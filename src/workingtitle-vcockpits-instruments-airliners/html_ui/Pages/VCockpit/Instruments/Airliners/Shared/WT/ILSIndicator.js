@@ -97,7 +97,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let circle = document.createElementNS(Avionics.SVG.NS, "circle");
                     circle.setAttribute("cx", this.gs_cursorPosX.toString());
                     circle.setAttribute("cy", y.toString());
-                    circle.setAttribute("r", "5");
+                    circle.setAttribute("r", "4");
                     circle.setAttribute("fill", "none");
                     circle.setAttribute("stroke", "white");
                     circle.setAttribute("stroke-width", "2");
@@ -106,28 +106,13 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     circle = document.createElementNS(Avionics.SVG.NS, "circle");
                     circle.setAttribute("cx", this.gs_cursorPosX.toString());
                     circle.setAttribute("cy", y.toString());
-                    circle.setAttribute("r", "5");
+                    circle.setAttribute("r", "4");
                     circle.setAttribute("fill", "none");
                     circle.setAttribute("stroke", "white");
                     circle.setAttribute("stroke-width", "2");
                     this.gs_mainGroup.appendChild(circle);
                 }
-                this.gs_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                this.gs_cursorGroup.setAttribute("id", "CursorGroup");
-                this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + this.gs_cursorPosY + ")");
-                this.gs_mainGroup.appendChild(this.gs_cursorGroup);
-                {
-                    let x = 12;
-                    let y = 20;
-                    this.gs_cursorShapeUp = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.gs_cursorShapeUp.setAttribute("fill", "#FF0CE2");
-                    this.gs_cursorShapeUp.setAttribute("d", "M -12 0 L 0 -20 L 12 0 L 7 0 L 0 -13 L -7 0");
-                    this.gs_cursorGroup.appendChild(this.gs_cursorShapeUp);
-                    this.gs_cursorShapeDown = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.gs_cursorShapeDown.setAttribute("fill", "#FF0CE2");
-                    this.gs_cursorShapeDown.setAttribute("d", "M -12 0 L 0 20 L 12 0 L 7 0 L 0 14 L -7 0");
-                    this.gs_cursorGroup.appendChild(this.gs_cursorShapeDown);
-                }
+
                 let neutralLine = document.createElementNS(Avionics.SVG.NS, "line");
                 neutralLine.setAttribute("id", "NeutralLine");
                 neutralLine.setAttribute("x1", (posX + 5).toString());
@@ -137,6 +122,31 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 neutralLine.setAttribute("stroke", "white");
                 neutralLine.setAttribute("stroke-width", "2");
                 this.gs_mainGroup.appendChild(neutralLine);
+
+                this.gs_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                this.gs_cursorGroup.setAttribute("id", "CursorGroup");
+                this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + this.gs_cursorPosY + ")");
+                this.gs_mainGroup.appendChild(this.gs_cursorGroup);
+
+                {
+                    let x = 12;
+                    let y = 20;
+                    this.gs_cursorShapeUp = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
+                    this.gs_cursorShapeUp.setAttribute("d", "M -12 0 L 0 -20 L 12 0 L 7 0 L 0 -13 L -7 0");
+                    this.gs_cursorGroup.appendChild(this.gs_cursorShapeUp);
+                    this.gs_cursorShapeDown = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
+                    this.gs_cursorShapeDown.setAttribute("d", "M -12 0 L 0 20 L 12 0 L 7 0 L 0 14 L -7 0");
+                    this.gs_cursorGroup.appendChild(this.gs_cursorShapeDown);
+
+                    this.vertical_snowFlake = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.vertical_snowFlake.setAttribute("fill", "none");
+                    this.vertical_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
+                    this.vertical_snowFlake.setAttribute("stroke", "magenta");
+                    this.vertical_snowFlake.setAttribute("stroke-width", "2.5");
+                    this.gs_cursorGroup.appendChild(this.vertical_snowFlake);
+                }
             }
             this.centerGroup.appendChild(this.gs_mainGroup);
             posX = 114;
@@ -153,7 +163,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 bg.setAttribute("height", height.toString());
                 bg.setAttribute("fill", "black");
                 bg.setAttribute("fill-opacity", "0.3");
-                this.gs_mainGroup.appendChild(bg);
+                this.loc_mainGroup.appendChild(bg);
                 let rangeFactor = 0.85;
                 let nbCircles = 2;
                 this.loc_cursorMinX = posX + (width * 0.5) - (rangeFactor * width * 0.5);
@@ -165,7 +175,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let circle = document.createElementNS(Avionics.SVG.NS, "circle");
                     circle.setAttribute("cx", x.toString());
                     circle.setAttribute("cy", this.loc_cursorPosY.toString());
-                    circle.setAttribute("r", "5");
+                    circle.setAttribute("r", "4");
                     circle.setAttribute("fill", "none");
                     circle.setAttribute("stroke", "white");
                     circle.setAttribute("stroke-width", "2");
@@ -174,28 +184,13 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     circle = document.createElementNS(Avionics.SVG.NS, "circle");
                     circle.setAttribute("cx", x.toString());
                     circle.setAttribute("cy", this.loc_cursorPosY.toString());
-                    circle.setAttribute("r", "5");
+                    circle.setAttribute("r", "4");
                     circle.setAttribute("fill", "none");
                     circle.setAttribute("stroke", "white");
                     circle.setAttribute("stroke-width", "2");
                     this.loc_mainGroup.appendChild(circle);
                 }
-                this.loc_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                this.loc_cursorGroup.setAttribute("id", "CursorGroup");
-                this.loc_cursorGroup.setAttribute("transform", "translate(" + this.loc_cursorPosX + ", " + this.loc_cursorPosY + ")");
-                this.loc_mainGroup.appendChild(this.loc_cursorGroup);
-                {
-                    let x = 20;
-                    let y = 12;
-                    this.loc_cursorShapeRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.loc_cursorShapeRight.setAttribute("fill", "#FF0CE2");
-                    this.loc_cursorShapeRight.setAttribute("d", "M 0 -12 L -20 0 L 0 12 L 0 6 L -14 0 L 0 -7");
-                    this.loc_cursorGroup.appendChild(this.loc_cursorShapeRight);
-                    this.loc_cursorShapeLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    this.loc_cursorShapeLeft.setAttribute("fill", "#FF0CE2");
-                    this.loc_cursorShapeLeft.setAttribute("d", "M 0 -12 L 20 0 L 0 12 L 0 6 L 14 0 L 0 -7");
-                    this.loc_cursorGroup.appendChild(this.loc_cursorShapeLeft);
-                }
+
                 let neutralLine = document.createElementNS(Avionics.SVG.NS, "line");
                 neutralLine.setAttribute("id", "NeutralLine");
                 neutralLine.setAttribute("x1", (posX + width * 0.5).toString());
@@ -205,6 +200,31 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 neutralLine.setAttribute("stroke", "white");
                 neutralLine.setAttribute("stroke-width", "2");
                 this.loc_mainGroup.appendChild(neutralLine);
+
+                this.loc_cursorGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                this.loc_cursorGroup.setAttribute("id", "CursorGroup");
+                this.loc_cursorGroup.setAttribute("transform", "translate(" + this.loc_cursorPosX + ", " + this.loc_cursorPosY + ")");
+                this.loc_mainGroup.appendChild(this.loc_cursorGroup);
+                {
+                    let x = 20;
+                    let y = 12;
+                    this.loc_cursorShapeRight = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+                    this.loc_cursorShapeRight.setAttribute("d", "M 0 -12 L -20 0 L 0 12 L 0 6 L -14 0 L 0 -7");
+                    this.loc_cursorGroup.appendChild(this.loc_cursorShapeRight);
+                    this.loc_cursorShapeLeft = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
+                    this.loc_cursorShapeLeft.setAttribute("d", "M 0 -12 L 20 0 L 0 12 L 0 6 L 14 0 L 0 -7");
+                    this.loc_cursorGroup.appendChild(this.loc_cursorShapeLeft);
+
+                    this.lateral_snowFlake = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.lateral_snowFlake.setAttribute("fill", "none");
+                    this.lateral_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
+                    this.lateral_snowFlake.setAttribute("stroke", "magenta");
+                    this.lateral_snowFlake.setAttribute("stroke-width", "2.5");
+                    this.loc_cursorGroup.appendChild(this.lateral_snowFlake);
+
+                }
             }
             this.centerGroup.appendChild(this.loc_mainGroup);
         }
@@ -810,43 +830,67 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
         let navCheck = SimVar.GetSimVarValue('L:RADIONAV_SOURCE', 'Number');
         if (navCheck === 1) {
-            this.gs_cursorShapeUp.setAttribute("fill", "#FF0CE2");
-            this.gs_cursorShapeDown.setAttribute("fill", "#FF0CE2");
-            this.loc_cursorShapeRight.setAttribute("fill", "#FF0CE2");
-            this.loc_cursorShapeLeft.setAttribute("fill", "#FF0CE2");
+            this.gs_cursorShapeUp.setAttribute("display", "none");
+            this.gs_cursorShapeDown.setAttribute("display", "none");
+            this.loc_cursorShapeRight.setAttribute("display", "none");
+            this.loc_cursorShapeLeft.setAttribute("display", "none");
+            this.lateral_snowFlake.setAttribute("display", "");
+            this.vertical_snowFlake.setAttribute("display", "");
+
+            // The snowflake should only show when in FMS and in either PPOS or flying an RNAV approach. But we can't detect mapDisplayMode through this
+
+            /*if (this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
+                this.loc_mainGroup.setAttribute("display", "");
+            } else {
+                this.loc_mainGroup.setAttribute("display", "none");
+            }*/ 
+
         } else {
-            this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
-            this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
-            this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
-            this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
+            this.gs_cursorShapeUp.setAttribute("display", "");
+            this.gs_cursorShapeDown.setAttribute("display", "");
+            this.loc_cursorShapeRight.setAttribute("display", "");
+            this.loc_cursorShapeLeft.setAttribute("display", "");
+            this.lateral_snowFlake.setAttribute("display", "none");
+            this.vertical_snowFlake.setAttribute("display", "none");
        }
+
+       const navSensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
 
         if (this.gsVisible || this.locVisible || this.infoVisible) {
             let localizer = this.gps.radioNav.getBestILSBeacon();
             let isApproachLoaded = Simplane.getAutoPilotApproachLoaded();
             let approachType = Simplane.getAutoPilotApproachType();
-                    
+            
+            /*if (this.gs_cursorGroup && this.gsVisible && navCheck === 1) {
+                console.log("We are in Nav");
+            }*/
+
             if (this.gs_cursorGroup && this.gsVisible) {
-                if (isApproachLoaded && approachType == 10) {
-                    let gsi = -SimVar.GetSimVarValue("GPS VERTICAL ERROR", "meters");
-                    let delta = 0.5 + (gsi / 150.0) / 2;
+                //if (isApproachLoaded && approachType == 10) {
+                if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1) {
+                    this.vertical_snowFlake.setAttribute("visibility", "visible");
+                } else {
+                    this.vertical_snowFlake.setAttribute("visibility", "hidden");
+                }
+                if (navCheck === 1) {
+                    let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
+                    let gsi = gsiFeet / 3.28;
+                    let delta = 0.5 + ((gsi / 250.0) / 2);
+
+                    switch (navSensitivity) {
+                        case 3:
+                            delta = 0.5 + ((gsi / 125.0) / 2);
+                            break;
+                        case 4: {
+                            const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
+                            delta = 0.5 + ((gsi / (125.0 * sensitivityScalar)) / 2);
+                            break;
+                        }
+                    }
+                
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
                     this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
-                    if (delta >= 0.95) {
-                        this.gs_glidePathCursorUp.setAttribute("visibility", "visible");
-                        this.gs_glidePathCursorDown.setAttribute("visibility", "hidden");
-                    }
-                    else if (delta <= 0.05) {
-                        this.gs_glidePathCursorUp.setAttribute("visibility", "hidden");
-                        this.gs_glidePathCursorDown.setAttribute("visibility", "visible");
-                    }
-                    else {
-                        this.gs_glidePathCursorUp.setAttribute("visibility", "visible");
-                        this.gs_glidePathCursorDown.setAttribute("visibility", "visible");
-                    }
-                    this.gs_cursorShapeUp.setAttribute("visibility", "hidden");
-                    this.gs_cursorShapeDown.setAttribute("visibility", "hidden");
                 }
                 else if (localizer.id > 0 && SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + localizer.id, "Bool")) {
                     let gsi = -SimVar.GetSimVarValue("NAV GSI:" + localizer.id, "number") / 127.0;
@@ -877,8 +921,23 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 }
             }
             if (this.loc_cursorGroup && this.locVisible) {
-                if ((!isApproachLoaded || approachType != 10) && localizer.id > 0) {
-                    let cdi = SimVar.GetSimVarValue("NAV CDI:" + localizer.id, "number") / 127.0;
+                const hasCDI = ((!isApproachLoaded || approachType != 10) && localizer.id > 0)
+                    || navSensitivity === 4;
+                
+                if (hasCDI) {
+                    let cdi = 0;
+
+                    if (navSensitivity === 4) {
+                        const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
+                        const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
+                        const deviation = (-(xtk / 2) / 0.3) / sensitivityScalar;
+
+                        cdi = Math.min(Math.max(deviation, -1.0), 1.0);
+                    }
+                    else {
+                        cdi = SimVar.GetSimVarValue("NAV CDI:" + localizer.id, "number") / 127.0;
+                    }
+                    
                     let delta = (cdi + 1.0) * 0.5;
                     let x = this.loc_cursorMinX + (this.loc_cursorMaxX - this.loc_cursorMinX) * delta;
                     x = Math.max(this.loc_cursorMinX, Math.min(this.loc_cursorMaxX, x));
@@ -933,6 +992,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
         }
     }
     showGlideslope(_val) {
+        _val = true; // TODO: REMOVE THIS
         this.gsVisible = _val;
         if (_val) {
             this.gs_mainGroup.setAttribute("visibility", "visible");

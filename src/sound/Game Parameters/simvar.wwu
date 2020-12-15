@@ -519,7 +519,7 @@ Unit : millimeters of water</Comment>
 								<Property Name="FilterTimeDown" Type="Real64" Value="1"/>
 								<Property Name="FilterTimeUp" Type="Real64" Value="1"/>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
-								<Property Name="Max" Type="Real64" Value="200"/>
+								<Property Name="Max" Type="Real64" Value="20"/>
 							</PropertyList>
 						</GameParameter>
 					</ChildrenList>
@@ -560,7 +560,7 @@ Unit : Knots</Comment>
 								<Property Name="FilterTimeDown" Type="Real64" Value="3"/>
 								<Property Name="FilterTimeUp" Type="Real64" Value="3"/>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
-								<Property Name="Max" Type="Real64" Value="1000"/>
+								<Property Name="Max" Type="Real64" Value="500"/>
 							</PropertyList>
 						</GameParameter>
 						<GameParameter Name="SIMVAR_ROTATION_VELOCITY_BODY_Z" ID="{9970D6C2-20EF-4E4B-A40D-0181AB8EA25B}">
@@ -760,7 +760,7 @@ Unit : Knots</Comment>
 								<Property Name="FilterTimeDown" Type="Real64" Value="3"/>
 								<Property Name="FilterTimeUp" Type="Real64" Value="3"/>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
-								<Property Name="Max" Type="Real64" Value="1000"/>
+								<Property Name="Max" Type="Real64" Value="305"/>
 							</PropertyList>
 						</GameParameter>
 						<Folder Name="derived" ID="{4D3B3343-E4D3-4E75-8155-DA9E0DC84C99}" ShortID="600110436">
@@ -856,6 +856,7 @@ Unit : Percent Over 100</Comment>
 Unit : Percentage</Comment>
 							<PropertyList>
 								<Property Name="InitialValue" Type="Real64" Value="0"/>
+								<Property Name="Max" Type="Real64" Value="1"/>
 							</PropertyList>
 						</GameParameter>
 						<Folder Name="derived" ID="{F6FF84AA-24EB-4F7D-B252-BAFB1F2ED399}" ShortID="763764561">
@@ -998,6 +999,7 @@ Unit Position (-16K to 0) -16K = full left</Comment>
 								<Property Name="Min" Type="Real64" Value="-10000"/>
 							</PropertyList>
 						</GameParameter>
+						<GameParameter Name="SIMVAR_SPOILERS_LEFT_POSITION" ID="{F0B68DB9-910B-4F35-9505-555AA68233E4}"/>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="engine" ID="{A5564708-E5EC-48F9-B5B3-B21D87755A96}" ShortID="609095319">
@@ -1063,9 +1065,9 @@ Unit : Rpm</Comment>
 Unit : Percent</Comment>
 									<PropertyList>
 										<Property Name="FilterTimeDown" Type="Real64" Value="1"/>
-										<Property Name="FilterTimeUp" Type="Real64" Value="1"/>
+										<Property Name="FilterTimeUp" Type="Real64" Value="8"/>
 										<Property Name="InitialValue" Type="Real64" Value="0"/>
-										<Property Name="Max" Type="Real64" Value="200"/>
+										<Property Name="Max" Type="Real64" Value="105"/>
 										<Property Name="SlewRateDown" Type="Real64" Value="1"/>
 										<Property Name="SlewRateUp" Type="Real64" Value="1"/>
 									</PropertyList>
@@ -1226,7 +1228,7 @@ Unit : Rpm
 									<PropertyList>
 										<Property Name="FilterTimeDown" Type="Real64" Value="0.1"/>
 										<Property Name="InitialValue" Type="Real64" Value="560"/>
-										<Property Name="Max" Type="Real64" Value="10000"/>
+										<Property Name="Max" Type="Real64" Value="40000"/>
 										<Property Name="SlewRateUp" Type="Real64" Value="0"/>
 									</PropertyList>
 								</GameParameter>
@@ -1390,26 +1392,7 @@ Unit : Percent</Comment>
 						</Folder>
 					</ChildrenList>
 				</Folder>
-				<Folder Name="working_title" ID="{2A089371-D91F-4B8A-8A91-9811EC11DAC7}" ShortID="70824550">
-					<ChildrenList>
-						<GameParameter Name="SIMVAR_AC" ID="{1AA79A50-3201-4F5F-8D74-1B3682D07603}">
-							<PropertyList>
-								<Property Name="FilterTimeDown" Type="Real64" Value="0.5"/>
-								<Property Name="FilterTimeUp" Type="Real64" Value="0.5"/>
-								<Property Name="RTPCRamping" Type="int16" Value="2"/>
-							</PropertyList>
-						</GameParameter>
-						<GameParameter Name="SIMVAR_PLAY_CHIME" ID="{6A5ADBF1-0DD5-44C3-B1B5-4A19F7980F7F}">
-							<PropertyList>
-								<Property Name="FilterTimeDown" Type="Real64" Value="0.5"/>
-								<Property Name="FilterTimeUp" Type="Real64" Value="0.5"/>
-								<Property Name="InitialValue" Type="Real64" Value="0"/>
-								<Property Name="Max" Type="Real64" Value="1"/>
-								<Property Name="RTPCRamping" Type="int16" Value="2"/>
-							</PropertyList>
-						</GameParameter>
-					</ChildrenList>
-				</Folder>
+				<WorkUnit Name="WT_SimVars" ID="{049DCAE9-E15A-4526-93F4-2DE9423D4A4D}" PersistMode="Reference"/>
 			</ChildrenList>
 		</WorkUnit>
 	</GameParameters>

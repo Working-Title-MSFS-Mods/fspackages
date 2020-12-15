@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "typeRoots": [
+            "./types"
+        ],
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "allowJs": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "outDir": "./.tmp",
+        "sourceMap": false,
+        "skipLibCheck": true,
+
+    },
+    "include": [
+        "src"
+    ]
+}

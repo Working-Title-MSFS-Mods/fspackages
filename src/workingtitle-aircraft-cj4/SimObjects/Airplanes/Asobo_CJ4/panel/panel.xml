@@ -432,7 +432,7 @@
 	
 		<Alert>
 			<Type>SoundOnly</Type>
-			<SoundEvent>aural_500ft</SoundEvent>
+			<SoundEvent>WT_aural_500ft</SoundEvent>
 			<Condition>
 				<StateMachine>
 					<State id="Under" value="0">
@@ -459,6 +459,78 @@
 				</StateMachine>
 			</Condition>
 		</Alert>
+
+		<Alert>
+			<Type>SoundOnly</Type>
+			<SoundEvent>WT_aural_minimums</SoundEvent>
+			<Condition>
+				<StateMachine>
+					<State id="Under" value="0">
+						<Transition to="Over">
+							<GreaterEqual>
+								<Simvar name="INDICATED ALTITUDE" unit="feet"/>
+								<Simvar name="L:WT_CJ4_BARO_SET" unit="number"/>
+							</GreaterEqual>
+						</Transition>
+					</State>
+					<State id="Over" value="0">
+						<Transition to="Alerting">
+							<LowerEqual>
+								<Simvar name="INDICATED ALTITUDE" unit="feet"/>
+								<Simvar name="L:WT_CJ4_BARO_SET" unit="number"/>
+							</LowerEqual>
+						</Transition>
+					</State>
+					<State id="Alerting" value="1">
+						<Transition to="Under">
+							<Constant>1</Constant>
+						</Transition>
+					</State>
+				</StateMachine>
+			</Condition>
+		</Alert>
+
+		<!--<Alert>
+			<Type>SoundOnly</Type>
+			<SoundEvent>WT_altitude_alerter</SoundEvent>
+			<Condition>
+				<StateMachine>
+					<State id="Checking" value="0">
+						<Transition to="ArmAlert">
+							<Or>
+								<GreaterEqual>
+									<Simvar name="INDICATED ALTITUDE" unit="feet"/>
+									<Substract>
+										<Simvar name="AUTOPILOT ALTITUDE LOCK VAR:1" unit="feet"/>
+										<Constant>1000</Constant>
+									</Substract>
+								</GreaterEqual>
+								<LowerEqual>
+									<Simvar name="INDICATED ALTITUDE" unit="feet"/>
+									<Add>
+										<Simvar name="AUTOPILOT ALTITUDE LOCK VAR:1" unit="feet"/>
+										<Constant>1000</Constant>
+									</Add>
+								</LowerEqual>
+							</Or>
+						</Transition>
+					</State>
+					<State id="ArmAlert" value="1">
+						<Transition to="Under">
+							<Timer time="2">
+							</Timer>
+						</Transition>
+					</State>
+					<State id="Alerting" value="1">
+						<Transition to="Under">
+							<Constant>1</Constant>
+						</Transition>
+					</State>
+					-> CHECK FOR ALTITUDE LOCK CHANGE
+				</StateMachine>
+			</Condition>
+		</Alert> -->
+
 		
 		<Alert>
 			<Type>SoundOnly</Type>
@@ -472,7 +544,7 @@
 			<Type>Warning</Type>
 			<ShortText>PULL UP</ShortText>
 			<LongText>PULL UP</LongText>
-			<SoundEvent>aural_pull_up</SoundEvent>
+			<SoundEvent>WT_aural_pull_up</SoundEvent>
 			<Condition>
 				<And>
 					<LinearMultiPoint>
@@ -497,19 +569,19 @@
 			</Condition>
 		</Alert>
 		
-		<Alert>
+		<!-- <Alert>
 			<Type>SoundOnly</Type>
-			<SoundEvent>aural_overspeed</SoundEvent>
+			<SoundEvent>WT_aural_overspeed</SoundEvent>
 			<Condition>
 				<Simvar name="OVERSPEED WARNING" unit="bool"/>
 			</Condition>
-		</Alert>
+		</Alert> -->
 		
 		<Alert>
 			<Type>Caution</Type>
 			<ShortText>TERRAIN</ShortText>
 			<LongText>SINK RATE</LongText>
-			<SoundEvent>aural_sink_rate</SoundEvent>
+			<SoundEvent>WT_aural_sink_rate</SoundEvent>
 			<Condition>
 				<And>
 					<LinearMultiPoint>
@@ -539,7 +611,7 @@
 			<Type>Caution</Type>
 			<ShortText>TERRAIN</ShortText>
 			<LongText>DONT' SINK</LongText>
-			<SoundEvent>aural_dont_sink</SoundEvent>
+			<SoundEvent>WT_aural_dont_sink</SoundEvent>
 			<Condition>
 				<And>
 					<Lower>
@@ -592,7 +664,7 @@
 		
 		<Alert>
 			<Type>SoundOnly</Type>
-			<SoundEvent>aural_landing_gear</SoundEvent>
+			<SoundEvent>WT_aural_landing_gear</SoundEvent>
 			<Condition>
 				<And>
 					<Or> <!-- One of the following conditions is true: --> 
@@ -652,7 +724,7 @@
 			</Condition>
 		</Alert>
 		
-		<Alert>
+		<!-- <Alert>
 			<Type>Test</Type>
 			<ShortText>TAWS TEST</ShortText>
 			<Condition>
@@ -679,7 +751,7 @@
 				</And>
 			</Condition>
 			<Once>True</Once>
-		</Alert>
+		</Alert> -->
 	</VoicesAlerts>
   
 </PlaneHTMLConfig>

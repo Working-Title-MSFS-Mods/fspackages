@@ -69,16 +69,16 @@ class FacilityLoader {
         RegisterViewListener("JS_LISTENER_FACILITY", () => {
             console.log("JS_LISTENER_FACILITY registered.");
             Coherent.on("SendAirport", (data) => {
-                this.addFacility(data);
+                this.addFacility(data, 'A');
             });
             Coherent.on("SendIntersection", (data) => {
-                this.addFacility(data);
+                this.addFacility(data, 'W');
             });
             Coherent.on("SendVor", (data) => {
-                this.addFacility(data);
+                this.addFacility(data, 'V');
             });
             Coherent.on("SendNdb", (data) => {
-                this.addFacility(data);
+                this.addFacility(data, 'N');
             });
             this._isCompletelyRegistered = true;
         });
@@ -95,7 +95,7 @@ class FacilityLoader {
             }
         }
     }
-    addFacility(_data) {
+    addFacility(_data, type) {
 
         _data.icaoTrimed = _data.icao.trim();
 
@@ -116,42 +116,48 @@ class FacilityLoader {
             }
         }
 
-        const pendingRequest = this._pendingRawRequests.get(_data.icaoTrimed);
+        const pendingRequest = this._pendingRawRequests.get(`${type}${_data.icaoTrimed}`);
         if (pendingRequest) {
             clearTimeout(pendingRequest.timeout);
             pendingRequest.resolve(_data);
-            this._pendingRawRequests.delete(_data.icaoTrimed);
+            this._pendingRawRequests.delete(`${type}${_data.icaoTrimed}`);
         }
     }
     /**
      * Gets the raw facility data for a given icao.
      * @param {String} icao The ICAO to get the raw facility data for.
      */
-    getFacilityRaw(icao, timeout = 1000) {
-        return new Promise((resolve, reject) => {
-            const request = {
-                resolve: resolve,
-                timeout: setTimeout(() => reject(), timeout),
-                icao: icao.trim()
-            };
+    getFacilityRaw(icao, timeout = 1500) {
 
-            this._pendingRawRequests.set(request.icao, request);
-            const type = icao[0];
-            switch (type) {
-                case 'A':
-                    Coherent.call('LOAD_AIRPORT', icao);
-                    break;
-                case 'W':
-                    Coherent.call('LOAD_INTERSECTION', icao);
-                    break;
-                case 'V':
-                    Coherent.call('LOAD_VOR', icao);
-                    break;
-                case 'N':
-                    Coherent.call('LOAD_NDB', icao);
-                    break;
-            }
-        });
+        const queueRawLoad = (loadCall, icao, type) => {
+            return new Promise((resolve) => {
+                const request = {
+                    resolve: resolve,
+                    timeout: setTimeout(() => resolve(undefined), timeout),
+                    icao: icao.trim()
+                };
+    
+                this._pendingRawRequests.set(`${type}${request.icao}`, request);
+                Coherent.call(loadCall, icao);
+            });
+        };
+
+        const type = icao[0];
+        switch (type) {
+            case 'A':
+                return queueRawLoad('LOAD_AIRPORT', icao, 'A');
+            case 'W':
+                return queueRawLoad('LOAD_INTERSECTION', icao, 'W');
+            case 'V':
+                return Promise.all([queueRawLoad('LOAD_VOR', icao, 'V'), queueRawLoad('LOAD_INTERSECTION', icao, 'W')])
+                    .then(facilities => {
+                        return Object.assign(facilities[0], facilities[1]);
+                    });
+            case 'N':
+                return Promise.all([queueRawLoad('LOAD_NDB', icao, 'N'), queueRawLoad('LOAD_INTERSECTION', icao, 'W')])
+                    .then(facilities => Object.assign(facilities[0], facilities[1]));
+        }
+        
     }
     getFacilityCB(icao, callback, loadFacilitiesTransitively = false) {
         if (this._isCompletelyRegistered && this.loadingFacilities.length < this._maxSimultaneousCoherentCalls) {

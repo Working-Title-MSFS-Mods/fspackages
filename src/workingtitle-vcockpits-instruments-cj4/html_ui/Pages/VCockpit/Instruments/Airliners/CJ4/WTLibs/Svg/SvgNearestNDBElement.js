@@ -44,4 +44,3 @@ class SvgNearestNDBElement extends SvgWaypointElement {
         return 20;
     }
 }
-//# sourceMappingURL=SvgNearestNDBElement.js.map

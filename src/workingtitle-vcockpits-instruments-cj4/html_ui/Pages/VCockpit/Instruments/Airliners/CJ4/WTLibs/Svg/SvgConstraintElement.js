@@ -197,4 +197,3 @@ class SvgTopOfXElement extends SvgMapElement {
         }
     }
 }
-//# sourceMappingURL=SvgConstraintElement.js.map

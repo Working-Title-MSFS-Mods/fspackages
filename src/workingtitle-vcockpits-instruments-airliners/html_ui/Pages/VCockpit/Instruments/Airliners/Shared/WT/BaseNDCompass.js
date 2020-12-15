@@ -195,6 +195,7 @@ class Jet_NDCompass extends HTMLElement {
     update(_deltaTime) {
         this.updateCompass(_deltaTime);
         this.updateNavigationInfo();
+        this.updateCourseNeedleAnimation(_deltaTime);
         this.updateMapRange();
     }
     updateCompass(_deltaTime) {
@@ -205,9 +206,9 @@ class Jet_NDCompass extends HTMLElement {
         }
 
         let simHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
-        let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
+        let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degree");
         let simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
-        let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+        let simSelectedTrack = Simplane.getNextWaypointTrack();
         let simGroundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
         if (Simplane.getAutoPilotTRKModeActive() || Simplane.getAutoPilotTRKFPAModeActive())
             this._referenceMode = Jet_NDCompass_Reference.TRACK;
@@ -344,7 +345,7 @@ class Jet_NDCompass extends HTMLElement {
                     if (this.aircraft == Aircraft.CJ4) {
                         let CompassAngle = this.degreeToArc(compass);
                         let selectedAngle = this.degreeToArc(simSelectedHeading);
-                        let delta = Math.abs(CompassAngle - selectedAngle);
+                        let delta = Math.abs(Avionics.Utils.angleDiff(CompassAngle, selectedAngle));
                         this.selectedHeadingLine.classList.toggle('hide', (delta > 65 && this._displayMode !== Jet_NDCompass_Display.ROSE && Simplane.getAutoPilotHeadingLockActive()) ? false : true);
                         this.selectedHeadingBug.classList.toggle('hide', (delta > 90 && this._displayMode === Jet_NDCompass_Display.ARC) ? true : false);
 
@@ -439,6 +440,8 @@ class Jet_NDCompass extends HTMLElement {
                     this.courseFROMBorder.setAttribute("visibility", "hidden");
                     this.courseFROMLine.setAttribute("visibility", "hidden");
                     this.courseTOBorder.setAttribute("visibility", "hidden");
+                    this.courseGroup.setAttribute("visibility", "hidden");
+                    this.noFplnGroup.setAttribute("visibility", "visible");
                 } else {
                     this.courseDeviation.setAttribute("visibility", "visible");
                     this.courseTO.setAttribute("visibility", "visible");
@@ -447,6 +450,8 @@ class Jet_NDCompass extends HTMLElement {
                     this.courseFROMBorder.setAttribute("visibility", "visible");
                     this.courseFROMLine.setAttribute("visibility", "visible");
                     this.courseTOBorder.setAttribute("visibility", "visible");
+                    this.courseGroup.setAttribute("visibility", "visible");
+                    this.noFplnGroup.setAttribute("visibility", "hidden");
 
                     if (bearingDiff > 90 && bearingDiff < 270) {
                         this.courseTO.setAttribute("visibility", "hidden");
@@ -518,9 +523,23 @@ class Jet_NDCompass extends HTMLElement {
                 else if (this.navigationMode === Jet_NDCompass_Navigation.NAV) {
 
                     displayCourseDeviation = true;
-                    let crossTrack = SimVar.GetSimVarValue("GPS WP CROSS TRK", "Number");
-                    let deviation = (crossTrack * 0.000539957) / 2; //Converts cross track to NM and then divides by 2 since enroute max deflection is 2nm off course)
-                    let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+                    let crossTrack = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
+                    const sensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
+                    let deviation = -(crossTrack / 2);
+
+                    if (sensitivity === 0) {
+                        deviation = deviation * 2;
+                    }
+                    else if (sensitivity > 2) {
+                        deviation = deviation / 0.3;
+                        if (sensitivity === 4) {
+                            deviation /= SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
+                        }
+                    }
+
+                    //let simSelectedTrack = Simplane.getNextWaypointTrack();
+                    let simSelectedTrack = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
+
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
 
@@ -539,7 +558,13 @@ class Jet_NDCompass extends HTMLElement {
                             deviation = -deviation;
                         this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
-                        this.ghostNeedleGroup.setAttribute("visibility", "visible");
+                        
+                        const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
+                        if (navSensitivity == 1) {
+                            this.ghostNeedleGroup.setAttribute("visibility", "visible");
+                        } else {
+                            this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+                        }
                     }
                     else {
                         this.setAttribute("ghost_needle_course", compass.toString());
@@ -574,7 +599,7 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing1_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                            this.setAttribute("bearing1_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
@@ -613,7 +638,7 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing2_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                            this.setAttribute("bearing2_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
@@ -633,6 +658,49 @@ class Jet_NDCompass extends HTMLElement {
             }
         }
     }
+
+    /**
+     * Updates the course needle animation.
+     * @param {number} deltaTime The deltatime, in milliseconds, since the last frame.
+     */
+    updateCourseNeedleAnimation(deltaTime) {
+
+        if (!this._courseTarget) {
+            this._courseTarget = 0;
+        }
+
+        if (!this._currentCourse) {
+            this._currentCourse = 0;
+        }
+
+        if (!this._previousDisplayMode) {
+            this._previousDisplayMode = this.displayMode;
+        }
+
+        if (this._currentCourse !== this._courseTarget) {
+            const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
+            const absAngleDiff = Math.abs(angleDiff);
+
+            const currentAnimationPosition = Math.pow((absAngleDiff / 180), .25);
+            let nextAnimationPosition = Math.pow(Math.max(currentAnimationPosition - (deltaTime / 2000), 0), 4);
+            
+            this._currentCourse = this._courseTarget - (nextAnimationPosition * 180 * Math.sign(angleDiff));      
+            let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+
+            if (this.course) {
+                this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            }
+        }
+        else if (this._currentCourse === this._courseTarget && this._previousDisplayMode !== this.displayMode) {
+            let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+            if (this.course) {
+                this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            }
+        }
+
+        this._previousDisplayMode = this.displayMode;
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
             case "toggle_bearing1":
@@ -709,7 +777,7 @@ class Jet_NDCompass extends HTMLElement {
                 break;
             case "course":
                 if (this.course) {
-                    this.course.setAttribute("transform", "rotate(" + (newValue) + " " + (50 * factor) + " " + (50 * factor) + ")");
+                    this._courseTarget = parseFloat(newValue);
                 }
                 break;
             case "course_deviation":
@@ -878,4 +946,3 @@ class Jet_NDCompass extends HTMLElement {
         this._showILS = _val;
     }
 }
-//# sourceMappingURL=BaseNDCompass.js.map

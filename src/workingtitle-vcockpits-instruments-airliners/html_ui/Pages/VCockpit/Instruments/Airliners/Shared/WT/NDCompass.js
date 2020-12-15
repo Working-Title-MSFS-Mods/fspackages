@@ -2,6 +2,8 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
     constructor() {
         super();
         this.hudTopOrigin = NaN;
+        this.UPDATE_TIME = 250;
+        this._updateTimer = this.UPDATE_TIME;
     }
     connectedCallback() {
         super.connectedCallback();
@@ -101,20 +103,22 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     let stopR = false;
                     setInterval(function () {
                         // dot.setAttribute('transform', 'translate(40,0) rotate(' + y + ')');
-                        if (y >= 0.9751) {
-                            stopR = true;
-                        }
+                        if (dot.style.display === "") {
+                            if (y >= 0.9751) {
+                                stopR = true;
+                            }
 
-                        if (y >= 1.2) {
-                            y = 0;
-                            r = initR;
-                            stopR = false;
-                        }
+                            if (y >= 1.2) {
+                                y = 0;
+                                r = initR;
+                                stopR = false;
+                            }
 
-                        y += 0.013;
-                        if (!stopR) {
-                            r += 1.61;
-                            dot.setAttribute("transform", "translate(" + (path.getPointAtLength(y * cLength).x + 42) + "," + (path.getPointAtLength(y * cLength).y + 51) + ") rotate( " + r + ",8,3)");
+                            y += 0.013;
+                            if (!stopR) {
+                                r += 1.61;
+                                dot.setAttribute("transform", "translate(" + (path.getPointAtLength(y * cLength).x + 42) + "," + (path.getPointAtLength(y * cLength).y + 51) + ") rotate( " + r + ",8,3)");
+                            }
                         }
                     }, 30);
 
@@ -404,6 +408,35 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 airplaneStick.setAttribute("stroke-width", "2.5");
                 airplaneSymbolGroup.appendChild(airplaneStick);
                 this.root.appendChild(airplaneSymbolGroup);
+            }
+            {
+                this.noFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                let noFpln = document.createElementNS(Avionics.SVG.NS, "text");
+                noFpln.textContent = "NO FLIGHT PLAN";
+                noFpln.setAttribute("x", "50");
+                noFpln.setAttribute("y", "75");
+                noFpln.setAttribute("fill", "white");
+                noFpln.setAttribute("font-size", "20");
+                noFpln.setAttribute("font-family", "Roboto-Bold");
+                noFpln.setAttribute("text-anchor", "middle");
+                noFpln.setAttribute("alignment-baseline", "central");
+                this.noFplnGroup.appendChild(noFpln);
+                this.root.appendChild(this.noFplnGroup);
+            }
+            {
+                this.discoFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                let discoFpln = document.createElementNS(Avionics.SVG.NS, "text");
+                discoFpln.textContent = "DISCONTINUITY";
+                discoFpln.setAttribute("x", "50");
+                discoFpln.setAttribute("y", "55");
+                discoFpln.setAttribute("fill", "white");
+                discoFpln.setAttribute("font-size", "20");
+                discoFpln.setAttribute("font-family", "Roboto-Bold");
+                discoFpln.setAttribute("text-anchor", "middle");
+                discoFpln.setAttribute("alignment-baseline", "central");
+                this.discoFplnGroup.appendChild(discoFpln);
+                this.discoFplnGroup.setAttribute("visibility", "hidden");
+                this.root.appendChild(this.discoFplnGroup);
             }
 
             this.currentRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -2735,28 +2768,28 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.courseDeviationGhost.setAttribute("stroke", "cyan");
                     this.courseDeviationGhost.setAttribute("stroke-width", "3");
                     this.ghostNeedleGroup.appendChild(this.courseDeviationGhost);
-    
+
                     this.courseTOLineGhost = document.createElementNS(Avionics.SVG.NS, "path");
                     this.courseTOLineGhost.setAttribute("d", "M 486 673 l 0 5 m 0 10 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 5 l 0 3 l -8 0 l 21 50 l 24 -50 l -7 0 l 0 -3 m 0 -5 l 0 -12 m 0 -12 l 0 -12 m 0 -12 l 0 -12 m 0 -12 l 0 -12 m 0 -10 l 0 -5 m -30 107 l 30 0 z");
                     this.courseTOLineGhost.setAttribute("transform", "rotate(180 500 500)");
                     this.courseTOLineGhost.setAttribute("stroke", "cyan");
                     this.courseTOLineGhost.setAttribute("stroke-width", "3");
                     this.ghostNeedleGroup.appendChild(this.courseTOLineGhost);
-    
+
                     this.courseFROMLineGhost = document.createElementNS(Avionics.SVG.NS, "path");
                     this.courseFROMLineGhost.setAttribute("d", "M 485 165 l 0 5 m 0 10 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 10 l 0 6 M 515 165 l 0 5 m 0 10 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 12 l 0 12 m 0 10 l 0 6 Z");
                     this.courseFROMLineGhost.setAttribute("transform", "rotate(180 500 500)");
                     this.courseFROMLineGhost.setAttribute("stroke", "cyan");
                     this.courseFROMLineGhost.setAttribute("stroke-width", "3");
                     this.ghostNeedleGroup.appendChild(this.courseFROMLineGhost);
-    
+
                     this.rotatingCircle.appendChild(this.ghostNeedleGroup);
                 }
             }
 
             this.trackingGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.trackingGroup.setAttribute("id", "trackingGroup");
-        
+
             this.headingGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.headingGroup.setAttribute("id", "headingGroup");
             {
@@ -2812,6 +2845,33 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         airplaneStick.setAttribute("stroke-width", "2.5");
         airplaneSymbolGroup.appendChild(airplaneStick);
         this.root.appendChild(airplaneSymbolGroup);
+
+        this.noFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        let noFpln = document.createElementNS(Avionics.SVG.NS, "text");
+        noFpln.textContent = "NO FLIGHT PLAN";
+        noFpln.setAttribute("x", "500");
+        noFpln.setAttribute("y", "450");
+        noFpln.setAttribute("fill", "white");
+        noFpln.setAttribute("font-size", "30");
+        noFpln.setAttribute("font-family", "Roboto-Bold");
+        noFpln.setAttribute("text-anchor", "middle");
+        noFpln.setAttribute("alignment-baseline", "central");
+        this.noFplnGroup.appendChild(noFpln);
+        this.root.appendChild(this.noFplnGroup);
+
+        this.discoFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        let discoFpln = document.createElementNS(Avionics.SVG.NS, "text");
+        discoFpln.textContent = "DISCONTINUITY";
+        discoFpln.setAttribute("x", "500");
+        discoFpln.setAttribute("y", "420");
+        discoFpln.setAttribute("fill", "white");
+        discoFpln.setAttribute("font-size", "30");
+        discoFpln.setAttribute("font-family", "Roboto-Bold");
+        discoFpln.setAttribute("text-anchor", "middle");
+        discoFpln.setAttribute("alignment-baseline", "central");
+        this.discoFplnGroup.appendChild(discoFpln);
+        this.discoFplnGroup.setAttribute("visibility", "hidden");
+        this.root.appendChild(this.discoFplnGroup);
 
 
         let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -2924,6 +2984,14 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
     }
     update(_deltaTime) {
         super.update(_deltaTime);
+        this._updateTimer -= _deltaTime;
+        if (this._updateTimer < 0) {
+            if (this.discoFplnGroup !== undefined) {
+                const onDisco = SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 1;
+                this.discoFplnGroup.setAttribute("visibility", onDisco ? "visible" : "hidden");
+            }
+            this._updateTimer = this.UPDATE_TIME;
+        }
         if (this.isHud) {
             if (!isFinite(this.hudTopOrigin)) {
                 let clientRect = this.getBoundingClientRect();
@@ -2938,4 +3006,3 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
     }
 }
 customElements.define("jet-mfd-nd-compass", Jet_MFD_NDCompass);
-//# sourceMappingURL=NDCompass.js.map

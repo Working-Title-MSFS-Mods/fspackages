@@ -67,7 +67,6 @@ class CJ4_FMC_FuelMgmtPageOne {
     }
 
     render() {
-        console.log("Render Fuel");
 
         const fuelQuantityTotalText = WT_ConvertUnit.getWeight(this._fuelQuantityTotal).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG[s-text]" : "[d-text] LB[s-text]");
         const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
@@ -94,8 +93,9 @@ class CJ4_FMC_FuelMgmtPageOne {
     }
 
     bindEvents() {
+        
         this._fmc.onLeftInput[2] = () => {
-            let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
+            let value = WT_ConvertUnit.setWeight(parseInt(this._fmc.inOut));
             if (value >= 0 && value <= 5000) {
                 this._fmc.reserveFuel = value;
             }
@@ -106,6 +106,8 @@ class CJ4_FMC_FuelMgmtPageOne {
             //console.log(this._fmc.reserve);
             this.invalidate();
             this.update();
+            this.updateFuel();
+            this.render();
         };
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage3(this._fmc); };
         this._fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(this._fmc); };

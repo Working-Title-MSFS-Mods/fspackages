@@ -1456,5 +1456,3 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
     }
 }
 registerInstrument("cj4-mfd-element", CJ4_MFD);
-
-//# sourceMappingURL=CJ4_MFD.js.map
