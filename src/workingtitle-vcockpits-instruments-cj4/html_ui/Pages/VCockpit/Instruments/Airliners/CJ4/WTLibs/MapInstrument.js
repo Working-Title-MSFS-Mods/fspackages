@@ -751,7 +751,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                     if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
-                        for (let i = 0; i < 30; i++) {
+                        for (let i = 0; i < Math.min(30, this.intersectionLoader.waypoints.length); i++) {
                             let intersection = this.intersectionLoader.waypoints[i];
                             intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
                             if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
@@ -834,7 +834,7 @@ class MapInstrument extends ISvgMapRootElement {
                         if (todDist > 0) {
                             this.updateTodWaypoint();
                             if (this._todWaypoint) {
-                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(0));
+                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
                             }  
                         }
 
@@ -891,7 +891,7 @@ class MapInstrument extends ISvgMapRootElement {
     
                 waypoint.ident = "TOD";
                 waypoint.infos.ident = "TOD";
-                waypoint.getSvgElement(0);
+                waypoint.getSvgElement(this.navMap.index);
                 this._todWaypoint = waypoint;
             }
     
@@ -956,39 +956,12 @@ class MapInstrument extends ISvgMapRootElement {
     }
     update(_deltaTime) {
         this.updateVisibility();
-        this.updateSize(true);
+        this.updateSize(false);
         if (this.selfManagedInstrument) {
             this.instrument.doUpdate();
             this.flightPlanManager.update(_deltaTime);
         }
-        if (this.wpt) {
-            var wpId = SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
-            if (this.wpIdValue != wpId) {
-                this.wpt.textContent = wpId;
-                this.wpIdValue = wpId;
-            }
-        }
-        if (this.dtkMap) {
-            var wpDtk = fastToFixed(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree"), 0);
-            if (this.wpDtkValue != wpDtk) {
-                this.dtkMap.textContent = wpDtk;
-                this.wpDtkValue = wpDtk;
-            }
-        }
-        if (this.disMap) {
-            var wpDis = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical mile"), 1);
-            if (this.wpDisValue != wpDis) {
-                this.disMap.textContent = wpDis;
-                this.wpDisValue = wpDis;
-            }
-        }
-        if (this.gsMap) {
-            var gs = fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0);
-            if (this.gsValue != gs) {
-                this.gsMap.textContent = gs;
-                this.gsValue = gs;
-            }
-        }
+
         // Adapt code to new range display formatting
         if (this.mapRangeElement) {
             if (this.showRangeDisplay) {
