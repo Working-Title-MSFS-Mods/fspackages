@@ -100,14 +100,14 @@ WT_MapViewRangeRingLayer.CONFIG_PROPERTIES = [
 
 class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
     _createLabel() {
-        this._rangeLabel = new WT_MapViewRangeLabel();
+        this._rangeLabel = new WT_MapViewRangeDisplay();
         return this._rangeLabel;
     }
 
     /**
      * @readonly
      * @property {WT_MapViewRangeLabel} rangeRing - this label's range label object.
-     * @type {WT_MapViewRangeLabel}
+     * @type {WT_MapViewRangeDisplay}
      */
     get rangeLabel() {
         return this._rangeLabel;
