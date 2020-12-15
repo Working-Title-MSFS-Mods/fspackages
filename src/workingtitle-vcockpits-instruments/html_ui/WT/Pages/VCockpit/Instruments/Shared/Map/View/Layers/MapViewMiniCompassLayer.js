@@ -4,42 +4,97 @@ class WT_MapViewMiniCompassLayer extends WT_MapViewLayer {
     }
 
     _createHTMLElement() {
-        this._miniCompassContainer = document.createElement("div");
-        return this._miniCompassContainer;
-    }
-
-    _initIconLayer(path) {
-        this._compassIcon = document.createElement("img");
-        this._compassIcon.classList.add(WT_MapViewMiniCompassLayer.ICON_IMAGE_CLASS);
-        this._compassIcon.style.zIndex = 1;
-        this._compassIcon.src = path;
-        this._miniCompassContainer.appendChild(this._compassIcon);
-    }
-
-    _initTextLayer() {
-        let text = document.createElement("div");
-        text.classList.add(WT_MapViewMiniCompassLayer.TEXT_CLASS);
-        text.style.zIndex = 2;
-        text.innerHTML = "N";
-        this._miniCompassContainer.appendChild(text);
+        return this._miniCompass = new WT_MapViewMiniCompass();
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onConfigLoaded(state) {
-        this._initIconLayer(this.config.iconPath);
-        this._initTextLayer();
+        this._miniCompass.iconSrc = this.config.iconPath;
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
-        this._compassIcon.style.transform = `rotate(${state.projection.rotation}deg)`;
+        this._miniCompass.update(state);
     }
 }
 WT_MapViewMiniCompassLayer.CLASS_DEFAULT = "miniCompassLayer";
 WT_MapViewMiniCompassLayer.CONFIG_NAME_DEFAULT = "miniCompass";
 WT_MapViewMiniCompassLayer.ICON_IMAGE_CLASS = "miniCompassIcon";
 WT_MapViewMiniCompassLayer.TEXT_CLASS = "miniCompassText";
+
+class WT_MapViewMiniCompass extends HTMLElement {
+    constructor() {
+        super();
+
+        let template = document.createElement("template");
+        template.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    overflow: hidden;
+                    height: 5vh;
+                    width: 5vh;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 1.75vh;
+                    color: black;
+                }
+                #icon {
+                    height: 100%;
+                    width: 100%;
+                    z-index: 1;
+                }
+                #text {
+                    position: absolute;
+                    top: 50%;
+                    width: 100%;
+                    transform: translateY(-50%);
+                    z-index: 2;
+                }
+            </style>
+            <img id="icon"></img>
+            <div id="text">N</div>
+        `;
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+
+        this._iconSrc = undefined;
+    }
+
+    get iconSrc() {
+        return this._iconSrc;
+    }
+
+    set iconSrc(src) {
+        this._iconSrc = src;
+        if (this._icon) {
+            this._icon.src = src;
+        }
+    }
+
+    connectedCallback() {
+        this._icon = this.shadowRoot.querySelector(`#icon`);
+        if (this.iconSrc !== undefined) {
+            this._icon.src = this.iconSrc;
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "icon-src") {
+            this.iconSrc = newValue;
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    update(state) {
+        this._icon.style.transform = `rotate(${state.projection.rotation}deg)`;
+    }
+}
+
+customElements.define("map-view-minicompass", WT_MapViewMiniCompass);
