@@ -337,6 +337,7 @@
 
 		<Sound WwiseData="true" WwiseEvent="WT_wind_inside" SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0">
 			<WwiseRTPC SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_TRUE"/>
+			<Range LowerBound="1" />
 		</Sound>
 
 		<Sound WwiseEvent="WT_gear_down" WwiseData="true" FadeOutType="2" Continuous="false" FadeOutTime="1" SimVar="GEAR HANDLE POSITION" Units="NUMBER">

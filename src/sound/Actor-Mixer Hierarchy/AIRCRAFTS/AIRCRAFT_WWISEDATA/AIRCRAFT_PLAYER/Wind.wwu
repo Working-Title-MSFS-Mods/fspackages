@@ -26,7 +26,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="winds_inside_generic" ID="{E12DFC2F-BEFC-4750-B51A-E62015C54090}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -127,18 +127,18 @@
 														<Flags>5</Flags>
 													</Point>
 													<Point>
-														<XPos>31.93989</XPos>
+														<XPos>26.7895</XPos>
 														<YPos>-200</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>82.00684</XPos>
-														<YPos>-7.2174</YPos>
+														<XPos>92.71965</XPos>
+														<YPos>-8.29785</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
-														<XPos>150.9869</XPos>
-														<YPos>-3.35621</YPos>
+														<XPos>183.33136</XPos>
+														<YPos>-2.43033</YPos>
 														<Flags>0</Flags>
 													</Point>
 													<Point>
@@ -276,7 +276,7 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="Cj4 Interior during Cruise 2" ID="{BE880328-02D3-4B6A-A0E2-E39073B407A8}">
+										<AudioFileSource Name="Cj4 Interior during Cruise 2 48k" ID="{91085FA1-FC5C-44C4-8EE1-B88AA0C24BE2}">
 											<PropertyList>
 												<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
 												<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
@@ -284,11 +284,11 @@
 												<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
 											</PropertyList>
 											<Language>SFX</Language>
-											<AudioFile>Cj4 Interior during Cruise LOOP FIX.wav</AudioFile>
+											<AudioFile>Cj4 Interior during Cruise 2 48k.wav</AudioFile>
 										</AudioFileSource>
 									</ChildrenList>
 									<ActiveSourceList>
-										<ActiveSource Name="Cj4 Interior during Cruise 2" ID="{BE880328-02D3-4B6A-A0E2-E39073B407A8}" Platform="Linked"/>
+										<ActiveSource Name="Cj4 Interior during Cruise 2 48k" ID="{91085FA1-FC5C-44C4-8EE1-B88AA0C24BE2}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="Wind Very Low" ID="{D12E6535-E222-40BE-BEE1-499272F9F906}" ShortID="921191517">
