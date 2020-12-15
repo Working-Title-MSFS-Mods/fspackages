@@ -304,6 +304,11 @@
 				<Sound Name="Sink Rate" ID="{499F1C72-3F5E-4824-B4A5-64F6EE9B93DB}" ShortID="610884569">
 					<PropertyList>
 						<Property Name="OverrideOutput" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>3</Value>
+							</ValueList>
+						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
@@ -332,6 +337,11 @@
 				<Sound Name="Dont Sink" ID="{5974EBA0-240A-4BB7-AFA4-0698C1AF0D4B}" ShortID="556876901">
 					<PropertyList>
 						<Property Name="OverrideOutput" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>4</Value>
+							</ValueList>
+						</Property>
 					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
@@ -355,6 +365,40 @@
 					</ChildrenList>
 					<ActiveSourceList>
 						<ActiveSource Name="dontsink" ID="{44F8D227-093E-49EA-8235-EDAAE5F77A91}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Autopilot Disconnect" ID="{E0C0190F-6A0F-4C49-9FD1-7B3F7286104B}" ShortID="733963538">
+					<PropertyList>
+						<Property Name="OverrideOutput" Type="bool" Value="True"/>
+						<Property Name="OverridePositioning" Type="bool" Value="True"/>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>5</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="warning_inside_generic" ID="{6C22F7CB-D5EB-4419-8CF6-BA4C5E88B5F0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Autopilot Disconnect_01" ID="{040200EE-9C4E-4308-BAA1-49D1AAE26090}">
+							<PropertyList>
+								<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+								<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+								<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+								<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>Autopilot Disconnect.wav</AudioFile>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Autopilot Disconnect_01" ID="{040200EE-9C4E-4308-BAA1-49D1AAE26090}" Platform="Linked"/>
 					</ActiveSourceList>
 				</Sound>
 			</ChildrenList>

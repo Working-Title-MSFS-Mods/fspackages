@@ -363,6 +363,53 @@
 			<EMISSIVE_CODE_ACTIVE>(L:WT_CJ4_VNAV_ON)</EMISSIVE_CODE_ACTIVE>
 			<TOOLTIPID>Toggle VNAV</TOOLTIPID>
 		</UseTemplate>
-
+	</Template>
+	<Template Name="ASOBO_AUTOPILOT_Push_Disconnect_Template">
+		<DefaultTemplateParameters> 
+			<DEFAULT_NAME>Disconnect</DEFAULT_NAME>
+			<ID>1</ID>
+			<Condition Check="TOGGLEABLE">
+				<True>
+					<ANIM_CODE>(A:AUTOPILOT DISENGAGED, Bool) 100 *</ANIM_CODE>
+					<WWISE_EVENT_AUTOPILOT_SWITCH_ON>WT_autopilot_disconnect_button_on</WWISE_EVENT_AUTOPILOT_SWITCH_ON>
+					<WWISE_EVENT_AUTOPILOT_SWITCH_OFF>WT_autopilot_disconnect_button_off</WWISE_EVENT_AUTOPILOT_SWITCH_OFF>
+				</True>
+				<False>
+					<WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>WT_autopilot_disconnect_button_on</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>
+					<WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>WT_autopilot_disconnect_button_off</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>
+				</False>
+			</Condition>
+		</DefaultTemplateParameters>
+		<EditableTemplateParameters>
+			<AddOptions>
+				<TOGGLEABLE/>
+			</AddOptions>
+		</EditableTemplateParameters>
+		<OverrideTemplateParameters>
+			<Condition Valid="RESET_XMLVARS">
+				<True>
+					<XMLVAR_RESET_CODE>
+						0 (&gt;L:XMLVAR_Autopilot_1_Status) 
+						#AP_COUNT# 2 &gt;= if{ 0 (&gt;L:XMLVAR_Autopilot_2_Status) }
+						#AP_COUNT# 3 &gt;= if{ 0 (&gt;L:XMLVAR_Autopilot_3_Status) }
+					</XMLVAR_RESET_CODE>
+				</True>
+				<False>
+					<XMLVAR_RESET_CODE></XMLVAR_RESET_CODE>
+				</False>
+			</Condition>
+		</OverrideTemplateParameters>
+		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
+			<LEFT_SINGLE_CODE>
+				(A:AUTOPILOT DISENGAGED, Bool) if{ 
+					0 (&gt;K:AUTOPILOT_DISENGAGE_SET)
+				} els{ 
+					1 (&gt;K:AUTOPILOT_DISENGAGE_SET)
+					#XMLVAR_RESET_CODE#
+				}
+			</LEFT_SINGLE_CODE>
+			<EMISSIVE_SIMVAR_ACTIVE>AUTOPILOT DISENGAGED</EMISSIVE_SIMVAR_ACTIVE>
+			<TOOLTIPID>%((A:AUTOPILOT DISENGAGED, BOOL))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_YD_AP_DISC_ON%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_YD_AP_DISC_OFF%{end}</TOOLTIPID>
+		</UseTemplate>
 	</Template>
 </ModelBehaviors>
