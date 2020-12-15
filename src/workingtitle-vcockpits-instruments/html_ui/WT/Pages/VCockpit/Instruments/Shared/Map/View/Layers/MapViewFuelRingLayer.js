@@ -208,11 +208,6 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
         super();
 
         this._time = new WT_NumberUnit(0, WT_Unit.MINUTE);
-        this._formatter = new WT_TimeFormatter({
-            unitShow: true,
-            timeFormat: WT_TimeFormatter.Format.HH_MM,
-            delim: WT_TimeFormatter.Delim.SPACE
-        });
     }
 
     /**
@@ -227,24 +222,8 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
         this._time.set(time);
     }
 
-    /**
-     * @property {HTMLDivElement} timeElement - the HTML element used to display the time.
-     * @type {HTMLDivElement}
-     */
-    get timeElement() {
-        return this._timeElement;
-    }
-
     _createLabel() {
-        let element = document.createElement("div");
-        element.classList.add(WT_MapViewFuelRingLabel.LABEL_CLASS_LIST_DEFAULT);
-
-        this._timeElement = document.createElement("div");
-        this._timeElement.classList.add(WT_MapViewFuelRingLabel.TIME_CLASS_LIST_DEFAULT);
-
-        element.appendChild(this._timeElement);
-
-        return element;
+        return this._timeDisplay = new WT_MapViewFuelReserveTimeDisplay();
     }
 
     /**
@@ -252,8 +231,52 @@ class WT_MapViewFuelRingLabel extends WT_MapViewRingLabel {
      */
     onUpdate(state) {
         super.onUpdate(state);
-        this.timeElement.innerHTML = this._formatter.getFormattedString(this.time);
+        this._timeDisplay.update(this.time);
     }
 }
 WT_MapViewFuelRingLabel.LABEL_CLASS_LIST_DEFAULT = ["fuelRingLabel"];
 WT_MapViewFuelRingLabel.TIME_CLASS_LIST_DEFAULT = ["time"];
+
+class WT_MapViewFuelReserveTimeDisplay extends HTMLElement {
+    constructor() {
+        super();
+
+        let template = document.createElement("template");
+        template.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    background-color: black;
+                    border: solid 1px white;
+                    border-radius: 5px;
+                    text-align: center;
+                    color: #63aa59;
+                    font-size: 1.75vh;
+                    line-height: 1.5vh;
+                }
+                    #time {
+                        margin: 0.2em;
+                    }
+            </style>
+            <div id="time"></div>
+        `;
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+
+        this._formatter = new WT_TimeFormatter({
+            unitShow: true,
+            timeFormat: WT_TimeFormatter.Format.HH_MM,
+            delim: WT_TimeFormatter.Delim.SPACE
+        });
+    }
+
+    connectedCallback() {
+        this._timeElement = this.shadowRoot.querySelector(`#time`);
+    }
+
+    update(time) {
+        this._timeElement.innerHTML = this._formatter.getFormattedString(time);
+    }
+}
+
+customElements.define("map-view-fuelreservetimedisplay", WT_MapViewFuelReserveTimeDisplay);
