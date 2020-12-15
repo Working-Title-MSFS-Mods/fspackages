@@ -1,7 +1,7 @@
 /**
  * A label which displays the nominal map range.
  */
-class WT_MapViewRangeLabel extends HTMLElement {
+class WT_MapViewRangeDisplay extends HTMLElement {
     constructor() {
         super();
 
@@ -21,15 +21,15 @@ class WT_MapViewRangeLabel extends HTMLElement {
                     div {
                         margin: 0 0.5vh;
                     }
-                    .${WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT} {
+                    .${WT_MapViewRangeDisplay.AUTO_CLASS_DEFAULT} {
                         display: none;
                     }
                     .rangeUnit {
                         font-size: var(--rangelabel-unit-font-size, 1.75vh);
                     }
             </style>
-            <div class="${WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT}">Auto</div>
-            <div class="${WT_MapViewRangeLabel.RANGE_CLASS_DEFAULT}"></div>
+            <div class="${WT_MapViewRangeDisplay.AUTO_CLASS_DEFAULT}">Auto</div>
+            <div class="${WT_MapViewRangeDisplay.RANGE_CLASS_DEFAULT}"></div>
         `;
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(template.content.cloneNode(true));
@@ -57,8 +57,8 @@ class WT_MapViewRangeLabel extends HTMLElement {
     }
 
     connectedCallback() {
-        this._autoElement = this.shadowRoot.querySelector(`.${WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT}`);
-        this._rangeElement = this.shadowRoot.querySelector(`.${WT_MapViewRangeLabel.RANGE_CLASS_DEFAULT}`);
+        this._autoElement = this.shadowRoot.querySelector(`.${WT_MapViewRangeDisplay.AUTO_CLASS_DEFAULT}`);
+        this._rangeElement = this.shadowRoot.querySelector(`.${WT_MapViewRangeDisplay.RANGE_CLASS_DEFAULT}`);
     }
 
     _updateAutoElement(state) {
@@ -87,7 +87,7 @@ class WT_MapViewRangeLabel extends HTMLElement {
         this._updateRangeElement(state);
     }
 }
-WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT = "auto";
-WT_MapViewRangeLabel.RANGE_CLASS_DEFAULT = "range";
+WT_MapViewRangeDisplay.AUTO_CLASS_DEFAULT = "auto";
+WT_MapViewRangeDisplay.RANGE_CLASS_DEFAULT = "range";
 
-customElements.define("map-view-rangelabel", WT_MapViewRangeLabel);
+customElements.define("map-view-rangedisplay", WT_MapViewRangeDisplay);

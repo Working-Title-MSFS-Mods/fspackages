@@ -232,7 +232,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._labelContainer.style.height = "100%";
         this._labelContainer.style.zIndex = 2;
 
-        this._rangeLabel = new WT_MapViewRangeLabel();
+        this._rangeLabel = new WT_MapViewRangeDisplay();
         this._rangeLabel.style.position = "absolute";
         this._rangeLabel.style.transform = "translate(-50%, -50%)";
         this._labelContainer.appendChild(this._rangeLabel);
