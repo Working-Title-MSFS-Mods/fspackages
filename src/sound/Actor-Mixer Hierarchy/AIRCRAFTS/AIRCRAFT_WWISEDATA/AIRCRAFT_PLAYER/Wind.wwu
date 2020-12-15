@@ -106,6 +106,9 @@
 									</RTPCList>
 								</Property>
 								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-2</Value>
+									</ValueList>
 									<RTPCList>
 										<RTPC Name="" ID="{0B1F6FEE-3561-4270-95C1-68CA70511EA7}" ShortID="623464466">
 											<ReferenceList>
