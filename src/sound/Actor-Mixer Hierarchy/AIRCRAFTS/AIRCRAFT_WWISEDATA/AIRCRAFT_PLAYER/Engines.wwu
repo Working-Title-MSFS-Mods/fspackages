@@ -1418,7 +1418,7 @@
 															</Point>
 															<Point>
 																<XPos>105</XPos>
-																<YPos>-16.88276</YPos>
+																<YPos>-4.52239</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -3177,6 +3177,30 @@
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
 										<Property Name="Lowpass" Type="int16">
 											<RTPCList>
+												<RTPC Name="" ID="{F2BEDA3D-7450-493A-99F8-E65579188D1F}" ShortID="996632762">
+													<ReferenceList>
+														<Reference Name="ControlInput">
+															<ObjectRef Name="SIMVAR_TURB_ENG_N1" ID="{23BAD005-E61B-45C7-9ADA-EB168F71B891}" WorkUnitID="{160297A3-539B-416D-BB27-309DA15AE344}"/>
+														</Reference>
+													</ReferenceList>
+													<Curve Name="" ID="{DB8A9CA7-968A-48FC-A914-24C547229998}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="65537"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>0</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>105</XPos>
+																<YPos>59</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</RTPC>
 												<RTPC Name="" ID="{62C6936E-470E-4F26-A3DB-5CA504F7D06B}" ShortID="26589772">
 													<ReferenceList>
 														<Reference Name="ControlInput">
