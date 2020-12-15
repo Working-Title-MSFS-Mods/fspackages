@@ -34,7 +34,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
             <style>
                 :host {
                     display: block;
-                    width: 22vh;
+                    width: 24vh;
                     height: 4.5vh;
                     background-color: black;
                     border: solid 1px white;
@@ -47,7 +47,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
                     #grid {
                         margin: 0 0.5vh;
                         display: grid;
-                        grid-template-columns: 1fr 1.2fr;
+                        grid-template-columns: 1fr 1fr;
                         grid-template-rows: 1fr 1fr;
                         grid-template-areas:
                             "distance lat"
@@ -61,7 +61,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
                         justify-content: space-between;
                     }
                         .distanceUnit {
-                            font-size: var(--pointerinfo-unit-font-size, 1.25vh);
+                            font-size: 0.75em;
                         }
 
                     #bearing {
