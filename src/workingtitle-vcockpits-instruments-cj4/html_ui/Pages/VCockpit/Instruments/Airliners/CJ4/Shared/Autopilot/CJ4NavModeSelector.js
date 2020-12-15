@@ -297,7 +297,7 @@ class CJ4NavModeSelector {
     }
 
     if (this.isVNAVOn) {
-      console.log("handleFLCPressed - VNAV ON: " + this.vnavRequestedSlot);
+      // console.log("handleFLCPressed - VNAV ON: " + this.vnavRequestedSlot);
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);
     }
     else {
@@ -335,7 +335,7 @@ class CJ4NavModeSelector {
    */
   handleAltSlotChanged() {
     this.currentAltSlotIndex = this._inputDataStates.altSlot.state;
-    console.log("alt slot changed to: " + this.currentAltSlotIndex);
+    // console.log("alt slot changed to: " + this.currentAltSlotIndex);
 
     //Prevent sim from changing to alt slot 1 automatically if we're trying to drive via
     //VNAV and PATH
@@ -353,7 +353,7 @@ class CJ4NavModeSelector {
    */
   handleAlt1Changed() {
     this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
-    console.log("handleAlt1Changed: " + this.selectedAlt1);
+    // console.log("handleAlt1Changed: " + this.selectedAlt1);
     this.setProperVerticalArmedStates();
   }
 
@@ -362,7 +362,7 @@ class CJ4NavModeSelector {
    */
   handleAlt2Changed() {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
-    console.log("handleAlt2Changed: " + this.selectedAlt2);
+    // console.log("handleAlt2Changed: " + this.selectedAlt2);
     this.setProperVerticalArmedStates();
   }
 
@@ -564,7 +564,7 @@ class CJ4NavModeSelector {
           break;
         case WT_ApproachType.ILS: {
           this.isVNAVOn = false;
-          console.log("ILS APPR");
+          // console.log("ILS APPR");
           SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
 
           if (this.lNavModeState === LNavModeState.NAV2) {

@@ -586,7 +586,6 @@ class CJ4_FMC extends FMCMainDisplay {
      * local fuel consumption lvar.
      */
     adjustFuelConsumption() {
-
         const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
         const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
 
@@ -673,42 +672,44 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     updateFlightLog() {
-        const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
-        const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
-        const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
-        const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
-        const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+        if (this._frameUpdates % 30 == 0) {
+            const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
+            const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
+            const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+            const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
+            const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
 
-        // Update takeoff time
-        if (!takeOffTime) {
-            if (!onGround && altitude > 15) {
-                if (zuluTime) {
-                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+            // Update takeoff time
+            if (!takeOffTime) {
+                if (!onGround && altitude > 15) {
+                    if (zuluTime) {
+                        SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                    }
                 }
             }
-        }
-        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
-            if (!onGround && altitude > 15) {
-                if (zuluTime) {
-                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
-                }
-                SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
-                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
-            }
-        }
-
-
-        if (takeOffTime && takeOffTime > 0) {
-            // Update landing time
-            if (onGround && (!landingTime || landingTime == 0)) {
-                if (zuluTime) {
-                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
+            else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
+                if (!onGround && altitude > 15) {
+                    if (zuluTime) {
+                        SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                    }
+                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
+                    SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
                 }
             }
-            // Update enroute time
-            if (!landingTime || landingTime == 0) {
-                const enrouteTime = zuluTime - takeOffTime;
-                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
+
+
+            if (takeOffTime && takeOffTime > 0) {
+                // Update landing time
+                if (onGround && (!landingTime || landingTime == 0)) {
+                    if (zuluTime) {
+                        SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
+                    }
+                }
+                // Update enroute time
+                if (!landingTime || landingTime == 0) {
+                    const enrouteTime = zuluTime - takeOffTime;
+                    SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
+                }
             }
         }
     }
@@ -757,8 +758,7 @@ CJ4_FMC.ALTALERT_STATE = {
     NONE: 0,
     ARMED: 1,
     ALERT: 2
-}
-
+};
 
 CJ4_FMC.VSPEED_STATUS = {
     NONE: 0,

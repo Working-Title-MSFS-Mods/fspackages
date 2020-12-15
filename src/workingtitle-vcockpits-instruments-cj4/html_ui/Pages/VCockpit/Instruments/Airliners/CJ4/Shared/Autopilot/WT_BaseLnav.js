@@ -180,7 +180,7 @@ class WT_BaseLnav {
                     // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
 
                     if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 10) { //TIME TO START TURN
-                        console.log("ACTIVATE " + this._activeWaypoint.ident);
+                        // console.log("ACTIVATE " + this._activeWaypoint.ident);
                         this._setHeading = toNextFixHeading;
                         this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 

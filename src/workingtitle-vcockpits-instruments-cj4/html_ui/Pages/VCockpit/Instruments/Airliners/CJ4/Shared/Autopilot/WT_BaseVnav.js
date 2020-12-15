@@ -186,9 +186,9 @@ class WT_BaseVnav {
 
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
-                console.log("build profile started");
+                // console.log("build profile started");
                 this.buildDescentProfile();
-                console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
+                // console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
             }
 
             //TRACK ALTITUDE DEVIATION

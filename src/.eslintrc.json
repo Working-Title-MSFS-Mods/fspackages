@@ -20,6 +20,7 @@
         "semi": [2, "always"]
     },
     "globals": {
+        "VerticalNavModeState": "writable",
         "CJ4_MFD": "writable",
         "CJ4_PFD": "writable",
         "SvgWaypointElement": "writable",
