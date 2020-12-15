@@ -757,8 +757,10 @@ class CJ4NavModeSelector {
   handleApproachChanged() {
     if (this.currentApproachName.startsWith('RN')) {
       this.approachMode = WT_ApproachType.RNAV;
-      this.isVNAVOn = true;
-
+      if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+        this.isVNAVOn = true;
+      }
+      
       if (this.currentVerticalActiveState === VerticalNavModeState.GS) {
         this.currentVerticalActiveState = VerticalNavModeState.GP;
       }
@@ -770,7 +772,9 @@ class CJ4NavModeSelector {
 
     if (this.currentApproachName.startsWith('ILS')) {
       this.approachMode = WT_ApproachType.ILS;
-      this.isVNAVOn = false;
+      if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+        this.isVNAVOn = false;
+      }
 
       if (this.currentVerticalActiveState === VerticalNavModeState.GP) {
         this.currentVerticalActiveState = VerticalNavModeState.GS;

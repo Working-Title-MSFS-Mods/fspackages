@@ -1,6 +1,10 @@
 # Working Title CJ4 v0.8.0 Changes
 
-THIS IS HUUUUUUUUUUUGE!
+Welcome to the Working Title CJ4 v0.8.0, one of the largest and most comprehensive updates to the aircraft to date. This update includes an enormous navigational systems overhaul, making it an excellent aircraft for a full range of IFR flight activities and procedures. We have also added a number of other great features, like a full FADEC and sound overhaul.
+
+This release is incredibly large, and is such very much a beta release. Please check the list of outstanding issues below, and file any issues encountered on our GitHub Issues tracker.
+
+We hope you enjoy flying this release!
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
