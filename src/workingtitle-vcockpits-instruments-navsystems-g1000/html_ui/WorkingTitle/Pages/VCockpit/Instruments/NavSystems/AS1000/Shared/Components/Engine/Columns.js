@@ -5,150 +5,152 @@ class XMLColumnGauge extends HTMLElement {
         this.minValueCallback = null;
         this.maxValueCallback = null;
         this.peak = 0;
-        this.selectedColumn = null;
         this.numberOfBars = 16;
         this.columnsContainer = null;
-        this.height = 80;
+        this.height = 60;
         this.sizePercent = 100;
-        this.columns = [];
-        this.redLineValue = null;
         this.redLineElement = null;
+
+        this.context$ = new rxjs.Subject();
+        this.redLineValue$ = new rxjs.BehaviorSubject(null);
+        this.selectedColumn$ = new rxjs.BehaviorSubject(null);
+
+        this.subscriptions = new Subscriptions();
+    }
+    disconnectedCallback() {
+        this.subscriptions.unsubscribe();
     }
     setLimits(minValueCallback, maxValueCallback) {
-        this.minValueCallback = minValueCallback;
-        this.maxValueCallback = maxValueCallback;
+        this.min$ = this.context$.pipe(
+            WT_RX.distinctMap(context => minValueCallback.getValueAsNumber(context)),
+            WT_RX.shareReplay()
+        );
+        this.max$ = this.context$.pipe(
+            WT_RX.distinctMap(context => maxValueCallback.getValueAsNumber(context)),
+            WT_RX.shareReplay()
+        );
     }
     setTitle(title) {
         this.titleElements = title;
         this.leftText.textContent = this.titleElements;
     }
     setRedLine(value) {
-        this.redLineElement.setAttribute("visibility", value != null ? "visible" : "hidden");
-        this.redLineValue = value;
+        this.redLineValue$.next(value);
     }
     addColumns(columns) {
-        let numColumns = columns.length;
+        // Columns
+        const numColumns = columns.length;
+        const horizontalMargin = 8;
+        const topMargin = 4;
+        const horizontalSpacing = 4;
+        const verticalSpacing = 0.8;
+        const columnWidth = (100 - horizontalMargin * 2) / numColumns - (horizontalSpacing * (numColumns - 1)) / numColumns;
+        const columnHeight = this.height - 10 - topMargin;
+        const barHeight = columnHeight / this.numberOfBars - (verticalSpacing * (this.numberOfBars - 1)) / this.numberOfBars;
 
-        for (let c = 0; c < numColumns; c++) {
-            let valueCallback = columns[c];
+        const mapRatio = (value, min, max) => (value - min) / (max - min);
 
-            let g = document.createElementNS(Avionics.SVG.NS, "g");
-            g.setAttribute("fill", "white");
-            this.rootSvg.appendChild(g);
+        columns.forEach((valueCallback, c) => {
+            const g = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g", { class: "bar" }));
 
-            let horizontalMargin = 8;
-            let topMargin = 4;
-            let horizontalSpacing = 4;
-            let verticalSpacing = 0.8;
-            let columnWidth = (100 - horizontalMargin * 2) / numColumns - (horizontalSpacing * (numColumns - 1)) / numColumns;
-            let columnHeight = this.height - 30 - topMargin;
-            let barHeight = columnHeight / this.numberOfBars - (verticalSpacing * (this.numberOfBars - 1)) / this.numberOfBars;
-
-            let bars = [];
-            for (let i = 0; i < this.numberOfBars; i++) {
-                let bar = document.createElementNS(Avionics.SVG.NS, "rect");
-                bar.setAttribute("visibility", "hidden");
-                bar.setAttribute("width", columnWidth);
-                bar.setAttribute("height", barHeight);
-                bar.setAttribute("x", horizontalMargin + c * (columnWidth + horizontalSpacing));
-                bar.setAttribute("y", topMargin + i * (barHeight + verticalSpacing));
-                g.appendChild(bar);
+            // Visual bars
+            const bars = [];
+            for (let i = this.numberOfBars - 1; i >= 0; i--) {
+                const bar = g.appendChild(DOMUtilities.createSvgElement("rect", {
+                    visibility: "hidden",
+                    width: columnWidth,
+                    height: barHeight,
+                    x: horizontalMargin + c * (columnWidth + horizontalSpacing),
+                    y: topMargin + i * (barHeight + verticalSpacing),
+                }));
                 bars.push(bar);
             }
 
-            let barText = document.createElementNS(Avionics.SVG.NS, "text");
-            barText.setAttribute("x", horizontalMargin + c * (columnWidth + horizontalSpacing) + columnWidth / 2);
-            barText.setAttribute("y", this.height - 30 + 10);
-            barText.setAttribute("font-size", "8");
-            barText.setAttribute("font-family", "Roboto-Bold");
-            barText.setAttribute("text-anchor", "middle");
+            // Text
+            const barText = g.appendChild(DOMUtilities.createSvgElement("text", {
+                x: horizontalMargin + c * (columnWidth + horizontalSpacing) + columnWidth / 2,
+                y: this.height,
+                class: "bar-text"
+            }));
             barText.textContent = c + 1;
-            g.appendChild(barText);
 
-            let redLine = document.createElementNS(Avionics.SVG.NS, "rect");
-            redLine.setAttribute("visibility", "hidden");
-            redLine.setAttribute("fill", "red");
-            redLine.setAttribute("width", 100 - horizontalMargin * 2);
-            redLine.setAttribute("height", "2");
-            redLine.setAttribute("x", horizontalMargin);
-            redLine.setAttribute("y", topMargin);
-            this.rootSvg.appendChild(redLine);
-            this.redLineElement = redLine;
+            // Value
+            const value$ = this.context$.pipe(
+                rxjs.operators.map(context => valueCallback.getValueAsNumber(context)),
+                WT_RX.shareReplay()
+            );
+            const selected$ = this.selectedColumn$.pipe(
+                rxjs.operators.map(selectedColumn => selectedColumn == c)
+            );
+            this.subscriptions.add(
+                rxjs.combineLatest(value$, this.min$, this.max$, mapRatio).pipe(
+                    rxjs.operators.map(v => Math.floor(v * this.numberOfBars)),
+                    rxjs.operators.map(v => Math.min(this.numberOfBars - 1, Math.max(0, v))),
+                    rxjs.operators.distinctUntilChanged(),
+                    rxjs.operators.startWith(0),
+                    rxjs.operators.pairwise(),
+                ).subscribe(([previousBarsVisible, barsVisible]) => {
+                    const start = Math.min(previousBarsVisible, barsVisible);
+                    const end = Math.max(previousBarsVisible, barsVisible);
+                    for (let b = start; b < end; b++) {
+                        bars[b].setAttribute("visibility", barsVisible > b ? "visible" : "hidden");
+                    }
+                }),
 
-            this.columns.push({
-                valueCallback: valueCallback,
-                lastValue: 0,
-                g: g,
-                text: barText,
-                bars: bars
-            });
-        }
+                selected$.pipe(
+                    rxjs.operators.switchMap(selected => selected ? value$ : rxjs.empty()),
+                    WT_RX.distinctMap(v => Math.round(v))
+                ).subscribe(v => this.rightText.textContent = v),
+
+                selected$.subscribe(selected => DOMUtilities.ToggleAttribute(g, "selected", selected))
+            );
+        });
+
+        // Red line
+        this.redLineElement = this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
+            class: "red-line",
+            visibility: "hidden",
+            width: 100 - horizontalMargin * 2,
+            height: "2",
+            x: horizontalMargin,
+            y: topMargin,
+        }));
+
+        const redLineVisible$ = this.redLineValue$.pipe(rxjs.operators.map(value => value !== null));
+        const redLinePosition$ = rxjs.combineLatest(this.redLineValue$, this.min$, this.max$, mapRatio).pipe(
+            rxjs.operators.map(ratio => topMargin + (1 - ratio) * columnHeight)
+        );
+        this.subscriptions.add(
+            redLineVisible$.subscribe(visible => this.redLineElement.setAttribute("visibility", visible ? "visible" : "hidden")),
+            redLineVisible$.pipe(
+                rxjs.operators.switchMap(visible => visible ? redLinePosition$ : rxjs.empty()),
+                rxjs.operators.distinctUntilChanged()
+            ).subscribe(y => this.redLineElement.setAttribute("y", y))
+        );
 
         this.selectColumn(0);
     }
     selectColumn(index) {
         this.peak = 0;
-        if (this.selectedColumn != null) {
-            this.selectedColumn.g.setAttribute("fill", "white");
-        }
-        this.selectedColumn = this.columns[index];
-        this.selectedColumn.g.setAttribute("fill", "cyan");
+        this.selectedColumn$.next(index);
     }
-    update(_context) {
-        let min = this.minValueCallback.getValueAsNumber(_context);
-        let max = this.maxValueCallback.getValueAsNumber(_context);
-        for (let column of this.columns) {
-            let value = column.valueCallback.getValueAsNumber(_context);
-            let ratio = (value - min) / (max - min);
-            if (Math.abs(ratio - column.lastValue) * column.bars.length >= 1) {
-                for (let b = 0; b < column.bars.length; b++) {
-                    let bar = column.bars[b];
-                    let oldValue = (1 - b / column.bars.length > column.lastValue);
-                    let newValue = (1 - b / column.bars.length > ratio);
-                    if (oldValue != newValue) {
-                        bar.setAttribute("visibility", newValue ? "hidden" : "visible");
-                    }
-                }
-                column.lastValue = ratio;
-            }
-        }
-        if (this.selectedColumn != null && this.selectedColumn.valueCallback) {
-            let selectedValue = this.selectedColumn.valueCallback.getValueAsNumber(_context).toFixed(0);
-            if (selectedValue != this.lastSelectedValue) {
-                this.rightText.textContent = selectedValue;
-                this.lastSelectedValue = selectedValue;
-            }
-        }
-        if (this.redLineValue) {
-            let ratio = (this.redLineValue - min) / (max - min);
-            let y = 4 + (1 - ratio) * (this.height - 30 - 4);
-            if (this.redLineElement.getAttribute("y") != y) {
-                this.redLineElement.setAttribute("y", y);
-            }
-        }
+    update(context) {
+        this.context$.next(context);
     }
     connectedCallback() {
-        this.rootSvg = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.rootSvg.setAttribute("width", this.sizePercent + "%");
-        this.rootSvg.setAttribute("viewBox", "0 0 100 " + this.height);
-        this.appendChild(this.rootSvg);
+        this.rootSvg = this.appendChild(DOMUtilities.createSvgElement("svg", {
+            width: `${this.sizePercent}%`,
+            viewBox: `0 0 100 ${this.height}`,
+        }));
 
-        this.leftText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.leftText.setAttribute("y", this.height - 15 + 12.5);
-        this.leftText.setAttribute("x", "10");
-        this.leftText.setAttribute("fill", "white");
-        this.leftText.setAttribute("font-size", "10");
-        this.leftText.setAttribute("font-family", "Roboto-Bold");
-        this.leftText.setAttribute("text-anchor", "start");
-        this.rootSvg.appendChild(this.leftText);
-        this.rightText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.rightText.setAttribute("y", this.height - 15 + 12.5);
-        this.rightText.setAttribute("x", "90");
-        this.rightText.setAttribute("fill", "white");
-        this.rightText.setAttribute("font-size", "10");
-        this.rightText.setAttribute("font-family", "Roboto-Bold");
-        this.rightText.setAttribute("text-anchor", "end");
-        this.rootSvg.appendChild(this.rightText);
+        const createText = (x, className) => this.appendChild(DOMUtilities.createElement("div", {
+            y: this.height - 15 + 12.5,
+            x: x,
+            class: className
+        }));
+
+        this.leftText = createText(10, "left-text");
+        this.rightText = createText(90, "right-text");
     }
 }
 customElements.define('glasscockpit-xmlcolumngauge', XMLColumnGauge);

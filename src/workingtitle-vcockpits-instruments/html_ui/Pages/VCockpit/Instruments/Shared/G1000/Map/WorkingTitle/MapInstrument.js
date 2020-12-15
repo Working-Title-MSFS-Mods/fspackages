@@ -192,6 +192,7 @@ class MapInstrument extends ISvgMapRootElement {
                 this.attributeChangedCallback(attr, null, this.getAttribute(attr));
             }
         }
+        setTimeout(() => this.updateSize(true), 16);
         super.connectedCallback();
     }
     static get observedAttributes() {
@@ -962,9 +963,11 @@ class MapInstrument extends ISvgMapRootElement {
             setBingConfig();
         }
     }
+    adoptedCallback() {
+        this.updateSize(true);
+    }
     update(_deltaTime) {
         this.updateVisibility();
-        this.updateSize(true);
         if (this.selfManagedInstrument) {
             this.instrument.doUpdate();
             this.flightPlanManager.update(_deltaTime);

@@ -27,7 +27,7 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
             })
         );
 
-        const mapValue = _value => ((Math.max(Math.min(_value, this.maxValue), this.minValue) - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX);
+        const mapValue = value => ((Math.max(Math.min(value, this.maxValue), this.minValue) - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX);
 
         const handleValue = (value$, cursor, label, textElement) => {
             this.subscriptions.add(
@@ -90,11 +90,11 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     drawBase() {
         this.setAttribute("mode", this.valuePos);
 
-        this.rootSvg = DOMUtilities.createSvgElement("svg", {
+        this.rootSvg = this.appendChild(DOMUtilities.createSvgElement("svg", {
             width: `${this.sizePercent}%`
-        });
-        this.appendChild(this.rootSvg);
+        }));
 
+        // bar
         this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
             x: this.beginX,
             y: 21,
@@ -103,11 +103,8 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
             fill: "white"
         }));
 
-        this.decorationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.decorationGroup);
-
-        this.graduationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.graduationGroup);
+        this.decorationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
+        this.graduationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
 
         // begin / end element
         this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
@@ -119,59 +116,47 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
 
         // cursors
         const cursorWidth = 6;
-        this.cursor = DOMUtilities.createSvgElement("polygon", {
+        this.cursor = this.rootSvg.appendChild(DOMUtilities.createSvgElement("polygon", {
             points: `${this.beginX},21 ${this.beginX - cursorWidth},12 ${this.beginX + cursorWidth},12`,
             class: "cursor",
-        });
-        this.rootSvg.appendChild(this.cursor);
-
-        this.cursor2 = DOMUtilities.createSvgElement("polygon", {
+        }));
+        this.cursor2 = this.rootSvg.appendChild(DOMUtilities.createSvgElement("polygon", {
             points: `${this.beginX},23 ${this.beginX - cursorWidth},32 ${this.beginX + cursorWidth},32`,
             class: "cursor",
-        });
-        this.rootSvg.appendChild(this.cursor2);
+        }));
 
         // begin / end text
-        this.beginText = DOMUtilities.createSvgElement("text", {
+        this.beginText = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
             x: this.beginX,
             y: 40,
             "fill": "white",
             "font-size": 8,
             "text-anchor": "middle"
-        });
-        this.rootSvg.appendChild(this.beginText);
-
-        this.endText = DOMUtilities.createSvgElement("text", {
+        }));
+        this.endText = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
             x: this.endX,
             y: 40,
             "fill": "white",
             "font-size": 8,
             "text-anchor": "middle"
-        });
-        this.rootSvg.appendChild(this.endText);
+        }));
 
-        this.titleText = DOMUtilities.createElement("label", {
+        // labels
+        const labelContainer = this.appendChild(DOMUtilities.createElement("div", { class: "label" }));
+        this.titleText = labelContainer.appendChild(DOMUtilities.createElement("label", {
             CautionBlink: "Text",
             AlertBlink: "Text"
-        });
-        const labelContainer = DOMUtilities.createElement("div", {
-            class: "label"
-        });
-        labelContainer.appendChild(this.titleText);
-        this.appendChild(labelContainer);
-
-        this.valueText = DOMUtilities.createElement("div", {
+        }));
+        this.valueText = this.appendChild(DOMUtilities.createElement("div", {
             class: "value-1",
             CautionBlink: "Text",
             AlertBlink: "Text"
-        });
-        this.appendChild(this.valueText);
-        this.valueText2 = DOMUtilities.createElement("div", {
+        }));
+        this.valueText2 = this.appendChild(DOMUtilities.createElement("div", {
             class: "value-2",
             CautionBlink: "Text",
             AlertBlink: "Text"
-        });
-        this.appendChild(this.valueText2);
+        }));
     }
     addColorZone(_begin, _end, _color, _context) {
         let colorZone = DOMUtilities.createSvgElement("rect", {
@@ -193,14 +178,13 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
         element.setAttribute("width", endX - beginX);
     }
     addColorLine(position, color, context) {
-        const colorLine = DOMUtilities.createSvgElement("rect", {
+        const colorLine = this.decorationGroup.appendChild(DOMUtilities.createSvgElement("rect", {
             height: "12",
             width: "2",
             x: this.beginX - 1,
             y: "16",
             fill: color,
-        });
-        this.decorationGroup.appendChild(colorLine);
+        }));
         this.colorLines.push(new XMLGaugeColorLine(colorLine, position));
         this.updateColorLine(colorLine, position.getValueAsNumber(context));
     }
@@ -210,25 +194,23 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     }
     setGraduations(spaceBetween, withText = false) {
         for (let i = this.minValue + spaceBetween; i < this.maxValue; i += spaceBetween) {
-            const grad = DOMUtilities.createSvgElement("rect", {
+            this.graduationGroup.appendChild(DOMUtilities.createSvgElement("rect", {
                 x: this.lerp(i) - 0.5,
                 y: 17,
                 height: 10,
                 width: 1,
                 fill: "white",
-            });
-            this.graduationGroup.appendChild(grad);
+            }));
             if (withText) {
-                const gradText = DOMUtilities.createSvgElement("text", {
+                const gradText = this.graduationGroup.appendChild(DOMUtilities.createSvgElement("text", {
                     x: this.lerp(i) - 0.5,
                     y: 40,
                     fill: "white",
                     "font-size": "8",
                     "font-family": "Roboto-Regular",
                     "text-anchor": "middle"
-                });
-                gradText.textContent = i.toString();
-                this.graduationGroup.appendChild(gradText);
+                }));
+                gradText.textContent = i;
                 this.showFooter$.next();
             }
         }
@@ -266,14 +248,16 @@ class XMLHorizontalDoubleGauge extends XMLGauge {
     }
     setCursorLabel(label1, label2) {
         if (!this.cursorLabel) {
-            this.cursorLabel = DOMUtilities.createSvgElement("text", { x: this.beginX, y: 18, class: "cursor-label" });
-            this.rootSvg.appendChild(this.cursorLabel);
+            this.cursorLabel = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
+                x: this.beginX, y: 18, class: "cursor-label"
+            }));
         }
         this.cursorLabel.textContent = label1;
         if (label2) {
             if (!this.cursor2Label) {
-                this.cursor2Label = DOMUtilities.createSvgElement("text", { x: this.beginX, y: 31, class: "cursor-label" });
-                this.rootSvg.appendChild(this.cursor2Label);
+                this.cursor2Label = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
+                    x: this.beginX, y: 31, class: "cursor-label"
+                }));
             }
             this.cursor2Label.textContent = label2;
         }

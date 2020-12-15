@@ -72,58 +72,37 @@ class XMLHorizontalGauge extends XMLGauge {
 
         handleValue(this.value$, this.cursor, this.cursorLabel, this.valueText, this.valueText_cautionbg, this.valueText_alertbg);
     }
-    setStyle(_styleElem) {
-        if (_styleElem) {
-            let textIncrementElem = _styleElem.getElementsByTagName("TextIncrement");
-            if (textIncrementElem.length > 0) {
-                this.textIncrement = parseFloat(textIncrementElem[0].textContent);
+    setStyle(styleElement) {
+        this.processStyleElement(styleElement, "TextIncrement", v => this.textIncrement = parseFloat(v));
+        this.processStyleElement(styleElement, "ValuePos", v => {
+            switch (v) {
+                case "End":
+                    this.valuePos = 1;
+                    break;
+                case "Right":
+                    this.valuePos = 2;
+                    this.endX = 70;
             }
-            let valuePosElem = _styleElem.getElementsByTagName("ValuePos");
-            if (valuePosElem.length > 0) {
-                switch (valuePosElem[0].textContent) {
-                    case "End":
-                        this.valuePos = 1;
-                        break;
-                    case "Right":
-                        this.valuePos = 2;
-                        this.endX = 70;
-                }
-            }
-            let cursorColorElem = _styleElem.getElementsByTagName("CursorColor");
-            if (cursorColorElem.length > 0) {
-                this.cursorColor = cursorColorElem[0].textContent;
-            }
-            let widthElem = _styleElem.getElementsByTagName("Width");
-            if (widthElem.length > 0) {
-                this.width = parseFloat(widthElem[0].textContent);
-                this.beginX = this.beginX / (100 / this.width);
-                this.endX = this.endX / (100 / this.width);
-            }
-            let reverseYElem = _styleElem.getElementsByTagName("ReverseY");
-            if (reverseYElem.length > 0) {
-                this.isReverseY = reverseYElem[0].textContent == "True";
-            }
-            let precisionElem = _styleElem.getElementsByTagName("ValuePrecision");
-            if (precisionElem.length > 0) {
-                this.textPrecision = parseInt(precisionElem[0].textContent);
-            }
-        }
+        });
+        this.processStyleElement(styleElement, "CursorColor", v => this.cursorColor = v);
+        this.processStyleElement(styleElement, "Width", width => {
+            this.width = parseFloat(width);
+            this.beginX = this.beginX / (100 / this.width);
+            this.endX = this.endX / (100 / this.width);
+        });
+        this.processStyleElement(styleElement, "ReverseY", v => this.isReverseY = v == "True");
+        this.processStyleElement(styleElement, "ValuePrecision", v => this.textPrecision = parseInt(v));
     }
     drawBase() {
         this.setAttribute("mode", this.valuePos);
 
-        this.label = DOMUtilities.createElement("label");
-        this.appendChild(this.label);
-
-        this.valueText = DOMUtilities.createElement("div", { class: "value" });
-        this.appendChild(this.valueText);
-
-        this.rootSvg = DOMUtilities.createSvgElement("svg", {
+        this.label = this.appendChild(DOMUtilities.createElement("label"));
+        this.valueText = this.appendChild(DOMUtilities.createElement("div", { class: "value" }));
+        this.rootSvg = this.appendChild(DOMUtilities.createSvgElement("svg", {
             class: "bar",
             width: `${this.sizePercent}%`,
             viewBox: `0 0 ${this.width} 20`,
-        });
-        this.appendChild(this.rootSvg);
+        }));
 
         /*const defs = DOMUtilities.createSvgElement("defs");
         const color1 = "#aaaaaa";
@@ -137,11 +116,8 @@ class XMLHorizontalGauge extends XMLGauge {
         </linearGradient>`;
         this.rootSvg.appendChild(defs);*/
 
-        this.decorationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.decorationGroup);
-
-        this.graduationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.graduationGroup);
+        this.decorationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
+        this.graduationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
 
         /*let bottomBar = DOMUtilities.createSvgElement("path", {
             d: `M${this.beginX} 0 L${this.beginX} 9 L${this.endX} 9 L${this.endX} 0`,
@@ -177,50 +153,54 @@ class XMLHorizontalGauge extends XMLGauge {
         });
         this.rootSvg.appendChild(endLimit);
 
-        this.cursor = DOMUtilities.createSvgElement("polygon", {
+        this.cursor = this.rootSvg.appendChild(DOMUtilities.createSvgElement("polygon", {
             CautionBlink: "Yellow",
             AlertBlink: "Red",
             class: "cursor"
-        });
+        }));
         this.cursor.style.setProperty('--color', this.cursorColor);
         if (this.isReverseY) {
             this.cursor.setAttribute("points", `${this.beginX},2 ${this.beginX - 3},5 ${this.beginX - 3},10 ${this.beginX + 3},10 ${this.beginX + 3},5`);
         } else {
             this.cursor.setAttribute("points", `${this.beginX},8 ${this.beginX - 3},5 ${this.beginX - 3},0 ${this.beginX + 3},0 ${this.beginX + 3},5`);
         }
-        this.rootSvg.appendChild(this.cursor);
 
-        this.beginText = DOMUtilities.createSvgElement("text", { x: this.beginX, y: 18, class: "bar-graduation-text" });
-        this.rootSvg.appendChild(this.beginText);
+        this.beginText = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
+            x: this.beginX,
+            y: 18,
+            class: "bar-graduation-text"
+        }));
 
-        this.endText = DOMUtilities.createSvgElement("text", { x: this.endX, y: 18, class: "bar-graduation-text" });
-        this.rootSvg.appendChild(this.endText);
+        this.endText = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
+            x: this.endX,
+            y: 18,
+            class: "bar-graduation-text"
+        }));
     }
-    addColorZone(_begin, _end, _color, _context) {
-        let colorZone = DOMUtilities.createSvgElement("rect", { height: 4, y: 4, fill: _color });
+    lerp(value) {
+        return ((value - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX
+    }
+    addColorZone(begin, end, color, context) {
+        let colorZone = DOMUtilities.createSvgElement("rect", { height: 4, y: 4, fill: color });
         this.decorationGroup.appendChild(colorZone);
-        this.colorZones.push(new XMLGaugeColorZone(colorZone, _begin, _end));
-        this.updateColorZone(colorZone, _begin.getValueAsNumber(_context), _end.getValueAsNumber(_context));
+        this.colorZones.push(new XMLGaugeColorZone(colorZone, begin, end));
+        this.updateColorZone(colorZone, begin.getValueAsNumber(context), end.getValueAsNumber(context));
     }
-    updateColorZone(_element, _begin, _end) {
-        let begin = ((_begin - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX;
-        let end = ((_end - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX) + this.beginX;
-        _element.setAttribute("x", begin.toString());
-        _element.setAttribute("width", (end - begin).toString());
+    updateColorZone(element, begin, end) {
+        const beginX = this.lerp(begin);
+        const endX = this.lerp(end);
+        element.setAttribute("x", beginX);
+        element.setAttribute("width", endX - beginX);
     }
-    addColorLine(_position, _color, _context) {
-        const colorLine = DOMUtilities.createSvgElement("rect", { x: 9, y: 4, height: 10, width: 2, fill: _color, });
+    addColorLine(position, color, context) {
+        const colorLine = DOMUtilities.createSvgElement("rect", { x: 9, y: 4, height: 10, width: 2, fill: color, });
         this.decorationGroup.appendChild(colorLine);
-        this.colorLines.push(new XMLGaugeColorLine(colorLine, _position));
-        this.updateColorLine(colorLine, _position.getValueAsNumber(_context));
+        this.colorLines.push(new XMLGaugeColorLine(colorLine, position));
+        this.updateColorLine(colorLine, position.getValueAsNumber(context));
     }
-    updateColorLine(_element, _pos) {
-        if (_pos >= this.minValue && _pos <= this.maxValue) {
-            _element.setAttribute("transform", `translate(${((_pos - this.minValue) / (this.maxValue - this.minValue)) * (this.endX - this.beginX)} 0)`);
-            _element.setAttribute("display", "");
-        } else {
-            _element.setAttribute("display", "none");
-        }
+    updateColorLine(element, pos) {
+        element.setAttribute("transform", `translate(${this.lerp(value) - this.beginX} 0)`);
+        element.setAttribute("display", (value >= this.minValue && value <= this.maxValue) ? "" : "none");
     }
     setGraduations(_spaceBetween, _withText = false) {
         for (let i = this.minValue + _spaceBetween; i < this.maxValue; i += _spaceBetween) {
@@ -228,12 +208,12 @@ class XMLHorizontalGauge extends XMLGauge {
             this.graduationGroup.appendChild(grad);
         }
     }
-    updateValue(_value, _value2) {
+    updateValue(value, value2) {
         this.setupObservers();
-        this.value$.next(_value);
+        this.value$.next(value);
     }
-    setTitleAndUnit(_title, _unit) {
-        this.label.textContent = _title + " " + _unit;
+    setTitleAndUnit(title, unit) {
+        this.label.textContent = `${title} ${unit}`;
     }
     computeCautionBackgrounds() {
         /*let titleBbox = this.titleText.getBBox();
@@ -260,22 +240,22 @@ class XMLHorizontalGauge extends XMLGauge {
             this.showFooter$.next();
         }
     }
-    forceBeginText(_text) {
-        this.beginText.textContent = _text;
-        this.forcedBeginText = _text;
+    forceBeginText(text) {
+        this.beginText.textContent = text;
+        this.forcedBeginText = text;
         this.showFooter$.next();
     }
-    forceEndText(_text) {
-        this.endText.textContent = _text;
-        this.forcedEndText = _text;
+    forceEndText(text) {
+        this.endText.textContent = text;
+        this.forcedEndText = text;
         this.showFooter$.next();
     }
-    setCursorLabel(_label1, _label2) {
+    setCursorLabel(label1, label2) {
         if (!this.cursorLabel) {
             this.cursorLabel = DOMUtilities.createSvgElement("text", { x: 10, y: this.isReverseY ? 9 : 19, class: "cursor-label" });
             this.rootSvg.appendChild(this.cursorLabel);
         }
-        this.cursorLabel.textContent = _label1;
+        this.cursorLabel.textContent = label1;
     }
 }
 customElements.define('glasscockpit-xmlhorizontalgauge', XMLHorizontalGauge);

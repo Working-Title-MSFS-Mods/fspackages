@@ -193,4 +193,15 @@ class WT_RX {
     static clamp(min = 0, max = 1) {
         return rxjs.operators.map(v => Math.min(max, Math.max(min, v)));
     }
+    static takeNth(n) {
+        return rxjs.pipe(
+            rxjs.operators.scan((acc, v) => {
+                acc.v = v
+                acc.i++;
+                return acc;
+            }, { v: null, i: 0 }),
+            rxjs.operators.filter(v => v.i % n == 0),
+            rxjs.operators.map(v => v.v)
+        );
+    }
 }

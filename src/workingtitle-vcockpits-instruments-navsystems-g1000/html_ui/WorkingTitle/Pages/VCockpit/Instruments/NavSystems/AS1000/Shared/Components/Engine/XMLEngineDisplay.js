@@ -179,7 +179,7 @@ class XMLEngineDisplay extends HTMLElement {
                     let contentElem = leftText[0].getElementsByTagName("Content");
                     if (contentElem.length > 0) {
                         if (contentElem[0].children.length > 0) {
-                            textZone.leftCallback = new CompositeLogicXMLElement(this.gps, contentElem[0]);
+                            textZone.setLeftCallback(new CompositeLogicXMLElement(this.gps, contentElem[0]));
                         }
                         else {
                             textZone.setLeftText(contentElem[0].textContent);
@@ -187,7 +187,7 @@ class XMLEngineDisplay extends HTMLElement {
                     }
                     else {
                         if (leftText[0].children.length > 0) {
-                            textZone.leftCallback = new CompositeLogicXMLElement(this.gps, leftText[0]);
+                            textZone.setLeftCallback(new CompositeLogicXMLElement(this.gps, leftText[0]));
                         }
                         else {
                             textZone.setLeftText(leftText[0].textContent);
@@ -208,7 +208,7 @@ class XMLEngineDisplay extends HTMLElement {
                     let contentElem = centerText[0].getElementsByTagName("Content");
                     if (contentElem.length > 0) {
                         if (contentElem[0].children.length > 0) {
-                            textZone.centerCallback = new CompositeLogicXMLElement(this.gps, contentElem[0]);
+                            textZone.setCenterCallback(new CompositeLogicXMLElement(this.gps, contentElem[0]));
                         }
                         else {
                             textZone.setCenterText(contentElem[0].textContent);
@@ -216,7 +216,7 @@ class XMLEngineDisplay extends HTMLElement {
                     }
                     else {
                         if (centerText[0].children.length > 0) {
-                            textZone.centerCallback = new CompositeLogicXMLElement(this.gps, centerText[0]);
+                            textZone.setCenterCallback(new CompositeLogicXMLElement(this.gps, centerText[0]));
                         }
                         else {
                             textZone.setCenterText(centerText[0].textContent);
@@ -237,7 +237,7 @@ class XMLEngineDisplay extends HTMLElement {
                     let contentElem = rightText[0].getElementsByTagName("Content");
                     if (contentElem.length > 0) {
                         if (contentElem[0].children.length > 0) {
-                            textZone.rightCallback = new CompositeLogicXMLElement(this.gps, contentElem[0]);
+                            textZone.setRightCallback(new CompositeLogicXMLElement(this.gps, contentElem[0]));
                         }
                         else {
                             textZone.setRightText(contentElem[0].textContent);
@@ -245,7 +245,7 @@ class XMLEngineDisplay extends HTMLElement {
                     }
                     else {
                         if (rightText[0].children.length > 0) {
-                            textZone.rightCallback = new CompositeLogicXMLElement(this.gps, rightText[0]);
+                            textZone.setRightCallback(new CompositeLogicXMLElement(this.gps, rightText[0]));
                         }
                         else {
                             textZone.setRightText(rightText[0].textContent);

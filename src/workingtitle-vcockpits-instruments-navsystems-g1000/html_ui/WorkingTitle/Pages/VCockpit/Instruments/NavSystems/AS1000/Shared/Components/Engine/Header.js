@@ -4,14 +4,9 @@ class XMLHeader extends HTMLElement {
         this.height = 15;
     }
     connectedCallback() {
-        let line = document.createElement("div");
-        this.appendChild(line);
-
-        this.textElement = document.createElement("label");
-        this.appendChild(this.textElement);
-
-        line = document.createElement("div");
-        this.appendChild(line);
+        this.appendChild(document.createElement("div"));
+        this.textElement = this.appendChild(document.createElement("label"));
+        this.appendChild(document.createElement("div"));
     }
     setText(_value) {
         if (this.textElement.textContent != _value) {

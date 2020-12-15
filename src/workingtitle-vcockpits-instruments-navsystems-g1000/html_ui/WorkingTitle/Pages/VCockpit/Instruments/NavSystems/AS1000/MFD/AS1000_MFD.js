@@ -333,9 +333,9 @@ class AS1000_MFD extends BaseAS1000 {
         for (let updatable of this.updatables) {
             updatable.update(dt);
         }
-        if (this.mainMap.offsetParent)
+        if (document.body.contains(this.mainMap))
             this.mainMap.update(dt);
-        if (this.miniMap.offsetParent)
+        if (document.body.contains(this.miniMap))
             this.miniMap.update(dt);
         this.electricityAvailable.value = this.isElectricityAvailable();
 

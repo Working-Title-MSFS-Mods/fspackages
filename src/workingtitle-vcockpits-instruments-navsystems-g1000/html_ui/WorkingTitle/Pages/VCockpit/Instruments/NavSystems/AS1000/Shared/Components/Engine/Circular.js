@@ -99,38 +99,35 @@ class XMLCircularGauge extends XMLGauge {
         this.height = Math.max(40 - 40 * Math.sin(this.startAngle * Math.PI / 180), 40 - 40 * Math.sin(this.endAngle * Math.PI / 180) + (this.valuePos == 1 ? 20 : 0), (this.valuePos == 1 ? 50 : 65)) + 3;
     }
     drawBase() {
-        this.rootSvg = DOMUtilities.createSvgElement("svg", {
-            width: `${this.sizePercent}%`,
-            viewBox: `0 -2 100 ${this.height}`
-        });
-        this.appendChild(this.rootSvg);
-
         this.setAttribute("mode", this.valuePos);
 
-        this.decorationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.decorationGroup);
+        this.rootSvg = this.appendChild(DOMUtilities.createSvgElement("svg", {
+            width: `${this.sizePercent}%`,
+            viewBox: `0 -2 100 ${this.height}`
+        }));
 
-        this.graduationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.graduationGroup);
+        this.decorationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
+        this.graduationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
+        this.customGraduationGroup = this.rootSvg.appendChild(DOMUtilities.createSvgElement("g"));
 
-        this.customGraduationGroup = DOMUtilities.createSvgElement("g");
-        this.rootSvg.appendChild(this.customGraduationGroup);
-
-        const mainArc = DOMUtilities.createSvgElement("path", {
+        // Main arc
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("path", {
             d: `M${50 - 40 * Math.cos(this.startAngle * Math.PI / 180)} ${40 - 40 * Math.sin(this.startAngle * Math.PI / 180)} A 40 40 0 ${this.endAngle - this.startAngle > 180 ? "1" : "0"} 1 ${50 - 40 * Math.cos(this.endAngle * Math.PI / 180)} ${40 - 40 * Math.sin(this.endAngle * Math.PI / 180)}`,
             stroke: "white",
             "stroke-width": "1",
             fill: "none",
-        });
-        this.rootSvg.appendChild(mainArc);
+        }));
 
-        const beginLimit = DOMUtilities.createSvgElement("rect", { x: 10, y: 40, width: 10, height: 1, fill: "white", transform: `rotate(${this.startAngle} 50 40)` });
-        this.rootSvg.appendChild(beginLimit);
+        // Limits
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", {
+            x: 10, y: 40, width: 10, height: 1, fill: "white", transform: `rotate(${this.startAngle} 50 40)`
+        }));
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("rect", { 
+            x: 10, y: 40, width: 10, height: 1, fill: "white", transform: `rotate(${this.endAngle} 50 40)` 
+        }));
 
-        const endLimit = DOMUtilities.createSvgElement("rect", { x: 10, y: 40, width: 10, height: 1, fill: "white", transform: `rotate(${this.endAngle} 50 40)` });
-        this.rootSvg.appendChild(endLimit);
-
-        this.cursor = DOMUtilities.createSvgElement("polygon", { class: "cursor" });
+        // Cursor
+        this.cursor = this.rootSvg.appendChild(DOMUtilities.createSvgElement("polygon", { class: "cursor" }));
         switch (this.cursorType) {
             case 0:
                 this.cursor.setAttribute("points", "13.5,40, 22,36 24,39 45,39 45,41 24,41 22,44");
@@ -139,26 +136,23 @@ class XMLCircularGauge extends XMLGauge {
                 this.cursor.setAttribute("points", "13.5,40, 25,35 25,45");
                 break;
         }
-        this.rootSvg.appendChild(this.cursor);
 
-        const axle = DOMUtilities.createSvgElement("circle", { cx: 50, cy: 40, r: 3, class: "axle", });
-        this.rootSvg.appendChild(axle);
+        // Axle
+        this.rootSvg.appendChild(DOMUtilities.createSvgElement("circle", { cx: 50, cy: 40, r: 3, class: "axle", }));
 
         // Begin text
-        this.beginText = DOMUtilities.createSvgElement("text", {
+        this.beginText = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
             x: (50 - 40 * Math.cos((this.startAngle - 15) * Math.PI / 180)),
             y: (40 - 40 * Math.sin((this.startAngle - 15) * Math.PI / 180)),
             class: "bottom-text",
-        });
-        this.rootSvg.appendChild(this.beginText);
+        }));
 
         // End text
-        this.endText = DOMUtilities.createSvgElement("text", {
+        this.endText = this.rootSvg.appendChild(DOMUtilities.createSvgElement("text", {
             x: (50 - 40 * Math.cos((this.endAngle + 15) * Math.PI / 180)),
             y: (40 - 40 * Math.sin((this.endAngle + 15) * Math.PI / 180)),
             class: "bottom-text",
-        });
-        this.rootSvg.appendChild(this.endText);
+        }));
 
         // Unit text
         this.unitElements = {
@@ -192,7 +186,7 @@ class XMLCircularGauge extends XMLGauge {
                 break;
         }
 
-        DOMUtilities.AppendChildren(this.rootSvg, [
+        DOMUtilities.AppendChildren(this.rootSvg, [ // Order for layering
             this.unitElements.caution, this.unitElements.alert,
             this.titleElements.caution, this.titleElements.alert,
             this.valueElements.caution, this.valueElements.alert,

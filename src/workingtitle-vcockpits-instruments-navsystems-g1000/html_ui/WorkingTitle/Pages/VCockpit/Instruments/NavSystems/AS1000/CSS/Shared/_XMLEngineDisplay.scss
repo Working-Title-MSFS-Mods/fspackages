@@ -269,6 +269,53 @@ engine-display #XMLEngineDisplay glasscockpit-xmltextzone {
     }
 }
 
+engine-display #XMLEngineDisplay glasscockpit-xmlcolumngauge {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "columns columns"
+        "left-text right-text";
+    font-size: 0.9rem;
+
+    svg {
+        grid-area: columns;
+    }
+
+    .left-text,
+    .right-text {
+        color: white;
+        padding: 1.5vh;
+    }
+
+    .left-text {
+        grid-area: left-text;
+    }
+
+    .right-text {
+        grid-area: right-text;
+        text-align: right;
+    }
+
+    .red-line {
+        fill: red;
+    }
+
+    .bar {
+        fill: white;
+
+        &[selected] {
+            fill: cyan;
+        }
+    }
+
+    .bar-text {
+        font-size: 8px;
+        font-family: "Roboto-Bold";
+        text-anchor: middle;
+    }
+}
+
 @keyframes AlertBlink {
     0%,
     49% {
@@ -299,11 +346,12 @@ engine-display #XMLEngineDisplay glasscockpit-xmltextzone {
 
 engine-display #XMLEngineDisplay *[state="Alert"] *[AlertBlink="Text"],
 engine-display #XMLEngineDisplay .Column *[state="Alert"] *[AlertBlink="Text"] {
-    animation: AlertBlink 1s infinite;
+    // !important because a smart decision was made to turn off all css animations with the menu option....
+    animation: AlertBlink 1s infinite !important; 
 }
 engine-display #XMLEngineDisplay *[state="Alert"] *[AlertBlink="Background"],
 engine-display #XMLEngineDisplay .Column *[state="Alert"] *[AlertBlink="Background"] {
-    animation: AlertBlinkBackground 1s infinite;
+    animation: AlertBlinkBackground 1s infinite !important;
     fill-opacity: 1;
 }
 engine-display #XMLEngineDisplay *[state="Alert"] *[AlertBlink="Red"],
