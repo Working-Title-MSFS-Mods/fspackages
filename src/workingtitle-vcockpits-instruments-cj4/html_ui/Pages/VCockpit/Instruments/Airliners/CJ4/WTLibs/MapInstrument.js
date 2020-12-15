@@ -751,7 +751,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                     if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
-                        for (let i = 0; i < 30; i++) {
+                        for (let i = 0; i < Math.min(30, this.intersectionLoader.waypoints.length); i++) {
                             let intersection = this.intersectionLoader.waypoints[i];
                             intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
                             if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
