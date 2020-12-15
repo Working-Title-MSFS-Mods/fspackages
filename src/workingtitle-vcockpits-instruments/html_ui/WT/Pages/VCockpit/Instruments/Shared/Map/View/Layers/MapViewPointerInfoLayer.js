@@ -1,6 +1,109 @@
 class WT_MapViewPointerInfoLayer extends WT_MapViewLayer {
     constructor(className = WT_MapViewPointerInfoLayer.CLASS_DEFAULT, configName = WT_MapViewPointerInfoLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
+    }
+
+    _createHTMLElement() {
+        this._pointerInfo = new WT_MapViewPointerInfo();
+        return this._pointerInfo;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.pointer.show;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        this._pointerInfo.update(state);
+    }
+}
+WT_MapViewPointerInfoLayer.CLASS_DEFAULT = "pointerInfoLayer";
+WT_MapViewPointerInfoLayer.CONFIG_NAME_DEFAULT = "pointerInfo";
+
+class WT_MapViewPointerInfo extends HTMLElement {
+    constructor() {
+        super();
+
+        let template = document.createElement("template");
+        template.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    width: 22vh;
+                    height: 4.5vh;
+                    background-color: black;
+                    border: solid 1px white;
+                    border-radius: 3px;
+                    font-weight: bold;
+                    font-size: 1.75vh;
+                    line-height: 2vh;
+                    color: white;
+                }
+                    #grid {
+                        margin: 0 0.5vh;
+                        display: grid;
+                        grid-template-columns: 1fr 1.2fr;
+                        grid-template-rows: 1fr 1fr;
+                        grid-template-areas:
+                            "distance lat"
+                            "bearing long";
+                    }
+
+                    #distance {
+                        grid-area: distance;
+                        display: flex;
+                        flex-flow: row nowrap;
+                        justify-content: space-between;
+                    }
+                        .distanceUnit {
+                            font-size: var(--pointerinfo-unit-font-size, 1.25vh);
+                        }
+
+                    #bearing {
+                        grid-area: bearing;
+                        display: flex;
+                        flex-flow: row nowrap;
+                        justify-content: space-between;
+                    }
+
+                    #lat {
+                        padding-left: 1vh;
+                        grid-area: lat;
+                        text-align: start;
+                    }
+                    #long {
+                        padding-left: 1vh;
+                        grid-area: long;
+                        text-align: start;
+                    }
+
+                    .title {
+                        text-align: start;
+                    }
+                    .value {
+                        text-align: end;
+                    }
+            </style>
+            <div id="grid">
+                <div id="distance">
+                    <div class="title">DIS</div>
+                    <div class="value"></div>
+                </div>
+                <div id="bearing">
+                    <div class="title">BRG</div>
+                    <div class="value"></div>
+                </div>
+                <div id="lat"></div>
+                <div id="long"></div>
+            </div>
+        `;
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
 
         let distanceFormatterOpts = {
             precision: 0.01,
@@ -11,8 +114,12 @@ class WT_MapViewPointerInfoLayer extends WT_MapViewLayer {
         let distanceHTMLFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
-                getNumberClassList: this._getDistanceNumberClassList.bind(this),
-                getUnitClassList: this._getDistanceUnitClassList.bind(this)
+                getNumberClassList() {
+                    return ["distanceNumber"];
+                },
+                getUnitClassList() {
+                    return ["distanceUnit"];
+                }
             }
         };
         this._distanceFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(distanceFormatterOpts), distanceHTMLFormatterOpts);
@@ -30,58 +137,11 @@ class WT_MapViewPointerInfoLayer extends WT_MapViewLayer {
         this._tempAngle = new WT_NumberUnit(0, WT_Unit.DEGREE);
     }
 
-    _createHTMLElement() {
-        this._infoBox = document.createElement("div");
-        this._infoBox.style.position = "absolute";
-        this._infoBox.style.overflow = "hidden";
-        this._infoBox.style.transform = "rotate(0deg)";
-
-        this._distanceCell = document.createElement("div");
-        this._distanceCell.classList.add(WT_MapViewPointerInfoLayer.DISTANCE_CLASS);
-        this._distanceTitle = document.createElement("div");
-        this._distanceTitle.classList.add(WT_MapViewPointerInfoLayer.TITLE_CLASS);
-        this._distanceTitle.innerHTML = "DIS";
-        this._distanceValue = document.createElement("div");
-        this._distanceValue.classList.add(WT_MapViewPointerInfoLayer.VALUE_CLASS);
-        this._distanceCell.appendChild(this._distanceTitle);
-        this._distanceCell.appendChild(this._distanceValue);
-
-        this._bearingCell = document.createElement("div");
-        this._bearingCell.classList.add(WT_MapViewPointerInfoLayer.BEARING_CLASS);
-        this._bearingTitle = document.createElement("div");
-        this._bearingTitle.classList.add(WT_MapViewPointerInfoLayer.TITLE_CLASS);
-        this._bearingTitle.innerHTML = "BRG";
-        this._bearingValue = document.createElement("div");
-        this._bearingValue.classList.add(WT_MapViewPointerInfoLayer.VALUE_CLASS);
-        this._bearingCell.appendChild(this._bearingTitle);
-        this._bearingCell.appendChild(this._bearingValue);
-
-        this._latCell = document.createElement("div");
-        this._latCell.classList.add(WT_MapViewPointerInfoLayer.LAT_CLASS);
-        this._longCell = document.createElement("div");
-        this._longCell.classList.add(WT_MapViewPointerInfoLayer.LONG_CLASS);
-
-        this._infoBox.appendChild(this._distanceCell);
-        this._infoBox.appendChild(this._bearingCell);
-        this._infoBox.appendChild(this._latCell);
-        this._infoBox.appendChild(this._longCell);
-
-        return this._infoBox;
-    }
-
-    _getDistanceNumberClassList() {
-        return ["distanceNumber"];
-    }
-
-    _getDistanceUnitClassList() {
-        return ["distanceUnit"];
-    }
-
-    /**
-     * @param {WT_MapViewState} state
-     */
-    isVisible(state) {
-        return state.model.pointer.show;
+    connectedCallback() {
+        this._distanceValue = this.shadowRoot.querySelector(`#distance .value`);
+        this._bearingValue = this.shadowRoot.querySelector(`#bearing .value`);
+        this._latCell = this.shadowRoot.querySelector(`#lat`);
+        this._longCell = this.shadowRoot.querySelector(`#long`);
     }
 
     /**
@@ -125,7 +185,7 @@ class WT_MapViewPointerInfoLayer extends WT_MapViewLayer {
     /**
      * @param {WT_MapViewState} state
      */
-    onUpdate(state) {
+    update(state) {
         let reference = state.model.pointer.measureReference;
         if (!reference) {
             reference = state.model.airplane.position;
@@ -136,11 +196,5 @@ class WT_MapViewPointerInfoLayer extends WT_MapViewLayer {
         this._updateLatLong(state, pointer);
     }
 }
-WT_MapViewPointerInfoLayer.CLASS_DEFAULT = "pointerInfoLayer";
-WT_MapViewPointerInfoLayer.CONFIG_NAME_DEFAULT = "pointerInfo";
-WT_MapViewPointerInfoLayer.DISTANCE_CLASS = "distance";
-WT_MapViewPointerInfoLayer.BEARING_CLASS = "bearing";
-WT_MapViewPointerInfoLayer.LAT_CLASS = "lat";
-WT_MapViewPointerInfoLayer.LONG_CLASS = "long";
-WT_MapViewPointerInfoLayer.TITLE_CLASS = "title";
-WT_MapViewPointerInfoLayer.VALUE_CLASS = "value";
+
+customElements.define("map-view-pointerinfo", WT_MapViewPointerInfo);
