@@ -129,7 +129,7 @@ class WT_BaseLnav {
 
             //Remove heading instruction inhibition when near desired track
             const windCorrectedDtk = this.normalizeCourse(this._dtk - this.calculateWindCorrection(this._dtk, airspeedTrue));
-            if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 12.5) {
+            if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 15) {
                 this._isTurnCompleting = false;
                 this._executeInhibited = false;
             }
@@ -173,7 +173,7 @@ class WT_BaseLnav {
                     let nextFixTurnAngle = Avionics.Utils.angleDiff(this._dtk, toNextFixHeading);
                     let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
 
-                    let enterBankDistance = (this._groundSpeed / 3600) * 6;
+                    let enterBankDistance = (this._groundSpeed / 3600) * 5;
 
                     const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(Math.min(110, turnAngle) * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
 
