@@ -341,7 +341,7 @@ class WT_BaseVnav {
         }
         let constraint = false;
         if (this._vnavConstraintAltitude && this._vnavConstraintWaypoint) {
-            if (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 20) {
+            if (this._currentFlightSegment == SegmentType.Approach || this._currentFlightSegment == SegmentType.Arrival || (this._vnavConstraintWaypoint.cumulativeDistanceInFP - (this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist) < 20)) {
                 let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
                 if (this._vnavConstraintType == "above" && selectedAltitude < this._vnavConstraintAltitude) {
                     SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", Math.round(this._vnavConstraintAltitude));
