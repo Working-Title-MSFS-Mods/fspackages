@@ -61,7 +61,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## FMC
 * Reserve fuel can now be changed
-* Revised the format of the FLPN page to better match the real unit, especialy for approaches
+* Revised the format of the FLPN page to better match the real unit, especially for approaches
 * Approach ref temp of zero can now be entered
 
 ## Engines
