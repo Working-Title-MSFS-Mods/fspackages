@@ -25,7 +25,7 @@ class WT_MapViewRangeDisplay extends HTMLElement {
                         display: none;
                     }
                     .rangeUnit {
-                        font-size: var(--rangelabel-unit-font-size, 1.75vh);
+                        font-size: 0.75em;
                     }
             </style>
             <div id="auto">Auto</div>
