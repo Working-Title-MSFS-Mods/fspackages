@@ -3229,12 +3229,12 @@
 														<PointList>
 															<Point>
 																<XPos>0</XPos>
-																<YPos>-1619</YPos>
+																<YPos>-1343</YPos>
 																<Flags>5</Flags>
 															</Point>
 															<Point>
 																<XPos>105</XPos>
-																<YPos>0</YPos>
+																<YPos>-22</YPos>
 																<Flags>37</Flags>
 															</Point>
 														</PointList>
@@ -3243,9 +3243,6 @@
 											</RTPCList>
 										</Property>
 										<Property Name="Volume" Type="Real64">
-											<ValueList>
-												<Value>-2</Value>
-											</ValueList>
 											<RTPCList>
 												<RTPC Name="" ID="{3A813724-B92C-4C86-A906-A58DD189AF82}" ShortID="376917597">
 													<ReferenceList>
@@ -3264,7 +3261,7 @@
 																<Flags>5</Flags>
 															</Point>
 															<Point>
-																<XPos>50.35847</XPos>
+																<XPos>74.58591</XPos>
 																<YPos>-200</YPos>
 																<Flags>0</Flags>
 															</Point>
@@ -3289,12 +3286,12 @@
 														<PointList>
 															<Point>
 																<XPos>0</XPos>
-																<YPos>-3.1908</YPos>
+																<YPos>-5.76413</YPos>
 																<Flags>5</Flags>
 															</Point>
 															<Point>
-																<XPos>123.81541</XPos>
-																<YPos>-3.20438</YPos>
+																<XPos>125.0515</XPos>
+																<YPos>-5.93378</YPos>
 																<Flags>0</Flags>
 															</Point>
 															<Point>
