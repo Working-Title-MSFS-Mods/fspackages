@@ -833,7 +833,9 @@ class MapInstrument extends ISvgMapRootElement {
                         const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
                         if (todDist > 0) {
                             this.updateTodWaypoint();
-                            this.navMap.mapElements.push(this._todWaypoint.getSvgElement(0));
+                            if (this._todWaypoint) {
+                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(0));
+                            }  
                         }
 
                         if (this.flightPlanManager.getIsDirectTo()) {
@@ -876,24 +878,31 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateTodWaypoint() {
-        if (this._todWaypoint === undefined) {
-            // create it
-            const waypoint = new WayPoint(this._instrument);
-            waypoint.type = 'W';
-            waypoint.isInFlightPlan = false;
-
-            waypoint.infos = new WayPointInfo(this._instrument);
-
-            waypoint.ident = "TOD";
-            waypoint.infos.ident = "TOD";
-            waypoint.getSvgElement(0);
-            this._todWaypoint = waypoint;
+        const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
+        const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
+        if (!pathActive && todDistanceRemaining > 0.1) {
+            if (this._todWaypoint === undefined) {
+                // create it
+                const waypoint = new WayPoint(this._instrument);
+                waypoint.type = 'W';
+                waypoint.isInFlightPlan = false;
+    
+                waypoint.infos = new WayPointInfo(this._instrument);
+    
+                waypoint.ident = "TOD";
+                waypoint.infos.ident = "TOD";
+                waypoint.getSvgElement(0);
+                this._todWaypoint = waypoint;
+            }
+    
+            // update it
+            const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
+            const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
+            this._todWaypoint.infos.coordinates = todLLA;
         }
-
-        // update it
-        const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
-        const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
-        this._todWaypoint.infos.coordinates = todLLA;
+        else {
+            this._todWaypoint = undefined;
+        }
     }
     loadBingMapConfig() {
         if (this.eBingMode !== EBingMode.HORIZON) {
