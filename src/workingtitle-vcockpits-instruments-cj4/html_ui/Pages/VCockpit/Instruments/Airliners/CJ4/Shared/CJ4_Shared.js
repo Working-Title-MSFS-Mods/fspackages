@@ -3465,7 +3465,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
     onEvent(_event) {
         super.onEvent(_event);
         if (this.handler && this.handler.reactsOnEvent(_event)) {
-            if (this.gps instanceof CJ4_PFD) {
+            if (typeof CJ4_PFD === 'function') {
                 switch (_event) {
                     case "Upr_DATA_PUSH":
                         this.handler.onActivate();
@@ -3493,7 +3493,7 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
                         break;
                 }
             }
-            else if (this.gps instanceof CJ4_MFD) {
+            else if (typeof CJ4_MFD === 'function') {
                 switch (_event) {
                     case "Lwr_DATA_PUSH":
                         this.handler.onActivate();
