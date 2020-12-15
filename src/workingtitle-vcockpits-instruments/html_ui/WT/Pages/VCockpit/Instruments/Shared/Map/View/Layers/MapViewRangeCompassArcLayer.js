@@ -232,11 +232,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._labelContainer.style.height = "100%";
         this._labelContainer.style.zIndex = 2;
 
-        this._rangeLabel = new WT_MapViewRangeLabel("");
-        let labelElement = this._rangeLabel.labelElement;
-        labelElement.style.position = "absolute";
-        labelElement.style.transform = "translate(-50%, -50%)";
-        this._labelContainer.appendChild(labelElement);
+        this._rangeLabel = new WT_MapViewRangeLabel();
+        this._rangeLabel.style.position = "absolute";
+        this._rangeLabel.style.transform = "translate(-50%, -50%)";
+        this._labelContainer.appendChild(this._rangeLabel);
 
         topLevel.appendChild(this._compassContainer);
         topLevel.appendChild(this._labelContainer);
@@ -335,7 +334,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         }
 
         if (!this.showLabel) {
-            this._rangeLabel.labelElement.style.display = "none";
+            this._rangeLabel.style.display = "none";
         }
     }
 
@@ -705,15 +704,15 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        this._rangeLabel.onUpdate(state);
+        this._rangeLabel.update(state);
 
         if (!this._needRepositionLabel) {
             return;
         }
 
         let position = WT_GVector2.fromPolar(this.radius + this.labelOffset * state.dpiScale, (this.labelAngle + this.facing) * Avionics.Utils.DEG2RAD).add(this.center);
-        this._rangeLabel.labelElement.style.left = `${position.x}px`;
-        this._rangeLabel.labelElement.style.top = `${position.y}px`;
+        this._rangeLabel.style.left = `${position.x}px`;
+        this._rangeLabel.style.top = `${position.y}px`;
 
         this._needRepositionLabel = false;
     }

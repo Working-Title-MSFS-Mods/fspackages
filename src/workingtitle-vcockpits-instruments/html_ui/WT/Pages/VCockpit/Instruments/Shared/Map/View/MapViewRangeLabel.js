@@ -1,6 +1,38 @@
-class WT_MapViewRangeLabel {
-    constructor(id, classList = WT_MapViewRangeLabel.CLASS_LIST_DEFAULT, autoClassList = WT_MapViewRangeLabel.AUTO_CLASS_LIST_DEFAULT, rangeClassList = WT_MapViewRangeLabel.RANGE_CLASS_LIST_DEFAULT) {
-        this._labelElement = this._createLabel(id, classList, autoClassList, rangeClassList);
+/**
+ * A label which displays the nominal map range.
+ */
+class WT_MapViewRangeLabel extends HTMLElement {
+    constructor() {
+        super();
+
+        let template = document.createElement("template");
+        template.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    background-color: black;
+                    border: solid 1px white;
+                    border-radius: 3px;
+                    text-align: center;
+                    font-size: 2.5vh;
+                    line-height: 2vh;
+                    color: #67e8ef;
+                }
+                    div {
+                        margin: 0 0.5vh;
+                    }
+                    .${WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT} {
+                        display: none;
+                    }
+                    .rangeUnit {
+                        font-size: var(--rangelabel-unit-font-size, 1.75vh);
+                    }
+            </style>
+            <div class="${WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT}">Auto</div>
+            <div class="${WT_MapViewRangeLabel.RANGE_CLASS_DEFAULT}"></div>
+        `;
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
 
         let formatterOpts = {
             precision: 0.01,
@@ -8,55 +40,25 @@ class WT_MapViewRangeLabel {
             maxDigits: 3,
             unitCaps: true
         };
-
         let htmlFormatterOpts = {
             numberUnitDelim: "",
-            classGetter: this
+            classGetter: {
+                getNumberClassList() {
+                    return ["rangeNumber"];
+                },
+                getUnitClassList() {
+                    return ["rangeUnit"];
+                }
+            }
         };
-
         this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
 
         this._lastRange = new WT_NumberUnit(0, WT_Unit.NMILE);
     }
 
-    _createLabel(id, classList, autoClassList, rangeClassList) {
-        let element = document.createElement("div");
-        if (id) {
-            element.id = id;
-        }
-        element.classList.add(...classList);
-
-        this._autoElement = document.createElement("div");
-        this._autoElement.classList.add(...autoClassList);
-        this._autoElement.style.display = "none";
-
-        this._rangeElement = document.createElement("div");
-        this._rangeElement.classList.add(...rangeClassList);
-
-        element.appendChild(this._autoElement);
-        element.appendChild(this._rangeElement);
-
-        return element;
-    }
-
-    getNumberClassList() {
-        return ["rangeNumber"];
-    }
-
-    getUnitClassList() {
-        return ["rangeUnit"];
-    }
-
-    get labelElement() {
-        return this._labelElement;
-    }
-
-    get autoElement() {
-        return this._autoElement;
-    }
-
-    get rangeElement() {
-        return this._rangeElement;
+    connectedCallback() {
+        this._autoElement = this.shadowRoot.querySelector(`.${WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT}`);
+        this._rangeElement = this.shadowRoot.querySelector(`.${WT_MapViewRangeLabel.RANGE_CLASS_DEFAULT}`);
     }
 
     _updateAutoElement(state) {
@@ -76,15 +78,16 @@ class WT_MapViewRangeLabel {
             unit = WT_Unit.NMILE;
         }
 
-        this.rangeElement.innerHTML = this._formatter.getFormattedHTML(range, unit);
+        this._rangeElement.innerHTML = this._formatter.getFormattedHTML(range, unit);
         this._lastRange.set(range);
     }
 
-    onUpdate(data) {
-        this._updateAutoElement(data);
-        this._updateRangeElement(data);
+    update(state) {
+        this._updateAutoElement(state);
+        this._updateRangeElement(state);
     }
 }
-WT_MapViewRangeLabel.CLASS_LIST_DEFAULT = ["rangeLabel"];
-WT_MapViewRangeLabel.AUTO_CLASS_LIST_DEFAULT = ["auto"];
-WT_MapViewRangeLabel.RANGE_CLASS_LIST_DEFAULT = ["range"];
+WT_MapViewRangeLabel.AUTO_CLASS_DEFAULT = "auto";
+WT_MapViewRangeLabel.RANGE_CLASS_DEFAULT = "range";
+
+customElements.define("map-view-rangelabel", WT_MapViewRangeLabel);

@@ -100,8 +100,8 @@ WT_MapViewRangeRingLayer.CONFIG_PROPERTIES = [
 
 class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
     _createLabel() {
-        this._rangeLabel = new WT_MapViewRangeLabel("");
-        return this._rangeLabel.labelElement;
+        this._rangeLabel = new WT_MapViewRangeLabel();
+        return this._rangeLabel;
     }
 
     /**
@@ -118,6 +118,6 @@ class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
      */
     onUpdate(state) {
         super.onUpdate(state);
-        this.rangeLabel.onUpdate(state);
+        this.rangeLabel.update(state);
     }
 }
