@@ -338,6 +338,10 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP
     text-align: left;
 }
 
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon {
+    display: none;
+}
+
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon #Speedbug {
     width: 20%;
     margin-left: 2%;
