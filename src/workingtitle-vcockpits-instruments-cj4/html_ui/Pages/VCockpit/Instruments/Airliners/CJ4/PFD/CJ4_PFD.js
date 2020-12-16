@@ -831,7 +831,8 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";
                     if (Simplane.getAutoPilotMachModeActive()) {
-                        Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2).slice(1));
+                        const machValue = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
+                        Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "M" + machValue.toFixed(2).slice(1));
                     }
                     else {
                         Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0));
