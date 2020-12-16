@@ -134,6 +134,7 @@ class CJ4_FMC_ModSettingsPageOne {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
+        this._fmc.onRightInput[0] = () => { this.fpSync = this.fpSync + 1; };
         this._fmc.onLeftInput[1] = () => {
             let idValue = this._fmc.inOut;
             this.pilotId = idValue == FMCMainDisplay.clrValue ? "" : idValue;
