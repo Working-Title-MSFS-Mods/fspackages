@@ -834,7 +834,8 @@ class CJ4_APDisplay extends NavSystemElement {
                 else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
                     if (Simplane.getAutoPilotMachModeActive()) {
-                        Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
+                        const machValue = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
+                        Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + machValue.toFixed(2));
                     }
                     else {
                         Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
