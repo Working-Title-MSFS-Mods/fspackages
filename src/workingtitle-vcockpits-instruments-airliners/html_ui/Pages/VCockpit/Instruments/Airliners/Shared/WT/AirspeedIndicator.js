@@ -351,7 +351,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 shape.setAttribute("fill", "none");
                 shape.setAttribute("stroke", "cyan");
                 shape.setAttribute("stroke-width", "2");
-                shape.setAttribute("d", "M 0 22 l 15 -8 l 15 0 l 0 16 l -15 0 l -15 -8 z");
+                shape.setAttribute("d", "M 0 22 l 18 -8 l 11 0 l 0 16 l -11 0 l -18 -8 z");
                 this.targetSpeedPointerSVG.appendChild(shape);
             }
             var speedMarkersPosX = _left + gradWidth;
@@ -509,7 +509,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
 
         this.targetSpeedIconSVG = document.createElementNS(Avionics.SVG.NS, "path");
         this.targetSpeedIconSVG.setAttribute("fill", "black");
-        this.targetSpeedIconSVG.setAttribute("d", "M21 19 l15 -8 l15 0 l0 16 l-15 0 l-15 -8 Z");
+        this.targetSpeedIconSVG.setAttribute("d", "M 21 19 l 19 -8 l 11 0 l 0 16 l -11 0 l -19 -8 z");
         this.targetSpeedIconSVG.setAttribute("fill", "none");
         this.targetSpeedIconSVG.setAttribute("stroke", "cyan");
         this.targetSpeedIconSVG.setAttribute("stroke-width", "2");
