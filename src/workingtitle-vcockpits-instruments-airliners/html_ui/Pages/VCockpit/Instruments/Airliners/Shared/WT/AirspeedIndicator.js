@@ -2079,7 +2079,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     updateSpeedTrendArrow(currentAirspeed, speedTrend, hide = false) {
         let hideArrow = true;
         if (this.speedTrendArrowSVG && !hide) {
-            if (currentAirspeed > 40 && Math.abs(speedTrend) > 1) {
+            if (currentAirspeed >= 40 && Math.abs(speedTrend) > 1) {
                 let arrowBaseY = this.valueToSvg(currentAirspeed, currentAirspeed);
                 let arrowTopY = this.valueToSvg(currentAirspeed, currentAirspeed + speedTrend);
                 let arrowPath = "M 70 " + arrowBaseY + " L 70 " + arrowTopY.toFixed(1) + " ";
@@ -2385,13 +2385,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerV1(_marker, currentAirspeed) {
         let v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
-        if (v1Speed > 0) {
+        if (v1Speed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
         }
-        if (v1Speed > 0) {
+        if (v1Speed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, v1Speed);
             _marker.setOffscreen(false);
                 if (posY >= this.refHeight + 25) {
@@ -2414,13 +2414,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVR(_marker, currentAirspeed) {
         let vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
-        if (vRSpeed > 0) {
+        if (vRSpeed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
         }
-        if (vRSpeed > 0) {
+        if (vRSpeed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, vRSpeed);
             if (posY >= this.refHeight + 25) {
                 _marker.passed = true;
@@ -2443,13 +2443,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerV2(_marker, currentAirspeed) {
         let v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
-        if (v2Speed > 0) {
+        if (v2Speed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
         }
-        if (v2Speed > 0) {
+        if (v2Speed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, v2Speed);
             if (posY >= this.refHeight + 25) {
                 _marker.passed = true;
@@ -2472,7 +2472,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVRef(_marker, currentAirspeed) {
         let vRefSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots");
-        if (vRefSpeed > 0) {
+        if (vRefSpeed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, vRefSpeed);
             _marker.setOffscreen(false);
             _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
@@ -2493,7 +2493,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVApp(_marker, currentAirspeed) {
         let vAppSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots");
-        if (vAppSpeed > 0 && this.aircraft == Aircraft.CJ4) {
+        if (vAppSpeed >= 40 && this.aircraft == Aircraft.CJ4) {
             var posY = this.valueToSvg(currentAirspeed, vAppSpeed);
             _marker.setOffscreen(false);
             _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
@@ -2514,13 +2514,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVX(_marker, currentAirspeed) {
         let vxSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
-        if (vxSpeed > 0) {
+        if (vxSpeed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             vxSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
         }
-        if (vxSpeed > 0) {
+        if (vxSpeed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, vxSpeed);
             if (posY >= this.refHeight + 25) {
                 _marker.passed = true;
