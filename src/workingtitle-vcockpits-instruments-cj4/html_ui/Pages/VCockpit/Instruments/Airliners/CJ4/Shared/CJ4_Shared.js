@@ -2641,7 +2641,7 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         // Set expected fuel and gross weight
                         if (groundSpeed >= 50) {
-                            const fuelFlow = SimVar.GetSimVarValue("CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("CJ4 FUEL FLOW:2", "Pounds per hour");
+                            const fuelFlow = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour") + SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
                             const expectedFuelUsage = (fuelFlow * (this.calcETEseconds(destinationDistance, groundSpeed) / 3600)).toFixed(0);
                             const currentFuel = (SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds") * SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons")).toFixed(0);
                             const expectedFuelAtDestination = (currentFuel - expectedFuelUsage) < 0 ? 0 : (currentFuel - expectedFuelUsage);
