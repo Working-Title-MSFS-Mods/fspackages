@@ -1043,7 +1043,7 @@ export class FlightPlanManager {
    * @param {Number} index The index of the runway to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  public async setArrivalRunwayIndex(index, callback = () => { }): Promise<void> {
+  public async setArrivalRunwayIndex(index, vfrRunwayExtension, callback = () => { }): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (currentFlightPlan.procedureDetails.arrivalRunwayIndex !== index) {
