@@ -1198,9 +1198,9 @@ export class FlightPlanManager {
 
     if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
       const destination = currentFlightPlan.waypoints[currentFlightPlan.waypoints.length - 1];
-      const approachRunwayName = (destination.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex].runway.trim();
+      const approachRunwayName = (destination.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex].runway;
 
-      const runway = (destination.infos as AirportInfo).oneWayRunways.find(rw => rw.designation === approachRunwayName);
+      const runway = currentFlightPlan.getRunway((destination.infos as AirportInfo).oneWayRunways, approachRunwayName);
       return runway;
     }
 

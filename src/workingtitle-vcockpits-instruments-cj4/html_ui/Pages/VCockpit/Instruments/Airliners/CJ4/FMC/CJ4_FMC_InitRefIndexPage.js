@@ -1144,14 +1144,11 @@ class CJ4_FMC_InitRefIndexPage {
             rightSelectionKeyProc = CJ4_FMC_RoutePage.ShowPage1;
         } else {
             let approach = fmc.flightPlanManager.getApproach();
-            if (!approach.name && !fmc.vfrLandingRunway) {
+            if (approach === undefined || (!approach.name && !fmc.vfrLandingRunway)) {
                 CJ4_FMC_InitRefIndexPage.ShowPage25ErrorMsg(fmc, "NO APPROACH SELECTED", "ARRIVAL");
                 rightSelectionKeyProc = CJ4_FMC_DepArrPage.ShowArrivalPage;
             } else {
                 arrAirportText = destination.ident;
-                if (destination.infos) {
-                    arrAirportText = arrAirportText + "/" + destination.infos.name;
-                }
 
                 approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
                 let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
