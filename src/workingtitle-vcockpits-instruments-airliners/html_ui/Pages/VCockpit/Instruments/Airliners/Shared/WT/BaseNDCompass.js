@@ -346,7 +346,7 @@ class Jet_NDCompass extends HTMLElement {
                         let CompassAngle = this.degreeToArc(compass);
                         let selectedAngle = this.degreeToArc(simSelectedHeading);
                         let delta = Math.abs(Avionics.Utils.angleDiff(CompassAngle, selectedAngle));
-                        this.selectedHeadingLine.classList.toggle('hide', (delta > 65 && this._displayMode !== Jet_NDCompass_Display.ROSE && Simplane.getAutoPilotHeadingLockActive()) ? false : true);
+                        this.selectedHeadingLine.classList.toggle('hide', (delta > 65 && this._displayMode !== Jet_NDCompass_Display.ROSE && (SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") === 1)) ? false : true);
                         this.selectedHeadingBug.classList.toggle('hide', (delta > 90 && this._displayMode === Jet_NDCompass_Display.ARC) ? true : false);
 
                         if (showSelectedHeading) {
