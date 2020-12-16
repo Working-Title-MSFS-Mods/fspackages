@@ -1,6 +1,10 @@
 # Working Title CJ4 v0.8.0 Changes
 
-THIS IS HUUUUUUUUUUUGE!
+Welcome to the Working Title CJ4 v0.8.0, one of the largest and most comprehensive updates to the aircraft to date. This update includes an enormous navigational systems overhaul, making it an excellent aircraft for a full range of IFR flight activities and procedures. We have also added a number of other great features, like a full FADEC and sound overhaul.
+
+This release is incredibly large, and is such very much a beta release. Please check the list of outstanding issues below, and file any issues encountered on our GitHub Issues tracker.
+
+We hope you enjoy flying this release!
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -38,6 +42,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Lateral Navigation
 * New lateral navigation over the top of existing AP
+* Greatly improved bank response and turn performance
 * Supports correct discontinuity behavior
 * Compatibility with the new Flight Plan Manager
 * Much improved ILS APPR capture success rate
@@ -57,7 +62,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## FMC
 * Reserve fuel can now be changed
-* Revised the format of the FLPN page to better match the real unit, especialy for approaches
+* Revised the format of the FLPN page to better match the real unit, especially for approaches
 * Approach ref temp of zero can now be entered
 
 ## Engines
@@ -88,7 +93,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Spoiler drag, Gear drag, extend, retract
 * Cockpit wind and rain
 * FMS, AP panel, DCP, CCP, and soft buttons
-* Aurals (Altitude, Minimums, Caution/Warning, Landing Gear, Pull up, Overspeed etc.)
+* Aurals (Altitude Alert, Minimums, AP disconnect, Caution/Warning, Landing Gear, Pull up, Overspeed, Sink Rate, Don't Sink)
 * Removed TAWS System Test (To be replaced with accurate sound)
 
 ## Misc
@@ -102,6 +107,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Manual Point/Bearing or Point/Bearing/Distance fixes
 * Route offsets
 * LNAV/VNAV approaches. Currently all RNAV approaches use LPV in APPR mode due to no minimums type information in the available navdata.
+* Going direct-to on the LEGS page does not give you an EXEC option, it will automatically execute.
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
@@ -109,9 +115,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Loading and saving flights can occasionally have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
 * Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse.
-* Sound: Wind sound can stutter from time to time.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
 * Sometimes when turning more than 90 degrees onto an approach segment, VNAV might give a NOPATH condition because it sees that you are too high.  Engage FLC or VS and descend down and it should recapture the path.
-* The FMS now builds turn anticipation into direct-to course projection. However, you will still encounter some overshoot beyond 60 or so degrees.
+* Very long legs may display some constant cross track deviation on the map and course needles. The plane will still track properly towards the fix. This will be addressed later in the beta.
+* The FMS now builds turn anticipation into direct-to course projection. However, you will still encounter some overshoot beyond 90 or so degrees.
+* If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.
 
 ### 🎅 Have fun! 🎅

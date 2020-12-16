@@ -712,7 +712,7 @@ export class FlightPlanManager {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
-    return this._flightPlans[flightPlanIndex].length;
+    return this._flightPlans[flightPlanIndex]?.length ?? 0;
   }
 
   /**

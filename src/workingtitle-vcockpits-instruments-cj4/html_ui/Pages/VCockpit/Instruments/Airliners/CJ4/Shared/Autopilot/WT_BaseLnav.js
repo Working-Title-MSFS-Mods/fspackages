@@ -151,6 +151,8 @@ class WT_BaseLnav {
 
                     this._isTurnCompleting = false;
                     this._executeInhibited = false;
+
+                    this._nextTurnHeading = this._setHeading;
                     this.execute();
                     this._isTurnCompleting = true;
 
@@ -196,6 +198,8 @@ class WT_BaseLnav {
 
                         this._isTurnCompleting = false;
                         this._executeInhibited = false;
+
+                        this._nextTurnHeading = this._setHeading;
                         this.execute();
                         this._isTurnCompleting = true; //Prevent heading changes until turn is near completion
 
@@ -245,7 +249,7 @@ class WT_BaseLnav {
             }
             else {
                 const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
-                const angleDiffToTarget = Avionics.Utils.angleDiff(planeHeading, this._setHeading);
+                const angleDiffToTarget = Avionics.Utils.angleDiff(planeHeading, this._nextTurnHeading);
     
                 const turnDirection = Math.sign(angleDiffToTarget);
                 const targetHeading = planeHeading + (turnDirection * 90);

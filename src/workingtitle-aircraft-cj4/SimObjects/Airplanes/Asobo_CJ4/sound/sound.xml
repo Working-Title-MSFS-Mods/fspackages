@@ -337,6 +337,7 @@
 
 		<Sound WwiseData="true" WwiseEvent="WT_wind_inside" SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0">
 			<WwiseRTPC SimVar="AIRSPEED TRUE" Units="KNOTS" Index="0" RTPCName="SIMVAR_AIRSPEED_TRUE"/>
+			<Range LowerBound="1" />
 		</Sound>
 
 		<Sound WwiseEvent="WT_gear_down" WwiseData="true" FadeOutType="2" Continuous="false" FadeOutTime="1" SimVar="GEAR HANDLE POSITION" Units="NUMBER">
@@ -378,13 +379,13 @@
 		<Sound WwiseData="true" WwiseEvent="aural_200ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_300ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_400ft" />
-		<Sound WwiseData="true" WwiseEvent="aural_500ft" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_500ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_1000ft" />
 		<Sound WwiseData="true" WwiseEvent="aural_stall" />
 		<Sound WwiseData="true" WwiseEvent="WT_aural_pull_up" />
 		<!-- <Sound WwiseData="true" WwiseEvent="WT_aural_overspeed" /> -->
-		<Sound WwiseData="true" WwiseEvent="aural_sink_rate" />
-		<Sound WwiseData="true" WwiseEvent="aural_dont_sink" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_sink_rate" />
+		<Sound WwiseData="true" WwiseEvent="WT_aural_dont_sink" />
 		<Sound WwiseData="true" WwiseEvent="WT_aural_minimums" />
 		<Sound WwiseData="true" WwiseEvent="WT_aural_landing_gear" />
 		<Sound WwiseData="true" WwiseEvent="aural_taws_system_test_ok" ViewPoint="Inside"/>
