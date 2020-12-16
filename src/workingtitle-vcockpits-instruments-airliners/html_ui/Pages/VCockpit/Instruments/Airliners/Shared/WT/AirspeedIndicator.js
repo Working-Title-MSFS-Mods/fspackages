@@ -335,7 +335,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 }
                 this.stripsSVG.appendChild(this.stallStripSVG);
             }
-            var targetSpeedPointerPosX = _left + gradWidth;
+            var targetSpeedPointerPosX = _left + gradWidth + 2;
             var targetSpeedPointerPosY = _top + _height * 0.5;
             var targetSpeedPointerWidth = width;
             this.targetSpeedPointerHeight = 47;
@@ -501,14 +501,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.speedBackground = document.createElementNS(Avionics.SVG.NS, "rect");
         this.speedBackground.setAttribute("x", 12);
         this.speedBackground.setAttribute("y", 2);
-        this.speedBackground.setAttribute("width", 100);
+        this.speedBackground.setAttribute("width", 113);
         this.speedBackground.setAttribute("height", 32);
         this.speedBackground.setAttribute("fill", "black");
         this.speedBackground.setAttribute("fill-opacity", "0.5");
         this.rootGroup.appendChild(this.speedBackground);
 
         this.targetSpeedIconSVG = document.createElementNS(Avionics.SVG.NS, "path");
-        this.targetSpeedIconSVG.setAttribute("fill", "black");
         this.targetSpeedIconSVG.setAttribute("d", "M 21 19 l 19 -8 l 11 0 l 0 16 l -11 0 l -19 -8 z");
         this.targetSpeedIconSVG.setAttribute("fill", "none");
         this.targetSpeedIconSVG.setAttribute("stroke", "cyan");
@@ -516,7 +515,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.rootGroup.appendChild(this.targetSpeedIconSVG);
         this.targetSpeedSVG = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetSpeedSVG.textContent = "260";
-        this.targetSpeedSVG.setAttribute("x", (posX - 10).toString());
+        this.targetSpeedSVG.setAttribute("x", (posX - 12).toString());
         this.targetSpeedSVG.setAttribute("y", (posY - 8).toString());
         this.targetSpeedSVG.setAttribute("fill", "cyan");
         this.targetSpeedSVG.setAttribute("font-size", (this.fontSize * 0.5).toString());
@@ -2207,11 +2206,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                         let machAirspeed = Simplane.getAutoPilotMachHoldValue();
                         if (machAirspeed < 1.0) {
                             var fixedMach = machAirspeed.toFixed(2);
-                            var radixPos = fixedMach.indexOf('.');
-                            this.targetSpeedSVG.textContent = fixedMach.slice(radixPos);
+                            this.targetSpeedSVG.textContent = "M" + fixedMach.slice(1);
                         }
                         else {
-                            this.targetSpeedSVG.textContent = machAirspeed.toFixed(2);
+                            this.targetSpeedSVG.textContent = "M" + machAirspeed.toFixed(2);
                         }
                         selectedAirspeed = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", machAirspeed);
                     }

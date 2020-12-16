@@ -330,12 +330,25 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
     position: absolute;
-    width: 50%;
-    color: green;
-    font-size: 1.25vh;
+    width: 62%;
+    color: cyan;
+    font-size: 22px;
     top: 8%;
-    right: 20%;
-    text-align: center;
+    right: 0;
+    text-align: left;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon #Speedbug {
+    width: 20%;
+    margin-left: 2%;
+    margin-right: -7%;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon #Speedbug path {
+    fill: transparent;
+    stroke: cyan;
+    stroke-width: 2;
+    stroke-linecap: round;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_Armed {
@@ -848,7 +861,6 @@ cj4-pfd-element #Mainframe #PopupMenu svg {
 }
 
 #Approach,
-#AutopilotInfos,
 #Coms div.Modifiable {
     color: #11d011 !important;
 }
@@ -880,8 +892,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Speed {
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_Status,
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
     color: #11d011 !important;
     font-size: 22px
 }
@@ -936,7 +947,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #Airspeed>text:last-child {
-    fill: #11d011;
+    fill: cyan;
     font-size: 30px;
 }
 

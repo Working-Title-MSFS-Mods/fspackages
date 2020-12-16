@@ -775,7 +775,8 @@ class CJ4_APDisplay extends NavSystemElement {
         this.AP_Status = this.gps.getChildById("AP_Status");
         this.AP_FDIndicatorArrow = this.gps.getChildById("AP_FDIndicatorArrow");
         this.AP_VerticalActive = this.gps.getChildById("AP_VerticalActive");
-        this.AP_ModeReference = this.gps.getChildById("AP_ModeReference");
+        this.AP_ModeReference_Icon = this.gps.getChildById("AP_ModeReference_Icon");
+        this.AP_ModeReference_Value = this.gps.getChildById("AP_ModeReference_Value");
         this.AP_Armed = this.gps.getChildById("AP_Armed");
         this.AP_YDStatus = this.gps.getChildById("AP_YDStatus");
         if (this.gps.instrumentXmlConfig) {
@@ -822,30 +823,24 @@ class CJ4_APDisplay extends NavSystemElement {
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
-                    let vsDisplay = "<span>" + verticalMode + "</span> ";
-                    let verticalHoldVar = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
-                    vsDisplay += "<span style=\"color: #0599fc;\">" + fastToFixed(verticalHoldVar, 0) + "</span>";
-                    if (verticalHoldVar > 0) {
-                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↑</span>";
-                    }
-                    else if (verticalHoldVar < 0) {
-                        vsDisplay += "<span style=\"font-size: 17px; color: #0599fc;\">↓</span>";
-                    }
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, vsDisplay);
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    this.AP_ModeReference_Icon.style.display = "none";
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
                 }
                 else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    this.AP_ModeReference_Icon.style.display = "inline";
                     if (Simplane.getAutoPilotMachModeActive()) {
-                        Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2));
+                        Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 2).slice(1));
                     }
                     else {
-                        Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
+                        Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0));
                     }
                 }
                 else {
                     Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference, "");
+                    this.AP_ModeReference_Icon.style.display = "none";
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 
                 const verticalArmed = verticalArmed2 ? verticalArmed2 : verticalArmed1 ? verticalArmed1 : "";
@@ -862,7 +857,7 @@ class CJ4_APDisplay extends NavSystemElement {
         }
         else {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, ""); //VETICAL MODE
-            Avionics.Utils.diffAndSet(this.AP_ModeReference, ""); //VERTICAL MODE VAL (if needed)
+            Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
             Avionics.Utils.diffAndSet(this.AP_Armed, ""); //VERTICAL ARMED
             Avionics.Utils.diffAndSet(this.AP_LateralActive, ""); //LATERAL ACTIVE
             Avionics.Utils.diffAndSet(this.AP_LateralArmed, ""); //LATERAL ARMED
