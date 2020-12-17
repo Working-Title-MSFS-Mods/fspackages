@@ -191,8 +191,8 @@ class CJ4_FMC_LegsPage {
                         re = /()(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
                         match = value.match(re);
                         if (!match) return;
-                        // if "alt" is < 500 its a speed
-                        if (match[3] !== "" && isFinite(match[3])) {
+                        // if "alt" is < 500 and no FL its a speed
+                        if (match[2] === "" && match[3] !== "" && isFinite(match[3])) {
                             const speed = Number(match[3]);
                             if (speed < 500) {
                                 match[1] = speed;
