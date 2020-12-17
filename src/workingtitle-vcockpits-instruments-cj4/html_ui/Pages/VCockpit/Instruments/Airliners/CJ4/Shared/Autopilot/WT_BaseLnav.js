@@ -18,6 +18,12 @@ class WT_BaseLnav {
         this._activeWaypointChanged = true;
         this._activeWaypointChangedflightPlanChanged = true;
 
+        /** Whether or not a waypoint has recently been sequenced. */
+        this._waypointSequenced = false;
+
+        /** The current flight plan version. */
+        this._currentFlightPlanVersion = 0;
+
         /**
          * The current active waypoint.
          * @type {WayPoint}
@@ -80,6 +86,19 @@ class WT_BaseLnav {
         this._previousWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex - 1];
         const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
+
+        const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
+        if (flightPlanVersion !== this._currentFlightPlanVersion) {
+            if (this._waypointSequenced) {
+                this._waypointSequenced = false;
+            }
+            else {
+                this._isTurnCompleting = false;
+                this._executeInhibited = false;
+            }
+
+            this._currentFlightPlanVersion = flightPlanVersion;
+        }
 
         //CHECK IF DISCO/VECTORS
         if (this._onDiscontinuity) {
@@ -148,6 +167,7 @@ class WT_BaseLnav {
 
                     SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
                     this._isWaypointAlerting = false;
+                    this._waypointSequenced = true;
 
                     this._isTurnCompleting = false;
                     this._executeInhibited = false;
@@ -195,6 +215,7 @@ class WT_BaseLnav {
 
                         SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
                         this._isWaypointAlerting = false;
+                        this._waypointSequenced = true;
 
                         this._isTurnCompleting = false;
                         this._executeInhibited = false;

@@ -1043,13 +1043,35 @@ export class FlightPlanManager {
    * @param {Number} index The index of the runway to select.
    * @param {() => void} callback A callback to call when the operation completes.
    */
-  public async setArrivalRunwayIndex(index, vfrRunwayExtension, callback = () => { }): Promise<void> {
+  public async setArrivalRunwayIndex(index, callback = () => { }): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
     if (currentFlightPlan.procedureDetails.arrivalRunwayIndex !== index) {
       currentFlightPlan.procedureDetails.arrivalRunwayIndex = index;
       await currentFlightPlan.buildArrival();
 
+      this._updateFlightPlanVersion();
+    }
+
+    callback();
+  }
+
+  /**
+   * Sets the destination runway index in the currently active flight plan.
+   * @param index The index of the runway to select.
+   * @param runwayExtension The length of the runway extension fix to create, or -1 if none.
+   * @param callback A callback to call when the operation completes.
+   */
+  public async setDestinationRunwayIndex(index: number, runwayExtension: number = -1, callback: () => void = () => { }): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+
+    if (currentFlightPlan.procedureDetails.destinationRunwayIndex !== index
+      || currentFlightPlan.procedureDetails.destinationRunwayExtension !== runwayExtension) {
+
+      currentFlightPlan.procedureDetails.destinationRunwayIndex = index;
+      currentFlightPlan.procedureDetails.destinationRunwayExtension = runwayExtension;
+
+      await currentFlightPlan.buildApproach();
       this._updateFlightPlanVersion();
     }
 

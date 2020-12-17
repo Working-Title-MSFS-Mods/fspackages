@@ -197,14 +197,14 @@ class CJ4_FMC_RoutePage {
             // main page
             this._fmc.onLeftInput[0] = () => {
                 this._fmc.setMsg("Working...");
-                let value = this._fmc.inOut;
+                let value = String(this._fmc.inOut).padEnd(4);
                 this._fmc.clearUserInput();
                 this.setOrigin(value);
             };
 
             this._fmc.onRightInput[0] = () => {
                 this._fmc.setMsg("Working...");
-                let value = this._fmc.inOut;
+                let value = String(this._fmc.inOut).padEnd(4);
                 this._fmc.clearUserInput();
                 this.setDestination(value);
             };

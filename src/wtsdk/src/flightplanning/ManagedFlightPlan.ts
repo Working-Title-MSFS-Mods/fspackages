@@ -676,6 +676,8 @@ export class ManagedFlightPlan {
 
     const approachIndex = this.procedureDetails.approachIndex;
     const approachTransitionIndex = this.procedureDetails.approachTransitionIndex;
+    const destinationRunwayIndex = this.procedureDetails.destinationRunwayIndex;
+    const destinationRunwayExtension = this.procedureDetails.destinationRunwayExtension;
 
     const destinationInfo = destination.infos as AirportInfo;
 
@@ -690,7 +692,7 @@ export class ManagedFlightPlan {
 
     let { startIndex, segment } = this.truncateSegment(SegmentType.Approach);
 
-    if (legs.length > 0 || approachIndex !== -1) {
+    if (legs.length > 0 || approachIndex !== -1 || destinationRunwayIndex !== -1) {
 
       if (segment === FlightPlanSegment.Empty) {
         segment = this.addSegment(SegmentType.Approach);
@@ -712,9 +714,22 @@ export class ManagedFlightPlan {
         }
       }
 
-      const runway = this.getRunway(destinationInfo.oneWayRunways, destinationInfo.approaches[approachIndex].runway);
+      let runway: OneWayRunway;
+      if (approachIndex !== -1) {
+        runway = this.getRunway(destinationInfo.oneWayRunways, destinationInfo.approaches[approachIndex].runway);
+      }
+      else if (destinationRunwayIndex !== -1) {
+        runway = destinationInfo.oneWayRunways[destinationRunwayIndex];
+      }
+
       if (runway) {
-        const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.beginningCoordinates);
+        if (approachIndex === -1 && destinationRunwayIndex !== -1 && destinationRunwayExtension !== -1) {
+          const runwayExtensionWaypoint = procedure.buildWaypoint(`RX${runway.designation.padStart(3, '0')}`,
+            Avionics.Utils.bearingDistanceToCoordinates(runway.direction + 180, destinationRunwayExtension, runway.beginningCoordinates.lat, runway.beginningCoordinates.long));
+          this.addWaypoint(runwayExtensionWaypoint);
+        }
+
+        const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation.padStart(3, '0')}`, runway.beginningCoordinates);
         runwayWaypoint.legAltitudeDescription = 1;
         runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
         runwayWaypoint.isRunway = true;
