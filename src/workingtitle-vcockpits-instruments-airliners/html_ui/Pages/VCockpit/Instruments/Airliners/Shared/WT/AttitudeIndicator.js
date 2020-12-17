@@ -6,6 +6,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
         this.radioAltitudeColorBad = "white";
         this.radioAltitudeColorLimit = 0;
         this.radioAltitudeRotate = false;
+        this.cj4_HalfBankActive = false;
         this.cj4_FlightDirectorActive = true;
         this.cj4_FlightDirectorPitch = 0;
         this.cj4_FlightDirectorBank = 0;
@@ -27,7 +28,8 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             "flight_director-pitch",
             "flight_director-bank",
             "radio_altitude",
-            "decision_height"
+            "decision_height",
+            "half_bank-active"
         ];
     }
     static get observedAttributes() {
@@ -1461,7 +1463,13 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 rightTriangle.setAttribute("stroke-width", "2");
                 rightTriangle.setAttribute("stroke-opacity", "1");
                 rightTriangle.setAttribute("transform", "rotate(-45,0,0)");
-                this.attitude_bank.appendChild(rightTriangle);
+                this.attitude_bank.appendChild(rightTriangle);                
+                this.halfBankArc = document.createElementNS(Avionics.SVG.NS, "path");
+                this.halfBankArc.setAttribute("d", "M 46 -173 A 179 179 0 0 0 -46 -173");
+                this.halfBankArc.setAttribute("stroke", "white");
+                this.halfBankArc.setAttribute("stroke-width", "2");
+                this.halfBankArc.setAttribute("fill", "none");
+                this.attitude_bank.appendChild(this.halfBankArc);
             }
             {
                 let cursors = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1550,6 +1558,11 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.cj4_FlightDirector.setAttribute("display", "none");
             }
         }
+        if (this.cj4_HalfBankActive){
+            this.halfBankArc.setAttribute("display", "");
+        }else{
+            this.halfBankArc.setAttribute("display", "none");
+        }
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue == newValue)
@@ -1593,6 +1606,9 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     let val = parseFloat(newValue);
                     this.radioDecisionHeight.textContent = fastToFixed(val, 0);
                 }
+                break;
+            case "half_bank-active":
+                this.cj4_HalfBankActive = parseFloat(newValue) > 15;
                 break;
             default:
                 return;
