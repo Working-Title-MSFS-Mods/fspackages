@@ -198,7 +198,7 @@ class CJ4_FMC_RoutePage {
             this._fmc.onLeftInput[0] = () => {
                 let value = this._fmc.inOut;
                 if (value == "") {
-                    if (currentFp.hasOrigin) {
+                    if (this._fmc.flightPlanManager.getOrigin()) {
                         this._fmc.inOut = this._fmc.flightPlanManager.getOrigin().ident;
                     }
                 } else {
@@ -208,10 +208,15 @@ class CJ4_FMC_RoutePage {
             };
 
             this._fmc.onRightInput[0] = () => {
-                this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
-                this._fmc.clearUserInput();
-                this.setDestination(value);
+                if (value == "") {
+                    if (this._fmc.flightPlanManager.getDestination()) {
+                        this._fmc.inOut = this._fmc.flightPlanManager.getDestination().ident;
+                    }
+                } else {
+                    this._fmc.clearUserInput();
+                    this.setDestination(value);
+                }
             };
 
             this._fmc.onRightInput[4] = () => {
