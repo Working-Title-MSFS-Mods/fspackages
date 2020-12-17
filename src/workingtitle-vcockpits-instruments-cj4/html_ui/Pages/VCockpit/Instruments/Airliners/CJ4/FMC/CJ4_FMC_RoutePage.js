@@ -196,10 +196,15 @@ class CJ4_FMC_RoutePage {
         if (this._currentPage == 0) {
             // main page
             this._fmc.onLeftInput[0] = () => {
-                this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
-                this._fmc.clearUserInput();
-                this.setOrigin(value);
+                if (value == "") {
+                    if (currentFp.hasOrigin) {
+                        this._fmc.inOut = this._fmc.flightPlanManager.getOrigin().ident;
+                    }
+                } else {
+                    this._fmc.clearUserInput();
+                    this.setOrigin(value);
+                }
             };
 
             this._fmc.onRightInput[0] = () => {
@@ -531,7 +536,7 @@ class CJ4_FMC_RoutePage {
 
                 // last app fix
                 let appName = (flightPlanManager.getAirportApproach() !== undefined) ? flightPlanManager.getAirportApproach().name : "APP";
-                appName = `${allRows[allRows.length-1].ident}.${appName}`;
+                appName = `${allRows[allRows.length - 1].ident}.${appName}`;
                 const wp = approachSeg.waypoints[approachSeg.waypoints.length - 1];
                 const fpIdx = approachSeg.offset + (approachSeg.waypoints.length - 1);
                 tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
