@@ -132,7 +132,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
         this._coordinateFormatter = new WT_CoordinateFormatter();
 
         this._tempVector = new WT_GVector2(0, 0);
-        this._tempGeoPoint = new WT_GeoPoint(0, 0, 0);
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
         this._tempDistance = new WT_NumberUnit(0, WT_Unit.NMILE);
         this._tempAngle = new WT_NumberUnit(0, WT_Unit.DEGREE);
     }

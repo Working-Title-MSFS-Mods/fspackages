@@ -86,7 +86,7 @@ class WT_ICAOWaypoint extends WT_Waypoint {
         this._icao = data.icao;
         this._uniqueID = data.icaoTrimmed;
         this._ident = this.icao.substring(7, 12).replace(/ /g, "");
-        this._location = new WT_GeoPoint(data.lat, data.lon, 0);
+        this._location = new WT_GeoPoint(data.lat, data.lon);
         this._name = Utils.Translate(data.name);
 
         let city = data.city.split(", ").map(name => Utils.Translate(name));

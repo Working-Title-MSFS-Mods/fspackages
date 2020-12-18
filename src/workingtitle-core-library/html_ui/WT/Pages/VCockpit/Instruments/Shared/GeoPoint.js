@@ -1,14 +1,13 @@
 /**
- * A point on Earth defined by latitude, longitude, and elevation.
+ * A point on Earth's surface defined by latitude and longitude.
  */
 class WT_GeoPoint {
     /**
      * @param {Number} lat - the latitude, in degrees.
      * @param {Number} long - the longitude, in degrees.
-     * @param {Number} elevation - the elevation, in great-arc radians above mean sea level.
      */
-    constructor(lat, long, elevation) {
-        this.set(lat, long, elevation);
+    constructor(lat, long) {
+        this.set(lat, long);
         this._readonly = new WT_GeoPointReadOnly(this);
     }
 
@@ -30,42 +29,30 @@ class WT_GeoPoint {
         return this._long;
     }
 
-    /**
-     * @readonly
-     * @property {Number} elevation - the elevation of this point, in great-arc radians above mean sea level.
-     * @type {Number}
-     */
-    get elevation() {
-        return this._elevation;
-    }
-
-    static _parseArgs(_1, _2, _3) {
+    static _parseArgs(_1, _2) {
         let returnValue = undefined;
-        if (_1 !== undefined && typeof _1.lat === "number" && typeof _1.long === "number" && typeof _1.elevation === "number") {
+        if (_1 !== undefined && typeof _1.lat === "number" && typeof _1.long === "number") {
             WT_GeoPoint._tempValue.lat = _1.lat;
             WT_GeoPoint._tempValue.long = _1.long;
-            WT_GeoPoint._tempValue.elevation = _1.elevation;
             returnValue = WT_GeoPoint._tempValue;
-        } else if (typeof _1 === "number" && typeof _2 === "number" && typeof _3 === "number") {
+        } else if (typeof _1 === "number" && typeof _2 === "number") {
             WT_GeoPoint._tempValue.lat = _1;
             WT_GeoPoint._tempValue.long = _2;
-            WT_GeoPoint._tempValue.elevation = _3;
             returnValue = WT_GeoPoint._tempValue;
         }
         return returnValue;
     }
 
     /**
-     * Sets this point's coordinate values. This method takes either one or three arguments. The one-argument version takes a single object
-     * with .lat, .long, .elevation properties. The three-argument version takes three numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the new coordinate values, or the new latitude
+     * Sets this point's coordinate values. This method takes either one or two arguments. The one-argument version takes a single object
+     * with .lat and .long properties. The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the new coordinate values, or the new latitude
      *                                                                    value.
      * @param {Number} [arg2] - the new longitude value.
-     * @param {Number} [arg3] - the new elevation value.
      * @returns {WT_GeoPoint} this point, after it has been changed.
      */
-    set(arg1, arg2, arg3) {
-        let value = WT_GeoPoint._parseArgs(arg1, arg2, arg3);
+    set(arg1, arg2) {
+        let value = WT_GeoPoint._parseArgs(arg1, arg2);
         if (value) {
             let lat = WT_GeoPoint._toPlusMinus180(value.lat);
             let long = WT_GeoPoint._toPlusMinus180(value.long);
@@ -83,46 +70,72 @@ class WT_GeoPoint {
     }
 
     /**
-     * Calculates the distance between two points. This method takes either one or three arguments. The one-argument version takes a single
-     * object with .lat, .long, .elevation properties. The three-argument version takes three numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Calculates the great-circle distance between this point and another point. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .lat and .long properties. The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
-     * @param {Number} [arg3] - the elevation value of the other point.
-     * @returns {Number} the distance between the two points, in great-arc radians.
+     * @returns {Number} the great-circle distance to the other point, in great-arc radians.
      */
-    distance(arg1, arg2, arg3) {
-        let other = WT_GeoPoint._parseArgs(arg1, arg2, arg3);
+    distance(arg1, arg2) {
+        let other = WT_GeoPoint._parseArgs(arg1, arg2);
         if (other) {
             let lat1 = this.lat * Avionics.Utils.DEG2RAD;
             let lat2 = other.lat * Avionics.Utils.DEG2RAD;
             let long1 = this.long * Avionics.Utils.DEG2RAD;
             let long2 = other.long * Avionics.Utils.DEG2RAD;
-            let deltaElevation = other.elevation - this.elevation;
 
             let sinHalfDeltaLat = Math.sin((lat2 - lat1) / 2);
             let sinHalfDeltaLong = Math.sin((long2 - long1) / 2);
             let a = sinHalfDeltaLat * sinHalfDeltaLat + Math.cos(lat1) * Math.cos(lat2) * sinHalfDeltaLong * sinHalfDeltaLong;
-            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return Math.sqrt(c * c + deltaElevation * deltaElevation);
+            return 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         } else {
             return undefined;
         }
     }
 
     /**
-     * Offsets this point by a constant bearing and distance. The operation can either be performed in-place or a new WT_GeoPoint
-     * object can be returned.
+     * Calculates the distance along the rhumb line connecting this point with another point. This method takes either one or two
+     * arguments. The one-argument version takes a single object with .lat and .long properties. The two-argument version takes
+     * two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     *                                                                    latitude value of the other point.
+     * @param {Number} [arg2] - the longitude value of the other point.
+     * @returns {Number} the rhumb-line distance to the other point, in great-arc radians.
+     */
+    distanceRhumb(arg1, arg2) {
+        let other = WT_GeoPoint._parseArgs(arg1, arg2);
+        if (other) {
+            let lat1 = this.lat * Avionics.Utils.DEG2RAD;
+            let lat2 = other.lat * Avionics.Utils.DEG2RAD;
+            let long1 = this.long * Avionics.Utils.DEG2RAD;
+            let long2 = other.long * Avionics.Utils.DEG2RAD;
+            let deltaLong = long2 - long1;
+
+            let deltaPsi = WT_GeoPoint._deltaPsi(lat1, lat2);
+            let correction = WT_GeoPoint._rhumbCorrection(deltaPsi, lat1, lat2);
+            if (Math.abs(deltaLong) > Math.PI) {
+                deltaLong += -Math.sign(deltaLong) * 2 * Math.PI;
+            }
+            return Math.sqrt(deltaLat * deltaLat + correction * correction * deltaLong * deltaLong);
+        } else {
+            return undefined;
+        }
+    }
+
+    /**
+     * Offsets this point by an initial bearing and distance along a great circle. The operation can either be performed in-place
+     * or a new WT_GeoPoint object can be returned.
      * @param {Number} bearing - the initial bearing (forward azimuth) by which to offset.
      * @param {Number} distance - the distance, in great-arc radians, by which to offset.
      * @param {Boolean} [mutate] - whether to perform the operation in place.
      * @returns {WT_GeoPoint} the offset point, either as a new WT_GeoPoint object or this point after it has been changed.
      */
     offset(bearing, distance, mutate) {
-        let lat = this.lat;
-        let long = this.long;
-        let sinLat = Math.sin(lat * Avionics.Utils.DEG2RAD);
-        let cosLat = Math.cos(lat * Avionics.Utils.DEG2RAD);
+        let lat = this.lat * Avionics.Utils.DEG2RAD;
+        let long = this.long * Avionics.Utils.DEG2RAD;
+        let sinLat = Math.sin(lat);
+        let cosLat = Math.cos(lat);
         let sinBearing = Math.sin(bearing * Avionics.Utils.DEG2RAD);
         let cosBearing = Math.cos(bearing * Avionics.Utils.DEG2RAD);
         let angularDistance = distance;
@@ -133,12 +146,43 @@ class WT_GeoPoint {
         let offsetLongDeltaRad = Math.atan2(sinBearing * sinAngularDistance * cosLat, cosAngularDistance - sinLat * Math.sin(offsetLatRad));
 
         let offsetLat = offsetLatRad * Avionics.Utils.RAD2DEG;
-        let offsetLong = long + offsetLongDeltaRad * Avionics.Utils.RAD2DEG;
+        let offsetLong = (long + offsetLongDeltaRad) * Avionics.Utils.RAD2DEG;
 
         if (mutate) {
-            return this.set(offsetLat, offsetLong, this.elevation);
+            return this.set(offsetLat, offsetLong);
         } else {
-            return new WT_GeoPoint(offsetLat, offsetLong, this.elevation);
+            return new WT_GeoPoint(offsetLat, offsetLong);
+        }
+    }
+
+    /**
+     * Offsets this point by a constant bearing and distance along a rhumb line. The operation can either be performed in-place
+     * or a new WT_GeoPoint object can be returned.
+     * @param {Number} bearing - the bearing by which to offset.
+     * @param {Number} distance - the distance, in great-arc radians, by which to offset.
+     * @param {Boolean} [mutate] - whether to perform the operation in place.
+     * @returns {WT_GeoPoint} the offset point, either as a new WT_GeoPoint object or this point after it has been changed.
+     */
+    offsetRhumb(bearing, distance, mutate) {
+        let lat = this.lat * Avionics.Utils.DEG2RAD;
+        let long = this.long * Avionics.Utils.DEG2RAD;
+        let bearingRad = bearing * Avionics.Utils.DEG2RAD;
+
+        let deltaLat = distance * Math.cos(bearingRad);
+        let offsetLat = lat + deltaLat;
+
+        let deltaPsi = WT_GeoPoint._deltaPsi(lat, offsetLat);
+        let correction = WT_GeoPoint._rhumbCorrection(deltaPsi, lat, offsetLat);
+        let deltaLong = distance * Math.sin(bearingRad) / correction;
+        let offsetLong = long + deltaLong;
+
+        offsetLat *= Avionics.Utils.RAD2DEG;
+        offsetLong *= Avionics.Utils.RAD2DEG;
+
+        if (mutate) {
+            return this.set(offsetLat, offsetLong);
+        } else {
+            return this.set(offsetLat, offsetLong);
         }
     }
 
@@ -155,9 +199,10 @@ class WT_GeoPoint {
     }
 
     /**
-     * Calculates the initial bearing (forward azimuth) from this point to another point. This method takes either one or two arguments.
-     * The one-argument version takes a single object with .lat, .long properties. The two-argument version takes two numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Calculates the initial bearing (forward azimuth) from this point to another point along the great circle connecting the two.
+     * This method takes either one or two arguments. The one-argument version takes a single object with .lat, .long properties.
+     * The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Number} the initial bearing to the other point, in degrees.
@@ -172,10 +217,10 @@ class WT_GeoPoint {
     }
 
     /**
-     * Calculates the final bearing from another point to this point (i.e. the back azimuth from this point to the other point).
-     * This method takes either one or two arguments. The one-argument version takes a single object with .lat, .long properties.
-     * The two-argument version takes two numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Calculates the final bearing from another point to this point (i.e. the back azimuth from this point to the other point)
+     * along the great circle connecting the two. This method takes either one or two arguments. The one-argument version takes
+     * a single object with .lat, .long properties. The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Number} the final bearing from the other point, in degrees.
@@ -190,6 +235,34 @@ class WT_GeoPoint {
     }
 
     /**
+     * Calculates the constant bearing to another point to this point along the rhumb line connecting the two. This method takes
+     * either one or two arguments. The one-argument version takes a single object with .lat, .long properties. The two-argument
+     * version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     *                                                                    latitude value of the other point.
+     * @param {Number} [arg2] - the longitude value of the other point.
+     * @returns {Number} the constant bearing to the other point, in degrees.
+     */
+    bearingRhumb(arg1, arg2) {
+        let other = WT_GeoPoint._parseArgs(arg1, arg2, 0);
+        if (other) {
+            let lat1 = this.lat * Avionics.Utils.DEG2RAD;
+            let long1 = this.long * Avionics.Utils.DEG2RAD;
+            let lat2 = other.lat * Avionics.Util.DEG2RAD;
+            let long2 = other.long * Avionics.Util.DEG2RAD;
+
+            let deltaLong = long2 - long1;
+            let deltaPsi = WT_GeoPoint._deltaPsi(lat1, lat2);
+            if (Math.abs(deltaLong) > Math.PI) {
+                deltaLong += -Math.sign(deltaLong) * 2 * Math.PI;
+            }
+            return Math.atan2(deltaLong, deltaPsi) * Avionics.Utils.RAD2DEG;
+        } else {
+            return undefined;
+        }
+    }
+
+    /**
      * Calculates the cartesian (x, y, z) representation of this point, in units of great-arc radians, and returns the result.
      * In the cartesian coordinate system, the center of the Earth is at the origin.
      * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the results. If this argument is not supplied,
@@ -198,24 +271,23 @@ class WT_GeoPoint {
      */
     cartesian(reference) {
         if (reference) {
-            return reference.setFromSpherical(1 + this.elevation, (90 - this.lat) * Avionics.Utils.DEG2RAD, this.long * Avionics.Utils.DEG2RAD);
+            return reference.setFromSpherical(1, (90 - this.lat) * Avionics.Utils.DEG2RAD, this.long * Avionics.Utils.DEG2RAD);
         } else {
-            return WT_GVector3.createFromSpherical(1 + this.elevation, (90 - this.lat) * Avionics.Utils.DEG2RAD, this.long * Avionics.Utils.DEG2RAD);
+            return WT_GVector3.createFromSpherical(1, (90 - this.lat) * Avionics.Utils.DEG2RAD, this.long * Avionics.Utils.DEG2RAD);
         }
     }
 
     /**
      * Checks whether this point is equal to another point. Two points are considered equal if and only if they occupy the same location.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
-     * @param {Number} [arg3] - the elevation value of the other point.
      * @returns {Boolean} whether this point is equal to the other point.
      */
-    equals(arg1, arg2, arg3) {
-        let other = WT_GeoPoint._parseArgs(arg1, arg2, arg3);
+    equals(arg1, arg2) {
+        let other = WT_GeoPoint._parseArgs(arg1, arg2);
         if (other) {
-            return this.lat === other.lat && this.long === other.long && this.elevation === other.elevation;
+            return this.lat === other.lat && this.long === other.long;
         } else {
             return false;
         }
@@ -226,7 +298,7 @@ class WT_GeoPoint {
      * @returns {WT_GeoPoint} a copy of this point.
      */
     copy() {
-        return new WT_GeoPoint(this.lat, this.long, this.elevation);
+        return new WT_GeoPoint(this.lat, this.long);
     }
 
     /**
@@ -241,8 +313,16 @@ class WT_GeoPoint {
     static _toPlusMinus180(value) {
         return ((value % 360) + 540) % 360 - 180;
     }
+
+    static _deltaPsi(latRad1, latRad2) {
+        return Math.log(Math.tan(latRad2 / 2 + Math.PI / 4) / Math.tan(latRad1 / 2 + Math.PI / 4));
+    }
+
+    static _rhumbCorrection(deltaPsi, latRad1, latRad2) {
+        return Math.abs(deltaPsi) > 1e-12 ? (latRad2 - latRad1) / deltaPsi : Math.cos(lat1);
+    }
 }
-WT_GeoPoint._tempValue = {lat: 0, long: 0, elevation: 0};
+WT_GeoPoint._tempValue = {lat: 0, long: 0};
 
 /**
  * A read-only interface for a WT_GeoPoint.
@@ -274,43 +354,45 @@ class WT_GeoPointReadOnly {
     }
 
     /**
-     * @readonly
-     * @property {Number} elevation - the elevation of this point, in great-arc radians above mean sea level.
-     * @type {Number}
-     */
-    get elevation() {
-        return this._source.elevation;
-    }
-
-    /**
-     * Sets this point's coordinate values. This method takes either one or three arguments. The one-argument version takes a single object
-     * with .lat, .long, .elevation properties. The three-argument version takes three numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the new coordinate values, or the new latitude
+     * Sets this point's coordinate values. This method takes either one or two arguments. The one-argument version takes a single object
+     * with .lat and .long properties. The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the new coordinate values, or the new latitude
      *                                                                    value.
      * @param {Number} [arg2] - the new longitude value.
-     * @param {Number} [arg3] - the new elevation value.
      * @returns {WT_GeoPoint} this point, after it has been changed.
      */
-    set(arg1, arg2, arg3) {
-        return this._source.copy().set(arg1, arg2, arg3);
+    set(arg1, arg2) {
+        return this._source.copy().set(arg1, arg2);
     }
 
     /**
-     * Calculates the distance between two points. This method takes either one or three arguments. The one-argument version takes a single
-     * object with .lat, .long, .elevation properties. The three-argument version takes three numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Calculates the great-circle distance between this point and another point. This method takes either one or two arguments.
+     * The one-argument version takes a single object with .lat and .long properties. The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
-     * @param {Number} [arg3] - the elevation value of the other point.
-     * @returns {Number} the distance between the two points, in great-arc radians.
+     * @returns {Number} the great-circle distance to the other point, in great-arc radians.
      */
-    distance(arg1, arg2, arg3) {
-        return this._source.distance(arg1, arg2, arg3);
+    distance(arg1, arg2) {
+        return this._source.distance(arg1, arg2);
     }
 
     /**
-     * Offsets this point by a constant bearing and distance and returns the result as a new WT_GeoPoint object.
-     * object can be returned.
+     * Calculates the distance along the rhumb line connecting this point with another point. This method takes either one or two
+     * arguments. The one-argument version takes a single object with .lat and .long properties. The two-argument version takes
+     * two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     *                                                                    latitude value of the other point.
+     * @param {Number} [arg2] - the longitude value of the other point.
+     * @returns {Number} the rhumb-line distance to the other point, in great-arc radians.
+     */
+    distanceRhumb(arg1, arg2) {
+        return this._source.distanceRhumb(arg1, arg2);
+    }
+
+    /**
+     * Offsets this point by an initial bearing and distance along a great-circle. The operation can either be performed in-place
+     * or a new WT_GeoPoint object can be returned.
      * @param {Number} bearing - the initial bearing (forward azimuth) by which to offset.
      * @param {Number} distance - the distance, in great-arc radians, by which to offset.
      * @param {Boolean} [mutate] - this argument is ignored.
@@ -321,9 +403,22 @@ class WT_GeoPointReadOnly {
     }
 
     /**
-     * Calculates the initial bearing (forward azimuth) from this point to another point. This method takes either one or two arguments.
-     * The one-argument version takes a single object with .lat, .long properties. The two-argument version takes two numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Offsets this point by a constant bearing and distance along a rhumb line. The operation can either be performed in-place
+     * or a new WT_GeoPoint object can be returned.
+     * @param {Number} bearing - the bearing by which to offset.
+     * @param {Number} distance - the distance, in great-arc radians, by which to offset.
+     * @param {Boolean} [mutate] - this argument is ignored.
+     * @returns {WT_GeoPoint} the offset point, either as a new WT_GeoPoint object or this point after it has been changed.
+     */
+    offsetRhumb(bearing, distance, mutate) {
+        return this._source.offsetRhumb(bearing, distance, false);
+    }
+
+    /**
+     * Calculates the initial bearing (forward azimuth) from this point to another point along the great circle connecting the two.
+     * This method takes either one or two arguments. The one-argument version takes a single object with .lat, .long properties.
+     * The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Number} the initial bearing to the other point, in degrees.
@@ -333,10 +428,10 @@ class WT_GeoPointReadOnly {
     }
 
     /**
-     * Calculates the final bearing from another point to this point (i.e. the back azimuth from this point to the other point).
-     * This method takes either one or two arguments. The one-argument version takes a single object with .lat, .long properties.
-     * The two-argument version takes two numbers.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Calculates the final bearing from another point to this point (i.e. the back azimuth from this point to the other point)
+     * along the great circle connecting the two. This method takes either one or two arguments. The one-argument version takes
+     * a single object with .lat, .long properties. The two-argument version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Number} the final bearing from the other point, in degrees.
@@ -346,15 +441,27 @@ class WT_GeoPointReadOnly {
     }
 
     /**
-     * Checks whether this point is equal to another point. Two points are considered equal if and only if they occupy the same location.
-     * @param {{lat:Number, long:Number, elevation:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     * Calculates the constant bearing to another point to this point along the rhumb line connecting the two. This method takes
+     * either one or two arguments. The one-argument version takes a single object with .lat, .long properties. The two-argument
+     * version takes two numbers.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
      *                                                                    latitude value of the other point.
      * @param {Number} [arg2] - the longitude value of the other point.
-     * @param {Number} [arg3] - the elevation value of the other point.
+     * @returns {Number} the constant bearing to the other point, in degrees.
+     */
+    bearingRhumb(arg1, arg2) {
+        return this._source.bearingRhumb(arg1, arg2);
+    }
+
+    /**
+     * Checks whether this point is equal to another point. Two points are considered equal if and only if they occupy the same location.
+     * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
+     *                                                                    latitude value of the other point.
+     * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Boolean} whether this point is equal to the other point.
      */
-    equals(arg1, arg2, arg3) {
-        return this._source.equals(arg1, arg2, arg3);
+    equals(arg1, arg2) {
+        return this._source.equals(arg1, arg2);
     }
 
     /**

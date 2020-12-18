@@ -16,7 +16,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
 
         this.addSubLayer(this._vectorLayer);
 
-        this._tempGeoPoint = new WT_GeoPoint(0, 0, 0);
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
 
         this._lastTime = 0;
         this._lastTurnSpeed = 0;
