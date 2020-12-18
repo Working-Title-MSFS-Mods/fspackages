@@ -756,7 +756,6 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                         alert = true;
                 }
                 if (this.cursorSVGLine) {
-                    console.log(Y3dev);
                     this.cursorSVGLine.setAttribute("y1", this.cursorPosY1.toString());
                     this.cursorSVGLine.setAttribute("y2", this.cursorPosY2.toString());
                     this.cursorSVGVerticalLine.setAttribute("y1", this.cursorPosY3.toString());
