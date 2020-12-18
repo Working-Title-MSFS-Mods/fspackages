@@ -26,7 +26,7 @@
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+							<ObjectRef Name="winds_inside_generic" ID="{E12DFC2F-BEFC-4750-B51A-E62015C54090}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
