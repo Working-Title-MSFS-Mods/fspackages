@@ -20,7 +20,7 @@ export class ProcedureDetails {
     /** The index of the arrival transition in the destination airport arrival information. */
     public arrivalTransitionIndex: number = -1;
 
-    /** The index of the selected runway at the destination airport. */
+    /** The index of the selected runway transition at the destination airport arrival information. */
     public arrivalRunwayIndex: number = -1;
 
     /** The index of the apporach in the destination airport information.*/
@@ -28,4 +28,10 @@ export class ProcedureDetails {
 
     /** The index of the approach transition in the destination airport approach information.*/
     public approachTransitionIndex: number = -1;
+
+    /** The index of the destination runway in the destination runway information. */
+    public destinationRunwayIndex = -1;
+
+    /** The length from the threshold of the runway extension fix. */
+    public destinationRunwayExtension = -1;
 }
