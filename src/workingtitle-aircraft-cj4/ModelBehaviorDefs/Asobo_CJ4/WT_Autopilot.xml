@@ -14,6 +14,39 @@
 		</UseTemplate>
 	</Template>
 
+	<Template Name="ASOBO_AUTOPILOT_Push_Bank_Template">
+		<DefaultTemplateParameters>
+			<Condition Valid="REVERSE_ACTIVE_CONDITION">
+				<True>
+					<REVERSAL_PARAM> ! </REVERSAL_PARAM>
+				</True>
+				<False>
+					<REVERSAL_PARAM></REVERSAL_PARAM>
+				</False>
+			</Condition>
+			<MAX_BANK_DEGREES>30</MAX_BANK_DEGREES>
+		</DefaultTemplateParameters>
+		
+		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Bank_SubTemplate">
+		</UseTemplate>
+	</Template>
+	<Template Name="ASOBO_AUTOPILOT_Push_Bank_SubTemplate">
+		<DefaultTemplateParameters> 
+			<DEFAULT_NAME>Bank</DEFAULT_NAME>
+			<TOOLTIPID>%((A:AUTOPILOT MAX BANK, degrees) #MAX_BANK_DEGREES# - abs 0.1 &lt; #REVERSAL_PARAM#)%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_BANK_ON%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_BANK_OFF%{end}</TOOLTIPID>
+		</DefaultTemplateParameters>
+		<UseTemplate Name="ASOBO_AUTOPILOT_Push_Template">
+			<LEFT_SINGLE_CODE>
+				(A:AUTOPILOT MAX BANK, degrees) 16 &lt; if{
+					(&gt;K:AP_MAX_BANK_INC)
+				} els{
+					(&gt;K:AP_MAX_BANK_DEC)
+				}
+			</LEFT_SINGLE_CODE>  
+			<EMISSIVE_CODE_ACTIVE>(A:AUTOPILOT MAX BANK, degrees) #MAX_BANK_DEGREES# - abs 0.1 &lt; #REVERSAL_PARAM#</EMISSIVE_CODE_ACTIVE>
+		</UseTemplate>
+	</Template>
+
 	<Template Name="ASOBO_AUTOPILOT_Knob_Heading_SubTemplate">
 		<DefaultTemplateParameters>
 			<ANIM_NAME_KNOB>AUTOPILOT_Knob_Heading#SUFFIX_ID#</ANIM_NAME_KNOB>
