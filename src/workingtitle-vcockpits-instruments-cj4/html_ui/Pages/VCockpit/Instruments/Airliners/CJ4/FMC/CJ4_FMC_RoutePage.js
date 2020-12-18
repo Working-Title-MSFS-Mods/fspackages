@@ -196,17 +196,27 @@ class CJ4_FMC_RoutePage {
         if (this._currentPage == 0) {
             // main page
             this._fmc.onLeftInput[0] = () => {
-                this._fmc.setMsg("Working...");
-                let value = String(this._fmc.inOut).padEnd(4);
-                this._fmc.clearUserInput();
-                this.setOrigin(value);
+                let value = this._fmc.inOut;
+                if (value == "") {
+                    if (this._fmc.flightPlanManager.getOrigin()) {
+                        this._fmc.inOut = this._fmc.flightPlanManager.getOrigin().ident;
+                    }
+                } else {
+                    this._fmc.clearUserInput();
+                    this.setOrigin(value.padEnd(4));
+                }
             };
 
             this._fmc.onRightInput[0] = () => {
-                this._fmc.setMsg("Working...");
-                let value = String(this._fmc.inOut).padEnd(4);
-                this._fmc.clearUserInput();
-                this.setDestination(value);
+                let value = this._fmc.inOut;
+                if (value == "") {
+                    if (this._fmc.flightPlanManager.getDestination()) {
+                        this._fmc.inOut = this._fmc.flightPlanManager.getDestination().ident;
+                    }
+                } else {
+                    this._fmc.clearUserInput();
+                    this.setDestination(value.padEnd(4));
+                }
             };
 
             this._fmc.onRightInput[4] = () => {
@@ -531,7 +541,7 @@ class CJ4_FMC_RoutePage {
 
                 // last app fix
                 let appName = (flightPlanManager.getAirportApproach() !== undefined) ? flightPlanManager.getAirportApproach().name : "APP";
-                appName = `${allRows[allRows.length-1].ident}.${appName}`;
+                appName = `${allRows[allRows.length - 1].ident}.${appName}`;
                 const wp = approachSeg.waypoints[approachSeg.waypoints.length - 1];
                 const fpIdx = approachSeg.offset + (approachSeg.waypoints.length - 1);
                 tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
