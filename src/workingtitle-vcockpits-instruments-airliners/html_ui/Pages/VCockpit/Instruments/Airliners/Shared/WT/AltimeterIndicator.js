@@ -192,20 +192,22 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     line.IsPrimary = false;
                 var lineWidth = line.IsPrimary ? 15 : 4;
                 line.SVGLine = document.createElementNS(Avionics.SVG.NS, "rect");
-                line.SVGLine.setAttribute("x", "0");
+                line.SVGLine.setAttribute("x", "-2");
                 line.SVGLine.setAttribute("width", lineWidth.toString());
                 line.SVGLine.setAttribute("height", "2");
                 line.SVGLine.setAttribute("fill", "white");
                 if (line.IsPrimary) {
                     line.SVGText1 = document.createElementNS(Avionics.SVG.NS, "text");
-                    line.SVGText1.setAttribute("x", "-28");
+                    line.SVGText1.setAttribute("x", "-38");
+                    line.SVGText1.setAttribute("y", "6");
                     line.SVGText1.setAttribute("fill", "white");
-                    line.SVGText1.setAttribute("font-size", (this.fontSize * 1).toString());
+                    line.SVGText1.setAttribute("font-size", (this.fontSize).toString());
                     line.SVGText1.setAttribute("font-family", "Roboto-Light");
                     line.SVGText1.setAttribute("text-anchor", "end");
                     line.SVGText1.setAttribute("alignment-baseline", "central");
                     line.SVGText2 = document.createElementNS(Avionics.SVG.NS, "text");
-                    line.SVGText2.setAttribute("x", "-28");
+                    line.SVGText2.setAttribute("x", "-36");
+                    line.SVGText2.setAttribute("y", "4");
                     line.SVGText2.setAttribute("fill", "white");
                     line.SVGText2.setAttribute("font-size", (this.fontSize * 0.72).toString());
                     line.SVGText2.setAttribute("font-family", "Roboto-Light");
@@ -261,10 +263,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 var _cursorPosY = cursorHeight * 0.5;
                 this.cursorSVGIntegralContainer = document.createElementNS(Avionics.SVG.NS, "g");
                 this.cursorSVGIntegralContainer.setAttribute("clip-path", "url(#AltCursorClip)");
-                this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 25, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 44, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 63, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
-                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 95, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
+                this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 27, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
+                this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 46, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
+                this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 65, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
+                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 93, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
                 this.cursorSVG.appendChild(this.cursorSVGIntegralContainer);
                 this.centerSVG.appendChild(this.cursorSVG);
             }
