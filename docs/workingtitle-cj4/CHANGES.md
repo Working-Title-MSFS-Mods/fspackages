@@ -1,26 +1,47 @@
 # Working Title CJ4 v0.8.1 Changes
 
-Welcome to the Working Title CJ4 v0.8.1...
+Welcome to the Working Title CJ4 v0.8.1. This is a point release to address some of the issues seen this week with version 0.8.0. This version remains a beta release. Please report any issues found to our Issues tracker on our GitHub repository.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## 🆕 Key Features
-* Custom Flight Plan Manager
-* Vertical Navigation (VNAV)
-* FADEC
-* Custom Lateral Navigation
-* RNAV capability with LPV
-* Improved FMA Display
-* Sound overhaul (WIP)
-* PFD/MFD improvements (a lot)
-* Map improvements
-* Many many more...
+## Compatibility
+* Removed old unused files that were causing a compatibility issue with WT Garmin units and the FBW A32NX
 
-## PFD/MFD
-* .... Contributed by TheFlieger
+## RNAV
+* Fixed an issue where GP would stop descending and capture an altitude when the altitude preselector was moved (i.e. to the missed approach altitude)
+
+## MCP
+* Fixed an issue where the CRS would not accept input sometimes while not in LNV or NAV mode
+
+## PFD
+* Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
+* FMS mach value now always shows only two digits
+* Heading select line will no longer show permanently while in LNV
+
+## MFD
+* Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
+* Heading select line will no longer show permanently while in LNV
+* Fixed issue where incorrect fuel flow and weight were used in FMS TEXT
+
+## SAI
+* Fixed an altimeter rounding error
+
+## FMC
+* LEGS page will no longer intepret entries of lower than FL500 as speed restrictions
+* FPLN now allows proper entry of 3 letter ICAO airport codes
+* Visual approach (runway extension fix) capabilty added to the DEP/ARR page
+* Pressing LSK next to origin and dest will now copy ICAO to the scratchpad
+* FMC should no longer blackscreen when going to the ARR DATA page
+* FP Sync option will now actually be active when set to enabled
+
+## Flight Plan Manager
+* Fixed issue where some track-to-radial-intercept legs were being dropped from procedures
+
+## LNAV
+* Fixed issue where LNAV would get stuck in a swapping full left then right bank oscillation
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
