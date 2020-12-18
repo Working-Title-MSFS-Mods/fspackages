@@ -3,10 +3,12 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         super(...arguments);
         this.cursorTextColor = "#11d011";
         this.fontSize = 25;
+        this.centerLineWidth = 24;
         this.cursorPosX1 = 0;
         this.cursorPosY1 = 0;
         this.cursorPosX2 = 0;
         this.cursorPosY2 = 0;
+        this.cursorPosY3 = 0;
         this.cursorBgOffsetY = 0;
         this.selectedCursorOffsetY = 0;
         this.maxSpeed = 0;
@@ -145,7 +147,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                     var text = document.createElementNS(Avionics.SVG.NS, "text");
                     text.textContent = (grad / 1000).toString();
                     text.setAttribute("x", (this.cursorPosX1 - 2).toString());
-                    text.setAttribute("y", y.toString());
+                    text.setAttribute("y", (y + 4).toString());
                     text.setAttribute("fill", "white");
                     text.setAttribute("font-size", (this.fontSize * 0.8).toString());
                     text.setAttribute("font-family", "Roboto-Light");
@@ -182,7 +184,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             let centerLine = document.createElementNS(Avionics.SVG.NS, "line");
             centerLine.setAttribute("x1", (this.cursorPosX1 - 10).toString());
             centerLine.setAttribute("y1", this.cursorPosY1.toString());
-            centerLine.setAttribute("x2", (this.cursorPosX1 + 20).toString());
+            centerLine.setAttribute("x2", (this.cursorPosX1 + this.centerLineWidth).toString());
             centerLine.setAttribute("y2", this.cursorPosY1.toString());
             centerLine.setAttribute("stroke", "white");
             centerLine.setAttribute("stroke-width", "3");
@@ -202,6 +204,15 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.cursorSVGLine.setAttribute("stroke", this.cursorTextColor);
             this.cursorSVGLine.setAttribute("stroke-width", "3");
             this.cursorSVGGroup.appendChild(this.cursorSVGLine);
+            if (!this.cursorSVGVerticalLine)
+                this.cursorSVGVerticalLine = document.createElementNS(Avionics.SVG.NS, "line");
+            this.cursorSVGVerticalLine.setAttribute("x1", (this.cursorPosX1 + this.centerLineWidth).toString());
+            this.cursorSVGVerticalLine.setAttribute("y1", this.cursorPosY1.toString());
+            this.cursorSVGVerticalLine.setAttribute("x2", (this.cursorPosX1 + this.centerLineWidth).toString());
+            this.cursorSVGVerticalLine.setAttribute("y2", this.cursorPosY2.toString());
+            this.cursorSVGVerticalLine.setAttribute("stroke", this.cursorTextColor);
+            this.cursorSVGVerticalLine.setAttribute("stroke-width", "1.75");
+            this.cursorSVGGroup.appendChild(this.cursorSVGVerticalLine);
             this.centerGroup.appendChild(this.cursorSVGGroup);
             let selectedCursorHeight = 12;
             this.selectedCursorOffsetY = selectedCursorHeight * 0.5;
@@ -729,10 +740,15 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             {
                 let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
                 let height = this.heightFromSpeed(vSpeed);
-                if (vSpeed >= 0)
+                let slope = Math.abs(this.cursorPosY1 - this.cursorPosY2) / (this.cursorPosX2 - this.cursorPosX1);
+                let Y3dev = this.centerLineWidth * slope;
+                if (vSpeed >= 0){
                     this.cursorPosY1 = this.cursorPosY2 - height;
-                else
+                    this.cursorPosY3 = this.cursorPosY2 - height + Y3dev;
+                }else{
                     this.cursorPosY1 = this.cursorPosY2 + height;
+                    this.cursorPosY3 = this.cursorPosY2 + height - Y3dev;
+                }
                 let alert = false;
                 {
                     let altitude = Simplane.getAltitudeAboveGround();
@@ -740,10 +756,11 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                         alert = true;
                 }
                 if (this.cursorSVGLine) {
-                    this.cursorSVGLine.setAttribute("x1", this.cursorPosX1.toString());
+                    console.log(Y3dev);
                     this.cursorSVGLine.setAttribute("y1", this.cursorPosY1.toString());
-                    this.cursorSVGLine.setAttribute("x2", this.cursorPosX2.toString());
                     this.cursorSVGLine.setAttribute("y2", this.cursorPosY2.toString());
+                    this.cursorSVGVerticalLine.setAttribute("y1", this.cursorPosY3.toString());
+                    this.cursorSVGVerticalLine.setAttribute("y2", this.cursorPosY2.toString());
                     if (alert)
                         this.cursorSVGLine.setAttribute("stroke", "orange");
                     else
