@@ -249,7 +249,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
                 this.cursorSVGClip.setAttribute("id", "SpdCursorClip");
                 this.cursorSVGClipShape = document.createElementNS(Avionics.SVG.NS, "path");
-                this.cursorSVGClipShape.setAttribute("d", "M24 22 L62 22 L62 8 L86 8 L86 28 L105 39 L86 50 L86 71 L62 71 L62 56 L24 56 Z");
+                this.cursorSVGClipShape.setAttribute("d", "M 24 23 L 62 23 L 62 9 L 86 9 L 86 28 L 105 39 L 86 50 L 86 70 L 62 70 L 62 55 L 24 55 Z");
                 this.cursorSVGClip.appendChild(this.cursorSVGClipShape);
                 this.cursorSVGDefs.appendChild(this.cursorSVGClip);
                 this.cursorSVG.appendChild(this.cursorSVGDefs);

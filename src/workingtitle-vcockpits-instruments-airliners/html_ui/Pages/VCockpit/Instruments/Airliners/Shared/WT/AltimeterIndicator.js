@@ -247,7 +247,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
                 this.cursorSVGClip.setAttribute("id", "AltCursorClip");
                 this.cursorSVGClipShape = document.createElementNS(Avionics.SVG.NS, "path");
-                this.cursorSVGClipShape.setAttribute("d", "M0 5 L95 5 L95 30 L105 40 L95 50 L95 75 L0 75 Z");
+                this.cursorSVGClipShape.setAttribute("d", "M 1 6 L 95 6 L 95 30 L 105 40 L 95 50 L 95 74 L 1 74 Z");
                 this.cursorSVGClip.appendChild(this.cursorSVGClipShape);
                 this.cursorSVGDefs.appendChild(this.cursorSVGClip);
                 this.cursorSVG.appendChild(this.cursorSVGDefs);
