@@ -84,9 +84,9 @@
 				<BARO_KNOB_2_USE_PUSH_STD>True</BARO_KNOB_2_USE_PUSH_STD>
 				<!--VVV DYNAMIC VOR ID params VVV-->
 				<DYNAMIC_VOR_ID>True</DYNAMIC_VOR_ID>
-				<VOR_ID_1_SELECTED_CHECK>(A:AUTOPILOT NAV SELECTED, Number) 1 ==</VOR_ID_1_SELECTED_CHECK>
-				<ID_1>1</ID_1>
-				<ID_2>2</ID_2>
+				<VOR_ID_1_SELECTED_CHECK>(L:WT_CJ4_LNAV_MODE, Number) 2 ==</VOR_ID_1_SELECTED_CHECK>
+				<ID_1>2</ID_1>
+				<ID_2>1</ID_2>
 			</UseTemplate>
 		</Component>
 
