@@ -62,10 +62,12 @@ export class FlightPlanAsoboSync {
               //  approachtrans index
               await fpln.setApproachTransitionIndex(data.approachTransitionIndex);
 
-              setTimeout(() => {
-                Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0).catch(console.log);
-                Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").catch(console.log);
-              }, 750);
+              if (WTDataStore.get('WT_CJ4_FPSYNC', 0) === 0) {
+                setTimeout(() => {
+                  Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", 0).catch(console.log);
+                  Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN").catch(console.log);
+                }, 750);
+              }
 
               this.fpChecksum = fpln.getCurrentFlightPlan().checksum;
               resolve();
