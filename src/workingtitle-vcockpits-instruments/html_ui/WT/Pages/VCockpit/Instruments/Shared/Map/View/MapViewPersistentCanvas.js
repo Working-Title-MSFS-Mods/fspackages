@@ -240,7 +240,7 @@ class WT_MapViewPersistenCanvasDrawable extends WT_MapViewCanvasDrawable {
         this._reference = {
             _range: new WT_NumberUnit(-1, WT_Unit.NMILE),
             get range() {return this._range.readonly()},
-            _center: new WT_GeoPoint(0, 0, 0),
+            _center: new WT_GeoPoint(0, 0),
             get center() {return this._center.readonly()},
             scale: 150,
             rotation: 0,

@@ -9,7 +9,7 @@
  */
 class WT_MapModel {
     constructor() {
-        this._target = new WT_GeoPoint(0, 0, 0);
+        this._target = new WT_GeoPoint(0, 0);
         this._range = new WT_NumberUnit(5, WT_Unit.NMILE);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
@@ -134,8 +134,7 @@ class WT_MapModelAirplaneModule extends WT_MapModelModule {
      */
     get position() {
         return new WT_GeoPoint(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"),
-                               SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"),
-                               WT_Unit.FOOT.convert(SimVar.GetSimVarValue("PLANE ALTITUDE", "feet"), WT_Unit.GA_RADIAN));
+                               SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
     }
 
     /**

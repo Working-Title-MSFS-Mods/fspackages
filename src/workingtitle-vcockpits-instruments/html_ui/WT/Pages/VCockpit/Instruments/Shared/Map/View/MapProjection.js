@@ -12,8 +12,8 @@ class WT_MapProjection {
         this._d3Projection.center([0, 0]);
         this._d3Projection.translate([0, 0]);
 
-        this.__target = new WT_GeoPoint(0, 0, 0);
-        this._center = new WT_GeoPoint(0, 0, 0);
+        this.__target = new WT_GeoPoint(0, 0);
+        this._center = new WT_GeoPoint(0, 0);
         this.__range = new WT_NumberUnit(1, WT_Unit.NMILE);
         this._viewResolution = new WT_NumberUnit(1, WT_Unit.NMILE);
         this.__viewTargetOffset = new WT_GVector2(0, 0);
@@ -27,8 +27,8 @@ class WT_MapProjection {
 
         this._currentRange = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
         this._tempVector = new WT_GVector2(0, 0);
-        this._tempGeoPoint1 = new WT_GeoPoint(0, 0, 0);
-        this._tempGeoPoint2 = new WT_GeoPoint(0, 0, 0);
+        this._tempGeoPoint1 = new WT_GeoPoint(0, 0);
+        this._tempGeoPoint2 = new WT_GeoPoint(0, 0);
         this._tempArray1 = [0, 0];
         this._tempArray2 = [0, 0];
     }
@@ -364,7 +364,7 @@ class WT_MapProjection {
 
     _asGeoPoint(point, reference) {
         if (typeof point.lat === "number" && typeof point.long === "number") {
-            reference.set(point.lat, point.long, 0);
+            reference.set(point.lat, point.long);
         } else if (typeof point.x === "number" && typeof point.y === "number") {
             this.invert(point, reference);
         } else {
@@ -595,9 +595,9 @@ class WT_MapProjection {
      */
     static latLongProjectionToGame(latLong, reference) {
         if (reference) {
-            return reference.set(latLong[1], latLong[0], 0);
+            return reference.set(latLong[1], latLong[0]);
         }
-        return new WT_GeoPoint(latLong[1], latLong[0], 0);
+        return new WT_GeoPoint(latLong[1], latLong[0]);
     }
 
     /**
