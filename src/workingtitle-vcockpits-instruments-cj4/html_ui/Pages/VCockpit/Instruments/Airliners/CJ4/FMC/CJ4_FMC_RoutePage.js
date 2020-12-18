@@ -203,7 +203,7 @@ class CJ4_FMC_RoutePage {
                     }
                 } else {
                     this._fmc.clearUserInput();
-                    this.setOrigin(value);
+                    this.setOrigin(value.padEnd(4));
                 }
             };
 
@@ -215,7 +215,7 @@ class CJ4_FMC_RoutePage {
                     }
                 } else {
                     this._fmc.clearUserInput();
-                    this.setDestination(value);
+                    this.setDestination(value.padEnd(4));
                 }
             };
 

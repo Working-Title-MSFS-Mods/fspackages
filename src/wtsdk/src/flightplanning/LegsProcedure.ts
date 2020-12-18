@@ -114,6 +114,7 @@ export class LegsProcedure {
               mappedLeg = this.mapHeadingToInterceptNextLeg(currentLeg, this._previousFix, this._legs[this._currentIndex + 1]);
               break;
             case 6:
+            case 23:
               mappedLeg = this.mapHeadingUntilRadialCrossing(currentLeg, this._previousFix);
               break;
             case 9:

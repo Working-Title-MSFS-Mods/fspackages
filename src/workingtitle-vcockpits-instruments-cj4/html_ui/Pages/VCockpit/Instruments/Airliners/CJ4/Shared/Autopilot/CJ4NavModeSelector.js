@@ -172,6 +172,10 @@ class CJ4NavModeSelector {
         this.currentApproachName = approach.name;
         this.queueEvent(NavModeEvent.APPROACH_CHANGED);
       }
+      else if (this.flightPlanManager.getFlightPlan(0).procedureDetails.destinationRunwayIndex !== -1) {
+        this.currentApproachName = 'VISUAL';
+        this.queueEvent(NavModeEvent.APPROACH_CHANGED);
+      }
     }
   }
 
@@ -550,7 +554,6 @@ class CJ4NavModeSelector {
 
       switch(this.approachMode) {
         case WT_ApproachType.RNAV:
-        case WT_ApproachType.VISUAL:
           this.isVNAVOn = true;
           SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
 
@@ -562,6 +565,8 @@ class CJ4NavModeSelector {
           }
 
           break;
+        case WT_ApproachType.NONE:
+        case WT_ApproachType.VISUAL:
         case WT_ApproachType.ILS: {
           this.isVNAVOn = false;
           // console.log("ILS APPR");
@@ -596,8 +601,6 @@ class CJ4NavModeSelector {
 
           break;
         }
-        case WT_ApproachType.NONE:
-          break;
       }
     };
 
@@ -666,6 +669,9 @@ class CJ4NavModeSelector {
 
     if (this.isAltitudeLocked) {
       this.currentVerticalActiveState = VerticalNavModeState.ALTC;
+
+      Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
+      Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
     }
 
     if (!this.isAltitudeLocked && (this.currentVerticalActiveState === VerticalNavModeState.ALTC || this.currentVerticalActiveState === VerticalNavModeState.ALT)) {
