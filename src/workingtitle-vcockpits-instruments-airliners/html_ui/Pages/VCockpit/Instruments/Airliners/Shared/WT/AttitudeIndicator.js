@@ -1463,7 +1463,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 rightTriangle.setAttribute("stroke-width", "2");
                 rightTriangle.setAttribute("stroke-opacity", "1");
                 rightTriangle.setAttribute("transform", "rotate(-45,0,0)");
-                this.attitude_bank.appendChild(rightTriangle);                
+                this.attitude_bank.appendChild(rightTriangle);
                 this.halfBankArc = document.createElementNS(Avionics.SVG.NS, "path");
                 this.halfBankArc.setAttribute("d", "M 46 -173 A 179 179 0 0 0 -46 -173");
                 this.halfBankArc.setAttribute("stroke", "white");
@@ -1558,10 +1558,12 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.cj4_FlightDirector.setAttribute("display", "none");
             }
         }
-        if (this.cj4_HalfBankActive){
-            this.halfBankArc.setAttribute("display", "");
-        }else{
-            this.halfBankArc.setAttribute("display", "none");
+        if (this.halfBankArc) {
+            if (this.cj4_HalfBankActive) {
+                this.halfBankArc.setAttribute("display", "");
+            } else {
+                this.halfBankArc.setAttribute("display", "none");
+            }
         }
     }
     attributeChangedCallback(name, oldValue, newValue) {
