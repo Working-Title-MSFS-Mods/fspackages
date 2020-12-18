@@ -343,7 +343,7 @@ class CJ4NavModeSelector {
 
     //Prevent sim from changing to alt slot 1 automatically if we're trying to drive via
     //VNAV and PATH
-    if (this.currentAltSlotIndex === 1 && this.vPathState === VPathState.ACTIVE && this.isVNAVOn === true) {
+    if (this.currentAltSlotIndex === 1 && this.vPathState === VPathState.ACTIVE && (this.isVNAVOn === true || this.currentVerticalActiveState === VerticalNavModeState.GP)) {
       console.log("alt slot changed to 2 for path");
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
       this.currentAltSlotIndex = 2;
