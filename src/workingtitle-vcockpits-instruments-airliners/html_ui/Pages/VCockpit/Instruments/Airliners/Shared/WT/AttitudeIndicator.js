@@ -6,6 +6,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
         this.radioAltitudeColorBad = "white";
         this.radioAltitudeColorLimit = 0;
         this.radioAltitudeRotate = false;
+        this.cj4_HalfBankActive = false;
         this.cj4_FlightDirectorActive = true;
         this.cj4_FlightDirectorPitch = 0;
         this.cj4_FlightDirectorBank = 0;
@@ -27,7 +28,8 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             "flight_director-pitch",
             "flight_director-bank",
             "radio_altitude",
-            "decision_height"
+            "decision_height",
+            "half_bank-active"
         ];
     }
     static get observedAttributes() {
@@ -1248,6 +1250,14 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             pitchSvg.setAttribute("viewBox", "-200 -200 400 300");
             pitchSvg.setAttribute("overflow", "visible");
             pitchSvg.setAttribute("style", "position:absolute; z-index: -2;");
+            let pitchSvgDefs = document.createElementNS(Avionics.SVG.NS, "defs");
+            let pitchSvgClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
+            pitchSvgClip.setAttribute("id", "pitchClip");
+            let pitchSvgClipShape = document.createElementNS(Avionics.SVG.NS, "circle");
+            pitchSvgClipShape.setAttribute("r", "165");
+            pitchSvgClip.appendChild(pitchSvgClipShape);
+            pitchSvgDefs.appendChild(pitchSvgClip);
+            pitchSvg.appendChild(pitchSvgDefs);
             pitchContainer.appendChild(pitchSvg);
             {
                 this.pitch_root = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1264,9 +1274,12 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 attitudePitchContainer.setAttribute("viewBox", x + " " + y + " " + w + " " + h);
                 attitudePitchContainer.setAttribute("overflow", "hidden");
                 this.pitch_root.appendChild(attitudePitchContainer);
+                let attitudePitchInnerContainer = document.createElementNS(Avionics.SVG.NS, "g");
+                attitudePitchInnerContainer.setAttribute("clip-path", "url(#pitchClip)");
+                attitudePitchContainer.appendChild(attitudePitchInnerContainer);
                 {
                     this.attitude_pitch.push(document.createElementNS(Avionics.SVG.NS, "g"));
-                    attitudePitchContainer.appendChild(this.attitude_pitch[0]);
+                    attitudePitchInnerContainer.appendChild(this.attitude_pitch[0]);
                     let maxDash = 80;
                     let fullPrecisionLowerLimit = -20;
                     let fullPrecisionUpperLimit = 20;
@@ -1280,7 +1293,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     let mediumHeight = 3;
                     let smallWidth = 10;
                     let smallHeight = 2;
-                    let fontSize = 20;
+                    let fontSize = 25;
                     let angle = -maxDash;
                     let nextAngle;
                     let width;
@@ -1329,13 +1342,12 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                             rect.setAttribute("height", 1);
                             this.attitude_pitch[0].appendChild(rect);
                             if (text) {
-                                
                                 let rightText = document.createElementNS(Avionics.SVG.NS, "text");
                                 rightText.textContent = Math.abs(angle).toString();
                                 rightText.setAttribute("x", ((width / 2) + 5).toString());
-                                rightText.setAttribute("y", (pitchFactor * angle - height / 2 + fontSize / 2).toString() - 2);
+                                rightText.setAttribute("y", (pitchFactor * angle - height / 2 + fontSize / 2).toString() - 4);
                                 rightText.setAttribute("text-anchor", "start");
-                                rightText.setAttribute("font-size", "20");
+                                rightText.setAttribute("font-size", fontSize.toString());
                                 rightText.setAttribute("font-family", "Roboto-Light");
                                 rightText.setAttribute("fill", "white");
                                 this.attitude_pitch[0].appendChild(rightText);
@@ -1451,7 +1463,13 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 rightTriangle.setAttribute("stroke-width", "2");
                 rightTriangle.setAttribute("stroke-opacity", "1");
                 rightTriangle.setAttribute("transform", "rotate(-45,0,0)");
-                this.attitude_bank.appendChild(rightTriangle);
+                this.attitude_bank.appendChild(rightTriangle);                
+                this.halfBankArc = document.createElementNS(Avionics.SVG.NS, "path");
+                this.halfBankArc.setAttribute("d", "M 46 -173 A 179 179 0 0 0 -46 -173");
+                this.halfBankArc.setAttribute("stroke", "white");
+                this.halfBankArc.setAttribute("stroke-width", "2");
+                this.halfBankArc.setAttribute("fill", "none");
+                this.attitude_bank.appendChild(this.halfBankArc);
             }
             {
                 let cursors = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1540,6 +1558,11 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.cj4_FlightDirector.setAttribute("display", "none");
             }
         }
+        if (this.cj4_HalfBankActive){
+            this.halfBankArc.setAttribute("display", "");
+        }else{
+            this.halfBankArc.setAttribute("display", "none");
+        }
     }
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue == newValue)
@@ -1583,6 +1606,9 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     let val = parseFloat(newValue);
                     this.radioDecisionHeight.textContent = fastToFixed(val, 0);
                 }
+                break;
+            case "half_bank-active":
+                this.cj4_HalfBankActive = parseFloat(newValue) > 15;
                 break;
             default:
                 return;

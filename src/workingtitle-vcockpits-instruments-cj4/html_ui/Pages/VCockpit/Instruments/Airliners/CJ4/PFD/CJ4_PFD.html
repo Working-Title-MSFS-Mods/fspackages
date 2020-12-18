@@ -18,14 +18,21 @@
                             <div id="AP_Status">AP</div>
                             <div id="AP_YDStatus">YD</div>
                             <div id="AP_FDIndicatorArrow">
-                                <svg id="arrow" width="100%" viewBox="0 0 50 30">
-                                    <polygon points="0,10 10,0 10,12 40,12 40,8 10,8 10,20" fill="#11d011"></polygon>
+                                <svg id="arrow" width="100%" viewBox="0 0 50 20">
+                                    <polygon points="0,10 20,0 20,11 50,11 50,9 20,9 20,20"></polygon>
                                 </svg>
                             </div>
                         </div>
                         <div class="Right">
                             <div id="AP_VerticalActive">V VS</div>
-                            <div id="AP_ModeReference">-200FPM</div>
+                            <div id="AP_ModeReference">
+                                <span id="AP_ModeReference_Icon">
+                                    <svg id="Speedbug" viewBox="0 0 31 18">
+                                        <path d="M 1 9 l 18 -8 l 11 0 l 0 16 l -11 0 l -18 -8"/>
+                                    </svg>
+                                </span>
+                                <span id="AP_ModeReference_Value">-200</span>
+                            </div>
                             <div id="AP_Armed">ALTS</div>
                             <div id="AP_ArmedReference"></div>
                         </div>
@@ -193,7 +200,7 @@
                     <div id="Rat">
                         <div>RAT</div>
                         <div class="Modifiable" id="Rat_Value">19</div>
-                        <div>°C</div>
+                        <div id="Rat_Unit">°C</div>
                     </div>
                     <div id="Utc">
                         <div>UTC</div>

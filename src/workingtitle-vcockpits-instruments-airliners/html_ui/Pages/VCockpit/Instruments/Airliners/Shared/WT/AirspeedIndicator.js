@@ -245,6 +245,15 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.cursorSVG.setAttribute("height", cursorHeight.toString());
             this.cursorSVG.setAttribute("viewBox", "0 7 " + cursorWidth + " " + cursorHeight);
             {
+                this.cursorSVGDefs = document.createElementNS(Avionics.SVG.NS, "defs");
+                this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
+                this.cursorSVGClip.setAttribute("id", "SpdCursorClip");
+                this.cursorSVGClipShape = document.createElementNS(Avionics.SVG.NS, "path");
+                this.cursorSVGClipShape.setAttribute("d", "M24 22 L62 22 L62 8 L86 8 L86 28 L105 39 L86 50 L86 71 L62 71 L62 56 L24 56 Z");
+                this.cursorSVGClip.appendChild(this.cursorSVGClipShape);
+                this.cursorSVGDefs.appendChild(this.cursorSVGClip);
+                this.cursorSVG.appendChild(this.cursorSVGDefs);
+
                 if (!this.cursorSVGShape)
                     this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGShape.setAttribute("fill", "black");
@@ -254,9 +263,12 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.cursorSVG.appendChild(this.cursorSVGShape);
                 var _cursorPosX = -2;
                 var _cursorPosY = cursorHeight * 0.5 + 10.5;
-                this.cursorIntegrals[0].construct(this.cursorSVG, _cursorPosX + 48, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
-                this.cursorIntegrals[1].construct(this.cursorSVG, _cursorPosX + 66, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
-                this.cursorDecimals.construct(this.cursorSVG, _cursorPosX + 86, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
+                this.cursorSVGIntegralContainer = document.createElementNS(Avionics.SVG.NS, "g");
+                this.cursorSVGIntegralContainer.setAttribute("clip-path", "url(#SpdCursorClip)");
+                this.cursorIntegrals[0].construct(this.cursorSVGIntegralContainer, _cursorPosX + 48, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
+                this.cursorIntegrals[1].construct(this.cursorSVGIntegralContainer, _cursorPosX + 66, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
+                this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 86, _cursorPosY, _width, "Roboto-Bold", this.fontSize * 1.2, "green");
+                this.cursorSVG.appendChild(this.cursorSVGIntegralContainer);
             }
             if (!this.speedTrendArrowSVG) {
                 this.speedTrendArrowSVG = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -323,7 +335,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 }
                 this.stripsSVG.appendChild(this.stallStripSVG);
             }
-            var targetSpeedPointerPosX = _left + gradWidth;
+            var targetSpeedPointerPosX = _left + gradWidth + 2;
             var targetSpeedPointerPosY = _top + _height * 0.5;
             var targetSpeedPointerWidth = width;
             this.targetSpeedPointerHeight = 47;
@@ -339,7 +351,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 shape.setAttribute("fill", "none");
                 shape.setAttribute("stroke", "cyan");
                 shape.setAttribute("stroke-width", "2");
-                shape.setAttribute("d", "M 0 22 l 15 -8 l 15 0 l 0 16 l -15 0 l -15 -8 z");
+                shape.setAttribute("d", "M 0 22 l 18 -8 l 11 0 l 0 16 l -11 0 l -18 -8 z");
                 this.targetSpeedPointerSVG.appendChild(shape);
             }
             var speedMarkersPosX = _left + gradWidth;
@@ -489,22 +501,21 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.speedBackground = document.createElementNS(Avionics.SVG.NS, "rect");
         this.speedBackground.setAttribute("x", 12);
         this.speedBackground.setAttribute("y", 2);
-        this.speedBackground.setAttribute("width", 100);
+        this.speedBackground.setAttribute("width", 113);
         this.speedBackground.setAttribute("height", 32);
         this.speedBackground.setAttribute("fill", "black");
         this.speedBackground.setAttribute("fill-opacity", "0.5");
         this.rootGroup.appendChild(this.speedBackground);
 
         this.targetSpeedIconSVG = document.createElementNS(Avionics.SVG.NS, "path");
-        this.targetSpeedIconSVG.setAttribute("fill", "black");
-        this.targetSpeedIconSVG.setAttribute("d", "M21 19 l15 -8 l15 0 l0 16 l-15 0 l-15 -8 Z");
+        this.targetSpeedIconSVG.setAttribute("d", "M 21 19 l 19 -8 l 11 0 l 0 16 l -11 0 l -19 -8 z");
         this.targetSpeedIconSVG.setAttribute("fill", "none");
         this.targetSpeedIconSVG.setAttribute("stroke", "cyan");
         this.targetSpeedIconSVG.setAttribute("stroke-width", "2");
         this.rootGroup.appendChild(this.targetSpeedIconSVG);
         this.targetSpeedSVG = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetSpeedSVG.textContent = "260";
-        this.targetSpeedSVG.setAttribute("x", (posX - 10).toString());
+        this.targetSpeedSVG.setAttribute("x", (posX - 12).toString());
         this.targetSpeedSVG.setAttribute("y", (posY - 8).toString());
         this.targetSpeedSVG.setAttribute("fill", "cyan");
         this.targetSpeedSVG.setAttribute("font-size", (this.fontSize * 0.5).toString());
@@ -2067,7 +2078,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     updateSpeedTrendArrow(currentAirspeed, speedTrend, hide = false) {
         let hideArrow = true;
         if (this.speedTrendArrowSVG && !hide) {
-            if (currentAirspeed > 40 && Math.abs(speedTrend) > 1) {
+            if (currentAirspeed >= 40 && Math.abs(speedTrend) > 1) {
                 let arrowBaseY = this.valueToSvg(currentAirspeed, currentAirspeed);
                 let arrowTopY = this.valueToSvg(currentAirspeed, currentAirspeed + speedTrend);
                 let arrowPath = "M 70 " + arrowBaseY + " L 70 " + arrowTopY.toFixed(1) + " ";
@@ -2195,11 +2206,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                         let machAirspeed = Simplane.getAutoPilotMachHoldValue();
                         if (machAirspeed < 1.0) {
                             var fixedMach = machAirspeed.toFixed(2);
-                            var radixPos = fixedMach.indexOf('.');
-                            this.targetSpeedSVG.textContent = fixedMach.slice(radixPos);
+                            this.targetSpeedSVG.textContent = "M" + fixedMach.slice(1);
                         }
                         else {
-                            this.targetSpeedSVG.textContent = machAirspeed.toFixed(2);
+                            this.targetSpeedSVG.textContent = "M" + machAirspeed.toFixed(2);
                         }
                         selectedAirspeed = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", machAirspeed);
                     }
@@ -2373,13 +2383,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerV1(_marker, currentAirspeed) {
         let v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
-        if (v1Speed > 0) {
+        if (v1Speed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
         }
-        if (v1Speed > 0) {
+        if (v1Speed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, v1Speed);
             _marker.setOffscreen(false);
                 if (posY >= this.refHeight + 25) {
@@ -2402,13 +2412,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVR(_marker, currentAirspeed) {
         let vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
-        if (vRSpeed > 0) {
+        if (vRSpeed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
         }
-        if (vRSpeed > 0) {
+        if (vRSpeed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, vRSpeed);
             if (posY >= this.refHeight + 25) {
                 _marker.passed = true;
@@ -2431,13 +2441,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerV2(_marker, currentAirspeed) {
         let v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
-        if (v2Speed > 0) {
+        if (v2Speed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
         }
-        if (v2Speed > 0) {
+        if (v2Speed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, v2Speed);
             if (posY >= this.refHeight + 25) {
                 _marker.passed = true;
@@ -2460,7 +2470,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVRef(_marker, currentAirspeed) {
         let vRefSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots");
-        if (vRefSpeed > 0) {
+        if (vRefSpeed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, vRefSpeed);
             _marker.setOffscreen(false);
             _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
@@ -2481,7 +2491,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVApp(_marker, currentAirspeed) {
         let vAppSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots");
-        if (vAppSpeed > 0 && this.aircraft == Aircraft.CJ4) {
+        if (vAppSpeed >= 40 && this.aircraft == Aircraft.CJ4) {
             var posY = this.valueToSvg(currentAirspeed, vAppSpeed);
             _marker.setOffscreen(false);
             _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
@@ -2502,13 +2512,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateMarkerVX(_marker, currentAirspeed) {
         let vxSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
-        if (vxSpeed > 0) {
+        if (vxSpeed >= 40) {
             _marker.engaged = true;
         }
         else if (_marker.engaged && !_marker.passed) {
             vxSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
         }
-        if (vxSpeed > 0) {
+        if (vxSpeed >= 40) {
             var posY = this.valueToSvg(currentAirspeed, vxSpeed);
             if (posY >= this.refHeight + 25) {
                 _marker.passed = true;
