@@ -3447,10 +3447,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
-								</Reference>
-								<Reference Name="UserAuxSend0">
-									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend1">
 									<ObjectRef Name="disto_overspeed" ID="{5815E54F-778D-4C14-BF59-097980689171}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
@@ -3462,7 +3459,6 @@
 										<Property Name="3DSpatialization" Type="int16" Value="1"/>
 										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
-										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
 										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
@@ -3565,11 +3561,6 @@
 										<Value>100</Value>
 									</ValueList>
 								</Property>
-								<Property Name="Volume" Type="Real64">
-									<ValueList>
-										<Value>2</Value>
-									</ValueList>
-								</Property>
 							</PropertyList>
 							<ReferenceList>
 								<Reference Name="Attenuation">
@@ -3579,7 +3570,7 @@
 									<ObjectRef Name="NoDCOffset_Conversion_Settings" ID="{2463764E-1C92-49C9-B7B9-69C9CD89583D}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
 								</Reference>
 								<Reference Name="OutputBus">
-									<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
 								<Reference Name="UserAuxSend0">
 									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
@@ -3595,18 +3586,12 @@
 										<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
-										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
 											</ValueList>
 										</Property>
 										<Property Name="SpeakerPanning3DSpatializationMix" Type="int32" Value="52"/>
-										<Property Name="Volume" Type="Real64">
-											<ValueList>
-												<Value>-4</Value>
-											</ValueList>
-										</Property>
 									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Conversion">
@@ -3694,6 +3679,7 @@
 								</Property>
 								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 								<Property Name="OverrideAnalysis" Type="bool" Value="True"/>
+								<Property Name="OverrideOutput" Type="bool" Value="True"/>
 								<Property Name="OverridePositioning" Type="bool" Value="True"/>
 								<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 								<Property Name="Priority" Type="int16">
@@ -3722,9 +3708,6 @@
 								<Reference Name="OutputBus">
 									<ObjectRef Name="combustion_outside_generic" ID="{7FF9CAE6-1D75-4441-8E63-E1F32BD1EEC0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
-								<Reference Name="UserAuxSend0">
-									<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
-								</Reference>
 								<Reference Name="UserAuxSend1">
 									<ObjectRef Name="disto_overspeed" ID="{5815E54F-778D-4C14-BF59-097980689171}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 								</Reference>
@@ -3732,7 +3715,6 @@
 							<ChildrenList>
 								<Sound Name="Williams FJ44-4A Shutdown Exterior_edit" ID="{ADD76001-F7DF-4CEC-AFEC-3687180E689F}" ShortID="146167410">
 									<PropertyList>
-										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="Volume" Type="Real64">
 											<ValueList>
 												<Value>-2</Value>
