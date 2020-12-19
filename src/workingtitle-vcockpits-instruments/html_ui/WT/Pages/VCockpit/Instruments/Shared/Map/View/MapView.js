@@ -68,10 +68,6 @@ class WT_MapView extends HTMLElement {
         this._configLoaded = true;
     }
 
-    get templateID() {
-        return "MapView";
-    }
-
     /**
      * @readonly
      * @property {Number} viewWidth - the width, in pixels, of the viewing window.
