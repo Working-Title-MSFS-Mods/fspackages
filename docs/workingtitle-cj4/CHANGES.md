@@ -7,6 +7,14 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
+## Remarks to flight plan synchronization between the Game and FMS 
+Our recommendation is to keep FP Sync _off_.  
+You can still "file" your flight plan to ATC by entering it in the world map of MSFS and it will remain visible to ATC/VFR.
+
+To then load the plan into the FMS you can either enter it manually or use the _FPLN RECALL (GAME/SB)_ option in _IDX -> PAGE2 -> ROUTE MENU_
+
+Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
+
 ## Compatibility
 * Removed old unused files that were causing a compatibility issue with WT Garmin units and the FBW A32NX
 
@@ -42,6 +50,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## Flight Plan Manager
 * Fixed issue where some track-to-radial-intercept legs were being dropped from procedures
+* Changed behavior of FP Sync on flight start
+* When FP Sync is off: ATC/VFR plan remains but FMS plan is empty. Enter the flight plan manually or use the _FPLN RECALL_ options 
 
 ## LNAV
 * Fixed issue where LNAV would get stuck in a swapping full left then right bank oscillation
@@ -52,7 +62,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected.
-* Loading and saving flights can occasionally have bad results.
+* Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
 * Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
