@@ -376,6 +376,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.IgnLeft.setAttribute("y", (startPosY - 10).toString());
             this.IgnLeft.setAttribute("fill", "#11d011");
             this.IgnLeft.setAttribute("font-size", "26");
+            this.IgnLeft.setAttribute("visibility", "hidden");
             this.IgnLeft.setAttribute("writing-mode", "tb-rl");
             this.IgnLeft.setAttribute("glyph-orientation-vertical", "0");
             this.IgnLeft.setAttribute("font-family", "Roboto-Bold");
@@ -387,6 +388,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.IgnRight.setAttribute("y", (startPosY - 10).toString());
             this.IgnRight.setAttribute("fill", "#11d011");
             this.IgnRight.setAttribute("font-size", "26");
+            this.IgnRight.setAttribute("visibility", "hidden");
             this.IgnRight.setAttribute("writing-mode", "tb-rl");
             this.IgnRight.setAttribute("glyph-orientation-vertical", "0");
             this.IgnRight.setAttribute("font-family", "Roboto-Bold");
@@ -1120,6 +1122,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.IgnLeft.setAttribute("y", (startPosY - 6).toString());
             this.IgnLeft.setAttribute("fill", "#11d011");
             this.IgnLeft.setAttribute("font-size", "28");
+            this.IgnLeft.setAttribute("visibility", "hidden");
             this.IgnLeft.setAttribute("writing-mode", "tb-rl");
             this.IgnLeft.setAttribute("glyph-orientation-vertical", "0");
             this.IgnLeft.setAttribute("font-family", "Roboto-Bold");
@@ -1131,6 +1134,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.IgnRight.setAttribute("y", (startPosY - 6).toString());
             this.IgnRight.setAttribute("fill", "#11d011");
             this.IgnRight.setAttribute("font-size", "28");
+            this.IgnRight.setAttribute("visibility", "hidden");
             this.IgnRight.setAttribute("writing-mode", "tb-rl");
             this.IgnRight.setAttribute("glyph-orientation-vertical", "0");
             this.IgnRight.setAttribute("font-family", "Roboto-Bold");
