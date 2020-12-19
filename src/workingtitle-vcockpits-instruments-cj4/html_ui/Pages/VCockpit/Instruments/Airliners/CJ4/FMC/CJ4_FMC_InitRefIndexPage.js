@@ -205,7 +205,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage32(fmc) { //IDENT
         fmc.clearDisplay();
         const mtow = WT_ConvertUnit.getWeight(1, "17110 LB", "7761 KG").Unit;
-        
+
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue]", "IDENT[blue]"],
             [" MODEL[blue]", "VARIANT [blue]"],
@@ -416,7 +416,7 @@ class CJ4_FMC_InitRefIndexPage {
                 let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
                 let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
                 let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
-                + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
+                    + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
                 //default values
                 let prevWaypointIdent = "-----";
@@ -546,16 +546,16 @@ class CJ4_FMC_InitRefIndexPage {
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
             let headwindDirection = currHeadwind > 0 ? "HEADWIND"
-            : currHeadwind < 0 ? "TAILWIND"
-                : "TAILWIND";
+                : currHeadwind < 0 ? "TAILWIND"
+                    : "TAILWIND";
 
             let crosswinddirection = currCrosswind > 0 ? "L"
                 : currCrosswind < 0 ? "R"
-                : "";
+                    : "";
 
             let xtkDirection = xtk > 0 ? "L"
                 : xtk < 0 ? "R"
-                : "";
+                    : "";
 
             fmc._templateRenderer.setTemplateRaw([
                 [" PROGRESS[blue]", "2/2 [blue]"],
@@ -602,8 +602,8 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
         let pilotId = WTDataStore.get('simbriefPilotId', '');
-        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL[disabled]" : "<FPLN RECALL[d-text]";
-        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]"
+        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL (SB)[disabled]" : "<FPLN RECALL (SB)[d-text]";
+        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]";
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "ROUTE MENU[blue]"],
             [""],
@@ -613,7 +613,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [fplnRecallDisplay],
             [pilotIdDisplay],
-            ["<FPLN WIND[disabled]"],
+            ["<FPLN RECALL (GAME)"],
             [""],
             [""],
             ["-----------------------[blue]"],
@@ -627,7 +627,17 @@ class CJ4_FMC_InitRefIndexPage {
                 fmc.showErrorMessage("NO PILOT ID[red]");
                 CJ4_FMC_ModSettingsPage.ShowPage1(fmc);
             }
-            };
+        };
+        fmc.onLeftInput[3] = async () => {
+            fmc.setMsg("LOAD FPLN...[yellow]");
+            fmc.flightPlanManager.pauseSync();
+            await FlightPlanAsoboSync.LoadFromGame(fmc.flightPlanManager);
+            fmc.flightPlanManager.resumeSync();
+            fmc.flightPlanManager.setActiveWaypointIndex(1);
+            fmc.setMsg("FPLN LOADED[green]");
+            CJ4_FMC_RoutePage.ShowPage1(fmc);
+        };
+
         // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -1110,7 +1120,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage25ErrorMsg(fmc, msg, rskText) {
-         fmc._templateRenderer.setTemplateRaw([
+        fmc._templateRenderer.setTemplateRaw([
             [" ACT[blue]", "ARRIVAL DATA  [blue]"],
             [" " + msg],
             [""],
@@ -1128,14 +1138,14 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
-        
+
         let arrAirportText = "";
         let approachText = "";
         let rwyThresholdAltText = "";
         let freqText = "---.--";
         let gsAngleText = "-.--°";
         let locTrueBrgText = "---T";
-        
+
         let rightSelectionKeyProc = undefined;
 
         let destination = fmc.flightPlanManager.getDestination();
@@ -1158,7 +1168,7 @@ class CJ4_FMC_InitRefIndexPage {
                     locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";
                     gsAngleText = "3.00°";
                 }
-                
+
                 fmc._templateRenderer.setTemplateRaw([
                     [" ACT[blue]", "ARRIVAL DATA  [blue]"],
                     [" ARR AIRPORT[blue]"],
