@@ -186,8 +186,13 @@ class WT_BaseLnav {
                 //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
                 const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
                 const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7 : 10;
+                
+                let isLandingRunway = false;
+                if (this.flightplan.activeWaypointIndex == this.flightplan.length - 2 && this._activeWaypoint.isRunway) {
+                    isLandingRunway = true;
+                }
 
-                if (this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
+                if (!isLandingRunway && this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
 
                     let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
                     let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
