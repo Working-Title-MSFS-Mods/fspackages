@@ -1575,14 +1575,16 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     }
                     var integral = Math.floor(targetAltitude / divider);
                     var modulo = Math.floor(targetAltitude - (integral * divider));
-                    if (stdMode && targetAltitude >= 1000) {
-                        this.targetAltitudeTextSVG1.textContent = "FL";
-                        this.targetAltitudeTextSVG2.textContent = Math.floor(targetAltitude / 100).toString();
-                    }
-                    else {
-                        this.targetAltitudeTextSVG1.textContent = integral.toString();
-                        this.targetAltitudeTextSVG2.textContent = Utils.leadingZeros(modulo, leadingZeros);
-                    }
+                    this.targetAltitudeTextSVG1.textContent = integral.toString();
+                    this.targetAltitudeTextSVG2.textContent = Utils.leadingZeros(modulo, leadingZeros);
+                    // if (stdMode && targetAltitude >= 1000) {
+                    //     this.targetAltitudeTextSVG1.textContent = "FL";
+                    //     this.targetAltitudeTextSVG2.textContent = Math.floor(targetAltitude / 100).toString();
+                    // }
+                    // else {
+                    //     this.targetAltitudeTextSVG1.textContent = integral.toString();
+                    //     this.targetAltitudeTextSVG2.textContent = Utils.leadingZeros(modulo, leadingZeros);
+                    // }
                     hudAltitude = targetAltitude;
                     let deltaAltitude = targetAltitude - currentAltitude;
                     if (deltaAltitude < -refDelta || deltaAltitude > refDelta) {
