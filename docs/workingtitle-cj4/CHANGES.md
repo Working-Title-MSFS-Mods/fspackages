@@ -20,6 +20,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 
 ## RNAV
 * Fixed an issue where GP would stop descending and capture an altitude when the altitude preselector was moved (i.e. to the missed approach altitude)
+* Fixed an issue where sometimes the active waypoing would sequence to the airport and take the plane off course on an RNAV approach.
 
 ## MCP
 * Fixed an issue where the CRS would not accept input sometimes while not in LNV or NAV mode
@@ -28,6 +29,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
 * FMS mach value now always shows only two digits
 * Heading select line will no longer show permanently while in LNV
+* Updated BARO indications to show when STD has been set; updated BARO knob to always set STD pressure when pressed
 
 ## MFD
 * Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
@@ -37,7 +39,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Don't show TOD marker on map when in Approach Mode
 
 ## SAI
-* Fixed an altimeter rounding error
+* Fixed an baro setting rounding error
 
 ## FMC
 * LEGS page will no longer intepret entries of lower than FL500 as speed restrictions
