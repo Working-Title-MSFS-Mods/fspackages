@@ -57,7 +57,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Fixed issue where LNAV would get stuck in a swapping full left then right bank oscillation
 
 ## Sound
-* Wind should now be played on the right audio bus so it doesn't play during pause
+* Wind, Spoiler Drag and external engine sounds should now be played on the right audio bus so it doesn't play during pause
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
