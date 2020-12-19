@@ -3464,6 +3464,7 @@
 										<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
 										<Property Name="OverrideOutput" Type="bool" Value="True"/>
 										<Property Name="OverridePositioning" Type="bool" Value="True"/>
+										<Property Name="OverrideUserAuxSends" Type="bool" Value="True"/>
 										<Property Name="Priority" Type="int16">
 											<ValueList>
 												<Value>100</Value>
@@ -3482,9 +3483,6 @@
 										</Reference>
 										<Reference Name="OutputBus">
 											<ObjectRef Name="aircraft_wwisedata_player" ID="{F4F38FB6-3CC3-4EE9-9F11-8CD46992EA96}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
-										</Reference>
-										<Reference Name="UserAuxSend0">
-											<ObjectRef Name="rev_outdoor_aircraft" ID="{3070D14E-37F3-4DB4-8C7E-262318A02693}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
 										</Reference>
 										<Reference Name="UserAuxSend1">
 											<ObjectRef Name="disto_overspeed" ID="{5815E54F-778D-4C14-BF59-097980689171}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
