@@ -1403,7 +1403,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var units = Simplane.getPressureSelectedUnits();
             var pressure = Simplane.getPressureValue(units);
             if (_mode == "STD") {
-                this.pressureSVG.textContent = "STD";
+                if (units == "millibar") {
+                    this.pressureSVG.textContent = "1013 STD";
+                }
+                else {
+                    this.pressureSVG.textContent = "29.92 STD";
+                }
             }
             else {
                 if (this.aircraft == Aircraft.A320_NEO) {
