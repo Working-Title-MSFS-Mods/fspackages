@@ -48,6 +48,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Pressing LSK next to origin and dest will now copy ICAO to the scratchpad
 * FMC should no longer blackscreen when going to the ARR DATA page
 * FP Sync option will now actually be active when set to enabled
+* Added new option "FPLN RECALL (GAME)" to Route Menu to sync the flight plan from world map to the FMS
 
 ## Flight Plan Manager
 * Fixed issue where some track-to-radial-intercept legs were being dropped from procedures
