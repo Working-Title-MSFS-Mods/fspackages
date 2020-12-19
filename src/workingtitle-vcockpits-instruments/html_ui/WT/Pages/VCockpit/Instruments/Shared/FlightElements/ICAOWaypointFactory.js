@@ -56,7 +56,7 @@ class WT_ICAOWaypointFactory {
                 if (this._isRegistered) {
                     resolve();
                 } else {
-                    this.instrument.requestCall(loop.bind(this));
+                    requestAnimationFrame(loop.bind(this));
                 }
             }
             loop.bind(this)();
