@@ -39,7 +39,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Don't show TOD marker on map when in Approach Mode
 
 ## SAI
-* Fixed an baro setting rounding error
+* Fixed the baro setting rounding error
 
 ## FMC
 * LEGS page will no longer intepret entries of lower than FL500 as speed restrictions
@@ -61,7 +61,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Fixed issue where LNAV would get stuck in a swapping full left then right bank oscillation
 
 ## Sound
-* Wind, Spoiler Drag and external engine sounds should now be played on the right audio bus so it doesn't play during pause
+* Wind, Spoiler Drag and external engine sounds should now be played on the right audio bus so it doesn't play during pause & volume can be adjusted.
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
