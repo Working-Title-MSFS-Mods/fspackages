@@ -25,13 +25,16 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
 * Heading select line will no longer show permanently while in LNV
 * Fixed issue where incorrect fuel flow and weight were used in FMS TEXT
+* Don't show TOD marker on map when in Approach Mode
 
 ## SAI
 * Fixed an altimeter rounding error
 
 ## FMC
 * LEGS page will no longer intepret entries of lower than FL500 as speed restrictions
+* LEGS order of AB restrictions should now be correct
 * FPLN now allows proper entry of 3 letter ICAO airport codes
+* FPLN selecting Origin or Destination will put the ICAO into the scratchpad
 * Visual approach (runway extension fix) capabilty added to the DEP/ARR page
 * Pressing LSK next to origin and dest will now copy ICAO to the scratchpad
 * FMC should no longer blackscreen when going to the ARR DATA page
@@ -42,6 +45,9 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 ## LNAV
 * Fixed issue where LNAV would get stuck in a swapping full left then right bank oscillation
+
+## Sound
+* Wind should now be played on the right audio bus so it doesn't play during pause
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.

@@ -876,8 +876,9 @@ class MapInstrument extends ISvgMapRootElement {
     }
     updateTodWaypoint() {
         const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
+        const apprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") === 1;
         const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-        if (!pathActive && todDistanceRemaining > 0.1) {
+        if (!pathActive && !apprActive && todDistanceRemaining > 0.1) {
             if (this._todWaypoint === undefined) {
                 // create it
                 const waypoint = new WayPoint(this._instrument);

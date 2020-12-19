@@ -508,7 +508,7 @@ class CJ4_FMC_LegsPage {
                     : wpt.legAltitude2.toFixed(0) + "A";
                 let altitudeConstraintB = wpt.legAltitude1.toFixed(0) >= 18000 ? "FL" + wpt.legAltitude1.toFixed(0) / 100 + "B"
                     : wpt.legAltitude1.toFixed(0) + "B";
-                altitudeConstraint = altitudeConstraintB + altitudeConstraintA;
+                altitudeConstraint = altitudeConstraintA + altitudeConstraintB;
             }
 
         }
