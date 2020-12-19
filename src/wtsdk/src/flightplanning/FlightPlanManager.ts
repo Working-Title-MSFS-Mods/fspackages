@@ -2,7 +2,7 @@ import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInf
 import { ManagedFlightPlan, GPS } from '../wtsdk';
 import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
-import { LZUTF8 } from 'WorkingTitle'
+import { LZUTF8, WTDataStore } from 'WorkingTitle'
 import * as _LZUTF8 from '../utils/LzUtf8'
 
 /**
