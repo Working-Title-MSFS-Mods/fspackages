@@ -15,6 +15,10 @@ To then load the plan into the FMS you can either enter it manually or use the _
 
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
 
+## KEY FEATURES
+* Added VFR runway approaches - in DEP/ARR you can now choose a VFR runway for landing and specify a runway extension waypoint to be added to the flight plan as far as 25nm from the runway. This allows you to 'roll your own' LNAV/VNAV approach to any runway at any airport. Great for small/private fields!
+* Fixed issue when resuming VNAV climbs and fixed issue when setting missed approach altitude during an RNAV approach with GP.
+
 ## Compatibility
 * Removed old unused files that were causing a compatibility issue with WT Garmin units and the FBW A32NX
 
