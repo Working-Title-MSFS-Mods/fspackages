@@ -25,6 +25,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 * Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
 * Heading select line will no longer show permanently while in LNV
 * Fixed issue where incorrect fuel flow and weight were used in FMS TEXT
+* Don't show TOD marker on map when in Approach Mode
 
 ## SAI
 * Fixed an altimeter rounding error
