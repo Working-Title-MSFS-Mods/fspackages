@@ -32,14 +32,11 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 ## PFD
 * Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
 * FMS mach value now always shows only two digits
-* Heading select line will no longer show permanently while in LNV
 * Updated BARO indications to show when STD has been set; updated BARO knob to always set STD pressure when pressed
 
 ## MFD
 * Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
 * Shows IGN indication on engine ignition during startup
-* Heading select line will no longer show permanently while in LNV
-* Fixed issue where incorrect fuel flow and weight were used in FMS TEXT
 * Don't show TOD marker on map when in Approach Mode
 
 ## SAI
