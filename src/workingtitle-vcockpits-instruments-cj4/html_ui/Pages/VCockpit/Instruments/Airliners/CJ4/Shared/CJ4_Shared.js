@@ -367,6 +367,30 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTRightCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ITTRightCursor.setAttribute("fill", "white");
             ittGroup.appendChild(this.ITTRightCursor);
+
+
+            // IGN
+            this.IgnLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.IgnLeft.textContent = "IGN";
+            this.IgnLeft.setAttribute("x", (startPosX - halfWidth - 28).toString());
+            this.IgnLeft.setAttribute("y", (startPosY - 10).toString());
+            this.IgnLeft.setAttribute("fill", "#11d011");
+            this.IgnLeft.setAttribute("font-size", "26");
+            this.IgnLeft.setAttribute("writing-mode", "tb-rl");
+            this.IgnLeft.setAttribute("glyph-orientation-vertical", "0");
+            this.IgnLeft.setAttribute("font-family", "Roboto-Bold");
+            ittGroup.appendChild(this.IgnLeft);
+
+            this.IgnRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.IgnRight.textContent = "IGN";
+            this.IgnRight.setAttribute("x", (startPosX + halfWidth + 25).toString());
+            this.IgnRight.setAttribute("y", (startPosY - 10).toString());
+            this.IgnRight.setAttribute("fill", "#11d011");
+            this.IgnRight.setAttribute("font-size", "26");
+            this.IgnRight.setAttribute("writing-mode", "tb-rl");
+            this.IgnRight.setAttribute("glyph-orientation-vertical", "0");
+            this.IgnRight.setAttribute("font-family", "Roboto-Bold");
+            ittGroup.appendChild(this.IgnRight);
         }
         {
             var n2Group = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1088,6 +1112,29 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTRightCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ITTRightCursor.setAttribute("fill", "white");
             ittGroup.appendChild(this.ITTRightCursor);
+
+            // IGN
+            this.IgnLeft = document.createElementNS(Avionics.SVG.NS, "text");
+            this.IgnLeft.textContent = "IGN";
+            this.IgnLeft.setAttribute("x", (startPosX - halfWidth - 30).toString());
+            this.IgnLeft.setAttribute("y", (startPosY - 6).toString());
+            this.IgnLeft.setAttribute("fill", "#11d011");
+            this.IgnLeft.setAttribute("font-size", "28");
+            this.IgnLeft.setAttribute("writing-mode", "tb-rl");
+            this.IgnLeft.setAttribute("glyph-orientation-vertical", "0");
+            this.IgnLeft.setAttribute("font-family", "Roboto-Bold");
+            ittGroup.appendChild(this.IgnLeft);
+
+            this.IgnRight = document.createElementNS(Avionics.SVG.NS, "text");
+            this.IgnRight.textContent = "IGN";
+            this.IgnRight.setAttribute("x", (startPosX + halfWidth + 30).toString());
+            this.IgnRight.setAttribute("y", (startPosY - 6).toString());
+            this.IgnRight.setAttribute("fill", "#11d011");
+            this.IgnRight.setAttribute("font-size", "28");
+            this.IgnRight.setAttribute("writing-mode", "tb-rl");
+            this.IgnRight.setAttribute("glyph-orientation-vertical", "0");
+            this.IgnRight.setAttribute("font-family", "Roboto-Bold");
+            ittGroup.appendChild(this.IgnRight);
         }
         {
             var n2Group = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1728,6 +1775,7 @@ class CJ4_SystemEngines extends NavSystemElement {
         this.updateN1();
         this.updateN2();
         this.updateITT();
+        this.updateIGN();
         this.updateOil();
         this.updateFuel();
         this.updateFlaps();
@@ -1831,6 +1879,13 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
             this.ITTRightBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
         }
+    }
+    updateIGN() {
+        let ignLeft = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:1", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:1", "number") == 1));
+        let ignRight = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:2", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:2", "number") == 1));
+
+        this.IgnLeft.setAttribute("visibility", ignLeft ? "visible" : "hidden");
+        this.IgnRight.setAttribute("visibility", ignRight ? "visible" : "hidden");
     }
     updateN2() {
         {
