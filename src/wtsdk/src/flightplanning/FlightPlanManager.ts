@@ -44,8 +44,10 @@ export class FlightPlanManager {
         plan.setParentInstrument(_parentInstrument);
         this._flightPlans = [];
         this._flightPlans.push(plan);
-        this.pauseSync();
-        await FlightPlanAsoboSync.LoadFromGame(this);
+        if (WTDataStore.get('WT_CJ4_FPSYNC', 0) !== 0) {
+          this.pauseSync();
+          await FlightPlanAsoboSync.LoadFromGame(this);
+        }
         this.resumeSync();
       }.bind(this));
     }
