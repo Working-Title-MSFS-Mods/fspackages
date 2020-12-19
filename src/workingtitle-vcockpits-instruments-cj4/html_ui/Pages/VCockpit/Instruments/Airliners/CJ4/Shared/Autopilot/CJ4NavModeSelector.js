@@ -267,6 +267,16 @@ class CJ4NavModeSelector {
    * Handles when the FLC button is pressed.
    */
   handleFLCPressed() {
+
+    if (this.isVNAVOn) {
+      console.log("handleFLCPressed - VNAV ON: " + this.vnavRequestedSlot);
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);
+    }
+    else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
+
+
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.VS:
@@ -280,7 +290,11 @@ class CJ4NavModeSelector {
           const airspeed = Simplane.getIndicatedSpeed();
           Coherent.call("AP_SPD_VAR_SET", 0, airspeed);
         }
-        SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 1);
+        SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+        console.log("before: " + SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number"));
+        //SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 1);
+        SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_ON", "Number", 1);
+        console.log("after: " + SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "number"));
         this.currentVerticalActiveState = VerticalNavModeState.FLC;
         break;
       case VerticalNavModeState.FLC:
@@ -301,12 +315,14 @@ class CJ4NavModeSelector {
     }
 
     if (this.isVNAVOn) {
-      // console.log("handleFLCPressed - VNAV ON: " + this.vnavRequestedSlot);
+      console.log("handleFLCPressed - VNAV ON: " + this.vnavRequestedSlot);
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);
     }
     else {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
     }
+
+
 
     this.setProperVerticalArmedStates();
   }
@@ -822,16 +838,24 @@ class CJ4NavModeSelector {
    * Handles when vnav autopilot requests alt slot 1 in the sim autopilot.
    */
   handleVnavRequestSlot1() {
-    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-    this.vnavRequestedSlot = 1;
+    if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTC) {
+      this.vnavRequestedSlot = 1;
+    } else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+      this.vnavRequestedSlot = 1;
+    }
   }
 
   /**
    * Handles when vnav autopilot requests alt slot 2 in the sim autopilot.
    */
   handleVnavRequestSlot2() {
-    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-    this.vnavRequestedSlot = 2;
+    if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTC) {
+      this.vnavRequestedSlot = 2;
+    } else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+      this.vnavRequestedSlot = 2;
+    }
   }
 }
 
