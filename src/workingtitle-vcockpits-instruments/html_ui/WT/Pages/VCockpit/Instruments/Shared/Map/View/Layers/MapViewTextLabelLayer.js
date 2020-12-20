@@ -17,11 +17,21 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
     }
 
     _drawLabels(data, labels) {
-        this.textLayer.buffer.context.clearRect(0, 0, this.textLayer.width, this.textLayer.height);
+        labels = Array.from(labels);
+        labels.sort(
+            (a, b) => {
+                let value = a.priority - b.priority;
+                if (a.alwaysShow !== b.alwaysShow) {
+                    value = b.alwaysShow ? -1 : 1;
+                }
+                return value;
+            }
+        )
+        this.textLayer.buffer.clear();
         for (let label of labels) {
             label.draw(data, this.textLayer.buffer.context);
         }
-        this.textLayer.display.context.clearRect(0, 0, this.textLayer.width, this.textLayer.height);
+        this.textLayer.display.clear();
         this.textLayer.copyBufferToCanvas();
     }
 
@@ -99,7 +109,7 @@ class WT_MapViewTextLabelManager {
                 if (toCompare.doesCollide(managedLabelToAdd)) {
                     toCompare.collisions.add(managedLabelToAdd);
                     managedLabelToAdd.collisions.add(toCompare);
-                    if (toCompare.show) {
+                    if (toCompare.show && !managedLabelToAdd.label.alwaysShow) {
                         show = show && managedLabelToAdd.label.priority > toCompare.label.priority;
                     }
                 }
@@ -133,7 +143,7 @@ class WT_MapViewTextLabelManager {
             managedLabel.show = true;
             for (let conflicted of managedLabel.collisions) {
                 queries++;
-                if (conflicted.show) {
+                if (conflicted.show && !conflicted.label.alwaysShow) {
                     queries += this._changeVisibilityHelper(conflicted, false, depth + 1);
                 }
             }
@@ -192,7 +202,7 @@ class WT_MapViewTextLabelManager {
                     continue;
                 }
                 if (current.doesCollide(other)) {
-                    show = false;
+                    show = current.label.alwaysShow;
                     current.collisions.add(other);
                     other.collisions.add(current);
                 }
@@ -224,7 +234,15 @@ class WT_MapViewTextLabelManager {
 
         this._lastPerformanceMode = this._isInPerformanceMode();
 
-        this._collisionUpdateBuffer = Array.from(this._managedLabels.values()).sort((a, b) => b.label.priority - a.label.priority);
+        this._collisionUpdateBuffer = Array.from(this._managedLabels.values()).sort(
+            (a, b) => {
+                let value = b.label.priority - a.label.priority;
+                if (a.label.alwaysShow !== b.label.alwaysShow) {
+                    value = a.label.alwaysShow ? -1 : 1;
+                }
+                return value;
+            }
+        );
         this._collisionUpdateHead = 0;
         for (let managedLabel of this._collisionUpdateBuffer) {
             managedLabel.label.update(data);
