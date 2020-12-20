@@ -70,6 +70,17 @@ class WT_GeoPoint {
     }
 
     /**
+     * Sets this point's coordinate values from a cartesian position vector. By convention, in the cartesian coordinate system the
+     * origin is at the center of the Earth, the positive x-axis passes through 0 degrees N, 0 degrees E, and the positive z-axis
+     * passes through the north pole.
+     * @param {WT_GVector3} vector - a position vector defining the new coordinates.
+     * @returns {WT_GeoPoint} this point, after it has been changed.
+     */
+    setFromCartesian(vector) {
+        return this.set(90 - vector.theta * Avionics.Utils.RAD2DEG, vector.phi * Avionics.Utils.RAD2DEG);
+    }
+
+    /**
      * Calculates the great-circle distance between this point and another point. This method takes either one or two arguments.
      * The one-argument version takes a single object with .lat and .long properties. The two-argument version takes two numbers.
      * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the coordinate values of the other point, or the
@@ -264,7 +275,8 @@ class WT_GeoPoint {
 
     /**
      * Calculates the cartesian (x, y, z) representation of this point, in units of great-arc radians, and returns the result.
-     * In the cartesian coordinate system, the center of the Earth is at the origin.
+     * By convention, in the cartesian coordinate system the origin is at the center of the Earth, the positive x-axis passes through
+     * 0 degrees N, 0 degrees E, and the positive z-axis passes through the north pole.
      * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the results. If this argument is not supplied,
      *                                    a new WT_GVector3 object will be created.
      * @returns {WT_GVector3} the cartesian representation of this point.
@@ -354,8 +366,8 @@ class WT_GeoPointReadOnly {
     }
 
     /**
-     * Sets this point's coordinate values. This method takes either one or two arguments. The one-argument version takes a single object
-     * with .lat and .long properties. The two-argument version takes two numbers.
+     * Copies this point and sets the copy's coordinate values. This method takes either one or two arguments. The one-argument
+     * version takes a single object with .lat and .long properties. The two-argument version takes two numbers.
      * @param {{lat:Number, long:Number}|Number} arg1 - an object defining the new coordinate values, or the new latitude
      *                                                                    value.
      * @param {Number} [arg2] - the new longitude value.
@@ -363,6 +375,17 @@ class WT_GeoPointReadOnly {
      */
     set(arg1, arg2) {
         return this._source.copy().set(arg1, arg2);
+    }
+
+    /**
+     * Copies this point and sets the copy's coordinate values from a cartesian position vector. By convention, in the cartesian
+     * coordinate system the origin is at the center of the Earth, the positive x-axis passes through 0 degrees N, 0 degrees E,
+     * and the positive z-axis passes through the north pole.
+     * @param {WT_GVector3} vector - a position vector defining the new coordinates.
+     * @returns {WT_GeoPoint} this point, after it has been changed.
+     */
+    setFromCartesian(vector) {
+        return this._source.copy().setFromCartesian(vector);
     }
 
     /**
@@ -451,6 +474,18 @@ class WT_GeoPointReadOnly {
      */
     bearingRhumb(arg1, arg2) {
         return this._source.bearingRhumb(arg1, arg2);
+    }
+
+    /**
+     * Calculates the cartesian (x, y, z) representation of this point, in units of great-arc radians, and returns the result.
+     * By convention, in the cartesian coordinate system the origin is at the center of the Earth, the positive x-axis passes through
+     * 0 degrees N, 0 degrees E, and the positive z-axis passes through the north pole.
+     * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the results. If this argument is not supplied,
+     *                                    a new WT_GVector3 object will be created.
+     * @returns {WT_GVector3} the cartesian representation of this point.
+     */
+    cartesian(reference) {
+        return this._source.cartesian(reference);
     }
 
     /**
