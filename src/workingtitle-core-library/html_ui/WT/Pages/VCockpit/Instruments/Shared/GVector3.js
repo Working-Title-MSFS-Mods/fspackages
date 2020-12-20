@@ -120,6 +120,16 @@ class WT_GVector3 {
     }
 
     /**
+     * Scales this vector to a length of one. The operation can either be performed in-place or a new WT_GVector3 object can
+     * be returned.
+     * @param {Boolean} [mutate] - whether to perform the operation in place.
+     * @return {WT_GVector3} the unit vector, either as a new WT_GVector3 object or this vector after it has been changed.
+     */
+    unit(mutate) {
+        return this.scale(1 / this.length, mutate);
+    }
+
+    /**
      * Adds another vector to this one and returns the result as a new WT_GVector2 object. This method takes either one or three arguments.
      * The one-argument version takes a single object with .x, .y, .z properties. The three-argument version takes three scalar numbers.
      * @param {{x:Number, y:Number, z:Number}|Number} arg1 - an object defining the x, y, z values of the vector to add, or the x value to
@@ -197,7 +207,7 @@ class WT_GVector3 {
      * Scales this vector by a scalar factor. The operation can either be performed in-place or a new WT_GVector3 object can
      * be returned.
      * @param {Number} factor - the scalar factor by which to scale.
-     * @param {Boolean} mutate - whether to perform the operation in place.
+     * @param {Boolean} [mutate] - whether to perform the operation in place.
      * @return {WT_GVector3} the scaled vector, either as a new WT_GVector3 object or this vector after it has been changed.
      */
     scale(factor, mutate) {
@@ -382,6 +392,15 @@ class WT_GVector3ReadOnly {
     }
 
     /**
+     * Scales this vector to a length of one. The operation can either be performed in-place or a new WT_GVector3 object can
+     * be returned.
+     * @return {WT_GVector3} the unit vector, either as a new WT_GVector3 object or this vector after it has been changed.
+     */
+    unit() {
+        return this._source.unit(false);
+    }
+
+    /**
      * Adds another vector to this one and returns the result as a new WT_GVector2 object. This method takes either one or three arguments.
      * The one-argument version takes a single object with .x, .y, .z properties. The three-argument version takes three scalar numbers.
      * @param {{x:Number, y:Number, z:Number}|Number} arg1 - an object defining the x, y, z values of the vector to add, or the x value to
@@ -437,10 +456,9 @@ class WT_GVector3ReadOnly {
      * Scales this vector by a scalar factor. The operation can either be performed in-place or a new WT_GVector3 object can
      * be returned.
      * @param {Number} factor - the scalar factor by which to scale.
-     * @param {Boolean} mutate - whether to perform the operation in place.
      * @return {WT_GVector3} the scaled vector, either as a new WT_GVector2 object or this vector after it has been changed.
      */
-    scale(factor, mutate) {
+    scale(factor) {
         return this._source.scale(factor, false);
     }
 
@@ -458,24 +476,18 @@ class WT_GVector3ReadOnly {
     }
 
     /**
-     * Calculates the cross product of this vector and another vector. The operation can either be performed in-place or a
-     * new WT_GVector3 object can be returned.
+     * Calculates the cross product of this vector and another vector and returns the result as a new WT_GVector3 object.
      * @param {{x:Number, y:Number, z:Number}|Number} arg1 - an object defining the x, y, z values of other vector, or the x value of the
      *                                                       other vector as a scalar number.
-     * @param {Number|Boolean} [arg2] - the y value of the other vector as a scalar number, or whether to perform the operation
-     *                                  in place.
+     * @param {Number|Boolean} [arg2] - the y value of the other vector as a scalar number.
      * @param {Number} [arg3] - the z value of the other vector as a scalar number.
-     * @param {Boolean} [arg4] - whether to perform the operation in-place.
-     * @returns {WT_GVector3} the cross product, either as a new WT_GVector3 object or this vector after it has been changed.
+     * @returns {WT_GVector3} the cross product as a new WT_GVector3 object.
      */
-    cross(arg1, arg2, arg3, arg4) {
+    cross(arg1, arg2, arg3) {
         if (arg2 === true) {
             arg2 = false;
         }
-        if (arg4 === true) {
-            arg4 = false;
-        }
-        return this._source.cross(arg1, arg2, arg3, arg4);
+        return this._source.cross(arg1, arg2, arg3);
     }
 
     /**
