@@ -31,7 +31,7 @@ class WT_ICAOSearcher {
 
     /**
      * Creates a new ICAO search request from this searcher.
-     * @param {LatLong} center - the center of the initial search circle of the new request.
+     * @param {{lat:Number, long:Number}} center - the center of the initial search circle of the new request.
      * @param {WT_NumberUnit} radius - the radius of the initial search circle of the new request.
      * @param {Number} searchLimit - the maximum number of items to return with the new request.
      * @returns {WT_ICAOSearchRequest} a new ICAO search request.
@@ -108,7 +108,7 @@ class WT_ICAOSearchRequest {
     /**
      * @param {WT_ICAOSearcher} searcher - the ICAO searcher to which the new request belongs.
      * @param {Number} id - a unique integer ID belonging to the new request.
-     * @param {LatLong} center - the center of the initial search circle.
+     * @param {{lat:Number, long:Number}} center - the center of the initial search circle.
      * @param {WT_NumberUnit} radius - the radius of the initial search circle.
      * @param {Number} searchLimit - the maximum number of items to return with the search.
      */
@@ -117,8 +117,8 @@ class WT_ICAOSearchRequest {
         this._keys = searcher._keys;
         this._simVarSearchInstanceKey = `${searcher.instrument.instrumentIdentifier}-${WT_ICAOSearcher.SIMVAR_KEY_SUFFIX}_${id}`;
         this._id = id;
-        this._center = center;
-        this._radius = radius;
+        this._center = new WT_GeoPoint(center.lat, center.long);
+        this._radius = new WT_NumberUnit(radius.number, radius.unit);
         this._searchLimit = searchLimit;
         this._results = [];
 
@@ -143,11 +143,11 @@ class WT_ICAOSearchRequest {
 
     /**
      * @readonly
-     * @property {LatLong} center - the center of the search circle.
-     * @type {LatLong}
+     * @property {WT_GeoPointReadOnly} center - the center of the search circle.
+     * @type {WT_GeoPointReadOnly}
      */
     get center() {
-        return this._center;
+        return this._center.readonly();
     }
 
     /**
@@ -187,7 +187,7 @@ class WT_ICAOSearchRequest {
     }
 
     _doSetParameters(center, radius, searchLimit) {
-        this._center = center;
+        this._center.set(center);
         this._radius.set(radius);
         this._searchLimit = searchLimit;
     }
@@ -198,7 +198,7 @@ class WT_ICAOSearchRequest {
      * or when all pending search updates have finished. If this search request is already closed, then a rejected Promise will be returned.
      * If this search request is closed or if another parameter change is initiated while the returned Promise is pending, the Promise will
      * be rejected.
-     * @param {LatLong} center - the center of the new search circle.
+     * @param {{lat:Number, long:Number}} center - the center of the new search circle.
      * @param {WT_NumberUnit} radius - the radius of the new search circle.
      * @param {Number} searchLimit - the maximum number of items to return with the search.
      * @returns {Promise} - a Promise that resolves when the new search parameters take effect, or rejects if this search request closes

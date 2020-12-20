@@ -51,7 +51,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
 
         this._lastSearchParams = {
             time: 0,
-            center: new LatLong(0, 0),
+            center: new WT_GeoPoint(0, 0),
             radius: new WT_NumberUnit(0, WT_Unit.NMILE)
         };
 
@@ -160,8 +160,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
                 int: this._icaoSearchers.int.openRequest(center, radius, intSearchSize)
             };
         }
-        this._lastSearchParams.center = center;
-        this._lastSearchParams.radius = radius;
+        this._lastSearchParams.center.set(center);
+        this._lastSearchParams.radius.set(radius);
     }
 
     /**
