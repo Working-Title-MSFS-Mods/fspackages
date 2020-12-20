@@ -13,6 +13,8 @@ class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
         this._offset = new WT_GVector2(0, 0);
 
         this._anchor.set(0.5, 0.5);
+
+        this._optsManager.addOptions(WT_MapViewWaypointLabel.OPTIONS_DEF);
     }
 
     /**
@@ -57,6 +59,9 @@ class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
         return new WT_MapViewWaypointLabel(waypoint, text, priority);
     }
 }
+WT_MapViewWaypointLabel.OPTIONS_DEF = {
+    offset: {}
+};
 
 /**
  * A cache for waypoint labels.
