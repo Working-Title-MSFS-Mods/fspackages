@@ -1121,23 +1121,38 @@ class WT_MapProjectionRenderer {
      * @returns {Boolean} whether the projection of the specified point lies within the bounds of the viewing window.
      */
     isInView(point, margin = 0) {
-        let clip = this.viewClipExtent;
-        if (clip === null) {
+        return this.isInViewBounds(point, this.viewClipExtent, margin);
+    }
+
+    /**
+     * Checks whether a point lies within a bounding rectangle in the viewing window. The point to check can either be
+     * in spherical coordinates or pixel coordinates in the viewing window. If the former, the point will first be projected
+     * before the bounds check is made.
+     * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the point to check.
+     * @param {WT_GVector2[]} bounds - an array specifying the top left and bottom right corners of the bounding rectangle,
+     *                                 at index 0 and 1, respectively
+     * @param {Number} margin - the margin to use, expressed as a fraction of the width/height of the bounding rectangle.
+     *                          (a positive margin extends the bounds beyond the true bounds)
+     * @returns {Boolean} whether the projection of the specified point lies within the bounding rectangle.
+     */
+    isInViewBounds(point, bounds, margin = 0) {
+        if (!bounds) {
             return true;
         }
-
-        let width = clip[1].x - clip[0].x;
-        let height = clip[0].y - clip[0].y;
 
         if (typeof point.lat === "number" && typeof point.long === "number") {
             point = this.project(point, this._tempVector);
         } else if (typeof point.x !== "number" || typeof point.y !== "number") {
             return undefined;
         }
-        return (point.x >= clip[0].x - width * margin) &&
-               (point.x <= clip[1].x + width * margin) &&
-               (point.y >= clip[0].y - height * margin) &&
-               (point.y <= clip[1].y + height * margin);
+
+        let width = bounds[1].x - bounds[0].x;
+        let height = bounds[0].y - bounds[0].y;
+
+        return (point.x >= bounds[0].x - width * margin) &&
+               (point.x <= bounds[1].x + width * margin) &&
+               (point.y >= bounds[0].y - height * margin) &&
+               (point.y <= bounds[1].y + height * margin);
     }
 }
 
