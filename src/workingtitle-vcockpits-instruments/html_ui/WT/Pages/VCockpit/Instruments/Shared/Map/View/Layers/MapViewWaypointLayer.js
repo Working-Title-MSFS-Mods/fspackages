@@ -698,7 +698,7 @@ WT_MapViewWaypointLayer.OPTIONS_DEF = {
     airwayLabelBackgroundPadding: {default: [1], auto: true},
     airwayLabelBackgroundColor: {default: "#bdbdbd", auto: true},
     airwayLabelBackgroundOutlineWidth: {default: 1, auto: true},
-    airwayLabelBackgroundOutlineColor: {default: "color", auto: true},
+    airwayLabelBackgroundOutlineColor: {default: "black", auto: true},
 
     airwayLabelPriority: {default: 100, auto: true}
 };
@@ -709,10 +709,10 @@ WT_MapViewWaypointLayer.CONFIG_PROPERTIES = [
     "vorIconSize",
     "ndbIconSize",
     "intIconSize",
-    "labelFontSize",
-    "labelFontColor",
-    "labelFontOutlineWidth",
-    "labelFontOutlineColor",
+    "waypointLabelFontSize",
+    "waypointLabelFontColor",
+    "waypointLabelFontOutlineWidth",
+    "waypointLabelFontOutlineColor",
     "userLabelPriority",
     "airportLabelPriority",
     "vorLabelPriority",
@@ -722,7 +722,19 @@ WT_MapViewWaypointLayer.CONFIG_PROPERTIES = [
     "airportLabelOffset",
     "vorLabelOffset",
     "ndbLabelOffset",
-    "intLabelOffset"
+    "intLabelOffset",
+    "airwayStrokeWidth",
+    "airwayStrokeColor",
+    "airwayLabelFontSize",
+    "airwayLabelFontColor",
+    "airwayLabelFontOutlineWidth",
+    "airwayLabelFontOutlineColor",
+    "airwayLabelShowBackground",
+    "airwayLabelBackgroundPadding",
+    "airwayLabelBackgroundColor",
+    "airwayLabelBackgroundOutlineWidth",
+    "airwayLabelBackgroundOutlineColor",
+    "airwayLabelPriority",
 ];
 
 /**
