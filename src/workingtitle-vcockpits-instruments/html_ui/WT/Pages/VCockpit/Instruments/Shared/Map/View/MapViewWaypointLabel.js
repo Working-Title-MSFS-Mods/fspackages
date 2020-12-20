@@ -6,9 +6,10 @@ class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
      * @param {WT_Waypoint} waypoint - the waypoint for which to create the new label.
      * @param {String} text - the text content of the new label.
      * @param {Number} priority - the priority for the new label.
+     * @param {Boolean} alwaysShow - whether to force the new label to be shown, even when it would otherwise culled.
      */
-    constructor(waypoint, text, priority) {
-        super(text, priority);
+    constructor(waypoint, text, priority, alwaysShow = false) {
+        super(text, priority, alwaysShow);
         this._waypoint = waypoint;
         this._offset = new WT_GVector2(0, 0);
 
@@ -52,11 +53,12 @@ class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
      * Creates a new label for a waypoint.
      * @param {WT_Waypoint} waypoint - the waypoint for which to create a label.
      * @param {Number} priority - the priority for the new label.
+     * @param {Boolean} alwaysShow - whether to force the new label to be shown, even when it would otherwise culled.
      * @returns {WT_MapViewWaypointLayer} a waypoint label.
      */
-    static createFromWaypoint(waypoint, priority) {
+    static createFromWaypoint(waypoint, priority, alwaysShow) {
         let text = waypoint.ident;
-        return new WT_MapViewWaypointLabel(waypoint, text, priority);
+        return new WT_MapViewWaypointLabel(waypoint, text, priority, alwaysShow);
     }
 }
 WT_MapViewWaypointLabel.OPTIONS_DEF = {
@@ -80,12 +82,13 @@ class WT_MapViewWaypointLabelCache {
      * returned.
      * @param {WT_Waypoint} waypoint - the waypoint for which to get a label.
      * @param {Number} priority - the priority for the label, if a new one has to be created.
+     * @param {Boolean} alwaysShow - whether to force the label to be shown, even when it would otherwise culled.
      * @returns {WT_MapViewWaypointLabel} a label for the waypoint.
      */
-    getLabel(waypoint, priority) {
+    getLabel(waypoint, priority, alwaysShow = false) {
         let existing = this._cache.get(waypoint.uniqueID);
         if (!existing) {
-            existing = WT_MapViewWaypointLabel.createFromWaypoint(waypoint, priority);
+            existing = WT_MapViewWaypointLabel.createFromWaypoint(waypoint, priority, alwaysShow);
             this._cache.set(waypoint.uniqueID, existing);
             if (this._cache.size > this._size) {
                 this._cache.delete(this._cache.keys().next().value);

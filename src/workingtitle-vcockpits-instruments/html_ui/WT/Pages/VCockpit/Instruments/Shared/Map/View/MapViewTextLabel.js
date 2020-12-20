@@ -3,6 +3,10 @@ class WT_MapViewTextLabel {
         return 0;
     }
 
+    get alwaysShow() {
+        return false;
+    }
+
     get bounds() {
         return undefined;
     }
@@ -15,10 +19,11 @@ class WT_MapViewTextLabel {
 }
 
 class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
-    constructor(text, priority) {
+    constructor(text, priority, alwaysShow = false) {
         super();
         this._text = text;
         this._priority = priority;
+        this._alwaysShow = alwaysShow;
         this._position = new WT_GVector2(0, 0);
         this._anchor = new WT_GVector2(0, 1);
 
@@ -31,6 +36,10 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
 
     get priority() {
         return this._priority;
+    }
+
+    get alwaysShow() {
+        return this._alwaysShow;
     }
 
     get bounds() {
