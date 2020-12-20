@@ -317,8 +317,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
 
     /**
      * @readonly
-     * @property {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}} display - an object containing this sublayer's display canvas and its rendering context.
-     * @type {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}}
+     * @property {WT_MapViewCanvasDrawable} display - an object containing this sublayer's display canvas and its rendering context.
+     * @type {WT_MapViewCanvasDrawable}
      */
     get display() {
         return this._display;
@@ -326,8 +326,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
 
     /**
      * @readonly
-     * @property {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}} buffer - an object containing this sublayer's offscreen buffer and its rendering context, if they exist.
-     * @type {{canvas:HTMLCanvasElement, context:CanvasRenderingContext2D}}
+     * @property {WT_MapViewCanvasDrawable} buffer - an object containing this sublayer's offscreen buffer and its rendering context, if they exist.
+     * @type {WT_MapViewCanvasDrawable}
      */
     get buffer() {
         return this._buffer;
