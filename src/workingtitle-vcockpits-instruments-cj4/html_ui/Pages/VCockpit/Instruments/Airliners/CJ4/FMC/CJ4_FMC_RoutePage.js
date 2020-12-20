@@ -117,7 +117,7 @@ class CJ4_FMC_RoutePage {
         }
 
         const currFplnVer = SimVar.GetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number');
-        if (this._fplnVersion < currFplnVer) {
+        if (this._fmc.fpHasChanged === true || this._fplnVersion < currFplnVer) {
             this._rows = CJ4_FMC_RoutePage._GetAllRows(this._fmc);
             this._fplnVersion = currFplnVer;
 
@@ -147,6 +147,7 @@ class CJ4_FMC_RoutePage {
     }
 
     render() {
+        console.log("render");
         if (this._currentPage == 0) {
             this.renderMainPage();
         } else {
@@ -196,6 +197,7 @@ class CJ4_FMC_RoutePage {
         if (this._currentPage == 0) {
             // main page
             this._fmc.onLeftInput[0] = () => {
+                this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
                 if (value == "") {
                     if (this._fmc.flightPlanManager.getOrigin()) {
@@ -208,6 +210,7 @@ class CJ4_FMC_RoutePage {
             };
 
             this._fmc.onRightInput[0] = () => {
+                this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
                 if (value == "") {
                     if (this._fmc.flightPlanManager.getDestination()) {
@@ -291,6 +294,7 @@ class CJ4_FMC_RoutePage {
     bindRowEvents(lskIdx) {
         if (this._currentPage > 0) {
             this._fmc.onLeftInput[lskIdx] = () => {
+                this._fmc.setMsg("Working...");
                 const value = this._fmc.inOut;
                 this._fmc.clearUserInput();
                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
@@ -301,6 +305,7 @@ class CJ4_FMC_RoutePage {
                     if (lastWaypoint.infos instanceof WayPointInfo) {
                         lastWaypoint.infos.UpdateAirway(value).then(() => {
                             let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
+                            this._fmc.setMsg();
                             if (airway) {
                                 this._airwayInput = airway.name;
                                 this.update(true);
@@ -342,6 +347,7 @@ class CJ4_FMC_RoutePage {
                                 if (result) {
                                     this._airwayInput = "";
                                     this._fmc.setMsg();
+                                    console.log("added " + wpt.ident);
                                     this.update(true);
                                 } else
                                     this._fmc.showErrorMessage("NOT ON AIRWAY");
