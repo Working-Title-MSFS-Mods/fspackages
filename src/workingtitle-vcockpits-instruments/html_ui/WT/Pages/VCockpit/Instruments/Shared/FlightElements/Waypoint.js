@@ -33,11 +33,11 @@ class WT_Waypoint {
 /**
  * A navigational waypoint defined by a custom set of lat/long coordinates.
  */
-class WT_WaypointCustom extends WT_Waypoint {
+class WT_CustomWaypoint extends WT_Waypoint {
     constructor(ident, location) {
         super();
         this._ident = ident;
-        this._location = location;
+        this._location = new WT_GeoPoint(location.lat, location.long);
     }
 
     /**
