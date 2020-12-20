@@ -91,6 +91,12 @@ WT_MapViewWaypointImageIcon.SIZE_DEFAULT = 40;
  * A map icon for an airport.
  */
 class WT_MapViewAirportImageIcon extends WT_MapViewWaypointImageIcon {
+    constructor(waypoint, priority, imageDir, size = WT_MapViewWaypointImageIcon.SIZE_DEFAULT) {
+        super(waypoint, priority, imageDir, size);
+
+        this._longestRunway = waypoint.runways.longest();
+    }
+
     get imageFileName() {
         let fuel = this.waypoint.fuel !== "";
         switch(this.waypoint.class) {
@@ -136,8 +142,8 @@ class WT_MapViewAirportImageIcon extends WT_MapViewWaypointImageIcon {
         let rectLength = sizePx * WT_MapViewAirportImageIcon.RUNWAY_RECT_LENGTH_FACTOR;
         let rectWidth = sizePx * WT_MapViewAirportImageIcon.RUNWAY_RECT_WIDTH_FACTOR;
         let rotation = 0;
-        if (this.waypoint.longestRunway) {
-            rotation = this.waypoint.longestRunway.direction + state.projection.rotation;
+        if (this._longestRunway) {
+            rotation = this._longestRunway.direction + state.projection.rotation;
         }
 
         context.translate(this._viewPosition.x, this._viewPosition.y);

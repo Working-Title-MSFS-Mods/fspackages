@@ -14,7 +14,7 @@ class WT_Airport extends WT_ICAOWaypoint {
         this._isTowered = data.towered;
         this._fuel = `${data.fuel1} ${data.fuel2}`;
         this._radarCoverage = data.radarCoverage;
-        this._runways = this._initRunways(data.runways);
+        this._runways = new WT_RunwayList(this._initRunways(data.runways));
         this._size = this._calculateSize();
     }
 
@@ -28,38 +28,27 @@ class WT_Airport extends WT_ICAOWaypoint {
             let newRunwayPair = WT_Runway._createFromData(this, data);
             for (let runway of newRunwayPair) {
                 let i = 0;
-                let length = runway.length;
-                let width = runway.width;
                 while (i < runways.length) {
                     let other = runways[i++];
-                    let lengthCompare = length.compare(other.length);
-                    if (lengthCompare > 0) {
+                    let numberCompare = runway.number - other.number;
+                    if (numberCompare < 0) {
                         break;
-                    } else if (lengthCompare === 0) {
-                        let widthCompare = width.compare(other.width);
-                        if (widthCompare > 0) {
-                            break;
-                        } else if (widthCompare === 0) {
-                            if (runway.number < other.number) {
-                                break;
-                            } else if (runway.number === other.number) {
-                                let shouldBreak = false;
-                                switch (runway.suffix) {
-                                    case WT_Runway.Suffix.R:
-                                        if (other.suffix === WT_Runway.Suffix.C) {
-                                            break;
-                                        }
-                                    case WT_Runway.Suffix.C:
-                                        if (other.suffix === WT_Runway.Suffix.L) {
-                                            break;
-                                        }
-                                    case WT_Runway.Suffix.L:
-                                        shouldBreak = true;
-                                }
-                                if (shouldBreak) {
+                    } else if (numberCompare === 0) {
+                        let shouldBreak = false;
+                        switch (runway.suffix) {
+                            case WT_Runway.Suffix.R:
+                                if (other.suffix === WT_Runway.Suffix.C) {
                                     break;
                                 }
-                            }
+                            case WT_Runway.Suffix.C:
+                                if (other.suffix === WT_Runway.Suffix.L) {
+                                    break;
+                                }
+                            case WT_Runway.Suffix.L:
+                                shouldBreak = true;
+                        }
+                        if (shouldBreak) {
+                            break;
                         }
                     }
                 }
@@ -137,20 +126,11 @@ class WT_Airport extends WT_ICAOWaypoint {
 
     /**
      * @readonly
-     * @property {WT_Runway[]} runways - a list of runways belonging to this airport.
-     * @type {WT_Runway[]}
+     * @property {WT_RunwayList} runways - a list of runways belonging to this airport.
+     * @type {WT_RunwayList}
      */
     get runways() {
-        return Array.from(this._runways);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_Runway} longestRunway - the longest runway at this airport.
-     * @type {WT_Runway}
-     */
-    get longestRunway() {
-        return this._runways[0];
+        return this._runways;
     }
 }
 /**
@@ -198,6 +178,39 @@ WT_Airport.RadarCoverage = {
     YES: 2
 }
 
+class WT_RunwayList {
+    constructor(runways) {
+        /**
+         * @type {WT_Runway[]}
+         */
+        this._runways = runways;
+
+        this._longest;
+        for (let runway of this._runways) {
+            if (!this._longest || runway.length > this._longest.length) {
+                this._longest = runway;
+            }
+        }
+    }
+
+    longest() {
+        return this._longest;
+    }
+
+    getByIndex(index) {
+        return this._runways[index];
+    }
+
+    getByDesignation(designation) {
+        let index = this._runways.findIndex(runway => runway.designation === designation);
+        return this.getByIndex(index);
+    }
+
+    [Symbol.iterator]() {
+        return this._runways.values();
+    }
+}
+
 /**
  * An airport runway.
  */
@@ -223,7 +236,7 @@ class WT_Runway {
             default: this._suffix = WT_Runway.Suffix.NONE;
         }
         this._designation = this._number + this._suffix;
-        this._location = new LatLong(data.latitude, data.longitude);
+        this._location = new WT_GeoPoint(data.latitude, data.longitude);
         this._elevation = new WT_NumberUnit(data.elevation, WT_Unit.METER);
         this._direction = reverse ? (data.direction + 180) % 360 : data.direction;
         this._length = new WT_NumberUnit(data.length, WT_Unit.METER);
@@ -271,20 +284,20 @@ class WT_Runway {
 
     /**
      * @readonly
-     * @property {LatLong} location - the lat/long coordinates of the center of this runway.
-     * @type {LatLong}
+     * @property {WT_GeoPoint} location - the lat/long coordinates of the center of this runway.
+     * @type {WT_GeoPoint}
      */
     get location() {
-        return this._location;
+        return this._location.readonly();
     }
 
     /**
      * @readonly
-     * @property {WT_NumberUnit} elevation - the elevation of the center of this runway.
-     * @type {WT_NumberUnit}
+     * @property {WT_NumberUnitReadOnly} elevation - the elevation of the center of this runway.
+     * @type {WT_NumberUnitReadOnly}
      */
     get elevation() {
-        return this._elevation.copy();
+        return this._elevation.readonly();
     }
 
     /**
@@ -298,20 +311,20 @@ class WT_Runway {
 
     /**
      * @readonly
-     * @property {WT_NumberUnit} length - the length of this runway.
-     * @type {WT_NumberUnit}
+     * @property {WT_NumberUnitReadOnly} length - the length of this runway.
+     * @type {WT_NumberUnitReadOnly}
      */
     get length() {
-        return this._length.copy();
+        return this._length.readonly();
     }
 
     /**
      * @readonly
-     * @property {WT_NumberUnit} width - the width of this runway.
-     * @type {WT_NumberUnit}
+     * @property {WT_NumberUnitReadOnly} width - the width of this runway.
+     * @type {WT_NumberUnitReadOnly}
      */
     get width() {
-        return this._width.copy();
+        return this._width.readonly();
     }
 
     /**
