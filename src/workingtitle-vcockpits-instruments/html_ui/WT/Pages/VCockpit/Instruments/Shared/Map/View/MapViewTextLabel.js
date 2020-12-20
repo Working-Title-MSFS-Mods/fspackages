@@ -72,6 +72,10 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
         }
     }
 
+    setOptions(opts) {
+        this._optsManager.setOptions(opts);
+    }
+
     draw(state, context) {
         context.font = `${this.fontSize * state.dpiScale}px ${this.font}`;
         let width = context.measureText(this.text).width;
