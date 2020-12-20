@@ -238,7 +238,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
      */
     _updateRegisteredCities(state) {
         for (let entry of this._registeredCities.values()) {
-            let show = state.projection.isInView(entry.label.city.location, 1.05);
+            let show = state.projection.isInView(entry.label.city.location, 0.05);
             if (show && !entry.showLabel) {
                 this._labelManager.add(entry.label);
             } else if (!show && entry.showLabel) {
