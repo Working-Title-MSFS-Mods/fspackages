@@ -3,6 +3,14 @@ class CJ4_FMC_FplnRecallPage {
         let url = "https://www.simbrief.com/api/xml.fetcher.php?userid=" + pilotId + "&json=1";
         let json = "";
 
+        let parseAirport = (icao) => {
+            if (icao.startsWith("K") && (/\d/.test(icao))) {
+                icao = icao.substring(1).padEnd(4, " ");
+            }
+
+            return icao;
+        };
+
         // HINT: defining these methods here in the order they will be called by the callbacks
         let updateFrom = () => {
             console.log("UPDATE FROMTO");
@@ -14,7 +22,7 @@ class CJ4_FMC_FplnRecallPage {
                     fmc.flightPlanManager.clearFlightPlan(() => {
                         fmc.setMsg("LOAD FPLN...ORIG [yellow]" + from);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                            fmc.updateRouteOrigin(from, updateRunways);
+                            fmc.updateRouteOrigin(parseAirport(from), updateRunways);
                         });
                     });
                 });
@@ -32,7 +40,7 @@ class CJ4_FMC_FplnRecallPage {
             console.log("UPDATE DESTINATION");
             let dest = json.destination.icao_code;
             fmc.setMsg("LOAD FPLN...DST [yellow]" + dest);
-            fmc.updateRouteDestination(dest, updateRoute);
+            fmc.updateRouteDestination(parseAirport(dest), updateRoute);
         };
 
         let updateRoute = () => {
