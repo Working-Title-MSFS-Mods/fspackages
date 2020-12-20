@@ -38,7 +38,9 @@ export class FlightPlanAsoboSync {
               for (let i = 0; i < enroute.length - 1; i++) {
                 const wpt = enroute[i];
                 console.log(wpt.icao);
-                await fpln.addWaypoint(wpt.icao);
+                if (wpt.icao.trim() !== "") {
+                  await fpln.addWaypoint(wpt.icao);
+                }
               }
 
               // set departure
