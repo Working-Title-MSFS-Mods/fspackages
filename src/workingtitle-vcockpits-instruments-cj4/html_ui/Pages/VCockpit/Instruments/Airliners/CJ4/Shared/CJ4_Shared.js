@@ -2646,7 +2646,7 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         // Set ETA
                         let previousWaypointETAValue;
-                        if (previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
+                        if (previousWaypoint && flightPlanManager.getOrigin() !== undefined && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
                             if (this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint.ident) {
                                 const seconds = Number.parseInt(UTCTime);
                                 previousWaypointETAValue = Utils.SecondsToDisplayTime(seconds, true, false, false);
