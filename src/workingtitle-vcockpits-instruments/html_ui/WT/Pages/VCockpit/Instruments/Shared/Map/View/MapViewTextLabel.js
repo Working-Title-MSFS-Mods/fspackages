@@ -86,7 +86,7 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
     }
 
     draw(state, context) {
-        context.font = `${this.fontSize * state.dpiScale}px ${this.font}`;
+        context.font = `${this.fontWeight} ${this.fontSize * state.dpiScale}px ${this.font}`;
         let width = context.measureText(this.text).width;
         let height = this.fontSize * state.dpiScale;
 
@@ -144,6 +144,7 @@ class WT_MapViewSimpleTextLabel extends WT_MapViewTextLabel {
 }
 WT_MapViewSimpleTextLabel.OPTIONS_DEF = {
     font: {default: "Roboto", auto: true},
+    fontWeight: {default: "normal", auto: true},
     fontSize: {default: 20, auto: true},
     fontColor: {default: "white", auto: true},
     fontOutlineWidth: {default: 6, auto: true},
