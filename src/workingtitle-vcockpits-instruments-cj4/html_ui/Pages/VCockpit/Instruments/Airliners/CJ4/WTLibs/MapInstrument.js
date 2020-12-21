@@ -123,6 +123,8 @@ class MapInstrument extends ISvgMapRootElement {
         this.roadPrimaryMaxRange = MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT;
 
         this._todWaypoint = undefined;
+        this._fplnVersion = -1;
+        this._fplnNavMapElements = [];
         // MOD END
     }
     get flightPlanManager() {
@@ -692,107 +694,106 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                 }
             }
-            this.navMap.mapElements = [];
-            if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
-                /*
-                 * Because of the weird way SvgRoadNetworkElement draws its subelements, when it gets removed from the map its subelements
-                 * don't get properly cleaned up and remain on the map indefinitely as static graphics. To prevent this, we will use the
-                 * hack-y workaround of ensuring SvgRoadNetworkElement is always loaded into the map so it can properly update and hide
-                 * its subelements as needed.
-                 */
-                this.navMap.mapElements.push(this.roadNetwork);
+            if ((this.drawCounter % 15 === 10)) {
+                this.navMap.mapElements = [];
+                if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
+                    /*
+                     * Because of the weird way SvgRoadNetworkElement draws its subelements, when it gets removed from the map its subelements
+                     * don't get properly cleaned up and remain on the map indefinitely as static graphics. To prevent this, we will use the
+                     * hack-y workaround of ensuring SvgRoadNetworkElement is always loaded into the map so it can properly update and hide
+                     * its subelements as needed.
+                     */
+                    this.navMap.mapElements.push(this.roadNetwork);
 
-                if (this.showTraffic) {
-                    if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
-                        this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
-                    }
-                }
-                if (this.bShowAirplane) {
-                    this.navMap.mapElements.push(this.airplaneIconElement);
-                }
-                if (this.showObstacles && this.navMap.centerCoordinates) {
-                    if (Math.abs(this.navMap.centerCoordinates.lat - 47.6) < 2) {
-                        if (Math.abs(this.navMap.centerCoordinates.long + 122.3) < 2) {
-                            this.navMap.mapElements.push(...this.dummyObstacles);
+                    if (this.showTraffic) {
+                        if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
+                            this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
                         }
                     }
-                }
-                let margin = 0.05;
-                if (this.showAirports) {
-                    for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
-                        let airport = this.airportLoader.waypoints[i];
-                        if (airport && airport.infos instanceof AirportInfo) {
-                            if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                if (this.getDeclutteredRange() <= this.airportMaxRanges[airport.infos.getClassSize()]) {
-                                    this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
+                    if (this.bShowAirplane) {
+                        this.navMap.mapElements.push(this.airplaneIconElement);
+                    }
+                    if (this.showObstacles && this.navMap.centerCoordinates) {
+                        if (Math.abs(this.navMap.centerCoordinates.lat - 47.6) < 2) {
+                            if (Math.abs(this.navMap.centerCoordinates.long + 122.3) < 2) {
+                                this.navMap.mapElements.push(...this.dummyObstacles);
+                            }
+                        }
+                    }
+                    let margin = 0.05;
+                    if (this.showAirports) {
+                        for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
+                            let airport = this.airportLoader.waypoints[i];
+                            if (airport && airport.infos instanceof AirportInfo) {
+                                if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
+                                    if (this.getDeclutteredRange() <= this.airportMaxRanges[airport.infos.getClassSize()]) {
+                                        this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if (this.showVORs && (this.getDeclutteredRange() <= this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
-                    for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
-                        let vor = this.vorLoader.waypoints[i];
-                        vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
-                        if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
-                            this.navMap.mapElements.push(vor.getSvgElement(this.navMap.index));
+                    if (this.showVORs && (this.getDeclutteredRange() <= this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
+                        for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
+                            let vor = this.vorLoader.waypoints[i];
+                            vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
+                            if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
+                                this.navMap.mapElements.push(vor.getSvgElement(this.navMap.index));
+                            }
                         }
                     }
-                }
-                if (this.showNDBs && (this.getDeclutteredRange() <= this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
-                    for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
-                        let ndb = this.ndbLoader.waypoints[i];
-                        ndb.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.ndbMaxRange;
-                        if (this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
-                            this.navMap.mapElements.push(ndb.getSvgElement(this.navMap.index));
+                    if (this.showNDBs && (this.getDeclutteredRange() <= this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
+                        for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
+                            let ndb = this.ndbLoader.waypoints[i];
+                            ndb.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.ndbMaxRange;
+                            if (this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
+                                this.navMap.mapElements.push(ndb.getSvgElement(this.navMap.index));
+                            }
                         }
                     }
-                }
-                if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
-                    for (let i = 0; i < Math.min(30, this.intersectionLoader.waypoints.length); i++) {
-                        let intersection = this.intersectionLoader.waypoints[i];
-                        intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
-                        if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
-                            this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
+                    if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
+                        for (let i = 0; i < Math.min(30, this.intersectionLoader.waypoints.length); i++) {
+                            let intersection = this.intersectionLoader.waypoints[i];
+                            intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
+                            if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
+                                this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
+                            }
                         }
                     }
-                }
-                if (this.showCities) {
-                    for (let city of this.cityManager.displayedCities) {
-                        if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
-                            this.navMap.mapElements.push(city);
+                    if (this.showCities) {
+                        for (let city of this.cityManager.displayedCities) {
+                            if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
+                                this.navMap.mapElements.push(city);
+                            }
                         }
                     }
-                }
-                if (this.showConstraints) {
-                    for (let i = 0; i < this.constraints.length; i++) {
-                        this.navMap.mapElements.push(this.constraints[i]);
+                    if (this.showConstraints) {
+                        for (let i = 0; i < this.constraints.length; i++) {
+                            this.navMap.mapElements.push(this.constraints[i]);
+                        }
                     }
-                }
 
-                if (this.showTrackVector && this.trackVectorElement) {
-                    this.navMap.mapElements.push(this.trackVectorElement);
-                }
-
-                if (this.showAltitudeIntercept && this.altitudeInterceptElement) {
-                    this.navMap.mapElements.push(this.altitudeInterceptElement);
-                }
-
-                if (this.showFuelRing && this.fuelRingElement) {
-                    this.navMap.mapElements.push(this.fuelRingElement);
-                }
-
-                if (this.eBingMode != EBingMode.CURSOR) {
-                    if (this.showRangeRing && this.rangeRingElement) {
-                        this.navMap.mapElements.push(this.rangeRingElement);
+                    if (this.showTrackVector && this.trackVectorElement) {
+                        this.navMap.mapElements.push(this.trackVectorElement);
                     }
-                    if (this.showRangeCompass && this.rangeCompassElement) {
-                        this.navMap.mapElements.push(this.rangeCompassElement);
+
+                    if (this.showAltitudeIntercept && this.altitudeInterceptElement) {
+                        this.navMap.mapElements.push(this.altitudeInterceptElement);
                     }
-                }
-                if (this.flightPlanManager && this.bIsFlightPlanVisible) {
-                    let l = this.flightPlanManager.getWaypointsCount();
-                    if (l > 1) {
+
+                    if (this.showFuelRing && this.fuelRingElement) {
+                        this.navMap.mapElements.push(this.fuelRingElement);
+                    }
+
+                    if (this.eBingMode != EBingMode.CURSOR) {
+                        if (this.showRangeRing && this.rangeRingElement) {
+                            this.navMap.mapElements.push(this.rangeRingElement);
+                        }
+                        if (this.showRangeCompass && this.rangeCompassElement) {
+                            this.navMap.mapElements.push(this.rangeCompassElement);
+                        }
+                    }
+                    if (this.flightPlanManager && this.bIsFlightPlanVisible) {
                         if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
                             this.navMap.mapElements.push(this.tmpFlightPlanElement);
                             let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
@@ -812,67 +813,86 @@ class MapInstrument extends ISvgMapRootElement {
                                 }
                             }
                         }
-                        this.navMap.mapElements.push(this.flightPlanElement);
-                        for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
-                            let waypoint = this.flightPlanManager.getWaypoint(i, 0);
-                            if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
-                                if (waypoint.getSvgElement(this.navMap.index)) {
-                                    if (!this.navMap.mapElements.find(w => {
-                                        return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
-                                    })) {
-                                        waypoint.isInFlightPlan = true;
-                                        this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
-                                    }
-                                }
+
+                        let l = this.flightPlanManager.getWaypointsCount();
+                        if (l > 1) {
+
+                            this.navMap.mapElements.push(this.flightPlanElement);
+                            this.navMap.mapElements.push(...this.updateFplnWaypoints());
+                        }
+
+                        const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
+                        if (todDist > 0) {
+                            this.updateTodWaypoint();
+                            if (this._todWaypoint) {
+                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
                             }
                         }
-                    }
 
-                    const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
-                    if (todDist > 0) {
-                        this.updateTodWaypoint();
-                        if (this._todWaypoint) {
-                            this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
+                        if (this.flightPlanManager.getIsDirectTo()) {
+                            this.directToElement.llaRequested = this.flightPlanManager.getDirecToOrigin();
+                            this.directToElement.targetWaypoint = this.flightPlanManager.getDirectToTarget();
+                            this.directToElement.planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+                            this.navMap.mapElements.push(this.directToElement);
+                        }
+                        if (this.tmpDirectToElement) {
+                            this.navMap.mapElements.push(this.tmpDirectToElement);
+                        }
+                        this.navMap.mapElements.push(...this.backOnTracks);
+                        if ((SimVar.GetSimVarValue("L:FLIGHTPLAN_USE_DECEL_WAYPOINT", "number") === 1) && this.flightPlanManager.decelWaypoint) {
+                            this.navMap.mapElements.push(this.flightPlanManager.decelWaypoint.getSvgElement(this.navMap.index));
+                        }
+                        if (this.debugApproachFlightPlanElement) {
+                            this.navMap.mapElements.push(this.debugApproachFlightPlanElement);
                         }
                     }
-
-                    if (this.flightPlanManager.getIsDirectTo()) {
-                        this.directToElement.llaRequested = this.flightPlanManager.getDirecToOrigin();
-                        this.directToElement.targetWaypoint = this.flightPlanManager.getDirectToTarget();
-                        this.directToElement.planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-                        this.navMap.mapElements.push(this.directToElement);
+                    this.navMap.mapElements.push(...this.maskElements);
+                    this.navMap.mapElements.push(...this.topOfCurveElements);
+                    this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
+                }
+                else {
+                    if (this.bShowAirplaneOnWeather) {
+                        this.navMap.mapElements.push(this.airplaneIconElement);
                     }
-                    if (this.tmpDirectToElement) {
-                        this.navMap.mapElements.push(this.tmpDirectToElement);
-                    }
-                    this.navMap.mapElements.push(...this.backOnTracks);
-                    if ((SimVar.GetSimVarValue("L:FLIGHTPLAN_USE_DECEL_WAYPOINT", "number") === 1) && this.flightPlanManager.decelWaypoint) {
-                        this.navMap.mapElements.push(this.flightPlanManager.decelWaypoint.getSvgElement(this.navMap.index));
-                    }
-                    if (this.debugApproachFlightPlanElement) {
-                        this.navMap.mapElements.push(this.debugApproachFlightPlanElement);
+                    if (this.bingMap) {
+                        let transform = "";
+                        if (this.bingMap.getWeather() == EWeatherRadar.VERTICAL)
+                            transform = "scale(0.75)";
+                        this.bingMap.style.transform = transform;
                     }
                 }
-                this.navMap.mapElements.push(...this.maskElements);
-                this.navMap.mapElements.push(...this.topOfCurveElements);
-                this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
-                if (this.bingMap) {
+
+                if (this.bingMap && (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS)) {
                     // MOD: handle bing map rotation
                     this.bingMap.style.transform = "rotate(" + this.rotation + "deg)";
                 }
             }
-            else {
-                if (this.bShowAirplaneOnWeather) {
-                    this.navMap.mapElements.push(this.airplaneIconElement);
-                }
-                if (this.bingMap) {
-                    let transform = "";
-                    if (this.bingMap.getWeather() == EWeatherRadar.VERTICAL)
-                        transform = "scale(0.75)";
-                    this.bingMap.style.transform = transform;
+        }
+    }
+    updateFplnWaypoints() {
+        if (this._fplnVersion < this.flightPlanManager.CurrentFlightPlanVersion) {
+            let l = this.flightPlanManager.getWaypointsCount();
+            if (l > 1) {
+                this._fplnNavMapElements = [];
+                console.log("update flightplan svgs");
+                for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
+                    let waypoint = this.flightPlanManager.getWaypoint(i, 0);
+                    if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
+                        if (waypoint.getSvgElement(this.navMap.index)) {
+                            if (!this.navMap.mapElements.find(w => {
+                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                            })) {
+                                waypoint.isInFlightPlan = true;
+                                this._fplnNavMapElements.push(waypoint.getSvgElement(this.navMap.index));
+                            }
+                        }
+                    }
                 }
             }
+            this._fplnVersion = this.flightPlanManager.CurrentFlightPlanVersion;
         }
+
+        return this._fplnNavMapElements;
     }
     updateTodWaypoint() {
         const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
