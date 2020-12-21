@@ -3,11 +3,11 @@ class WT_FlightPlan {
         this._icaoWaypointFactory = icaoWaypointFactory;
 
         /**
-         * @type {WT_Airport}
+         * @type {WT_Waypoint}
          */
         this._origin = null;
         /**
-         * @type {WT_Airport}
+         * @type {WT_Waypoint}
          */
         this._destination = null;
 
@@ -36,6 +36,10 @@ class WT_FlightPlan {
         return this._origin !== null;
     }
 
+    isOriginAirport() {
+        return this.hasOrigin() && this._origin.icao && this._origin.type === WT_ICAOWaypoint.Type.AIRPORT;
+    }
+
     hasDeparture() {
         return this._departure !== null;
     }
@@ -52,15 +56,19 @@ class WT_FlightPlan {
         return this._destination !== null;
     }
 
+    isDestinationAirport() {
+        return this.hasDestination() && this._destination.icao && this._destination.type === WT_ICAOWaypoint.Type.AIRPORT;
+    }
+
     /**
-     * @returns {WT_Airport}
+     * @returns {WT_Waypoint}
      */
     getOrigin() {
         return this._origin;
     }
 
     /**
-     * @returns {WT_Airport}
+     * @returns {WT_Waypoint}
      */
     getDestination() {
         return this._destination;
@@ -143,15 +151,15 @@ class WT_FlightPlan {
 
     /**
      *
-     * @param {WT_Airport} airport
+     * @param {WT_Waypoint} waypoint
      */
-    setOrigin(airport) {
-        if (!airport || (this.hasOrigin() && (airport.uniqueID === this._origin.uniqueID))) {
+    setOrigin(waypoint) {
+        if (!waypoint || (this.hasOrigin() && (waypoint.uniqueID === this._origin.uniqueID))) {
             return;
         }
 
         let eventData = {types: 0};
-        this._changeOrigin(airport, eventData);
+        this._changeOrigin(waypoint, eventData);
         this._changeDeparture(null, eventData);
         this._enroute._setPrevious(this._originLeg);
         this._updateFromEnroute();
@@ -171,13 +179,17 @@ class WT_FlightPlan {
         this._fireEvent(eventData);
     }
 
-    setDestination(airport) {
-        if (!airport || (this.hasDestination() && (airport.uniqueID === this._destination.uniqueID))) {
+    /**
+     *
+     * @param {WT_Waypoint} waypoint
+     */
+    setDestination(waypoint) {
+        if (!waypoint || (this.hasDestination() && (waypoint.uniqueID === this._destination.uniqueID))) {
             return;
         }
 
         let eventData = {types: 0};
-        this._changeDestination(airport, eventData);
+        this._changeDestination(waypoint, eventData);
         this._destinationLeg._setPrevious(this._enroute);
         this._changeArrival(null, eventData);
         this._approach = null;
@@ -350,7 +362,7 @@ class WT_FlightPlan {
      * @param {Number} enrouteTransitionIndex
      */
     async setDeparture(name, runwayTransitionIndex, enrouteTransitionIndex) {
-        if (!this.hasOrigin() ||
+        if (!this.isOriginAirport() ||
             (this.hasDeparture() && (this._departure.procedure.name === name && this._departure.runwayTransitionIndex === runwayTransitionIndex && this._departure.enrouteTransitionIndex === enrouteTransitionIndex))) {
             return;
         }
@@ -366,7 +378,7 @@ class WT_FlightPlan {
      * @param {Number} enrouteTransitionIndex
      */
     async setDepartureIndex(index, runwayTransitionIndex, enrouteTransitionIndex) {
-        if (!this.hasOrigin() ||
+        if (!this.isOriginAirport() ||
             (this.hasDeparture() && (this._departure.procedure.name === this._origin.departures.getByIndex(index).name && this._departure.runwayTransitionIndex === runwayTransitionIndex && this._departure.enrouteTransitionIndex === enrouteTransitionIndex))) {
             return;
         }
@@ -426,7 +438,7 @@ class WT_FlightPlan {
      * @param {Number} [runwayTransitionIndex]
      */
     async setArrival(name, enrouteTransitionIndex, runwayTransitionIndex = -1) {
-        if (!this.hasDestination() ||
+        if (!this.isDestinationAirport() ||
             (this.hasArrival() && (this._arrival.procedure.name === name && this._arrival.runwayTransitionIndex === runwayTransitionIndex && this._arrival.enrouteTransitionIndex === enrouteTransitionIndex))) {
             return;
         }
@@ -442,7 +454,7 @@ class WT_FlightPlan {
      * @param {Number} [enrouteTransitionIndex]
      */
     async setArrivalIndex(index, enrouteTransitionIndex, runwayTransitionIndex = -1) {
-        if (!this.hasDestination() ||
+        if (!this.isDestinationAirport() ||
             (this.hasArrival() && (this._arrival.procedure.name === this._destination.arrivals.getByIndex(index).name && this._arrival.runwayTransitionIndex === runwayTransitionIndex && this._arrival.enrouteTransitionIndex === enrouteTransitionIndex))) {
             return;
         }
@@ -498,7 +510,7 @@ class WT_FlightPlan {
      * @param {Number} [transitionIndex]
      */
     async setApproach(name, transitionIndex = -1) {
-        if (!this.hasDestination() ||
+        if (!this.isDestinationAirport() ||
             (this.hasApproach() && (this._approach.procedure.name === name && this._approach.transitionIndex === transitionIndex))) {
             return;
         }
@@ -513,7 +525,7 @@ class WT_FlightPlan {
      * @param {Number} [transitionIndex]
      */
     async setApproachIndex(index, transitionIndex = -1) {
-        if (!this.hasDestination() ||
+        if (!this.isDestinationAirport() ||
             (this.hasApproach() && (this._approach.procedure.name === this._destination.approaches.getByIndex(index).name && this._approach.transitionIndex === transitionIndex))) {
             return;
         }
