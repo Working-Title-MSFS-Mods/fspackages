@@ -81,15 +81,20 @@
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Libraries/d3-array.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Libraries/d3-geo.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Libraries/topojson.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Libraries/WorldMagneticModel.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Utils/OptionsManager.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Utils/DataStoreController.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Math/NumberUnit.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Math/GVector2.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Math/GVector3.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Geo/GeoPoint.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Geo/SphericalMath.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Utils/DataStoreController.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Geo/GeoMagnetic.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/highlight.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/WindDataDisplay/WindDataDisplay.js"></script>
@@ -108,6 +113,8 @@
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/FlightElements/Airway.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/FlightElements/ICAOWaypointFactory.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/FlightElements/ICAOSearcher.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/FlightElements/FlightPlan.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/FlightElements/FlightPlanAsoboInterface.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Cities/City.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Cities/CitySearcher.js"></script>
 
@@ -121,7 +128,6 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/GeoCalc.js"></script>
 
 <script type="text/html" import-script="/JS/NetBingMap.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Libraries/topojson.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Model/MapModel.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Model/Modules/MapModelUnitsModule.js"></script>
@@ -152,6 +158,7 @@
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/MapViewWaypointLabel.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/MapViewAirwaySegmentLabel.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/MapViewAirwayCanvasRenderer.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/MapViewFlightPlanCanvasRenderer.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewCrosshairLayer.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewRangeDisplayLayer.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewOrientationDisplayLayer.js"></script>
@@ -170,6 +177,7 @@
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewBorderLayer.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewCityLayer.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewWaypointLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/View/Layers/MapViewFlightPlanLayer.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapController.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapPointerSettingGroup.js"></script>
