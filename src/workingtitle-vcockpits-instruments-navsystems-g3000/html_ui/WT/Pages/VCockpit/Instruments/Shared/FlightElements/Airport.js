@@ -6,6 +6,18 @@ class WT_Airport extends WT_ICAOWaypoint {
         super(data, WT_ICAOWaypoint.Type.AIRPORT);
     }
 
+    _departureMap(data, index) {
+        return new WT_Departure(this, data.name, index, data);
+    }
+
+    _arrivalMap(data, index) {
+        return new WT_Arrival(this, data.name, index, data);
+    }
+
+    _approachMap(data, index) {
+        return new WT_Approach(this, data.name, index, data);
+    }
+
     _initFromData(data) {
         super._initFromData(data);
 
@@ -16,6 +28,10 @@ class WT_Airport extends WT_ICAOWaypoint {
         this._radarCoverage = data.radarCoverage;
         this._runways = new WT_RunwayList(this._initRunways(data.runways));
         this._size = this._calculateSize();
+
+        this._departures = new WT_ProcedureList(data.departures.map(this._departureMap.bind(this)));
+        this._arrivals = new WT_ProcedureList(data.arrivals.map(this._arrivalMap.bind(this)));
+        this._approaches = new WT_ProcedureList(data.approaches.map(this._approachMap.bind(this)));
     }
 
     _initRunways(runwayData) {
@@ -132,6 +148,35 @@ class WT_Airport extends WT_ICAOWaypoint {
     get runways() {
         return this._runways;
     }
+
+    /**
+     * @readonly
+     * @property {WT_ProcedureList<WT_Departure>} departures - a list of standard instrument departure procedures (SIDs) belonging
+     *                                                         to this airport.
+     * @type {WT_ProcedureList<WT_Departure>}
+     */
+    get departures() {
+        return this._departures;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_ProcedureList<WT_Arrival>} arrivals - a list of standard terminal arrival procedures (STARs) belonging
+     *                                                     to this airport.
+     * @type {WT_ProcedureList<WT_Arrival>}
+     */
+    get arrivals() {
+        return this._arrivals;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_ProcedureList<WT_Approach>} approaches - a list of approach procedures belonging to this airport.
+     * @type {WT_ProcedureList<WT_Approach>}
+     */
+    get approaches() {
+        return this._approaches;
+    }
 }
 /**
  * Airport size.
@@ -193,6 +238,10 @@ class WT_RunwayList {
         }
     }
 
+    count() {
+        return this._runways.length;
+    }
+
     longest() {
         return this._longest;
     }
@@ -231,8 +280,8 @@ class WT_Runway {
         let suffixIndex = reverse ? data.designatorCharSecondary : data.designatorCharPrimary;
         switch (suffixIndex) {
             case 1: this._suffix = WT_Runway.Suffix.L; break;
-            case 2: this._suffix = WT_Runway.Suffix.C; break;
-            case 3: this._suffix = WT_Runway.Suffix.R; break;
+            case 2: this._suffix = WT_Runway.Suffix.R; break;
+            case 3: this._suffix = WT_Runway.Suffix.C; break;
             default: this._suffix = WT_Runway.Suffix.NONE;
         }
         this._designation = this._number + this._suffix;
@@ -244,6 +293,8 @@ class WT_Runway {
         this._surface = data.surface;
         this._lighting = data.lighting;
 
+        this._start = this._location.offset(this._direction + 180, this._length.asUnit(WT_Unit.GA_RADIAN) / 2);
+        this._end = this._location.offset(this._direction, this._length.asUnit(WT_Unit.GA_RADIAN) / 2);
     }
 
     /**
@@ -289,6 +340,24 @@ class WT_Runway {
      */
     get location() {
         return this._location.readonly();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GeoPoint} start - the lat/long coordinates of the start of this runway.
+     * @type {WT_GeoPoint}
+     */
+    get start() {
+        return this._start.readonly();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GeoPoint} end - the lat/long coordinates of the end of this runway.
+     * @type {WT_GeoPoint}
+     */
+    get end() {
+        return this._end.readonly();
     }
 
     /**
@@ -412,3 +481,41 @@ WT_Runway.Surface = {
     ICE: 116,
     WATER: 201
 };
+
+/**
+ * @template T
+ */
+class WT_ProcedureList {
+    /**
+     * @param {Array<T>} procedures
+     */
+    constructor(procedures) {
+        this._procedures = procedures;
+    }
+
+    /**
+     *
+     * @param {Number} index
+     * @returns {T}
+     */
+    getByIndex(index) {
+        return this._procedures[index];
+    }
+
+    /**
+     *
+     * @param {String} name
+     * @returns {T}
+     */
+    getByName(name) {
+        let index = this._procedures.findIndex(procedure => procedure.name === name);
+        return this.getByIndex(index);
+    }
+
+    /**
+     * @returns {Iterator<T>}
+     */
+    [Symbol.iterator]() {
+        return this._procedures.values();
+    }
+}
