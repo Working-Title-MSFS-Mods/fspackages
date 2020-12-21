@@ -445,16 +445,18 @@ class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseRefer
 
     /**
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     * @param {WT_Waypoint} previousFix
      * @returns {Promise<WT_ICAOWaypoint>}
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
         let targetDistance = this.distance.asUnit(WT_Unit.GA_RADIAN);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);
 
         // because I'm not smart enough to derive the closed-form solution, we will approximate using small circle intersection,
         // then iterate to find the solution numerically
         let solutions = [new WT_GVector3(0, 0, 0), new WT_GVector3(0, 0, 0)];
-        let path = WT_GreatCircle.createFromPointBearing(previousFix.location, this.course);
+        let path = WT_GreatCircle.createFromPointBearing(previousFix.location, courseTrue);
         let circle = WT_SmallCircle.createFromPoint(reference.location, targetDistance);
         path.intersection(circle, solutions);
         if (solutions[0].length === 0) {
@@ -466,8 +468,8 @@ class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseRefer
             let alternate = WT_FlyHeadingUntilDistanceFromReference._tempGeoPoint2.setFromCartesian(solutions[1]);
             let headingTo1 = previousFix.location.bearingTo(solution);
             let headingTo2 = previousFix.location.bearingTo(alternate);
-            let delta1 = Math.abs(headingTo1 - this.course);
-            let delta2 = Math.abs(headingTo2 - this.course);
+            let delta1 = Math.abs(headingTo1 - courseTrue);
+            let delta2 = Math.abs(headingTo2 - courseTrue);
             delta1 = Math.min(delta1, 360 - delta1);
             delta2 = Math.min(delta2, 360 - delta2);
             if (delta2 < delta1) {
@@ -477,10 +479,10 @@ class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseRefer
 
         let a = previousFix.location.distance(reference.location);
         let aSquared = a * a;
-        solution = solution.set(previousFix.location).offsetRhumb(this.course, b, true);
+        solution = solution.set(previousFix.location).offsetRhumb(courseTrue, b, true);
         let c = reference.location.distance(solution);
         let previousFixBearingFromOrigin = previousFix.location.bearingFrom(reference.location);
-        let theta = Math.abs(180 - (this.course - previousFixBearingFromOrigin)) * Avionics.Utils.DEG2RAD;
+        let theta = Math.abs(180 - (courseTrue - previousFixBearingFromOrigin)) * Avionics.Utils.DEG2RAD;
         let cosTheta = Math.cos(theta);
         while (Math.abs(c - targetDistance) > WT_FlyHeadingUntilDistanceFromReference.FIX_TOLERANCE) {
             let b = previousFix.location.distance(solution);
@@ -499,7 +501,7 @@ class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseRefer
             } else {
                 break;
             }
-            solution = solution.set(previousFix.location).offsetRhumb(this.course, b * bFactorSolution, true);
+            solution = solution.set(previousFix.location).offsetRhumb(courseTrue, b * bFactorSolution, true);
             c = reference.location.distance(solution);
         }
 
@@ -545,8 +547,10 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
             } catch (e) {}
         }
 
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);
+
         let targetDistance = this.distance.asUnit(WT_Unit.GA_RADIAN);
-        let fix = WT_FlyReferenceRadialForDistance._tempGeoPoint.set(previousFix.location).offsetRhumb(this.course, targetDistance);
+        let fix = WT_FlyReferenceRadialForDistance._tempGeoPoint.set(previousFix.location).offsetRhumb(courseTrue, targetDistance);
 
         return new WT_CustomWaypoint(this.procedure.name, fix);
     }
@@ -582,8 +586,11 @@ class WT_FlyHeadingToIntercept extends WT_ProcedureLegCourse {
             throw new Error("Invalid procedure leg definition.");
         }
 
-        let path = WT_RhumbLine.createFromPointBearing(previousFix.location, this.course);
-        let courseToIntercept = WT_RhumbLine.createFromPointBearing(reference.location, nextLeg.course);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);
+        let nextLegCourseTrue = GeoMagnetic.INSTANCE.magneticToTrue(nextLeg.course, reference.location);
+
+        let path = WT_RhumbLine.createFromPointBearing(previousFix.location, courseTrue);
+        let courseToIntercept = WT_RhumbLine.createFromPointBearing(reference.location, nextLegCourseTrue);
 
         let intersection = path.intersectionGeoPoint(courseToIntercept, WT_FlyHeadingToIntercept._tempGeoPoint);
         if (!intersection) {
@@ -622,9 +629,11 @@ class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseRef
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);
+        let radialTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.radial, reference.location);
 
-        let path = WT_RhumbLine.createFromPointBearing(previousFix.location, this.course);
-        let radial = WT_RhumbLine.createFromPointBearing(reference.location, this.radial);
+        let path = WT_RhumbLine.createFromPointBearing(previousFix.location, courseTrue);
+        let radial = WT_RhumbLine.createFromPointBearing(reference.location, radialTrue);
 
         let intersection = path.intersectionGeoPoint(radial, WT_FlyHeadingUntilReferenceRadialCrossing._tempGeoPoint);
         if (!intersection) {
@@ -647,9 +656,10 @@ class WT_FlyToBearingDistanceFromReference extends WT_ProcedureLegCourseReferenc
      */
     async waypointFix(icaoWaypointFactory) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, reference.location);
 
         let targetDistance = this.distance.asUnit(WT_Unit.GA_RADIAN);
-        let fix = WT_FlyToBearingDistanceFromReference._tempGeoPoint.set(reference.location).offset(this.course, targetDistance);
+        let fix = WT_FlyToBearingDistanceFromReference._tempGeoPoint.set(reference.location).offset(courseTrue, targetDistance);
 
         return new WT_CustomWaypoint(this.procedure.name, fix);
     }
@@ -667,8 +677,9 @@ class WT_FlyHeadingToAltitude extends WT_ProcedureLegCourse {
      * @returns {Promise<WT_ICAOWaypoint>}
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);
         let targetDistance = this.altitudeFloor.asUnit(WT_Unit.FOOT) / 500;
-        let fix = previousFix.location.offsetRhumb(this.course, WT_Unit.NMILE.convert(targetDistance, WT_Unit.GA_RADIAN));
+        let fix = previousFix.location.offsetRhumb(courseTrue, WT_Unit.NMILE.convert(targetDistance, WT_Unit.GA_RADIAN));
         return new WT_CustomWaypoint(this.procedure.name, fix);
     }
 }

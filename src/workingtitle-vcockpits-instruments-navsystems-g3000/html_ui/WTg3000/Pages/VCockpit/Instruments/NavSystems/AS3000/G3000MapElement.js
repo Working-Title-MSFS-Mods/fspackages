@@ -55,6 +55,7 @@ class WT_G3000MapElement extends WT_MapElement {
         this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
         this.view.addLayer(new WT_MapViewCityLayer(labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this.gps.icaoSearchers, this.gps.icaoWaypointFactory, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this.gps.icaoWaypointFactory, labelManager));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
