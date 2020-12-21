@@ -10,7 +10,7 @@ class WT_SmallCircle {
      */
     constructor(center, radius) {
         this._center = new WT_GVector3(center.x, center.y, center.z).unit(true);
-        this._radius = radius;
+        this._radius = Math.abs(radius) % Math.PI;
     }
 
     /**
@@ -29,6 +29,66 @@ class WT_SmallCircle {
      */
     get radius() {
         return this._radius;
+    }
+
+    _distanceToCenter(point) {
+        if (typeof point.lat === "number" && typeof point.long === "number") {
+            point = WT_SmallCircle._tempGeoPoint.set(point).cartesian(WT_SmallCircle._tempVector1);
+        } else if (typeof point.x === "number" && typeof point.y === "number" && typeof point.z === "number") {
+            point = WT_SmallCircle._tempVector1.set(point);
+        } else {
+            return undefined;
+        }
+
+        return Math.acos(point.dot(this.center) / (point.length * this.center.length));
+    }
+
+    /**
+     * Calculates and returns the great circle distance from a specified point to the closest point that lies on this small circle.
+     * In other words, calculates the shortest distance from a point to this small circle.
+     * @param {{x:Number, y:Number, z:Number}|{lat:Number, long:Number}} point - a point, represented as either a position vector or
+     *                                                                           lat/long coordinates.
+     * @returns {Number} the great circle distance, in great-arc radians, from the point to the closest point on this small circle.
+     */
+    distance(point) {
+        let distanceToCenter = this._distanceToCenter(point);
+        if (distanceToCenter === undefined) {
+            return undefined;
+        }
+        return Math.abs(distanceToCenter - this.radius);
+    }
+
+    /**
+     * Checks whether a point lies on this small circle.
+     * @param {{x:Number, y:Number, z:Number}|{lat:Number, long:Number}} point - a point, represented as either a position vector or
+     *                                                                           lat/long coordinates.
+     * @param {Number} [tolerance] - the error tolerance, in great-arc radians, of this operation. Defaults to 1e-8 (roughly 6 cm)
+     *                               if not specified.
+     * @returns {Boolean} whether the point lies on this small circle.
+     */
+    contains(point, tolerance = WT_SmallCircle.ANGULAR_TOLERANCE) {
+        let distance = this.distance(point);
+        if (distance === undefined) {
+            return undefined;
+        }
+        return distance < tolerance;
+    }
+
+    /**
+     * Checks whether a point lies within the boundary defined by this small circle. This is equivalent to checking whether the
+     * distance of the point from the center of this circle is less than or equal to this circle's radius.
+     * @param {{x:Number, y:Number, z:Number}|{lat:Number, long:Number}} point - a point, represented as either a position vector or
+     *                                                                           lat/long coordinates.
+     * @param {Number} [tolerance] - the error tolerance, in great-arc radians, of this operation. Defaults to 1e-8 (roughly 6 cm)
+     *                               if not specified.
+     * @returns {Boolean} whether the point lies within the boundary defined by this small circle.
+     */
+    encircles(point, tolerance = WT_SmallCircle.ANGULAR_TOLERANCE) {
+        let distanceToCenter = this._distanceToCenter(point);
+        if (distanceToCenter === undefined) {
+            return undefined;
+        }
+        return distanceToCenter - this.radius < tolerance;
     }
 
     /**
@@ -136,6 +196,7 @@ WT_SmallCircle._tempVector1 = new WT_GVector3(0, 0, 0);
 WT_SmallCircle._tempVector2 = new WT_GVector3(0, 0, 0);
 WT_SmallCircle._tempArray = [new WT_GVector3(0, 0, 0), new WT_GVector3(0, 0, 0)];
 WT_SmallCircle._tempGeoPoint = new WT_GeoPoint(0, 0);
+WT_SmallCircle.ANGULAR_TOLERANCE = 1e-8; // ~6 cm
 
 /**
  * A great circle. A great circle is the set of points on the Earth's surface defined by the intersection of the surface sphere
@@ -221,6 +282,25 @@ class WT_RhumbLine {
      */
     get vector() {
         return this._vector.readonly();
+    }
+
+    /**
+     * Checks whether a point lies on this rhumb line.
+     * @param {{x:Number, y:Number, z:Number}|{lat:Number, long:Number}} point - a point, represented as either a position vector or
+     *                                                                           lat/long coordinates.
+     * @returns {Boolean} whether the point lies on this rhumb line.
+     */
+    contains(point) {
+        if (typeof point.lat === "number" && typeof point.long === "number") {
+            point = WT_RhumbLine._tempGeoPoint.set(point);
+        } else if (typeof point.x === "number" && typeof point.y === "number" && typeof point.z === "number") {
+            point = WT_RhumbLine._tempGeoPoint.setFromCartesian(WT_RhumbLine._tempVector3.set(point));
+        } else {
+            return undefined;
+        }
+
+        let projected = WT_RhumbLine._PROJECTION(point, WT_RhumbLine._tempVector2);
+        return projected.x * this.vector.x + projected.y * this.vector.y + this.vector.z === 0;
     }
 
     /**
