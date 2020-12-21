@@ -51,7 +51,7 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return state.model.fuelRing.show;
+        return state.model.fuelRing.show && !state.model.airplane.isOnGround;
     }
 
     /**
