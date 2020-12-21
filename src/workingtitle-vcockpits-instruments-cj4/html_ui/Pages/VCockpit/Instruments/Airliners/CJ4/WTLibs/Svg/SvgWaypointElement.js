@@ -114,12 +114,15 @@ class SvgWaypointElement extends SvgMapElement {
         this._image.setAttribute("width", "100%");
         this._image.setAttribute("height", "100%");
         if (!isActiveWaypoint) {
-            const isInFpln = FlightPlanManager.DEBUG_INSTANCE.getAllWaypoints().indexOf(x => x.ident == this.source.ident) > -1;
+            const fpIdx = SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number");
+            const isInFpln = FlightPlanManager.DEBUG_INSTANCE.getAllWaypoints(fpIdx).findIndex(x => x.ident == this.source.ident) > -1;
+
             this._image.setAttribute("isInFpln", isInFpln.toString());
             if (this.ident === "TOD") {
-                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg?cb=3434444444444544");
+                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
             }
             else if (!isInFpln) {
+                console.log("create " + this.source.ident + " " + this.imageFileName());
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
             } else {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
@@ -161,7 +164,7 @@ class SvgWaypointElement extends SvgMapElement {
             if (this._image) {
                 if (!isActiveWaypoint) {
                     if (this.ident === "TOD") {
-                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg?cb=3444444444443");
+                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
                     }
                     else if ((this._image.getAttribute("isInFpln") !== "true")) {
                         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
