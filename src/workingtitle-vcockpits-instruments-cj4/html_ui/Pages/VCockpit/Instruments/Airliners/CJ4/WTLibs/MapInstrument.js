@@ -550,7 +550,7 @@ class MapInstrument extends ISvgMapRootElement {
             }
 
             this.flightPlanManager.updateWaypointIndex();
-            this.updateFlightPlanVisibility();
+            //this.updateFlightPlanVisibility();
             this.flightPlanManager.updateFlightPlan();
 
             if (!this.showConstraints && this.constraints && this.constraints.length > 0) {
@@ -694,7 +694,7 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                 }
             }
-            if ((this.drawCounter % 15 === 10)) {
+            if ((this.drawCounter % 10 === 1)) {
                 this.navMap.mapElements = [];
                 if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
                     /*
@@ -705,11 +705,11 @@ class MapInstrument extends ISvgMapRootElement {
                      */
                     this.navMap.mapElements.push(this.roadNetwork);
 
-                    if (this.showTraffic) {
-                        if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
-                            this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
-                        }
-                    }
+                    // if (this.showTraffic) {
+                    // if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
+                    // this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
+                    // }
+                    // }
                     if (this.bShowAirplane) {
                         this.navMap.mapElements.push(this.airplaneIconElement);
                     }
@@ -861,11 +861,10 @@ class MapInstrument extends ISvgMapRootElement {
                         this.bingMap.style.transform = transform;
                     }
                 }
-
-                if (this.bingMap && (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS)) {
-                    // MOD: handle bing map rotation
-                    this.bingMap.style.transform = "rotate(" + this.rotation + "deg)";
-                }
+            }
+            if (this.bingMap && (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS)) {
+                // MOD: handle bing map rotation
+                this.bingMap.style.transform = "rotate(" + this.rotation + "deg)";
             }
         }
     }

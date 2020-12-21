@@ -35,6 +35,8 @@ class SvgMap {
         this.cosRotation = 1;   // cosine of rotation, mainly for internal use
         this.sinRotation = 0;   // sine of rotation, mainly for internal use
 
+        this.drawCounter = 0;
+
         let configPath = "./";
         let elementId = "MapSVG";
         if (typeof (arg) === "string") {
@@ -299,6 +301,10 @@ class SvgMap {
         if (!this.centerCoordinates) {
             return;
         }
+
+        this.drawCounter++;
+        this.drawCounter %= 100;
+        if(this.drawCounter % 20 !== 9) return;
 
         this.planeDirection = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") % 360;
 
