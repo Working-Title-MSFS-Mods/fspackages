@@ -18,14 +18,6 @@
 			<AssetDir>src\workingtitle-core-library</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
-        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">
-			<Type>Copy</Type>
-			<Flags>
-				<FSXCompatibility>false</FSXCompatibility>
-			</Flags>
-			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems</AssetDir>
-			<OutputDir>.\</OutputDir>
-		</AssetGroup>
         <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems-g3000">
 			<Type>Copy</Type>
 			<Flags>
