@@ -1,5 +1,3 @@
-Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js")
-
 class PFD_VSpeed extends NavSystemElement {
     init(root) {
         this.vsi = this.gps.getChildById("VSpeed");
