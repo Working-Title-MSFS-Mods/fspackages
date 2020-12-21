@@ -1,6 +1,3 @@
-Include.addScript("/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js")
-
-
 var HSIndicatorDisplayType;
 (function (HSIndicatorDisplayType) {
     HSIndicatorDisplayType[HSIndicatorDisplayType["GlassCockpit"] = 0] = "GlassCockpit";
