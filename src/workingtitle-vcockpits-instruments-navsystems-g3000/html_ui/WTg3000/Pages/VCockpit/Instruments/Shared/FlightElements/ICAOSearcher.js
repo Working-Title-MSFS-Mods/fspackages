@@ -152,8 +152,8 @@ class WT_ICAOSearchRequest {
 
     /**
      * @readonly
-     * @property {WT_NumberUnit} radius - the radius of the search circle.
-     * @type {WT_NumberUnit}
+     * @property {WT_NumberUnitReadOnly} radius - the radius of the search circle.
+     * @type {WT_NumberUnitReadOnly}
      */
     get radius() {
         return this._radius.readonly();
@@ -299,8 +299,8 @@ class WT_ICAOSearchRequest {
             }
 
             this._isLocked = true;
-            let center = this.center;
-            let radius = this.radius;
+            let center = this.center.copy();
+            let radius = this.radius.copy();
             let searchLimit = this.searchLimit;
             await Promise.all([
                 SimVar.SetSimVarValue(`C:fs9gps:${this._keys.setLatitudeKey}`, "degree latitude", center.lat, this._simVarSearchInstanceKey),
