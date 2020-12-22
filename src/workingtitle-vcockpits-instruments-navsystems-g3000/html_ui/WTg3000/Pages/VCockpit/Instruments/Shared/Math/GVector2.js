@@ -429,6 +429,11 @@ class WT_GVector2ReadOnly {
         return new WT_GVector2(this.x, this.y);
     }
 
+    /**
+     * Gets a read-only version of this vector. The read-only version is updated as this vector is changed. Attempting to call
+     * any mutating method on the read-only version will create and return a mutated copy of this vector instead.
+     * @returns {WT_GVector2ReadOnly} a read-only version of this vector.
+     */
     readonly() {
         return this;
     }
@@ -445,10 +450,56 @@ class WT_GVector2ReadOnly {
  * A 2D affine transformation.
  */
 class WT_GTransform2 {
-    constructor(matrix) {
-        this._ = matrix;
+    /**
+     * @param {Number[][]|WT_GTransform2} [definition] - the 3x3 matrix defining the new transformation or a WT_GTransform2 object
+     *                                                   from which to copy. If this argument is not supplied, the new transformation
+     *                                                   will be created as the identity transformation.
+     */
+    constructor(definition) {
+        this._ = [[1, 0, 0],
+                  [0, 1, 0],
+                  [0, 0, 1]];
+        this.set(definition);
     }
 
+    static _toMatrix(definition) {
+        if (definition instanceof WT_GTransform2) {
+            return definition._;
+        } else if (definition instanceof Array && definition[0] instanceof Array) {
+            return definition;
+        } else {
+            return undefined;
+        }
+    }
+
+    /**
+     * Sets this transformation's matrix.
+     * @param {Number[][]|WT_GTransform2} definition - the 3x3 matrix defining the new transformation or a WT_GTransform2 object
+     *                                                 from which to copy.
+     * @returns {WT_GTransform2} this transformation, after it has been changed.
+     */
+    set(definition) {
+        let matrix = WT_GTransform2._toMatrix(definition);
+        if (!matrix) {
+            return;
+        }
+
+        this._[0][0] = matrix[0][0];
+        this._[0][1] = matrix[0][1];
+        this._[0][2] = matrix[0][2];
+        this._[1][0] = matrix[1][0];
+        this._[1][1] = matrix[1][1];
+        this._[1][2] = matrix[1][2];
+        return this;
+    }
+
+    /**
+     * Applies this transformation to a vector and returns the result. The operation can either be performed in-place or a new
+     * WT_GVector2 object can be created.
+     * @param {WT_GVector2} vec - the vector to transform.
+     * @param {Boolean} mutate - whether to perform the operation in-place.
+     * @returns {WT_GVector2} the transformed vector.
+     */
     apply(vec, mutate = false) {
         let x = vec.x * this._[0][0] + vec.y * this._[0][1] + this._[0][2];
         let y = vec.x * this._[1][0] + vec.y * this._[1][1] + this._[1][2];
@@ -459,11 +510,25 @@ class WT_GTransform2 {
         }
     }
 
-    concat(...others) {
-        return WT_GTransform2.concat(this, ...others);
+    /**
+     * Concatenates this transformation with one or more other transformations in order and returns the result. This method takes
+     * an arbitrary number of transformation objects as arguments. The last argument to this method can optionally be a boolean
+     * that indicates whether to set this transformation to the concatenated transformation. If the optional boolean argument is
+     * false or omitted, then the result is stored in a new WT_GTransform2 object instead.
+     * @param  {...any} args - the arguments to pass to this method.
+     * @returns {WT_GTransform2} a single transformation equivalent to the ordered concatenation of two or more transformations.
+     */
+    concat(...args) {
+        return WT_GTransform2.concat(this, ...args);
     }
 
-    inverse() {
+    /**
+     * Calculates and returns the inverse of this transformation. The operation can be performed in-place or a new WT_GTransform2
+     * object can be created.
+     * @param {Boolean} [mutate] - whether to perform the operation in-place.
+     * @returns {WT_GTransform2} the inverse of this transformation.
+     */
+    inverse(mutate = false) {
         let e_00 = this._[0][0];
         let e_01 = this._[0][1];
         let e_02 = this._[0][2];
@@ -488,35 +553,52 @@ class WT_GTransform2 {
 
         let det = e_00 * i_00 + e_01 * i_01 + e_02 * i_02;
 
-        return new WT_GTransform2([
-            [i_00 / det, i_10 / det, i_20 / det],
-            [i_01 / det, i_11 / det, i_21 / det],
-            [i_02 / det, i_12 / det, i_22 / det]
-        ]);
+        let inverse = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
+            i_00 / det, i_01 / det, i_02 / det,
+            i_10 / det, i_11 / det, i_12 / det,
+            i_20 / det, i_21 / det, i_22 / det
+        );
+
+        if (mutate) {
+            return this.set(inverse);
+        } else {
+            return new WT_GTransform2(inverse);
+        }
     }
 
+    /**
+     * Concatenates one or more other transformations in order and returns the result. This method takes an arbitrary number of
+     * transformation objects as arguments. The last argument to this method can optionally be a boolean that indicates whether
+     * to store the resulting concatenated transformation in the transformation object provided as the first argument. If the
+     * optional boolean argument is false or omitted, then the result is stored in a new WT_GTransform2 object instead.
+     * @param  {...any} args - the arguments to pass to this method.
+     * @returns {WT_GTransform2} a single transformation equivalent to the ordered concatenation of one or more transformations.
+     */
     static concat(...args) {
         if (args.length === 0) {
             return undefined;
         }
 
-        if (args.length === 1) {
+        if (args.length === 1 && args[1] instanceof WT_GTransform2) {
             return args[1];
         }
 
+        let mutate = args[args.length - 1] === true;
+
         let index = 0;
         let next = args[index];
-        let oldMatrix = [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1]
-        ];
-        let newMatrix = [
-            [next._[0][0], next._[0][1], next._[0][2]],
-            [next._[1][0], next._[1][1], next._[1][2]],
-            [next._[2][0], next._[2][1], next._[2][2]]
-        ];
-        while (++index < args.length) {
+        let oldMatrix = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        );
+        let newMatrix = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix2,
+            next._[0][0], next._[0][1], next._[0][2],
+            next._[1][0], next._[1][1], next._[1][2],
+            next._[2][0], next._[2][1], next._[2][2]
+        );
+        let end = args.length - (typeof args[args.length - 1] === "boolean");
+        while (++index < end) {
             next = args[index];
             for (let i = 0; i < 2; i++) {
                 for (let j = 0; j < 3; j++) {
@@ -528,97 +610,182 @@ class WT_GTransform2 {
                     newMatrix[j][i] = oldMatrix[0][i] * next._[j][0] + oldMatrix[1][i] * next._[j][1] + oldMatrix[2][i] * next._[j][2];
                 }
             }
-
         }
-        return new WT_GTransform2(newMatrix);
+
+        if (mutate) {
+            return args[0].set(newMatrix);
+        } else {
+            return new WT_GTransform2(newMatrix);
+        }
+    }
+
+    static _setMatrix(matrix, _00, _01, _02, _10, _11, _12, _20, _21, _22) {
+        matrix[0][0] = _00;
+        matrix[0][1] = _01;
+        matrix[0][2] = _02;
+        matrix[1][0] = _10;
+        matrix[1][1] = _11;
+        matrix[1][2] = _12;
+        matrix[2][0] = _20;
+        matrix[2][1] = _21;
+        matrix[2][2] = _22;
+        return matrix;
     }
 
     static _offsetOrigin(transform, x, y) {
-        return WT_GTransform2.concat(
-            WT_GTransform2.translate(-x, -y),
+        let concat = WT_GTransform2.concat(
+            WT_GTransform2.translation(-x, -y, WT_GTransform2._tempTransform1),
             transform,
-            WT_GTransform2.translate(x, y)
+            WT_GTransform2.translation(x, y, WT_GTransform2._tempTransform2),
+            true
         );
+        return transform.set(concat);
     }
 
-    static translate(...args) {
-        let x;
-        let y;
-        if (args.length === 1) {
-            x = args[0].x;
-            y = args[0].y;
-        } else if (args.length === 2) {
-            x = args[0];
-            y = args[1];
-        } else {
+    /**
+     * Gets a transformation representing a translation. This method takes in as arguments either a 2D vector object or separate
+     * x and y values to define the translation. Additionally, the last argument can optionally be a WT_GTransform2 object to
+     * set to the new translation transformation. If this optional argument is omitted, then a new WT_GTransform2 object will be
+     * created.
+     * @param {...any} args - the arguments to pass to this method.
+     * @returns {WT_GTransform2} a translation transformation.
+     */
+    static translation(...args) {
+        let value = WT_GVector2._parseArgs(args[0], args[1]);
+        if (!value) {
             return undefined;
         }
 
-        return new WT_GTransform2([
-            [1, 0, x],
-            [0, 1, y],
-            [0, 0, 1]
-        ]);
+        let translate = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
+            1, 0, value.x,
+            0, 1, value.y,
+            0, 0, 1
+        );
+
+        if (args.length === 2 && args[1] instanceof WT_GTransform2) {
+            return args[1].set(translate);
+        } else if (args.length === 3 && args[2] instanceof WT_GTransform2) {
+            return args[2].set(translate);
+        } else {
+            return new WT_GTransform2(translate);
+        }
     }
 
-    static rotate(theta, ...args) {
+    /**
+     * Gets a transformation representing a rotation. In addition to the rotation angle, this method takes in additional optional
+     * arguments in the form of a position vector or separate x and y values defining the center of rotation. If these are omitted,
+     * then the center of rotation is set to be the origin. Additionally, the last argument can optionally be a WT_GTransform2
+     * object to set to the new scaling transformation. If this last optional argument is omitted, then a new WT_GTransform2 object
+     * will be created.
+     * @param {Number} theta - the rotation angle, in radians.
+     * @param {...any} [args] - additional optional arguments to pass to this method.
+     * @returns {WT_GTransform2} a rotation transformation.
+     */
+    static rotation(theta, ...args) {
         let sin = Math.sin(theta);
         let cos = Math.cos(theta);
-        let transform = new WT_GTransform2([
-            [cos,   -sin,   0],
-            [sin,   cos,    0],
-            [0,     0,      1]
-        ]);
-        if (args.length > 0) {
-            // handle rotation around arbitrary point
-            if (args.length === 1) {
-                transform = WT_GTransform2._offsetOrigin(transform, args[0].x, args[0].y);
-            } else if (args.length === 2) {
-                transform = WT_GTransform2._offsetOrigin(transform, args[0], args[1]);
-            } else {
-                return undefined;
-            }
+
+        let rotate = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
+            cos,  -sin, 0,
+            sin,  cos,  0,
+            0,    0,    1
+        );
+
+        let transform;
+        if (args.length === 1 && args[0] instanceof WT_GTransform2) {
+            transform = args[0].set(rotate);
+        } else if (args.length === 2 && args[1] instanceof WT_GTransform2) {
+            transform = args[1].set(rotate);
+        } else if (args.length === 3 && args[2] instanceof WT_GTransform2) {
+            transform = args[2].set(rotate);
+        } else {
+            transform = new WT_GTransform2(rotate);
+        }
+
+        let value = WT_GVector2._parseArgs(args[0], args[1]);
+        if (value) {
+            transform = WT_GTransform2._offsetOrigin(transform, value.x, value.y);
         }
         return transform;
     }
 
+    /**
+     * Gets a transformation representing a scaling. This method takes in as arguments one or two numeric scale factors. If only one
+     * is provided, it will be applied in both the x- and y- dimensions. If two are provided, the first will apply to the x-dimension
+     * and the second to the y-dimension. Additionally, the last argument can optionally be a WT_GTransform2 object to
+     * set to the new scaling transformation. If this optional argument is omitted, then a new WT_GTransform2 object will be
+     * created.
+     * @param {...any} args - the arguments to pass to this method.
+     * @returns {WT_GTransform2} a scaling transformation.
+     */
     static scale(...args) {
         let x;
         let y;
-        if (args.length === 1) {
-            x = args[0];
-            y = args[0];
-        } else if (args.length === 2) {
-            x = args[0];
-            y = args[1];
+        if (typeof args[0] === "number" && typeof args[1] === "number") {
+            x = arg1;
+            y = arg2;
+        } else if (typeof args[0] === "number") {
+            x = arg1;
+            y = arg1;
         } else {
             return undefined;
         }
-        return new WT_GTransform2([
-            [x, 0, 0],
-            [0, y, 0],
-            [0, 0, 1]
-        ]);
+
+        let scale = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
+            x, 0, 0,
+            0, y, 0,
+            0, 0, 1
+        );
+
+        if (args.length === 2 && args[1] instanceof WT_GTransform2) {
+            return args[1].set(scale);
+        } else if (args.length === 3 && args[2] instanceof WT_GTransform2) {
+            return args[2].set(scale);
+        } else {
+            return new WT_GTransform2(scale);
+        }
     }
 
-    static reflect(theta, ...args) {
+    /**
+     * Gets a transformation representing a reflection. In addition to the line of reflection angle, this method takes in additional
+     * optional arguments in the form of a position vector or separate x and y values defining a point through which the line passes.
+     * If these are omitted, then the line will be set to pass through the origin. Additionally, the last argument can optionally be
+     * a WT_GTransform2 object to set to the new scaling transformation. If this last optional argument is omitted, then a new
+     * WT_GTransform2 object will be created.
+     * @param {Number} theta - the angle of the line across which to reflect, in radians. A value of 0 defines a vertical line, with
+     *                         positive values proceeding clockwise.
+     * @param {...any} [args] - additional optional arguments to pass to this method.
+     * @returns {WT_GTransform2} a reflection transformation.
+     */
+    static reflection(theta, ...args) {
         let sin = Math.sin(2 * theta);
         let cos = Math.cos(2 * theta);
-        let transform = new WT_GTransform2([
-            [-cos,  -sin,   0],
-            [-sin,  cos,    0],
-            [0,     0,      1]
-        ])
-        if (args.length > 0) {
-            // handle reflection around arbitrary line
-            if (args.length === 1) {
-                transform = WT_GTransform2._offsetOrigin(transform, args[0].x, args[0].y);
-            } else if (args.length === 2) {
-                transform = WT_GTransform2._offsetOrigin(transform, args[0], args[1]);
-            } else {
-                return undefined;
-            }
+
+        let reflect = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
+            -cos, -sin, 0,
+            -sin, cos,  0,
+            0,    0,    1
+        );
+
+        let transform;
+        if (args.length === 1 && args[0] instanceof WT_GTransform2) {
+            transform = args[0].set(reflect);
+        } else if (args.length === 2 && args[1] instanceof WT_GTransform2) {
+            transform = args[1].set(reflect);
+        } else if (args.length === 3 && args[2] instanceof WT_GTransform2) {
+            transform = args[2].set(reflect);
+        } else {
+            transform = new WT_GTransform2(reflect);
+        }
+
+        let value = WT_GVector2._parseArgs(args[0], args[1]);
+        if (value) {
+            transform = WT_GTransform2._offsetOrigin(transform, value.x, value.y);
         }
         return transform;
     }
 }
+WT_GTransform2._tempMatrix1 = [[1, 0, 0],[0, 1, 0],[0, 0, 1]];
+WT_GTransform2._tempMatrix2 = [[1, 0, 0],[0, 1, 0],[0, 0, 1]];
+WT_GTransform2._tempTransform1 = new WT_GTransform2();
+WT_GTransform2._tempTransform2 = new WT_GTransform2();
