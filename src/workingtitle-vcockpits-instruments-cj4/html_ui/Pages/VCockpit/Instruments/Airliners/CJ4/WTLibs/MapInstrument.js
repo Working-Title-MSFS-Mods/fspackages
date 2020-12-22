@@ -619,13 +619,13 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.navMap.lastCenterCoordinates)
                     this.bingMap.setParams({ lla: this.navMap.lastCenterCoordinates, radius: bingRadius });
             }
-            if (this.navMap.centerCoordinates) {
+            if (this.navMap.centerCoordinates && (this.drawCounter % 20 === 10)) {
                 let centerCoordinates = this.navMap.centerCoordinates;
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
                     this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.intersectionLoader.maxItemsSearchCount = 30;
+                    this.airportLoader.maxItemsSearchCount = 20;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -633,8 +633,8 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showIntersections) {
                     this.intersectionLoader.searchLat = centerCoordinates.lat;
                     this.intersectionLoader.searchLong = centerCoordinates.long;
-                    this.intersectionLoader.searchRange = this.navMap.NMWidth * 2;
-                    this.intersectionLoader.maxItemsSearchCount = 30;
+                    this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.intersectionLoader.maxItemsSearchCount = 20;
                     this.intersectionLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.intersectionLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.intersectionLoader.update();
@@ -643,7 +643,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
                     this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.intersectionLoader.maxItemsSearchCount = 30;
+                    this.vorLoader.maxItemsSearchCount = 20;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -652,7 +652,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
                     this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.intersectionLoader.maxItemsSearchCount = 30;
+                    this.ndbLoader.maxItemsSearchCount = 20;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
@@ -730,9 +730,9 @@ class MapInstrument extends ISvgMapRootElement {
                             let airport = this.airportLoader.waypoints[i];
                             if (airport && airport.infos instanceof AirportInfo) {
                                 if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                    if (this.getDeclutteredRange() <= this.airportMaxRanges[airport.infos.getClassSize()]) {
+                                    // if (this.getDeclutteredRange() <= this.airportMaxRanges[airport.infos.getClassSize()]) {
                                         this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
-                                    }
+                                    // }
                                 }
                             }
                         }
