@@ -149,7 +149,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _syncDisplayFromBuffer() {
-        this.display.reference.range.set(this.buffer.reference.range);
+        this.display.reference._range.set(this.buffer.reference.range);
         this.display.reference._center.set(this.buffer.reference.center);
         this.display.reference.scale = this.buffer.reference.scale;
         this.display.reference.rotation = this.buffer.reference.rotation;
