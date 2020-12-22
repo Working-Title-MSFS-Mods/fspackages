@@ -3,11 +3,11 @@
  */
 class WT_GVector2 {
     /**
-     * @param {Number} x
-     * @param {Number} y
+     * @param {{x:Number, y:Number}|Number} arg1 - an object defining the new vector's x and y values, or the x value as a scalar number.
+     * @param {Number} [arg2] - the y value as a scalar number.
      */
-    constructor(x, y) {
-        this.set(x, y);
+    constructor(arg1, arg2) {
+        this.set(arg1, arg2);
         this._readonly = new WT_GVector2ReadOnly(this);
     }
 
