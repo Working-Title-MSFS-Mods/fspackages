@@ -1,7 +1,10 @@
 class WT_MapViewFlightPlanCanvasRenderer {
-    constructor() {
+    constructor(legStyleChooser) {
+        this._legStyleChooser = legStyleChooser;
+
         this._flightPlan = null;
         this._activeLeg = null;
+        this._activeLegIndex = -1;
         this._flightPlanListener = this._onFlightPlanEvent.bind(this);
         /**
          * @type {WT_FlightPlanLeg[]}
@@ -12,10 +15,22 @@ class WT_MapViewFlightPlanCanvasRenderer {
 
         this._needsRedraw = false;
 
+        this._legRenderFuncs = [];
+        this._initRenderFuncs();
+
         this._optsManager = new WT_OptionsManager(this, WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF);
 
         this._tempVector1 = new WT_GVector2(0, 0);
         this._tempVector2 = new WT_GVector2(0, 0);
+    }
+
+    _initRenderFuncs() {
+        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.NONE] = this._renderNone.bind(this);
+        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_STANDARD] = this._renderLineStandard.bind(this);
+        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_THIN] = this._renderLineThin.bind(this);
+        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_DOTTED] = this._renderLineDotted.bind(this);
+        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.ARROW_STANDARD] = this._renderArrowsStandard.bind(this);
+        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.ARROW_ALT] = this._renderArrowsAlt.bind(this);
     }
 
     /**
@@ -82,7 +97,43 @@ class WT_MapViewFlightPlanCanvasRenderer {
         }
 
         this._activeLeg = leg;
+        if (leg) {
+            this._activeLegIndex = this._legs.indexOf(leg);
+        } else {
+            this._activeLegIndex = -1;
+        }
         this._needsRedraw = true;
+    }
+
+    /**
+     *
+     * @param {WT_MapProjectionRenderer} projectionRenderer
+     * @param {CanvasRenderingContext2D} context
+     * @param {WT_GeoPoint} start
+     * @param {WT_GeoPoint} end
+     */
+    _pathGreatCircle(projectionRenderer, context, start, end) {
+        let geoJSON = {
+            type: "LineString",
+            coordinates: [[start.long, start.lat], [end.long, end.lat]]
+        };
+        context.beginPath();
+        projectionRenderer.renderCanvas(geoJSON, context);
+    }
+
+    /**
+     *
+     * @param {WT_MapProjectionRenderer} projectionRenderer
+     * @param {CanvasRenderingContext2D} context
+     * @param {WT_GeoPoint} start
+     * @param {WT_GeoPoint} end
+     */
+    _pathRhumb(projectionRenderer, context, start, end) {
+        let projectedStart = projectionRenderer.project(start, this._tempVector1);
+        let projectedEnd = projectionRenderer.project(end, this._tempVector2);
+        context.beginPath();
+        context.moveTo(projectedStart);
+        context.lineTo(projectedEnd);
     }
 
     /**
@@ -90,17 +141,17 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
+     * @param {Boolean} useRhumb
      * @param {WT_GeoPoint} endpoint
      * @param {WT_GeoPoint} previousEndpoint
      * @param {Boolean} isActive
      */
-    _renderLine(state, projectionRenderer, context, endpoint, previousEndpoint, isActive) {
-        let geoJSON = {
-            type: "LineString",
-            coordinates: [[previousEndpoint.long, previousEndpoint.lat], [endpoint.long, endpoint.lat]]
-        };
-        context.beginPath();
-        projectionRenderer.renderCanvas(geoJSON, context);
+    _renderLineStandard(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+        if (useRhumb) {
+            this._pathRhumb(projectionRenderer, context, previousEndpoint, endpoint);
+        } else {
+            this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
+        }
         context.lineWidth = this.standardStrokeWidth * state.dpiScale;
         context.strokeStyle = isActive ? this.activeColor : this.inactiveColor;
         context.stroke();
@@ -111,23 +162,53 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
+     * @param {Boolean} useRhumb
      * @param {WT_GeoPoint} endpoint
      * @param {WT_GeoPoint} previousEndpoint
      * @param {Boolean} isActive
      */
-    _renderArrows(state, projectionRenderer, context, endpoint, previousEndpoint, isActive) {
-        let begin = projectionRenderer.project(previousEndpoint, this._tempVector1);
-        let end = projectionRenderer.project(endpoint, this._tempVector2);
-        let delta = end.subtract(begin);
+    _renderLineThin(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+        if (useRhumb) {
+            this._pathRhumb(projectionRenderer, context, previousEndpoint, endpoint);
+        } else {
+            this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
+        }
+        context.lineWidth = this.thinStrokeWidth * state.dpiScale;
+        context.strokeStyle = isActive ? this.activeColor : this.inactiveColor;
+        context.stroke();
+    }
 
-        context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapProjectionRenderer} projectionRenderer
+     * @param {CanvasRenderingContext2D} context
+     * @param {Boolean} useRhumb
+     * @param {WT_GeoPoint} endpoint
+     * @param {WT_GeoPoint} previousEndpoint
+     * @param {Boolean} isActive
+     */
+    _renderLineDotted(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+        if (useRhumb) {
+            this._pathRhumb(projectionRenderer, context, previousEndpoint, endpoint);
+        } else {
+            this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
+        }
+        context.lineWidth = this.dottedStrokeWidth * state.dpiScale;
+        context.strokeStyle = isActive ? this.activeColor : this.inactiveColor;
+        context.setLineDash(this.dottedPattern);
+        context.stroke();
+    }
+
+    _drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, start, end) {
+        let projectedStart = projectionRenderer.project(start, this._tempVector1);
+        let projectedEnd = projectionRenderer.project(end, this._tempVector2);
+        let delta = projectedEnd.subtract(projectedStart);
+
         context.resetTransform();
-        context.translate(begin.x, begin.y);
+        context.translate(projectedStart.x, projectedStart.y);
         context.rotate(delta.theta);
 
-        let arrowHeight = this.standardArrowHeight * state.dpiScale;
-        let arrowWidth = this.standardArrowWidth * state.dpiScale;
-        let arrowSpacing = this.standardArrowSpacing * state.dpiScale;
         let length = 0;
         let totalLength = delta.length;
         while (totalLength - length >= arrowHeight) {
@@ -151,11 +232,66 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
+     * @param {Boolean} useRhumb
+     * @param {WT_GeoPoint} endpoint
+     * @param {WT_GeoPoint} previousEndpoint
+     * @param {Boolean} isActive
+     */
+    _renderArrowsStandard(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+        context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
+
+        let arrowWidth = this.standardArrowWidth * state.dpiScale;
+        let arrowHeight = this.standardArrowHeight * state.dpiScale;
+        let arrowSpacing = this.standardArrowSpacing * state.dpiScale;
+
+        if (useRhumb) {
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+        } else {
+            // TODO: implement drawing arrows along great circle
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapProjectionRenderer} projectionRenderer
+     * @param {CanvasRenderingContext2D} context
+     * @param {Boolean} useRhumb
+     * @param {WT_GeoPoint} endpoint
+     * @param {WT_GeoPoint} previousEndpoint
+     * @param {Boolean} isActive
+     */
+    _renderArrowsAlt(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+        context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
+
+        let arrowWidth = this.altArrowWidth * state.dpiScale;
+        let arrowHeight = this.altArrowHeight * state.dpiScale;
+        let arrowSpacing = this.altArrowSpacing * state.dpiScale;
+
+        if (useRhumb) {
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+        } else {
+            // TODO: implement drawing arrows along great circle
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+        }
+    }
+
+    _renderNone(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapProjectionRenderer} projectionRenderer
+     * @param {CanvasRenderingContext2D} context
      * @param {WT_GVector2[]} bounds
+     * @param {Number} index
      * @param {WT_FlightPlanLeg} leg
      * @param {WT_GeoPoint} previousEndpoint
+     * @param {Boolean} discontinuity
      */
-    _renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint) {
+    _renderLeg(state, projectionRenderer, context, bounds, index, leg, previousEndpoint, discontinuity) {
         if (leg.waypoint && projectionRenderer.isInViewBounds(leg.waypoint.location, bounds, 0.05)) {
             this._waypointsRendered.add(leg.waypoint);
         }
@@ -166,20 +302,24 @@ class WT_MapViewFlightPlanCanvasRenderer {
         }
 
         let isActive = leg === this.activeLeg;
-
+        let useRhumb = false;
         if (leg instanceof WT_FlightPlanProcedureLeg) {
             switch (leg.procedureLeg.type) {
                 case WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE:
                 case WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING:
                 case WT_ProcedureLeg.Type.FLY_HEADING_TO_INTERCEPT:
                 case WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE:
-                    this._renderArrows(state, projectionRenderer, context, leg.endpoint, previousEndpoint, isActive);
+                    useRhumb = true;
                     break;
-                default:
-                    this._renderLine(state, projectionRenderer, context, leg.endpoint, previousEndpoint, isActive);
             }
+        }
+
+        let style = this._legStyleChooser.chooseStyle(leg, index, this.activeLeg, this._activeLegIndex, discontinuity);
+        let renderFunc = this._legRenderFuncs[style];
+        if (renderFunc) {
+            renderFunc(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
         } else {
-            this._renderLine(state, projectionRenderer, context, leg.endpoint, previousEndpoint, isActive);
+            this._renderLineStandard(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
         }
     }
 
@@ -207,13 +347,12 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._waypointsRendered.add(destination);
         }
 
-        for (let leg of this._legs) {
-            this._renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint);
-            if (leg.discontinuity) {
-                previousEndpoint = null;
-            } else {
-                previousEndpoint = leg.endpoint;
-            }
+        let discontinuity = false;
+        for (let i = 0; i < this._legs.length; i++) {
+            let leg = this._legs[i];
+            this._renderLeg(state, projectionRenderer, context, bounds, i, leg, previousEndpoint, discontinuity);
+            previousEndpoint = leg.endpoint;
+            discontinuity = leg.discontinuity;
         }
 
         this._needsRedraw = false;
@@ -222,19 +361,19 @@ class WT_MapViewFlightPlanCanvasRenderer {
 /**
  * @enum {Number}
  */
-WT_MapViewFlightPlanCanvasRenderer.LegStyles = {
-    LINE_STANDARD: 0,
-    LINE_THIN: 1,
-    LINE_DOTTED: 2,
-    ARROW_STANDARD: 3,
-    ARROW_ALT: 4,
+WT_MapViewFlightPlanCanvasRenderer.LegStyle = {
+    NONE: 0,
+    LINE_STANDARD: 1,
+    LINE_THIN: 2,
+    LINE_DOTTED: 3,
+    ARROW_STANDARD: 4,
+    ARROW_ALT: 5,
 };
 WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
     standardStrokeWidth: {default: 4, auto: true},
     thinStrokeWidth: {default: 2, auto: true},
-    thinStrokeWidth: {default: 2, auto: true},
-
-    legStyles: {default: [], auto: true},
+    dottedStrokeWidth: {default: 2, auto: true},
+    dottedPattern: {default: [2, 2], auto: true},
 
     standardArrowWidth: {default: 6, auto: true},
     standardArrowHeight: {default: 8, auto: true},
@@ -244,8 +383,6 @@ WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
     altArrowHeight: {default: 8, auto: true},
     altArrowSpacing: {default: 2, auto: true},
 
-    currentSegmentSizeFactor: {default: 1.5, auto: true},
-
-    inactiveColor: {default: "magenta", auto: true},
-    activeColor: {default: "white", auto: true},
+    inactiveColor: {default: "white", auto: true},
+    activeColor: {default: "magenta", auto: true},
 };
