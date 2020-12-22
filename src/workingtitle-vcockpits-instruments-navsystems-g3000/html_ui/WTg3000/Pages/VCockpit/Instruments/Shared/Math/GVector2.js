@@ -40,7 +40,8 @@ class WT_GVector2 {
 
     /**
      * @readonly
-     * @property {Number} theta - the angle of this vector in radians.
+     * @property {Number} theta - the angle of this vector in radians, measured from the NEGATIVE Y-AXIS (as opposed to the usual
+     *                            convention of measuring from the positive x-axis).
      * @type {Number}
      */
     get theta() {
@@ -91,6 +92,16 @@ class WT_GVector2 {
      */
     setFromPolar(r, theta) {
         return this.set(r * Math.sin(theta), r * -Math.cos(theta));
+    }
+
+    /**
+     * Scales this vector to a length of one. The operation can either be performed in-place or a new WT_GVector2 object can
+     * be returned.
+     * @param {Boolean} [mutate] - whether to perform the operation in place.
+     * @return {WT_GVector2} the unit vector, either as a new WT_GVector2 object or this vector after it has been changed.
+     */
+    unit(mutate) {
+        return this.scale(1 / this.length, mutate);
     }
 
     /**
@@ -318,6 +329,14 @@ class WT_GVector2ReadOnly {
      */
     setFromPolar(r, theta) {
         return this.set(r * Math.sin(theta), r * -Math.cos(theta));
+    }
+
+    /**
+     * Scales this vector to a length of one and returns the result as a new WT_GVector2 object.
+     * @return {WT_GVector2} the unit vector.
+     */
+    unit() {
+        return this._source.scale(false);
     }
 
     /**

@@ -393,9 +393,8 @@ class WT_GVector3ReadOnly {
     }
 
     /**
-     * Scales this vector to a length of one. The operation can either be performed in-place or a new WT_GVector3 object can
-     * be returned.
-     * @return {WT_GVector3} the unit vector, either as a new WT_GVector3 object or this vector after it has been changed.
+     * Scales this vector to a length of one and returns the result as a new WT_GVector3 object.
+     * @return {WT_GVector3} the unit vector.
      */
     unit() {
         return this._source.unit(false);
