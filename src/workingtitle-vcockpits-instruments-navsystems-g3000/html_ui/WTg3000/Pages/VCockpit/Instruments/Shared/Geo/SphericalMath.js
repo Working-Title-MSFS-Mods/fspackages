@@ -9,7 +9,7 @@ class WT_SmallCircle {
      * @param {Number} radius - the radius of the new small circle in great-arc radians.
      */
     constructor(center, radius) {
-        this._center = new WT_GVector3(center.x, center.y, center.z).unit(true);
+        this._center = new WT_GVector3(center).unit(true);
         this._radius = Math.abs(radius) % Math.PI;
     }
 
@@ -272,7 +272,7 @@ class WT_RhumbLine {
      *                                                  equals 1 nautical mile along the equator.
      */
     constructor(vector) {
-        this._vector = new WT_GVector3(vector.x, vector.y, vector.z);
+        this._vector = new WT_GVector3(vector);
     }
 
     /**
