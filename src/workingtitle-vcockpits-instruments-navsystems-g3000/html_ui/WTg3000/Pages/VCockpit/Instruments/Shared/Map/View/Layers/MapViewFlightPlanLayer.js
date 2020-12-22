@@ -5,13 +5,13 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(icaoWaypointFactory, labelManager, className = WT_MapViewFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewFlightPlanLayer.CONFIG_NAME_DEFAULT) {
+    constructor(icaoWaypointFactory, labelManager, legStyleChooser, className = WT_MapViewFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewFlightPlanLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._labelManager = labelManager;
         this._fpm = new WT_FlightPlanManager(icaoWaypointFactory);
-        this._renderer = new WT_MapViewFlightPlanCanvasRenderer();
+        this._renderer = new WT_MapViewFlightPlanCanvasRenderer(legStyleChooser);
         this._renderer.setFlightPlan(this._fpm.activePlan);
 
         /**
