@@ -48,6 +48,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
 
         this._shouldDrawUnfinished = [false, false, false];
         this._lastShow = [false, false, false];
+        this._redrawTimer = [0, 0, 0];
         this._lastTime = 0;
     }
 
@@ -205,6 +206,12 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         this._renderQueues[size].resume(state);
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {Number} size
+     * @param {Boolean} show
+     */
     _updateLayer(state, size, show) {
         let layer = this._cityLayers[size];
         layer.update(state);
@@ -213,18 +220,34 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         let offsetXAbs = Math.abs(transform.offset.x);
         let offsetYAbs = Math.abs(transform.offset.y);
 
-        let isImageInvalid = layer.display.isInvalid ||
-                             (show != this._lastShow[size]);
+        let isDisplayInvalid = layer.display.isInvalid;
+        let showChanged = show != this._lastShow[size];
+        let shouldInvalidate = isDisplayInvalid ||
+                               showChanged;
 
-        let shouldRedraw = isImageInvalid ||
+        let shouldRedraw = shouldInvalidate ||
                            (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
 
-        if (isImageInvalid) {
+        if (shouldInvalidate) {
             layer.redrawDisplay(state, false);
             this._clearDrawnCities(size);
             this._shouldDrawUnfinished[size] = true;
         }
         if (show) {
+            if (isDisplayInvalid) {
+                // start timer
+                this._redrawTimer[size] = WT_MapViewCityLayer.REDRAW_DELAY;
+                return;
+            }
+            if (this._redrawTimer[size] > 0) {
+                this._redrawTimer[size] -= state.currentTime - this._lastTime;
+                if (this._redrawTimer[size] <= 0) {
+                    shouldRedraw = true;
+                } else {
+                    return;
+                }
+            }
+
             if (shouldRedraw) {
                 this._startRenderCities(state, size);
             } else if (this._renderQueues[size].isBusy) {
@@ -269,7 +292,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         this._updateRegisteredCities(state);
 
         this._lastShow = show;
-        this._lastTime = state.currentTime / 1000;
+        this._lastTime = state.currentTime;
     }
 }
 WT_MapViewCityLayer.CLASS_DEFAULT = "cityLayer";
@@ -277,6 +300,7 @@ WT_MapViewCityLayer.CONFIG_NAME_DEFAULT = "cities";
 WT_MapViewCityLayer.DATA_PATH = "/WTg3000/Pages/VCockpit/Instruments/Shared/Data/cities.json";
 WT_MapViewCityLayer.LABEL_CACHE_SIZE = 1000;
 WT_MapViewCityLayer.OVERDRAW_FACTOR = 1.91421356237;
+WT_MapViewCityLayer.REDRAW_DELAY = 500 // ms
 WT_MapViewCityLayer.DRAW_TIME_BUDGET = 1; // ms
 WT_MapViewCityLayer.OPTIONS_DEF = {
     iconSize: {default: [25, 20, 15], auto: true},
