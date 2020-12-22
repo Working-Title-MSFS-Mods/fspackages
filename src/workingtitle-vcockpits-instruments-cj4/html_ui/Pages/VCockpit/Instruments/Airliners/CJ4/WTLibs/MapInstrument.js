@@ -625,6 +625,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
                     this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.intersectionLoader.maxItemsSearchCount = 30;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -633,6 +634,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.intersectionLoader.searchLat = centerCoordinates.lat;
                     this.intersectionLoader.searchLong = centerCoordinates.long;
                     this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.intersectionLoader.maxItemsSearchCount = 30;
                     this.intersectionLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.intersectionLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.intersectionLoader.update();
@@ -641,6 +643,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
                     this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.intersectionLoader.maxItemsSearchCount = 30;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -649,6 +652,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
                     this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.intersectionLoader.maxItemsSearchCount = 30;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
@@ -752,7 +756,7 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
                     if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
-                        for (let i = 0; i < Math.min(30, this.intersectionLoader.waypoints.length); i++) {
+                        for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                             let intersection = this.intersectionLoader.waypoints[i];
                             intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
                             if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {

@@ -1196,7 +1196,7 @@ class WaypointLoader {
         let t = performance.now();
         if (!this._isLoadingItems) {
             this.maxItemsSearchCount = Math.min(this.maxItemsSearchCount, this.waypointsCountLimit);
-            while (this.waypoints.length > this.waypointsCountLimit) {
+            while (this.waypoints.length > this.maxItemsSearchCount) {
                 this.waypoints.splice(0, 1);
             }
         }
