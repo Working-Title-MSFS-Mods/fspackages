@@ -4,7 +4,7 @@ class CJ4_FMC_FplnRecallPage {
         let json = "";
 
         let parseAirport = (icao) => {
-            if (icao.startsWith("K") && (/\d/.test(icao))) {
+            if ((/K.*\d.*/.test(icao))) {
                 icao = icao.substring(1).padEnd(4, " ");
             }
 
