@@ -15,8 +15,8 @@ class WT_SmallCircle {
 
     /**
      * @readonly
-     * @property {WT_GVector3} center - the center of this small circle.
-     * @type {WT_GVector3}
+     * @property {WT_GVector3ReadOnly} center - the center of this small circle.
+     * @type {WT_GVector3ReadOnly}
      */
     get center() {
         return this._center.readonly();
@@ -213,9 +213,9 @@ class WT_GreatCircle extends WT_SmallCircle {
 
     /**
      * @readonly
-     * @property {WT_GVector3} normal - the normal vector of this great circle. This vector is perpendicular to the position
-     *                                  vectors of all points on the great circle.
-     * @type {WT_GVector3}
+     * @property {WT_GVector3ReadOnly} normal - the normal vector of this great circle. This vector is perpendicular to the position
+     *                                          vectors of all points on the great circle.
+     * @type {WT_GVector3ReadOnly}
      */
     get normal() {
         return this.center;
@@ -277,8 +277,8 @@ class WT_RhumbLine {
 
     /**
      * @readonly
-     * @property {WT_GVector3} vector - the vector representation of this rhumb line.
-     * @type {WT_GVector3}
+     * @property {WT_GVector3ReadOnly} vector - the vector representation of this rhumb line.
+     * @type {WT_GVector3ReadOnly}
      */
     get vector() {
         return this._vector.readonly();
