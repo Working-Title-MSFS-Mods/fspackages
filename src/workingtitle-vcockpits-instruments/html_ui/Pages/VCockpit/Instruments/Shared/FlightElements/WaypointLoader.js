@@ -103,9 +103,22 @@ class FacilityLoader {
     }
     addFacility(_data) {
         _data.icaoTrimed = _data.icao.trim();
-        this.loadedFacilities.push(_data);
-        while (this.loadedFacilities.length > 1000) {
-            this.loadedFacilities.splice(0, 1);
+        let isLoaded = this.loadedFacilities.findIndex(f => {
+            if (f.icao === _data.icao) {
+                if (_data.routes != undefined && f.routes != undefined) {
+                    return true;
+                }
+                if (_data.routes === undefined && f.routes === undefined) {
+                    return true;
+                }
+            }
+            return false;
+        }) != -1;
+        if (!isLoaded) {
+            this.loadedFacilities.push(_data);
+            while (this.loadedFacilities.length > 1000) {
+                this.loadedFacilities.splice(0, 1);
+            }
         }
     }
     getFacilityCB(icao, callback) {
@@ -885,7 +898,7 @@ class FacilityLoader {
             loadedVorsCallback();
         });
     }
-    async getAllAirways(intersection, maxLength = 100) {
+    async getAllAirways(intersection, maxLength = 10) {
         await this.waitRegistration();
         let airways = [];
         let intersectionInfo;
@@ -896,7 +909,7 @@ class FacilityLoader {
             intersectionInfo = intersection;
         }
         if (intersectionInfo instanceof WayPointInfo) {
-            let datas = await this.getAllAirwaysData(intersectionInfo);
+            let datas = await this.getAllAirwaysData(intersectionInfo, maxLength);
             for (let i = 0; i < datas.length; i++) {
                 let airway = new Airway();
                 airway.SetFromIAirwayData(datas[i]);
@@ -905,7 +918,7 @@ class FacilityLoader {
         }
         return airways;
     }
-    async getAllAirwaysData(intersectionInfo, maxLength = 100) {
+    async getAllAirwaysData(intersectionInfo, maxLength = 10) {
         await this.waitRegistration();
         let airways = [];
         if (intersectionInfo.routes) {

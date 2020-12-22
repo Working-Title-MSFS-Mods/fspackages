@@ -1,3 +1,5 @@
+const { runInThisContext } = require("vm");
+
 class AS1000_PFD extends BaseAS1000 {
     constructor() {
         super();
@@ -19,12 +21,14 @@ class AS1000_PFD extends BaseAS1000 {
         let bgTimer = new AS1000_PFD_BackgroundTimer();
         let timerRef = new AS1000_PFD_TMRREF();
         timerRef.backgroundTimer = bgTimer;
+        this.warnings = new PFD_Warnings();
+        this.engines = new Engine("Engine", "EngineDisplay")
         this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new PFD_InnerMap()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Transponder", "XPDRTimeBox", new PFD_XPDR()));
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", new PFD_Warnings()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this.warnings));
         this.addIndependentElementContainer(new NavSystemElementContainer("BackGroundTimer", "", bgTimer));
-        this.addIndependentElementContainer(new Engine("Engine", "EngineDisplay"));
+        this.addIndependentElementContainer(this.engines);
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Nearest Airports", "NearestAirports", new AS1000_PFD_NearestAirports(), "SoftKey_NRST"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("ADF/DME", "AdfDme", new PFD_ADF_DME(), "SoftKey_ADF_DME"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Alerts", "AlertsWindow", new AS1000_Alerts(), "Toggle_Alerts"));
@@ -138,6 +142,15 @@ class AS1000_PFD extends BaseAS1000 {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+    }
+    reboot() {
+        super.reboot();
+        if (this.warnings)
+            this.warnings.reset();
+        if (this.mainPage)
+            this.mainPage.reset();
+        if (this.engines)
+            this.engines.reset();
     }
 }
 class AS1000_PFD_MainPage extends NavSystemPage {
@@ -312,7 +325,10 @@ class AS1000_PFD_MainPage extends NavSystemPage {
         ];
         this.softKeys = this.rootMenu;
     }
-
+    reset() {
+        if (this.annunciations)
+            this.annunciations.reset();
+    }
     switchToMenu(_menu) {
         this.softKeys = _menu;
     }
