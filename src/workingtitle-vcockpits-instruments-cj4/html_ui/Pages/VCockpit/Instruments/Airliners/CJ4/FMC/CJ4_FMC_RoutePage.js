@@ -56,7 +56,7 @@ class CJ4_FMC_RoutePage {
         if (this._activeWptIndex != actWptIndex) {
             this._activeWptIndex = actWptIndex;
             this._isDirty = true;
-            console.log("active wpt changed");
+            // console.log("active wpt changed");
         }
 
         if (this._isDirty || forceUpdate) {
@@ -147,7 +147,7 @@ class CJ4_FMC_RoutePage {
     }
 
     render() {
-        console.log("render");
+        // console.log("render");
         if (this._currentPage == 0) {
             this.renderMainPage();
         } else {
@@ -347,7 +347,7 @@ class CJ4_FMC_RoutePage {
                                 if (result) {
                                     this._airwayInput = "";
                                     this._fmc.setMsg();
-                                    console.log("added " + wpt.ident);
+                                    // console.log("added " + wpt.ident);
                                     this.update(true);
                                 } else
                                     this._fmc.showErrorMessage("NOT ON AIRWAY");
