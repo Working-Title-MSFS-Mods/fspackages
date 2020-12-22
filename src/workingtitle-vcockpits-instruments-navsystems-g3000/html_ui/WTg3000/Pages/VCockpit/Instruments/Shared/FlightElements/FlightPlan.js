@@ -102,51 +102,76 @@ class WT_FlightPlan {
         return this._approach;
     }
 
+    /**
+     *
+     * @param {WT_Waypoint} origin
+     * @param {*} eventData
+     */
     _changeOrigin(origin, eventData) {
-        if (origin !== this._origin) {
-            eventData.types = eventData.types | WT_FlightPlanEvent.Type.ORIGIN_CHANGED;
-            eventData.oldOrigin = this._origin;
-            eventData.newOrigin = origin;
-            this._origin = origin;
-            this._originLeg = origin ? new WT_FlightPlanWaypointFixLeg(origin) : null;
+        if (origin === null && this._origin === null) {
+            return;
+        } else if (origin !== null && this._origin !== null && origin.uniqueID === this._origin.uniqueID) {
+            return;
         }
+
+        eventData.types = eventData.types | WT_FlightPlanEvent.Type.ORIGIN_CHANGED;
+        eventData.oldOrigin = this._origin;
+        eventData.newOrigin = origin;
+        this._origin = origin;
+        this._originLeg = origin ? new WT_FlightPlanWaypointFixLeg(origin) : null;
     }
 
     _changeDeparture(departure, eventData) {
-        if (departure !== this._departure) {
-            eventData.types = eventData.types | WT_FlightPlanEvent.Type.DEPARTURE_CHANGED;
-            eventData.oldDeparture = this._departure;
-            eventData.newDeparture = departure;
-            this._departure = departure;
+        if (departure === null && this._departure === null) {
+            return;
+        } else if (departure !== null && departure.equals(this._departure)) {
+            return;
         }
+
+        eventData.types = eventData.types | WT_FlightPlanEvent.Type.DEPARTURE_CHANGED;
+        eventData.oldDeparture = this._departure;
+        eventData.newDeparture = departure;
+        this._departure = departure;
     }
 
     _changeArrival(arrival, eventData) {
-        if (arrival !== this._arrival) {
-            eventData.types = eventData.types | WT_FlightPlanEvent.Type.ARRIVAL_CHANGED;
-            eventData.oldArrival = this._arrival;
-            eventData.newArrival = arrival;
-            this._arrival = arrival;
+        if (arrival === null && this._arrival === null) {
+            return;
+        } else if (arrival !== null && arrival.equals(this._arrival)) {
+            return;
         }
+
+        eventData.types = eventData.types | WT_FlightPlanEvent.Type.ARRIVAL_CHANGED;
+        eventData.oldArrival = this._arrival;
+        eventData.newArrival = arrival;
+        this._arrival = arrival;
     }
 
     _changeApproach(approach, eventData) {
-        if (approach !== this._approach) {
-            eventData.types = eventData.types | WT_FlightPlanEvent.Type.APPROACH_CHANGED;
-            eventData.oldApproach = this._approach;
-            eventData.newApproach = approach;
-            this._approach = approach;
+        if (approach === null && this._approach === null) {
+            return;
+        } else if (approach !== null && approach.equals(this._approach)) {
+            return;
         }
+
+        eventData.types = eventData.types | WT_FlightPlanEvent.Type.APPROACH_CHANGED;
+        eventData.oldApproach = this._approach;
+        eventData.newApproach = approach;
+        this._approach = approach;
     }
 
     _changeDestination(destination, eventData) {
-        if (destination !== this._destination) {
-            eventData.types = eventData.types | WT_FlightPlanEvent.Type.DESTINATION_CHANGED;
-            eventData.oldDestination = this._destination;
-            eventData.newDestination = destination;
-            this._destination = destination;
-            this._destinationLeg = destination ? new WT_FlightPlanWaypointFixLeg(destination) : null;
+        if (destination === null && this._destination === null) {
+            return;
+        } else if (destination !== null && this._destination !== null && destination.uniqueID === this._destination.uniqueID) {
+            return;
         }
+
+        eventData.types = eventData.types | WT_FlightPlanEvent.Type.DESTINATION_CHANGED;
+        eventData.oldDestination = this._destination;
+        eventData.newDestination = destination;
+        this._destination = destination;
+        this._destinationLeg = destination ? new WT_FlightPlanWaypointFixLeg(destination) : null;
     }
 
     /**
@@ -255,8 +280,26 @@ class WT_FlightPlan {
                 eventData.enrouteRemoved.push({element: element, index: i});
                 i++;
             }
-            this._enroute.clear();
+            this._enroute._clear();
         }
+    }
+
+    _setEnroute(elements, eventData) {
+        if (this._enroute.length() === elements.length) {
+            let equals = true;
+            for (let i = 0; i < elements.length; i++) {
+                if (!this._enroute.getElement(i).equals(elements[i])) {
+                    equals = false;
+                    break;
+                }
+            }
+            if (equals) {
+                return;
+            }
+        }
+
+        this._clearEnroute(eventData);
+        this._insertEnroute(elements, 0, eventData);
     }
 
     /**
@@ -585,12 +628,14 @@ class WT_FlightPlan {
             this._changeDeparture(null, eventData);
         }
         this._enroute._setPrevious(this._departure ? this._departure : this._originLeg);
-        let enrouteElements = [];
-        for (let element of flightPlan.getEnroute().elements()) {
-            enrouteElements.push(element.copy());
+        if (!flightPlan.getEnroute().equals(this._enroute)) {
+            let enrouteElements = [];
+            for (let element of flightPlan.getEnroute().elements()) {
+                enrouteElements.push(element.copy());
+            }
+            this._clearEnroute(eventData);
+            this._insertEnroute(enrouteElements, 0, eventData);
         }
-        this._clearEnroute(eventData);
-        this._insertEnroute(enrouteElements, 0, eventData);
         if (flightPlan.hasArrival()) {
             let arrival = flightPlan.getArrival();
             this._changeArrival(arrival.copy(), eventData);
@@ -803,6 +848,13 @@ class WT_FlightPlanElement {
     copy() {
         return null;
     }
+
+    /**
+     * @returns {WT_FlightPlanLeg[]}
+     */
+    legs() {
+        return null;
+    }
 }
 
 class WT_FlightPlanLeg extends WT_FlightPlanElement {
@@ -878,6 +930,10 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
     copy() {
         return new WT_FlightPlanWaypointFixLeg(this.waypoint);
     }
+
+    equals(other) {
+        return (other instanceof WT_FlightPlanWaypointFixLeg) && this.waypoint.uniqueID === other.waypoint.uniqueID;
+    }
 }
 
 class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
@@ -910,6 +966,10 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
 
     copy() {
         return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.waypoint);
+    }
+
+    equals(other) {
+        return super.equals(other) && (other instanceof WT_FlightPlanProcedureLeg);
     }
 }
 
@@ -1011,6 +1071,22 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
     copy() {
         return new WT_FlightPlanSequence(this._copyElements());
     }
+
+    equals(other) {
+        if (!(other instanceof WT_FlightPlanSequence)) {
+            return false;
+        }
+        if (this.length() !== other.length()) {
+            return false;
+        }
+
+        for (let i = 0; i < this._elements.length; i++) {
+            if (!this._elements[i].equals(other._elements[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 class WT_FlightPlanAirwaySequence extends WT_FlightPlanSequence {
@@ -1080,11 +1156,27 @@ class WT_FlightPlanDeparture extends WT_FlightPlanDepartureArrival {
     copy() {
         return new WT_FlightPlanDeparture(this.procedure, this.runwayTransitionIndex, this.enrouteTransitionIndex, this._copyElements());
     }
+
+    equals(other) {
+        return other instanceof WT_FlightPlanDeparture &&
+               this.procedure.name === other.procedure.name &&
+               this.procedure.airport.icao === other.procedure.airport.icao &&
+               this.runwayTransitionIndex === other.runwayTransitionIndex &&
+               this.enrouteTransitionIndex === other.enrouteTransitionIndex;
+    }
 }
 
 class WT_FlightPlanArrival extends WT_FlightPlanDepartureArrival {
     copy() {
         return new WT_FlightPlanArrival(this.procedure, this.runwayTransitionIndex, this.enrouteTransitionIndex, this._copyElements());
+    }
+
+    equals(other) {
+        return other instanceof WT_FlightPlanArrival &&
+               this.procedure.name === other.procedure.name &&
+               this.procedure.airport.icao === other.procedure.airport.icao &&
+               this.runwayTransitionIndex === other.runwayTransitionIndex &&
+               this.enrouteTransitionIndex === other.enrouteTransitionIndex;
     }
 }
 
@@ -1106,5 +1198,12 @@ class WT_FlightPlanApproach extends WT_FlightPlanProcedure {
 
     copy() {
         return new WT_FlightPlanApproach(this.procedure, this.transitionIndex, this._copyElements());
+    }
+
+    equals(other) {
+        return other instanceof WT_FlightPlanApproach &&
+               this.procedure.airport.icao === other.procedure.airport.icao &&
+               this.procedure.name === other.procedure.name &&
+               this.transitionIndex === other.transitionIndex;
     }
 }
