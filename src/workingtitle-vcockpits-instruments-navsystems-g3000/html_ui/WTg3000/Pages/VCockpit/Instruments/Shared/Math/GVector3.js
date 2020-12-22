@@ -3,12 +3,13 @@
  */
 class WT_GVector3 {
     /**
-     * @param {Number} x
-     * @param {Number} y
-     * @param {Number} z
+     * @param {{x:Number, y:Number, z:Number}|Number} arg1 - an object defining the new vector's x, y, z values, or the x value
+     *                                                       as a scalar number.
+     * @param {Number} [arg2] - the y value as a scalar number.
+     * @param {Number} [arg3] - the z value as a scalar number.
      */
-    constructor(x, y, z) {
-        this.set(x, y, z);
+    constructor(arg1, arg2, arg3) {
+        this.set(arg1, arg2, arg3);
         this._readonly = new WT_GVector3ReadOnly(this);
     }
 
