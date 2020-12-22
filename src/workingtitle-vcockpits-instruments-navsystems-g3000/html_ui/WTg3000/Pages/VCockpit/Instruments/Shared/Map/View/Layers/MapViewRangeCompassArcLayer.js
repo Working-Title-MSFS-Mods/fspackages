@@ -50,6 +50,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._bearingLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
         this._forwardTickLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
         this._labelLastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
+
+        this._tempTransform = new WT_GTransform2();
     }
 
     /**
@@ -57,11 +59,11 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @type {WT_GVector2}
      */
     get center() {
-        return this._center.copy();
+        return this._center.readonly();
     }
 
     set center(newValue) {
-        let oldValue = this.center;
+        let oldValue = this.center.copy();
         this._center.set(newValue);
         this.onOptionChanged("center", oldValue, newValue);
     }
@@ -675,7 +677,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let leftInner2 = WT_GVector2.fromPolar(thick / 2, leftAngleRad - Math.PI / 2).add(leftInner1);
         let leftOuter = WT_GVector2.fromPolar(innerToOuterLength, leftAngleRad).add(leftInner2);
 
-        let reflect = WT_GTransform2.reflect(facingRad, center);
+        let reflect = WT_GTransform2.reflection(facingRad, center, this._tempTransform);
 
         let rightInner1 = reflect.apply(leftInner1);
         let rightInner2 = reflect.apply(leftInner2);
