@@ -53,7 +53,13 @@ class CJ4_MFD extends BaseAirliners {
     }
     disconnectedCallback() {
     }
-
+    reboot() {
+        super.reboot();
+        if (this.systems1)
+            this.systems1.reboot();
+        if (this.systems2)
+            this.systems2.reboot();
+    }
     onUnitSystemChanged() {
         this.modeChangeTimer = -1;
         this.initDuration = 11000;
