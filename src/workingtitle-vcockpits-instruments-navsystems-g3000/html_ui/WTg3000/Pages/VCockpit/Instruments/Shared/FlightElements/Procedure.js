@@ -106,7 +106,11 @@ class WT_Approach extends WT_Procedure {
     }
 
     _initFromData(data) {
-        this._runway = this.airport.runways.getByDesignation(data.runway.trim());
+        let runwayDesignation = data.runway.trim();
+        this._runway = this.airport.runways.getByDesignation(runwayDesignation);
+        if (!this._runway) {
+            this._runway = this.airport.runways.getByDesignation(runwayDesignation + "C"); // data from the game leaves out the C for center runways
+        }
         if (data.finalLegs) {
             this._finalLegs = new WT_ProcedureLegList(data.finalLegs.map(this._legMap.bind(this)));
         }
