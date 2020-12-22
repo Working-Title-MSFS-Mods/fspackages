@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.3.3
+**Fixes**
+- \[Compatibility\] Brought up to date with game patch 1.12.13.0 (SIM UPDATE 2).
+
 ### v0.3.2
 **Fixes**
 - \[Compatibility\] Brought up to date with game patch 1.10.11.0 (Update 6).
