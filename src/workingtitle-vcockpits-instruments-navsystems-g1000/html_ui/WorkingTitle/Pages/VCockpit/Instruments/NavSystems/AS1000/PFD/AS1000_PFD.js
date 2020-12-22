@@ -1,5 +1,3 @@
-const { runInThisContext } = require("vm");
-
 class AS1000_PFD extends BaseAS1000 {
     constructor() {
         super();
