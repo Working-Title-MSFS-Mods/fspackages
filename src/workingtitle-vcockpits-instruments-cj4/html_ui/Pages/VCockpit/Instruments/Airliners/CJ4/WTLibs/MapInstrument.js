@@ -424,7 +424,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.smartIterator = new SmartIterator();
             this.roadsBuffer = [];
             this.drawCounter = 0;
-            this.airportLoader = new AirportLoader(this.instrument);
+            this.airportLoader = new AirportLoader(this.instrument, false);
             this.intersectionLoader = new IntersectionLoader(this.instrument);
             this.vorLoader = new VORLoader(this.instrument);
             this.ndbLoader = new NDBLoader(this.instrument);
@@ -633,7 +633,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showIntersections) {
                     this.intersectionLoader.searchLat = centerCoordinates.lat;
                     this.intersectionLoader.searchLong = centerCoordinates.long;
-                    this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
+                    this.intersectionLoader.searchRange = this.navMap.NMWidth * 2;
                     this.intersectionLoader.maxItemsSearchCount = 30;
                     this.intersectionLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.intersectionLoader.currentMapAngularWidth = this.navMap.angularWidth;

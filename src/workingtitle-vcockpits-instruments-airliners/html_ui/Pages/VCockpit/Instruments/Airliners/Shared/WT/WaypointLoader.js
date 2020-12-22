@@ -136,7 +136,7 @@ class FacilityLoader {
                     timeout: setTimeout(() => resolve(undefined), timeout),
                     icao: icao.trim()
                 };
-    
+
                 this._pendingRawRequests.set(`${type}${request.icao}`, request);
                 Coherent.call(loadCall, icao);
             });
@@ -157,7 +157,7 @@ class FacilityLoader {
                 return Promise.all([queueRawLoad('LOAD_NDB', icao, 'N'), queueRawLoad('LOAD_INTERSECTION', icao, 'W')])
                     .then(facilities => Object.assign(facilities[0], facilities[1]));
         }
-        
+
     }
     getFacilityCB(icao, callback, loadFacilitiesTransitively = false) {
         if (this._isCompletelyRegistered && this.loadingFacilities.length < this._maxSimultaneousCoherentCalls) {
@@ -1164,7 +1164,7 @@ class WaypointLoader {
     set maxItemsSearchCount(v) {
         if (this._maxItemsSearchCount !== v) {
             this._maxItemsSearchCountNeedUpdate = true;
-            this._maxItemsSearchCount = v;
+            this._maxItemsSearchCount = Math.min(v, this.waypointsCountLimit);
         }
     }
     get searchRange() {
@@ -1195,7 +1195,6 @@ class WaypointLoader {
         }
         let t = performance.now();
         if (!this._isLoadingItems) {
-            this.maxItemsSearchCount = Math.min(this.maxItemsSearchCount, this.waypointsCountLimit);
             while (this.waypoints.length > this.maxItemsSearchCount) {
                 this.waypoints.splice(0, 1);
             }
@@ -1490,7 +1489,7 @@ class IntersectionLoader extends WaypointLoader {
     }
 }
 class AirportLoader extends WaypointLoader {
-    constructor(_instrument) {
+    constructor(_instrument, loadFacility = true) {
         super(_instrument);
         this.loaderName = "AirportLoader";
         this.SET_ORIGIN_LATITUDE = "NearestAirportCurrentLatitude";
@@ -1539,18 +1538,20 @@ class AirportLoader extends WaypointLoader {
                 this.instrument.facilityLoader.getFacilityCB(icao, resolve);
             });
         };
-        this.createWaypointsCallback = async (icaos) => {
-            let icaosToLoad = [];
-            for (let i = 0; i < icaos.length; i++) {
-                let icao = icaos[i];
-                if (icao) {
-                    if (!this.waypoints.find(a => { return a.icao === icao; })) {
-                        icaosToLoad.push(icao);
+        if(loadFacility){
+            this.createWaypointsCallback = async (icaos) => {
+                let icaosToLoad = [];
+                for (let i = 0; i < icaos.length; i++) {
+                    let icao = icaos[i];
+                    if (icao) {
+                        if (!this.waypoints.find(a => { return a.icao === icao; })) {
+                            icaosToLoad.push(icao);
+                        }
                     }
                 }
-            }
-            return this.instrument.facilityLoader.getAirports(icaosToLoad);
-        };
+                return this.instrument.facilityLoader.getAirports(icaosToLoad);
+            };
+        }
     }
 }
 //# sourceMappingURL=WaypointLoader.js.map
