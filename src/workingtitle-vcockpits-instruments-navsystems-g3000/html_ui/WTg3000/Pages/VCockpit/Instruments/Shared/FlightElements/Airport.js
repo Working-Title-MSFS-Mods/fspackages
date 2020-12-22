@@ -76,15 +76,15 @@ class WT_Airport extends WT_ICAOWaypoint {
 
     _calculateSize() {
         let longestRunwayLength;
-        if (this.longestRunway) {
-            longestRunwayLength = this.longestRunway.length;
+        if (this.runways.longest()) {
+            longestRunwayLength = this.runways.longest().length;
         }
 
-        if (this.longestRunway && longestRunwayLength.compare(WT_Unit.FOOT.createNumber(8100)) >= 0) {
+        if (longestRunwayLength && longestRunwayLength.compare(WT_Unit.FOOT.createNumber(8100)) >= 0) {
             return WT_Airport.Size.LARGE;
         }
 
-        if (this.isTowered || this.longestRunway && longestRunwayLength.compare(WT_Unit.FOOT.createNumber(5000)) >= 0) {
+        if (this.isTowered || longestRunwayLength && longestRunwayLength.compare(WT_Unit.FOOT.createNumber(5000)) >= 0) {
             return WT_Airport.Size.MEDIUM;
         }
 
@@ -232,7 +232,7 @@ class WT_RunwayList {
 
         this._longest;
         for (let runway of this._runways) {
-            if (!this._longest || runway.length > this._longest.length) {
+            if (!this._longest || runway.length.compare(this._longest.length) > 0) {
                 this._longest = runway;
             }
         }
