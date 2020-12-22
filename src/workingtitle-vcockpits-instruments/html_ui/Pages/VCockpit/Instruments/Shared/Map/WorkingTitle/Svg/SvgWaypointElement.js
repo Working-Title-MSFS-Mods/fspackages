@@ -42,8 +42,28 @@ class SvgWaypointElement extends SvgMapElement {
             return this.source.icao;
         }
     }
+    get icaoNoSpace() {
+        if (this.source instanceof WayPoint) {
+            return this.source.icaoNoSpace;
+        }
+        if (!this._icaoNoSpace) {
+            if (this.icao) {
+                this._icaoNoSpace = this.icao;
+                while (this._icaoNoSpace.indexOf(" ") != -1) {
+                    this._icaoNoSpace = this._icaoNoSpace.replace(" ", "_");
+                }
+            }
+        }
+        if (this._icaoNoSpace) {
+            return this._icaoNoSpace;
+        }
+    }
     set icao(v) {
         this._icao = v;
+        this._icaoNoSpace = this._icao;
+        while (this._icaoNoSpace.indexOf(" ") != -1) {
+            this._icaoNoSpace.replace(" ", "_");
+        }
     }
     get coordinates() {
         if (this._coordinates) {
@@ -85,7 +105,8 @@ class SvgWaypointElement extends SvgMapElement {
     }
 
     isActiveWaypoint() {
-        return this.source.ident === FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIdent();
+        let wp = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint();
+        return this.source.icao === wp ? wp.icao : "";
     }
 
     getIconSize(map) {
@@ -264,12 +285,12 @@ class SvgWaypointTextElement {
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
-        let ident;
+        let icao;
         let activeWaypoint = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypoint(false, true);
         if (activeWaypoint) {
-            ident = activeWaypoint.ident;
+            icao = activeWaypoint.ident;
         }
-        let isActiveWaypoint = this.waypointElement.source.ident === ident;
+        let isActiveWaypoint = this.waypointElement.source.icao === icao;
         this._refreshLabel(map, isActiveWaypoint);
     }
 

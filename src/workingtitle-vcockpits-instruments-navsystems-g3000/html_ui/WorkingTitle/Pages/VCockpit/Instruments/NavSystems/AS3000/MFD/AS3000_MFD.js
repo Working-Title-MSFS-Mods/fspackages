@@ -12,7 +12,8 @@ class AS3000_MFD extends NavSystem {
     connectedCallback() {
         super.connectedCallback();
         this.pagesContainer = this.getChildById("RightInfos");
-        this.addIndependentElementContainer(new AS3000_Engine("Engine", "LeftInfos"));
+        this.engines = new AS3000_Engine("Engine", "LeftInfos");
+        this.addIndependentElementContainer(this.engines);
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new AS3000_MFD_NavDataBar()));
         this.pageGroups = [
@@ -38,6 +39,12 @@ class AS3000_MFD extends NavSystem {
 
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+    }
+
+    reboot() {
+        super.reboot();
+        if (this.engines)
+            this.engines.reset();
     }
 }
 
@@ -455,14 +462,19 @@ class AS3000_Engine extends NavSystemElementContainer {
                     this.addGauge().Set(_engine.querySelector(".Turbo_IttGauge"), this.settings.ITTEngineOff, this.getItt.bind(this, _index), "ITT", "°C");
                     this.addGauge().Set(_engine.querySelector(".Turbo_OilPressGauge"), this.settings.OilPressure, this.getOilPress.bind(this, _index), "OIL PRESS", "");
                     this.addGauge().Set(_engine.querySelector(".Turbo_OilTempGauge"), this.settings.OilTemperature, this.getOilTemp.bind(this, _index), "OIL TEMP", "");
-                    let CAS = new Engine_Annunciations();
-                    this.allElements.push(CAS);
+                    this.engineAnnunciations = new Engine_Annunciations();
+                    this.allElements.push(this.engineAnnunciations);
                     break;
                 }
         }
         if (this.nbEngineReady == this.engineCount) {
             this.allEnginesReady = true;
             this.element = new NavSystemElementGroup(this.allElements);
+        }
+    }
+    reset() {
+        if (this.engineAnnunciations) {
+            this.engineAnnunciations.reset();
         }
     }
     onUpdate(_deltaTime) {
