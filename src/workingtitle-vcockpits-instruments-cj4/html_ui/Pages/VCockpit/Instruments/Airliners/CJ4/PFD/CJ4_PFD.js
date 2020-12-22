@@ -59,6 +59,11 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
         document.documentElement.classList.add("animationsEnabled");
     }
+    reboot() {
+        super.reboot();
+        if (this.systems)
+            this.systems.reboot();
+    }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         this.reversionaryMode = false;
@@ -871,6 +876,10 @@ class CJ4_APDisplay extends NavSystemElement {
     }
 }
 class CJ4_ILS extends NavSystemElement {
+    constructor() {
+        super(...arguments);
+        this.altWentAbove500 = false;
+    }
     init(root) {
         this.ils = this.gps.getChildById("ILS");
         this.ils.aircraft = Aircraft.CJ4;
@@ -879,11 +888,15 @@ class CJ4_ILS extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
+        if (!this.altWentAbove500) {
+            let altitude = Simplane.getAltitudeAboveGround();
+            if (altitude >= 500)
+                this.altWentAbove500 = true;
+        }
         if (this.ils) {
             let showIls = false;
-            let localizer = this.gps.radioNav.getBestILSBeacon(false);
-            let navSensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
-            if (localizer.id != 0 || navSensitivity === 4) {
+            let localizer = this.gps.radioNav.getBestILSBeacon(true);
+            if ((localizer.id != 0 && this.altWentAbove500) || (this.gps.currFlightPlanManager.isActiveApproach() && Simplane.getAutoPilotApproachType() == 10)) {
                 showIls = true;
             }
             this.ils.showLocalizer(showIls);

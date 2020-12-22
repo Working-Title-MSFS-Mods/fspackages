@@ -1,14 +1,22 @@
-import { Coherent } from "MSFS"
+import { Coherent, RegisterViewListener } from "MSFS"
 import { WTDataStore } from "WorkingTitle";
-import { ManagedFlightPlan } from "../wtsdk";
 import { FlightPlanManager } from "./FlightPlanManager";
 
 /** A class for syncing a flight plan with the game */
 export class FlightPlanAsoboSync {
   static fpChecksum: number = 0;
+  static fpListenerInitialized = false;
+
+  public static init() {
+    if(!this.fpListenerInitialized){
+      RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
+      this.fpListenerInitialized = true;
+    }
+  }
 
   public static async LoadFromGame(fpln: FlightPlanManager): Promise<void> {
     return new Promise((resolve, reject) => {
+      this.init();
       setTimeout(() => {
         Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
         Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
