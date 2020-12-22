@@ -27,6 +27,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._isReady = false;
         this._lastShowStateBorders = false;
         this._drawUnfinishedBorders = false;
+        this._redrawTimer = 0;
+
+        this._lastTime = 0;
     }
 
     get isReady() {
@@ -259,6 +262,58 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo, this.countryLabelPriority, this.stateLabelPriority)));
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
+    _handleRedraw(state) {
+        let transform = this._borderLayer.display.transform;
+        let offsetXAbs = Math.abs(transform.offset.x);
+        let offsetYAbs = Math.abs(transform.offset.y);
+
+        let shouldShowStateBorders = this._shouldShowStateBorders(state);
+
+        let isDisplayInvalid = this._borderLayer.display.isInvalid;
+        let shouldInvalidate = isDisplayInvalid ||
+                               (!shouldShowStateBorders && this._lastShowStateBorders);
+
+        let shouldRedraw = shouldInvalidate ||
+                           (shouldShowStateBorders != this._lastShowStateBorders) ||
+                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
+
+        this._lastShowStateBorders = shouldShowStateBorders;
+
+        if (shouldInvalidate) {
+            this._borderLayer.redrawDisplay(state, false);
+            this._clearLabels();
+            this._drawUnfinishedBorders = true;
+        }
+
+        if (isDisplayInvalid) {
+            // start timer
+            this._redrawTimer = WT_MapViewBorderLayer.REDRAW_DELAY;
+            return;
+        }
+        if (this._redrawTimer > 0) {
+            this._redrawTimer -= state.currentTime - this._lastTime;
+            if (this._redrawTimer <= 0) {
+                shouldRedraw = true;
+            } else {
+                return;
+            }
+        }
+
+        if (shouldRedraw) {
+            this._startDrawBorders(state, shouldShowStateBorders);
+        } else if (this._renderQueue.isBusy) {
+            this._continueDrawBorders(state);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
     onUpdate(state) {
         super.onUpdate(state);
 
@@ -267,31 +322,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         }
 
         this._borderLayer.update(state);
-        let transform = this._borderLayer.display.transform;
-        let offsetXAbs = Math.abs(transform.offset.x);
-        let offsetYAbs = Math.abs(transform.offset.y);
-
-        let shouldShowStateBorders = this._shouldShowStateBorders(state);
-
-        let isImageInvalid = this._borderLayer.display.isInvalid ||
-                             (!shouldShowStateBorders && this._lastShowStateBorders);
-
-        let shouldRedraw = isImageInvalid ||
-                           (shouldShowStateBorders != this._lastShowStateBorders) ||
-                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
-
-        this._lastShowStateBorders = shouldShowStateBorders;
-
-        if (isImageInvalid) {
-            this._borderLayer.redrawDisplay(state, false);
-            this._clearLabels();
-            this._drawUnfinishedBorders = true;
-        }
-        if (shouldRedraw) {
-            this._startDrawBorders(state, shouldShowStateBorders);
-        } else if (this._renderQueue.isBusy) {
-            this._continueDrawBorders(state);
-        }
+        this._handleRedraw(state);
+        this._lastTime = state.currentTime;
     }
 }
 WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
@@ -312,6 +344,7 @@ WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(3)
 ];
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
+WT_MapViewBorderLayer.REDRAW_DELAY = 500; // ms
 WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 2; // ms
 WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX = 0.75; // fraction of view area
 WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN = 0.0025; // fraction of view area
