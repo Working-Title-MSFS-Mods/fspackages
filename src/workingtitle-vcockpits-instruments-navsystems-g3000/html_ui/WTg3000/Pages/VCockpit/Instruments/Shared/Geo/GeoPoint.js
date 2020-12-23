@@ -193,7 +193,7 @@ class WT_GeoPoint {
         if (mutate) {
             return this.set(offsetLat, offsetLong);
         } else {
-            return this.set(offsetLat, offsetLong);
+            return new WT_GeoPoint(offsetLat, offsetLong);
         }
     }
 
@@ -419,10 +419,9 @@ class WT_GeoPointReadOnly {
      * or a new WT_GeoPoint object can be returned.
      * @param {Number} bearing - the initial bearing (forward azimuth) by which to offset.
      * @param {Number} distance - the distance, in great-arc radians, by which to offset.
-     * @param {Boolean} [mutate] - this argument is ignored.
      * @returns {WT_GeoPoint} the offset point.
      */
-    offset(bearing, distance, mutate) {
+    offset(bearing, distance) {
         return this._source.offset(bearing, distance, false);
     }
 
@@ -431,10 +430,9 @@ class WT_GeoPointReadOnly {
      * or a new WT_GeoPoint object can be returned.
      * @param {Number} bearing - the bearing by which to offset.
      * @param {Number} distance - the distance, in great-arc radians, by which to offset.
-     * @param {Boolean} [mutate] - this argument is ignored.
      * @returns {WT_GeoPoint} the offset point, either as a new WT_GeoPoint object or this point after it has been changed.
      */
-    offsetRhumb(bearing, distance, mutate) {
+    offsetRhumb(bearing, distance) {
         return this._source.offsetRhumb(bearing, distance, false);
     }
 
