@@ -96,17 +96,35 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      * @param {{icon:WT_MapViewWaypointIconOptions, label:WT_MapViewWaypointLabelOptions}} options - the options object to which to save the options.
      */
     _getWaypointIconAndLabelOptions(waypoint, options) {
-        options.label.fontSize = this.waypointLabelFontSize;
-        options.label.fontWeight = this.waypointLabelFontWeight;
-        options.label.fontColor = this.waypointLabelFontColor;
-        options.label.fontOutlineWidth = this.waypointLabelFontOutlineWidth;
-        options.label.fontOutlineColor = this.waypointLabelFontOutlineColor;
-        options.label.showBackground = this.waypointLabelShowBackground;
-        options.label.backgroundColor = this.waypointLabelBackgroundColor;
-        options.label.backgroundPadding = this.waypointLabelBackgroundPadding;
-        options.label.backgroundOutlineWidth = this.waypointLabelBackgroundOutlineWidth;
-        options.label.backgroundOutlineColor = this.waypointLabelBackgroundOutlineColor;
-        options.label.alwaysShow = this.waypointLabelAlwaysShow;
+        let activeWaypoint = this._fpm.directTo.isActive() ?
+            this._fpm.directTo.getDestination() :
+            (this._fpRenderer.activeLeg() ? this._fpRenderer.activeLeg().fix : null);
+
+        if (activeWaypoint && activeWaypoint.uniqueID === waypoint.uniqueID) {
+            options.label.fontSize = this.activeLabelFontSize;
+            options.label.fontWeight = this.activeLabelFontWeight;
+            options.label.fontColor = this.activeLabelFontColor;
+            options.label.fontOutlineWidth = this.activeLabelFontOutlineWidth;
+            options.label.fontOutlineColor = this.activeLabelFontOutlineColor;
+            options.label.showBackground = this.activeLabelShowBackground;
+            options.label.backgroundColor = this.activeLabelBackgroundColor;
+            options.label.backgroundPadding = this.activeLabelBackgroundPadding;
+            options.label.backgroundOutlineWidth = this.activeLabelBackgroundOutlineWidth;
+            options.label.backgroundOutlineColor = this.activeLabelBackgroundOutlineColor;
+            options.label.alwaysShow = this.activeLabelAlwaysShow;
+        } else {
+            options.label.fontSize = this.waypointLabelFontSize;
+            options.label.fontWeight = this.waypointLabelFontWeight;
+            options.label.fontColor = this.waypointLabelFontColor;
+            options.label.fontOutlineWidth = this.waypointLabelFontOutlineWidth;
+            options.label.fontOutlineColor = this.waypointLabelFontOutlineColor;
+            options.label.showBackground = this.waypointLabelShowBackground;
+            options.label.backgroundColor = this.waypointLabelBackgroundColor;
+            options.label.backgroundPadding = this.waypointLabelBackgroundPadding;
+            options.label.backgroundOutlineWidth = this.waypointLabelBackgroundOutlineWidth;
+            options.label.backgroundOutlineColor = this.waypointLabelBackgroundOutlineColor;
+            options.label.alwaysShow = this.waypointLabelAlwaysShow;
+        }
 
         if (waypoint.icao) {
             switch (waypoint.type) {
@@ -310,6 +328,17 @@ WT_MapViewFlightPlanLayer.OPTIONS_DEF = {
     waypointLabelBackgroundPadding: {default: [1], auto: true},
     waypointLabelBackgroundOutlineWidth: {default: 1, auto: true},
     waypointLabelBackgroundOutlineColor: {default: "black", auto: true},
+
+    activeLabelFontSize: {default: 15, auto: true},
+    activeLabelFontWeight: {default: "bold", auto: true},
+    activeLabelFontColor: {default: "9c70b1", auto: true},
+    activeLabelFontOutlineWidth: {default: 0, auto: true},
+    activeLabelFontOutlineColor: {default: "black", auto: true},
+    activeLabelShowBackground: {default: true, auto: true},
+    activeLabelBackgroundColor: {default: "black", auto: true},
+    activeLabelBackgroundPadding: {default: [1], auto: true},
+    activeLabelBackgroundOutlineWidth: {default: 1, auto: true},
+    activeLabelBackgroundOutlineColor: {default: "white", auto: true},
 
     waypointLabelAlwaysShow: {default: true, auto: true},
 
