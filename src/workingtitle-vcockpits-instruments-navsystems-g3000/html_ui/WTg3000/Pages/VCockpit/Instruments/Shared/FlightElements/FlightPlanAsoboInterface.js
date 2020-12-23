@@ -145,7 +145,7 @@ class WT_FlightPlanAsoboInterface {
             await Coherent.call("SET_DESTINATION", flightPlan.getDestination().icao);
             let count = 1;
             for (let leg of flightPlan.getEnroute().legs()) {
-                let waypoint = leg.waypoint;
+                let waypoint = leg.fix;
                 if (waypoint && waypoint.icao) {
                     await Coherent.call("ADD_WAYPOINT", waypoint.icao, count, false);
                     count++;
@@ -175,6 +175,11 @@ class WT_FlightPlanAsoboInterface {
         await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
     }
 
+    /**
+     *
+     * @param {WT_FlightPlan} flightPlan
+     * @returns {WT_FlightPlanLeg}
+     */
     async getActiveLeg(flightPlan) {
         let index = await this.getGameActiveWaypointIndex();
         if (index <= 0) {
@@ -192,11 +197,11 @@ class WT_FlightPlanAsoboInterface {
         }
 
         let leg = legs[index];
-        if (!leg || (ident !== "USR" && leg.waypoint.ident !== ident)) {
+        if (!leg || (ident !== "USR" && leg.fix.ident !== ident)) {
             let legsBefore = legs.slice(0, index).reverse();
             let legsAfter = legs.slice(index + 1, legs.length);
-            let before = legsBefore.findIndex(leg => leg.waypoint.ident === ident);
-            let after = legsAfter.findIndex(leg => leg.waypoint.ident === ident);
+            let before = legsBefore.findIndex(leg => leg.fix.ident === ident);
+            let after = legsAfter.findIndex(leg => leg.fix.ident === ident);
             if (before < 0) {
                 if (after >= 0) {
                     index += after + 1;
