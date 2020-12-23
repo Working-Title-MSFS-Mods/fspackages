@@ -1,3 +1,6 @@
+# Changes in v0.3.3
+* Compatibility with and improvements from v1.12.13.0.
+
 # Changes in v0.3.2
 * Compatibility fix for 1.10.7.
 

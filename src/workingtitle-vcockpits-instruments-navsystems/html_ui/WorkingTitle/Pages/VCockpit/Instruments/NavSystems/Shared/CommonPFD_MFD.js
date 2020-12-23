@@ -100,7 +100,7 @@ class PFD_Airspeed extends NavSystemElement {
         this.lastSpeed = indicatedSpeed;
         this.airspeedElement.setAttribute("airspeed-trend", (this.acceleration).toString());
         let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
-        let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+        let cruiseMach = SimVar.GetSimVarValue("MACH MAX OPERATE", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
         if (crossSpeed != 0) {
             this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString());

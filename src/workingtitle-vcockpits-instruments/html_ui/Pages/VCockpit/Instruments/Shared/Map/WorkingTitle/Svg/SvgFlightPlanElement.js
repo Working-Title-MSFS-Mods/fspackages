@@ -102,8 +102,18 @@ class SvgFlightPlanElement extends SvgMapElement {
             }
             let pIndex = 0;
             let first = 0;
+            let firstApproach = 0;
             if (this.source.getIsDirectTo()) {
-                first = 1;
+                let directToTarget = this.source.getDirectToTarget();
+                if (directToTarget) {
+                    first = this.source.getWaypoints().findIndex(wp => { return wp.icao === directToTarget.icao; });
+                    if (first === -1) {
+                        firstApproach = this.source.getApproachWaypoints().findIndex(wp => { return wp.icao === directToTarget.icao; });
+                        if (firstApproach != -1) {
+                            first = Infinity;
+                        }
+                    }
+                }
             }
             else if (this.hideReachedWaypoints) {
                 first = Math.max(0, activeWaypointIndex - 1);
@@ -201,27 +211,32 @@ class SvgFlightPlanElement extends SvgMapElement {
             }
             if (approach) {
                 let waypoints = this.source.getApproachWaypoints();
-                for (let i = 0; i < waypoints.length; i++) {
-                    let wpPoints = [];
-                    if (waypoints[i].transitionLLas) {
-                        for (let j = 0; j < waypoints[i].transitionLLas.length; j++) {
-                            wpPoints.push(waypoints[i].transitionLLas[j]);
+                for (let i = firstApproach; i < waypoints.length; i++) {
+                    let waypoint = waypoints[i];
+                    if (waypoint) {
+                        let wpPoints = [];
+                        if (i > firstApproach || !this.source.getIsDirectTo()) {
+                            if (waypoints[i].transitionLLas) {
+                                for (let j = 0; j < waypoints[i].transitionLLas.length; j++) {
+                                    wpPoints.push(waypoints[i].transitionLLas[j]);
+                                }
+                            }
                         }
-                    }
-                    wpPoints.push(new LatLongAlt(waypoints[i].latitudeFP, waypoints[i].longitudeFP, waypoints[i].altitudeinFP));
-                    for (let j = 0; j < wpPoints.length; j++) {
-                        if (this.points[pIndex]) {
-                            map.coordinatesToXYToRef(wpPoints[j], this.points[pIndex]);
-                            this.points[pIndex].refWP = waypoints[i];
-                            this.points[pIndex].refWPIndex = last + i;
+                        wpPoints.push(new LatLongAlt(waypoints[i].latitudeFP, waypoints[i].longitudeFP, waypoints[i].altitudeinFP));
+                        for (let j = 0; j < wpPoints.length; j++) {
+                            if (this.points[pIndex]) {
+                                map.coordinatesToXYToRef(wpPoints[j], this.points[pIndex]);
+                                this.points[pIndex].refWP = waypoints[i];
+                                this.points[pIndex].refWPIndex = last + i;
+                            }
+                            else {
+                                let p = map.coordinatesToXY(wpPoints[j]);
+                                p.refWP = waypoints[i];
+                                p.refWPIndex = last + i;
+                                this.points.push(p);
+                            }
+                            pIndex++;
                         }
-                        else {
-                            let p = map.coordinatesToXY(wpPoints[j]);
-                            p.refWP = waypoints[i];
-                            p.refWPIndex = last + i;
-                            this.points.push(p);
-                        }
-                        pIndex++;
                     }
                 }
             }
@@ -295,70 +310,93 @@ class SvgFlightPlanElement extends SvgMapElement {
                 prevRefWP = point.refWP;
             }
         }
-        let path = "";
         let activePath = "";
+        let standardPath = "";
         let transitionPath = "";
         let showActiveLeg = false;
-        let prevIsHighlit;
-        for (let i = 0; i < this.points.length - 1; i++) {
-            let p1 = this.points[i];
-            let p2 = this.points[i + 1];
-            if (!p2) {
-                p2 = this.points[i + 2];
+        let prevIsHighlit = false;
+        let prevWasClipped = false;
+        let first = true;
+        let s1 = new Vec2();
+        let s2 = new Vec2();
+        let p1 = null;
+        let p2 = null;
+        for (let i = 0; i < this.points.length; i++) {
+            let p = this.points[i];
+            if (!p || isNaN(p.x) || isNaN(p.y)) {
+                continue;
             }
-            if (p1 && p2) {
-                let p1x = fastToFixed(p1.x, 0);
-                let p1y = fastToFixed(p1.y, 0);
-                let p2x = fastToFixed(p2.x, 0);
-                let p2y = fastToFixed(p2.y, 0);
-                if (p1x !== p2x || p1y !== p2y) {
-                    let isHighlit = false;
-                    if (!this._isDashed && this.highlightActiveLeg) {
-                        if (this.source.getActiveWaypoint(false, true)) {
-                            if (p2.refWP.ident === this.source.getActiveWaypoint(false, true).ident) {
-                                isHighlit = true;
-                            }
-                        }
-                        else if (activeWaypointIndex <= 1 && p2.refWPIndex <= activeWaypointIndex) {
+            if (!p1) {
+                p1 = p;
+                continue;
+            }
+            p2 = p;
+            if (p1.x != p2.x || p1.y != p2.y) {
+                let isHighlit = false;
+                if (!this._isDashed && this.highlightActiveLeg) {
+                    if (this.source.getActiveWaypoint(false, true)) {
+                        if (p2.refWP === this.source.getActiveWaypoint(false, true)) {
                             isHighlit = true;
                         }
                     }
+                    else if (activeWaypointIndex <= 1 && p2.refWPIndex <= activeWaypointIndex) {
+                        isHighlit = true;
+                    }
+                }
+                if (map.segmentVsFrame(p1, p2, s1, s2)) {
+                    let x1 = fastToFixed(s1.x, 0);
+                    let y1 = fastToFixed(s1.y, 0);
+                    let x2 = fastToFixed(s2.x, 0);
+                    let y2 = fastToFixed(s2.y, 0);
                     if (isHighlit) {
                         showActiveLeg = true;
-                        if (i === 0 || prevIsHighlit != isHighlit) {
-                            activePath += "M" + p1x + " " + p1y + " L" + p2x + " " + p2y + " ";
+                        if (first || prevIsHighlit != isHighlit || prevWasClipped) {
+                            activePath += "M" + x1 + " " + y1 + " L" + x2 + " " + y2 + " ";
                         }
                         else {
-                            activePath += "L" + p2x + " " + p2y + " ";
+                            activePath += "L" + x2 + " " + y2 + " ";
                         }
                     }
                     else {
-                        if (i === 0 || prevIsHighlit != isHighlit) {
-                            path += "M" + p1x + " " + p1y + " L" + p2x + " " + p2y + " ";
+                        if (first || prevIsHighlit != isHighlit || prevWasClipped) {
+                            standardPath += "M" + x1 + " " + y1 + " L" + x2 + " " + y2 + " ";
                         }
                         else {
-                            path += "L" + p2x + " " + p2y + " ";
+                            standardPath += "L" + x2 + " " + y2 + " ";
                         }
                     }
-                    prevIsHighlit = isHighlit;
+                    first = false;
+                    prevWasClipped = (s2.Equals(p2)) ? false : true;
                 }
+                else {
+                    prevWasClipped = true;
+                }
+                prevIsHighlit = isHighlit;
             }
+            p1 = p2;
         }
-        for (let i = 0; i < transitionPoints.length - 1; i++) {
-            let p1 = transitionPoints[i];
-            let p2 = transitionPoints[i + 1];
-            if (!p2) {
-                p2 = transitionPoints[i + 2];
+        p1 = null;
+        p2 = null;
+        for (let i = 0; i < transitionPoints.length; i++) {
+            let p = transitionPoints[i];
+            if (!p || isNaN(p.x) || isNaN(p.y)) {
+                continue;
             }
-            if (p1 && p2 && map.isSegmentInFrame(p1, p2)) {
-                let p1x = fastToFixed(p1.x, 0);
-                let p1y = fastToFixed(p1.y, 0);
-                let p2x = fastToFixed(p2.x, 0);
-                let p2y = fastToFixed(p2.y, 0);
-                if (p1x !== p2x || p1y !== p2y) {
-                    transitionPath += "M" + p1x + " " + p1y + " L" + p2x + " " + p2y + " ";
+            if (!p1) {
+                p1 = p;
+                continue;
+            }
+            p2 = p;
+            if (p1.x != p2.x || p1.y != p2.y) {
+                if (map.segmentVsFrame(p1, p2, s1, s2)) {
+                    let x1 = fastToFixed(s1.x, 0);
+                    let y1 = fastToFixed(s1.y, 0);
+                    let x2 = fastToFixed(s2.x, 0);
+                    let y2 = fastToFixed(s2.y, 0);
+                    transitionPath += "M" + x1 + " " + y1 + " L" + x2 + " " + y2 + " ";
                 }
             }
+            p1 = p2;
         }
         if (showActiveLeg) {
             if (this._colorActive) {
@@ -382,21 +420,17 @@ class SvgFlightPlanElement extends SvgMapElement {
                 this._outlineActive.setAttribute("display", "none");
             }
         }
-        if (this._colorPath.getAttribute("d") !== path) {
-            if (this._colorPath) {
-                this._colorPath.setAttribute("d", path);
-            }
-            if (this._outlinePath) {
-                this._outlinePath.setAttribute("d", path);
-            }
+        if (this._colorPath) {
+            this._colorPath.setAttribute("d", standardPath);
         }
-        if (this._transitionPath.getAttribute("d") !== transitionPath) {
-            if (this._transitionPath) {
-                this._transitionPath.setAttribute("d", transitionPath);
-            }
-            if (this._transitionOutlinePath) {
-                this._transitionOutlinePath.setAttribute("d", transitionPath);
-            }
+        if (this._outlinePath) {
+            this._outlinePath.setAttribute("d", standardPath);
+        }
+        if (this._transitionPath) {
+            this._transitionPath.setAttribute("d", transitionPath);
+        }
+        if (this._transitionOutlinePath) {
+            this._transitionOutlinePath.setAttribute("d", transitionPath);
         }
     }
     setAsDashed(_val, _force = false) {

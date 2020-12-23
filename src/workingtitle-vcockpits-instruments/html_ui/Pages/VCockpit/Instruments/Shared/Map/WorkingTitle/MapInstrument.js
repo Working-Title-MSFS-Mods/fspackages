@@ -791,7 +791,7 @@ class MapInstrument extends ISvgMapRootElement {
                                     if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                                         if (waypoint.getSvgElement(this.navMap.index)) {
                                             if (!this.navMap.mapElements.find(w => {
-                                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                                return (w instanceof SvgWaypointElement) && w.source.icao === waypoint.icao;
                                             })) {
                                                 this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                             }
@@ -806,7 +806,7 @@ class MapInstrument extends ISvgMapRootElement {
                             if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
-                                        return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                        return (w instanceof SvgWaypointElement) && w.source.icao === waypoint.icao;
                                     })) {
                                         this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                     }
@@ -821,7 +821,7 @@ class MapInstrument extends ISvgMapRootElement {
                         if (apprWaypoint && apprWaypoint.ident !== "" && apprWaypoint.ident !== "USER") {
                             if (apprWaypoint.getSvgElement(this.navMap.index)) {
                                 if (!this.navMap.mapElements.find(w => {
-                                    return (w instanceof SvgWaypointElement) && w.source.ident === apprWaypoint.ident;
+                                    return (w instanceof SvgWaypointElement) && w.source.icao === apprWaypoint.icao;
                                 })) {
                                     this.navMap.mapElements.push(apprWaypoint.getSvgElement(this.navMap.index));
                                 }
