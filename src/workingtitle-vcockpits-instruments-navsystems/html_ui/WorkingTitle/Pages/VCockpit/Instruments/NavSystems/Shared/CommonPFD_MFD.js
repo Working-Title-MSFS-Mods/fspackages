@@ -1639,6 +1639,15 @@ class PFD_AutopilotDisplay extends NavSystemElement {
     onExit() {
     }
     onEvent(_event) {
+        switch (_event) {
+            case "Autopilot_Manual_Off":
+                this.apStatusDisplay = 2;
+                this.yellowFlashBegin = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                break;
+            case "Autopilot_Disc":
+                this.apStatusDisplay = 0;
+                break;
+        }
     }
 }
 class MFD_FlightPlanLine {
