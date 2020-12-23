@@ -65,7 +65,7 @@ class WT_FlightPlanAsoboInterface {
 
         if (data.arrivalProcIndex >= 0) {
             waypoints = [];
-            await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex);
+            await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length());
             await this._getWaypointsFromData(data.waypoints.slice(arrivalStart, destinationStart), waypoints);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypoints);
@@ -176,5 +176,47 @@ class WT_FlightPlanAsoboInterface {
         }
         //Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", fpln.getActiveWaypointIndex() + 1);
         await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
+    }
+
+    async getActiveLeg(flightPlan) {
+        let index = await this.getGameActiveWaypointIndex();
+        if (index <= 0) {
+            return null;
+        }
+
+        let ident = this.getGameActiveWaypointIdent();
+        let isApproachActive = this.isApproachActive();
+
+        let legs;
+        if (isApproachActive) {
+            legs = flightPlan.getApproach().legs();
+        } else {
+            legs = flightPlan.legs();
+        }
+
+        let leg = legs[index];
+        if (!leg || (ident !== "USR" && leg.waypoint.ident !== ident)) {
+            let legsBefore = legs.slice(0, index).reverse();
+            let legsAfter = legs.slice(index + 1, legs.length);
+            let before = legsBefore.findIndex(leg => leg.waypoint.ident === ident);
+            let after = legsAfter.findIndex(leg => leg.waypoint.ident === ident);
+            if (before < 0) {
+                if (after >= 0) {
+                    index += after + 1;
+                } else {
+                    index = -1
+                }
+            } else {
+                if (after >= 0 && after <= before) {
+                    index += after + 1;
+                } else {
+                    index -= before + 1;
+                }
+            }
+            if (index >= 0) {
+                return legs[index];
+            }
+        }
+        return leg ? leg: null;
     }
 }
