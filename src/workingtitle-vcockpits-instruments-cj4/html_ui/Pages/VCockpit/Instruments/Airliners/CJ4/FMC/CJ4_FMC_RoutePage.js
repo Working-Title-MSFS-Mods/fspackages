@@ -478,7 +478,7 @@ class CJ4_FMC_RoutePage {
                 lastDepartureWaypoint = departureWaypoints[lastDepartureIdx];
                 if (lastDepartureWaypoint) {
                     foundActive = flightPlanManager.getActiveWaypointIndex() <= lastDepartureIdx;
-                    allRows.push(new FpRow(lastDepartureWaypoint.ident, lastDepartureIdx, departure.name, undefined, foundActive));
+                    allRows.push(new FpRow(lastDepartureWaypoint.ident, lastDepartureIdx + 1, departure.name, undefined, foundActive));
                 }
             }
             let fpIndexes = [];
