@@ -15,53 +15,99 @@ class WT_FlightPlanAsoboInterface {
         return SimVar.GetSimVarValue("C:fs9gps:FlightPlanIsActiveApproach", "Bool");
     }
 
+    async _syncFlightPlan(flightPlan, data) {
+        let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
+
+        let origin;
+        let firstICAO = data.waypoints[0].icao;
+        if (firstICAO[0] === "A") {
+            origin = await this._icaoWaypointFactory.getAirport(firstICAO);
+            tempFlightPlan.setOrigin(origin);
+        }
+        let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
+        let destination;
+        if (data.waypoints.length > 1 && lastICAO[0] === "A") {
+            destination = await this._icaoWaypointFactory.getAirport(data.waypoints[data.waypoints.length - 1].icao);
+            tempFlightPlan.setDestination(destination);
+        }
+
+        if (data.departureProcIndex >= 0) {
+            await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
+        }
+
+        let enrouteStart = (data.departureWaypointsSize === -1) ? (origin ? 1 : 0) : data.departureWaypointsSize;
+        let enrouteEnd = data.waypoints.length - (destination ? 1 : 0) - (data.arrivalWaypointsSize === -1 ? 0 : data.arrivalWaypointsSize);
+        let enrouteICAOs = data.waypoints.slice(enrouteStart, enrouteEnd);
+        let waypoints = [];
+        for (let leg of enrouteICAOs) {
+            try {
+                waypoints.push(await this._icaoWaypointFactory.getWaypoint(leg.icao));
+            } catch (e) {}
+        }
+        await tempFlightPlan.insertEnrouteWaypoints(waypoints);
+
+        if (data.arrivalProcIndex >= 0) {
+            await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex);
+        }
+        if (data.approachIndex >= 0) {
+            await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
+        }
+
+        flightPlan.copyFrom(tempFlightPlan);
+    }
+
+    async _syncDirectTo(directTo, isActive, origin, destination) {
+        if (isActive) {
+            let targetWaypoint;
+            if (destination.icao) {
+                targetWaypoint = await this._icaoWaypointFactory.getWaypoint(destination.icao);
+            } else {
+                targetWaypoint = new WT_CustomWaypoint("DRCT-DEST", new WT_GeoPoint(destination.lla.lat, destination.lla.long));
+            }
+            directTo.setDestination(targetWaypoint);
+            if (!directTo.isActive() || !directTo.getOrigin().location.equals(origin)) {
+                directTo.activate(new WT_GeoPoint(origin.lat, origin.long));
+            }
+        } else {
+            if (directTo.isActive()) {
+                directTo.deactivate();
+            }
+        }
+    }
+
     /**
      *
      * @param {WT_FlightPlan} flightPlan
+     * @param {WT_DirectTo} [directTo]
      */
-    async syncFromGame(flightPlan) {
+    async syncFromGame(flightPlan, directTo) {
         let data = await Coherent.call("GET_FLIGHTPLAN");
-        let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
-        let isDirectTo = data.isDirectTo;
-        if (!isDirectTo) {
-            if (data.waypoints.length === 0) {
-                return;
-            }
-            let firstICAO = data.waypoints[0].icao;
-            let origin;
-            if (firstICAO[0] === "A") {
-                origin = await this._icaoWaypointFactory.getAirport(firstICAO);
-                tempFlightPlan.setOrigin(origin);
-            }
-            let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
-            let destination;
-            if (data.waypoints.length > 1 && lastICAO[0] === "A") {
-                destination = await this._icaoWaypointFactory.getAirport(data.waypoints[data.waypoints.length - 1].icao);
-                tempFlightPlan.setDestination(destination);
-            }
 
-            if (data.departureProcIndex >= 0) {
-                await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
-            }
+        if (data.waypoints.length === 0) {
+            return;
+        }
 
-            let enrouteStart = (data.departureWaypointsSize === -1) ? (origin ? 1 : 0) : data.departureWaypointsSize;
-            let enrouteEnd = data.waypoints.length - (destination ? 1 : 0) - (data.arrivalWaypointsSize === -1 ? 0 : data.arrivalWaypointsSize);
-            let enrouteICAOs = data.waypoints.slice(enrouteStart, enrouteEnd);
-            let waypoints = [];
-            for (let leg of enrouteICAOs) {
-                try {
-                    waypoints.push(await this._icaoWaypointFactory.getWaypoint(leg.icao));
-                } catch (e) {}
-            }
-            await tempFlightPlan.insertEnrouteWaypoints(waypoints);
+        let isDRCTActive = false;
+        let drctOrigin = null;
+        let drctDestination = null;
 
-            if (data.arrivalProcIndex >= 0) {
-                await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex);
+        let firstICAO = data.waypoints[0].icao;
+        if (!(firstICAO[0] === "U" && data.waypoints.length === 2)) {
+            await this._syncFlightPlan(flightPlan, data);
+        } else {
+            flightPlan.clear();
+            isDRCTActive = true;
+            drctOrigin = data.waypoints[0].lla;
+            drctDestination = data.waypoints[1];
+        }
+
+        if (directTo) {
+            if (data.isDirectTo) {
+                isDRCTActive = true;
+                drctOrigin = data.directToOrigin;
+                drctDestination = data.directToTarget;
             }
-            if (data.approachIndex >= 0) {
-                await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
-            }
-            flightPlan.copyFrom(tempFlightPlan);
+            await this._syncDirectTo(directTo, isDRCTActive, drctOrigin, drctDestination);
         }
     }
 
