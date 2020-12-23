@@ -4,7 +4,6 @@ class WT_MapViewFlightPlanCanvasRenderer {
 
         this._flightPlan = null;
         this._activeLeg = null;
-        this._activeLegIndex = -1;
         this._flightPlanListener = this._onFlightPlanEvent.bind(this);
         /**
          * @type {WT_FlightPlanLeg[]}
@@ -95,17 +94,16 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._needsRedraw = true;
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
     setActiveLeg(leg) {
         if (leg === this.activeLeg) {
             return;
         }
 
         this._activeLeg = leg;
-        if (leg) {
-            this._activeLegIndex = this._legs.indexOf(leg);
-        } else {
-            this._activeLegIndex = -1;
-        }
         this._needsRedraw = true;
     }
 
@@ -336,7 +334,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             }
         }
 
-        let style = this._legStyleChooser.chooseStyle(leg, index, this.activeLeg, this._activeLegIndex, discontinuity);
+        let style = this._legStyleChooser.chooseStyle(leg, this.activeLeg, discontinuity);
         let renderFunc = this._legRenderFuncs[style];
         if (renderFunc) {
             renderFunc(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
@@ -359,7 +357,6 @@ class WT_MapViewFlightPlanCanvasRenderer {
         }
 
         let bounds = projectionRenderer.viewClipExtent;
-        let previousEndpoint = null;
         let origin = this.flightPlan.getOrigin();
         let destination = this.flightPlan.getDestination();
         if (origin && projectionRenderer.isInViewBounds(origin.location, bounds, 0.05)) {
@@ -369,8 +366,11 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._waypointsRendered.add(destination);
         }
 
-        let discontinuity = false;
-        for (let i = 0; i < this._legs.length; i++) {
+        let start = (this.activeLeg && !this.drawPreviousLegs) ? this.activeLeg.index : 0;
+        let startPrevious = this._legs[start - 1];
+        let previousEndpoint = startPrevious ? startPrevious.endpoint : null;
+        let discontinuity = startPrevious ? startPrevious.discontinuity : false;
+        for (let i = start; i < this._legs.length; i++) {
             let leg = this._legs[i];
             this._renderLeg(state, projectionRenderer, context, bounds, i, leg, previousEndpoint, discontinuity);
             previousEndpoint = leg.endpoint;
@@ -392,6 +392,8 @@ WT_MapViewFlightPlanCanvasRenderer.LegStyle = {
     ARROW_ALT: 5,
 };
 WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
+    drawPreviousLegs: {default: true, auto: true},
+
     standardStrokeWidth: {default: 6, auto: true},
     standardOutlineWidth: {default: 1, auto: true},
     thinStrokeWidth: {default: 4, auto: true},
