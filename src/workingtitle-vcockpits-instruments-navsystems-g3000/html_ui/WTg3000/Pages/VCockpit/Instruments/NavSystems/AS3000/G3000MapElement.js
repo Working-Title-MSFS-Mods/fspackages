@@ -39,6 +39,9 @@ class WT_G3000MapElement extends WT_MapElement {
         this.model.addModule(new WT_MapModelBingModule(this.instrumentID));
         this.model.addModule(new WT_MapModelTerrainModule());
         this.model.addModule(new WT_MapModelOrientationModule());
+        if (this._layerOptions.windData) {
+            this.model.addModule(new WT_MapModelWindDataModule());
+        }
         this.model.addModule(new WT_MapModelPointerModule());
         this.model.addModule(new WT_MapModelRangeRingModule());
         this.model.addModule(new WT_MapModelRangeCompassModule());
@@ -69,6 +72,9 @@ class WT_G3000MapElement extends WT_MapElement {
         this.view.addLayer(new WT_MapViewCrosshairLayer());
         this.view.addLayer(new WT_MapViewAirplaneLayer());
         this.view.addLayer(new WT_MapViewPointerLayer());
+        if (this._layerOptions.windData) {
+            this.view.addLayer(new WT_MapViewWindDataLayer());
+        }
         this.view.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3000MapElement.ORIENTATION_DISPLAY_TEXTS));
         if (this._layerOptions.rangeDisplay) {
             this.view.addLayer(new WT_MapViewRangeDisplayLayer());
@@ -83,6 +89,10 @@ class WT_G3000MapElement extends WT_MapElement {
         this.controller.addSetting(new WT_MapTrackVectorSettingGroup(this.controller));
         this.controller.addSetting(new WT_MapFuelRingSettingGroup(this.controller));
         this.controller.addSetting(new WT_MapAltitudeInterceptSetting(this.controller));
+
+        if (this._layerOptions.windData) {
+            this.controller.addSetting(new WT_MapWindDataShowSetting(this.controller));
+        }
 
         this._dcltrSetting = new WT_MapDCLTRSetting(this.controller, [
             {},
