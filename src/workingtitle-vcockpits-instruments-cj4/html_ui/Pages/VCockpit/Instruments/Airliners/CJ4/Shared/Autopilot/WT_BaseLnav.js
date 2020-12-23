@@ -84,7 +84,6 @@ class WT_BaseLnav {
         //CAN LNAV EVEN RUN?
         this._activeWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex];
         this._previousWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex - 1];
-        const isLnavActive = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
 
         const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
@@ -153,16 +152,68 @@ class WT_BaseLnav {
                 this._executeInhibited = false;
             }
 
-            if (isLnavActive) {
+            this._setHeading = this._dtk;
+            const interceptAngle = this.calculateDesiredInterceptAngle(this._xtk, navSensitivity);
+
+            let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
+            this._setHeading = this.normalizeCourse(this._dtk + interceptAngle);
+
+            let isLandingRunway = false;
+            if (this.flightplan.activeWaypointIndex == this.flightplan.length - 2 && this._activeWaypoint.isRunway) {
+                isLandingRunway = true;
+            }
+
+            //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
+            if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10 && !isLandingRunway) {
                 this._setHeading = this._dtk;
-                const interceptAngle = this.calculateDesiredInterceptAngle(this._xtk, navSensitivity);
+                this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
-                let deltaAngle = Avionics.Utils.angleDiff(this._dtk, this._bearingToWaypoint);
-                this._setHeading = this.normalizeCourse(this._dtk + interceptAngle);
+                SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+                this._isWaypointAlerting = false;
+                this._waypointSequenced = true;
 
-                //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
-                if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10) {
-                    this._setHeading = this._dtk;
+                this._isTurnCompleting = false;
+                this._executeInhibited = false;
+
+                this._nextTurnHeading = this._setHeading;
+                this.execute();
+                this._isTurnCompleting = true;
+
+                return;
+            }
+            //CASE WHERE INTERCEPT ANGLE IS NOT BIG ENOUGH AND INTERCEPT NEEDS TO BE SET TO BEARING
+            else if (Math.abs(deltaAngle) > Math.abs(interceptAngle)) {
+                this._setHeading = this._bearingToWaypoint;
+            }
+
+            //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
+            const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
+            const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7 : 10;
+
+            if (!isLandingRunway && this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
+
+                let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
+                let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
+
+                let nextFixTurnAngle = Avionics.Utils.angleDiff(this._dtk, toNextFixHeading);
+                let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
+
+                let enterBankDistance = (this._groundSpeed / 3600) * 5;
+
+                const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(Math.min(110, turnAngle) * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
+
+                let activateDistance = Math.max(getDistanceToActivate(Math.abs(nextFixTurnAngle)), getDistanceToActivate(Math.abs(currentFixTurnAngle)));
+                let alertDistance = activateDistance + (this._groundSpeed / 3600) * 5; //Alert approximately 5 seconds prior to waypoint change
+
+                if (this._activeWaypointDist <= alertDistance) {
+                    SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
+                    this._isWaypointAlerting = true;
+                }
+                // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
+
+                if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 10) { //TIME TO START TURN
+                    // console.log("ACTIVATE " + this._activeWaypoint.ident);
+                    this._setHeading = toNextFixHeading;
                     this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
                     SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
@@ -174,79 +225,25 @@ class WT_BaseLnav {
 
                     this._nextTurnHeading = this._setHeading;
                     this.execute();
-                    this._isTurnCompleting = true;
+                    this._isTurnCompleting = true; //Prevent heading changes until turn is near completion
 
                     return;
                 }
-                //CASE WHERE INTERCEPT ANGLE IS NOT BIG ENOUGH AND INTERCEPT NEEDS TO BE SET TO BEARING
-                else if (Math.abs(deltaAngle) > Math.abs(interceptAngle)) {
-                    this._setHeading = this._bearingToWaypoint;
-                }
-
-                //TURN ANTICIPATION & TURN WAYPOINT SWITCHING
-                const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
-                const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7 : 10;
-                
-                let isLandingRunway = false;
-                if (this.flightplan.activeWaypointIndex == this.flightplan.length - 2 && this._activeWaypoint.isRunway) {
-                    isLandingRunway = true;
-                }
-
-                if (!isLandingRunway && this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
-
-                    let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
-                    let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);
-
-                    let nextFixTurnAngle = Avionics.Utils.angleDiff(this._dtk, toNextFixHeading);
-                    let currentFixTurnAngle = Avionics.Utils.angleDiff(planeHeading, toCurrentFixHeading);
-
-                    let enterBankDistance = (this._groundSpeed / 3600) * 5;
-
-                    const getDistanceToActivate = turnAngle => Math.min((turnRadius * Math.tan((Math.abs(Math.min(110, turnAngle) * Avionics.Utils.DEG2RAD) / 2))) + enterBankDistance, maxAnticipationDistance);
-
-                    let activateDistance = Math.max(getDistanceToActivate(Math.abs(nextFixTurnAngle)), getDistanceToActivate(Math.abs(currentFixTurnAngle)));
-                    let alertDistance = activateDistance + (this._groundSpeed / 3600) * 5; //Alert approximately 5 seconds prior to waypoint change
-
-                    if (this._activeWaypointDist <= alertDistance) {
-                        SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
-                        this._isWaypointAlerting = true;
-                    }
-                    // console.log("d/a/ta: " + this._activeWaypointDist.toFixed(2) + "/" + activateDistance.toFixed(2) + "/" + Math.abs(currentFixTurnAngle).toFixed(2) + "/" + this._activeWaypoint.ident);
-
-                    if (this._activeWaypointDist <= activateDistance && this._groundSpeed > 10) { //TIME TO START TURN
-                        // console.log("ACTIVATE " + this._activeWaypoint.ident);
-                        this._setHeading = toNextFixHeading;
-                        this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
-
-                        SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
-                        this._isWaypointAlerting = false;
-                        this._waypointSequenced = true;
-
-                        this._isTurnCompleting = false;
-                        this._executeInhibited = false;
-
-                        this._nextTurnHeading = this._setHeading;
-                        this.execute();
-                        this._isTurnCompleting = true; //Prevent heading changes until turn is near completion
-
-                        return;
-                    }
-                }
-
-                //DISCONTINUITIES
-                if (this._activeWaypoint.endsInDiscontinuity && this._activeWaypointDist < 0.25) {
-                    this._setHeading = this._dtk;
-                    this.executeDiscontinuity();
-                    return;
-                }
-
-                //NEAR WAYPOINT TRACKING
-                if (navModeActive && this._activeWaypointDist < 1.0 && !this._isWaypointAlerting) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
-                    this._setHeading = this._bearingToWaypoint;
-                    this._executeInhibited = true;
-                }
-                this.execute();
             }
+
+            //DISCONTINUITIES
+            if (this._activeWaypoint.endsInDiscontinuity && this._activeWaypointDist < 0.25) {
+                this._setHeading = this._dtk;
+                this.executeDiscontinuity();
+                return;
+            }
+
+            //NEAR WAYPOINT TRACKING
+            if (navModeActive && this._activeWaypointDist < 1.0 && !this._isWaypointAlerting) { //WHEN NOT MUCH TURN, STOP CHASING DTK CLOSE TO WAYPOINT
+                this._setHeading = this._bearingToWaypoint;
+                this._executeInhibited = true;
+            }
+            this.execute();
         }
         else {
             if (!this._lnavDeactivated) {
