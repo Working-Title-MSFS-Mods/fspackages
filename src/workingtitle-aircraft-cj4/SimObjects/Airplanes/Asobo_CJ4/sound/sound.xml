@@ -213,9 +213,12 @@
 			<WwiseRTPC SimVar="RUDDER PEDAL POSITION" Units="PERCENT" Index="0" Derived="true" RTPCName="SIMVAR_RUDDER_PEDAL_POSITION_DERIVED" />
 		</Sound>
 
-		<Sound WwiseData="true" WwiseEvent="brake_movement" ViewPoint="Inside" NodeName="HANDLING_YOKE_HIDER_1_ADD_2" ContinuousStopDelay="0.3" SimVar="BRAKE LEFT POSITION" Units="PERCENT" Index="0">
+		<Sound WwiseData="true" WwiseEvent="left_brake_movement" FadeOutType="2" FadeOutTime="0.5" ViewPoint="Inside" NodeName="HANDLING_YOKE_HIDER_1_ADD_2" ContinuousStopDelay="0.3" SimVar="BRAKE LEFT POSITION" Units="PERCENT" Index="0">
 			<WwiseRTPC SimVar="BRAKE LEFT POSITION" Units="PERCENT" Index="0" Derived="true" RTPCName="SIMVAR_BRAKE_LEFT_POSITION_DERIVED" />
-			<Range LowerBound="15" UpperBound="90"/>
+		</Sound>
+
+		<Sound WwiseData="true" WwiseEvent="RIGHT_brake_movement" FadeOutType="2" FadeOutTime="0.5" ViewPoint="Inside" NodeName="HANDLING_YOKE_HIDER_1_ADD_2" ContinuousStopDelay="0.3" SimVar="BRAKE RIGHT POSITION" Units="PERCENT" Index="0">
+			<WwiseRTPC SimVar="BRAKE RIGHT POSITION" Units="PERCENT" Index="0" Derived="true" RTPCName="SIMVAR_BRAKE_RIGHT_POSITION_DERIVED" />
 		</Sound>
 
 		<Sound WwiseData="true" WwiseEvent="parking_brake_movement" ViewPoint="Inside" NodeName="HANDLING_YOKE_HIDER_1_ADD_2" ContinuousStopDelay="0.3" SimVar="BRAKE PARKING POSITION" Units="PERCENT" Index="0">
@@ -307,7 +310,7 @@
 		<Sound WwiseData="true" WwiseEvent="WT_AP_Disconnect" SimVar="AUTOPILOT MASTER" Units="BOOL" Continuous="false">
 			<Range UpperBound="0" />
 		</Sound>
-	
+
 
 		<!--      PASSENGER AIR     -->
 
@@ -426,7 +429,7 @@
 		<Sound WwiseData="true" WwiseEvent="autopilot_knob" ViewPoint="Inside"/>
 		<!--<Sound WwiseData="true" WwiseEvent="WT_autopilot_disconnect_button_on" ViewPoint="Inside"/>
 		<Sound WwiseData="true" WwiseEvent="WT_autopilot_disconnect_button_off" ViewPoint="Inside"/> -->
- 
+
 		<!-- This event below will play the same sound for every soft button on the tilt panel-->
 		<Sound WwiseData="true" WwiseEvent="WT_hard_button_on" ViewPoint="Inside"/>
 

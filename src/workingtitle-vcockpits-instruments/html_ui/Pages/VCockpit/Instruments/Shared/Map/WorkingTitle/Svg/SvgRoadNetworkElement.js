@@ -161,6 +161,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         this.displayedSize = 1000;
         this.canvasSize = 1000;
         this.canvasOffset = 0;
+        this.canvasClipping = new Avionics.Intersect();
         this.visible = true;
         this.k = 0;
         this.datas = [
@@ -168,7 +169,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
             new RoadNetworkLODedData(SvgRoadNetworkElement.EPSILON_ROADS_LEVEL1),
             new RoadNetworkLODedData(SvgRoadNetworkElement.EPSILON_ROADS_LEVEL2)
         ];
-        
+
         // MOD: need to keep track of when visibility changes so we know when to redraw
         this.lastShowRoadsHighway = true;
         this.lastShowRoadsTrunk = true;
@@ -242,24 +243,26 @@ class SvgRoadNetworkElement extends SvgMapElement {
             else
                 this._visibleCanvas.canvas.style.display = "none";
         }
-        
+
         let mapRange = map.htmlRoot.getDisplayRange();
         let showRoadsHighway = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadHighwayMaxRange);
         let showRoadsTrunk = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadTrunkMaxRange);
         let showRoadsPrimary = map.htmlRoot.showRoads && (mapRange <= map.htmlRoot.roadPrimaryMaxRange);
         let showAirspaces = map.htmlRoot.showAirspaces && (map.htmlRoot.getDisplayRange() <= map.htmlRoot.airspaceMaxRange);
         let showAirways = map.htmlRoot.showAirways;
-        
+
         let visibilityChanged = (this.lastShowRoadsHighway != showRoadsHighway) ||
                                 (this.lastShowRoadsTrunk != showRoadsTrunk) ||
                                 (this.lastShowRoadsPrimary != showRoadsPrimary) ||
                                 (this.lastShowAirspaces != showAirspaces) ||
                                 (this.lastShowAirways != showAirways);
-                                
-        this.lastShowRoads = map.htmlRoot.showRoads;
-        this.lastShowAirspaces = map.htmlRoot.showAirspaces;
-        this.lastShowAirways = map.htmlRoot.showAirways;
-        
+
+        this.lastShowRoadsHighway = showRoadsHighway;
+        this.lastShowRoadsTrunk = showRoadsTrunk;
+        this.lastShowRoadsPrimary = showRoadsPrimary;
+        this.lastShowAirspaces = showAirspaces;
+        this.lastShowAirways = showAirways;
+
         this.parentWidth = map.htmlRoot.getWidth();
         this.parentHeight = map.htmlRoot.getHeight();
         if (this.parentWidth * this.parentHeight < 1) {
@@ -308,6 +311,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
             document.body.appendChild(this._invisibleCanvases[1].canvas);
             this._invisibleCanvases[1].canvas.style.position = "fixed";
             this.translateCanvas(this._invisibleCanvases[1].canvas, 10000, 10000, 0);
+            this.canvasClipping.initRect(this.canvasSize, this.canvasSize);
             resized = true;
         }
         let invisibleContext = this._invisibleCanvases[this._activeInvisibleCanvasIndex].context2D;
@@ -318,7 +322,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         if (l === 0) {
             return;
         }
-        
+
         if (!map.htmlRoot.showRoads && !map.htmlRoot.showAirspaces && !map.htmlRoot.showAirways) {
             // all elements are hidden, so cleanup graphics and skip the rest of the update
             this._iterator = 0;
@@ -328,11 +332,11 @@ class SvgRoadNetworkElement extends SvgMapElement {
             this._deprecatePointsIterator = 0;
             return;
         }
-        
+
         this.onLatLongChanged(map, this._lastCoords);
         let diffLastLat = Math.abs(this._lastCoords.lat - map.centerCoordinates.lat);
         let diffLastLong = Math.abs(this._lastCoords.long - map.centerCoordinates.long);
-        
+
         if (this._lastRange !== map.NMWidth || resized) {
             // map was resized or map range (zoom level) was changed
             this._iterator = 0;
@@ -395,11 +399,14 @@ class SvgRoadNetworkElement extends SvgMapElement {
         }
         let t0 = performance.now();
         let lastLinkType = NaN;
+        let s1 = new Vec2();
+        let s2 = new Vec2();
+        let prevWasClipped = false;
         invisibleContext.beginPath();
         while ((performance.now() - t0) < SvgRoadNetworkElement.MAX_STALL_DRAW_ROADS && this._iterator < l) {
             let link = links.get(this._iterator++);
             if (link) {
-                
+
                 if ((link.type == 0 && !showRoadsHighway) ||
                     (link.type == 2 && !showRoadsTrunk) ||
                     (link.type == 4 && !showRoadsPrimary) ||
@@ -407,8 +414,8 @@ class SvgRoadNetworkElement extends SvgMapElement {
                     (link.type > 102 && !showAirspaces)) {
                     continue;
                 }
-                
-                if (lastLinkType !== link.type) {
+
+                if (lastLinkType !== link.type || prevWasClipped) {
                     if (link.type === 0) {
                         invisibleContext.stroke();
                         invisibleContext.strokeStyle = map.config.roadMotorWayColor;
@@ -490,31 +497,34 @@ class SvgRoadNetworkElement extends SvgMapElement {
                         lastLinkType = link.type;
                     }
                 }
-                
+
                 let n1 = link.start;
                 let n2 = link.end;
-                if (!n1.isPointUpToDate) {
-                    map.latLongToXYToRefForceCenter(n1.lat, n1.long, n1, this._forcedCoords);
-                    n1.isInFrame = map.isVec2InFrame(n1, 1.4);
-                    n1.x *= this.displayedSize / this.svgMapSize;
-                    n1.x += this.canvasOffset;
-                    n1.y *= this.displayedSize / this.svgMapSize;
-                    n1.y += this.canvasOffset;
-                    n1.isPointUpToDate = true;
-                }
-                if (!n2.isPointUpToDate) {
-                    map.latLongToXYToRefForceCenter(n2.lat, n2.long, n2, this._forcedCoords);
-                    n2.isInFrame = map.isVec2InFrame(n2, 1.4);
-                    n2.x *= this.displayedSize / this.svgMapSize;
-                    n2.x += this.canvasOffset;
-                    n2.y *= this.displayedSize / this.svgMapSize;
-                    n2.y += this.canvasOffset;
-                    n2.isPointUpToDate = true;
-                }
                 if (n1 && n2) {
-                    if (n1.isInFrame || n2.isInFrame) {
-                        invisibleContext.moveTo(n1.x, n1.y);
-                        invisibleContext.lineTo(n2.x, n2.y);
+                    if (!n1.isPointUpToDate) {
+                        map.latLongToXYToRefForceCenter(n1.lat, n1.long, n1, this._forcedCoords);
+                        n1.x *= this.displayedSize / this.svgMapSize;
+                        n1.x += this.canvasOffset;
+                        n1.y *= this.displayedSize / this.svgMapSize;
+                        n1.y += this.canvasOffset;
+                        n1.isPointUpToDate = true;
+                    }
+                    if (!n2.isPointUpToDate) {
+                        map.latLongToXYToRefForceCenter(n2.lat, n2.long, n2, this._forcedCoords);
+                        n2.isInFrame = map.isVec2InFrame(n2, 1.4);
+                        n2.x *= this.displayedSize / this.svgMapSize;
+                        n2.x += this.canvasOffset;
+                        n2.y *= this.displayedSize / this.svgMapSize;
+                        n2.y += this.canvasOffset;
+                        n2.isPointUpToDate = true;
+                    }
+                    if (this.canvasClipping.segmentVsRect(n1, n2, s1, s2)) {
+                        invisibleContext.moveTo(Math.round(s1.x), Math.round(s1.y));
+                        invisibleContext.lineTo(Math.round(s2.x), Math.round(s2.y));
+                        prevWasClipped = (s2.Equals(n2)) ? false : true;
+                    }
+                    else {
+                        prevWasClipped = true;
                     }
                 }
             }
@@ -522,7 +532,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         invisibleContext.stroke();
         this.onLatLongChanged(map, this._lastCoords);
     }
-    
+
     onLatLongChanged(_map, _coords) {
         let p = _map.coordinatesToXY(_coords);
         p.x -= this.svgMapSize * 0.5;
@@ -539,7 +549,7 @@ class SvgRoadNetworkElement extends SvgMapElement {
         }
         this.translateCanvas(this._visibleCanvas.canvas, left, top, _map.rotation - this._forcedDirection);
     }
-    
+
     translateCanvas(_canvas, _x, _y, _rotation) {
         _canvas.style.transform = "translate(" + _x + "px, " + _y + "px) rotate(" + _rotation + "deg)";
     }
