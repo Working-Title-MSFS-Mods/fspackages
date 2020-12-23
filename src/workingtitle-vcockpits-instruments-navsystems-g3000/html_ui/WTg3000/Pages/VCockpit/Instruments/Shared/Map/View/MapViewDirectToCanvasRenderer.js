@@ -112,8 +112,8 @@ class WT_MapViewDirectToCanvasRenderer {
 }
 WT_MapViewDirectToCanvasRenderer.OPTIONS_DEF = {
     strokeWidth: {default: 4, auto: true},
-    strokeColor: {default: "black", auto: true},
+    strokeColor: {default: "9c70b1", auto: true},
     outlineWidth: {default: 1, auto: true},
-    outlineColor: {default: "white", auto: true},
+    outlineColor: {default: "652f70", auto: true},
     lineDash: {default: [], auto: true}
 };
