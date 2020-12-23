@@ -7,8 +7,8 @@ class WT_G3000MapViewFlightPlanLegStyleChooser {
      * @param {Number} activeLegIndex
      * @param {Boolean} discontinuity - whether the previous leg ended in a discontinuity
      */
-    chooseStyle(leg, legIndex, activeLeg, activeLegIndex, discontinuity) {
-        let activeIndexDelta = legIndex - activeLegIndex;
+    chooseStyle(leg, activeLeg, discontinuity) {
+        let activeIndexDelta = activeLeg ? leg.index - activeLeg.index : undefined;
         if (discontinuity) {
             if (activeLeg && activeIndexDelta >= 0) {
                 if (activeIndexDelta <= 1) {
