@@ -240,6 +240,14 @@ as3000-mfd-element #Electricity map-view {
         top: 3vh;
         left: 1.25vh;
     }
+    as3000-mfd-element #Electricity map-view map-view-winddatadisplay {
+        position: absolute;
+        top: 0;
+        right: 15vh;
+        width: 12vh;
+        height: 4vh;
+        margin: 1px;
+    }
     as3000-mfd-element #Electricity map-view map-view-pointerinfo {
         position: absolute;
         top: 0;
