@@ -74,6 +74,10 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._needsRedraw = true;
     }
 
+    setOptions(options) {
+        this._optsManager.setOptions(options);
+    }
+
     setFlightPlan(flightPlan) {
         if (flightPlan === this.flightPlan) {
             return;
@@ -103,6 +107,15 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._activeLegIndex = -1;
         }
         this._needsRedraw = true;
+    }
+
+    _strokePath(context, lineWidth, strokeStyle, lineDash) {
+        context.lineWidth = lineWidth;
+        context.strokeStyle = strokeStyle;
+        if (lineDash) {
+            context.setLineDash(lineDash);
+        }
+        context.stroke();
     }
 
     /**
@@ -152,9 +165,11 @@ class WT_MapViewFlightPlanCanvasRenderer {
         } else {
             this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
         }
-        context.lineWidth = this.standardStrokeWidth * state.dpiScale;
-        context.strokeStyle = isActive ? this.activeColor : this.inactiveColor;
-        context.stroke();
+
+        if (this.standardOutlineWidth > 0) {
+            this._strokePath(context, (2 * this.standardOutlineWidth + this.standardStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor);
+        }
+        this._strokePath(context, this.standardStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor);
     }
 
     /**
@@ -173,9 +188,15 @@ class WT_MapViewFlightPlanCanvasRenderer {
         } else {
             this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
         }
-        context.lineWidth = this.thinStrokeWidth * state.dpiScale;
-        context.strokeStyle = isActive ? this.activeColor : this.inactiveColor;
-        context.stroke();
+
+        if (this.thinOutlineWidth > 0) {
+
+        }
+
+        if (this.thinOutlineWidth > 0) {
+            this._strokePath(context, (2 * this.thinOutlineWidth + this.thinStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor);
+        }
+        this._strokePath(context, this.thinStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor);
     }
 
     /**
@@ -194,10 +215,11 @@ class WT_MapViewFlightPlanCanvasRenderer {
         } else {
             this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
         }
-        context.lineWidth = this.dottedStrokeWidth * state.dpiScale;
-        context.strokeStyle = isActive ? this.activeColor : this.inactiveColor;
-        context.setLineDash(this.dottedPattern);
-        context.stroke();
+
+        if (this.dottedOutlineWidth > 0) {
+            this._strokePath(context, (2 * this.dottedOutlineWidth + this.dottedStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor, this.dottedLineDash);
+        }
+        this._strokePath(context, this.dottedStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor, this.dottedLineDash);
     }
 
     _drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, start, end) {
@@ -370,19 +392,24 @@ WT_MapViewFlightPlanCanvasRenderer.LegStyle = {
     ARROW_ALT: 5,
 };
 WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
-    standardStrokeWidth: {default: 4, auto: true},
-    thinStrokeWidth: {default: 2, auto: true},
-    dottedStrokeWidth: {default: 2, auto: true},
-    dottedPattern: {default: [2, 2], auto: true},
+    standardStrokeWidth: {default: 6, auto: true},
+    standardOutlineWidth: {default: 1, auto: true},
+    thinStrokeWidth: {default: 4, auto: true},
+    thinOutlineWidth: {default: 1, auto: true},
+    dottedStrokeWidth: {default: 4, auto: true},
+    dottedOutlineWidth: {default: 1, auto: true},
+    dottedLineDash: {default: [4, 4], auto: true},
 
-    standardArrowWidth: {default: 6, auto: true},
-    standardArrowHeight: {default: 8, auto: true},
-    standardArrowSpacing: {default: 8, auto: true},
+    standardArrowWidth: {default: 8, auto: true},
+    standardArrowHeight: {default: 12, auto: true},
+    standardArrowSpacing: {default: 12, auto: true},
 
-    altArrowWidth: {default: 6, auto: true},
-    altArrowHeight: {default: 8, auto: true},
-    altArrowSpacing: {default: 2, auto: true},
+    altArrowWidth: {default: 8, auto: true},
+    altArrowHeight: {default: 12, auto: true},
+    altArrowSpacing: {default: 4, auto: true},
 
     inactiveColor: {default: "white", auto: true},
-    activeColor: {default: "magenta", auto: true},
+    inactiveOutlineColor: {default: "#454545", auto: true},
+    activeColor: {default: "#9c70b1", auto: true},
+    activeOutlineColor: {default: "#652f70", auto: true},
 };
