@@ -112,6 +112,8 @@ class WT_MapViewFlightPlanCanvasRenderer {
         context.strokeStyle = strokeStyle;
         if (lineDash) {
             context.setLineDash(lineDash);
+        } else {
+            context.setLineDash([]);
         }
         context.stroke();
     }
@@ -214,10 +216,11 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
         }
 
+        let lineDash = this.dottedLineDash.map(e => state.dpiScale * e);
         if (this.dottedOutlineWidth > 0) {
-            this._strokePath(context, (2 * this.dottedOutlineWidth + this.dottedStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor, this.dottedLineDash);
+            this._strokePath(context, (2 * this.dottedOutlineWidth + this.dottedStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor, lineDash);
         }
-        this._strokePath(context, this.dottedStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor, this.dottedLineDash);
+        this._strokePath(context, this.dottedStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor, lineDash);
     }
 
     _drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, start, end) {
@@ -350,6 +353,8 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {CanvasRenderingContext2D} context
      */
     render(state, projectionRenderer, context) {
+        this._needsRedraw = false;
+
         this._waypointsRendered.clear();
 
         if (!this.flightPlan) {
@@ -376,8 +381,6 @@ class WT_MapViewFlightPlanCanvasRenderer {
             previousEndpoint = leg.endpoint;
             discontinuity = leg.discontinuity;
         }
-
-        this._needsRedraw = false;
     }
 }
 /**

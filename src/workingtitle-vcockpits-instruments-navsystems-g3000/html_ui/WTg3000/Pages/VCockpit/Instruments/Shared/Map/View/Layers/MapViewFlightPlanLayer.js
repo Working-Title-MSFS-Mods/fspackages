@@ -11,8 +11,10 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._labelManager = labelManager;
         this._fpm = new WT_FlightPlanManager(icaoWaypointFactory);
-        this._renderer = new WT_MapViewFlightPlanCanvasRenderer(legStyleChooser);
-        this._renderer.setFlightPlan(this._fpm.activePlan);
+        this._fpRenderer = new WT_MapViewFlightPlanCanvasRenderer(legStyleChooser);
+        this._fpRenderer.setFlightPlan(this._fpm.activePlan);
+        this._drctRenderer = new WT_MapViewDirectToCanvasRenderer();
+        this._drctRenderer.setDirectTo(this._fpm.directTo);
 
         /**
          * @type {Map<String,WT_MapViewFlightPlanRegisteredWaypointEntry>}
@@ -31,8 +33,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
 
         this._tempOptions = {icon: {}, label: {}};
 
-        this._activeLeg = null;
-        this._lastDrawnActiveLeg = null;
         this._lastFPMUpdateTime = 0;
     }
 
@@ -48,11 +48,11 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         await flightPlan.setApproach("ILS 3R", 0);
         let flightPlanCopy = new WT_FlightPlan(this._icaoWaypointFactory);
         flightPlanCopy.copyFrom(flightPlan);
-        this._renderer.setFlightPlan(flightPlanCopy);
+        this._fpRenderer.setFlightPlan(flightPlanCopy);
     }
 
     _setFlightPlanRendererOpts(options) {
-        this._renderer.setOptions(options);
+        this._fpRenderer.setOptions(options);
     }
 
     /**
@@ -74,7 +74,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
 
     async _syncFlightPlan() {
         await this._fpm.syncActiveFromGame();
-        this._renderer.setActiveLeg(await this._fpm.getActiveLeg());
+        this._fpRenderer.setActiveLeg(await this._fpm.getActiveLeg());
     }
 
     /**
@@ -170,6 +170,10 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      * @param {WT_Waypoint} waypoint
      */
     _registerWaypoint(waypoint) {
+        if (!waypoint.icao) {
+            return;
+        }
+
         let entry = this._registeredWaypoints.get(waypoint.uniqueID);
         if (!entry) {
             this._getWaypointIconAndLabelOptions(waypoint, this._tempOptions);
@@ -192,16 +196,24 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     }
 
     _clearRenderedWaypoints() {
-        for (let waypoint of this._renderer.waypointsRendered()) {
+        for (let waypoint of this._fpRenderer.waypointsRendered()) {
             this._deregisterWaypoint(waypoint);
         }
     }
 
     _registerRenderedWaypoints() {
-        for (let waypoint of this._renderer.waypointsRendered()) {
+        for (let waypoint of this._fpRenderer.waypointsRendered()) {
             if (waypoint.icao !== undefined) {
                 this._registerWaypoint(waypoint);
             }
+        }
+        let drctOrigin = this._drctRenderer.originRendered();
+        if (drctOrigin) {
+            this._registerWaypoint(drctOrigin);
+        }
+        let drctDestination = this._drctRenderer.destinationRendered();
+        if (drctDestination) {
+            this._registerWaypoint(drctDestination);
         }
     }
 
@@ -211,10 +223,10 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     _renderFlightPlan(state) {
         this._clearRenderedWaypoints();
         this._pathLayer.resetBuffer(state);
-        this._renderer.render(state, this._pathLayer.buffer.projectionRenderer, this._pathLayer.buffer.context);
+        this._fpRenderer.render(state, this._pathLayer.buffer.projectionRenderer, this._pathLayer.buffer.context);
+        this._drctRenderer.render(state, this._pathLayer.buffer.projectionRenderer, this._pathLayer.buffer.context);
         this._pathLayer.redrawDisplay(state);
         this._registerRenderedWaypoints();
-        this._lastDrawnActiveLeg = this._activeLeg;
     }
 
     /**
@@ -251,7 +263,8 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         this._pathLayer.update(state);
 
         let isImageInvalid = this._pathLayer.display.isInvalid ||
-                             this._renderer.needsRedraw();
+                             this._fpRenderer.needsRedraw() ||
+                             this._drctRenderer.needsRedraw();
 
         if (isImageInvalid) {
             this._renderFlightPlan(state);
@@ -266,7 +279,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        this._updateFlightPlan(state)
+        this._updateFlightPlan(state);
         this._updatePath(state);
     }
 }
