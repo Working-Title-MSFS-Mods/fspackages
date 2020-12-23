@@ -544,8 +544,18 @@ class MapInstrument extends ISvgMapRootElement {
                 }
             }
             this.flightPlanManager.updateWaypointIndex();
-            this.updateFlightPlanVisibility();
-            this.flightPlanManager.updateFlightPlan();
+            if (this.drawCounter === 25) {
+                this.updateFlightPlanVisibility();
+                this.flightPlanManager.updateFlightPlan();
+            }
+            if (this.drawCounter === 75) {
+                this.flightPlanManager.updateCurrentApproach();
+                if (this.debugApproachFlightPlanElement) {
+                    Coherent.call("GET_APPROACH_FLIGHTPLAN").then(data => {
+                        this.debugApproachFlightPlanElement.source = data;
+                    });
+                }
+            }
 
             if (!this.showConstraints && this.constraints && this.constraints.length > 0) {
                 this.constraints = [];
@@ -803,7 +813,7 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.flightPlanElement);
                         for (let i = 0; i < l; i++) {
                             let waypoint = this.flightPlanManager.getWaypoint(i);
-                            if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
+                            if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
                                         return (w instanceof SvgWaypointElement) && w.source.icao === waypoint.icao;
