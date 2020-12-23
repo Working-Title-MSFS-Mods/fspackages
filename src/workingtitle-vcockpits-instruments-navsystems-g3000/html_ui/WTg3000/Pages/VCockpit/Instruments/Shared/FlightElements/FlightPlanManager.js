@@ -2,10 +2,11 @@ class WT_FlightPlanManager {
     constructor(icaoWaypointFactory) {
         this._active = new WT_FlightPlan(icaoWaypointFactory);
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
+        this._directTo = null;
 
         this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
 
-        this._directTo = null;
+        this._directTo = new WT_DirectTo();
     }
 
     /**
@@ -26,6 +27,15 @@ class WT_FlightPlanManager {
         return this._standby;
     }
 
+    /**
+     * @readonly
+     * @property {WT_DirectTo} directTo
+     * @type {WT_DirectTo}
+     */
+    get directTo() {
+        return this._directTo;
+    }
+
     async copyToActive(flightPlan) {
         this._active.copyFrom(flightPlan);
         await this.syncActiveToGame();
@@ -40,12 +50,12 @@ class WT_FlightPlanManager {
     }
 
     async syncActiveFromGame() {
-        await this._interface.syncFromGame(this._active);
+        await this._interface.syncFromGame(this._active, this._directTo);
     }
 
     async getActiveLeg() {
         let index = await this._interface.getGameActiveWaypointIndex();
-        if (index === 0) {
+        if (index <= 0) {
             return null;
         }
 
@@ -60,7 +70,7 @@ class WT_FlightPlanManager {
         }
 
         let leg = legs[index];
-        if (ident !== "USR" && leg.waypoint.ident !== ident) {
+        if (!leg || (ident !== "USR" && leg.waypoint.ident !== ident)) {
             let legsBefore = legs.slice(0, index).reverse();
             let legsAfter = legs.slice(index + 1, legs.length);
             let before = legsBefore.findIndex(leg => leg.waypoint.ident === ident);
@@ -82,6 +92,6 @@ class WT_FlightPlanManager {
                 return legs[index];
             }
         }
-        return leg;
+        return leg ? leg: null;
     }
 }
