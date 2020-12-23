@@ -25,6 +25,12 @@ class CJ4_SystemContainer extends NavSystemElementContainer {
             console.log("Root component expected!");
         }
     }
+    reboot() {
+        if (this.warnings)
+            this.warnings.reset();
+        if (this.annunciations)
+            this.annunciations.reset();
+    }
     minimize(_value) {
         switch (this.curPage) {
             case CJ4_SystemPage.ENGINES:
@@ -294,7 +300,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
+                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -302,7 +308,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
+                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
@@ -3730,7 +3736,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
         }
         this.closeMenu();
-        this.highlight(_highlight);
+        this.highlight = _highlight;
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
@@ -4012,7 +4018,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
 
         }
         this.closeMenu();
-        this.highlight(_highlight);
+        this.highlight = _highlight;
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);

@@ -1,11 +1,14 @@
-# Working Title CJ4 v0.8.1 Changes
+# Working Title CJ4 v0.8.2 Changes
 
-Welcome to the Working Title CJ4 v0.8.1. This is a point release to address some of the issues seen this week with version 0.8.0. This version remains a beta release. Please report any issues found to our Issues tracker on our GitHub repository.
+Welcome to the Working Title CJ4 v0.8.2. This is a point release to address compatibility with MSFS 1.12.13.0 (VR Update).
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
+
+## Default Livery Conflicts
+The alternate default liveries that now ship with MSFS are not compatible with the CJ4 yet at this time. They currently ship with panel.cfg files that do not include our FADEC module. Please use the standard livery or a known compatible 3rd party or community livery.
 
 ## Remarks to flight plan synchronization between the Game and FMS 
 Our recommendation is to keep FP Sync _off_.  
@@ -16,53 +19,15 @@ To then load the plan into the FMS you can either enter it manually or use the _
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
 
 ## KEY FEATURES
-* Added VFR runway approaches - in DEP/ARR you can now choose a VFR runway for landing and specify a runway extension waypoint to be added to the flight plan as far as 25nm from the runway. This allows you to 'roll your own' LNAV/VNAV approach to any runway at any airport. Great for small/private fields!  https://streamable.com/idloxs
-* Fixed issue when resuming VNAV climbs and fixed issue when setting missed approach altitude during an RNAV approach with GP.
-
-## Compatibility
-* Removed old unused files that were causing a compatibility issue with WT Garmin units and the FBW A32NX
-
-## RNAV
-* Fixed an issue where GP would stop descending and capture an altitude when the altitude preselector was moved (i.e. to the missed approach altitude)
-* Fixed an issue where sometimes the active waypoing would sequence to the airport and take the plane off course on an RNAV approach.
-
-## MCP
-* Fixed an issue where the CRS would not accept input sometimes while not in LNV or NAV mode
-
-## PFD
-* Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
-* FMS mach value now always shows only two digits
-* Updated BARO indications to show when STD has been set; updated BARO knob to always set STD pressure when pressed
-
-## MFD
-* Numerous fantastic cosmetic accuracy updates (contribution by TheFlieger)
-* Shows IGN indication on engine ignition during startup
-* Don't show TOD marker on map when in Approach Mode
-
-## SAI
-* Fixed the baro setting rounding error
+* Compatibility with MSFS 1.12.13.0
 
 ## FMC
-* LEGS page will no longer intepret entries of lower than FL500 as speed restrictions
-* LEGS order of AB restrictions should now be correct
-* FPLN now allows proper entry of 3 letter ICAO airport codes
-* FPLN selecting Origin or Destination will put the ICAO into the scratchpad
-* Visual approach (runway extension fix) capabilty added to the DEP/ARR page
-* Pressing LSK next to origin and dest will now copy ICAO to the scratchpad
-* FMC should no longer blackscreen when going to the ARR DATA page
-* FP Sync option will now actually be active when set to enabled
-* Added new option "FPLN RECALL (GAME)" to Route Menu to sync the flight plan from world map to the FMS
+* Fixed an issue where FPLN and LEGS would not show modifications unless the page was changed under certain conditions
+* FMC should now be able to continue to be used even on page error in most circumstances
 
-## Flight Plan Manager
-* Fixed issue where some track-to-radial-intercept legs were being dropped from procedures
-* Changed behavior of FP Sync on flight start
-* When FP Sync is off: ATC/VFR plan remains but FMS plan is empty. Enter the flight plan manually or use the _FPLN RECALL_ options 
-
-## LNAV
-* Fixed issue where LNAV would get stuck in a swapping full left then right bank oscillation
-
-## Sound
-* Wind, Spoiler Drag and external engine sounds should now be played on the right audio bus so it doesn't play during pause & volume can be adjusted.
+## Flight Plan Import
+* Fixed an issue where game flight plans with blank ICAO legs would cause the plan to fail to load
+* Simbrief plans with 3 letter ICAO airports prefixed with K should now properly load
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
