@@ -42,11 +42,10 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     * @readonly
-     * @property {WT_FlightPlanLeg} activeLeg
-     * @type {WT_FlightPlanLeg}
+     *
+     * @returns {WT_FlightPlanLeg}
      */
-    get activeLeg() {
+    activeLeg() {
         return this._activeLeg;
     }
 
@@ -99,7 +98,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_FlightPlanLeg} leg
      */
     setActiveLeg(leg) {
-        if (leg === this.activeLeg) {
+        if (leg === this.activeLeg()) {
             return;
         }
 
@@ -315,8 +314,8 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {Boolean} discontinuity
      */
     _renderLeg(state, projectionRenderer, context, bounds, index, leg, previousEndpoint, discontinuity) {
-        if (leg.waypoint && projectionRenderer.isInViewBounds(leg.waypoint.location, bounds, 0.05)) {
-            this._waypointsRendered.add(leg.waypoint);
+        if (projectionRenderer.isInViewBounds(leg.fix.location, bounds, 0.05)) {
+            this._waypointsRendered.add(leg.fix);
         }
 
         if (!previousEndpoint ||
@@ -324,7 +323,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             return;
         }
 
-        let isActive = leg === this.activeLeg;
+        let isActive = leg === this.activeLeg();
         let useRhumb = false;
         if (leg instanceof WT_FlightPlanProcedureLeg) {
             switch (leg.procedureLeg.type) {
@@ -337,7 +336,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             }
         }
 
-        let style = this._legStyleChooser.chooseStyle(leg, this.activeLeg, discontinuity);
+        let style = this._legStyleChooser.chooseStyle(leg, this.activeLeg(), discontinuity);
         let renderFunc = this._legRenderFuncs[style];
         if (renderFunc) {
             renderFunc(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
@@ -371,7 +370,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._waypointsRendered.add(destination);
         }
 
-        let start = (this.activeLeg && !this.drawPreviousLegs) ? this.activeLeg.index : 0;
+        let start = (this.activeLeg() && !this.drawPreviousLegs) ? this.activeLeg().index : 0;
         let startPrevious = this._legs[start - 1];
         let previousEndpoint = startPrevious ? startPrevious.endpoint : null;
         let discontinuity = startPrevious ? startPrevious.discontinuity : false;

@@ -334,7 +334,7 @@ class WT_FlightPlan {
      * @param {WT_FlightPlanProcedureLeg[]} legs
      */
     async _buildLegsFromProcedure(procedureLegs, legs) {
-        let previous = legs.length > 0 ? legs[legs.length - 1].waypoint : undefined;
+        let previous = legs.length > 0 ? legs[legs.length - 1].fix : undefined;
         for (let i = 0; i < procedureLegs.count(); i++) {
             let current = procedureLegs.getByIndex(i);
             let next = procedureLegs.getByIndex(i + 1);
@@ -1105,12 +1105,30 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 
     /**
      * @readonly
+     * @property {WT_GeoPointReadOnly} endpoint
+     * @type {WT_GeoPointReadOnly}
+     */
+    get endpoint() {
+        return this.fix.location;
+    }
+
+    /**
+     * @readonly
      * @property {Number} index - the index of this leg in its parent flight plan, or -1 if this leg does not belong to a
      *                            flight plan.
      * @type {Number}
      */
     get index() {
         return this._index;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Waypoint} fix
+     * @type {WT_Waypoint}
+     */
+    get fix() {
+        return null;
     }
 
     /**
@@ -1148,29 +1166,20 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
     /**
      *
-     * @param {WT_Waypoint} waypoint
+     * @param {WT_Waypoint} fix
      */
-    constructor(waypoint, parent, segment) {
+    constructor(fix, parent, segment) {
         super(parent, segment);
-        this._waypoint = waypoint;
+        this._fix = fix;
     }
 
     /**
      * @readonly
-     * @property {WT_Waypoint} waypoint
+     * @property {WT_Waypoint} fix
      * @type {WT_Waypoint}
      */
-    get waypoint() {
-        return this._waypoint;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_GeoPointReadOnly} endpoint
-     * @type {WT_GeoPointReadOnly}
-     */
-    get endpoint() {
-        return this.waypoint.location;
+    get fix() {
+        return this._fix;
     }
 
     _updateDistance() {
@@ -1178,11 +1187,11 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
     }
 
     copy() {
-        return new WT_FlightPlanWaypointFixLeg(this.waypoint, null, this._segment);
+        return new WT_FlightPlanWaypointFixLeg(this.fix, null, this._segment);
     }
 
     equals(other) {
-        return (other instanceof WT_FlightPlanWaypointFixLeg) && this.waypoint.uniqueID === other.waypoint.uniqueID;
+        return (other instanceof WT_FlightPlanWaypointFixLeg) && this.fix.uniqueID === other.fix.uniqueID;
     }
 }
 
@@ -1215,7 +1224,7 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
     }
 
     copy() {
-        return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.waypoint, null, this._segment);
+        return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.fix, null, this._segment);
     }
 
     equals(other) {
