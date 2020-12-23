@@ -162,7 +162,7 @@ class WT_FlightPlan {
             if (this._approach) {
                 this._legs.push(...this._approach.legs());
             }
-            if (!this._approach && (!this._arrival || this._arrival.runwayTransitionIndex < 0)) {
+            if (!this._approach) {
                 this._legs.push(this._destinationLeg);
             }
         }
@@ -434,10 +434,8 @@ class WT_FlightPlan {
     async _setArrival(arrival, enrouteTransitionIndex, runwayTransitionIndex) {
         let enrouteTransition = arrival.enrouteTransitions.getByIndex(enrouteTransitionIndex);
         let runwayTransition;
-        let runway;
         if (runwayTransitionIndex >= 0) {
             runwayTransition = arrival.runwayTransitions.getByIndex(runwayTransitionIndex);
-            runway = runwayTransition.runway;
         }
 
         let legs = [];
@@ -447,9 +445,6 @@ class WT_FlightPlan {
         await this._buildLegsFromProcedure(arrival.commonLegs, legs);
         if (runwayTransition) {
             await this._buildLegsFromProcedure(runwayTransition.legs, legs);
-        }
-        if (!this.hasApproach && runway) {
-            legs.push(new WT_FlightPlanWaypointFixLeg(new WT_CustomWaypoint(runway.designation, runway.start))); // runway fix
         }
 
         let eventData = {types: 0};
