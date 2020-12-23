@@ -1,3 +1,7 @@
+# changes in v0.3.4
+* Fixed compatibility problems with FBW A320
+* Fixed nav map not drawing approach paths
+
 # Changes in v0.3.3
 * Compatibility with and improvements from v1.12.13.0.
 
