@@ -15,6 +15,18 @@ class WT_FlightPlanAsoboInterface {
         return SimVar.GetSimVarValue("C:fs9gps:FlightPlanIsActiveApproach", "Bool");
     }
 
+    async _getWaypointsFromData(data, array) {
+        for (let leg of data) {
+            try {
+                array.push(await this._icaoWaypointFactory.getWaypoint(leg.icao));
+            } catch (e) {
+                if (leg.lla) {
+                    array.push(new WT_CustomWaypoint(leg.ident, leg.lla));
+                }
+            }
+        }
+    }
+
     async _syncFlightPlan(flightPlan, data) {
         let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
 
@@ -31,26 +43,38 @@ class WT_FlightPlanAsoboInterface {
             tempFlightPlan.setDestination(destination);
         }
 
+        let waypoints = [];
+        let originEnd = (origin ? 1 : 0);
+        let destinationStart = data.waypoints.length - (destination ? 1 : 0);
+        let departureStart = (data.departureWaypointsSize === -1) ? -1 : originEnd;
+        let enrouteStart = (data.departureWaypointsSize === -1) ? originEnd : data.departureWaypointsSize;
+        let enrouteEnd = destinationStart - (data.arrivalWaypointsSize === -1 ? 0 : data.arrivalWaypointsSize);
+        let arrivalStart = (data.arrivalWaypointsSize === -1) ? -1 : enrouteEnd;
+
         if (data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
+            let removeStart = data.departureRunwayIndex < 0 ? 0 : 1; // don't remove runway fix.
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length() - removeStart);
+            await this._getWaypointsFromData(data.waypoints.slice(departureStart, enrouteStart), waypoints);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypoints);
+            waypoints = [];
         }
 
-        let enrouteStart = (data.departureWaypointsSize === -1) ? (origin ? 1 : 0) : data.departureWaypointsSize;
-        let enrouteEnd = data.waypoints.length - (destination ? 1 : 0) - (data.arrivalWaypointsSize === -1 ? 0 : data.arrivalWaypointsSize);
-        let enrouteICAOs = data.waypoints.slice(enrouteStart, enrouteEnd);
-        let waypoints = [];
-        for (let leg of enrouteICAOs) {
-            try {
-                waypoints.push(await this._icaoWaypointFactory.getWaypoint(leg.icao));
-            } catch (e) {}
-        }
-        await tempFlightPlan.insertEnrouteWaypoints(waypoints);
+        await this._getWaypointsFromData(data.waypoints.slice(enrouteStart, enrouteEnd), waypoints);
+        await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypoints);
 
         if (data.arrivalProcIndex >= 0) {
+            waypoints = [];
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex);
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length());
+            await this._getWaypointsFromData(data.waypoints.slice(arrivalStart, destinationStart), waypoints);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypoints);
         }
         if (data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
+            //tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, 0, tempFlightPlan.getApproach().length());
+            //await this._getWaypointsFromData(data.waypoints.slice(departureStart, enrouteStart), waypoints);
+            //await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypoints);
         }
 
         flightPlan.copyFrom(tempFlightPlan);
@@ -62,11 +86,11 @@ class WT_FlightPlanAsoboInterface {
             if (destination.icao) {
                 targetWaypoint = await this._icaoWaypointFactory.getWaypoint(destination.icao);
             } else {
-                targetWaypoint = new WT_CustomWaypoint("DRCT-DEST", new WT_GeoPoint(destination.lla.lat, destination.lla.long));
+                targetWaypoint = new WT_CustomWaypoint("DRCT-DEST", destination.lla);
             }
             directTo.setDestination(targetWaypoint);
             if (!directTo.isActive() || !directTo.getOrigin().location.equals(origin)) {
-                directTo.activate(new WT_GeoPoint(origin.lat, origin.long));
+                directTo.activate(origin);
             }
         } else {
             if (directTo.isActive()) {
