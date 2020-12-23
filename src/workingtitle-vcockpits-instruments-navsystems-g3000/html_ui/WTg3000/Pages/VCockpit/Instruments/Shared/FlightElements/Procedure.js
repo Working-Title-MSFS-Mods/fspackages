@@ -1,4 +1,12 @@
+/**
+ * A procedure.
+ */
 class WT_Procedure {
+    /**
+     * @param {WT_Airport} airport - the airport to which the new procedure belongs.
+     * @param {String} name - the name of the new procedure.
+     * @param {Number} index - the index of the new procedure within its parent airport's procedure list.
+     */
     constructor(airport, name, index) {
         this._airport = airport;
         this._name = name;
@@ -7,7 +15,7 @@ class WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_Airport} airport
+     * @property {WT_Airport} airport - the airport to which this procedure belongs.
      * @type {WT_Airport}
      */
     get airport() {
@@ -16,7 +24,7 @@ class WT_Procedure {
 
     /**
      * @readonly
-     * @property {String} name
+     * @property {String} name - the name of this procedure.
      * @type {String}
      */
     get name() {
@@ -25,7 +33,7 @@ class WT_Procedure {
 
     /**
      * @readonly
-     * @property {Number} index
+     * @property {Number} index - the index of this procedure in its parent airport's procedure list.
      * @type {Number}
      */
     get index() {
@@ -45,7 +53,16 @@ class WT_Procedure {
     }
 }
 
+/**
+ * A SID/STAR-type procedure.
+ */
 class WT_DepartureArrival extends WT_Procedure {
+    /**
+     * @param {WT_Airport} airport - the airport to which the new procedure belongs.
+     * @param {String} name - the name of the new procedure.
+     * @param {Number} index - the index of the new procedure within its parent airport's procedure list.
+     * @param {Object} data - a data object describing the new procedure.
+     */
     constructor(airport, name, index, data) {
         super(airport, name, index);
 
@@ -66,7 +83,7 @@ class WT_DepartureArrival extends WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_ProcedureLegList} commonLegs
+     * @property {WT_ProcedureLegList} commonLegs - the common legs for this procedure.
      * @type {WT_ProcedureLegList}
      */
     get commonLegs() {
@@ -75,7 +92,7 @@ class WT_DepartureArrival extends WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_TransitionList<WT_ProcedureRunwayTransition>} runwayTransitions
+     * @property {WT_TransitionList<WT_ProcedureRunwayTransition>} runwayTransitions - the runway transitions for this procedure.
      * @type {WT_TransitionList<WT_ProcedureRunwayTransition>}
      */
     get runwayTransitions() {
@@ -84,7 +101,7 @@ class WT_DepartureArrival extends WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_TransitionList<WT_ProcedureTransition>} enrouteTransitions
+     * @property {WT_TransitionList<WT_ProcedureTransition>} enrouteTransitions - the enroute transitions for this procedure.
      * @type {WT_TransitionList<WT_ProcedureTransition>}
      */
     get enrouteTransitions() {
@@ -92,13 +109,28 @@ class WT_DepartureArrival extends WT_Procedure {
     }
 }
 
+/**
+ * A standard instrument departure (SID) procedure.
+ */
 class WT_Departure extends WT_DepartureArrival {
 }
 
+/**
+ * A standard terminal arrival (STAR) procedure.
+ */
 class WT_Arrival extends WT_DepartureArrival {
 }
 
+/**
+ * An approach procedure.
+ */
 class WT_Approach extends WT_Procedure {
+    /**
+     * @param {WT_Airport} airport - the airport to which the new procedure belongs.
+     * @param {String} name - the name of the new procedure.
+     * @param {Number} index - the index of the new procedure within its parent airport's procedure list.
+     * @param {Object} data - a data object describing the new procedure.
+     */
     constructor(airport, name, index, data) {
         super(airport, name, index);
 
@@ -121,7 +153,7 @@ class WT_Approach extends WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_Runway} runway
+     * @property {WT_Runway} runway - the runway for this approach.
      * @type {WT_Runway}
      */
     get runway() {
@@ -130,7 +162,7 @@ class WT_Approach extends WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_ProcedureLegList} finalLegs
+     * @property {WT_ProcedureLegList} finalLegs - the final approach legs for this approach.
      * @type {WT_ProcedureLegList}
      */
     get finalLegs() {
@@ -139,7 +171,7 @@ class WT_Approach extends WT_Procedure {
 
     /**
      * @readonly
-     * @property {WT_TransitionList<WT_ProcedureTransition>} transitions
+     * @property {WT_TransitionList<WT_ProcedureTransition>} transitions - the transitions for this approach.
      * @type {WT_TransitionList<WT_ProcedureTransition>}
      */
     get transitions() {
@@ -147,7 +179,14 @@ class WT_Approach extends WT_Procedure {
     }
 }
 
+/**
+ * A procedure transition.
+ */
 class WT_ProcedureTransition {
+    /**
+     * @param {WT_Procedure} procedure - the procedure to which the new transition belongs.
+     * @param {Object} data - a data object describing the new transition.
+     */
     constructor(procedure, data) {
         this._procedure = procedure;
         this._initFromData(data);
@@ -159,7 +198,7 @@ class WT_ProcedureTransition {
 
     /**
      * @readonly
-     * @property {WT_Procedure} procedure
+     * @property {WT_Procedure} procedure - the procedure to which this transition belongs.
      * @type {WT_Procedure}
      */
     get procedure() {
@@ -168,7 +207,7 @@ class WT_ProcedureTransition {
 
     /**
      * @readonly
-     * @property {WT_ProcedureLegList} runwayTransitions
+     * @property {WT_ProcedureLegList} legs - the legs for this transition.
      * @type {WT_ProcedureLegList}
      */
     get legs() {
@@ -176,6 +215,9 @@ class WT_ProcedureTransition {
     }
 }
 
+/**
+ * A procedure runway transition.
+ */
 class WT_ProcedureRunwayTransition extends WT_ProcedureTransition {
     _initFromData(data) {
         super._initFromData(data);
@@ -190,7 +232,7 @@ class WT_ProcedureRunwayTransition extends WT_ProcedureTransition {
 
     /**
      * @readonly
-     * @property {WT_Runway} runway
+     * @property {WT_Runway} runway - the runway for this transition.
      * @type {WT_Runway}
      */
     get runway() {
@@ -199,27 +241,29 @@ class WT_ProcedureRunwayTransition extends WT_ProcedureTransition {
 }
 
 /**
+ * A list of procedure transitions.
  * @template T
  */
 class WT_TransitionList {
     /**
-     * @param {Array<T>} transitions
+     * @param {Array<T>} transitions - an array of transitions with which to initialize the new list.
      */
     constructor(transitions) {
         this._transitions = transitions;
     }
 
     /**
-     * @returns {Number}
+     * Gets the number of transitions in this list.
+     * @returns {Number} the number of transitions in this list.
      */
     count() {
         return this._transitions.length;
     }
 
     /**
-     *
-     * @param {Number} index
-     * @returns {T}
+     * Gets a transition from this list by its index.
+     * @param {Number} index - the index of the transition to get.
+     * @returns {T} a transition.
      */
     getByIndex(index) {
         return this._transitions[index];
@@ -233,7 +277,15 @@ class WT_TransitionList {
     }
 }
 
+/**
+ * A procedure leg.
+ */
 class WT_ProcedureLeg {
+    /**
+     * @param {WT_Procedure} procedure - the procedure to which the new leg belongs.
+     * @param {Number} type - the type of the new procedure leg.
+     * @param {Object} data - a data object describing the new leg.
+     */
     constructor(procedure, type, data) {
         this._procedure = procedure;
         this._type = type;
@@ -261,7 +313,7 @@ class WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {WT_Procedure} procedure
+     * @property {WT_Procedure} procedure - the procedure to which this leg belongs.
      * @type {WT_Procedure}
      */
     get procedure() {
@@ -270,7 +322,7 @@ class WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {Number} type
+     * @property {Number} type - the type of this leg.
      * @type {Number}
      */
     get type() {
@@ -279,7 +331,7 @@ class WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {Number} altitudeDescription
+     * @property {Number} altitudeDescription - the altitude constraint type of this leg.
      * @type {Number}
      */
     get altitudeDescription() {
@@ -288,25 +340,25 @@ class WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} altitudeCeiling
+     * @property {WT_NumberUnitReadOnly} altitudeCeiling - the altitude ceiling of this leg, if one exists.
      * @type {WT_NumberUnitReadOnly}
      */
     get altitudeCeiling() {
-        return this._altitudeCeiling.readonly();
+        return this._altitudeCeiling ? this._altitudeCeiling.readonly() : undefined;
     }
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} altitudeFloor
+     * @property {WT_NumberUnitReadOnly} altitudeFloor - the altitude floor of this leg, if one exists.
      * @type {WT_NumberUnitReadOnly}
      */
     get altitudeFloor() {
-        return this._altitudeFloor.readonly();
+        return this._altitudeFloor ? this._altitudeFloor.readonly() : undefined;
     }
 
     /**
      * @readonly
-     * @property {Boolean} discontinuity
+     * @property {Boolean} discontinuity - whether this leg ends in a discontinuity.
      * @type {Boolean}
      */
     get discontinuity() {
@@ -314,13 +366,14 @@ class WT_ProcedureLeg {
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} [previousFix]
-     * @param {WT_ProcedureLeg} [nextLeg]
-     * @returns {Promise<WT_Waypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} [previousFix] - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @param {WT_ProcedureLeg} [nextLeg] - the next leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix, nextLeg) {
-        return null;
+        return Promise.reject();
     }
 }
 /**
@@ -348,19 +401,37 @@ WT_ProcedureLeg.AltitudeDescription = {
     ABOVE_BELOW: 4
 };
 
+/**
+ * A list of procedure legs.
+ */
 class WT_ProcedureLegList {
+    /**
+     * @param {WT_ProcedureLeg[]} legs - an array of procedure legs with which to initialize the new list.
+     */
     constructor(legs) {
         this._legs = legs;
     }
 
+    /**
+     * Gets the number of legs in this list.
+     * @returns {Number} the number of legs in this list.
+     */
     count() {
         return this._legs.length;
     }
 
+    /**
+     * Gets a leg from this list by its index.
+     * @param {Number} index - the index of the leg to get.
+     * @returns {WT_ProcedureLeg} a procedure leg.
+     */
     getByIndex(index) {
         return this._legs[index];
     }
 
+    /**
+     * @returns {IterableIterator<WT_ProcedureLeg>}
+     */
     [Symbol.iterator]() {
         return this._legs.values();
     }
@@ -375,7 +446,7 @@ class WT_ProcedureLegCourse extends WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {Number} course
+     * @property {Number} course - the course heading of this leg.
      * @type {Number}
      */
     get course() {
@@ -383,6 +454,9 @@ class WT_ProcedureLegCourse extends WT_ProcedureLeg {
     }
 }
 
+/**
+ * A procedure leg consisting of flying a direct course to a pre-defined waypoint fix.
+ */
 class WT_FlyToFix extends WT_ProcedureLegCourse {
     _initFromData(data) {
         super._initFromData(data);
@@ -392,7 +466,7 @@ class WT_FlyToFix extends WT_ProcedureLegCourse {
 
     /**
      * @readonly
-     * @property {String} fixICAO
+     * @property {String} fixICAO - the ICAO string of the terminal waypoint fix for this leg.
      * @type {String}
      */
     get fixICAO() {
@@ -400,8 +474,9 @@ class WT_FlyToFix extends WT_ProcedureLegCourse {
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory) {
         return icaoWaypointFactory.getWaypoint(this.fixICAO);
@@ -417,7 +492,7 @@ class WT_ProcedureLegCourseReference extends WT_ProcedureLegCourse {
 
     /**
      * @readonly
-     * @property {String} fixICAO
+     * @property {String} referenceICAO - the ICAO string of the reference fix for this leg.
      * @type {String}
      */
     get referenceICAO() {
@@ -434,7 +509,7 @@ class WT_ProcedureLegCourseReferenceDistance extends WT_ProcedureLegCourseRefere
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} distance
+     * @property {WT_NumberUnitReadOnly} distance - the distance to fly for this leg.
      * @type {WT_NumberUnitReadOnly}
      */
     get distance() {
@@ -442,15 +517,19 @@ class WT_ProcedureLegCourseReferenceDistance extends WT_ProcedureLegCourseRefere
     }
 }
 
+/**
+ * A procedure leg consisting of flying a constant heading from the previous fix until reaching a specified distance from a reference fix.
+ */
 class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseReferenceDistance {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE, data);
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} previousFix
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
@@ -516,6 +595,9 @@ WT_FlyHeadingUntilDistanceFromReference.FIX_TOLERANCE = WT_Unit.METER.convert(10
 WT_FlyHeadingUntilDistanceFromReference._tempGeoPoint1 = new WT_GeoPoint(0, 0);
 WT_FlyHeadingUntilDistanceFromReference._tempGeoPoint2 = new WT_GeoPoint(0, 0);
 
+/**
+ * A procedure leg consisting of flying a constant heading from the previous fix for a specified distance.
+ */
 class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDistance {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_REFERENCE_RADIAL_FOR_DISTANCE, data);
@@ -531,7 +613,7 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
 
     /**
      * @readonly
-     * @property {String} fixICAO
+     * @property {String} fixICAO - the ICAO string of the terminal waypoint fix for this leg, if one exists.
      * @type {String}
      */
     get fixICAO() {
@@ -539,9 +621,10 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} previousFix
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         if (this.fixICAO) {
@@ -561,16 +644,20 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
 }
 WT_FlyReferenceRadialForDistance._tempGeoPoint = new WT_GeoPoint(0, 0);
 
+/**
+ * A procedure leg consisting of flying a constant heading from the previous fix until intercepting the next leg's course.
+ */
 class WT_FlyHeadingToIntercept extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_TO_INTERCEPT, data);
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} previousFix
-     * @param {WT_ProcedureLeg} nextLeg
-     * @returns {Promise<WT_Waypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @param {WT_ProcedureLeg} nextLeg - the next leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix, nextLeg) {
         let reference;
@@ -606,6 +693,10 @@ class WT_FlyHeadingToIntercept extends WT_ProcedureLegCourse {
 }
 WT_FlyHeadingToIntercept._tempGeoPoint = new WT_GeoPoint(0, 0);
 
+/**
+ * A procedure leg consisting of flying a constant heading from the previous fix until crossing a specified radial line
+ * of a reference fix.
+ */
 class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseReference {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING, data);
@@ -619,7 +710,7 @@ class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseRef
 
     /**
      * @readonly
-     * @property {Number} radial
+     * @property {Number} radial - the radial of the reference fix to cross.
      * @type {Number}
      */
     get radial() {
@@ -627,9 +718,10 @@ class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseRef
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} previousFix
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
@@ -649,14 +741,18 @@ class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseRef
 }
 WT_FlyHeadingUntilReferenceRadialCrossing._tempGeoPoint = new WT_GeoPoint(0, 0);
 
+/**
+ * A procedure leg consisting of flying direct to a point at a specified bearing and distance from a reference fix.
+ */
 class WT_FlyToBearingDistanceFromReference extends WT_ProcedureLegCourseReferenceDistance {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_TO_BEARING_DISTANCE_FROM_REFERENCE, data);
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
@@ -670,15 +766,19 @@ class WT_FlyToBearingDistanceFromReference extends WT_ProcedureLegCourseReferenc
 }
 WT_FlyToBearingDistanceFromReference._tempGeoPoint = new WT_GeoPoint(0, 0);
 
+/**
+ * A procedure leg consisting of flying a constant heading from the previous fix until reaching a specified altitude.
+ */
 class WT_FlyHeadingToAltitude extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE, data);
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} previousFix
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);
@@ -688,6 +788,9 @@ class WT_FlyHeadingToAltitude extends WT_ProcedureLegCourse {
     }
 }
 
+/**
+ * A procedure leg consisting of flying a VECTORS instruction. Ends in a discontinuity.
+ */
 class WT_FlyVectors extends WT_ProcedureLeg {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_VECTORS, data);
@@ -695,7 +798,7 @@ class WT_FlyVectors extends WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {Boolean} discontinuity
+     * @property {Boolean} discontinuity - whether this leg ends in a discontinuity.
      * @type {Boolean}
      */
     get discontinuity() {
@@ -703,9 +806,10 @@ class WT_FlyVectors extends WT_ProcedureLeg {
     }
 
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @param {WT_Waypoint} previousFix
-     * @returns {Promise<WT_ICAOWaypoint>}
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         return new WT_CustomWaypoint("VECTORS", previousFix.location);
@@ -713,6 +817,12 @@ class WT_FlyVectors extends WT_ProcedureLeg {
 }
 
 class ProcedureLegFactory {
+    /**
+     * Creates a WT_ProcedureLeg object from a procedure data object.
+     * @param {WT_Procedure} procedure - the parent procedure of the new leg.
+     * @param {Object} data - a data object describing the new leg.
+     * @returns {WT_ProcedureLeg}
+     */
     static createFromData(procedure, data) {
         switch (data.type) {
             case 7:
