@@ -68,13 +68,10 @@ class WT_FlightPlanAsoboInterface {
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length());
             await this._getWaypointsFromData(data.waypoints.slice(arrivalStart, destinationStart), waypoints);
-            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypoints);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypoints, 0);
         }
         if (data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
-            //tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, 0, tempFlightPlan.getApproach().length());
-            //await this._getWaypointsFromData(data.waypoints.slice(departureStart, enrouteStart), waypoints);
-            //await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypoints);
         }
 
         flightPlan.copyFrom(tempFlightPlan);
