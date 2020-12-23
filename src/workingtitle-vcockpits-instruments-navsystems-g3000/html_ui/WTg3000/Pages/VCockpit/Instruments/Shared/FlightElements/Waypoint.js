@@ -38,6 +38,7 @@ class WT_CustomWaypoint extends WT_Waypoint {
         super();
         this._ident = ident;
         this._location = new WT_GeoPoint(location.lat, location.long);
+        this._uniqueID = `${ident} (${location.lat.toFixed(6)},${location.long.toFixed(6)})`
     }
 
     /**
@@ -46,7 +47,7 @@ class WT_CustomWaypoint extends WT_Waypoint {
      * @type {String}
      */
     get uniqueID() {
-        return this._ident;
+        return this._uniqueID;
     }
 
     /**
