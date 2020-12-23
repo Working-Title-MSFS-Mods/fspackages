@@ -51,6 +51,10 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         this._renderer.setFlightPlan(flightPlanCopy);
     }
 
+    _setFlightPlanRendererOpts(options) {
+        this._renderer.setOptions(options);
+    }
+
     /**
      * @param {WT_MapViewState} state
      */
@@ -58,6 +62,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         for (let property of WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
+        this._setFlightPlanRendererOpts(this.flightPlanOptions);
     }
 
     /**
@@ -272,6 +277,8 @@ WT_MapViewFlightPlanLayer.WAYPOINT_ICON_CACHE_SIZE = 100;
 WT_MapViewFlightPlanLayer.WAYPOINT_LABEL_CACHE_SIZE = 100;
 WT_MapViewFlightPlanLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewFlightPlanLayer.OPTIONS_DEF = {
+    flightPlanOptions: {default: {}, auto: true},
+
     iconDirectory: {default: "", auto: true},
 
     userIconSize: {default: 15, auto: true},
@@ -312,6 +319,7 @@ WT_MapViewFlightPlanLayer.OPTIONS_DEF = {
     intLabelOffset: {default: {x: 0, y: -20}, auto: true},
 };
 WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES = [
+    "flightPlanOptions",
     "iconDirectory",
     "userIconSize",
     "airportIconSize",
