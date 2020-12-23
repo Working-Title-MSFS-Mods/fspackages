@@ -223,7 +223,13 @@ WT_Airport.RadarCoverage = {
     YES: 2
 }
 
+/**
+ * A list of runways at an airport.
+ */
 class WT_RunwayList {
+    /**
+     * @param {WT_Runway[]} runways - an array containing the runways with which to initialize the new list.
+     */
     constructor(runways) {
         /**
          * @type {WT_Runway[]}
@@ -238,23 +244,44 @@ class WT_RunwayList {
         }
     }
 
+    /**
+     * Gets the number of runways in this list.
+     * @returns {Number} the number of runways in this list.
+     */
     count() {
         return this._runways.length;
     }
 
+    /**
+     * Gets the longest runway in this list.
+     * @returns {WT_Runway} the longest runway in this list.
+     */
     longest() {
         return this._longest;
     }
 
+    /**
+     * Gets a runway from this list by its index.
+     * @param {WT_Runway} index - the index of the runway to get.
+     * @returns {WT_Runway} a runway.
+     */
     getByIndex(index) {
         return this._runways[index];
     }
 
+    /**
+     * Gets a runway from this list by its designation.
+     * @param {String} designation - the designation of the runway to get.
+     * @returns {WT_Runway} a runway.
+     */
     getByDesignation(designation) {
         let index = this._runways.findIndex(runway => runway.designation === designation);
         return this.getByIndex(index);
     }
 
+    /**
+     * @returns {IterableIterator<WT_Runway>}
+     */
     [Symbol.iterator]() {
         return this._runways.values();
     }
@@ -483,29 +510,30 @@ WT_Runway.Surface = {
 };
 
 /**
+ * A list of procedures.
  * @template T
  */
 class WT_ProcedureList {
     /**
-     * @param {Array<T>} procedures
+     * @param {Array<T>} procedures - an array of procedures with which to initialize this list.
      */
     constructor(procedures) {
         this._procedures = procedures;
     }
 
     /**
-     *
-     * @param {Number} index
-     * @returns {T}
+     * Gets a procedure from this list by its index.
+     * @param {Number} index - the index of the procedure to get.
+     * @returns {T} a procedure.
      */
     getByIndex(index) {
         return this._procedures[index];
     }
 
     /**
-     *
-     * @param {String} name
-     * @returns {T}
+     * Gets a procedure from this list by its name.
+     * @param {String} name - the name of the procedure to get.
+     * @returns {T} a procedure.
      */
     getByName(name) {
         let index = this._procedures.findIndex(procedure => procedure.name === name);
