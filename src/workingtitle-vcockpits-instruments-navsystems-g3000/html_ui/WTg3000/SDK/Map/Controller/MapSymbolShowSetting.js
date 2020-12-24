@@ -29,10 +29,6 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
         return this._symbolID;
     }
 
-    get showSetting() {
-        return this._showSetting;
-    }
-
     get dcltrSetting() {
         return this._dcltrSetting;
     }
