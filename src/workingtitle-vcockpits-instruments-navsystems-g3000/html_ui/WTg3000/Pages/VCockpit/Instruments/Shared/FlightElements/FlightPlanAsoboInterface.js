@@ -178,7 +178,7 @@ class WT_FlightPlanAsoboInterface {
     /**
      *
      * @param {WT_FlightPlan} flightPlan
-     * @returns {WT_FlightPlanLeg}
+     * @returns {Promise<WT_FlightPlanLeg>}
      */
     async getActiveLeg(flightPlan) {
         let index = await this.getGameActiveWaypointIndex();

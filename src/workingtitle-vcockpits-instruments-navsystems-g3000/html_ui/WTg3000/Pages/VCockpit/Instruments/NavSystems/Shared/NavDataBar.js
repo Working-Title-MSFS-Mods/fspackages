@@ -5,9 +5,14 @@
  * provided to facilitate an interface between data store, WT_NavDataBar, and controllers.
  */
 class WT_NavDataBar extends NavSystemElement {
-    constructor() {
+    /**
+     *
+     * @param {WT_FlightPlanManager} flightPlanManager
+     */
+    constructor(flightPlanManager) {
         super(...arguments);
-        this._t = 0;
+
+        this._fpm = flightPlanManager;
     }
 
     init(root) {
@@ -51,37 +56,30 @@ class WT_NavDataBar extends NavSystemElement {
         }
         let utcFormatter = new WT_TimeFormatter(utcOpts);
 
-        let flightPlanManager = this.gps.currFlightPlanManager;
+        let flightPlanManager = this._fpm;
+        let airplaneModel = WT_AirplaneModel.INSTANCE;
 
         this._infos = {
             BRG: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.BRG, new WT_NumberUnit(0, WT_Unit.DEGREE), "PLANE HEADING DEGREES MAGNETIC", "degree", bearingFormatter),
             DIS: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.DIS, new WT_NumberUnit(0, WT_Unit.NMILE), "GPS WP DISTANCE", "nautical miles", distanceFormatter),
             DTG: new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION.DTG, new WT_NumberUnit(0, WT_Unit.NMILE), {
+                    temp: new WT_NumberUnit(0, WT_Unit.NMILE),
                     getCurrentValue: function() {
-                        let currentWaypoint = flightPlanManager.getActiveWaypoint();
-                        let destination = flightPlanManager.getDestination();
-                        if (!currentWaypoint || !destination) {
-                            return 0;
-                        }
-
-                        return destination.cumulativeDistanceInFP - currentWaypoint.cumulativeDistanceInFP + flightPlanManager.getDistanceToActiveWaypoint();
+                        return flightPlanManager.distanceToDestination(true, this.temp).number;
                     }
                 }, distanceFormatter),
 
             DTK: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.DTK, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP DESIRED TRACK", "degree", bearingFormatter),
             END: new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION.END, new WT_NumberUnit(0, WT_Unit.HOUR), {
+                    tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
+                    tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
                     getCurrentValue: function() {
-                        let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
-
-                        let numEngines = SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
-                        let fuelFlow = 0;
-                        for (let i = 1; i <= numEngines; i++ ) {
-                            fuelFlow += SimVar.GetSimVarValue("ENG FUEL FLOW GPH:" + i, "gallons per hour");
-                        }
-                        if (fuelFlow == 0) {
+                        let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
+                        let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
+                        if (fuelFlow.number == 0) {
                             return 0;
                         } else {
-                            return fuelRemaining / fuelFlow;
+                            return fuelRemaining.number / fuelFlow.number;
                         }
                     }
                 }, timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
@@ -98,16 +96,14 @@ class WT_NavDataBar extends NavSystemElement {
             ETE: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.ETE, new WT_NumberUnit(0, WT_Unit.SECOND), "GPS WP ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
             FOB: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.FOB, new WT_NumberUnit(0, WT_Unit.GALLON), "FUEL TOTAL QUANTITY", "gallons", volumeFormatter),
             FOD: new WT_NavInfo(WT_NavDataBar.INFO_DESCRIPTION.FOD, new WT_NumberUnit(0, WT_Unit.GALLON), {
+                    tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
+                    tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
                     getCurrentValue: function() {
-                        let fuelRemaining = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
+                        let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
+                        let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
                         let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
 
-                        let numEngines = SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
-                        let fuelFlow = 0;
-                        for (let i = 1; i <= numEngines; i++ ) {
-                            fuelFlow += SimVar.GetSimVarValue("ENG FUEL FLOW GPH:" + i, "gallons per hour");
-                        }
-                        return fuelRemaining - enr * fuelFlow;
+                        return fuelRemaining.number - enr * fuelFlow.number;
                     }
                 }, volumeFormatter),
 
@@ -125,7 +121,6 @@ class WT_NavDataBar extends NavSystemElement {
             TRK: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TRK, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS GROUND MAGNETIC TRACK", "degree", bearingFormatter),
             XTK: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.XTK, new WT_NumberUnit(0, WT_Unit.METER), "GPS WP CROSS TRK", "meters", distanceFormatter),
         };
-        this._infos.XTK.unit = WT_Unit.NMILE;
 
         this.dataFields = [];
     }
@@ -134,12 +129,6 @@ class WT_NavDataBar extends NavSystemElement {
     }
 
     onUpdate(_deltaTime) {
-        this._t++;
-        if (this._t > 30) {
-            this.gps.currFlightPlanManager.updateFlightPlan();
-            this._t = 0;
-        }
-
         for (let i = 0; i < this.dataFields.length; i++) {
             this.dataFields[i].setInfo(this._infos[WT_NavDataBar.getFieldInfoIndex(i)]);
             this.dataFields[i].update();
@@ -220,12 +209,20 @@ class WT_NavInfo {
      *                         .showDefault(number) should return the default text to display when appropriate and either null, undefined, or the empty string otherwise.
      */
     constructor(description, value, valueGetter, numberFormatter, defaultChecker = {showDefault: number => null}) {
-        this.shortName = description.shortName;
-        this.longName = description.longName;
+        this._shortName = description.shortName;
+        this._longName = description.longName;
         this._value = value;
         this._numberFormatter = numberFormatter;
-        this.valueGetter = valueGetter;
+        this._valueGetter = valueGetter;
         this._defaultChecker = defaultChecker;
+    }
+
+    get shortName() {
+        return this._shortName;
+    }
+
+    get longName() {
+        return this._longName;
     }
 
     /**
@@ -233,7 +230,7 @@ class WT_NavInfo {
      * @returns {string} a formatted text representation of this nav info's current value.
      */
     getDisplayNumber() {
-        this._value.set(this.valueGetter.getCurrentValue());
+        this._value.set(this._valueGetter.getCurrentValue());
         let displayText;
         let defaultText = this._defaultChecker.showDefault(this._value.number);
         if (defaultText) {
