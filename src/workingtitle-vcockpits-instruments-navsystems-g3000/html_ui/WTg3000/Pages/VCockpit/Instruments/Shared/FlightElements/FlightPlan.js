@@ -30,6 +30,7 @@ class WT_FlightPlan {
         this._approach = null;
 
         this._legs = [];
+        this._totalDistance = new WT_NumberUnit(0, WT_Unit.NMILE);
 
         this._listeners = [];
     }
@@ -121,6 +122,41 @@ class WT_FlightPlan {
         }
     }
 
+    /**
+     * @returns {Number}
+     */
+    legCount() {
+        return this._legs.length;
+    }
+
+    /**
+     * @returns {WT_FlightPlanLeg}
+     */
+    firstLeg() {
+        return this._legs[0];
+    }
+
+    /**
+     * @returns {WT_FlightPlanLeg}
+     */
+    lastLeg() {
+        return this._legs[this._legs.length - 1];
+    }
+
+    /**
+     * @returns {WT_FlightPlanLeg[]}
+     */
+    legs() {
+        return Array.from(this._legs);
+    }
+
+    /**
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    totalDistance() {
+        return this._totalDistance.readonly();
+    }
+
     _updateFromSegment(segment) {
         switch (segment) {
             case WT_FlightPlan.Segment.ORIGIN:
@@ -170,6 +206,9 @@ class WT_FlightPlan {
         for (let i = 0; i < this._legs.length; i++) {
             this._legs[i]._index = i;
         }
+
+        let lastLeg = this.lastLeg();
+        this._totalDistance.set(lastLeg ? lastLeg.cumulativeDistance : 0);
     }
 
     /**
@@ -841,13 +880,6 @@ class WT_FlightPlan {
         }
         this._updateLegs();
         this._fireEvent(eventData);
-    }
-
-    /**
-     * @returns {WT_FlightPlanLeg[]}
-     */
-    legs() {
-        return Array.from(this._legs);
     }
 
     _fireEvent(eventData) {
