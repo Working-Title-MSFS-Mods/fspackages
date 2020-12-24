@@ -1,22 +1,27 @@
+/**
+ * A setting controlling whether a type of map symbol should be visible.
+ */
 class WT_MapSymbolShowSetting extends WT_MapSetting {
     /**
-     *
      * @param {WT_MapController} controller - the controller with which to associate the new setting.
-     * @param {String} componentName
-     * @param {String} symbolID
-     * @param {String} optionName
-     * @param {String} key
-     * @param {WT_MapSetting} dcltrSetting
-     * @param {Boolean} [isSyncable] - whether any settings belonging to the new group are sync-able. True by default.
+     * @param {String} symbolID - the identifier of the map symbol type controlled by this setting.
+     * @param {String} moduleName - the name of the map model module where the option controlled by the new setting is located.
+     * @param {String} optionName - the name of the option controlled by the new setting.
+     * @param {String} key - the data store key of the new setting.
+     * @param {WT_MapSetting} dcltrSetting - the declutter setting to use to override this setting when decluttering the map view.
+     * @param {Boolean} [defaultValue] - the value to which the new setting should default if it is not persistent or if a value cannot
+     *                                   be retrieved from the data store.
+     * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
+     * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(controller, symbolID, componentName, optionName, key, dcltrSetting, isSyncable = true, isPersistent = true) {
-        super(controller, key, true, isSyncable, true, isPersistent);
+    constructor(controller, symbolID, moduleName, optionName, key, dcltrSetting, defaultValue = true, isSyncable = true, isPersistent = true) {
+        super(controller, key, defaultValue, isSyncable, true, isPersistent);
 
         this._dcltrSetting = dcltrSetting;
         this._dcltrSetting.addListener(this._dcltrSettingChanged.bind(this));
 
         this._symbolID = symbolID;
-        this._componentName = componentName;
+        this._moduleName = moduleName;
         this._optionName = optionName;
     }
 
@@ -33,7 +38,7 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
     }
 
     update() {
-        this.model[this._componentName][this._optionName] =
+        this.model[this._moduleName][this._optionName] =
             this.getValue() &&
             !this.dcltrSetting.isDecluttered(this.symbolID);
     }
