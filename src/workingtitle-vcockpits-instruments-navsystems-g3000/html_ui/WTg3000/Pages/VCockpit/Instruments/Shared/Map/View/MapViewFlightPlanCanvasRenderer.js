@@ -222,7 +222,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._strokePath(context, this.dottedStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor, lineDash);
     }
 
-    _drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, start, end) {
+    _drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, useStroke, start, end) {
         let projectedStart = projectionRenderer.project(start, this._tempVector1);
         let projectedEnd = projectionRenderer.project(end, this._tempVector2);
         let delta = projectedEnd.subtract(projectedStart);
@@ -241,6 +241,9 @@ class WT_MapViewFlightPlanCanvasRenderer {
             context.lineTo(arrowWidth / 2, y);
             context.lineTo(0, y - arrowHeight);
             context.closePath();
+            if (useStroke) {
+                context.stroke();
+            }
             context.fill();
 
             length += arrowHeight + arrowSpacing;
@@ -261,16 +264,20 @@ class WT_MapViewFlightPlanCanvasRenderer {
      */
     _renderArrowsStandard(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
         context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
+        if (this.standardArrowOutlineWidth > 0) {
+            context.lineWidth = this.standardArrowOutlineWidth * 2 * state.dpiScale;
+            context.strokeStyle = isActive ? this.activeOutlineColor: this.inactiveOutlineColor;
+        }
 
         let arrowWidth = this.standardArrowWidth * state.dpiScale;
         let arrowHeight = this.standardArrowHeight * state.dpiScale;
         let arrowSpacing = this.standardArrowSpacing * state.dpiScale;
 
         if (useRhumb) {
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, previousEndpoint, endpoint);
         } else {
             // TODO: implement drawing arrows along great circle
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, previousEndpoint, endpoint);
         }
     }
 
@@ -286,16 +293,20 @@ class WT_MapViewFlightPlanCanvasRenderer {
      */
     _renderArrowsAlt(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
         context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
+        if (this.altArrowOutlineWidth > 0) {
+            context.lineWidth = this.altArrowOutlineWidth * 2 * state.dpiScale;
+            context.strokeStyle = isActive ? this.activeOutlineColor: this.inactiveOutlineColor;
+        }
 
         let arrowWidth = this.altArrowWidth * state.dpiScale;
         let arrowHeight = this.altArrowHeight * state.dpiScale;
         let arrowSpacing = this.altArrowSpacing * state.dpiScale;
 
         if (useRhumb) {
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.altArrowOutlineWidth > 0, previousEndpoint, endpoint);
         } else {
             // TODO: implement drawing arrows along great circle
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, previousEndpoint, endpoint);
+            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.altArrowOutlineWidth > 0, previousEndpoint, endpoint);
         }
     }
 
@@ -407,10 +418,12 @@ WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
     standardArrowWidth: {default: 8, auto: true},
     standardArrowHeight: {default: 12, auto: true},
     standardArrowSpacing: {default: 12, auto: true},
+    standardArrowOutlineWidth: {default: 1, auto: true},
 
     altArrowWidth: {default: 8, auto: true},
     altArrowHeight: {default: 12, auto: true},
     altArrowSpacing: {default: 4, auto: true},
+    altArrowOutlineWidth: {default: 1, auto: true},
 
     inactiveColor: {default: "white", auto: true},
     inactiveOutlineColor: {default: "#454545", auto: true},
