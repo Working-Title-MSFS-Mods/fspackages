@@ -442,16 +442,12 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     toggleWX() {
         if (this.innerMap.isEnabled()) {
-            //this.innerMap.toggleNexrad();
+            this.innerMap.nexradShowSetting.setValue(!this.innerMap.nexradShowSetting.getValue());
         }
     }
 
     getWXOverlayValue() {
-        if (/*this.innerMap.getNexrad()*/false) {
-            return "NEXRAD";
-        } else {
-            return "OFF";
-        }
+        return this.innerMap.nexradShowSetting.getValue() ? "NEXRAD" : "OFF";
     }
 
     toggleSyntheticVision() {

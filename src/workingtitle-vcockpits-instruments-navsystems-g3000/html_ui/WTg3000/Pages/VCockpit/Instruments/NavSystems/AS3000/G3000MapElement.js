@@ -35,6 +35,15 @@ class WT_G3000MapElement extends WT_MapElement {
         return this._dcltrSetting;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapSymbolShowSetting} dcltrSetting
+     * @type {WT_MapSymbolShowSetting}
+     */
+    get nexradShowSetting() {
+        return this._nexradShowSetting;
+    }
+
     init(root) {
         super.init(root);
 
@@ -133,7 +142,7 @@ class WT_G3000MapElement extends WT_MapElement {
         ]);
         this.controller.addSetting(this._dcltrSetting);
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "nexrad", "weatherDisplay", "nexradShow", WT_G3000MapElement.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
+        this.controller.addSetting(this._nexradShowSetting = new WT_MapSymbolShowSetting(this.controller, "nexrad", "weatherDisplay", "nexradShow", WT_G3000MapElement.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000MapElement.NEXRAD_RANGE_KEY, "weatherDisplay", "nexradRange", WT_G3000MapElement.MAP_RANGE_LEVELS, WT_G3000MapElement.NEXRAD_RANGE_DEFAULT));
 
         this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "airway", "waypoints", "airwayShow", WT_G3000MapElement.AIRWAY_SHOW_KEY, this._dcltrSetting));
