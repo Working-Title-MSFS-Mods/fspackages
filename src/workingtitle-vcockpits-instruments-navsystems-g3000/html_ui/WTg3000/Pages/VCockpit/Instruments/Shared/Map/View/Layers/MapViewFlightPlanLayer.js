@@ -5,12 +5,12 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(icaoWaypointFactory, labelManager, legStyleChooser, className = WT_MapViewFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewFlightPlanLayer.CONFIG_NAME_DEFAULT) {
+    constructor(flightPlanManager, icaoWaypointFactory, labelManager, legStyleChooser, className = WT_MapViewFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewFlightPlanLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
+        this._fpm = flightPlanManager;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._labelManager = labelManager;
-        this._fpm = new WT_FlightPlanManager(icaoWaypointFactory);
         this._fpRenderer = new WT_MapViewFlightPlanCanvasRenderer(legStyleChooser);
         this._fpRenderer.setFlightPlan(this._fpm.activePlan);
         this._drctRenderer = new WT_MapViewDirectToCanvasRenderer();
@@ -72,22 +72,11 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         super.onAttached(state);
     }
 
-    async _syncFlightPlan() {
-        await this._fpm.syncActiveFromGame();
-        this._fpRenderer.setActiveLeg(await this._fpm.getActiveLeg());
-    }
-
     /**
      * @param {WT_MapViewState} state
      */
-    _updateFlightPlan(state) {
-        let dt = state.currentTime / 1000 - this._lastFPMUpdateTime;
-        if (dt < WT_MapViewFlightPlanLayer.FLIGHT_PLAN_SYNC_INTERVAL) {
-            return;
-        }
-
-        this._syncFlightPlan();
-        this._lastFPMUpdateTime = state.currentTime / 1000;
+    _updateActiveLeg(state) {
+        this._fpRenderer.setActiveLeg(this._fpm.getActiveLeg(true));
     }
 
     /**
@@ -297,7 +286,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        this._updateFlightPlan(state);
+        this._updateActiveLeg(state);
         this._updatePath(state);
     }
 }

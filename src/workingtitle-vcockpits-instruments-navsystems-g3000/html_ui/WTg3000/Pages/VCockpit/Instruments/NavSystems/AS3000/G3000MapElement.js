@@ -1,7 +1,11 @@
 class WT_G3000MapElement extends WT_MapElement {
-    constructor(instrumentID, layerOptions = WT_G3000MapElement.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, layerOptions = WT_G3000MapElement.LAYER_OPTIONS_DEFAULT) {
         super(instrumentID);
+
         this._layerOptions = layerOptions;
+        this._icaoWaypointFactory = icaoWaypointFactory;
+        this._icaoSearchers = icaoSearchers;
+        this._fpm = flightPlanManager;
     }
 
     /**
@@ -57,8 +61,8 @@ class WT_G3000MapElement extends WT_MapElement {
         this.view.addLayer(new WT_MapViewBingLayer());
         this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
         this.view.addLayer(new WT_MapViewCityLayer(labelManager));
-        this.view.addLayer(new WT_MapViewWaypointLayer(this.gps.icaoSearchers, this.gps.icaoWaypointFactory, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this.gps.icaoWaypointFactory, labelManager, new WT_G3000MapViewFlightPlanLegStyleChooser()));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, labelManager, new WT_G3000MapViewFlightPlanLegStyleChooser()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
