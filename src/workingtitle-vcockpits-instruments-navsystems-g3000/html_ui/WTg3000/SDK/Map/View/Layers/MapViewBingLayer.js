@@ -1,8 +1,8 @@
 class WT_MapViewBingLayer extends WT_MapViewLayer {
-    constructor(className = WT_MapViewBingLayer.CLASS_DEFAULT, configName = WT_MapViewBingLayer.CONFIG_NAME_DEFAULT) {
+    constructor(bingMapID, className = WT_MapViewBingLayer.CLASS_DEFAULT, configName = WT_MapViewBingLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
-        this.projection = new WT_MapProjection("asdf", d3.geoEquirectangular());
+        this._bingMapID = bingMapID;
 
         this._tempVector1 = new WT_GVector2(0, 0);
         this._tempVector2 = new WT_GVector2(0, 0);
@@ -51,7 +51,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._bingMap.setMode(EBingMode.PLANE);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
-        this._bingMap.setBingId(state.model.bingMap.bingID);
+        this._bingMap.setBingId(this._bingMapID);
     }
 
     /**
