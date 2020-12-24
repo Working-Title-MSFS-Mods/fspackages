@@ -4810,7 +4810,7 @@ class WT_TSCMapSettingsTrackVectorTabRow extends WT_TSCMapSettingsToggleTabRow {
             title: "Map Track Vector",
             subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
-            callback: this._setLookaheadSetting.bind(this, this.context.controllerID),
+            callback: this._setLookaheadSetting.bind(this),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
             currentIndexGetter: new WT_MapSettingIndexGetter(this.context.controllerID, this._lookaheadSettingKey),
@@ -4819,8 +4819,8 @@ class WT_TSCMapSettingsTrackVectorTabRow extends WT_TSCMapSettingsToggleTabRow {
         };
     }
 
-    _setLookaheadSetting(controllerID, value) {
-        WT_MapController.setSettingValue(controllerID, this._lookaheadSettingKey, value, true);
+    _setLookaheadSetting(value) {
+        WT_MapController.setSettingValue(this.context.controllerID, this._lookaheadSettingKey, value, true);
     }
 
     onAttached(context) {
@@ -4860,9 +4860,9 @@ class WT_TSCMapSettingsFuelRingTabRow extends WT_TSCMapSettingsToggleTabRow {
         this._reserveTimeSettingKey = reserveTimeSettingKey;
     }
 
-    _setReserveTimeSetting(controllerID, value) {
+    _setReserveTimeSetting(value) {
         let reserveTime = Math.max(1, Math.round(value / 60000));
-        WT_MapController.setSettingValue(controllerID, this._reserveTimeSettingKey, reserveTime, true);
+        WT_MapController.setSettingValue(this.context.controllerID, this._reserveTimeSettingKey, reserveTime, true);
     }
 
     _updateRightButton() {
@@ -4876,8 +4876,8 @@ class WT_TSCMapSettingsFuelRingTabRow extends WT_TSCMapSettingsToggleTabRow {
 
     onRightButtonPressed() {
         let currentSettingValue = WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey) * 60000;
-        this.parentElement.gps.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
-        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.timeKeyboard);
+        this.context.instrument.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
+        this.context.instrument.switchToPopUpPage(this.context.instrument.timeKeyboard);
     }
 
     static getFuelRingReserveTimeText(value) {
