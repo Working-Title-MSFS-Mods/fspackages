@@ -49,7 +49,7 @@ WT_TitledPane.TEMPLATE.innerHTML = `
             position: relative;
             width: 100%;
             height: 100%;
-            background-color: var(--pane-border-color, turquoise);
+            background-color: var(--pane-border-color, #97d9d5);
         }
             #inner {
                 position: absolute;
