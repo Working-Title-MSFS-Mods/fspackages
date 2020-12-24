@@ -4163,14 +4163,16 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 
         this.tabbedContentContainer = new AS3000_TSC_TabbedContent(this);
         this.tabs = [
-            new WT_TSCMapSettingsSensorTab(this, "MapSensorTab"),
+            this._sensorTab = new WT_TSCMapSettingsTab(this, "MapSensorTab"),
             this._aviationTab = new WT_TSCMapSettingsTab(this, "MapAviationTab"),
             this._landTab = new WT_TSCMapSettingsTab(this, "MapLandTab"),
             this._otherTab = new WT_TSCMapSettingsTab(this, "MapOtherTab")
         ];
 
-        this._aviationTab.attachRow(0, new WT_TSCMapSettingsRangeTabRow(WT_G3000MapElement.AIRWAY_SHOW_KEY, WT_G3000MapElement.AIRWAY_RANGE_KEY, WT_G3000MapElement.AIRWAY_RANGE_MAX, "Map Airway Range"));
-        this._aviationTab.attachRow(2, new WT_TSCMapSettingsMultiRangeTabRow(
+        this._sensorTab.attachRow(new WT_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
+
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("Airways", WT_G3000MapElement.AIRWAY_SHOW_KEY, WT_G3000MapElement.AIRWAY_RANGE_KEY, WT_G3000MapElement.AIRWAY_RANGE_MAX, "Map Airway Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsMultiRangeTabRow("Airports",
             WT_G3000MapElement.AIRPORT_SHOW_KEY, [
                 WT_G3000MapElement.AIRPORT_LARGE_RANGE_KEY,
                 WT_G3000MapElement.AIRPORT_MEDIUM_RANGE_KEY,
@@ -4189,11 +4191,11 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
                 "Map Small Airport Range"
             ]
         ));
-        this._aviationTab.attachRow(3, new WT_TSCMapSettingsRangeTabRow(WT_G3000MapElement.VOR_SHOW_KEY, WT_G3000MapElement.VOR_RANGE_KEY, WT_G3000MapElement.VOR_RANGE_MAX, "Map VOR Range"));
-        this._aviationTab.attachRow(4, new WT_TSCMapSettingsRangeTabRow(WT_G3000MapElement.INT_SHOW_KEY, WT_G3000MapElement.INT_RANGE_KEY, WT_G3000MapElement.INT_RANGE_MAX, "Map INT Range"));
-        this._aviationTab.attachRow(5, new WT_TSCMapSettingsRangeTabRow(WT_G3000MapElement.NDB_SHOW_KEY, WT_G3000MapElement.NDB_RANGE_KEY, WT_G3000MapElement.NDB_RANGE_MAX, "Map NDB Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("VOR", WT_G3000MapElement.VOR_SHOW_KEY, WT_G3000MapElement.VOR_RANGE_KEY, WT_G3000MapElement.VOR_RANGE_MAX, "Map VOR Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("INT", WT_G3000MapElement.INT_SHOW_KEY, WT_G3000MapElement.INT_RANGE_KEY, WT_G3000MapElement.INT_RANGE_MAX, "Map INT Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("NDB", WT_G3000MapElement.NDB_SHOW_KEY, WT_G3000MapElement.NDB_RANGE_KEY, WT_G3000MapElement.NDB_RANGE_MAX, "Map NDB Range"));
 
-        this._landTab.attachRow(1, new WT_TSCMapSettingsMultiRangeTabRow(
+        this._landTab.attachRow(new WT_TSCMapSettingsMultiRangeTabRow("Cities",
             WT_G3000MapElement.CITY_SHOW_KEY, [
                 WT_G3000MapElement.CITY_LARGE_RANGE_KEY,
                 WT_G3000MapElement.CITY_MEDIUM_RANGE_KEY,
@@ -4212,15 +4214,15 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
                 "Map Small City Range"
             ]
         ));
-        this._landTab.attachRow(2, new WT_TSCMapSettingsRangeTabRow(WT_G3000MapElement.BORDERS_SHOW_KEY, WT_G3000MapElement.BORDERS_RANGE_KEY, WT_G3000MapElement.BORDERS_RANGE_MAX, "Map State/Province Range"));
+        this._landTab.attachRow(new WT_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3000MapElement.BORDERS_SHOW_KEY, WT_G3000MapElement.BORDERS_RANGE_KEY, WT_G3000MapElement.BORDERS_RANGE_MAX, "Map State/Province Range"));
 
-        this._otherTab.attachRow(0, new WT_TSCMapSettingsRangeTabRow(WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3000MapElement.MAP_RANGE_LEVELS[WT_G3000MapElement.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
-        this._otherTab.attachRow(1, new WT_TSCMapSettingsTrackVectorTabRow(WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
+        this._otherTab.attachRow(new WT_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3000MapElement.MAP_RANGE_LEVELS[WT_G3000MapElement.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
+        this._otherTab.attachRow(new WT_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
         if (useWindData) {
-            this._otherTab.attachRow(2, new WT_TSCMapSettingsToggleTabRow(WT_MapWindDataShowSetting.KEY));
+            this._otherTab.attachRow(new WT_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
         }
-        this._otherTab.attachRow(2 + (useWindData ? 1 : 0), new WT_TSCMapSettingsFuelRingTabRow(WT_MapFuelRingSettingGroup.SHOW_KEY, WT_MapFuelRingSettingGroup.RESERVE_KEY));
-        this._otherTab.attachRow(3 + (useWindData ? 1 : 0), new WT_TSCMapSettingsToggleTabRow(WT_MapAltitudeInterceptSetting.SHOW_KEY_DEFAULT));
+        this._otherTab.attachRow(new WT_TSCMapSettingsFuelRingTabRow("Fuel Rng (Rsv)", WT_MapFuelRingSettingGroup.SHOW_KEY, WT_MapFuelRingSettingGroup.RESERVE_KEY));
+        this._otherTab.attachRow(new WT_TSCMapSettingsToggleTabRow("Range to<br>Altitude", WT_MapAltitudeInterceptSetting.SHOW_KEY_DEFAULT));
 
         this._updateCallbacks = [];
     }
@@ -4487,77 +4489,113 @@ class AS3000_TSC_MapDetailSelect extends NavSystemElement {
     }
 }
 
-class WT_TSCMapSettingsTab {
-    constructor(parentElement, elementName) {
-        this.parentElement = parentElement;
-        this.elementName = elementName;
+class WT_TSCMapSettingsTabElement extends HTMLElement {
+    constructor() {
+        super();
 
+        let template = document.createElement("template");
+        template.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                }
+
+                #wrapper  {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    overflow-x: hidden;
+                    overflow-y: scroll;
+                }
+                    #wrapper::-webkit-scrollbar {
+                        width: 1vw;
+                    }
+                    #wrapper::-webkit-scrollbar-track {
+                        background: none;
+                    }
+                    #wrapper::-webkit-scrollbar-thumb {
+                        background: white;
+                    }
+            </style>
+            <div id="wrapper">
+                <slot name="rows"></slot>
+            </div>
+        `;
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+}
+
+customElements.define("tsc-mapsettings-tab", WT_TSCMapSettingsTabElement);
+
+class WT_TSCMapSettingsTab {
+    constructor(settingsPage, elementName) {
+        this._settingsPage = settingsPage;
+        this._elementName = elementName;
+
+        this._htmlElement = new WT_TSCMapSettingsTabElement();
+
+        /**
+         * @type {WT_TSCMapSettingsTabRow[]}
+         */
         this._rows = [];
         this._isInitialized = false;
     }
 
-    init(container) {
-        this.container = container;
-
-        this.buttonRowList = this.container.getElementsByClassName("MapSettingsTabRow");
-        this.buttonLeftList = [];
-        this.buttonRightList = [];
-        this.buttonRightStatusTextList = [];
-        for (let row of this.buttonRowList) {
-            let rowButtons = row.getElementsByClassName("gradientButton");
-            this.buttonLeftList.push(rowButtons[0]);
-            if (rowButtons.length > 1) {
-                this.buttonRightList.push(rowButtons[1]);
-                this.buttonRightStatusTextList.push(rowButtons[1].getElementsByClassName("statusText")[0]);
-            } else {
-                this.buttonRightList.push(null);
-                this.buttonRightStatusTextList.push(null);
-            }
-        }
-
-        this.scrollElement = new NavSystemTouch_ScrollElement();
-        this.scrollElement.elementContainer = this.container;
-        this.scrollElement.elementSize = this.buttonRowList.length > 0 ? this.buttonRowList[0].getBoundingClientRect().height : 0;
-
-        for (let i = 0; i < this.buttonRowList.length; i++) {
-            this.parentElement.gps.makeButton(this.buttonLeftList[i], this.onButtonClick.bind(this, i, true));
-            if (this.buttonRightList[i]) {
-                this.parentElement.gps.makeButton(this.buttonRightList[i], this.onButtonClick.bind(this, i, false));
-            }
-        }
-        this._isInitialized = true;
-        for (let i = 0; i < this._rows.length; i++) {
-            let row = this._rows[i];
-            if (row) {
-                row.onAttached(this._createContext(i));
-            }
-        }
+    /**
+     * @readonly
+     * @property {String} elementName
+     * @type {String}
+     */
+    get elementName() {
+        return this._elementName;
     }
 
-    _createContext(index) {
+    /**
+     * @readonly
+     * @property {WT_TSCMapSettingsTabElement} htmlElement
+     * @type {WT_TSCMapSettingsTabElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    _createContext() {
         return {
-            instrument: this.parentElement.gps,
-            controllerID: this.parentElement.controllerID,
-            leftButton: {
-                button: this.buttonLeftList[index]
-            },
-            rightButton: {
-                button: this.buttonRightList[index],
-                text: this.buttonRightStatusTextList[index]
-            },
-            homePageGroup: this.parentElement.homePageParent,
-            homePageName: this.parentElement.homePageName
+            instrument: this._settingsPage.gps,
+            controllerID: this._settingsPage.controllerID,
+            homePageGroup: this._settingsPage.homePageParent,
+            homePageName: this._settingsPage.homePageName
         };
     }
 
-    attachRow(index, row) {
-        if (this._rows[index]) {
-            return;
-        }
+    /**
+     *
+     * @param {WT_TSCMapSettingsTabRow} row
+     */
+    _initRow(row) {
+        this.htmlElement.appendChild(row.htmlElement);
+        row.htmlElement.setAttribute("slot", "rows");
+        row.onAttached(this._createContext());
+    }
 
-        this._rows[index] = row;
+    init(htmlElement) {
+        this._htmlElement = htmlElement;
+        for (let row of this._rows) {
+            this._initRow(row);
+        }
+        this._isInitialized = true;
+    }
+
+    /**
+     *
+     * @param {WT_TSCMapSettingsTabRow} row
+     */
+    attachRow(row) {
+        this._rows.push(row);
         if (this._isInitialized) {
-            row.onAttached(this._createContext(index));
+            this._initRow(row);
         }
     }
 
@@ -4569,20 +4607,112 @@ class WT_TSCMapSettingsTab {
             }
         }
     }
-
-    onButtonClick(rowIndex, isLeft) {
-        let row = this._rows[rowIndex];
-        if (row) {
-            if (isLeft) {
-                row.onLeftButtonPressed();
-            } else {
-                row.onRightButtonPressed();
-            }
-        }
-    }
 }
 
-class WT_TSCMapSettingsTabRow {
+class WT_TSCMapSettingsTabRowElement extends HTMLElement {
+    constructor() {
+        super();
+
+        let template = document.createElement("template");
+        template.innerHTML = `
+            <style>
+                :host {
+                    position: relative;
+                    display: block;
+                    margin: 0.5vh 0;
+                }
+
+                #wrapper {
+                    position: relative;
+                    height: 100%;
+                    width: 100%;
+                    display: grid;
+                    grid-template-rows: 1fr;
+                    grid-template-columns: 55% 45%;
+                }
+            </style>
+            <div id="wrapper">
+                <slot name="left"></slot>
+                <slot name="right"></slot>
+            </div>
+        `;
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
+
+        this._left = null;
+        this._right = null;
+    }
+
+    /**
+     * @readonly
+     * @property {HTMLElement} left
+     * @type {HTMLElement}
+     */
+    get left() {
+        return this._left;
+    }
+
+    /**
+     * @readonly
+     * @property {HTMLElement} right
+     * @type {HTMLElement}
+     */
+    get right() {
+        return this._right;
+    }
+
+    setLeft(element) {
+        if (this.left && this.left.parentNode === this) {
+            this.left.classList.remove(WT_TSCMapSettingsTabRowElement.LEFT_CLASS);
+            this.removeChild(this.left);
+        }
+        this.appendChild(element);
+        element.setAttribute("slot", "left");
+        element.classList.add(WT_TSCMapSettingsTabRowElement.LEFT_CLASS);
+        this._left = element;
+    }
+
+    setRight(element) {
+        if (this.right && this.right.parentNode === this) {
+            this.right.classList.remove(WT_TSCMapSettingsTabRowElement.RIGHT_CLASS);
+            this._wrapper.removeChild(this.right);
+        }
+        this.appendChild(element);
+        element.setAttribute("slot", "right");
+        element.classList.add(WT_TSCMapSettingsTabRowElement.RIGHT_CLASS);
+        this._right = element;
+    }
+}
+WT_TSCMapSettingsTabRowElement.LEFT_CLASS = "mapSettingsTabRowLeft";
+WT_TSCMapSettingsTabRowElement.RIGHT_CLASS = "mapSettingsTabRowRight";
+
+customElements.define("tsc-mapsettings-tabrow", WT_TSCMapSettingsTabRowElement);
+
+class WT_TSCMapSettingsTabRow  {
+    constructor() {
+        this._htmlElement = new WT_TSCMapSettingsTabRowElement();
+        this._htmlElement.setLeft(this._initLeft());
+        this._htmlElement.setRight(this._initRight());
+    }
+
+    /**
+     * @readonly
+     * @property {WT_TSCMapSettingsTabRowElement} htmlElement
+     * @type {WT_TSCMapSettingsTabRowElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    _initLeft() {
+        return document.createElement("div");
+    }
+
+    _initRight() {
+        return document.createElement("div");
+    }
+
     get context() {
         return this._context;
     }
@@ -4593,48 +4723,58 @@ class WT_TSCMapSettingsTabRow {
 
     onUpdate() {
     }
-
-    onLeftButtonPressed() {
-    }
-
-    onRightButtonPressed() {
-    }
 }
 
 class WT_TSCMapSettingsToggleTabRow extends WT_TSCMapSettingsTabRow {
     /**
+     * @param {String} toggleButtonLabel
      * @param {String} toggleSettingKey
      */
-    constructor(toggleSettingKey) {
+    constructor(toggleButtonLabel, toggleSettingKey) {
         super();
+
+        this._toggleButton.labelText = toggleButtonLabel;
         this._toggleSettingKey = toggleSettingKey;
     }
 
+    _initLeft() {
+        this._toggleButton = new WT_TSCStatusBarButton();
+        this._toggleButton.addButtonListener(this._onToggleButtonPressed.bind(this));
+        return this._toggleButton;
+    }
+
+    _onToggleButtonPressed() {
+        WT_MapController.setSettingValue(this.context.controllerID, this._toggleSettingKey, !WT_MapController.getSettingValue(this.context.controllerID, this._toggleSettingKey, false), true);
+    }
+
     _updateToggleButton() {
-        Avionics.Utils.diffAndSetAttribute(this.context.leftButton.button, "state", WT_MapController.getSettingValue(this.context.controllerID, this._toggleSettingKey, false) ? "Active" : "");
+        this._toggleButton.toggle = WT_MapController.getSettingValue(this.context.controllerID, this._toggleSettingKey, false) ? "on" : "off";
     }
 
     onUpdate() {
         this._updateToggleButton();
     }
-
-    onLeftButtonPressed() {
-        WT_MapController.setSettingValue(this.context.controllerID, this._toggleSettingKey, !WT_MapController.getSettingValue(this.context.controllerID, this._toggleSettingKey, false), true);
-    }
 }
 
 class WT_TSCMapSettingsRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
     /**
+     * @param {String} showButtonLabel
      * @param {String} showKey
      * @param {String} rangeKey
      * @param {WT_NumberUnit} rangeMax
      * @param {String} rangeWindowTitleText
      */
-    constructor(showKey, rangeKey, rangeMax, rangeWindowTitleText) {
-        super(showKey);
+    constructor(showButtonLabel, showKey, rangeKey, rangeMax, rangeWindowTitleText) {
+        super(showButtonLabel, showKey);
         this._rangeKey = rangeKey;
         this._rangeMax = rangeMax;
         this._rangeWindowTitleText = rangeWindowTitleText;
+    }
+
+    _initRight() {
+        this._rangeButton = new WT_TSCButton();
+        this._rangeButton.addButtonListener(this._onRangeButtonPressed.bind(this));
+        return this._rangeButton;
     }
 
     _initWindowContext() {
@@ -4656,23 +4796,23 @@ class WT_TSCMapSettingsRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
         WT_MapController.setSettingValue(controllerID, this._rangeKey, value, true);
     }
 
+    _onRangeButtonPressed() {
+        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._rangeWindowContext);
+        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
+    }
+
     onAttached(context) {
         super.onAttached(context);
         this._initWindowContext();
     }
 
     _updateRangeButton() {
-        Avionics.Utils.diffAndSet(this.context.rightButton.text, WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000MapElement.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.controllerID, this._rangeKey)]));
+        this._rangeButton.labelText = WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000MapElement.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.controllerID, this._rangeKey)]);
     }
 
     onUpdate() {
         super.onUpdate();
         this._updateRangeButton();
-    }
-
-    onRightButtonPressed() {
-        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._rangeWindowContext);
-        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
     }
 
     static getRangeValueText(range) {
@@ -4694,6 +4834,7 @@ class WT_TSCMapSettingsRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
 
 class WT_TSCMapSettingsMultiRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
     /**
+     * @param {String} showButtonLabel
      * @param {String} showKey
      * @param {String[]} rangeVarName
      * @param {WT_NumberUnit[]} rangesMax
@@ -4701,13 +4842,20 @@ class WT_TSCMapSettingsMultiRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
      * @param {String} typeWindowTitleText
      * @param {String[]} rangeWindowTitleTexts
      */
-    constructor(showKey, rangeKeys, rangesMax, rangeTypeNames, typeWindowTitleText, rangeWindowTitleTexts) {
-        super(showKey);
+    constructor(showButtonLabel, showKey, rangeKeys, rangesMax, rangeTypeNames, typeWindowTitleText, rangeWindowTitleTexts) {
+        super(showButtonLabel, showKey);
         this._rangeKeys = rangeKeys;
         this._rangesMax = rangesMax;
         this._rangeTypeNames = rangeTypeNames;
         this._typeWindowTitleText = typeWindowTitleText;
         this._rangeWindowTitleTexts = rangeWindowTitleTexts;
+    }
+
+    _initRight() {
+        this._rangeTypeButton = new WT_TSCButton();
+        this._rangeTypeButton.labelText = "Settings";
+        this._rangeTypeButton.addButtonListener(this._onRangeTypeButtonPressed.bind(this));
+        return this._rangeTypeButton;
     }
 
     _initTypeWindowContext() {
@@ -4752,15 +4900,15 @@ class WT_TSCMapSettingsMultiRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
         WT_MapController.setSettingValue(this.context.controllerID, this._rangeKeys[index], value, true);
     }
 
+    _onRangeTypeButtonPressed() {
+        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._typeWindowContext);
+        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
+    }
+
     onAttached(context) {
         super.onAttached(context);
         this._initTypeWindowContext();
         this._initRangeWindowContexts();
-    }
-
-    onRightButtonPressed() {
-        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._typeWindowContext);
-        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
     }
 }
 
@@ -4796,12 +4944,18 @@ class WT_TSCDynamicSelectionRangeTypeElementHandler {
 }
 
 class WT_TSCMapSettingsTrackVectorTabRow extends WT_TSCMapSettingsToggleTabRow {
-    constructor(toggleSettingKey, lookaheadSettingKey, lookaheadValues) {
-        super(toggleSettingKey);
+    constructor(toggleButtonLabel, toggleSettingKey, lookaheadSettingKey, lookaheadValues) {
+        super(toggleButtonLabel, toggleSettingKey);
 
         this._lookaheadSettingKey = lookaheadSettingKey;
         this._lookaheadValues = lookaheadValues;
         this._lookaheadValuesText = lookaheadValues.map(WT_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText);
+    }
+
+    _initRight() {
+        this._lookaheadButton = new WT_TSCButton();
+        this._lookaheadButton.addButtonListener(this._onLookaheadButtonPressed.bind(this));
+        return this._lookaheadButton;
     }
 
     _initWindowContext() {
@@ -4823,23 +4977,23 @@ class WT_TSCMapSettingsTrackVectorTabRow extends WT_TSCMapSettingsToggleTabRow {
         WT_MapController.setSettingValue(this.context.controllerID, this._lookaheadSettingKey, value, true);
     }
 
+    _onLookaheadButtonPressed() {
+        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._rangeWindowContext);
+        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
+    }
+
     onAttached(context) {
         super.onAttached(context);
         this._initWindowContext();
     }
 
-    _updateRightButton() {
-        Avionics.Utils.diffAndSet(this.context.rightButton.text, WT_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText(this._lookaheadValues[WT_MapController.getSettingValue(this.context.controllerID, this._lookaheadSettingKey)]));
+    _updateLookaheadButton() {
+        this._lookaheadButton.labelText = WT_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText(this._lookaheadValues[WT_MapController.getSettingValue(this.context.controllerID, this._lookaheadSettingKey)]);
     }
 
     onUpdate() {
         super.onUpdate();
-        this._updateRightButton();
-    }
-
-    onRightButtonPressed() {
-        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._rangeWindowContext);
-        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
+        this._updateLookaheadButton();
     }
 
     static getTrackVectorLookaheadText(time) {
@@ -4854,10 +5008,22 @@ class WT_TSCMapSettingsTrackVectorTabRow extends WT_TSCMapSettingsToggleTabRow {
 }
 
 class WT_TSCMapSettingsFuelRingTabRow extends WT_TSCMapSettingsToggleTabRow {
-    constructor(toggleSettingKey, reserveTimeSettingKey) {
-        super(toggleSettingKey);
+    constructor(toggleButtonLabel, toggleSettingKey, reserveTimeSettingKey) {
+        super(toggleButtonLabel, toggleSettingKey);
 
         this._reserveTimeSettingKey = reserveTimeSettingKey;
+    }
+
+    _initRight() {
+        this._reserveButton = new WT_TSCButton();
+        this._reserveButton.addButtonListener(this._onReserveButtonPressed.bind(this));
+        return this._reserveButton;
+    }
+
+    _onReserveButtonPressed() {
+        let currentSettingValue = WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey) * 60000;
+        this.context.instrument.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
+        this.context.instrument.switchToPopUpPage(this.context.instrument.timeKeyboard);
     }
 
     _setReserveTimeSetting(value) {
@@ -4865,19 +5031,13 @@ class WT_TSCMapSettingsFuelRingTabRow extends WT_TSCMapSettingsToggleTabRow {
         WT_MapController.setSettingValue(this.context.controllerID, this._reserveTimeSettingKey, reserveTime, true);
     }
 
-    _updateRightButton() {
-        Avionics.Utils.diffAndSet(this.context.rightButton.text, WT_TSCMapSettingsFuelRingTabRow.getFuelRingReserveTimeText(WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey)));
+    _updateReserveButton() {
+        this._reserveButton.labelText = WT_TSCMapSettingsFuelRingTabRow.getFuelRingReserveTimeText(WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey));
     }
 
     onUpdate() {
         super.onUpdate();
-        this._updateRightButton();
-    }
-
-    onRightButtonPressed() {
-        let currentSettingValue = WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey) * 60000;
-        this.context.instrument.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
-        this.context.instrument.switchToPopUpPage(this.context.instrument.timeKeyboard);
+        this._updateReserveButton();
     }
 
     static getFuelRingReserveTimeText(value) {
@@ -4893,58 +5053,63 @@ class WT_TSCMapSettingsFuelRingTabRow extends WT_TSCMapSettingsToggleTabRow {
     }
 }
 
-class WT_TSCMapSettingsSensorTab extends WT_TSCMapSettingsTab {
-    constructor(_parentElement, _elementName) {
-        super(_parentElement, _elementName);
+class WT_TSCMapSettingsTerrainTabRow extends WT_TSCMapSettingsTabRow {
+    /**
+     * @param {String} showButtonLabel
+     * @param {String} showKey
+     * @param {String} rangeKey
+     * @param {WT_NumberUnit} rangeMax
+     * @param {String} rangeWindowTitleText
+     */
+    constructor(modeSettingKey) {
+        super();
+
+        this._modeSettingKey = modeSettingKey;
     }
 
-    init(container) {
-        super.init(container);
-        this.terrainButtonStatusText = this.buttonLeftList[0].getElementsByClassName("lowerValue")[0];
+    _initLeft() {
+        this._modeButton = new WT_TSCValueButton();
+        this._modeButton.labelText = "Terrain";
+        this._modeButton.addButtonListener(this._onModeButtonPressed.bind(this));
+        return this._modeButton;
     }
 
-    update() {
-        // toggles
-
-        // statuses
-        Avionics.Utils.diffAndSet(this.terrainButtonStatusText, WT_G3000MapElement.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.parentElement.controllerID, WT_MapTerrainModeSetting.KEY_DEFAULT)]);
-    }
-
-    onButtonClick(rowIndex, isLeft) {
-        switch (rowIndex) {
-            case 0: isLeft ? this.openTerrainModeWindow() : this.openTerrainSettingsWindow(); break;
-        }
-    }
-
-    toggleShowElement(key) {
-        WT_MapController.setSettingValue(this.parentElement.controllerID, key, !WT_MapController.getSettingValue(this.parentElement.controllerID, key, false), true);
-    }
-
-    // terrain helpers
-
-    openTerrainModeWindow() {
+    _initWindowContext() {
         let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(WT_G3000MapElement.TERRAIN_MODE_DISPLAY_TEXT);
-
-        let context = {
+        this._modeWindowContext = {
             title: "Map Terrain Displayed",
             subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
-            callback: this.setTerrainMode.bind(this),
+            callback: this._setModeSetting.bind(this),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_MapSettingIndexGetter(this.parentElement.controllerID, WT_MapTerrainModeSetting.KEY_DEFAULT),
-            homePageParent: this.parentElement.homePageParent,
-            homePageName: this.parentElement.homePageName
+            currentIndexGetter: new WT_MapSettingIndexGetter(this.context.controllerID, this._modeSettingKey),
+            homePageParent: this.context.homePageParent,
+            homePageName: this.context.homePageName
         };
-        this.parentElement.gps.dynamicSelectionListWindow1.element.setContext(context);
-        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.dynamicSelectionListWindow1);
     }
 
-    setTerrainMode(value) {
-        WT_MapController.setSettingValue(this.parentElement.controllerID, WT_MapTerrainModeSetting.KEY_DEFAULT, value, true);
+    _setModeSetting(value) {
+        WT_MapController.setSettingValue(this.context.controllerID, this._modeSettingKey, value, true);
     }
 
-    openTerrainSettingsWindow() {
+    _onModeButtonPressed() {
+        this.context.instrument.dynamicSelectionListWindow1.element.setContext(this._modeWindowContext);
+        this.context.instrument.switchToPopUpPage(this.context.instrument.dynamicSelectionListWindow1);
+    }
+
+    onAttached(context) {
+        super.onAttached(context);
+        this._initWindowContext();
+    }
+
+    _updateModeButton() {
+        this._modeButton.valueText = WT_G3000MapElement.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.controllerID, this._modeSettingKey)];
+    }
+
+    onUpdate() {
+        super.onUpdate();
+        this._updateModeButton();
     }
 }
 

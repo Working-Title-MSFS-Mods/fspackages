@@ -401,19 +401,16 @@
             background: none; }
           .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-thumb {
             background: white; }
-            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow {
-              display: grid;
-              grid-template-rows: 1fr; }
-            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .gradientButton {
-              height: 100%;
-              margin: 0; }
-            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRowButtonLeft {
-              width: 98%; }
-            .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRowButtonRight {
-              width: 98%;
-              display: flex;
-              justify-content: center;
-              align-items: center; }
+
+tsc-mapsettings-tabrow {
+    display: block;
+}
+tsc-mapsettings-tabrow > * {
+    margin: 0.25vh;
+}
+tsc-mapsettings-tabrow .mapSettingsTabRowRight {
+    color: #67e8ef;
+}
 
 .MapDetailSelect .Container {
   position: absolute;
