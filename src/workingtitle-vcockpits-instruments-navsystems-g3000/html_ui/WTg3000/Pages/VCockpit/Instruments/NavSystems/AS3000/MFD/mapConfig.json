@@ -92,7 +92,7 @@
     },
 
     "miniCompass": {
-        "iconPath": "/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Images/Garmin/ICON_MAP_MINI_COMPASS.svg"
+        "iconPath": "/WTg3000/SDK/Map/Images/Garmin/ICON_MAP_MINI_COMPASS.svg"
     },
 
     "airplane": {
@@ -102,15 +102,15 @@
 
     "pointer": {
         "size": 20,
-        "imagePath": "/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Images/Garmin/ICON_MAP_CURSOR.svg"
+        "imagePath": "/WTg3000/SDK/Map/Images/Garmin/ICON_MAP_CURSOR.svg"
     },
 
     "waypoints": {
-        "iconDirectory": "/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Images/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Map/Images/Garmin"
     },
 
     "flightPlan": {
-        "iconDirectory": "/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Images/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Map/Images/Garmin"
     },
 
     "cities": {

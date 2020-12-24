@@ -297,7 +297,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewCityLayer.CLASS_DEFAULT = "cityLayer";
 WT_MapViewCityLayer.CONFIG_NAME_DEFAULT = "cities";
-WT_MapViewCityLayer.DATA_PATH = "/WTg3000/Pages/VCockpit/Instruments/Shared/Data/cities.json";
+WT_MapViewCityLayer.DATA_PATH = "/WTg3000/SDK/Data/cities.json";
 WT_MapViewCityLayer.LABEL_CACHE_SIZE = 1000;
 WT_MapViewCityLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewCityLayer.REDRAW_DELAY = 500 // ms
