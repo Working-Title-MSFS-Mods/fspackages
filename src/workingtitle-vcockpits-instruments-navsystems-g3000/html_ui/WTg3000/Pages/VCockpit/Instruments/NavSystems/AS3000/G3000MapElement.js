@@ -70,7 +70,7 @@ class WT_G3000MapElement extends WT_MapElement {
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(data) {
-                return data.model.orientation.mode === WT_G3000MapElement.Orientation.TRK ? data.model.airplane.trackTrue : data.model.airplane.headingTrue;
+                return data.model.orientation.mode === WT_G3000MapElement.Orientation.TRK ? data.model.airplane.model.trackTrue() : data.model.airplane.model.headingTrue();
             }
         }));
         this.view.addLayer(new WT_MapViewCrosshairLayer());
@@ -269,6 +269,8 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
 
         controller.view.setTargetOffsetHandler(this);
         controller.view.setRangeInterpreter(this);
+
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
     /**
@@ -327,7 +329,7 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
     }
 
     _getTargetTrackPlane() {
-        return this.model.airplane.position;
+        return this.model.airplane.model.position(this._tempGeoPoint);
     }
 
     updateRange() {
@@ -368,13 +370,13 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         switch (orientation) {
             case WT_G3000MapElement.Orientation.TRK:
                 if (!SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
-                    rotation = -this.model.airplane.trackTrue;
+                    rotation = -this.model.airplane.model.trackTrue();
                     this.model.rangeCompass.show = true;
                     this.model.rangeRing.show = false;
                     break;
                 }
             case WT_G3000MapElement.Orientation.HDG:
-                rotation = -this.model.airplane.headingTrue;
+                rotation = -this.model.airplane.model.headingTrue();
                 this.model.rangeCompass.show = true;
                 this.model.rangeRing.show = false;
                 break;

@@ -151,7 +151,7 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
      * @param {WT_MapViewState} state
      */
     update(state) {
-        if (state.model.airplane.isOnGround) {
+        if (state.model.airplane.model.isOnGround()) {
             this._setNoData(true);
         } else {
             this._setNoData(false);
