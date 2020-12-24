@@ -10,14 +10,6 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._radiusTemp = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
     }
 
-    get bingMap() {
-        return this._bingMap;
-    }
-
-    get size() {
-        return this._size;
-    }
-
     _createHTMLElement() {
         this._bingMap = document.createElement("bing-map");
         this._bingMap.style.position = "absolute";
@@ -35,10 +27,10 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         let offsetX = (state.projection.viewWidth - this._size) / 2;
         let offsetY = (state.projection.viewHeight - this._size) / 2;
 
-        this.bingMap.style.left = `${offsetX}px`;
-        this.bingMap.style.top = `${offsetY}px`;
-        this.bingMap.style.width = `${this._size}px`;
-        this.bingMap.style.height = `${this._size}px`;
+        this._bingMap.style.left = `${offsetX}px`;
+        this._bingMap.style.top = `${offsetY}px`;
+        this._bingMap.style.width = `${this._size}px`;
+        this._bingMap.style.height = `${this._size}px`;
     }
 
     /**
@@ -46,9 +38,9 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
      */
     onConfigLoaded(state) {
         for (let i = 0; i < this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME].length; i++) {
-            this.bingMap.addConfig(new WT_BingMapConfigParser(this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME][i]).parse());
+            this._bingMap.addConfig(new WT_BingMapConfigParser(this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME][i]).parse());
         }
-        this.bingMap.setConfig(1);
+        this._bingMap.setConfig(1);
     }
 
     /**
@@ -72,7 +64,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         let viewTop = this._tempVector2.set(viewCenter).subtract(delta);
         let viewBottom = this._tempVector3.set(viewCenter).add(delta);
 
-        return state.projection.distance(viewTop, viewBottom, this._radiusTemp).scale(this.size / state.projection.viewHeight * 0.5, true);
+        return state.projection.distance(viewTop, viewBottom, this._radiusTemp).scale(this._size / state.projection.viewHeight * 0.5, true);
     }
 
     /**
@@ -89,14 +81,14 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
             lla: new LatLong(target.lat, target.long),
             radius: range
         };
-        this.bingMap.setParams(params);
+        this._bingMap.setParams(params);
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     _updateRotation(state) {
-        this.bingMap.style.transform = `rotate(${state.projection.rotation}deg)`;
+        this._bingMap.style.transform = `rotate(${state.projection.rotation}deg)`;
     }
 
     /**
@@ -108,11 +100,23 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         if (state.model.airplane.model.isOnGround() && mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
             mode = WT_MapModelTerrainModule.TerrainMode.OFF;
         }
-        this.bingMap.setConfig(mode);
+        this._bingMap.setConfig(mode);
         if (mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
-            this.bingMap.setReference(EBingReference.PLANE);
+            this._bingMap.setReference(EBingReference.PLANE);
         } else {
-            this.bingMap.setReference(EBingReference.SEA);
+            this._bingMap.setReference(EBingReference.SEA);
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateNEXRAD(state) {
+        let show = state.model.weatherDisplay.nexradShow && state.model.range.compare(state.model.weatherDisplay.nexradRange) <= 0;
+        if (show && this._bingMap.getWeather() != EWeatherRadar.TOPVIEW) {
+            this._bingMap.showWeather(EWeatherRadar.TOPVIEW, 0);
+        } else if (!show && this._bingMap.getWeather() == EWeatherRadar.TOPVIEW) {
+            this._bingMap.showWeather(EWeatherRadar.OFF, 0);
         }
     }
 
@@ -123,6 +127,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._updateCenterAndRange(state);
         this._updateRotation(state);
         this._updateTerrainColors(state);
+        this._updateNEXRAD(state);
     }
 }
 WT_MapViewBingLayer.CLASS_DEFAULT = "bingLayer";
