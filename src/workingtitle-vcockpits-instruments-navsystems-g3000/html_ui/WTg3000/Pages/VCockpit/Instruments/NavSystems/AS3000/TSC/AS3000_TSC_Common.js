@@ -4170,6 +4170,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
         ];
 
         this._sensorTab.attachRow(new WT_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
+        this._sensorTab.attachRow(new WT_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3000MapElement.NEXRAD_SHOW_KEY, WT_G3000MapElement.NEXRAD_RANGE_KEY, WT_G3000MapElement.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
 
         this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("Airways", WT_G3000MapElement.AIRWAY_SHOW_KEY, WT_G3000MapElement.AIRWAY_RANGE_KEY, WT_G3000MapElement.AIRWAY_RANGE_MAX, "Map Airway Range"));
         this._aviationTab.attachRow(new WT_TSCMapSettingsMultiRangeTabRow("Airports",

@@ -42,6 +42,7 @@ class WT_G3000MapElement extends WT_MapElement {
         this.model.addModule(new WT_MapModelCrosshairModule());
         this.model.addModule(new WT_MapModelBingModule(this.instrumentID));
         this.model.addModule(new WT_MapModelTerrainModule());
+        this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelOrientationModule());
         if (this._layerOptions.windData) {
             this.model.addModule(new WT_MapModelWindDataModule());
@@ -99,11 +100,16 @@ class WT_G3000MapElement extends WT_MapElement {
         }
 
         this._dcltrSetting = new WT_MapDCLTRSetting(this.controller, [
+            // OFF
             {},
+
+            // DCLTR1
             {
                 stateBorder: true,
                 city: true
             },
+
+            // DCLTR2
             {
                 stateBorder: true,
                 city: true,
@@ -112,7 +118,10 @@ class WT_G3000MapElement extends WT_MapElement {
                 ndb: true,
                 int: true
             },
+
+            // LEAST
             {
+                nexrad: true,
                 stateBorder: true,
                 city: true,
                 userWaypoint: true,
@@ -123,6 +132,9 @@ class WT_G3000MapElement extends WT_MapElement {
             }
         ]);
         this.controller.addSetting(this._dcltrSetting);
+
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "nexrad", "weatherDisplay", "nexradShow", WT_G3000MapElement.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000MapElement.NEXRAD_RANGE_KEY, "weatherDisplay", "nexradRange", WT_G3000MapElement.MAP_RANGE_LEVELS, WT_G3000MapElement.NEXRAD_RANGE_DEFAULT));
 
         this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "airway", "waypoints", "airwayShow", WT_G3000MapElement.AIRWAY_SHOW_KEY, this._dcltrSetting));
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000MapElement.AIRWAY_RANGE_KEY, "waypoints", "airwayRange", WT_G3000MapElement.MAP_RANGE_LEVELS, WT_G3000MapElement.AIRWAY_RANGE_DEFAULT));
@@ -199,6 +211,11 @@ WT_G3000MapElement.TERRAIN_MODE_DISPLAY_TEXT = [
     "Absolute",
     "Relative"
 ];
+
+WT_G3000MapElement.NEXRAD_SHOW_KEY = "WT_Map_NEXRAD_Show";
+WT_G3000MapElement.NEXRAD_RANGE_KEY = "WT_Map_NEXRAD_Range";
+WT_G3000MapElement.NEXRAD_RANGE_MAX = WT_Unit.NMILE.createNumber(1000);
+WT_G3000MapElement.NEXRAD_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1000);
 
 WT_G3000MapElement.AIRWAY_SHOW_KEY = "WT_Map_Airway_Show";
 WT_G3000MapElement.AIRWAY_RANGE_KEY = "WT_Map_Airway_Range";
