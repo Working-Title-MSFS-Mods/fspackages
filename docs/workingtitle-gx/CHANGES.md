@@ -1,3 +1,12 @@
+# Changes in 0.1.0-dev5
+
+* Fixed compatibility problems with FBW A320
+* Fixed nav map not drawing approach paths
+
+# Changes in 0.1.0-dev4
+
+* Compatibility for 1.12.13.0
+
 # Changes in 0.1.0-dev3
 
 * Compatibility for 1.10.7

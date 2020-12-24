@@ -385,6 +385,29 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
         callback();
     }
+    // TODO: remove this when we rewrite dirto
+    activateDirectToWaypoint(waypoint, callback = EmptyCallback.Void) {
+        let waypoints = this.flightPlanManager.getWaypoints();
+        let indexInFlightPlan = waypoints.findIndex(w => {
+            return w.icao === waypoint.icao;
+        });
+        let i = 1;
+        let removeWaypointMethod = (callback = EmptyCallback.Void) => {
+            if (i < indexInFlightPlan) {
+                this.flightPlanManager.removeWaypoint(1, i === indexInFlightPlan - 1, () => {
+                    i++;
+                    removeWaypointMethod(callback);
+                });
+            }
+            else {
+                callback();
+            }
+        };
+        removeWaypointMethod(() => {
+            this.flightPlanManager.activateDirectTo(waypoint.infos.icao, callback);
+        });
+    }
+
     //function added to set departure enroute transition index
     setDepartureEnrouteTransitionIndex(departureEnrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {

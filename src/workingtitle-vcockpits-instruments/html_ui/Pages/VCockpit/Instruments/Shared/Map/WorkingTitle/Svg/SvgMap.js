@@ -6,6 +6,7 @@ class SvgMap {
         this._iterations = 0;
         this.configLoaded = false;
         this.rotateWithPlane = false;
+        this.lineCanvasClipping = new Avionics.Intersect();
         this.mapElements = [];
 
         this.textManager = new SvgTextManager(this);
@@ -24,6 +25,7 @@ class SvgMap {
         this._angularWidth = 0;
         this._angularWidthNorth = 0;
         this._angularWidthSouth = 0;
+        this._frameClipping = new Avionics.Intersect();
         this._bottomLeftCoordinates = new LatLongAlt();
         this._topRightCoordinates = new LatLongAlt();
         this.index = SvgMap.Index;
@@ -57,6 +59,7 @@ class SvgMap {
             this._svgHtmlElement = _root.querySelector("#" + elementId);
         }
         this.svgHtmlElement.setAttribute("viewBox", "0 0 1000 1000");
+        this._frameClipping.initRect(1000, 1000);
 
         this.cityLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.cityLayer);
@@ -113,6 +116,17 @@ class SvgMap {
 
     get svgHtmlElement() {
         return this._svgHtmlElement;
+    }
+
+    get lineCanvas() {
+        return this._lineCanvas;
+    }
+
+    set lineCanvas(_canvas) {
+        this._lineCanvas = _canvas;
+        if (_canvas) {
+            this.lineCanvasClipping.initRect(_canvas.width, _canvas.height);
+        }
     }
 
     get lastCenterCoordinates() {
@@ -422,8 +436,11 @@ class SvgMap {
         }
         this.svgHtmlElement.style.top = top;
         this.svgHtmlElement.style.left = left;
-        this.lineCanvas.width = w;
-        this.lineCanvas.height = h;
+        if (this.lineCanvas) {
+            this.lineCanvas.width = w;
+            this.lineCanvas.height = h;
+            this.lineCanvasClipping.initRect(w, h);
+        }
     }
 
     NMToPixels(distanceInNM) {
@@ -472,23 +489,8 @@ class SvgMap {
             ll.long <= this._topRightCoordinates.long + dLong);
     }
 
-    isSegmentInFrame(s1, s2) {
-        if (isNaN(s1.x) || isNaN(s1.y) || isNaN(s2.x) || isNaN(s2.y)) {
-            return false;
-        }
-        if (Math.min(s1.x, s2.x) > 1000) {
-            return false;
-        }
-        if (Math.max(s1.x, s2.x) < 0) {
-            return false;
-        }
-        if (Math.min(s1.y, s2.y) > 1000) {
-            return false;
-        }
-        if (Math.max(s1.y, s2.y) < 0) {
-            return false;
-        }
-        return true;
+    segmentVsFrame(s1, s2, out1, out2) {
+        return this._frameClipping.segmentVsRect(s1, s2, out1, out2);
     }
 
     coordinatesToXY(coordinates) {

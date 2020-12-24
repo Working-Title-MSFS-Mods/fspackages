@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.3.2
+### Latest version: v0.3.4
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,12 +8,13 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.3.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.3.4.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-### Release Highlights (v0.3.2)
-- Brought up to date with game patch 1.10.11.0 (Update 6).
+### Release Highlights (v0.3.4)
+- Fixed nav map not drawing approach paths.
+- Fixed PFD autopilot display not flashing appropriate warnings (e.g. when the autopilot is disengaged).
 
 #### Highlights for v0.3.1
 - Improved compatibility with the WorkingTitle CJ4 mod.
@@ -36,6 +37,7 @@ To install, copy the `workingtitle-g3000` folder from the zip file into your `Co
 - \[NAVCOM\] Fixed a bug where changing the ADF frequency in the touchscreen controller's Audio/Radio page would lead to unexpected changes in NAV frequencies.
 
 ### Known Issues
+- \[Stability\] The game will CTD when clearing origin and destination from the flight plan and attempting to enter a new origin/destination.
 - \[Stability\] (Vanilla issue) Sometimes the PFD will freeze when transitioning to an approach loaded into the flight plan. The PFD may unfreeze when you reach the second waypoint in the approach.
 - \[Stability\] (Vanilla issue) The game sometimes freezes or CTDs when editing the flight plan using the touchscreen controller flight plan menu.
 - \[PFD\] (Vanilla issue) Co-pilot PFD softkeys are nonfunctional in the TBM 930.

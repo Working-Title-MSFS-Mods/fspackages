@@ -1,6 +1,6 @@
-import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, RegisterViewListener, Coherent } from 'MSFS';
+import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, Coherent } from 'MSFS';
 import { ManagedFlightPlan, GPS } from '../wtsdk';
-import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
+import { FlightPlanSegment } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { LZUTF8, WTDataStore } from 'WorkingTitle'
 import * as _LZUTF8 from '../utils/LzUtf8'
@@ -38,7 +38,6 @@ export class FlightPlanManager {
 
     if (_parentInstrument.instrumentIdentifier == "CJ4_FMC") {
       this._isMaster = true;
-      RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
       _parentInstrument.addEventListener("FlightStart", async function () {
         let plan = new ManagedFlightPlan();
         plan.setParentInstrument(_parentInstrument);

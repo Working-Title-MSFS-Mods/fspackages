@@ -1,5 +1,15 @@
 # Changelog
 
+### v0.3.4
+**Fixes**
+- \[NavMap\] The map now correctly draws approach waypoints and paths.
+- \[PFD\] The autopilot display now correctly flashes warnings (e.g. when the autopilot is disengaged).
+- \[Compatibility\] Improved compatibility with non-WorkingTitle mods.
+
+### v0.3.3
+**Fixes**
+- \[Compatibility\] Brought up to date with game patch 1.12.13.0 (SIM UPDATE 2).
+
 ### v0.3.2
 **Fixes**
 - \[Compatibility\] Brought up to date with game patch 1.10.11.0 (Update 6).

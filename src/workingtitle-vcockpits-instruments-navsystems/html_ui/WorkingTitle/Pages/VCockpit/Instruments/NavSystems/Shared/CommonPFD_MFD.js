@@ -100,7 +100,7 @@ class PFD_Airspeed extends NavSystemElement {
         this.lastSpeed = indicatedSpeed;
         this.airspeedElement.setAttribute("airspeed-trend", (this.acceleration).toString());
         let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
-        let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+        let cruiseMach = SimVar.GetSimVarValue("MACH MAX OPERATE", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
         if (crossSpeed != 0) {
             this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString());
@@ -1639,6 +1639,15 @@ class PFD_AutopilotDisplay extends NavSystemElement {
     onExit() {
     }
     onEvent(_event) {
+        switch (_event) {
+            case "Autopilot_Manual_Off":
+                this.apStatusDisplay = 2;
+                this.yellowFlashBegin = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                break;
+            case "Autopilot_Disc":
+                this.apStatusDisplay = 0;
+                break;
+        }
     }
 }
 class MFD_FlightPlanLine {

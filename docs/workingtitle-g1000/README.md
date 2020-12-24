@@ -1,6 +1,6 @@
 # Documentation for the Working Title G1000
 
-_Applies to version: v0.3.2_
+_Applies to version: v0.3.4_
 
 Welcome to the latest version of the Working Title G1000 for Microsoft Flight Simulator.  This mod provides a raft of bug-fixes and enhancements to the stock G1000 used in many of the sim's general aviation planes.   Version 0.3.0 is developed for version 1.9.3.0 of the base sim, the version released on 29 September 2020.  Previous versions of the G1000 mod will not work with this version of the sim.
 
