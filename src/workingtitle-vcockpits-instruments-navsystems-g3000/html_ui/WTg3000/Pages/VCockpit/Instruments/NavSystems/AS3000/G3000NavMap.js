@@ -70,7 +70,6 @@ class WT_G3000NavMap extends NavSystemElement {
 
         this.map.model.addModule(new WT_MapModelUnitsModule());
         this.map.model.addModule(new WT_MapModelCrosshairModule());
-        this.map.model.addModule(new WT_MapModelBingModule(this.instrumentID));
         this.map.model.addModule(new WT_MapModelTerrainModule());
         this.map.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.map.model.addModule(new WT_MapModelOrientationModule());
@@ -89,7 +88,7 @@ class WT_G3000NavMap extends NavSystemElement {
 
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
 
-        this.map.view.addLayer(new WT_MapViewBingLayer());
+        this.map.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}-navmap`));
         this.map.view.addLayer(new WT_MapViewBorderLayer(labelManager));
         this.map.view.addLayer(new WT_MapViewCityLayer(labelManager));
         this.map.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, labelManager));
