@@ -194,6 +194,9 @@ class WT_G3000NavMap extends NavSystemElement {
         this.map.controller.update();
     }
 
+    onEvent(event) {
+    }
+
     onUpdate(deltaTime) {
         this._rangeTargetRotationController.update();
         this.map.update();

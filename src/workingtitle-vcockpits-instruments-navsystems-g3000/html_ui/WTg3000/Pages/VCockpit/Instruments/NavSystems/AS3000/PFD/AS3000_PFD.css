@@ -490,7 +490,7 @@ as3000-pfd-element {
             top: 1%;
             left: 0%;
             text-align: center; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=Yellow] {
+            as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=Yellow] {
               color: yellow; }
             as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=Red] {
               color: red; }
