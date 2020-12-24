@@ -828,7 +828,7 @@ class PFD_Annunciations extends Annunciations {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (this.engineType == EngineType.ENGINE_TYPE_PISTON) {
+        if ((this.engineType == EngineType.ENGINE_TYPE_PISTON) || (this.engineType == EngineType.ENGINE_TYPE_TURBOPROP)) {
             for (var i = 0; i < this.allMessages.length; i++) {
                 var message = this.allMessages[i];
                 var value = false;
