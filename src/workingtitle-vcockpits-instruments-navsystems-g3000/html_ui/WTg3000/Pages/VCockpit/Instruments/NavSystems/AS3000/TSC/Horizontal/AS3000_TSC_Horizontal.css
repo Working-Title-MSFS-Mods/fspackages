@@ -291,16 +291,11 @@ as3000-tsc-horizontal-element {
           as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect .tabButton {
             height: 15vh;
             margin: 1vh 0; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .mapSettingsGrid {
-                margin: 2vh; }
-                as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .MapSettingsTabRow {
-                  margin: 0.5vh 0;
+              as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
+                padding: 2vh; }
+                as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent tsc-mapsettings-tabrow {
                   height: 16vh;
-                  grid-template-columns: 55% 45%; }
-                  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .statusToggleButton .mainText {
-                    font-size: 4vh; }
-                  as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent .gradientButton .statusText {
-                    font-size: 4vh; }
+                  font-size: 4vh; }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo .tabContainer {
         top: 2.5%;
