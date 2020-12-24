@@ -132,8 +132,9 @@ class WT_MapViewPointerInfo extends HTMLElement {
         this._coordinateFormatter = new WT_CoordinateFormatter();
 
         this._tempVector = new WT_GVector2(0, 0);
-        this._tempGeoPoint = new WT_GeoPoint(0, 0);
-        this._tempDistance = new WT_NumberUnit(0, WT_Unit.NMILE);
+        this._tempGeoPoint1 = new WT_GeoPoint(0, 0);
+        this._tempGeoPoint2 = new WT_GeoPoint(0, 0);
+        this._tempDistance = WT_Unit.NMILE.createNumber(0);
         this._tempAngle = new WT_NumberUnit(0, WT_Unit.DEGREE);
     }
 
@@ -188,9 +189,9 @@ class WT_MapViewPointerInfo extends HTMLElement {
     update(state) {
         let reference = state.model.pointer.measureReference;
         if (!reference) {
-            reference = state.model.airplane.position;
+            reference = state.model.airplane.model.position(this._tempGeoPoint1);
         }
-        let pointer = state.projection.invert(state.projection.relXYToAbsXY(state.model.pointer.position, this._tempVector), this._tempGeoPoint);
+        let pointer = state.projection.invert(state.projection.relXYToAbsXY(state.model.pointer.position, this._tempVector), this._tempGeoPoint2);
         this._updateDistance(state, reference, pointer);
         this._updateBearing(state, reference, pointer);
         this._updateLatLong(state, pointer);

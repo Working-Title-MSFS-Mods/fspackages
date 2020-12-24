@@ -51,7 +51,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
         if (!state.viewPlane) {
             return;
         }
-        let iconRotation = state.model.airplane.headingTrue + state.projection.rotation;
+        let iconRotation = state.model.airplane.model.headingTrue() + state.projection.rotation;
         this._icon.style.transform = `translate(${state.viewPlane.x}px, ${state.viewPlane.y}px) rotate(${iconRotation}deg)`;
     }
 }
