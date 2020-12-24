@@ -26,6 +26,7 @@ class WT_MapView extends HTMLElement {
 
         this._targetOffsetTemp = new WT_GVector2(0, 0);
         this._trueRangeTemp = new WT_NumberUnit(0, WT_Unit.NMILE);
+        this._airplanePosition = new WT_GeoPoint(0, 0);
     }
 
     static get observedAttributes() {
@@ -265,7 +266,7 @@ class WT_MapView extends HTMLElement {
         });
 
         if (this.model.airplane) {
-            this.projection.project(this.model.airplane.position, this._viewPlane);
+            this.projection.project(this.model.airplane.model.position(this._airplanePosition), this._viewPlane);
         }
     }
 

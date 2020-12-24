@@ -10,7 +10,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.trackTrue + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
+    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.model.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this.facingAngleGetter = facingAngleGetter;
@@ -24,6 +24,13 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this._lastRadius = 0;
         this._lastRange = new WT_NumberUnit(0, WT_Unit.NMILE);
         this._lastDrawnBounds = {left: 0, top: 0, width: 0, height: 0};
+
+        this._tempFoot = WT_Unit.FOOT.createNumber(0);
+        this._tempFPM = WT_Unit.FPM.createNumber(0);
+        this._tempKnot = WT_Unit.KNOT.createNumber(0);
+        this._tempNM = WT_Unit.NMILE.createNumber(0);
+        this._tempVector = new WT_GVector2(0, 0);
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
     /**
@@ -131,26 +138,26 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (state.model.airplane.isOnGround) {
+        if (state.model.airplane.model.isOnGround()) {
             return;
         }
 
         this._arcLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        let vSpeed = state.model.airplane.verticalSpeed;
-        let currentAlt = state.model.airplane.altitudeIndicated;
-        let targetAlt = state.model.autopilot.altitudeTarget;
-        let deltaAlt = targetAlt.minus(currentAlt);
-        let time = deltaAlt.asUnit(WT_Unit.FOOT) / vSpeed.asUnit(WT_Unit.FPM) / 60; // hours
-        if (vSpeed.abs(true).compare(WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD) < 0 || time < 0 || deltaAlt.abs(true).compare(WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) < 0) {
+        let vSpeed = state.model.airplane.model.verticalSpeed(this._tempFPM).number;
+        let currentAlt = state.model.airplane.model.altitudeIndicated(this._tempFoot).number;
+        let targetAlt = state.model.autopilot.altitudeTarget.number;
+        let deltaAlt = targetAlt - currentAlt;
+        let time = deltaAlt / vSpeed / 60; // hours
+        if (Math.abs(vSpeed) < WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD || time < 0 || Math.abs(deltaAlt) < WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) {
             return;
         }
 
-        let gs = state.model.airplane.groundSpeed;
-        let distance = WT_Unit.NMILE.createNumber(gs.asUnit(WT_Unit.KNOT) * time);
+        let gs = state.model.airplane.model.groundSpeed(this._tempKnot).number;
+        let distance = this._tempNM.set(gs * time);
         let angle = this.facingAngleGetter.getFacingAngle(state);
-        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.position, distance, angle);
-        let viewArcTarget = state.projection.project(arcTarget);
+        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.model.position(this._tempGeoPoint), distance, angle, this._tempGeoPoint);
+        let viewArcTarget = state.projection.project(arcTarget, this._tempVector);
         let radius = viewArcTarget.subtract(state.viewPlane).length;
         if (state.projection.range.equals(this._lastRange)) {
             radius = this._smoothRadius(radius, this._calculateSmoothingFactor(state));
@@ -165,8 +172,8 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
 WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT = "altitudeInterceptLayer";
 WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT = "altitudeIntercept";
 WT_MapViewAltitudeInterceptLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
-WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD = WT_Unit.FPM.createNumber(100);
-WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD = WT_Unit.FOOT.createNumber(100);
+WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD = 100; // FPM
+WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD = 100; // feet
 WT_MapViewAltitudeInterceptLayer.OPTIONS_DEF = {
     smoothingConstant: {default: 50, auto: true},
 
