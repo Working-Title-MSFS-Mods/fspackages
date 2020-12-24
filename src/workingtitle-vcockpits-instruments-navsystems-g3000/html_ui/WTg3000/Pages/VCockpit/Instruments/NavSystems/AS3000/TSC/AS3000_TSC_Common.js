@@ -4493,39 +4493,38 @@ class WT_TSCMapSettingsTabElement extends HTMLElement {
     constructor() {
         super();
 
-        let template = document.createElement("template");
-        template.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                }
-
-                #wrapper  {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    overflow-x: hidden;
-                    overflow-y: scroll;
-                }
-                    #wrapper::-webkit-scrollbar {
-                        width: 1vw;
-                    }
-                    #wrapper::-webkit-scrollbar-track {
-                        background: none;
-                    }
-                    #wrapper::-webkit-scrollbar-thumb {
-                        background: white;
-                    }
-            </style>
-            <div id="wrapper">
-                <slot name="rows"></slot>
-            </div>
-        `;
-
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
+        this.shadowRoot.appendChild(WT_TSCMapSettingsTabElement.TEMPLATE.content.cloneNode(true));
     }
 }
+WT_TSCMapSettingsTabElement.TEMPLATE = document.createElement("template");
+WT_TSCMapSettingsTabElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper  {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+            #wrapper::-webkit-scrollbar {
+                width: 1vw;
+            }
+            #wrapper::-webkit-scrollbar-track {
+                background: none;
+            }
+            #wrapper::-webkit-scrollbar-thumb {
+                background: white;
+            }
+    </style>
+    <div id="wrapper">
+        <slot name="rows"></slot>
+    </div>
+`;
 
 customElements.define("tsc-mapsettings-tab", WT_TSCMapSettingsTabElement);
 
@@ -4613,32 +4612,8 @@ class WT_TSCMapSettingsTabRowElement extends HTMLElement {
     constructor() {
         super();
 
-        let template = document.createElement("template");
-        template.innerHTML = `
-            <style>
-                :host {
-                    position: relative;
-                    display: block;
-                    margin: 0.5vh 0;
-                }
-
-                #wrapper {
-                    position: relative;
-                    height: 100%;
-                    width: 100%;
-                    display: grid;
-                    grid-template-rows: 1fr;
-                    grid-template-columns: 55% 45%;
-                }
-            </style>
-            <div id="wrapper">
-                <slot name="left"></slot>
-                <slot name="right"></slot>
-            </div>
-        `;
-
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
+        this.shadowRoot.appendChild(WT_TSCMapSettingsTabRowElement.TEMPLATE.content.cloneNode(true));
 
         this._left = null;
         this._right = null;
@@ -4684,6 +4659,29 @@ class WT_TSCMapSettingsTabRowElement extends HTMLElement {
         this._right = element;
     }
 }
+WT_TSCMapSettingsTabRowElement.TEMPLATE = document.createElement("template");
+WT_TSCMapSettingsTabRowElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            position: relative;
+            display: block;
+            margin: 0.5vh 0;
+        }
+
+        #wrapper {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-rows: 1fr;
+            grid-template-columns: 55% 45%;
+        }
+    </style>
+    <div id="wrapper">
+        <slot name="left"></slot>
+        <slot name="right"></slot>
+    </div>
+`;
 WT_TSCMapSettingsTabRowElement.LEFT_CLASS = "mapSettingsTabRowLeft";
 WT_TSCMapSettingsTabRowElement.RIGHT_CLASS = "mapSettingsTabRowRight";
 
