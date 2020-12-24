@@ -263,7 +263,7 @@ class AS3000_TSC extends NavSystemTouch {
 
     changeMapRange(delta) {
         let currentIndex = WT_MapController.getSettingValue("MFD", WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3000MapElement.MAP_RANGE_LEVELS.length - 1), 0);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3000NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         WT_MapController.setSettingValue("MFD", WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
@@ -4170,18 +4170,18 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
         ];
 
         this._sensorTab.attachRow(new WT_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
-        this._sensorTab.attachRow(new WT_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3000MapElement.NEXRAD_SHOW_KEY, WT_G3000MapElement.NEXRAD_RANGE_KEY, WT_G3000MapElement.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
+        this._sensorTab.attachRow(new WT_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3000NavMap.NEXRAD_SHOW_KEY, WT_G3000NavMap.NEXRAD_RANGE_KEY, WT_G3000NavMap.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
 
-        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("Airways", WT_G3000MapElement.AIRWAY_SHOW_KEY, WT_G3000MapElement.AIRWAY_RANGE_KEY, WT_G3000MapElement.AIRWAY_RANGE_MAX, "Map Airway Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("Airways", WT_G3000NavMap.AIRWAY_SHOW_KEY, WT_G3000NavMap.AIRWAY_RANGE_KEY, WT_G3000NavMap.AIRWAY_RANGE_MAX, "Map Airway Range"));
         this._aviationTab.attachRow(new WT_TSCMapSettingsMultiRangeTabRow("Airports",
-            WT_G3000MapElement.AIRPORT_SHOW_KEY, [
-                WT_G3000MapElement.AIRPORT_LARGE_RANGE_KEY,
-                WT_G3000MapElement.AIRPORT_MEDIUM_RANGE_KEY,
-                WT_G3000MapElement.AIRPORT_SMALL_RANGE_KEY
+            WT_G3000NavMap.AIRPORT_SHOW_KEY, [
+                WT_G3000NavMap.AIRPORT_LARGE_RANGE_KEY,
+                WT_G3000NavMap.AIRPORT_MEDIUM_RANGE_KEY,
+                WT_G3000NavMap.AIRPORT_SMALL_RANGE_KEY
             ], [
-                WT_G3000MapElement.AIRPORT_LARGE_RANGE_MAX,
-                WT_G3000MapElement.AIRPORT_MEDIUM_RANGE_MAX,
-                WT_G3000MapElement.AIRPORT_SMALL_RANGE_MAX
+                WT_G3000NavMap.AIRPORT_LARGE_RANGE_MAX,
+                WT_G3000NavMap.AIRPORT_MEDIUM_RANGE_MAX,
+                WT_G3000NavMap.AIRPORT_SMALL_RANGE_MAX
             ], [
                 "Large Airport",
                 "Medium Airport",
@@ -4192,19 +4192,19 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
                 "Map Small Airport Range"
             ]
         ));
-        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("VOR", WT_G3000MapElement.VOR_SHOW_KEY, WT_G3000MapElement.VOR_RANGE_KEY, WT_G3000MapElement.VOR_RANGE_MAX, "Map VOR Range"));
-        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("INT", WT_G3000MapElement.INT_SHOW_KEY, WT_G3000MapElement.INT_RANGE_KEY, WT_G3000MapElement.INT_RANGE_MAX, "Map INT Range"));
-        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("NDB", WT_G3000MapElement.NDB_SHOW_KEY, WT_G3000MapElement.NDB_RANGE_KEY, WT_G3000MapElement.NDB_RANGE_MAX, "Map NDB Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("VOR", WT_G3000NavMap.VOR_SHOW_KEY, WT_G3000NavMap.VOR_RANGE_KEY, WT_G3000NavMap.VOR_RANGE_MAX, "Map VOR Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("INT", WT_G3000NavMap.INT_SHOW_KEY, WT_G3000NavMap.INT_RANGE_KEY, WT_G3000NavMap.INT_RANGE_MAX, "Map INT Range"));
+        this._aviationTab.attachRow(new WT_TSCMapSettingsRangeTabRow("NDB", WT_G3000NavMap.NDB_SHOW_KEY, WT_G3000NavMap.NDB_RANGE_KEY, WT_G3000NavMap.NDB_RANGE_MAX, "Map NDB Range"));
 
         this._landTab.attachRow(new WT_TSCMapSettingsMultiRangeTabRow("Cities",
-            WT_G3000MapElement.CITY_SHOW_KEY, [
-                WT_G3000MapElement.CITY_LARGE_RANGE_KEY,
-                WT_G3000MapElement.CITY_MEDIUM_RANGE_KEY,
-                WT_G3000MapElement.CITY_SMALL_RANGE_KEY
+            WT_G3000NavMap.CITY_SHOW_KEY, [
+                WT_G3000NavMap.CITY_LARGE_RANGE_KEY,
+                WT_G3000NavMap.CITY_MEDIUM_RANGE_KEY,
+                WT_G3000NavMap.CITY_SMALL_RANGE_KEY
             ], [
-                WT_G3000MapElement.CITY_LARGE_RANGE_MAX,
-                WT_G3000MapElement.CITY_MEDIUM_RANGE_MAX,
-                WT_G3000MapElement.CITY_SMALL_RANGE_MAX
+                WT_G3000NavMap.CITY_LARGE_RANGE_MAX,
+                WT_G3000NavMap.CITY_MEDIUM_RANGE_MAX,
+                WT_G3000NavMap.CITY_SMALL_RANGE_MAX
             ], [
                 "Large City",
                 "Medium City",
@@ -4215,9 +4215,9 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
                 "Map Small City Range"
             ]
         ));
-        this._landTab.attachRow(new WT_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3000MapElement.BORDERS_SHOW_KEY, WT_G3000MapElement.BORDERS_RANGE_KEY, WT_G3000MapElement.BORDERS_RANGE_MAX, "Map State/Province Range"));
+        this._landTab.attachRow(new WT_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3000NavMap.BORDERS_SHOW_KEY, WT_G3000NavMap.BORDERS_RANGE_KEY, WT_G3000NavMap.BORDERS_RANGE_MAX, "Map State/Province Range"));
 
-        this._otherTab.attachRow(new WT_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3000MapElement.MAP_RANGE_LEVELS[WT_G3000MapElement.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
+        this._otherTab.attachRow(new WT_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3000NavMap.MAP_RANGE_LEVELS[WT_G3000NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
         this._otherTab.attachRow(new WT_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
         if (useWindData) {
             this._otherTab.attachRow(new WT_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
@@ -4251,7 +4251,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
     }
 
     initOrientationSetting() {
-        this._orientationWindowContext = this._createWindowContext("Map Orientation", AS3000_TSC_MapSettings.ORIENTATION_TEXTS, this.setOrientation.bind(this), WT_G3000MapElement.ORIENTATION_KEY);
+        this._orientationWindowContext = this._createWindowContext("Map Orientation", AS3000_TSC_MapSettings.ORIENTATION_TEXTS, this.setOrientation.bind(this), WT_G3000NavMap.ORIENTATION_KEY);
         this._orientationButton = this.gps.getChildById(this.orientationButtonName);
         if (this._orientationButton) {
             this.orientationButtonValue = this._orientationButton.getElementsByClassName("lowerValue")[0];
@@ -4317,16 +4317,16 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
     // update helpers
 
     updateOrientationValue() {
-        let currentOrientation = WT_MapController.getSettingValue(this.controllerID, WT_G3000MapElement.ORIENTATION_KEY);
+        let currentOrientation = WT_MapController.getSettingValue(this.controllerID, WT_G3000NavMap.ORIENTATION_KEY);
         let newValue = "";
         switch (currentOrientation) {
-            case WT_G3000MapElement.Orientation.HDG:
+            case WT_G3000NavMap.Orientation.HDG:
                 newValue = "Heading Up";
                 break;
-            case WT_G3000MapElement.Orientation.TRK:
+            case WT_G3000NavMap.Orientation.TRK:
                 newValue = "Track Up";
                 break;
-            case WT_G3000MapElement.Orientation.NORTH:
+            case WT_G3000NavMap.Orientation.NORTH:
                 newValue = "North Up";
                 break;
         }
@@ -4374,7 +4374,7 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
     // setter helpers
 
     setOrientation(value) {
-        WT_MapController.setSettingValue(this.controllerID, WT_G3000MapElement.ORIENTATION_KEY, value, true);
+        WT_MapController.setSettingValue(this.controllerID, WT_G3000NavMap.ORIENTATION_KEY, value, true);
         this.updateOrientationValue();
     }
 
@@ -4407,8 +4407,8 @@ class AS3000_TSC_MapSettings extends NavSystemElement {
 
     static getRangeValuesDisplayToMax(max) {
         let values = [];
-        for (let i = 0; i < WT_G3000MapElement.MAP_RANGE_LEVELS.length && WT_G3000MapElement.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
-            values.push(AS3000_TSC_MapSettings.getRangeValueText(WT_G3000MapElement.MAP_RANGE_LEVELS[i]));
+        for (let i = 0; i < WT_G3000NavMap.MAP_RANGE_LEVELS.length && WT_G3000NavMap.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
+            values.push(AS3000_TSC_MapSettings.getRangeValueText(WT_G3000NavMap.MAP_RANGE_LEVELS[i]));
         }
         return values;
     }
@@ -4806,7 +4806,7 @@ class WT_TSCMapSettingsRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
     }
 
     _updateRangeButton() {
-        this._rangeButton.labelText = WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000MapElement.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.controllerID, this._rangeKey)]);
+        this._rangeButton.labelText = WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.controllerID, this._rangeKey)]);
     }
 
     onUpdate() {
@@ -4824,8 +4824,8 @@ class WT_TSCMapSettingsRangeTabRow extends WT_TSCMapSettingsToggleTabRow {
 
     static getRangeValuesDisplayToMax(max) {
         let values = [];
-        for (let i = 0; i < WT_G3000MapElement.MAP_RANGE_LEVELS.length && WT_G3000MapElement.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
-            values.push(WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000MapElement.MAP_RANGE_LEVELS[i]));
+        for (let i = 0; i < WT_G3000NavMap.MAP_RANGE_LEVELS.length && WT_G3000NavMap.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
+            values.push(WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000NavMap.MAP_RANGE_LEVELS[i]));
         }
         return values;
     }
@@ -4938,7 +4938,7 @@ class WT_TSCDynamicSelectionRangeTypeElementHandler {
     }
 
     update(index, elem) {
-        Avionics.Utils.diffAndSet(elem.value, WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000MapElement.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._controllerID, this._rangeKeys[index])]));
+        Avionics.Utils.diffAndSet(elem.value, WT_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3000NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._controllerID, this._rangeKeys[index])]));
     }
 }
 
@@ -5074,7 +5074,7 @@ class WT_TSCMapSettingsTerrainTabRow extends WT_TSCMapSettingsTabRow {
     }
 
     _initWindowContext() {
-        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(WT_G3000MapElement.TERRAIN_MODE_DISPLAY_TEXT);
+        let elementHandler = new WT_TouchDynamicSelectionStandardElementHandler(WT_G3000NavMap.TERRAIN_MODE_DISPLAY_TEXT);
         this._modeWindowContext = {
             title: "Map Terrain Displayed",
             subclass: "standardDynamicSelectionListWindow",
@@ -5103,7 +5103,7 @@ class WT_TSCMapSettingsTerrainTabRow extends WT_TSCMapSettingsTabRow {
     }
 
     _updateModeButton() {
-        this._modeButton.valueText = WT_G3000MapElement.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.controllerID, this._modeSettingKey)];
+        this._modeButton.valueText = WT_G3000NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.controllerID, this._modeSettingKey)];
     }
 
     onUpdate() {

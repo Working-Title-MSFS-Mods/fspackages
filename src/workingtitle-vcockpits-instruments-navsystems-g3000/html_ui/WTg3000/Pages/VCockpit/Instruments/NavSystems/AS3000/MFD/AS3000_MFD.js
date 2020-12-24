@@ -248,7 +248,7 @@ class AS3000_MFD_WindData extends MFD_WindData {
     }
 }
 
-class AS3000_MFD_MapElement extends WT_G3000MapElement {
+class AS3000_MFD_MapElement extends WT_G3000NavMap {
     constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
         super(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager);
     }

@@ -224,7 +224,7 @@ as3000-mfd-element {
             display: block; }
 
 as3000-mfd-element #Electricity map-view {
-    position: absolute;
+    position: relative;
     height: 100%;
     width: 100%;
     display: block;

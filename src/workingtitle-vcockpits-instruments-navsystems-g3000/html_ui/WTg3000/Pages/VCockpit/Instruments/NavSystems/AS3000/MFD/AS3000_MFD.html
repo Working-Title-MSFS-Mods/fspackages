@@ -66,9 +66,9 @@
                             <div class="value"><span class="number"></span><span class="unit"></div>
                         </div>
                     </div>
-                    <div id="MainMap">
-                        <map-view dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
-                    </div>
+                    <pane-titled id="MainMap" titletext="Navigation Map">
+                        <map-view slot="content" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                    </pane-titled>
                 </div>
             </div>
         </div>
@@ -197,6 +197,10 @@
 <script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapFuelRingSettingGroup.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAltitudeInterceptSetting.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Map/Map.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Display/TitledPane.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/CircularGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/HorizontalGauge.js"></script>
@@ -211,9 +215,8 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/MapElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000MapViewFlightPlanLegStyleChooser.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000MapElement.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>
