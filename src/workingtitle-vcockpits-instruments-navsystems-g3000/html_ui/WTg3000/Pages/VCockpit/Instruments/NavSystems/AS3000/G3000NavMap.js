@@ -112,12 +112,13 @@ class WT_G3000NavMap extends NavSystemElement {
         this.model.addModule(new WT_MapModelCitiesModule());
 
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
+        let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
         this.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}-navmap`));
         this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
         this.view.addLayer(new WT_MapViewCityLayer(labelManager));
-        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, labelManager, new WT_G3000MapViewFlightPlanLegStyleChooser()));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3000MapViewFlightPlanLegStyleChooser()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
