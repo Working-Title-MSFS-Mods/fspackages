@@ -44,10 +44,9 @@ class WT_MapViewWaypointIcon {
  * A waypoint map icon whose graphics are defined by an image file.
  */
 class WT_MapViewWaypointImageIcon extends WT_MapViewWaypointIcon {
-    constructor(waypoint, priority, imageDir, size = WT_MapViewWaypointImageIcon.SIZE_DEFAULT) {
+    constructor(waypoint, priority, imageDir) {
         super(waypoint, priority);
 
-        this.size = size;
         this._viewPosition = new WT_GVector2(0, 0);
 
         this._iconImage = WT_MapViewWaypointImageIcon._getImage(`${imageDir}/${this.imageFileName}`);
@@ -61,6 +60,10 @@ class WT_MapViewWaypointImageIcon extends WT_MapViewWaypointIcon {
 
     get iconImage() {
         return this._iconImage;
+    }
+
+    setOptions(opts) {
+        this._optsManager.setOptions(opts);
     }
 
     /**
@@ -85,14 +88,16 @@ class WT_MapViewWaypointImageIcon extends WT_MapViewWaypointIcon {
     }
 }
 WT_MapViewWaypointImageIcon._imageCache = new Map();
-WT_MapViewWaypointImageIcon.SIZE_DEFAULT = 40;
+WT_MapViewWaypointImageIcon.OPTIONS_DEF = {
+    size: {default: 40, auto: true}
+}
 
 /**
  * A map icon for an airport.
  */
 class WT_MapViewAirportImageIcon extends WT_MapViewWaypointImageIcon {
-    constructor(waypoint, priority, imageDir, size = WT_MapViewWaypointImageIcon.SIZE_DEFAULT) {
-        super(waypoint, priority, imageDir, size);
+    constructor(waypoint, priority, imageDir) {
+        super(waypoint, priority, imageDir);
 
         this._longestRunway = waypoint.runways.longest();
     }

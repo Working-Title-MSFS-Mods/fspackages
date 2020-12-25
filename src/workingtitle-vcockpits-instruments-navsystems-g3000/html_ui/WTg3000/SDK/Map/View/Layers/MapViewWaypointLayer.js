@@ -5,11 +5,12 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
     /**
      * @param {{airport:WT_ICAOSearcher}} icaoSearchers - searchers to use for enumerating ICAO strings of waypoints within range of the map view.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - a factory to create waypoint objects from ICAO strings.
+     * @param {WT_MapViewWaypointCanvasRenderer} waypointRenderer - the renderer to use for drawing waypoints.
      * @param {WT_MapViewTextLabelManager} labelManager - the text label manager to use for managing waypoint labels.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(icaoSearchers, icaoWaypointFactory, labelManager, className = WT_MapViewWaypointLayer.CLASS_DEFAULT, configName = WT_MapViewWaypointLayer.CONFIG_NAME_DEFAULT) {
+    constructor(icaoSearchers, icaoWaypointFactory, waypointRenderer, labelManager, className = WT_MapViewWaypointLayer.CLASS_DEFAULT, configName = WT_MapViewWaypointLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._icaoSearchers = icaoSearchers;
@@ -18,20 +19,19 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._searchRequestsOpened = false;
         this._airwayWaypoints = [];
 
-
         this._airportSearch = new WT_MapViewWaypointSearch(icaoWaypointFactory.getAirports.bind(icaoWaypointFactory), WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MIN, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MAX, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_INC_THRESHOLD);
         this._vorSearch = new WT_MapViewWaypointSearch(icaoWaypointFactory.getVORs.bind(icaoWaypointFactory), WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MIN, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MAX, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_INC_THRESHOLD);
         this._ndbSearch = new WT_MapViewWaypointSearch(icaoWaypointFactory.getNDBs.bind(icaoWaypointFactory), WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MIN, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MAX, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_INC_THRESHOLD);
         this._intSearch = new WT_MapViewWaypointSearch(icaoWaypointFactory.getINTs.bind(icaoWaypointFactory), WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MIN, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_MAX, WT_MapViewWaypointLayer.SEARCH_UPDATE_INTERVAL_INC_THRESHOLD);
 
-        /**
-         * @type {Map<String,WT_MapViewRegisteredWaypointEntry>}
-         */
-        this._registeredWaypoints = new Map();
+        this._showAirport = [false, false, false];
+        this._showVOR = false;
+        this._showNDB = false;
+        this._showINT = false;
+        this._showAirway = false;
+
         this._standaloneWaypoints = new Set();
 
-        this._waypointIconCache = new WT_MapViewWaypointImageIconCache(WT_MapViewWaypointLayer.WAYPOINT_ICON_CACHE_SIZE);
-        this._waypointLabelCache = new WT_MapViewWaypointLabelCache(WT_MapViewWaypointLayer.WAYPOINT_LABEL_CACHE_SIZE);
         this._airwaySegmentLabelCache = new WT_MapViewAirwaySegmentLabelCache(WT_MapViewWaypointLayer.AIRWAY_LABEL_CACHE_SIZE);
         this._airwayLabelsToShow = new Set();
 
@@ -41,6 +41,12 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._iconLayer = new WT_MapViewCanvas(true, true);
         this.addSubLayer(this._airwayLayer);
         this.addSubLayer(this._iconLayer);
+
+        this._waypointRenderer = waypointRenderer;
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, this._iconLayer.buffer.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, this._iconLayer.buffer.context);
+        this._waypointRenderer.setVisibilityHandler(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, {isVisible: this._shouldShowNormalWaypoint.bind(this)});
+        this._waypointStyleHandler = {getOptions: this._getWaypointStyleOptions.bind(this)};
 
         let airwayRendererEventHandler = {
             onStarted() {},
@@ -72,12 +78,206 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
     }
 
     /**
+     *
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_Waypoint} waypoint
+     */
+    _shouldShowNormalWaypoint(state, waypoint) {
+        let show = true;
+        if (waypoint.icao !== undefined) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    show = this._showAirport[waypoint.size];
+                    break;
+                case WT_ICAOWaypoint.Type.VOR:
+                    show = this._showVOR;
+                    break;
+                case WT_ICAOWaypoint.Type.NDB:
+                    show = this._showNDB;
+                    break;
+                case WT_ICAOWaypoint.Type.INT:
+                    show = this._showINT;
+                    break;
+            }
+        }
+        return show;
+    }
+
+    /**
+     * Gets icon and label style options for a waypoint.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_Waypoint} waypoint - the waypoint for which to get options.
+     */
+    _getWaypointStyleOptions(state, waypoint) {
+        if (waypoint.icao) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return this._airportStyles[waypoint.size];
+                case WT_ICAOWaypoint.Type.VOR:
+                    return this._vorStyle;
+                case WT_ICAOWaypoint.Type.NDB:
+                    return this._ndbStyle;
+                case WT_ICAOWaypoint.Type.INT:
+                    return this._intStyle;
+            }
+        } else {
+            return this._userStyle;
+        }
+    }
+
+    _initStyleOptions() {
+        this._airportStyles = [
+            {
+                icon: {
+                    priority: this.airportIconPriority,
+                    imageDir: this.iconDirectory,
+                    size: this.airportIconSize
+                },
+                label: {
+                    priority: this.airportLabelPriority,
+                    alwaysShow: false,
+                    offset: this.airportLabelOffset,
+                    fontSize: this.waypointLabelFontSize,
+                    fontColor: this.waypointLabelFontColor,
+                    fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                    fontOutlineColor: this.waypointLabelFontOutlineColor
+                }
+            },
+            {
+                icon: {
+                    priority: this.airportIconPriority - 1,
+                    imageDir: this.iconDirectory,
+                    size: this.airportIconSize
+                },
+                label: {
+                    priority: this.airportLabelPriority - 1,
+                    alwaysShow: false,
+                    offset: this.airportLabelOffset,
+                    fontSize: this.waypointLabelFontSize,
+                    fontColor: this.waypointLabelFontColor,
+                    fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                    fontOutlineColor: this.waypointLabelFontOutlineColor
+                }
+            },
+            {
+                icon: {
+                    priority: this.airportIconPriority - 2,
+                    imageDir: this.iconDirectory,
+                    size: this.airportIconSize
+                },
+                label: {
+                    priority: this.airportLabelPriority - 2,
+                    alwaysShow: false,
+                    offset: this.airportLabelOffset,
+                    fontSize: this.waypointLabelFontSize,
+                    fontColor: this.waypointLabelFontColor,
+                    fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                    fontOutlineColor: this.waypointLabelFontOutlineColor
+                }
+            }
+        ];
+        this._vorStyle = {
+            icon: {
+                priority: this.vorIconPriority,
+                imageDir: this.iconDirectory,
+                size: this.vorIconSize
+            },
+            label: {
+                priority: this.vorLabelPriority,
+                alwaysShow: false,
+                offset: this.vorLabelOffset,
+                fontSize: this.waypointLabelFontSize,
+                fontColor: this.waypointLabelFontColor,
+                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                fontOutlineColor: this.waypointLabelFontOutlineColor
+            }
+        };
+        this._ndbStyle = {
+            icon: {
+                priority: this.ndbIconPriority,
+                imageDir: this.iconDirectory,
+                size: this.ndbIconSize
+            },
+            label: {
+                priority: this.ndbLabelPriority,
+                alwaysShow: false,
+                offset: this.ndbLabelOffset,
+                fontSize: this.waypointLabelFontSize,
+                fontColor: this.waypointLabelFontColor,
+                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                fontOutlineColor: this.waypointLabelFontOutlineColor
+            }
+        };
+        this._intStyle = {
+            icon: {
+                priority: this.intIconPriority,
+                imageDir: this.iconDirectory,
+                size: this.intIconSize
+            },
+            label: {
+                priority: this.intLabelPriority,
+                alwaysShow: false,
+                offset: this.intLabelOffset,
+                fontSize: this.waypointLabelFontSize,
+                fontColor: this.waypointLabelFontColor,
+                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                fontOutlineColor: this.waypointLabelFontOutlineColor
+            }
+        };
+        this._userStyle = {
+            icon: {
+                priority: this.userIconPriority,
+                imageDir: this.iconDirectory,
+                size: this.userIconSize
+            },
+            label: {
+                priority: this.userLabelPriority,
+                alwaysShow: false,
+                offset: this.userLabelOffset,
+                fontSize: this.waypointLabelFontSize,
+                fontColor: this.waypointLabelFontColor,
+                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
+                fontOutlineColor: this.waypointLabelFontOutlineColor
+            }
+        };
+    }
+
+    _setWaypointRendererStyleHandlers() {
+        this._initStyleOptions();
+        this._waypointRenderer.setStyleOptionHandler(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, this._waypointStyleHandler);
+        this._waypointRenderer.setStyleOptionHandler(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, this._waypointStyleHandler);
+    }
+
+    /**
      * @param {WT_MapViewState} state
      */
     onConfigLoaded(state) {
         for (let property of WT_MapViewWaypointLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
+        this._setWaypointRendererStyleHandlers();
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateDeprecateBounds(state) {
+        let size = Math.max(state.projection.viewWidth, state.projection.viewHeight) * WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR;
+
+        let left = (state.projection.viewWidth - size) / 2;
+        let right = left + size;
+        let top = (state.projection.viewHeight - size) / 2;
+        let bottom = top + size;
+
+        this._waypointRenderer.setDeprecateBounds([{x: left, y: top}, {x: right, y: bottom}]);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _onViewChanged(state) {
+        this._updateDeprecateBounds(state);
+        this._airwayRenderer.desiredLabelDistance = Math.min(state.projection.viewWidth, state.projection.viewHeight) * 0.75;
     }
 
     /**
@@ -85,71 +285,17 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     onProjectionViewChanged(state) {
         super.onProjectionViewChanged(state);
-        this._airwayRenderer.desiredLabelDistance = Math.min(state.projection.viewWidth, state.projection.viewHeight) * 0.75;
-    }
 
-    _isInBounds(position, left, top, right, bottom) {
-        return position.x >= left &&
-               position.x <= right &&
-               position.y >= top &&
-               position.y <= bottom;
+        this._onViewChanged(state);
     }
 
     /**
-     *
-     * @param {WT_MapViewRegisteredWaypointEntry} entry
+     * @param {WT_MapViewState} state
      */
-    _removeRegisteredWaypointEntry(entry) {
-        if (entry.showLabel) {
-            this._labelManager.remove(entry.label);
-        }
-        this._registeredWaypoints.delete(entry.waypoint.uniqueID);
-        if (entry.standalone) {
-            this._standaloneWaypoints.delete(entry.waypoint);
-        }
-    }
+    onAttached(state) {
+        super.onAttached(state);
 
-    /**
-     * Registers a waypoint to be managed and drawn by this layer. Waypoints can be registered with a status as standalone or
-     * in association with a drawn airway segment. Only waypoints registered with a status as standalone will be labeled.
-     * @param {WT_Waypoint} waypoint - a waypoint.
-     * @param {Boolean} airway - whether the waypoint should be registered in association with a drawn airway segment.
-     *                           If false, the airway will be registered as standalone instead.
-     */
-    _registerWaypoint(waypoint, airway) {
-        let entry = this._registeredWaypoints.get(waypoint.uniqueID);
-        if (!entry) {
-            entry = {waypoint: waypoint, icon: null, label: null, showIcon: false, showLabel: false, standalone: !airway, airway: airway, timer: 0};
-            this._registeredWaypoints.set(waypoint.uniqueID, entry);
-        } else {
-            entry.standalone = entry.standalone || !airway;
-            entry.airway = entry.airway || airway;
-        }
-        if (entry.standalone) {
-            this._standaloneWaypoints.add(entry.waypoint);
-        }
-    }
-
-    /**
-     * De-registers a waypoint. Waypoints can be de-registered from status as standalone or in association with a drawn airway
-     * segment. If a waypoint is registered with both statuses, de-registration from standalone will not affect its status in
-     * association with an airway and vice versa.
-     * @param {WT_Waypoint} waypoint - a waypoint.
-     * @param {Boolean} airway - whether the waypoint should be de-registered from status in association with a drawn airway
-     *                           segment. If false, the airway will be de-registered from status as standalone instead.
-     */
-    _deregisterWaypoint(waypoint, airway) {
-        let entry = this._registeredWaypoints.get(waypoint.uniqueID);
-        if (entry) {
-            entry.standalone = entry.standalone && airway;
-            entry.airway = entry.airway && !airway;
-            if (!entry.standalone) {
-                this._standaloneWaypoints.delete(entry.waypoint);
-            }
-            if (!entry.standalone && !entry.airway) {
-                this._removeRegisteredWaypointEntry(entry);
-            }
-        }
+        this._onViewChanged(state);
     }
 
     /**
@@ -259,7 +405,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
     async _doUpdateSearch(search) {
         await search.update();
         for (let waypoint of search.results) {
-            this._registerWaypoint(waypoint, false);
+            this._waypointRenderer.register(waypoint, WT_MapViewWaypointCanvasRenderer.Context.NORMAL);
+            this._standaloneWaypoints.add(waypoint);
         }
     }
 
@@ -291,13 +438,11 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _handleSearchUpdates(state) {
-        let showAirway = this._shouldShowSymbolFromModel(state, state.model.waypoints.airwayShow, state.model.waypoints.airwayRange);
-        let showAirport = this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportLargeRange) ||
-                          this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportMediumRange) ||
-                          this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportSmallRange)
-        let showVOR = this._shouldShowSymbolFromModel(state, state.model.waypoints.vorShow, state.model.waypoints.vorRange);
-        let showNDB = this._shouldShowSymbolFromModel(state, state.model.waypoints.ndbShow, state.model.waypoints.ndbRange);
-        let showINT = this._shouldShowSymbolFromModel(state, state.model.waypoints.intShow, state.model.waypoints.intRange);
+        let showAirway = this._showAirway;
+        let showAirport = this._showAirport[0] || this._showAirport[1] || this._showAirport[2];
+        let showVOR = this._showVOR;
+        let showNDB = this._showNDB;
+        let showINT = this._showINT;
 
         let searchAirport = showAirport;
         let searchVOR = showVOR || showAirway;
@@ -374,7 +519,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     _clearAirwayWaypoints() {
         for (let waypoint of this._airwayWaypoints) {
-            this._deregisterWaypoint(waypoint, true);
+            this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY);
         }
         this._airwayWaypoints = [];
     }
@@ -394,7 +539,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._clearAirwayWaypoints();
         for (let waypoint of this._airwayRenderer.waypointsRendered) {
             this._airwayWaypoints.push(waypoint);
-            this._registerWaypoint(waypoint, true);
+            this._waypointRenderer.register(waypoint, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY);
         }
     }
 
@@ -513,167 +658,44 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * Gets and saves icon and label options for the specified waypoint to an options object.
-     * @param {WT_Waypoint} waypoint - the waypoint for which to get options.
-     * @param {{icon:WT_MapViewWaypointIconOptions, label:WT_MapViewWaypointLabelOptions}} options - the options object to which to save the options.
-     */
-    _getWaypointIconAndLabelOptions(waypoint, options) {
-        if (waypoint.icao) {
-            switch (waypoint.type) {
-                case WT_ICAOWaypoint.Type.AIRPORT:
-                    options.icon.priority = this.airportIconPriority - waypoint.size;
-                    options.icon.size = this.airportIconSize;
-                    options.label.priority = this.airportLabelPriority - waypoint.size;
-                    options.label.offset = this.airportLabelOffset;
-                    break;
-                case WT_ICAOWaypoint.Type.VOR:
-                    options.icon.priority = this.vorIconPriority;
-                    options.icon.size = this.vorIconSize;
-                    options.label.priority = this.vorLabelPriority;
-                    options.label.offset = this.vorLabelOffset;
-                    break;
-                case WT_ICAOWaypoint.Type.NDB:
-                    options.icon.priority = this.ndbIconPriority;
-                    options.icon.size = this.ndbIconSize;
-                    options.label.priority = this.ndbLabelPriority;
-                    options.label.offset = this.ndbLabelOffset;
-                    break;
-                case WT_ICAOWaypoint.Type.INT:
-                    options.icon.priority = this.intIconPriority;
-                    options.icon.size = this.intIconSize;
-                    options.label.priority = this.intLabelPriority;
-                    options.label.offset = this.intLabelOffset;
-                    break;
-            }
-        } else {
-            options.icon.priority = this.userIconPriority;
-            options.icon.size = this.userIconSize;
-            options.label.priority = this.userLabelPriority;
-            options.label.offset = this.userLabelOffset;
-        }
-    }
-
-    /**
-     * Gets an icon for the specified waypoint.
-     * @param {WT_Waypoint} waypoint - the waypoint for which to get an icon.
-     * @param {WT_MapViewWaypointIconOptions} options - icon options to use for the icon.
-     */
-    _getWaypointIcon(waypoint, options) {
-        let icon = this._waypointIconCache.getIcon(waypoint, options.priority, this.iconDirectory);
-        icon.size = options.size;
-        return icon;
-    }
-
-    /**
-     * Gets a label for the specified waypoint.
-     * @param {WT_Waypoint} waypoint - the waypoint for which to get a label.
-     * @param {WT_MapViewWaypointLabelOptions} options - label options to use for the label.
-     */
-    _getWaypointLabel(waypoint, options) {
-        let label = this._waypointLabelCache.getLabel(waypoint, options.priority);
-        label.fontSize = this.waypointLabelFontSize;
-        label.fontColor = this.waypointLabelFontColor;
-        label.outlineWidth = this.waypointLabelFontOutlineWidth;
-        label.outlineColor = this.waypointLabelFontOutlineColor;
-        label.offset = options.offset;
-        return label;
-    }
-
-    /**
-     * Updates all waypoints registered to this layer.
+     *
      * @param {WT_MapViewState} state - the current map view state.
      */
-    _updateRegisteredWaypoints(state) {
-        let tempVector = new WT_GVector2(0, 0);
-        let dt = state.currentTime / 1000 - this._lastTime;
-        let deprecateSize = Math.max(state.projection.viewWidth, state.projection.viewHeight) * WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR;
+    _updateVisibilityFromModel(state) {
+        this._showAirport[0] = this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportLargeRange);
+        this._showAirport[1] = this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportMediumRange);
+        this._showAirport[2] = this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportSmallRange);
+        this._showVOR = this._shouldShowSymbolFromModel(state, state.model.waypoints.vorShow, state.model.waypoints.vorRange);
+        this._showNDB = this._shouldShowSymbolFromModel(state, state.model.waypoints.ndbShow, state.model.waypoints.ndbRange);
+        this._showINT = this._shouldShowSymbolFromModel(state, state.model.waypoints.intShow, state.model.waypoints.intRange);
+        this._showAirway = this._shouldShowSymbolFromModel(state, state.model.waypoints.airwayShow, state.model.waypoints.airwayRange);
+    }
 
-        let viewBoundLeft = -state.projection.viewWidth * 0.05;
-        let viewBoundRight = state.projection.viewWidth * 1.05;
-        let viewBoundTop = -state.projection.viewHeight * 0.05;
-        let viewBoundBottom = state.projection.viewHeight * 1.05;
-
-        let deprecateBoundLeft = (state.projection.viewWidth - deprecateSize) / 2;
-        let deprecateBoundRight = deprecateBoundLeft + deprecateSize;
-        let deprecateBoundTop = (state.projection.viewHeight - deprecateSize) / 2;
-        let deprecateBoundBottom = deprecateBoundTop + deprecateSize;
-
-        let showAirport = [
-            this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportLargeRange),
-            this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportMediumRange),
-            this._shouldShowSymbolFromModel(state, state.model.waypoints.airportShow, state.model.waypoints.airportSmallRange)
-        ];
-        let showVOR = this._shouldShowSymbolFromModel(state, state.model.waypoints.vorShow, state.model.waypoints.vorRange);
-        let showNDB = this._shouldShowSymbolFromModel(state, state.model.waypoints.ndbShow, state.model.waypoints.ndbRange);
-        let showINT = this._shouldShowSymbolFromModel(state, state.model.waypoints.intShow, state.model.waypoints.intRange);
-
-        this._iconLayer.buffer.clear();
-        let iconsToDraw = [];
-        let options = {
-            icon: {size: 0},
-            label: {priority: 0, offset: undefined}
-        }
-
-        for (let entry of this._registeredWaypoints.values()) {
-            let viewPosition = state.projection.project(entry.waypoint.location, tempVector);
-            let isInView = this._isInBounds(viewPosition, viewBoundLeft, viewBoundTop, viewBoundRight, viewBoundBottom);
-            let showStandalone = false;
-            let showAirway = entry.airway;
-            if (entry.waypoint.icao !== undefined) {
-                switch (entry.waypoint.type) {
-                    case WT_ICAOWaypoint.Type.AIRPORT:
-                        showStandalone = showAirport[entry.waypoint.size];
-                        break;
-                    case WT_ICAOWaypoint.Type.VOR:
-                        showStandalone = showVOR;
-                        break;
-                    case WT_ICAOWaypoint.Type.NDB:
-                        showStandalone = showNDB;
-                        break;
-                    case WT_ICAOWaypoint.Type.INT:
-                        showStandalone = showINT;
-                        break;
-                }
-            }
-
-            let showIcon = (showStandalone || showAirway) && isInView;
-            let showLabel = showIcon && showStandalone;
-            if (!entry.icon || (showLabel && !entry.label)) {
-                this._getWaypointIconAndLabelOptions(entry.waypoint, options);
-            }
-            if (showIcon) {
-                if (!entry.icon) {
-                    entry.icon = this._getWaypointIcon(entry.waypoint, options.icon);
-                }
-                iconsToDraw.push(entry.icon);
-            }
-            if (showLabel && !entry.showLabel) {
-                if (!entry.label) {
-                    entry.label = this._getWaypointLabel(entry.waypoint, options.label);
-                }
-                this._labelManager.add(entry.label);
-            } else if (!showLabel && entry.showLabel) {
-                this._labelManager.remove(entry.label);
-            }
-
-            if (entry.standalone && !this._isInBounds(viewPosition, deprecateBoundLeft, deprecateBoundTop, deprecateBoundRight, deprecateBoundBottom)) {
-                entry.timer += dt;
-                if (entry.timer >= WT_MapViewWaypointLayer.WAYPOINT_DEPRECATE_DELAY) {
-                    this._deregisterWaypoint(entry.waypoint, false);
-                }
-            } else {
-                entry.timer = 0;
-            }
-
-            entry.showIcon = showIcon;
-            entry.showLabel = showLabel;
-        }
-
-        for (let icon of iconsToDraw.sort((a, b) => a.priority - b.priority)) {
-            icon.draw(state, this._iconLayer.buffer.context);
-        }
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
+    _updateWaypointRenderer(state) {
+        this._waypointRenderer.update(state);
         this._iconLayer.display.clear();
         this._iconLayer.copyBufferToCanvas();
+    }
+
+    /**
+     * Updates the set of standalone waypoints.
+     * @param {WT_MapViewState} state - the current map view state.
+     */
+    _updateStandaloneWaypoints(state) {
+        let toRemove = [];
+        for (let waypoint of this._standaloneWaypoints.values()) {
+            if (!this._waypointRenderer.isRegistered(waypoint, WT_MapViewWaypointCanvasRenderer.Context.NORMAL)) {
+                toRemove.push(waypoint);
+            }
+        }
+
+        for (let waypoint of toRemove) {
+            this._standaloneWaypoints.delete(waypoint);
+        }
     }
 
     /**
@@ -681,10 +703,11 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     onUpdate(state) {
         super.onUpdate(state);
-
+        this._updateVisibilityFromModel(state);
         this._retrieveWaypointsInRange(state);
         this._updateAirways(state);
-        this._updateRegisteredWaypoints(state);
+        this._updateWaypointRenderer(state);
+        this._updateStandaloneWaypoints(state);
         this._lastTime = state.currentTime / 1000;
         this._lastStandaloneWaypointsCount = this._standaloneWaypoints.size;
     }

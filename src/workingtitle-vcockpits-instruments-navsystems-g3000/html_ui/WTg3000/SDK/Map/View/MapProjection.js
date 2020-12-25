@@ -1129,8 +1129,8 @@ class WT_MapProjectionRenderer {
      * in spherical coordinates or pixel coordinates in the viewing window. If the former, the point will first be projected
      * before the bounds check is made.
      * @param {{lat:Number, long:Number}|{x:Number, y:Number}} point - the point to check.
-     * @param {WT_GVector2[]} bounds - an array specifying the top left and bottom right corners of the bounding rectangle,
-     *                                 at index 0 and 1, respectively
+     * @param {{x:Number, y:Number}[]} bounds - an array specifying the top left and bottom right corners of the bounding rectangle,
+     *                                          at index 0 and 1, respectively
      * @param {Number} margin - the margin to use, expressed as a fraction of the width/height of the bounding rectangle.
      *                          (a positive margin extends the bounds beyond the true bounds)
      * @returns {Boolean} whether the projection of the specified point lies within the bounding rectangle.
