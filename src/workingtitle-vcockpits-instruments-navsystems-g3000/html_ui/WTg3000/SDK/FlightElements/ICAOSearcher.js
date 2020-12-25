@@ -300,7 +300,7 @@ class WT_ICAOSearchRequest {
 
             this._isLocked = true;
             let center = this.center.copy();
-            let radius = this.radius.copy();
+            let radius = this.radius.asUnit(WT_Unit.NMILE);
             let searchLimit = this.searchLimit;
             await Promise.all([
                 SimVar.SetSimVarValue(`C:fs9gps:${this._keys.setLatitudeKey}`, "degree latitude", center.lat, this._simVarSearchInstanceKey),
@@ -309,7 +309,7 @@ class WT_ICAOSearchRequest {
 
             // ???????????
             for (let i = 0; i < 4; i++) {
-                SimVar.SetSimVarValue(`C:fs9gps:${this._keys.setRangeKey}`, "nautical miles", radius.asUnit(WT_Unit.NMILE), this._simVarSearchInstanceKey);
+                SimVar.SetSimVarValue(`C:fs9gps:${this._keys.setRangeKey}`, "nautical miles", radius, this._simVarSearchInstanceKey);
                 await SimVar.SetSimVarValue(`C:fs9gps:${this._keys.setSearchLimitKey}`, "number", searchLimit, this._simVarSearchInstanceKey);
             }
 
