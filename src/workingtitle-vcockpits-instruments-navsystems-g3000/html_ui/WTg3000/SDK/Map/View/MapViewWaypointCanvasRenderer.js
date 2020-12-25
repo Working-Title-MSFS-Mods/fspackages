@@ -222,7 +222,7 @@ class WT_MapViewWaypointCanvasRenderer {
         iconsToDraw.sort((a, b) => a.icon().priority - b.icon().priority);
         for (let entry of iconsToDraw) {
             let icon = entry.icon();
-            switch(entry.lastShownContext) {
+            switch(entry.lastShowContext) {
                 case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
                     icon.draw(state, this._canvasContexts.normal);
                     break;
@@ -288,7 +288,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
         this._deprecateTimer = 0;
         this._lastTime = 0;
 
-        this._lastShownContext = 0;
+        this._lastShowContext = 0;
         this._isDeprecated = false;
     }
 
@@ -315,8 +315,8 @@ class WT_MapViewWaypointCanvasRendererEntry {
      * @property {Number} lastShownContext
      * @type {Number}
      */
-    get lastShownContext() {
-        return this._lastShownContext;
+    get lastShowContext() {
+        return this._lastShowContext;
     }
 
     /**
@@ -347,7 +347,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
     isAnyContext(context, lastShown = false) {
         let toCompare;
         if (lastShown) {
-            toCompare = this.lastShownContext;
+            toCompare = this.lastShowContext;
         } else {
             toCompare = this.context;
         }
@@ -357,7 +357,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
     isOnlyContext(context, lastShown = false) {
         let toCompare;
         if (lastShown) {
-            toCompare = this.lastShownContext;
+            toCompare = this.lastShowContext;
         } else {
             toCompare = this.context;
         }
@@ -367,7 +367,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
     isAllContexts(context, lastShown = false) {
         let toCompare;
         if (lastShown) {
-            toCompare = this.lastShownContext;
+            toCompare = this.lastShowContext;
         } else {
             toCompare = this.context;
         }
@@ -393,7 +393,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
      * @param {{getOptions(state:WT_MapViewState, waypoint:WT_Waypoint)}} [styleOptionHandler]
      */
     _draw(state, showContext, showIcon, showLabel, iconCache, labelCache, styleOptionHandler) {
-        let needReplace = showContext !== this.lastShownContext;
+        let needReplace = showContext !== this.lastShowContext;
         if (needReplace) {
             if (this._showLabel && !showLabel) {
                 this._renderer._labelManager.remove(this._label);
@@ -416,47 +416,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
         this._showIcon = showIcon;
         this._showLabel = showLabel;
-        this._lastShownContext = showContext;
-    }
-
-    /**
-     *
-     * @param {WT_MapViewState} state
-     */
-    _drawHighlight(state) {
-        this._draw(state, WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT, true, true, this._renderer._iconCaches.highlight, this._renderer._labelCaches.highlight, this._renderer._styleOptionHandlers.highlight)
-    }
-
-    /**
-     *
-     * @param {WT_MapViewState} state
-     */
-    _drawFlightPlanActive(state) {
-        this._draw(state, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE, true, true, this._renderer._iconCaches.flightPlanActive, this._renderer._labelCaches.flightPlanActive, this._renderer._styleOptionHandlers.flightPlanActive)
-    }
-
-    /**
-     *
-     * @param {WT_MapViewState} state
-     */
-    _drawFlightPlan(state) {
-        this._draw(state, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN, true, true, this._renderer._iconCaches.flightPlan, this._renderer._labelCaches.flightPlan, this._renderer._styleOptionHandlers.flightPlan)
-    }
-
-    /**
-     *
-     * @param {WT_MapViewState} state
-     */
-    _drawNormal(state) {
-        this._draw(state, WT_MapViewWaypointCanvasRenderer.Context.NORMAL, true, true, this._renderer._iconCaches.normal, this._renderer._labelCaches.normal, this._renderer._styleOptionHandlers.normal)
-    }
-
-    /**
-     *
-     * @param {WT_MapViewState} state
-     */
-    _drawAirway(state) {
-        this._draw(state, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, true, false, this._renderer._iconCaches.airway, this._renderer._labelCaches.airway, this._renderer._styleOptionHandlers.airway)
+        this._lastShowContext = showContext;
     }
 
     /**
@@ -492,17 +452,37 @@ class WT_MapViewWaypointCanvasRendererEntry {
     update(state) {
         let hide = false;
         let isInView = state.projection.renderer.isInView(this.waypoint.location, 0.05);
+        let showContext = 0;
+        let showIcon = false;
+        let showLabel = false;
+        let propertyName = "";
+
         if (isInView) {
             if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT) && this._renderer._visibilityHandlers.highlight.isVisible(state, this.waypoint)) {
-                this._drawHighlight(state);
+                showContext = WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT;
+                showIcon = true;
+                showLabel = true;
+                propertyName = "highlight";
             } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE) && this._renderer._visibilityHandlers.flightPlanActive.isVisible(state, this.waypoint)) {
-                this._drawFlightPlanActive(state);
+                showContext = WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE;
+                showIcon = true;
+                showLabel = true;
+                propertyName = "flightPlanActive";
             } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN) && this._renderer._visibilityHandlers.flightPlan.isVisible(state, this.waypoint)) {
-                this._drawFlightPlan(state);
+                showContext = WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN;
+                showIcon = true;
+                showLabel = true;
+                propertyName = "flightPlan";
             } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL) && this._renderer._visibilityHandlers.normal.isVisible(state, this.waypoint)) {
-                this._drawNormal(state);
+                showContext = WT_MapViewWaypointCanvasRenderer.Context.NORMAL;
+                showIcon = true;
+                showLabel = true;
+                propertyName = "normal";
             } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY) && this._renderer._visibilityHandlers.airway.isVisible(state, this.waypoint)) {
-                this._drawAirway(state);
+                showContext = WT_MapViewWaypointCanvasRenderer.Context.AIRWAY;
+                showIcon = true;
+                showLabel = false;
+                propertyName = "airway";
             } else {
                 hide = true;
             }
@@ -511,7 +491,12 @@ class WT_MapViewWaypointCanvasRendererEntry {
         }
 
         if (hide) {
-            this._draw(state, this.lastShownContext, false, false);
+            this._draw(state, this.lastShowContext, false, false);
+        } else {
+            let iconCache = this._renderer._iconCaches[propertyName];
+            let labelCache = this._renderer._labelCaches[propertyName];
+            let optionHandler = this._renderer._styleOptionHandlers[propertyName];
+            this._draw(state, showContext, showIcon, showLabel, iconCache, labelCache, optionHandler);
         }
 
         this._updateDeprecation(state);
