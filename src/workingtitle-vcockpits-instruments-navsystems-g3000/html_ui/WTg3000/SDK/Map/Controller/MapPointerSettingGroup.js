@@ -1,11 +1,14 @@
 class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
     /**
      * @param {WT_MapController} controller - the controller with which to associate the new setting.
-     * @param {Number} maxScrollSpeed - the maximum map scroll speed, in pixels per second.
+     * @param {Number} [edgeBuffer] - the buffer, in units of relative width/height, around the edges of the viewing window
+     *                                that are inaccessible to the cursor.
+     * @param {Number} [maxScrollSpeed] - the maximum map scroll speed, in pixels per second.
      */
-    constructor(controller, maxScrollSpeed = WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT) {
+    constructor(controller, edgeBuffer = WT_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT, maxScrollSpeed = WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT) {
         super(controller, [], false, false);
 
+        this._edgeBuffer = edgeBuffer;
         this._maxScrollSpeed = maxScrollSpeed;
 
         this._showSetting = new WT_MapSetting(controller, WT_MapPointerSettingGroup.SHOW_KEY, false, false, false, false);
@@ -48,14 +51,17 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
             let deltaY = this._deltaYSetting.getValue();
             let delta = this._tempVector1.set(deltaX, deltaY);
             if (delta.length > this._maxScrollSpeed * dt) {
-                delta.setFromPolar(this._maxScrollSpeed * dt, delta.theta);
+                delta.scale(this._maxScrollSpeed * dt / delta.length, true);
             }
             this.view.projection.absXYToRelXY(delta, delta);
             let currentPosition = this.model.pointer.position;
 
             if (deltaX !== 0 || deltaY !== 0) {
                 let targetPosition = delta.add(currentPosition);
-                let clampedPosition = this._tempVector2.set(Math.max(0, Math.min(1, targetPosition.x)), Math.max(0, Math.min(1, targetPosition.y)));
+                let clampedPosition = this._tempVector2.set(
+                    Math.max(this._edgeBuffer, Math.min(1 - this._edgeBuffer, targetPosition.x)),
+                    Math.max(this._edgeBuffer, Math.min(1 - this._edgeBuffer, targetPosition.y))
+                );
                 let translate = this.view.projection.relXYToAbsXY(targetPosition.subtract(clampedPosition), targetPosition);
 
                 this.model.pointer.position = clampedPosition;
@@ -79,4 +85,5 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
 WT_MapPointerSettingGroup.SHOW_KEY = "WT_Map_CursorShow";
 WT_MapPointerSettingGroup.DELTA_X_KEY = "WT_Map_CursorDeltaX";
 WT_MapPointerSettingGroup.DELTA_Y_KEY = "WT_Map_CursorDeltaY";
+WT_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT = 0.05;
 WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT = 500; // pixels per second.
