@@ -100,7 +100,7 @@ class WT_G3000NavMap extends NavSystemElement {
         this.map.view.addLayer(new WT_MapViewRangeRingLayer());
         this.map.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(state) {
-                return state.model.orientation.mode === WT_G3000NavMap.Orientation.TRK ? state.model.airplane.model.trackTrue() : state.model.airplane.model.headingTrue();
+                return state.model.orientation.mode === WT_G3000NavMap.Orientation.TRK ? state.model.airplane.trackTrue() : state.model.airplane.headingTrue();
             }
         }));
         this.map.view.addLayer(new WT_MapViewCrosshairLayer());
@@ -378,7 +378,7 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
     }
 
     _getTargetTrackPlane() {
-        return this.model.airplane.model.position(this._tempGeoPoint);
+        return this.model.airplane.position(this._tempGeoPoint);
     }
 
     updateRange() {
@@ -419,13 +419,13 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         switch (orientation) {
             case WT_G3000NavMap.Orientation.TRK:
                 if (!SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
-                    rotation = -this.model.airplane.model.trackTrue();
+                    rotation = -this.model.airplane.trackTrue();
                     this.model.rangeCompass.show = true;
                     this.model.rangeRing.show = false;
                     break;
                 }
             case WT_G3000NavMap.Orientation.HDG:
-                rotation = -this.model.airplane.model.headingTrue();
+                rotation = -this.model.airplane.headingTrue();
                 this.model.rangeCompass.show = true;
                 this.model.rangeRing.show = false;
                 break;

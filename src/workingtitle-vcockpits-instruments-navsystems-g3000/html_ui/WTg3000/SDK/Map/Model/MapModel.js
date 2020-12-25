@@ -14,7 +14,6 @@ class WT_MapModel {
 
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
 
-        this.addModule(new WT_MapModelAirplaneModule());
         this.addModule(new WT_MapModelWeatherModule());
         this.addModule(new WT_MapModelAutopilotModule());
     }
@@ -41,6 +40,15 @@ class WT_MapModel {
 
     set range(range) {
         this._range.set(range);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirplaneModel} airplane - a model object that allows access to properties of the player airplane.
+     * @type {WT_AirplaneModel}
+     */
+    get airplane() {
+        return WT_AirplaneModel.INSTANCE;
     }
 
     /**
@@ -121,22 +129,6 @@ class WT_MapModelModule {
         this._optsManager.setOptions(opts);
     }
 }
-
-class WT_MapModelAirplaneModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelAirplaneModule.NAME_DEFAULT) {
-        super(name);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_AirplaneModel} model - model object for the player aircraft.
-     * @type {WT_AirplaneModel}
-     */
-    get model() {
-        return WT_AirplaneModel.INSTANCE;
-    }
-}
-WT_MapModelAirplaneModule.NAME_DEFAULT = "airplane";
 
 class WT_MapModelWeatherModule extends WT_MapModelModule {
     constructor(name = WT_MapModelWeatherModule.NAME_DEFAULT) {
