@@ -44,7 +44,7 @@ class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
      */
     update(state) {
         state.projection.project(this.waypoint.location, this._position);
-        this._position.add(this.offset);
+        this._position.add(this.offset.x * state.dpiScale, this.offset.y * state.dpiScale);
 
         super.update(state);
     }
