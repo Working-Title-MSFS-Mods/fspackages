@@ -189,7 +189,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
     update(state) {
         let reference = state.model.pointer.measureReference;
         if (!reference) {
-            reference = state.model.airplane.model.position(this._tempGeoPoint1);
+            reference = state.model.airplane.position(this._tempGeoPoint1);
         }
         let pointer = state.projection.invert(state.projection.relXYToAbsXY(state.model.pointer.position, this._tempVector), this._tempGeoPoint2);
         this._updateDistance(state, reference, pointer);
