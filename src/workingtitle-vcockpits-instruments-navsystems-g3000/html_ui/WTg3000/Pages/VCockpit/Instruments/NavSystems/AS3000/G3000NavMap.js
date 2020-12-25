@@ -4,7 +4,6 @@ class WT_G3000NavMap extends NavSystemElement {
 
         this._instrumentID = instrumentID;
 
-        this._map = new WT_Map(instrumentID);
         this._layerOptions = layerOptions;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
@@ -22,11 +21,29 @@ class WT_G3000NavMap extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {WT_Map} map
-     * @type {WT_Map}
+     * @property {WT_MapModel} model - the model associated with this map.
+     * @type {WT_MapModel}
      */
-    get map() {
-        return this._map;
+    get model() {
+        return this._model;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapView} view - the view associated with this map.
+     * @type {WT_MapView}
+     */
+    get view() {
+        return this._view;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapController} controller - the controller associated with this map.
+     * @type {WT_MapController}
+     */
+    get controller() {
+        return this._controller;
     }
 
     /**
@@ -66,69 +83,77 @@ class WT_G3000NavMap extends NavSystemElement {
     }
 
     init(root) {
-        this.map.init(root.querySelector(`map-view`));
-
-        this.map.model.addModule(new WT_MapModelUnitsModule());
-        this.map.model.addModule(new WT_MapModelCrosshairModule());
-        this.map.model.addModule(new WT_MapModelTerrainModule());
-        this.map.model.addModule(new WT_MapModelWeatherDisplayModule());
-        this.map.model.addModule(new WT_MapModelOrientationModule());
-        if (this._layerOptions.windData) {
-            this.map.model.addModule(new WT_MapModelWindDataModule());
+        let viewElement = root.querySelector(`map-view`);
+        this._model = new WT_MapModel();
+        if (!viewElement) {
+            viewElement = new WT_MapView();
+            root.appendChild(viewElement);
         }
-        this.map.model.addModule(new WT_MapModelPointerModule());
-        this.map.model.addModule(new WT_MapModelRangeRingModule());
-        this.map.model.addModule(new WT_MapModelRangeCompassModule());
-        this.map.model.addModule(new WT_MapModelTrackVectorModule());
-        this.map.model.addModule(new WT_MapModelFuelRingModule());
-        this.map.model.addModule(new WT_MapModelAltitudeInterceptModule());
-        this.map.model.addModule(new WT_MapModelBordersModule());
-        this.map.model.addModule(new WT_MapModelWaypointsModule());
-        this.map.model.addModule(new WT_MapModelCitiesModule());
+        this._view = viewElement;
+        this.view.setModel(this.model);
+        this._controller = new WT_MapController(this.instrumentID, this.model, this.view);
+
+        this.model.addModule(new WT_MapModelUnitsModule());
+        this.model.addModule(new WT_MapModelCrosshairModule());
+        this.model.addModule(new WT_MapModelTerrainModule());
+        this.model.addModule(new WT_MapModelWeatherDisplayModule());
+        this.model.addModule(new WT_MapModelOrientationModule());
+        if (this._layerOptions.windData) {
+            this.model.addModule(new WT_MapModelWindDataModule());
+        }
+        this.model.addModule(new WT_MapModelPointerModule());
+        this.model.addModule(new WT_MapModelRangeRingModule());
+        this.model.addModule(new WT_MapModelRangeCompassModule());
+        this.model.addModule(new WT_MapModelTrackVectorModule());
+        this.model.addModule(new WT_MapModelFuelRingModule());
+        this.model.addModule(new WT_MapModelAltitudeInterceptModule());
+        this.model.addModule(new WT_MapModelBordersModule());
+        this.model.addModule(new WT_MapModelWaypointsModule());
+        this.model.addModule(new WT_MapModelCitiesModule());
 
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
 
-        this.map.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}-navmap`));
-        this.map.view.addLayer(new WT_MapViewBorderLayer(labelManager));
-        this.map.view.addLayer(new WT_MapViewCityLayer(labelManager));
-        this.map.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, labelManager));
-        this.map.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, labelManager, new WT_G3000MapViewFlightPlanLegStyleChooser()));
-        this.map.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
-        this.map.view.addLayer(new WT_MapViewFuelRingLayer());
-        this.map.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
-        this.map.view.addLayer(new WT_MapViewTrackVectorLayer());
-        this.map.view.addLayer(new WT_MapViewRangeRingLayer());
-        this.map.view.addLayer(new WT_MapViewRangeCompassArcLayer({
+        this.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}-navmap`));
+        this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
+        this.view.addLayer(new WT_MapViewCityLayer(labelManager));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, labelManager, new WT_G3000MapViewFlightPlanLegStyleChooser()));
+        this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
+        this.view.addLayer(new WT_MapViewFuelRingLayer());
+        this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
+        this.view.addLayer(new WT_MapViewTrackVectorLayer());
+        this.view.addLayer(new WT_MapViewRangeRingLayer());
+        this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(state) {
                 return state.model.orientation.mode === WT_G3000NavMap.Orientation.TRK ? state.model.airplane.trackTrue() : state.model.airplane.headingTrue();
             }
         }));
-        this.map.view.addLayer(new WT_MapViewCrosshairLayer());
-        this.map.view.addLayer(new WT_MapViewAirplaneLayer());
-        this.map.view.addLayer(new WT_MapViewPointerLayer());
+        this.view.addLayer(new WT_MapViewCrosshairLayer());
+        this.view.addLayer(new WT_MapViewAirplaneLayer());
+        this.view.addLayer(new WT_MapViewPointerLayer());
         if (this._layerOptions.windData) {
-            this.map.view.addLayer(new WT_MapViewWindDataLayer());
+            this.view.addLayer(new WT_MapViewWindDataLayer());
         }
-        this.map.view.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3000NavMap.ORIENTATION_DISPLAY_TEXTS));
+        this.view.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3000NavMap.ORIENTATION_DISPLAY_TEXTS));
         if (this._layerOptions.rangeDisplay) {
-            this.map.view.addLayer(new WT_MapViewRangeDisplayLayer());
+            this.view.addLayer(new WT_MapViewRangeDisplayLayer());
         }
-        this.map.view.addLayer(new WT_MapViewPointerInfoLayer());
+        this.view.addLayer(new WT_MapViewPointerInfoLayer());
         if (this._layerOptions.miniCompass) {
-            this.map.view.addLayer(new WT_MapViewMiniCompassLayer());
+            this.view.addLayer(new WT_MapViewMiniCompassLayer());
         }
 
-        this.map.controller.addSetting(this._rangeTargetRotationController = new WT_G3000MapRangeTargetRotationController(this.map.controller));
-        this.map.controller.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.map.controller));
-        this.map.controller.addSetting(new WT_MapTrackVectorSettingGroup(this.map.controller));
-        this.map.controller.addSetting(new WT_MapFuelRingSettingGroup(this.map.controller));
-        this.map.controller.addSetting(new WT_MapAltitudeInterceptSetting(this.map.controller));
+        this.controller.addSetting(this._rangeTargetRotationController = new WT_G3000MapRangeTargetRotationController(this.controller));
+        this.controller.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.controller));
+        this.controller.addSetting(new WT_MapTrackVectorSettingGroup(this.controller));
+        this.controller.addSetting(new WT_MapFuelRingSettingGroup(this.controller));
+        this.controller.addSetting(new WT_MapAltitudeInterceptSetting(this.controller));
 
         if (this._layerOptions.windData) {
-            this.map.controller.addSetting(new WT_MapWindDataShowSetting(this.map.controller));
+            this.controller.addSetting(new WT_MapWindDataShowSetting(this.controller));
         }
 
-        this._dcltrSetting = new WT_MapDCLTRSetting(this.map.controller, [
+        this._dcltrSetting = new WT_MapDCLTRSetting(this.controller, [
             // OFF
             {},
 
@@ -160,38 +185,38 @@ class WT_G3000NavMap extends NavSystemElement {
                 airport: true
             }
         ]);
-        this.map.controller.addSetting(this._dcltrSetting);
+        this.controller.addSetting(this._dcltrSetting);
 
-        this.map.controller.addSetting(this._nexradShowSetting = new WT_MapSymbolShowSetting(this.map.controller, "nexrad", "weatherDisplay", "nexradShow", WT_G3000NavMap.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.NEXRAD_RANGE_KEY, "weatherDisplay", "nexradRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.NEXRAD_RANGE_DEFAULT));
+        this.controller.addSetting(this._nexradShowSetting = new WT_MapSymbolShowSetting(this.controller, "nexrad", "weatherDisplay", "nexradShow", WT_G3000NavMap.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.NEXRAD_RANGE_KEY, "weatherDisplay", "nexradRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.NEXRAD_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "airway", "waypoints", "airwayShow", WT_G3000NavMap.AIRWAY_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.AIRWAY_RANGE_KEY, "waypoints", "airwayRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRWAY_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "airway", "waypoints", "airwayShow", WT_G3000NavMap.AIRWAY_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.AIRWAY_RANGE_KEY, "waypoints", "airwayRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRWAY_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "airport", "waypoints", "airportShow", WT_G3000NavMap.AIRPORT_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.AIRPORT_LARGE_RANGE_KEY, "waypoints", "airportLargeRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRPORT_LARGE_RANGE_DEFAULT));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.AIRPORT_MEDIUM_RANGE_KEY, "waypoints", "airportMediumRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRPORT_MEDIUM_RANGE_DEFAULT));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.AIRPORT_SMALL_RANGE_KEY, "waypoints", "airportSmallRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRPORT_SMALL_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "airport", "waypoints", "airportShow", WT_G3000NavMap.AIRPORT_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.AIRPORT_LARGE_RANGE_KEY, "waypoints", "airportLargeRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRPORT_LARGE_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.AIRPORT_MEDIUM_RANGE_KEY, "waypoints", "airportMediumRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRPORT_MEDIUM_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.AIRPORT_SMALL_RANGE_KEY, "waypoints", "airportSmallRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.AIRPORT_SMALL_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "vor", "waypoints", "vorShow", WT_G3000NavMap.VOR_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.VOR_RANGE_KEY, "waypoints", "vorRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.VOR_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "vor", "waypoints", "vorShow", WT_G3000NavMap.VOR_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.VOR_RANGE_KEY, "waypoints", "vorRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.VOR_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "ndb", "waypoints", "ndbShow", WT_G3000NavMap.NDB_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.NDB_RANGE_KEY, "waypoints", "ndbRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.NDB_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "ndb", "waypoints", "ndbShow", WT_G3000NavMap.NDB_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.NDB_RANGE_KEY, "waypoints", "ndbRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.NDB_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "int", "waypoints", "intShow", WT_G3000NavMap.INT_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.INT_RANGE_KEY, "waypoints", "intRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.INT_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "int", "waypoints", "intShow", WT_G3000NavMap.INT_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.INT_RANGE_KEY, "waypoints", "intRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.INT_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "stateBorder", "borders", "stateBorderShow", WT_G3000NavMap.BORDERS_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.BORDERS_RANGE_KEY, "borders", "stateBorderRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.BORDERS_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "stateBorder", "borders", "stateBorderShow", WT_G3000NavMap.BORDERS_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.BORDERS_RANGE_KEY, "borders", "stateBorderRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.BORDERS_RANGE_DEFAULT));
 
-        this.map.controller.addSetting(new WT_MapSymbolShowSetting(this.map.controller, "city", "cities", "show", WT_G3000NavMap.CITY_SHOW_KEY, this._dcltrSetting));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.CITY_LARGE_RANGE_KEY, "cities", "largeRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.CITY_LARGE_RANGE_DEFAULT));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.CITY_MEDIUM_RANGE_KEY, "cities", "mediumRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.CITY_MEDIUM_RANGE_DEFAULT));
-        this.map.controller.addSetting(new WT_MapSymbolRangeSetting(this.map.controller, WT_G3000NavMap.CITY_SMALL_RANGE_KEY, "cities", "smallRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.CITY_SMALL_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "city", "cities", "show", WT_G3000NavMap.CITY_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.CITY_LARGE_RANGE_KEY, "cities", "largeRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.CITY_LARGE_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.CITY_MEDIUM_RANGE_KEY, "cities", "mediumRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.CITY_MEDIUM_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3000NavMap.CITY_SMALL_RANGE_KEY, "cities", "smallRange", WT_G3000NavMap.MAP_RANGE_LEVELS, WT_G3000NavMap.CITY_SMALL_RANGE_DEFAULT));
 
-        this.map.controller.init();
-        this.map.controller.update();
+        this.controller.init();
+        this.controller.update();
     }
 
     onEvent(event) {
@@ -199,7 +224,7 @@ class WT_G3000NavMap extends NavSystemElement {
 
     onUpdate(deltaTime) {
         this._rangeTargetRotationController.update();
-        this.map.update();
+        this.view.update();
     }
 }
 WT_G3000NavMap.LAYER_OPTIONS_DEFAULT = {
