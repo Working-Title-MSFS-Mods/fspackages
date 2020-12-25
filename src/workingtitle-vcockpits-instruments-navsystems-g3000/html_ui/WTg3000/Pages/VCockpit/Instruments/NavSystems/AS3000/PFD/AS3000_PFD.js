@@ -112,6 +112,12 @@ class AS3000_PFD extends NavSystem {
                 }
             }
         }
+        this.icaoWaypointFactory.update();
+        let currentTime = Date.now() / 1000;
+        if (currentTime - this._lastFPMSyncTime >= AS3000_PFD.FLIGHT_PLAN_SYNC_INTERVAL) {
+            this.flightPlanManagerWT.syncActiveFromGame();
+            this._lastFPMSyncTime = currentTime;
+        }
     }
 
     reboot() {
@@ -122,6 +128,7 @@ class AS3000_PFD extends NavSystem {
             this.mainPage.reset();
     }
 }
+AS3000_PFD.FLIGHT_PLAN_SYNC_INTERVAL = 2;
 
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
     constructor(_name = "", _callback = null, _statusCB = null, _valueCB = null, _stateCB = null) {
