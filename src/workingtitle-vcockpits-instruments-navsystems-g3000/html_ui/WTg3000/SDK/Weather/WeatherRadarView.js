@@ -11,7 +11,7 @@ class WT_WeatherRadarView extends HTMLElement {
         this._bingMap.setMode(EBingMode.PLANE);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
-        this._setWeatherMode();
+        this._setScanMode();
 
         this._overlay = document.createElementNS(Avionics.SVG.NS, "svg");
         this._overlay.style.position = "absolute";
@@ -138,7 +138,7 @@ class WT_WeatherRadarView extends HTMLElement {
         }
     }
 
-    _setWeatherMode() {
+    _setScanMode() {
         this._bingMap.showWeather(EWeatherRadar.HORIZONTAL, Math.PI / 2);
     }
 
@@ -231,7 +231,7 @@ class WT_WeatherRadarView extends HTMLElement {
     }
 
     _redraw() {
-        if (this.model.mode === WT_WeatherRadarModel.Mode.HORIZONTAL) {
+        if (this.model.scanMode === WT_WeatherRadarModel.ScanMode.HORIZONTAL) {
             this._redrawHorizontal();
         }
     }
