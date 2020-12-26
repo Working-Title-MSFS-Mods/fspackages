@@ -7,7 +7,7 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {String} instrumentID - the ID of the instrument to which this weather radar belongs.
+     * @property {String} instrumentID - the ID of this weather radar.
      * @type {String}
      */
     get instrumentID() {
@@ -25,8 +25,8 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {WT_WeatherRadarModel}
-     * @type {WT_WeatherRadarModel}
+     * @property {WT_DataStoreController} controller - the controller for this weather radar.
+     * @type {WT_DataStoreController}
      */
     get controller() {
         return this._controller;
@@ -45,12 +45,15 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
         this._settingsView = root.querySelector(`weatherradar-view-settings`);
         this._settingsView.setModel(this.model);
 
-        this._controller = new WT_DataStoreController(`${this.instrumentID}`);
+        this._controller = new WT_DataStoreController(`${this.instrumentID}`, this.model);
 
         this.controller.addSetting(new WT_DataStoreSetting(this.controller, WT_G3x5WeatherRadar.MODE_KEY, WT_G3x5WeatherRadar.MODE_DEFAULT, true, false));
         this.controller.addSetting(this._displaySetting = new WT_DataStoreSetting(this.controller, WT_G3x5WeatherRadar.DISPLAY_KEY, WT_G3x5WeatherRadar.DISPLAY_DEFAULT, true, false));
         this.controller.addSetting(new WT_DataStoreSetting(this.controller, WT_G3x5WeatherRadar.SCAN_MODE_KEY, WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT, true, false));
         this.controller.addSetting(new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5WeatherRadar.RANGES, WT_G3x5WeatherRadar.RANGE_DEFAULT));
+
+        this.controller.init();
+        this.controller.update();
     }
 
     onUpdate(deltaTime) {
