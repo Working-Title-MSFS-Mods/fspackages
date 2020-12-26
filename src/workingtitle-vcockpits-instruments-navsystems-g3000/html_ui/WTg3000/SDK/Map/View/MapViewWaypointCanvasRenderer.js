@@ -395,7 +395,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
     _draw(state, showContext, showIcon, showLabel, iconCache, labelCache, styleOptionHandler) {
         let needReplace = showContext !== this.lastShowContext;
         if (needReplace) {
-            if (this._showLabel && !showLabel) {
+            if (this._showLabel) {
                 this._renderer._labelManager.remove(this._label);
             }
 
