@@ -69,6 +69,13 @@
                     <pane-titled id="MainMap" titletext="Navigation Map">
                         <map-view slot="content" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
                     </pane-titled>
+                    <pane-titled id="WeatherRadar" titletext="Weather Radar">
+                        <div class="container" slot="content">
+                            <weatherradar-view></weatherradar-view>
+                            <weatherradar-view-scale></weatherradar-view-scale>
+                            <weatherradar-view-settings></weatherradar-view-settings>
+                        </div>
+                    </pane-titled>
                 </div>
             </div>
         </div>
@@ -197,6 +204,9 @@
 <script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapFuelRingSettingGroup.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAltitudeInterceptSetting.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
+
 <script type="text/html" import-script="/WTg3000/SDK/Display/TitledPane.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
@@ -217,4 +227,5 @@
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000MapViewFlightPlanLegStyleChooser.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000WeatherRadar.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>
