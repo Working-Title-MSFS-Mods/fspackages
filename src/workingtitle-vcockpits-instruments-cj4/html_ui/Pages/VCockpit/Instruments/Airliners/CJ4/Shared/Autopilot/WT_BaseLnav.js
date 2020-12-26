@@ -168,21 +168,25 @@ class WT_BaseLnav {
             }
 
             //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
-            if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10 && !isLandingRunway && !this._inhibitSequence) {
+            if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10 && !isLandingRunway) {
                 this._setHeading = this._dtk;
-                this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
-
-                SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
-                this._isWaypointAlerting = false;
-                this._waypointSequenced = true;
-
-                this._isTurnCompleting = false;
-                this._executeInhibited = false;
-
-                this._nextTurnHeading = this._setHeading;
-                this.execute();
-                this._isTurnCompleting = true;
-
+                if (!this._inhibitSequence) {
+                    this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
+                    SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+                    this._isWaypointAlerting = false;
+                    this._waypointSequenced = true;
+    
+                    this._isTurnCompleting = false;
+                    this._executeInhibited = false;
+    
+                    this._nextTurnHeading = this._setHeading;
+                    this.execute();
+                    this._isTurnCompleting = true;
+                } else {
+                    const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
+                    this._setHeading = planeHeading;
+                    this.execute();
+                }
                 return;
             }
             //CASE WHERE INTERCEPT ANGLE IS NOT BIG ENOUGH AND INTERCEPT NEEDS TO BE SET TO BEARING
