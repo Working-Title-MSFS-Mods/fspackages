@@ -64,11 +64,40 @@ class CJ4_FMC_LegsPage {
         let offset = Math.floor((this._currentPage - 1) * 5);
         let allWaypoints = this._fmc.flightPlanManager.getAllWaypoints();
         this._wayPointsToRender = this.buildLegs(allWaypoints, this._activeWptIndex);
+        let flightplanFPA = WTDataStore.get('CJ4_vpa', 3);
+        let runwayIndex = undefined;
+        let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
+        console.log("gpAngle legs page: " + gpAngle);
+
+        //FIND RUNWAY INDEX
+        console.log("_wayPointsToRender.length: " + this._wayPointsToRender.length);
+        if (allWaypoints[allWaypoints.length - 2].isRunway) {
+            runwayIndex = this._wayPointsToRender.length - 2;
+            console.log("runway found: " + runwayIndex);
+        }
 
         this._pageCount = Math.floor((this._wayPointsToRender.length - 1) / 5) + 1;
         for (let i = 0; i < 5; i++) {
 
             let waypoint = this._wayPointsToRender[i + offset];
+            //GET FPA
+            let segment = undefined;
+            if (waypoint && waypoint.fix && (waypoint.fix.icao != "$EMPTY" || waypoint.fix.icao != "$DISCO")) {
+                segment = this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoint.fix);
+            }
+            let waypointFPA = 0;
+            if (segment && (segment.type == SegmentType.Arrival || segment.type == SegmentType.Approach) && waypoint.fix.legAltitudeDescription > 0) {
+                waypointFPA = flightplanFPA;
+            }
+            if (runwayIndex) {
+                if (i + offset == runwayIndex) {
+                    waypointFPA = gpAngle > 0 ? gpAngle : flightplanFPA;
+                }
+                if ((i + offset == runwayIndex - 1 || i + offset == runwayIndex - 2) && waypoint.fix.legAltitudeDescription == 0) {
+                    waypointFPA = gpAngle > 0 ? gpAngle : flightplanFPA;
+                }
+            }
+            //EXISTING ->
             if (waypoint && waypoint.fix && waypoint.fix.icao === "$EMPTY") {
                 this._rows[2 * i + 1] = ["-----"];
             }
@@ -87,6 +116,7 @@ class CJ4_FMC_LegsPage {
 
                 // format distance
                 distance = (distance < 100) ? distance.toFixed(1) : distance.toFixed(0);
+                const fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
 
                 if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
@@ -100,7 +130,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i] = [" THEN[magenta]"];
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -[magenta]"];
                     } else {
-                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
+                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]" + fpaText];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[magenta]" : "USR[magenta]"];
                     }
                 }
@@ -110,7 +140,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -"];
                     }
                     else {
-                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
+                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM" + fpaText];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"];
                     }
                 }
@@ -144,11 +174,22 @@ class CJ4_FMC_LegsPage {
 
     buildLegs(waypoints, activeWaypointIndex) {
         const displayWaypoints = [];
-        for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
-            displayWaypoints.push({ index: i, fix: waypoints[i] });
+        let runwayExists = false;
+        let runwayIndex = 0;
 
-            if (waypoints[i].endsInDiscontinuity) {
-                displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
+        for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
+
+            if (waypoints[i].isRunway && this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoints[i]).type == SegmentType.Approach) {
+                runwayExists = true;
+                runwayIndex = i;
+            }
+            if (runwayExists && i == runwayIndex + 1) {
+                console.log("skipping destination waypoint");
+            } else {
+                displayWaypoints.push({ index: i, fix: waypoints[i] });
+                if (waypoints[i].endsInDiscontinuity) {
+                    displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
+                }
             }
         }
 
