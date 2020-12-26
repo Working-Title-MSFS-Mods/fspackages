@@ -38,10 +38,7 @@ class WT_G3000MFDMainPaneElement extends NavSystemElementGroup {
 
     onUpdate(deltaTime) {
         this._updateVisibility();
-        if (this._showWeatherRadar) {
-            this._weatherRadar.onUpdate(deltaTime);
-        }
-        this._map.onUpdate(deltaTime);
+        super.onUpdate(deltaTime);
     }
 }
 
