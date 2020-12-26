@@ -60,8 +60,8 @@ class AS3000_MFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new AS3000_MFD_NavDataBar(this.flightPlanManager)));
         this.pageGroups = [
-            new NavSystemPageGroup("MAP", this, [
-                new AS3000_MFD_MainMap(this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager)
+            new NavSystemPageGroup("MAIN", this, [
+                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3000MFDMainPaneElement(this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager))
             ]),
         ];
 
@@ -97,22 +97,6 @@ class AS3000_MFD extends NavSystem {
     }
 }
 AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL = 2; // seconds
-
-class AS3000_MFD_MapElement extends WT_G3000NavMap {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
-        super(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager);
-    }
-}
-
-class AS3000_MFD_MainMap extends NavSystemPage {
-    constructor(icaoWaypointFactory, icaoSearchers, flightPlanManager) {
-        super("NAVIGATION MAP", "MainMap", new NavSystemElementGroup([
-            new AS3000_MFD_MapElement("MFD", icaoWaypointFactory, icaoSearchers, flightPlanManager)
-        ]));
-    }
-    init() {
-    }
-}
 
 class AS3000_MFD_NavDataField {
     constructor(rootElement) {
