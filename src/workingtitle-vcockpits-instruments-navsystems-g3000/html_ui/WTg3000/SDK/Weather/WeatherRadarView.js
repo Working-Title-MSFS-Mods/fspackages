@@ -265,9 +265,9 @@ class WT_WeatherRadarView extends HTMLElement {
             this._viewWidth = viewWidth;
             this._viewHeight = viewHeight;
             this._resizeOverlay();
-
+            this._redraw();
         }
-        this._redraw();
+
         this._updateCenterAndRange();
     }
 }
