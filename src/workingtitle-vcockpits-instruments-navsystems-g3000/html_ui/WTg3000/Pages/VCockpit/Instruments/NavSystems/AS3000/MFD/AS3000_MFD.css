@@ -22,13 +22,13 @@
     display: none; }
 
 @font-face {
-    font-family: "Roboto";
+    font-family: "Roboto-Regular";
     src: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
-    font-family: "Roboto";
+    font-family: "Roboto-Regular";
     src: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Bold.ttf") format("truetype");
     font-weight: bold;
     font-style: normal;
@@ -196,6 +196,9 @@ as3000-mfd-element {
             height: 4%;
             background-color: #1a1d21;
             padding: 0 1vw 0.25vh;
+            font-family: "Roboto-Regular";
+            font-weight: bold;
+            line-height: 3vh;
             display: grid;
             grid-template-columns: repeat(8, 12.5%);
             grid-template-rows: 1fr; }
@@ -206,22 +209,25 @@ as3000-mfd-element {
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .title {
               font-size: 2vh;
               color: white;
-              margin-right: 0.25vw;
-              margin-bottom: 0.2vh; }
+              margin-right: 0.5em; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .value {
-              font-size: 2.5vh;
+              font-size: 2.75vh;
               color: #d12bc7; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .number {
-              font-size: 2.5vh; }
+              font-size: 2.75vh; }
             as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar .unit {
               font-size: 2vh; }
-          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #MainMap {
-            position: absolute;
-            height: 96%;
-            width: 100%;
-            bottom: 0%;
-            left: 0%;
-            display: block; }
+
+
+as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #MainMap {
+    display: block;
+    position: absolute;
+    height: 96%;
+    width: 100%;
+    bottom: 0%;
+    left: 0%;
+    font-family: "Roboto-Regular";
+}
 
 as3000-mfd-element #Electricity map-view {
     position: relative;
@@ -253,4 +259,40 @@ as3000-mfd-element #Electricity map-view {
         top: 0;
         left: 10vh;
         margin: 1px;
+    }
+
+as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #WeatherRadar {
+    display: none;
+    font-family: "Roboto-Regular";
+}
+
+as3000-mfd-element #Electricity #WeatherRadar .container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+}
+    as3000-mfd-element #Electricity #WeatherRadar weatherradar-view {
+        position: absolute;
+        left: 0%;
+        bottom: 35%;
+        width: 100%;
+        height: 50%;
+        display: block;
+    }
+    as3000-mfd-element #Electricity #WeatherRadar weatherradar-view-scale {
+        display: block;
+        position: absolute;
+        left: 2%;
+        bottom: 2%;
+        width: 15vh;
+        height: 30%;
+    }
+    as3000-mfd-element #Electricity #WeatherRadar weatherradar-view-settings {
+        display: block;
+        position: absolute;
+        right: 2%;
+        bottom: 2%;
+        width: 20vh;
+        height: 20%;
     }
