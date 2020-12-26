@@ -54,6 +54,10 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
     }
 
     onUpdate(deltaTime) {
+        if (!this.isVisible()) {
+            return;
+        }
+
         this._radarView.update();
         this._settingsView.update();
     }
