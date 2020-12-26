@@ -88,17 +88,17 @@ class WT_VnavAutopilot {
                         this._pathArmAbove = false;
                     }
                     else if (this._vnav._altDeviation <= 1000 && this._vnav._distanceToTod < 20 && this._vnav._distanceToTod >= 0 
-                        && (this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
+                        && (this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude || (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists))) {
                         //CAN ARM INTERCEPT FROM BELOW
                         this._pathArm = true;
                         this._pathArmAbove = false;
                     }
                     else if (this._vnav._altDeviation > 1000 && this._vnav._topOfDescent > this._vnav._vnavTargetDistance 
-                        && (this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
+                        && (this._navModeSelector.selectedAlt1 + 75 < this._indicatedAltitude || (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists))) {
                         //CAN ARM INTERCEPT FROM ABOVE
                         this._pathArmAbove = true;
                         this._pathArm = false;
-                    }        
+                    }
                     else {
                         this._pathArm = false;
                         this._pathArmAbove = false;
@@ -311,12 +311,15 @@ class WT_VnavAutopilot {
         }
         else if (this._pathActive) {
             //SET VS FOR VNAV PATH
+            const activeFPA = (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists) ? this._vnav._gpAngle
+                : this._vnav._desiredFPA;
+            SimVar.SetSimVarValue("L:WT_TEMP_ACTIVE_FPA", "number", activeFPA);
             let setVerticalSpeed = 0;
             const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(this._vnav._desiredFPA * (Math.PI / 180));
+            const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(activeFPA * (Math.PI / 180));
             const maxVerticalSpeed = 101.2686667 * groundSpeed * Math.tan(6 * (Math.PI / 180));
             const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
-            const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
+            //const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
             if (this._navModeSelector.selectedAlt2 != this._vnavTargetAltitude) {
                 this.setTargetAltitude();
             }
@@ -408,7 +411,9 @@ class WT_VnavAutopilot {
     setDonut() {
         if (this._pathActive) {
             const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(this._vnav._desiredFPA * (Math.PI / 180));
+            const activeFPA = (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists) ? this._vnav._gpAngle
+            : this._vnav._desiredFPA;
+            const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(activeFPA * (Math.PI / 180));
             SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", desiredVerticalSpeed); 
         }
         else if (this._vnav._vnavConstraintWaypoint && this._vnav._activeWaypointDist && this._vnav._distanceToTod < 50) {

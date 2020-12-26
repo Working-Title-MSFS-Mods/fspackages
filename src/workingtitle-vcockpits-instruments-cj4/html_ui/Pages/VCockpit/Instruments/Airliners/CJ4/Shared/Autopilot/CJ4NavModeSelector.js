@@ -573,6 +573,10 @@ class CJ4NavModeSelector {
           this.isVNAVOn = true;
           SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
 
+          if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 0) {
+            SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+          }
+
           if (this.vPathState === VPathState.ACTIVE) {
             this.currentVerticalActiveState = VerticalNavModeState.GP;
           }
