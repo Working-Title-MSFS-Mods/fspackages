@@ -43,13 +43,13 @@ WT_TitledPane.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
+            background-color: #97d9d5;
         }
 
         #container {
-            position: relative;
+            position: absolute;
             width: 100%;
             height: 100%;
-            background-color: var(--pane-border-color, #97d9d5);
         }
             #inner {
                 position: absolute;
