@@ -1,4 +1,4 @@
-class WT_G3000MapViewFlightPlanLegStyleChooser {
+class WT_G3x5MapViewFlightPlanLegStyleChooser {
     /**
      *
      * @param {WT_FlightPlanLeg} leg

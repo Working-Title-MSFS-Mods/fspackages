@@ -66,16 +66,18 @@
                             <div class="value"><span class="number"></span><span class="unit"></div>
                         </div>
                     </div>
-                    <pane-titled id="MainMap" titletext="Navigation Map">
-                        <map-view slot="content" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
-                    </pane-titled>
-                    <pane-titled id="WeatherRadar" titletext="Weather Radar">
-                        <div class="container" slot="content">
-                            <weatherradar-view></weatherradar-view>
-                            <weatherradar-view-scale></weatherradar-view-scale>
-                            <weatherradar-view-settings></weatherradar-view-settings>
-                        </div>
-                    </pane-titled>
+                    <g3000-mfd-mainpane id="MainPane">
+                        <pane-titled slot="map" id="MainMap" class="mainPaneElement" titletext="Navigation Map">
+                            <map-view slot="content" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                        </pane-titled>
+                        <pane-titled slot="weather" id="WeatherRadar" class="mainPaneElement" titletext="Weather Radar">
+                            <div class="container" slot="content">
+                                <weatherradar-view></weatherradar-view>
+                                <weatherradar-view-scale></weatherradar-view-scale>
+                                <weatherradar-view-settings></weatherradar-view-settings>
+                            </div>
+                        </pane-titled>
+                    </g3000-mfd-mainpane>
                 </div>
             </div>
         </div>
@@ -206,6 +208,7 @@
 
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarModel.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Display/TitledPane.js"></script>
 
@@ -225,7 +228,8 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000MapViewFlightPlanLegStyleChooser.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000NavMap.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/G3000WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5MapViewFlightPlanLegStyleChooser.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/MFD/G3000MFDMainPane.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>
