@@ -137,7 +137,8 @@ class WT_BaseLnav {
 
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
             this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
-            const correctedDtk = GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+            let correctedDtk = GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+            correctedDtk = correctedDtk < 0 ? correctedDtk + 360 : correctedDtk;
 
             SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk);
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", correctedDtk);
@@ -267,6 +268,7 @@ class WT_BaseLnav {
                 this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
     
                 //SET HEADING
+                this._setHeading = this._setHeading < 0 ? 360 + this._setHeading : this._setHeading;
                 SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
                 Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
             }
@@ -275,7 +277,8 @@ class WT_BaseLnav {
                 const angleDiffToTarget = Avionics.Utils.angleDiff(planeHeading, this._nextTurnHeading);
     
                 const turnDirection = Math.sign(angleDiffToTarget);
-                const targetHeading = planeHeading + (turnDirection * 90);
+                let targetHeading = planeHeading + (turnDirection * 90);
+                targetHeading = targetHeading < 0 ? 360 + targetHeading : targetHeading;
                 SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", targetHeading);
                 Coherent.call("HEADING_BUG_SET", 2, targetHeading);
             }
@@ -291,6 +294,7 @@ class WT_BaseLnav {
             this._setHeading = GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"));
 
             //SET HEADING AND CHANGE TO HEADING MODE
+            this._setHeading = this._setHeading < 0 ? 360 + this._setHeading : this._setHeading;
             Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
             Coherent.call("HEADING_BUG_SET", 1, this._setHeading);
 
@@ -309,6 +313,7 @@ class WT_BaseLnav {
      */
     deactivate() {
         SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", 0);
+        this._setHeading = this._setHeading < 0 ? 360 + this._setHeading : this._setHeading;
         SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
         SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
         this._lnavDeactivated = true;
