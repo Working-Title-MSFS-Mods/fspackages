@@ -166,7 +166,7 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
     }
 }
 
-class AS3000_PFD_InnerMap extends WT_G3000NavMap {
+class AS3000_PFD_InnerMap extends WT_G3x5NavMap {
     constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
         super(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, AS3000_PFD_InnerMap.LAYER_OPTIONS);
         this.gpsWasInReversionaryMode = false;
@@ -407,7 +407,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     changeMapRange(delta) {
         let currentIndex = WT_MapController.getSettingValue(this.innerMap.instrumentID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3000NavMap.MAP_RANGE_LEVELS.length - 1), 0);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         this.innerMap.rangeSetting.setValue(newIndex);
     }
 
@@ -426,25 +426,25 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     toggleDCLTR() {
         if (this.innerMap.isEnabled()) {
             let currentValue = this.innerMap.dcltrSetting.getValue();
-            let newValue = (currentValue + 1) % WT_G3000NavMap.DCLTR_DISPLAY_TEXTS.length;
+            let newValue = (currentValue + 1) % WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS.length;
             this.innerMap.dcltrSetting.setValue(newValue);
         }
     }
 
     getDCLTRValue() {
-        return WT_G3000NavMap.DCLTR_DISPLAY_TEXTS[this.innerMap.dcltrSetting.getValue()];
+        return WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS[this.innerMap.dcltrSetting.getValue()];
     }
 
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
             let currentValue = this.innerMap.terrainSetting.getValue();
-            let newValue = (currentValue + 1) % WT_G3000NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
+            let newValue = (currentValue + 1) % WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
             this.innerMap.terrainSetting.setValue(newValue);
         }
     }
 
     getTerrainValue() {
-        return WT_G3000NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.innerMap.terrainSetting.getValue()];
+        return WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.innerMap.terrainSetting.getValue()];
     }
 
     toggleWX() {
