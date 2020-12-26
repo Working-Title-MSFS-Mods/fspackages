@@ -1,6 +1,6 @@
 /**
  * A context for WT_TouchDynamicSelectionListWindow.
- * @typedef WT_TouchDynamicSelectionListWindowContext
+ * @typedef WT_TSCSelectionListWindowContext
  * @property {string} title - the window title to use when this context is active.
  * @property {string} subclass - a class to append to the html element's class list when this context is active.
  * @property {object} elementConstructor - an object that returns the elements (buttons) to display when this context is active by implementing the .nextElement(index) method.
@@ -11,9 +11,9 @@
  *                                         .getCurrentIndex() method. If no button should be highlighted, .getCurrentIndex() should return a negative number.
  * @property {object} elementUpdater - an object that updates each button element in the list per refresh cycle by implementing the .update(index, elem) method. elem is the
  *                                     element to update (created by elementConstructor) and index is its position in the list.
- * @property callback - the callback to invoke when the user selects a button. The callback should take a requirement argument of the position or index of the selected button,
- *                      and an optional argument of callback data defined by this context.
- * @property callbackData - data to optionally pass to the callback.
+ * @property {Function} callback - the callback to invoke when the user selects a button. The callback should take a requirement argument of the position or index of the selected button,
+ *                                 and an optional argument of callback data defined by this context.
+ * @property {*} callbackData - data to optionally pass to the callback.
  * @property {boolean} closeOnSelect - indicates whether the window should automatically close when the user selects a button.
  */
 
@@ -21,7 +21,7 @@
  * A touchscreen pop-up window that dynamically generates a list of buttons the user can choose from.
  * A single active button can optionally be highlighted and automatically scrolled to when the window is opened.
  */
-class WT_TouchDynamicSelectionListWindow extends NavSystemElement {
+class WT_TSCSelectionListWindow extends NavSystemElement {
     constructor() {
         super();
         this._elementList = [];
@@ -82,7 +82,7 @@ class WT_TouchDynamicSelectionListWindow extends NavSystemElement {
 
     /**
      * Sets the context for this window. The context will be used until another context is set.
-     * @param {WT_TouchDynamicSelectionListWindowContext} context - the new context definition.
+     * @param {WT_TSCSelectionListWindowContext} context - the new context definition.
      */
     setContext(context) {
         this.context = context;
@@ -112,7 +112,7 @@ class WT_TouchDynamicSelectionListWindow extends NavSystemElement {
  * This class also functions as an element updater; by default it leaves the button elements unchanged.
  * @property {string[]} values - an array of string values.
  */
-class WT_TouchDynamicSelectionStandardElementHandler {
+class WT_TSCStandardSelectionElementHandler {
     /**
      * @param values - an iterable of string values. One button element will be created per value in the order returned by the iterable.
      */
