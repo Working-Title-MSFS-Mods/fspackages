@@ -49,6 +49,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         this._shouldDrawUnfinished = [false, false, false];
         this._lastShow = [false, false, false];
         this._redrawTimer = [0, 0, 0];
+        this._lastRegisteredUpdateTime = 0;
         this._lastTime = 0;
     }
 
@@ -260,6 +261,10 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateRegisteredCities(state) {
+        if (state.currentTime - this._lastRegisteredUpdateTime < WT_MapViewCityLayer.REGISTERED_CITIES_UPDATE_INTERVAL) {
+            return;
+        }
+
         for (let entry of this._registeredCities.values()) {
             let show = state.projection.isInView(entry.label.city.location, 0.05);
             if (show && !entry.showLabel) {
@@ -269,6 +274,8 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
             }
             entry.showLabel = show;
         }
+
+        this._lastRegisteredUpdateTime = state.currentTime;
     }
 
     /**
@@ -302,6 +309,7 @@ WT_MapViewCityLayer.LABEL_CACHE_SIZE = 1000;
 WT_MapViewCityLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewCityLayer.REDRAW_DELAY = 500 // ms
 WT_MapViewCityLayer.DRAW_TIME_BUDGET = 1; // ms
+WT_MapViewCityLayer.REGISTERED_CITIES_UPDATE_INTERVAL = 200; // ms
 WT_MapViewCityLayer.OPTIONS_DEF = {
     iconSize: {default: [25, 20, 15], auto: true},
     iconFillColor: {default: ["white", "white", "white"], auto: true},
