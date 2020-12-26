@@ -68,6 +68,8 @@ class CJ4_FMC_LegsPage {
         let runwayIndex = undefined;
         let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
         console.log("gpAngle legs page: " + gpAngle);
+        const inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
+        const inhibitText = inhibitSequence ? "AUTO[s-text white]" + "/[white]" + "INHIBIT[green]" : "AUTO[green]" + "/[white]" + "INHIBIT[s-text white]";
 
         //FIND RUNWAY INDEX
         console.log("_wayPointsToRender.length: " + this._wayPointsToRender.length);
@@ -120,9 +122,13 @@ class CJ4_FMC_LegsPage {
 
                 if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
-                        this._rows[2 * i + 1] = ["(DIR)[blue]"];
+                        this._rows[2 * i + 1][0] = "(DIR)[blue]";
+                        this._rows[2 * i][1] = "SEQUENCE [s-text blue]";
+                        this._rows[2 * i + 1][1] = inhibitText;
                     } else {
-                        this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[blue]" : "USR[blue]"];
+                        this._rows[2 * i + 1][0] = waypoint.fix.ident != "" ? waypoint.fix.ident + "[blue]" : "USR[blue]";
+                        this._rows[2 * i][1] = "SEQUENCE [s-text blue]";
+                        this._rows[2 * i + 1][1] = inhibitText;
                     }
                 }
                 else if (isActWpt) {
@@ -477,6 +483,13 @@ class CJ4_FMC_LegsPage {
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                     this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
+            }
+        };
+        this._fmc.onRightInput[0] = () => {
+            if (this._currentPage == 1) {
+                let currentInhibit = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number");
+                let setInhibit = currentInhibit == 1 ? 0 : 1;
+                SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", setInhibit).then(() => { this.resetAfterOp(); });
             }
         };
 

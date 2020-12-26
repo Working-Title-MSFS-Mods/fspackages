@@ -55,6 +55,9 @@ class WT_BaseLnav {
 
         /** Whether or not turn execution is inhibited. */
         this._executeInhibited = false;
+
+        //** Whether or not sequencing is inhibited from the FMC LEGS Page */
+        this._inhibitSequence = false;
     }
 
     get waypoints() {
@@ -85,6 +88,7 @@ class WT_BaseLnav {
         this._activeWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex];
         this._previousWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex - 1];
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
+        this._inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
 
         const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
         if (flightPlanVersion !== this._currentFlightPlanVersion) {
@@ -164,7 +168,7 @@ class WT_BaseLnav {
             }
 
             //CASE WHERE WE ARE PASSED THE WAYPOINT AND SHOULD SEQUENCE THE NEXT WPT
-            if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10 && !isLandingRunway) {
+            if (!this._activeWaypoint.endsInDiscontinuity && Math.abs(deltaAngle) >= 90 && this._groundSpeed > 10 && !isLandingRunway && !this._inhibitSequence) {
                 this._setHeading = this._dtk;
                 this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
 
@@ -190,7 +194,7 @@ class WT_BaseLnav {
             const turnRadius = Math.pow(this._groundSpeed / 60, 2) / 9;
             const maxAnticipationDistance = SimVar.GetSimVarValue('AIRSPEED TRUE', 'Knots') < 350 ? 7 : 10;
 
-            if (!isLandingRunway && this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
+            if (!isLandingRunway && !this._inhibitSequence && this._activeWaypoint && !this._activeWaypoint.endsInDiscontinuity && nextActiveWaypoint && this._activeWaypointDist <= maxAnticipationDistance && this._groundSpeed < 700) {
 
                 let toCurrentFixHeading = Avionics.Utils.computeGreatCircleHeading(new LatLongAlt(this._planePos._lat, this._planePos._lon), this._activeWaypoint.infos.coordinates);
                 let toNextFixHeading = Avionics.Utils.computeGreatCircleHeading(this._activeWaypoint.infos.coordinates, nextActiveWaypoint.infos.coordinates);

@@ -61,6 +61,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
         this._altAlertCd = 500;
         this._altAlertPreselect = 0;
+        SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
     }
     get templateID() { return "CJ4_FMC"; }
 
