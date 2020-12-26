@@ -1,8 +1,19 @@
 class WT_MapController extends WT_DataStoreController {
     constructor(id, model, view) {
-        super(id, model, view);
+        super(id, model);
+
+        this._view = view;
 
         WTDataStore.addListener(this._onSyncIDChanged.bind(this), `${this.id}.${WT_MapController.SYNC_ID_PENDING_KEY}`);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapView} view - the view associated with this controller.
+     * @type {WT_MapView}
+     */
+    get view() {
+        return this._view;
     }
 
     _onSyncIDChanged(key, newValue, oldValue) {
@@ -141,6 +152,15 @@ class WT_MapSetting extends WT_DataStoreSetting {
 
     /**
      * @readonly
+     * @property {WT_MapView} view - the view this setting controls.
+     * @type {WT_MapView}
+     */
+    get view() {
+        return this._controller.view;
+    }
+
+    /**
+     * @readonly
      * @property {Boolean} isSyncable - whether this setting is sync-able.
      * @type {Boolean}
      */
@@ -197,6 +217,15 @@ class WT_MapSettingGroup extends WT_DataStoreSettingGroup {
         super(controller, settings, autoUpdate);
 
         this._isSyncable = isSyncable;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapView} view - the view this setting group controls.
+     * @type {WT_MapView}
+     */
+    get view() {
+        return this._controller.view;
     }
 
     /**

@@ -1,8 +1,7 @@
 class WT_DataStoreController {
-    constructor(id, model, view) {
+    constructor(id, model) {
         this._id = id;
         this._model = model;
-        this._view = view;
 
         /**
          * @type {WT_DataStoreSettingLike[]}
@@ -26,15 +25,6 @@ class WT_DataStoreController {
      */
     get model() {
         return this._model;
-    }
-
-    /**
-     * @readonly
-     * @property {*} view - the view associated with this controller.
-     * @type {*}
-     */
-    get view() {
-        return this._view;
     }
 
     /**
@@ -123,15 +113,6 @@ class WT_DataStoreSetting {
      */
     get model() {
         return this._controller.model;
-    }
-
-    /**
-     * @readonly
-     * @property {*} view - the view this setting controls.
-     * @type {*}
-     */
-    get view() {
-        return this._controller.view;
     }
 
     /**
@@ -262,15 +243,6 @@ class WT_DataStoreSettingGroup {
      */
     get model() {
         return this._controller.model;
-    }
-
-    /**
-     * @readonly
-     * @property {*} model - the view this setting group controls.
-     * @type {*}
-     */
-    get view() {
-        return this._controller.view;
     }
 
     /**
