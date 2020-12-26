@@ -504,7 +504,7 @@ class WT_GTransform2 {
         let x = vec.x * this._[0][0] + vec.y * this._[0][1] + this._[0][2];
         let y = vec.x * this._[1][0] + vec.y * this._[1][1] + this._[1][2];
         if (mutate) {
-            vec.set(x, y);
+            return vec.set(x, y);
         } else {
             return new WT_GVector2(x, y);
         }
@@ -675,7 +675,7 @@ class WT_GTransform2 {
      * Gets a transformation representing a rotation. In addition to the rotation angle, this method takes in additional optional
      * arguments in the form of a position vector or separate x and y values defining the center of rotation. If these are omitted,
      * then the center of rotation is set to be the origin. Additionally, the last argument can optionally be a WT_GTransform2
-     * object to set to the new scaling transformation. If this last optional argument is omitted, then a new WT_GTransform2 object
+     * object to set to the new rotation transformation. If this last optional argument is omitted, then a new WT_GTransform2 object
      * will be created.
      * @param {Number} theta - the rotation angle, in radians.
      * @param {...any} [args] - additional optional arguments to pass to this method.
@@ -750,7 +750,7 @@ class WT_GTransform2 {
      * Gets a transformation representing a reflection. In addition to the line of reflection angle, this method takes in additional
      * optional arguments in the form of a position vector or separate x and y values defining a point through which the line passes.
      * If these are omitted, then the line will be set to pass through the origin. Additionally, the last argument can optionally be
-     * a WT_GTransform2 object to set to the new scaling transformation. If this last optional argument is omitted, then a new
+     * a WT_GTransform2 object to set to the new reflection transformation. If this last optional argument is omitted, then a new
      * WT_GTransform2 object will be created.
      * @param {Number} theta - the angle of the line across which to reflect, in radians. A value of 0 defines a vertical line, with
      *                         positive values proceeding clockwise.
