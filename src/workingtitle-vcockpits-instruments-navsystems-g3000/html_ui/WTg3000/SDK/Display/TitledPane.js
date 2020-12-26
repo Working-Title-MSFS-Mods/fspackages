@@ -67,7 +67,7 @@ WT_TitledPane.TEMPLATE.innerHTML = `
                     height: auto;
                     color: var(--pane-title-color, white);
                     text-align: center;
-                    font-size: var(--pane-title-font-size, 1.5vh);
+                    font-size: var(--pane-title-font-size, 1.75vh);
                     background-color: var(--pane-title-bg-color, black);
                     padding: 0.05em 0.1em;
                 }
