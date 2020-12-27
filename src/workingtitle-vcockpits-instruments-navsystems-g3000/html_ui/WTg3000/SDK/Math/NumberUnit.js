@@ -651,7 +651,8 @@ class WT_NumberFormatter {
     }
 
     _formatNumber(number) {
-        let formatted = number;
+        let sign = number < 0 ? "-" : "+";
+        let formatted = Math.abs(number);
         if (this.precision != 0) {
             formatted = this._roundFunc(number / this.precision) * this.precision;
             let precisionString = this.precision + "";
@@ -689,7 +690,13 @@ class WT_NumberFormatter {
         wholePart = wholePart.padStart(this.pad, "0");
         formatted = wholePart + formatted.substring(decimalIndex);
 
-        return formatted;
+        if (this.showCommas) {
+            let parts = formatted.split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            formatted = parts.join(".");
+        }
+
+        return ((this.forceSign || sign === "-") ? sign : "") + formatted;
     }
 
     _formatUnit(number, unit) {
@@ -752,6 +759,8 @@ WT_NumberFormatter.OPTIONS_DEF = {
     maxDigits: {default: Infinity, auto: true},
     forceDecimalZeroes: {default: true, auto: true},
     pad: {default: 1, auto: true},
+    showCommas: {default: false, auto: true},
+    forceSign: {default: false, auto: true},
     unitShow: {default: true, auto: true},
     unitSpaceBefore: {default: true, auto: true},
     unitLong: {default: false, auto: true},
