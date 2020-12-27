@@ -317,10 +317,10 @@ class CJ4_FMC_LegsPage {
 
                 // Can't mod first blue line
                 // TODO this should be possible later to set it as FROM for intercept TO
-                if (i == 0 && this._currentPage == 1) {
-                    this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
-                    return;
-                }
+                // if (i == 0 && this._currentPage == 1) {
+                //     this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
+                //     return;
+                // }
 
                 // Mode evaluation
                 if (value == "")
@@ -349,6 +349,9 @@ class CJ4_FMC_LegsPage {
                             this._fmc.selectedWaypoint = waypoint;
                             this._fmc.inOut = waypoint.fix.ident;
                             this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
+                        }
+                        else if (i == 0 && this._currentPage == 1) {
+                            this._fmc.showErrorMessage("UNABLE SEL FROM WPT");
                         }
                         break;
                     }
@@ -402,6 +405,17 @@ class CJ4_FMC_LegsPage {
                                 }
                             }
                         }
+                        else if (i == 0 && this._currentPage == 1) {
+                            let scratchPadWaypointIndex = this._fmc.selectedWaypoint.index;
+                            console.log("modifying from line");
+                            console.log("scratchPadWaypointIndex: " + scratchPadWaypointIndex);
+                            this._fmc.setMsg("Working...");
+                            this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                this._fmc.flightPlanManager.setActiveWaypointIndex(scratchPadWaypointIndex + 1, () => {
+                                    this.resetAfterOp();
+                                });
+                            });
+                        }
                         break;
                     }
                     case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
@@ -434,6 +448,9 @@ class CJ4_FMC_LegsPage {
                                 }
                             });
                         }
+                        else if (i == 0 && this._currentPage == 1) {
+                            this._fmc.showErrorMessage("UNABLE ADD FROM WPT");
+                        }
                         break;
                     }
                     case CJ4_FMC_LegsPage.SELECT_MODE.DELETE: {
@@ -458,7 +475,7 @@ class CJ4_FMC_LegsPage {
                             });
                         }
                         else {
-                            this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
+                            this._fmc.showErrorMessage("UNABLE DEL FROM WPT");
                         }
                         break;
                     }
