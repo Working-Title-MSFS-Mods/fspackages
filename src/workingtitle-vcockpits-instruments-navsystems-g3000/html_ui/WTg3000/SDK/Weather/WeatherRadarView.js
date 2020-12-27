@@ -35,6 +35,7 @@ class WT_WeatherRadarView extends HTMLElement {
         this._bearingLine.setAttribute("fill-opacity", "1");
         this._bearingLine.setAttribute("fill", "cyan");
         this._bearingLine.setAttribute("stroke-opacity", "0");
+        this._bearingLine.setAttribute("display", "inherit");
 
         this._overlay.appendChild(this._bearingLine);
         this._overlay.appendChild(this._rangeLines);
@@ -236,6 +237,14 @@ class WT_WeatherRadarView extends HTMLElement {
         }
     }
 
+    _updateWeatherVisibility() {
+        if (this.model.display === WT_WeatherRadarModel.Display.OFF && this._bingMap.style.display !== "none") {
+            this._bingMap.style.display = "none";
+        } else if (this.model.display === WT_WeatherRadarModel.Display.WEATHER && this._bingMap.style.display !== "block") {
+            this._bingMap.style.display = "block";
+        }
+    }
+
     _updateCenterAndRange() {
         let range = this.model.range.asUnit(WT_Unit.METER);
         let target = this.model.airplane.position(this._tempGeoPoint);
@@ -248,6 +257,20 @@ class WT_WeatherRadarView extends HTMLElement {
             radius: range
         };
         this._bingMap.setParams(params);
+    }
+
+    _updateRangeLabels() {
+        for (let i = 0; i < this._rangeLabels.length; i++) {
+            this._rangeLabels[i].setRange(this._tempNM.set(this.model.range).scale((i + 1) / 4, true));
+        }
+    }
+
+    _updateBearingLineVisibility() {
+        if (!this.model.showBearingLine && this._bearingLine.getAttribute("display") !== "none") {
+            this._bearingLine.setAttribute("display", "none");
+        } else if (this.model.showBearingLine && this._bearingLine.getAttribute("display") !== "inherit") {
+            this._bearingLine.setAttribute("display", "inherit");
+        }
     }
 
     update() {
@@ -268,7 +291,10 @@ class WT_WeatherRadarView extends HTMLElement {
             this._redraw();
         }
 
+        this._updateWeatherVisibility();
         this._updateCenterAndRange();
+        this._updateRangeLabels();
+        this._updateBearingLineVisibility();
     }
 }
 WT_WeatherRadarView.BOUNDARY_CLASS = "weatherRadarBoundary";

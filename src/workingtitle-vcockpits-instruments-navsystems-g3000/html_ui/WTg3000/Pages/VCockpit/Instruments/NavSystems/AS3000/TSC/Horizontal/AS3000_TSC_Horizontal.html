@@ -387,6 +387,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="tscPage" id="WeatherRadarSettings">
+                    <tsc-weatherradarsettings></tsc-weatherradarsettings>
+                </div>
                 <div class="tscPage" id="DirectTo">
                     <div class="tabContainer">
                         <div class="tabSelect">
@@ -2545,6 +2548,7 @@
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreController.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
@@ -2555,6 +2559,7 @@
 
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCButton.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionListWindow.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
@@ -2569,6 +2574,10 @@
 <script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapFuelRingSettingGroup.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAltitudeInterceptSetting.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
 
@@ -2580,8 +2589,10 @@
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherRadarSettings.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>

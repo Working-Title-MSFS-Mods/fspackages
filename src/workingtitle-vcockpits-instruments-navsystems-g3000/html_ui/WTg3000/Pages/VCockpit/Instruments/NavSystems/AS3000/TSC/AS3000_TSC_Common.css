@@ -447,6 +447,12 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
         .MapDetailSelect .MapDetailSliderWrapper .sliderBackground {
           -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
+#WeatherRadarSettings {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
 #DirectTo .tabContainer {
   position: absolute;
   display: flex;
