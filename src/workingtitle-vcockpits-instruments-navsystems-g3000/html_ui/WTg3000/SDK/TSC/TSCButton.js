@@ -143,13 +143,15 @@ class WT_TSCButton extends HTMLElement {
     }
 
     _onMouseDown(event) {
-        this._setPrimed(true);
+        if (this._enabled) {
+            this._setPrimed(true);
+        }
     }
 
     _onMouseUp(event) {
         let primed = this._primed;
         this._setPrimed(false);
-        if (primed) {
+        if (primed && this._enabled) {
             this._onPressed();
         }
     }
@@ -184,9 +186,10 @@ class WT_TSCStatusBarButton extends WT_TSCButton {
             #statusbar {
                 position: absolute;
                 width: 50%;
-                height: 7%;
+                height: 10%;
                 left: 25%;
-                bottom: 15%;
+                bottom: 12%;
+                border-radius: var(--statusbar-border-radius, 0.5vh);
                 background-color: var(--statusbar-color-off, grey);
             }
             #statusbar[state=on] {

@@ -32,10 +32,6 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
         return this._controller;
     }
 
-    isVisible() {
-        return this._displaySetting ? this._displaySetting.getValue() === WT_WeatherRadarModel.Display.WEATHER : false;
-    }
-
     init(root) {
         this._radarView = root.querySelector(`weatherradar-view`);
         this._model = new WT_WeatherRadarModel();
@@ -47,16 +43,30 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
 
         this._controller = new WT_DataStoreController(`${this.instrumentID}`, this.model);
 
-        this.controller.addSetting(new WT_DataStoreSetting(this.controller, WT_G3x5WeatherRadar.MODE_KEY, WT_G3x5WeatherRadar.MODE_DEFAULT, true, false));
-        this.controller.addSetting(this._displaySetting = new WT_DataStoreSetting(this.controller, WT_G3x5WeatherRadar.DISPLAY_KEY, WT_G3x5WeatherRadar.DISPLAY_DEFAULT, true, false));
-        this.controller.addSetting(new WT_DataStoreSetting(this.controller, WT_G3x5WeatherRadar.SCAN_MODE_KEY, WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT, true, false));
+        this.controller.addSetting(this._showSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5WeatherRadar.SHOW_KEY, WT_G3x5WeatherRadar.SHOW_DEFAULT, true, false));
+        this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5WeatherRadar.MODE_KEY, WT_G3x5WeatherRadar.MODE_DEFAULT, true, false));
+        this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5WeatherRadar.DISPLAY_KEY, WT_G3x5WeatherRadar.DISPLAY_DEFAULT, true, false));
+        this.controller.addSetting(new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5WeatherRadar.SCAN_MODE_KEY, WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT, true, false));
+        this.controller.addSetting(new WT_WeatherRadarSetting(this.controller, "showBearingLine", WT_G3x5WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
         this.controller.addSetting(new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5WeatherRadar.RANGES, WT_G3x5WeatherRadar.RANGE_DEFAULT));
 
         this.controller.init();
         this.controller.update();
     }
 
+    isVisible() {
+        return this._showSetting.getValue();
+    }
+
+    _checkStandby() {
+        if (this.model.mode === WT_WeatherRadarModel.Mode.STANDBY) {
+            this._displaySetting.setValue(WT_WeatherRadarModel.Display.OFF);
+        }
+    }
+
     onUpdate(deltaTime) {
+        this._checkStandby();
+
         if (!this.isVisible()) {
             return;
         }
@@ -66,6 +76,9 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
     }
 }
 
+WT_G3x5WeatherRadar.SHOW_KEY = "WT_WeatherRadar_Show";
+WT_G3x5WeatherRadar.SHOW_DEFAULT = false;
+
 WT_G3x5WeatherRadar.MODE_KEY = "WT_WeatherRadar_Mode";
 WT_G3x5WeatherRadar.MODE_DEFAULT = WT_WeatherRadarModel.Mode.STANDBY;
 
@@ -74,6 +87,9 @@ WT_G3x5WeatherRadar.DISPLAY_DEFAULT = WT_WeatherRadarModel.Display.OFF;
 
 WT_G3x5WeatherRadar.SCAN_MODE_KEY = "WT_WeatherRadar_ScanMode";
 WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT = WT_WeatherRadarModel.ScanMode.HORIZONTAL;
+
+WT_G3x5WeatherRadar.BEARING_LINE_SHOW_KEY = "WT_WeatherRadar_BearingLine_Show";
+WT_G3x5WeatherRadar.BEARING_LINE_SHOW_DEFAULT = true;
 
 WT_G3x5WeatherRadar.RANGES = [10, 20, 40, 60, 80, 100, 120, 160].map(range => WT_Unit.NMILE.createNumber(range));
 WT_G3x5WeatherRadar.RANGE_DEFAULT = WT_Unit.NMILE.createNumber(20);

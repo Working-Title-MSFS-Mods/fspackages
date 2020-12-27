@@ -44,11 +44,13 @@ WT_WeatherRadarModel.ScanMode = {
     VERTICAL: 1
 };
 WT_WeatherRadarModel.OPTIONS_DEF = {
+    show: {default: false, auto: true},
     mode: {default: WT_WeatherRadarModel.Mode.STANDBY, auto: true},
     display: {default: WT_WeatherRadarModel.Display.OFF, auto: true},
     scanMode: {default: WT_WeatherRadarModel.ScanMode.HORIZONTAL, auto: true},
     range: {},
     tilt: {default: 0, auto: true},
     bearing: {default: 0, auto: true},
-    gain: {default: -1, auto: true}
+    gain: {default: -1, auto: true},
+    showBearingLine: {default: true, auto: true}
 };

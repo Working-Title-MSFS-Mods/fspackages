@@ -53,7 +53,7 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelection] #WeatherSelection,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettings] #WeatherRadarSettings,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfo] #AirportInfo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Nearest] #Nearest,
@@ -265,37 +265,73 @@ as3000-tsc-horizontal-element {
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .lineTitle {
               font-size: 5vh; }
 
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
-        position: absolute;
-        top: 5%;
-        left: 1.5%;
-        width: 22.5%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .gradientButton {
-          width: 100%;
-          height: 15vh;
-          margin: 1vh 0; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton {
-          max-height: 25vh;
-          height: 25vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img {
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
+    position: absolute;
+    top: 5%;
+    left: 1.5%;
+    width: 22.5%;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .gradientButton {
+        width: 100%;
+        height: 15vh;
+        margin: 1vh 0;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton {
+        max-height: 25vh;
+        height: 25vh;
+    }
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft .MapDetailButton .img {
             position: absolute;
             left: 25%;
             width: 50%;
-            bottom: 5%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight {
-        position: absolute;
-        top: 2.5%;
-        right: 3.5%;
-        height: 95%;
-        width: 70%; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect .tabButton {
-            height: 15vh;
-            margin: 1vh 0; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
-                padding: 2vh; }
-                as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent tsc-mapsettings-tabrow {
-                  height: 16vh;
-                  font-size: 4vh; }
+            bottom: 5%;
+        }
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight {
+    position: absolute;
+    top: 2.5%;
+    right: 3.5%;
+    height: 95%;
+    width: 70%;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabSelect .tabButton {
+        height: 15vh;
+        margin: 1vh 0;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
+        padding: 2vh;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent tsc-mapsettings-tabrow {
+        height: 16vh;
+        font-size: 4vh;
+    }
+
+as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings tsc-weatherradarsettings-mode {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 25%;
+    height: 98%;
+}
+as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings tsc-weatherradarsettings-controls {
+    position: absolute;
+    left: 27%;
+    top: 1%;
+    width: 43%;
+    height: 98%;
+}
+as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings tsc-weatherradarsettings-features {
+    position: absolute;
+    right: 4%;
+    top: 1%;
+    width: 25%;
+    height: 98%;
+}
+    as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings .weatherRadarModeButton,
+    as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings .weatherRadarControlsButton,
+    as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings .weatherRadarFeaturesButton {
+        height: 16vh;
+        margin: 1vh 0.5vh;
+    }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo .tabContainer {
         top: 2.5%;
