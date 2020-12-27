@@ -74,6 +74,9 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
         this._radarView.update();
         this._settingsView.update();
     }
+
+    onEvent(event) {
+    }
 }
 
 WT_G3x5WeatherRadar.SHOW_KEY = "WT_WeatherRadar_Show";
