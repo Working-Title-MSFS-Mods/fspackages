@@ -619,7 +619,7 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.navMap.lastCenterCoordinates)
                     this.bingMap.setParams({ lla: this.navMap.lastCenterCoordinates, radius: bingRadius });
             }
-            if (this.navMap.centerCoordinates && (this.drawCounter % 20 === 10)) {
+            if (this.navMap.centerCoordinates && (this.drawCounter % 10 === 1)) {
                 let centerCoordinates = this.navMap.centerCoordinates;
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
@@ -737,7 +737,7 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
-                    if (this.showVORs && (this.getDeclutteredRange() <= this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
+                    if (this.showVORs) { // && (this.getDeclutteredRange() <= this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                             let vor = this.vorLoader.waypoints[i];
                             vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
