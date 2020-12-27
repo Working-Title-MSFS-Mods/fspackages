@@ -224,77 +224,8 @@ class CJ4_FMC_LegsPage {
                         return;
                     }
 
-                    let re = /(\d*)\/(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
-                    // 1 = speed
-                    // 2 = F/FL
-                    // 3 = ALT
-                    // 4 = A/B
-                    // 5 = F/FL
-                    // 6 = ALT
-                    // 7 = A/B
-                    let match = value.match(re);
-                    if (!match) {
-                        // no match, input without speed?
-                        re = /()(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
-                        match = value.match(re);
-                        if (!match) return;
-                        // if "alt" is < 500 and no FL its a speed
-                        if (match[2] === "" && match[3] !== "" && isFinite(match[3])) {
-                            const speed = Number(match[3]);
-                            if (speed < 500) {
-                                match[1] = speed;
-                                match[3] = "";
-                            }
-                        }
-                    }
-
-                    // speed
-                    if (match[1] !== "") {
-                        const speed = Number(match[1]);
-                        if (isFinite(speed) && speed > 0 && speed < 500) {
-                            waypoint.speedConstraint = speed;
-                        }
-                    }
-
-                    // alt 1
-                    if (match[3] !== "") {
-                        const fl = match[2];
-                        let alt = Number(match[3]);
-                        if (isFinite(alt)) {
-                            const multi = (fl === "F" || fl === "FL") ? 100 : 1;
-                            alt *= multi;
-                            if (alt >= -1300 || alt <= 65000) {
-                                waypoint.legAltitude1 = alt;
-                            }
-                            // alt desc
-                            if (match[4] !== "") {
-                                waypoint.legAltitudeDescription = (match[4] === "A") ? 2 : 3;
-                            }
-                            else {
-                                waypoint.legAltitudeDescription = 1;
-                            }
-                        }
-                    }
-
-                    // alt 2
-                    if (match[6] !== "") {
-                        const fl = match[5];
-                        let alt = Number(match[6]);
-                        if (isFinite(alt)) {
-                            const multi = (fl === "F" || fl === "FL") ? 100 : 1;
-                            alt *= multi;
-                            if (alt >= -1300 || alt <= 65000) {
-                                waypoint.legAltitude2 = alt;
-                            }
-                            // alt desc
-                            if (match[7] !== "") {
-                                waypoint.legAltitudeDescription = 4;
-                            } else {
-                                waypoint.legAltitudeDescription = 1;
-                            }
-                        }
-                    }
-
+                    this.parseConstraintInput(value, waypoint);
+                   
                     this._fmc.flightPlanManager._updateFlightPlanVersion();
                     this.resetAfterOp();
                 };
@@ -314,13 +245,6 @@ class CJ4_FMC_LegsPage {
 
                 let value = this._fmc.inOut;
                 let selectedWpIndex = waypoint.index;
-
-                // Can't mod first blue line
-                // TODO this should be possible later to set it as FROM for intercept TO
-                // if (i == 0 && this._currentPage == 1) {
-                //     this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
-                //     return;
-                // }
 
                 // Mode evaluation
                 if (value == "")
@@ -431,22 +355,56 @@ class CJ4_FMC_LegsPage {
                                     return;
                                 }
                             }
-                            this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
-                                if (isSuccess) {
-                                    let isDirectTo = (i == 1 && this._currentPage == 1);
-                                    if (isDirectTo) {
-                                        let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
-                                        this._fmc.activateDirectToWaypoint(wp, () => {
+                            let userValue = value.search("/") >= 0;
+                            if (!userValue) {
+                                this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                    console.log("insert value:" + value);
+                                    if (isSuccess) {
+                                        let isDirectTo = (i == 1 && this._currentPage == 1);
+                                        if (isDirectTo) {
+                                            let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
+                                            this._fmc.activateDirectToWaypoint(wp, () => {
+                                                this.resetAfterOp();
+                                            });
+                                        } else
                                             this.resetAfterOp();
+                                    }
+                                    else {
+                                        console.log("else value:" + value);
+                                        let scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : Infinity;
+                                        const userWaypoint = this.parseWaypointInput(value, scratchPadWaypointIndex);
+                                        if (userWaypoint) {
+                                            this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                                this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
+                                                    this.resetAfterOp();
+                                                });
+                                            });
+                                        }
+                                        else {
+                                            this._fmc.fpHasChanged = false;
+                                            this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                            this._fmc.eraseTemporaryFlightPlan(); 
+                                        }
+                                    }
+                                });
+                            } else {
+                                console.log("else value:" + value);
+                                    let scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : Infinity;
+                                    const userWaypoint = this.parseWaypointInput(value, scratchPadWaypointIndex);
+                                    if (userWaypoint) {
+                                        this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                            this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
+                                                this.resetAfterOp();
+                                            });
                                         });
-                                    } else
-                                        this.resetAfterOp();
-                                } else {
-                                    this._fmc.fpHasChanged = false;
-                                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                                    this._fmc.eraseTemporaryFlightPlan();
-                                }
-                            });
+                                    }
+                                    else {
+                                        this._fmc.fpHasChanged = false;
+                                        this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                        this._fmc.eraseTemporaryFlightPlan(); 
+                                    }
+                            }
+                                
                         }
                         else if (i == 0 && this._currentPage == 1) {
                             this._fmc.showErrorMessage("UNABLE ADD FROM WPT");
@@ -586,6 +544,182 @@ class CJ4_FMC_LegsPage {
         altitudeConstraint = altitudeConstraint.padStart(6, " ");
 
         return speedConstraint + "/" + altitudeConstraint + "[green]";
+    }
+
+    parseWaypointInput(value, referenceIndex) {
+        let fullLatLong = /([NS])([0-8][0-9])([0-5][0-9](?:\.\d{1,2})?)([EW])([0-1][0-7][0-9])([0-5][0-9](?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
+        let shorhandLatLongEnd = /([0-8][0-9])([0-9][0-9]|[1][0-8][0-9])([NSEW])/;
+        let shorthandLatLongMid = /([0-8][0-9])([NSEW])([1][0-8][0-9]|[0-9][0-9])/;
+        let placeBearingDistance = /(\w{3,5})([0-3][0-9][0-9])\/(\d{1,3}(?:\.\d{1})?)(?:\/(\w{0,5}))?/;
+        let alongTrackOffset = /(\w{3,5})\/(?:(\-*\d{0,3}\.*\d{0,1}))?(?:\/(\w{0,5}))?/;
+
+        let matchFullLatLong = value.match(fullLatLong);
+        let matchShorhandLatLongEnd = value.match(shorhandLatLongEnd);
+        let matchShorthandLatLongMid = value.match(shorthandLatLongMid);
+        let matchPlaceBearingDistance = value.match(placeBearingDistance);
+        let matchAlongTrackOffset = value.match(alongTrackOffset);
+
+        function procMatch(item, defaultVal) {
+            return (item === undefined) ? defaultVal : item;
+          }
+        
+        let newWaypoint = undefined;
+        
+        if (matchFullLatLong) {
+            console.log("match full lat long");
+            // 1 = N/S
+            // 2 = LAT DEG
+            // 3 = LAT MINS
+            // 4 = E/W
+            // 5 = LONG DEG
+            // 6 = LONG MINS
+            // 7 = IDENT
+            const latitude = matchFullLatLong[1] == "S" ? 0 - parseInt(matchFullLatLong[2]) - (parseFloat(matchFullLatLong[3])/60)
+                : parseInt(matchFullLatLong[2]) + (parseFloat(matchFullLatLong[3])/60);
+            const longitude = matchFullLatLong[4] == "W" ? 0 - parseInt(matchFullLatLong[5]) - (parseFloat(matchFullLatLong[6])/60)
+                : parseInt(matchFullLatLong[5]) + (parseFloat(matchFullLatLong[6])/60);
+            const coordinates = new LatLongAlt(latitude, longitude, 0);
+            const ident = procMatch(matchFullLatLong[7], matchFullLatLong[1] + matchFullLatLong[2].slice(0, 2) + matchFullLatLong[4] + matchFullLatLong[5] + matchFullLatLong[6].slice(0, 2));
+            
+            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+
+
+        }
+        else if (matchShorhandLatLongEnd) {
+            // 1 = LAT DEG
+            // 2 = LONG DEG
+            // 3 = N/E/S/W (N = N:W; E = N:E; S = S:E; W = S:W)
+            const direction = matchShorhandLatLongEnd[3];
+
+            const latitude = direction == "S" || direction == "W" ? 0 - parseInt(matchShorhandLatLongEnd[1])
+                : parseInt(matchShorhandLatLongEnd[1]);
+            const longitude = direction == "N" || direction == "W" ? 0 - parseInt(matchShorhandLatLongEnd[2])
+                : parseInt(matchShorhandLatLongEnd[2]);
+            const coordinates = new LatLongAlt(latitude, longitude, 0);
+            const ident = matchShorhandLatLongEnd[1] + matchShorhandLatLongEnd[2] + direction;
+            
+            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+
+        }
+        else if (matchShorthandLatLongMid) {
+            // 1 = LAT DEG
+            // 2 = N/E/S/W (N = N:W; E = N:E; S = S:E; W = S:W)
+            // 3 = LONG DEG
+            const direction = matchShorthandLatLongMid[2];
+
+            const latitude = direction == "S" || direction == "W" ? 0 - parseInt(matchShorthandLatLongMid[1])
+                : parseInt(matchShorthandLatLongMid[1]);
+            const longitude = direction == "N" || direction == "W" ? 0 - 100 - parseInt(matchShorthandLatLongMid[3])
+                : 100 + parseInt(matchShorthandLatLongMid[3]);
+            const coordinates = new LatLongAlt(latitude, longitude, 0);
+            const ident = matchShorthandLatLongMid[1] + direction + matchShorthandLatLongMid[3];
+            
+            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+        }
+        else if (matchPlaceBearingDistance) {
+            // 1 = Reference Ident
+            // 2 = Bearing from Reference
+            // 3 = Distance from Reference
+            // 4 = Ident
+            
+            const referenceCoordinates = this._fmc.getOrSelectWaypointByIdent(matchPlaceBearingDistance[1], (w) => {
+                return w.infos.coordinates;
+            });
+            // const referenceWaypoint = this._fmc.getOrSelectWaypointByIdent(matchPlaceBearingDistance[1], (w) => {
+            //     return w;
+            // });
+            // const referenceCoordinates = referenceWaypoint.infos.coordinates;
+            const bearing = parseInt(matchPlaceBearingDistance[2]);
+            const distance = parseFloat(matchPlaceBearingDistance[3]);
+            const ident = procMatch(matchPlaceBearingDistance[4], matchPlaceBearingDistance[1] + matchPlaceBearingDistance[2] + "/" + matchPlaceBearingDistance[3]);
+            
+            newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);
+        }
+        else if (matchAlongTrackOffset) {
+            // 1 = Reference Ident
+            // 2 = Distance from Reference
+            // 3 = Ident
+
+            const ident = procMatch(matchAlongTrackOffset[3], matchAlongTrackOffset[1] + "/" + matchAlongTrackOffset[2]);
+            const distance = parseFloat(matchAlongTrackOffset[2]);
+
+            newWaypoint = WaypointBuilder.fromPlaceAlongFlightPlan(ident, referenceIndex, distance, this._fmc, this._fpm);
+        }
+
+        return newWaypoint;
+    }
+
+    parseConstraintInput(value, waypoint) {
+        let re = /(\d*)\/(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
+        // 1 = speed
+        // 2 = F/FL
+        // 3 = ALT
+        // 4 = A/B
+        // 5 = F/FL
+        // 6 = ALT
+        // 7 = A/B
+        let match = value.match(re);
+        if (!match) {
+            // no match, input without speed?
+            re = /()(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
+            match = value.match(re);
+            if (!match) return;
+            // if "alt" is < 500 and no FL its a speed
+            if (match[2] === "" && match[3] !== "" && isFinite(match[3])) {
+                const speed = Number(match[3]);
+                if (speed < 500) {
+                    match[1] = speed;
+                    match[3] = "";
+                }
+            }
+        }
+
+        // speed
+        if (match[1] !== "") {
+            const speed = Number(match[1]);
+            if (isFinite(speed) && speed > 0 && speed < 500) {
+                waypoint.speedConstraint = speed;
+            }
+        }
+
+        // alt 1
+        if (match[3] !== "") {
+            const fl = match[2];
+            let alt = Number(match[3]);
+            if (isFinite(alt)) {
+                const multi = (fl === "F" || fl === "FL") ? 100 : 1;
+                alt *= multi;
+                if (alt >= -1300 || alt <= 65000) {
+                    waypoint.legAltitude1 = alt;
+                }
+                // alt desc
+                if (match[4] !== "") {
+                    waypoint.legAltitudeDescription = (match[4] === "A") ? 2 : 3;
+                }
+                else {
+                    waypoint.legAltitudeDescription = 1;
+                }
+            }
+        }
+
+        // alt 2
+        if (match[6] !== "") {
+            const fl = match[5];
+            let alt = Number(match[6]);
+            if (isFinite(alt)) {
+                const multi = (fl === "F" || fl === "FL") ? 100 : 1;
+                alt *= multi;
+                if (alt >= -1300 || alt <= 65000) {
+                    waypoint.legAltitude2 = alt;
+                }
+                // alt desc
+                if (match[7] !== "") {
+                    waypoint.legAltitudeDescription = 4;
+                } else {
+                    waypoint.legAltitudeDescription = 1;
+                }
+            }
+        }
     }
 
     static ShowPage1(fmc) {
