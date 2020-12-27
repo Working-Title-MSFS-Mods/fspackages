@@ -1492,6 +1492,23 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 rightUpper1.setAttribute("width", "32");
                 rightUpper1.setAttribute("height", "5");
                 cursors.appendChild(rightUpper1);
+
+                this.crossPointersAircraftSymbol = document.createElementNS(Avionics.SVG.NS, "g");
+                this.attitude_root.appendChild(this.crossPointersAircraftSymbol);
+                let crossPointersLeft = document.createElementNS(Avionics.SVG.NS, "path");
+                crossPointersLeft.setAttribute("d", "M -90 30 m 30 0 L -60 0 L -135 0 L -135 10 L -70 10 L -70 42 L -60 42 Z");
+                crossPointersLeft.setAttribute("fill", "#black");
+                crossPointersLeft.setAttribute("stroke", "white");
+                crossPointersLeft.setAttribute("stroke-width", "2");
+                this.crossPointersAircraftSymbol.appendChild(crossPointersLeft);
+
+                let crossPointersRight = document.createElementNS(Avionics.SVG.NS, "path");
+                crossPointersRight.setAttribute("d", "M 90 30 m -30 -4 L 60 0 L 135 0 L 135 10 L 70 10 L 70 42 L 60 42 Z");
+                crossPointersRight.setAttribute("fill", "#black");
+                crossPointersRight.setAttribute("stroke", "white");
+                crossPointersRight.setAttribute("stroke-width", "2");
+                this.crossPointersAircraftSymbol.appendChild(crossPointersRight);
+
                 let triangleInnerLeft = document.createElementNS(Avionics.SVG.NS, "path");
                 triangleInnerLeft.setAttribute("d", "M-90 30 l30 0 L0 0 Z");
                 triangleInnerLeft.setAttribute("fill", "#black");
@@ -1504,6 +1521,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 triangleInnerRight.setAttribute("stroke", "white");
                 triangleInnerRight.setAttribute("stroke-width", "2");
                 cursors.appendChild(triangleInnerRight);
+
                 this.slipSkidTriangle = document.createElementNS(Avionics.SVG.NS, "path");
                 this.slipSkidTriangle.setAttribute("d", "M 0 -179 l -13 20 l 26 0 Z");
                 this.slipSkidTriangle.setAttribute("fill", "white");
@@ -1512,6 +1530,28 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.slipSkid.setAttribute("d", "M -13 -152 L -13 -157 L 13 -157 L 13 -152 Z");
                 this.slipSkid.setAttribute("fill", "white");
                 this.attitude_root.appendChild(this.slipSkid);
+
+                this.cj4_crossPointersPitch = document.createElementNS(Avionics.SVG.NS, "g");
+                let crossPointersPitch = document.createElementNS(Avionics.SVG.NS, "path");
+                cursors.appendChild(this.cj4_crossPointersPitch);
+                crossPointersPitch.setAttribute("d", "M -110 23 m -9 -14 L -119 2 L 119 2 L 119 8 L -119 8 Z");
+                crossPointersPitch.setAttribute("fill", "magenta");
+                this.cj4_crossPointersPitch.appendChild(crossPointersPitch);
+
+                this.cj4_crossPointersBank = document.createElementNS(Avionics.SVG.NS, "g");
+                let crossPointersBank = document.createElementNS(Avionics.SVG.NS, "path");
+                cursors.appendChild(this.cj4_crossPointersBank);
+                crossPointersBank.setAttribute("d", "M -3 0 l 0 -116 l 6 0 l 0 238 L -3 122 L -3 0");
+                crossPointersBank.setAttribute("fill", "magenta");
+                this.cj4_crossPointersBank.appendChild(crossPointersBank);
+
+                let crossPointersMiddle = document.createElementNS(Avionics.SVG.NS, "path");
+                crossPointersMiddle.setAttribute("d", "M -5 0 L 5 0 L 5 10 L -5 10 L -5 0 Z");
+                crossPointersMiddle.setAttribute("fill", "none");
+                crossPointersMiddle.setAttribute("stroke", "white");
+                crossPointersMiddle.setAttribute("stroke-width", "2");
+                this.crossPointersAircraftSymbol.appendChild(crossPointersMiddle);
+
             }
             {
                 this.radioAltitudeGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1549,12 +1589,31 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             this.slipSkidTriangle.setAttribute("transform", "rotate(" + this.bankAngle + ", 0, 0)");
         if (this.radioAltitude && this.radioAltitudeRotate)
             this.radioAltitude.setAttribute("transform", "rotate(" + this.bankAngle + ", 0, 0)");
-        if (this.cj4_FlightDirector != null) {
+        if (this.cj4_crossPointersPitch != null || this.cj4_FlightDirector != null) {
+            let currentPlaneBank = Simplane.getBank();
+            let fdBank = this.cj4_FlightDirectorBank;
+            let bankConversion = (currentPlaneBank - fdBank) * 2;
+            let flightDirectorStyle = SimVar.GetSimVarValue("L:WT_CJ4_FLT_DIR_STATUS", "Bool");
+            console.log("FD Status " + flightDirectorStyle);
             if (this.cj4_FlightDirectorActive) {
-                this.cj4_FlightDirector.setAttribute("transform", "rotate(" + (-this.cj4_FlightDirectorBank) + ") translate(0 " + ((this.pitchAngle - this.cj4_FlightDirectorPitch) * this.pitchAngleFactor) + ")");
-                this.cj4_FlightDirector.setAttribute("display", "");
+                if (flightDirectorStyle === 0) {
+                    this.crossPointersAircraftSymbol.setAttribute("display", "none");
+                    this.cj4_crossPointersPitch.setAttribute("display", "none");
+                    this.cj4_crossPointersBank.setAttribute("display", "none");
+                    this.cj4_FlightDirector.setAttribute("transform", "rotate(" + (-this.cj4_FlightDirectorBank) + ") translate(0 " + ((this.pitchAngle - this.cj4_FlightDirectorPitch) * this.pitchAngleFactor) + ")");
+                    this.cj4_FlightDirector.setAttribute("display", "");
+                } else if (flightDirectorStyle === 1) {
+                    this.cj4_FlightDirector.setAttribute("display", "none");
+                    this.crossPointersAircraftSymbol.setAttribute("display", "");
+                    this.cj4_crossPointersPitch.setAttribute("display", "");
+                    this.cj4_crossPointersBank.setAttribute("display", "");
+                    this.cj4_crossPointersPitch.setAttribute("transform", "translate(0 " + ((this.pitchAngle - this.cj4_FlightDirectorPitch) * this.pitchAngleFactor) + ")");
+                    this.cj4_crossPointersBank.setAttribute("transform", "translate(" + bankConversion + "0)");
+                }
             }
             else {
+                this.cj4_crossPointersPitch.setAttribute("display", "none");
+                this.cj4_crossPointersBank.setAttribute("display", "none");
                 this.cj4_FlightDirector.setAttribute("display", "none");
             }
         }
