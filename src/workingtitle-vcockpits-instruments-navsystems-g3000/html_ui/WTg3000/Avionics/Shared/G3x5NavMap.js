@@ -1,7 +1,5 @@
-class WT_G3x5NavMap extends NavSystemElement {
+class WT_G3x5NavMap {
     constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, layerOptions = WT_G3x5NavMap.LAYER_OPTIONS_DEFAULT) {
-        super(instrumentID);
-
         this._instrumentID = instrumentID;
 
         this._layerOptions = layerOptions;
@@ -114,7 +112,7 @@ class WT_G3x5NavMap extends NavSystemElement {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
-        this.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}-navmap`));
+        this.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
         this.view.addLayer(new WT_MapViewCityLayer(labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
@@ -220,10 +218,7 @@ class WT_G3x5NavMap extends NavSystemElement {
         this.controller.update();
     }
 
-    onEvent(event) {
-    }
-
-    onUpdate(deltaTime) {
+    update() {
         this._rangeTargetRotationController.update();
         this.view.update();
     }
