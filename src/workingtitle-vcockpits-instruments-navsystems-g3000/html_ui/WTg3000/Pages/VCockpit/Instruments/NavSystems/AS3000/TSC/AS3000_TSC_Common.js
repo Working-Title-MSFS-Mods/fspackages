@@ -105,7 +105,8 @@ class AS3000_TSC extends NavSystemTouch {
                     true
                 )),
                 //new NavSystemPage("Weather", "WeatherSettings", new AS3000_TSC_WeatherSettings()),
-                new NavSystemPage("Weather Selection", "WeatherSelection", new AS3000_TSC_WeatherSelection()),
+                //new NavSystemPage("Weather Selection", "WeatherSelection", new AS3000_TSC_WeatherSelection()),
+                new NavSystemPage("Weather Radar Settings", "WeatherRadarSettings", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD")),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
@@ -244,7 +245,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this.history = [];
                 break;
         }
-        if (this.getCurrentPageGroup().name == "MFD" && this.popUpElement != this.mapPointerControl) {
+        if (this.getCurrentPageGroup().name == "MFD" && this.popUpElement != this.mapPointerControl && this.getCurrentPage().name !== "Weather Radar Settings") {
             switch (_event) {
                 case "BottomKnob_Small_INC":
                     //LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_RNG_Dezoom");
@@ -453,7 +454,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.utilitiesButton = this.gps.getChildById("UtilitiesButton");
         this.updateMapButtons();
         this.gps.makeButton(this.mapButton, this.mapSwitch.bind(this, 0));
-        this.gps.makeButton(this.weatherButton, this.mapSwitch.bind(this, 2));
+        this.gps.makeButton(this.weatherButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Weather Radar Settings"));
         //this.gps.makeButton(this.mapButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Map Settings"));
         //this.gps.makeButton(this.weatherButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Weather"));
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));

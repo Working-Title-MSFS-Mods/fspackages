@@ -73,6 +73,8 @@ class WT_G3000MFDMainPaneHTMLElement extends HTMLElement {
 
         if (this.showWeather) {
             this._wrapper.setAttribute("layout", "weather");
+        } else {
+            this._wrapper.setAttribute("layout", "mapfull");
         }
     }
 }
