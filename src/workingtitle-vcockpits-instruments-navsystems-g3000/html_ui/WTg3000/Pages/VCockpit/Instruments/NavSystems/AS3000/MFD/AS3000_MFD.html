@@ -66,18 +66,24 @@
                             <div class="value"><span class="number"></span><span class="unit"></div>
                         </div>
                     </div>
-                    <g3000-mfd-mainpane id="MainPane">
-                        <pane-titled slot="map" id="MainMap" class="mainPaneElement" titletext="Navigation Map">
-                            <map-view slot="content" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
-                        </pane-titled>
-                        <pane-titled slot="weather" id="WeatherRadar" class="mainPaneElement" titletext="Weather Radar">
-                            <div class="container" slot="content">
+                    <mfd-mainpane id="MainPane">
+                        <mfd-halfpane slot="left">
+                            <map-view slot="navMap" class="navMap" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                            <div slot="weatherRadar" class="weatherRadar">
                                 <weatherradar-view></weatherradar-view>
                                 <weatherradar-view-scale></weatherradar-view-scale>
                                 <weatherradar-view-settings></weatherradar-view-settings>
                             </div>
-                        </pane-titled>
-                    </g3000-mfd-mainpane>
+                        </mfd-halfpane>
+                        <mfd-halfpane slot="right">
+                            <map-view slot="navMap" class="navMap" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                            <div slot="weatherRadar" class="weatherRadar">
+                                <weatherradar-view></weatherradar-view>
+                                <weatherradar-view-scale></weatherradar-view-scale>
+                                <weatherradar-view-settings></weatherradar-view-settings>
+                            </div>
+                        </mfd-halfpane>
+                    </mfd-mainpane>
                 </div>
             </div>
         </div>
@@ -231,5 +237,5 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5MapViewFlightPlanLegStyleChooser.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
-<script type="text/html" import-script="/WTg3000/Avionics/G3000/MFD/G3000MFDMainPane.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>

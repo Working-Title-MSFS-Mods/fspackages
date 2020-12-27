@@ -6,12 +6,9 @@ class WT_WeatherRadarView extends HTMLElement {
 
         this._bingMap = document.createElement("bing-map");
         this._bingMap.style.position = "absolute";
-        this._bingMap.addConfig(this._initBingConfig());
-        this._bingMap.setConfig(1);
-        this._bingMap.setMode(EBingMode.PLANE);
-        this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
-        this._setScanMode();
+
+        this._isAwake = false;
 
         this._overlay = document.createElementNS(Avionics.SVG.NS, "svg");
         this._overlay.style.position = "absolute";
@@ -158,6 +155,20 @@ class WT_WeatherRadarView extends HTMLElement {
         this._model = model;
     }
 
+    isAwake() {
+        return this._isAwake;
+    }
+
+    wake() {
+        this._setScanMode(this._scanMode);
+        this._isAwake = true;
+    }
+
+    sleep() {
+        this._bingMap.showWeather(EWeatherRadar.OFF, 0);
+        this._isAwake = false;
+    }
+
     _showRangeLabels(value) {
         for (let rangeLabel of this._rangeLabels) {
             rangeLabel.style.display = value ? "block" : "none";
@@ -286,7 +297,7 @@ class WT_WeatherRadarView extends HTMLElement {
         let height = this._tempNM.set(WT_WeatherRadarView.VERTICAL_RANGE_MARKER_HEIGHT).scale(heightFactor, true);
 
         let lineStartX = origin.x + lineOffset / Math.tan(angularWidth / 2);
-        let lineEndX = this.viewWidth * 2 / 3;
+        let lineEndX = WT_WeatherRadarView.EDGE_PADDING + targetHeight * 1.1;
 
         let path = `M ${lineStartX} ${origin.y + lineOffset} L ${lineEndX} ${origin.y + lineOffset} M ${lineStartX} ${origin.y - lineOffset} L ${lineEndX} ${origin.y - lineOffset}`;
         this._verticalRangeLines.setAttribute("d", path);
@@ -375,7 +386,7 @@ class WT_WeatherRadarView extends HTMLElement {
     }
 
     update() {
-        if (!this.model) {
+        if (!this.model || !this.isAwake()) {
             return;
         }
 

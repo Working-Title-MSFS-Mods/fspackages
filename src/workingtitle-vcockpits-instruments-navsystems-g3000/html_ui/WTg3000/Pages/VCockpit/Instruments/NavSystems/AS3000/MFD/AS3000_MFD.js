@@ -61,7 +61,7 @@ class AS3000_MFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new AS3000_MFD_NavDataBar(this.flightPlanManager)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
-                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3000MFDMainPaneElement(this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager))
+                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager))
             ]),
         ];
 
