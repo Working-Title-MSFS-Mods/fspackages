@@ -78,6 +78,7 @@ class CJ4_FMC_DsplMenuPage {
     static ShowPage2(fmc) {
         let rngSelDisabled = WTDataStore.get("WT_CJ4_RANGE_SEL_DISABLED", 0);
         let rngSelSwitch = (rngSelDisabled == 0) ? "green" : "";
+        let ndbsActive = fmc._templateRenderer.renderSwitch(["NDBS"], (this.hasSymbol(CJ4_MapSymbol.NDBS) - 1));
 
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
@@ -85,7 +86,7 @@ class CJ4_FMC_DsplMenuPage {
             ["", "", "MFD MAP DISPLAY[blue s-text]"],
             ["MISS APPR[s-text disabled]"],
             [""],
-            ["NDBS[s-text disabled]"],
+            [ndbsActive],
             [""],
             ["RNG: ALT SEL[s-text " + rngSelSwitch + "]"],
             [""],
@@ -95,6 +96,12 @@ class CJ4_FMC_DsplMenuPage {
             ["", "SIDE [blue s-text]"],
             ["", "L[green]/[white]R[s-text]>"]
         ]);
+
+        fmc.onLeftInput[1] = () => {
+            this.toggleSymbol(CJ4_MapSymbol.NDBS).then(() => {
+                CJ4_FMC_DsplMenuPage.ShowPage2(fmc);
+            });
+        };
 
         fmc.onLeftInput[2] = () => {
             rngSelDisabled = (rngSelDisabled == 1) ? 0 : 1;
@@ -118,6 +125,7 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["AIRPORTS"] = 4] = "AIRPORTS";
     CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
     CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
+    CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
 
 //# sourceMappingURL=CJ4_FMC_FMCCommPage.js.map
