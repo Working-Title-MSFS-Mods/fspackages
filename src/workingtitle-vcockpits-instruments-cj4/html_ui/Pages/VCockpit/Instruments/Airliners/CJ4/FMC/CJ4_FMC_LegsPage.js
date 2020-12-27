@@ -146,7 +146,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -"];
                     }
                     else {
-                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM" + fpaText];
+                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[shite]" + fpaText];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"];
                     }
                 }
