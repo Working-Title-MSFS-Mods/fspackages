@@ -123,7 +123,7 @@ class SvgWaypointElement extends SvgMapElement {
             }
             else if (!isInFpln) {
                 console.log("create " + this.source.ident + " " + this.imageFileName());
-                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg") + "?cb=4");
             } else {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
             }
@@ -167,7 +167,7 @@ class SvgWaypointElement extends SvgMapElement {
                         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
                     }
                     else if ((this._image.getAttribute("isInFpln") !== "true")) {
-                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg") + "?cb=44");
                     } else {
                         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
                     }
