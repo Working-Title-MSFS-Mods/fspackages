@@ -1,7 +1,5 @@
-class WT_G3x5WeatherRadar extends NavSystemElement {
+class WT_G3x5WeatherRadar {
     constructor(instrumentID) {
-        super(instrumentID);
-
         this._instrumentID = instrumentID;
     }
 
@@ -36,7 +34,7 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
         this._radarView = root.querySelector(`weatherradar-view`);
         this._model = new WT_WeatherRadarModel();
         this._radarView.setModel(this.model);
-        this._radarView.setBingMapID(`${this.instrumentID}-weatherradar`);
+        this._radarView.setBingMapID(`${this.instrumentID}`);
 
         this._settingsView = root.querySelector(`weatherradar-view-settings`);
         this._settingsView.setModel(this.model);
@@ -58,24 +56,36 @@ class WT_G3x5WeatherRadar extends NavSystemElement {
         return this._showSetting.getValue();
     }
 
+    wakeBing() {
+        this._radarView.wake();
+    }
+
+    sleepBing() {
+        this._radarView.sleep();
+    }
+
     _checkStandby() {
         if (this.model.mode === WT_WeatherRadarModel.Mode.STANDBY) {
             this._displaySetting.setValue(WT_WeatherRadarModel.Display.OFF);
         }
     }
 
-    onUpdate(deltaTime) {
+    update() {
         this._checkStandby();
 
         if (!this.isVisible()) {
+            if (this._radarView.isAwake()) {
+                this.sleepBing();
+            }
             return;
+        }
+
+        if (!this._radarView.isAwake()) {
+            this.wakeBing();
         }
 
         this._radarView.update();
         this._settingsView.update();
-    }
-
-    onEvent(event) {
     }
 }
 

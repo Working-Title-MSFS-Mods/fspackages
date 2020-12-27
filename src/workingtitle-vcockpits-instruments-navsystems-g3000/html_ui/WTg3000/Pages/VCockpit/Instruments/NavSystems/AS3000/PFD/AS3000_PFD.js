@@ -166,21 +166,33 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
     }
 }
 
-class AS3000_PFD_InnerMap extends WT_G3x5NavMap {
+class AS3000_PFD_InnerMap extends NavSystemElement {
     constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
-        super(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        super();
+
         this.gpsWasInReversionaryMode = false;
         this.enabled = true;
+
+        this._navMap = new WT_G3x5NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5NavMap} navMap
+     * @type {WT_G3x5NavMap}
+     */
+    get navMap() {
+        return this._navMap;
     }
 
     init(root) {
-        super.init(root);
+        this._navMap.init(root);
         this.mapContainer = this.gps.getChildById("InnerMap");
     }
 
     onUpdate(deltaTime) {
         if (this.enabled) {
-            super.onUpdate(deltaTime);
+            this._navMap.update();
         }
 
         if (this.gps.isInReversionaryMode() != this.gpsWasInReversionaryMode) {
@@ -406,9 +418,9 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     changeMapRange(delta) {
-        let currentIndex = WT_MapController.getSettingValue(this.innerMap.instrumentID, WT_MapRangeSetting.KEY_DEFAULT);
+        let currentIndex = WT_MapController.getSettingValue(this.innerMap.navMap.instrumentID, WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        this.innerMap.rangeSetting.setValue(newIndex);
+        this.innerMap.navMap.rangeSetting.setValue(newIndex);
     }
 
     activateInsetMap() {
@@ -425,9 +437,9 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     toggleDCLTR() {
         if (this.innerMap.isEnabled()) {
-            let currentValue = this.innerMap.dcltrSetting.getValue();
+            let currentValue = this.innerMap.navMap.dcltrSetting.getValue();
             let newValue = (currentValue + 1) % WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS.length;
-            this.innerMap.dcltrSetting.setValue(newValue);
+            this.innerMap.navMap.dcltrSetting.setValue(newValue);
         }
     }
 
@@ -437,24 +449,24 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
-            let currentValue = this.innerMap.terrainSetting.getValue();
+            let currentValue = this.innerMap.navMap.terrainSetting.getValue();
             let newValue = (currentValue + 1) % WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
-            this.innerMap.terrainSetting.setValue(newValue);
+            this.innerMap.navMap.terrainSetting.setValue(newValue);
         }
     }
 
     getTerrainValue() {
-        return WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.innerMap.terrainSetting.getValue()];
+        return WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.innerMap.navMap.terrainSetting.getValue()];
     }
 
     toggleWX() {
         if (this.innerMap.isEnabled()) {
-            this.innerMap.nexradShowSetting.setValue(!this.innerMap.nexradShowSetting.getValue());
+            this.innerMap.navMap.nexradShowSetting.setValue(!this.innerMap.navMap.nexradShowSetting.getValue());
         }
     }
 
     getWXOverlayValue() {
-        return this.innerMap.nexradShowSetting.getValue() ? "NEXRAD" : "OFF";
+        return this.innerMap.navMap.nexradShowSetting.getValue() ? "NEXRAD" : "OFF";
     }
 
     toggleSyntheticVision() {

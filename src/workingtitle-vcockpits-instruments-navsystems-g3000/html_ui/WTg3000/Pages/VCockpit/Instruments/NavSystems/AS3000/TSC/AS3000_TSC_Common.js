@@ -98,7 +98,7 @@ class AS3000_TSC extends NavSystemTouch {
             new NavSystemPageGroup("MFD", this, [
                 new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
                 new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMapSettings(
-                    "MFD", "MFD Home", "MFD",
+                    "MFD", "MFD Home", "MFD-LEFT",
                     "MFDMapOrientationButton",
                     "MFDMapSyncButton",
                     "MFDMapDetailButton",
@@ -106,7 +106,7 @@ class AS3000_TSC extends NavSystemTouch {
                 )),
                 //new NavSystemPage("Weather", "WeatherSettings", new AS3000_TSC_WeatherSettings()),
                 //new NavSystemPage("Weather Selection", "WeatherSelection", new AS3000_TSC_WeatherSelection()),
-                new NavSystemPage("Weather Radar Settings", "WeatherRadarSettings", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD")),
+                new NavSystemPage("Weather Radar Settings", "WeatherRadarSettings", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
@@ -263,9 +263,9 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     changeMapRange(delta) {
-        let currentIndex = WT_MapController.getSettingValue("MFD", WT_MapRangeSetting.KEY_DEFAULT);
+        let currentIndex = WT_MapController.getSettingValue("MFD-LEFT", WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapController.setSettingValue("MFD", WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
+        WT_MapController.setSettingValue("MFD-LEFT", WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
     goBack() {
@@ -4068,7 +4068,7 @@ class AS3000_MapPointerControl extends NavSystemElement {
         this.gps.setTopKnobText("Pan/Point Push: Pan Off");
         this.gps.setBottomKnobText("-Range+ Push: Pan Off");
 
-        WT_MapController.setSettingValue("MFD", WT_MapPointerSettingGroup.SHOW_KEY, true);
+        WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.SHOW_KEY, true);
     }
 
     onUpdate(_deltaTime) {
@@ -4083,7 +4083,7 @@ class AS3000_MapPointerControl extends NavSystemElement {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+ Push: Pan");
 
-        WT_MapController.setSettingValue("MFD", WT_MapPointerSettingGroup.SHOW_KEY, false);
+        WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.SHOW_KEY, false);
     }
 
     onEvent(event) {
@@ -4124,10 +4124,10 @@ class AS3000_MapPointerControl extends NavSystemElement {
         if (this._isMouseDown) {
             let delta = this._tempVector.set(event.clientX, event.clientY).subtract(this._lastMousePos);
             if (delta.length > 5) {
-                let deltaX = WT_MapController.getSettingValue("MFD", WT_MapPointerSettingGroup.DELTA_X_KEY, 0) + delta.x;
-                let deltaY = WT_MapController.getSettingValue("MFD", WT_MapPointerSettingGroup.DELTA_Y_KEY, 0) + delta.y;
-                WT_MapController.setSettingValue("MFD", WT_MapPointerSettingGroup.DELTA_X_KEY, deltaX);
-                WT_MapController.setSettingValue("MFD", WT_MapPointerSettingGroup.DELTA_Y_KEY, deltaY);
+                let deltaX = WT_MapController.getSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_X_KEY, 0) + delta.x;
+                let deltaY = WT_MapController.getSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_Y_KEY, 0) + delta.y;
+                WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_X_KEY, deltaX);
+                WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_Y_KEY, deltaY);
                 this._lastMousePos.set(event.clientX, event.clientY);
             }
         }

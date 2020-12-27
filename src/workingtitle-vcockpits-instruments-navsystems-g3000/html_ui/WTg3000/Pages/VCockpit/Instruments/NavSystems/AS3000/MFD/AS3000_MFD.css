@@ -228,15 +228,6 @@ as3000-mfd-element #Electricity #MainPane {
     left: 0%;
     font-family: "Roboto-Regular";
 }
-    as3000-mfd-element #Electricity .mainPaneElement {
-        position: absolute;
-        left: 1px;
-        right: 1px;
-        top: 1px;
-        bottom: 1px;
-        border: solid 1px black;
-        border-radius: 3px;
-    }
 
 as3000-mfd-element #Electricity map-view {
     position: relative;
@@ -270,13 +261,13 @@ as3000-mfd-element #Electricity map-view {
         margin: 1px;
     }
 
-as3000-mfd-element #Electricity #WeatherRadar .container {
+as3000-mfd-element #Electricity .weatherRadar {
     position: relative;
     height: 100%;
     width: 100%;
     background-color: black;
 }
-    as3000-mfd-element #Electricity #WeatherRadar weatherradar-view {
+    as3000-mfd-element #Electricity weatherradar-view {
         position: absolute;
         left: 0%;
         bottom: 35%;
@@ -284,7 +275,7 @@ as3000-mfd-element #Electricity #WeatherRadar .container {
         height: 50%;
         display: block;
     }
-    as3000-mfd-element #Electricity #WeatherRadar weatherradar-view-scale {
+    as3000-mfd-element #Electricity weatherradar-view-scale {
         display: block;
         position: absolute;
         left: 2%;
@@ -292,7 +283,7 @@ as3000-mfd-element #Electricity #WeatherRadar .container {
         width: 15vh;
         height: 30%;
     }
-    as3000-mfd-element #Electricity #WeatherRadar weatherradar-view-settings {
+    as3000-mfd-element #Electricity weatherradar-view-settings {
         display: block;
         position: absolute;
         right: 2%;
