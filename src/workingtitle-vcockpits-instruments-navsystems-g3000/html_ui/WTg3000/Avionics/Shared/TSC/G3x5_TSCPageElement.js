@@ -37,6 +37,12 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
         this.gps.activateNavButton(2, "Home", this._onHomePressed.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
+    onUpdate(deltaTime) {
+    }
+
+    onEvent(event) {
+    }
+
     onExit() {
         this.gps.deactivateNavButton(1);
         this.gps.deactivateNavButton(2);

@@ -53,6 +53,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
@@ -305,6 +307,12 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettin
         height: 16vh;
         font-size: 4vh;
     }
+
+as3000-tsc-horizontal-element #Electricity .weatherSelection tsc-button-img {
+    width: 27vh;
+    height: 21vh;
+    font-size: 4vh;
+}
 
 as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-mode {
     position: absolute;

@@ -152,8 +152,8 @@ class AS3000_TSC extends NavSystemTouch {
                     "MFDMapDetailButton",
                     true
                 )),
-                //new NavSystemPage("Weather", "WeatherSettings", new AS3000_TSC_WeatherSettings()),
-                //new NavSystemPage("Weather Selection", "WeatherSelection", new AS3000_TSC_WeatherSelection()),
+                new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
+                new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
                 new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-RIGHT")),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
@@ -584,9 +584,9 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
 
     _openWeatherSelectPage() {
         if (this.gps.getMFDPaneControl() === "LEFT") {
-            this.gps.SwitchToPageName("MFD", "Weather Radar Settings Left");
+            this.gps.SwitchToPageName("MFD", "Weather Selection Left");
         } else {
-            this.gps.SwitchToPageName("MFD", "Weather Radar Settings Right");
+            this.gps.SwitchToPageName("MFD", "Weather Selection Right");
         }
     }
 

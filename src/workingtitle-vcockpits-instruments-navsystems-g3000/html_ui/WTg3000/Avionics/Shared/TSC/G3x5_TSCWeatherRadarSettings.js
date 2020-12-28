@@ -7,7 +7,6 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
         this._model = new WT_WeatherRadarModel();
         this._controller = new WT_DataStoreController(`${this.instrumentID}`, this.model);
 
-        this.controller.addSetting(this._showSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5WeatherRadar.SHOW_KEY, WT_G3x5WeatherRadar.SHOW_DEFAULT, true, false));
         this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5WeatherRadar.MODE_KEY, WT_G3x5WeatherRadar.MODE_DEFAULT, true, false));
         this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5WeatherRadar.DISPLAY_KEY, WT_G3x5WeatherRadar.DISPLAY_DEFAULT, true, false));
         this.controller.addSetting(this._scanModeSetting = new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5WeatherRadar.SCAN_MODE_KEY, WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT, true, false));
@@ -57,20 +56,8 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
         this._features = new WT_G3x5_TSCWeatherRadarFeatures(this, this._htmlElement.featuresElement, this._modeSetting, this._bearingLineSetting);
     }
 
-    onEnter() {
-        super.onEnter();
-
-        this._showSetting.setValue(true);
-    }
-
     onUpdate(deltaTime) {
         this._radarMode.update();
-    }
-
-    onExit() {
-        this._showSetting.setValue(false);
-
-        super.onExit();
     }
 
     _changeRange(delta) {
