@@ -250,7 +250,9 @@ class CJ4_FMC_LegsPage {
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                 else if (value === FMCMainDisplay.clrValue)
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.DELETE;
-                else if (value.length > 0 && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.EXISTING)
+                else if (value.includes("/") && this._fmc.selectMode === CJ4_FMC_LegsPage.SELECT_MODE.EXISTING) // looks like user waypoint, go to new
+                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
+                else if (value.length > 0 && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.EXISTING) // scratchpad not empty, nothing selected, must be new wpt
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
 
                 // only allow insert new on add line
@@ -383,40 +385,6 @@ class CJ4_FMC_LegsPage {
                                     }
                                 });
                             }
-
-                            // let userValue = value.search("/") >= 0;
-                            // if (!userValue) {
-                            //     this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
-                            //         console.log("insert value:" + value);
-                            //         if (isSuccess) {
-                            //             let isDirectTo = (i == 1 && this._currentPage == 1);
-                            //             if (isDirectTo) {
-                            //                 let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
-                            //                 this._fmc.activateDirectToWaypoint(wp, () => {
-                            //                     this.resetAfterOp();
-                            //                 });
-                            //             } else
-                            //                 this.resetAfterOp();
-                            //         }
-                            //     });
-                            // } else {
-                            //     console.log("else value:" + value);
-                            //     let scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : Infinity;
-                            //     const userWaypoint = await this.parseWaypointInput(value, scratchPadWaypointIndex);
-                            //     if (userWaypoint) {
-                            //         this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                            //             this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
-                            //                 this.resetAfterOp();
-                            //             });
-                            //         });
-                            //     }
-                            //     else {
-                            //         this._fmc.fpHasChanged = false;
-                            //         this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                            //         this._fmc.eraseTemporaryFlightPlan();
-                            //     }
-                            // }
-
                         }
                         else if (i == 0 && this._currentPage == 1) {
                             this._fmc.showErrorMessage("UNABLE ADD FROM WPT");
