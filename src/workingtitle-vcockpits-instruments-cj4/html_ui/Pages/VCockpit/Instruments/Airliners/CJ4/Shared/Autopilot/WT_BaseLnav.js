@@ -237,6 +237,12 @@ class WT_BaseLnav {
 
                     return;
                 }
+            } else if (isLandingRunway && this._activeWaypointDist < 0.1) {
+
+                this._setHeading = this._dtk;
+                SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 1);
+                this.execute();
+                return;
             }
 
             //DISCONTINUITIES
