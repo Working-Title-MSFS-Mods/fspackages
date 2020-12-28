@@ -1,5 +1,6 @@
 import { Avionics, BaseInstrument, IntersectionInfo, LatLongAlt, WayPoint } from "MSFS";
 import { FlightPlanManager } from "../wtsdk";
+import { GeoMath } from "./GeoMath";
 
 /**
  * Creating a new waypoint to be added to a flight plan.
@@ -37,8 +38,10 @@ export class WaypointBuilder {
    * @returns The built waypoint.
    */
   public static fromPlaceBearingDistance(ident: string, placeCoordinates: LatLongAlt, bearing: number, distance: number, instrument: BaseInstrument): WayPoint {
+    let magneticBearing = bearing + GeoMath.getMagvar(placeCoordinates.lat, placeCoordinates.long);
+    magneticBearing = magneticBearing < 0 ? 360 + magneticBearing : magneticBearing;
 
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(bearing, distance, placeCoordinates.lat, placeCoordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(magneticBearing, distance, placeCoordinates.lat, placeCoordinates.long);
   
     return WaypointBuilder.fromCoordinates(ident, coordinates, instrument);
   }
@@ -53,10 +56,17 @@ export class WaypointBuilder {
    * @returns The built waypoint.
    */
   public static fromPlaceAlongFlightPlan(ident: string, placeIndex: number, distance: number, instrument: BaseInstrument, fpm: FlightPlanManager): WayPoint {
+    console.log("running fromPlaceAlongFlightPlan");
+    console.log("destination? " + fpm.getDestination() ? "True" : "False");
+    const destinationDistanceInFlightplan = fpm.getDestination().cumulativeDistanceInFP;
+    console.log("destinationDistanceInFlightplan " + destinationDistanceInFlightplan);
 
-    const destinationDistanceInFlightplan = fpm.getDestination().distanceInFP;
-    const placeDistanceFromDestination = fpm.getWaypoint(placeIndex, fpm._currentFlightPlanIndex, true).distanceInFP;
+    const placeDistanceFromDestination = fpm.getWaypoint(placeIndex, 0, true).cumulativeDistanceInFP;
+    console.log("placeDistanceFromDestination " + placeDistanceFromDestination);
+
     const distanceFromDestination = destinationDistanceInFlightplan - placeDistanceFromDestination - distance;
+    console.log("distanceFromDestination " + distanceFromDestination);
+
 
     const coordinates = fpm.getCoordinatesAtNMFromDestinationAlongFlightPlan(distanceFromDestination);
   
