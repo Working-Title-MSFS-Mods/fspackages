@@ -121,6 +121,12 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     get templateID() { return "AS3000_TSC"; }
+
+    _initMFDPaneSelectDisplay() {
+        this._mfdPaneSelectDisplay = this.getChildById("Softkey_1_Container").querySelector(`tsc-mfdpaneselectdisplay`);
+        this._mfdPaneSelectDisplay.selectColor = this.urlConfig.index === 1 ? WT_G3x5_MFDMainPane.LEFT_TSC_COLOR : WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR;
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.pagesContainer = this.getChildById("PagesDisplay");
@@ -233,10 +239,13 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._mfdHalfPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
 
+        this._initMFDPaneSelectDisplay();
+
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
     }
+
     parseXMLConfig() {
         super.parseXMLConfig();
         let pfdPrefix_elem = this.xmlConfig.getElementsByTagName("PFD");
@@ -252,14 +261,28 @@ class AS3000_TSC extends NavSystemTouch {
         if (this.terrainAlerts)
             this.terrainAlerts.reset();
     }
-    onUpdate() {
+
+    _updatePageTitle() {
         let currentPage = this.getCurrentPage();
         let title = currentPage.title ? currentPage.title : currentPage.name;
         if (this.pageTitle.innerHTML != title) {
             this.pageTitle.innerHTML = title;
         }
-        SimVar.SetSimVarValue("L:AS3000_" + this.urlConfig.index + "_Timer_Value", "number", this.timer.getCurrentDisplay());
+    }
 
+    _updateMFDPaneSelectDisplay() {
+        if (this.getCurrentPageGroup().name === "MFD" && (this.popUpElement != this.mapPointerControl)) {
+            if (this._mfdPaneSelectDisplay.style.display !== "block") {
+                this._mfdPaneSelectDisplay.style.display = "block";
+            }
+            this._mfdPaneSelectDisplay.setPaneMode(this._mfdMainPaneSettings.mode.getValue());
+            this._mfdPaneSelectDisplay.setSelected(this.getMFDPaneControl());
+        } else if (this._mfdPaneSelectDisplay.style.display !== "none") {
+            this._mfdPaneSelectDisplay.style.display = "none";
+        }
+    }
+
+    _updateSoftkeyLabels() {
         switch (this.getCurrentPageGroup().name) {
             case "PFD":
                 Avionics.Utils.diffAndSetAttribute(this.pfdSoftkey, "state", "Selected");
@@ -277,6 +300,14 @@ class AS3000_TSC extends NavSystemTouch {
                 Avionics.Utils.diffAndSetAttribute(this.navcomSoftkey, "state", "Selected");
                 break;
         }
+    }
+
+    onUpdate() {
+        this._updatePageTitle();
+        SimVar.SetSimVarValue("L:AS3000_" + this.urlConfig.index + "_Timer_Value", "number", this.timer.getCurrentDisplay());
+
+        this._updateSoftkeyLabels();
+        this._updateMFDPaneSelectDisplay();
     }
 
     _onMainPaneModeChanged(setting, newValue, oldValue) {
@@ -340,7 +371,9 @@ class AS3000_TSC extends NavSystemTouch {
                 this.mfdRightPaneSettings.control.addControl(this._mfdHalfPaneControlID);
                 break;
         }
-        this.SwitchToPageName("MFD", "MFD Home");
+        if (this.getCurrentPageGroup().name === "MFD") {
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
     }
 
     _switchMFDHalfPaneControl() {
@@ -355,7 +388,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _handleControlEvent(event) {
-        if (this.getCurrentPageGroup().name === "MFD" && this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF) {
+        if (this.getCurrentPageGroup().name === "MFD" && this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF && this.popUpElement != this.mapPointerControl) {
             switch (event) {
                 case "TopKnob_Small_INC":
                 case "TopKnob_Small_DEC":
