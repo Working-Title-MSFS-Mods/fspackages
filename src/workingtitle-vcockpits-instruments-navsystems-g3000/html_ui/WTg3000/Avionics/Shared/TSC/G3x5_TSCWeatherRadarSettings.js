@@ -1,9 +1,6 @@
-class WT_G3x5_TSCWeatherRadarSettings extends NavSystemElement {
+class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
     constructor(homePageGroup, homePageName, instrumentID) {
-        super();
-
-        this._homePageGroup = homePageGroup;
-        this._homePageName = homePageName;
+        super(homePageGroup, homePageName);
 
         this._instrumentID = instrumentID;
 
@@ -16,6 +13,8 @@ class WT_G3x5_TSCWeatherRadarSettings extends NavSystemElement {
         this.controller.addSetting(this._scanModeSetting = new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5WeatherRadar.SCAN_MODE_KEY, WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT, true, false));
         this.controller.addSetting(this._bearingLineSetting = new WT_WeatherRadarSetting(this.controller, "showBearingLine", WT_G3x5WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
         this.controller.addSetting(this._rangeSetting = new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5WeatherRadar.RANGES, WT_G3x5WeatherRadar.RANGE_DEFAULT));
+
+        this.controller.update();
     }
 
     /**
@@ -46,6 +45,8 @@ class WT_G3x5_TSCWeatherRadarSettings extends NavSystemElement {
     }
 
     init(root) {
+        this.container.title = "Weather Radar Settings";
+
         /**
          * @type {WT_G3x5_TSCWeatherRadarSettingsHTMLElement}
          */
@@ -56,31 +57,20 @@ class WT_G3x5_TSCWeatherRadarSettings extends NavSystemElement {
         this._features = new WT_G3x5_TSCWeatherRadarFeatures(this, this._htmlElement.featuresElement, this._modeSetting, this._bearingLineSetting);
     }
 
-    back() {
-        this.gps.goBack();
-    }
-
-    backHome() {
-        this.gps.SwitchToPageName(this._homePageGroup, this._homePageName);
-    }
-
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        super.onEnter();
 
         this._showSetting.setValue(true);
     }
 
     onUpdate(deltaTime) {
-        this.controller.update();
         this._radarMode.update();
     }
 
     onExit() {
         this._showSetting.setValue(false);
 
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
+        super.onExit();
     }
 
     _changeRange(delta) {

@@ -7,7 +7,11 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._icaoSearchers = icaoSearchers;
         this._flightPlanManager = flightPlanManager;
 
-        this._controller = new WT_DataStoreController(`${instrumentID}`, null);
+        this._controller = new WT_DataStoreController(instrumentID, null);
+        this._controller.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._controller));
+        this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
+        this._controller.init();
+        this._controller.update();
 
         this._mode;
 
@@ -59,6 +63,10 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, "RIGHT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager);
 
         this._setMode(WT_G3x5_MFDMainPaneModeSetting.Mode.FULL);
+    }
+
+    _onModeSettingChanged(setting, newValue, oldValue) {
+        this._setMode(newValue);
     }
 
     _setMode(mode) {
@@ -158,6 +166,12 @@ class WT_G3x5_MFDHalfPane {
         let id = `${instrumentID}-${halfPaneID}`;
 
         this._controller = new WT_DataStoreController(id, null);
+        this._controller.addSetting(this._controlSetting = new WT_G3x5_MFDHalfPaneControlSetting(this._controller));
+        this._controller.addSetting(this._displaySetting = new WT_G3x5_MFDHalfPaneDisplaySetting(this._controller));
+        this._controlSetting.addListener(this._onControlSettingChanged.bind(this));
+        this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
+        this._controller.init();
+        this._controller.update();
 
         this._navMap = new WT_G3x5NavMap(id, icaoWaypointFactory, icaoSearchers, flightPlanManager);
         this._weatherRadar = new WT_G3x5WeatherRadar(id);
@@ -194,6 +208,14 @@ class WT_G3x5_MFDHalfPane {
         return this._controller;
     }
 
+    _onControlSettingChanged(setting, newValue, oldValue) {
+        this._setControl(newValue);
+    }
+
+    _onDisplaySettingChanged(setting, newValue, oldValue) {
+        this._setDisplayMode(newValue);
+    }
+
     /**
      * @returns {Number}
      */
@@ -210,6 +232,10 @@ class WT_G3x5_MFDHalfPane {
 
     setHalfRefresh(value) {
         this._halfRefresh = value;
+    }
+
+    _setControl(value) {
+
     }
 
     _setDisplayMode(mode) {
@@ -343,8 +369,29 @@ class WT_G3x5_MFDHalfPaneControlSetting extends WT_DataStoreSetting {
     constructor(controller, defaultValue = 0, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
         super(controller, key, defaultValue, autoUpdate, isPersistent);
     }
+
+    hasControl(touchscreen, all = false) {
+        let value = this.getValue();
+        if (all) {
+            return (value & touchscreen) === touchscreen;
+        } else {
+            return (value & touchscreen) !== 0;
+        }
+    }
+
+    addControl(touchscreen) {
+        this.setValue(this.getValue() | touchscreen);
+    }
+
+    removeControl(touchscreen) {
+        this.setValue(this.getValue() & (~touchscreen));
+    }
 }
 WT_G3x5_MFDHalfPaneControlSetting.KEY = "WT_MFDHalfPane_Control"
+WT_G3x5_MFDHalfPaneControlSetting.Touchscreen = {
+    LEFT: 1,
+    RIGHT: 1 << 1
+}
 
 class WT_G3x5_MFDHalfPaneDisplaySetting extends WT_DataStoreSetting {
     constructor(controller, defaultValue = WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneDisplaySetting.KEY) {

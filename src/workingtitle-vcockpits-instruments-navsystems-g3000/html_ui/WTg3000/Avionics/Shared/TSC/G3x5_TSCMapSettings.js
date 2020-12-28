@@ -1,15 +1,13 @@
-class WT_G3x5_TSCMapSettings extends NavSystemElement {
+class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
     constructor(
-        homePageGroup, homePageName, controllerID,
+        homePageGroup, homePageName, instrumentID,
         orientationButtonName,
         syncButtonName,
         detailButtonName,
         useWindData
     ) {
-        super();
-        this.homePageGroup = homePageGroup;
-        this.homePageName = homePageName;
-        this.controllerID = controllerID;
+        super(homePageGroup, homePageName);
+        this._instrumentID = instrumentID;
 
         this._allControllerIDs = ["PFD", "MFD"];
 
@@ -84,6 +82,19 @@ class WT_G3x5_TSCMapSettings extends NavSystemElement {
         this._updateCallbacks = [];
     }
 
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    getControllerID() {
+        return `${this.instrumentID}-${this.gps.getMFDPaneControl()}`;
+    }
+
     init(root) {
         this.initOrientationSetting();
         this.initSyncSetting();
@@ -100,7 +111,7 @@ class WT_G3x5_TSCMapSettings extends NavSystemElement {
             callback: callback,
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.controllerID, key),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.getControllerID.bind(this), key),
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName
         };
@@ -143,37 +154,19 @@ class WT_G3x5_TSCMapSettings extends NavSystemElement {
         }
     }
 
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-    }
-
     onUpdate(_deltaTime) {
         for (let callback of this._updateCallbacks) {
             callback();
         }
     }
 
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
     onEvent(_event) {
-    }
-
-    back() {
-        this.gps.goBack();
-    }
-
-    backHome() {
-        this.gps.SwitchToPageName(this.homePageGroup, this.homePageName);
     }
 
     // update helpers
 
     updateOrientationValue() {
-        let currentOrientation = WT_MapController.getSettingValue(this.controllerID, WT_G3x5NavMap.ORIENTATION_KEY);
+        let currentOrientation = WT_MapController.getSettingValue(this.getControllerID(), WT_G3x5NavMap.ORIENTATION_KEY);
         let newValue = "";
         switch (currentOrientation) {
             case WT_G3x5NavMap.Orientation.HDG:
@@ -190,7 +183,7 @@ class WT_G3x5_TSCMapSettings extends NavSystemElement {
     }
 
     updateSyncValue() {
-        let currentSync = WT_MapController.getSyncMode(this.controllerID);
+        let currentSync = WT_MapController.getSyncMode(this.getControllerID());
         let newValue = "";
         switch (currentSync) {
             case WT_MapController.SyncMode.OFF:
@@ -204,7 +197,7 @@ class WT_G3x5_TSCMapSettings extends NavSystemElement {
     }
 
     updateDetailValue() {
-        let currentDetail = WT_MapController.getSettingValue(this.controllerID, WT_MapDCLTRSetting.KEY_DEFAULT);
+        let currentDetail = WT_MapController.getSettingValue(this.getControllerID(), WT_MapDCLTRSetting.KEY_DEFAULT);
         for (let i = 0; i < this.detailButtonImages.length; i++) {
             Avionics.Utils.diffAndSetAttribute(this.detailButtonImages[i], "state", (currentDetail == i) ? "Active" : "Inactive");
         }
@@ -223,50 +216,33 @@ class WT_G3x5_TSCMapSettings extends NavSystemElement {
     }
 
     openDetailSelection() {
-        this.gps.mapDetailSelect.element.setContext(this.controllerID, this.homePageGroup, this.homePageName);
+        this.gps.mapDetailSelect.element.setContext(this.getControllerID(), this.homePageGroup, this.homePageName);
         this.gps.switchToPopUpPage(this.gps.mapDetailSelect);
     }
 
     // setter helpers
 
     setOrientation(value) {
-        WT_MapController.setSettingValue(this.controllerID, WT_G3x5NavMap.ORIENTATION_KEY, value, true);
+        WT_MapController.setSettingValue(this.getControllerID(), WT_G3x5NavMap.ORIENTATION_KEY, value, true);
         this.updateOrientationValue();
     }
 
     setSync(mode) {
-        let oldMode = WT_MapController.getSyncMode(this.controllerID);
+        let oldMode = WT_MapController.getSyncMode(this.getControllerID());
         if (mode !== oldMode) {
             switch (mode) {
                 case WT_MapController.SyncMode.ALL:
                     for (let id of this._allControllerIDs) {
-                        WT_MapController.setSyncMode(id, mode, this.controllerID);
+                        WT_MapController.setSyncMode(id, mode, this.getControllerID());
                     }
                     break;
                 case WT_MapController.SyncMode.OFF:
                     for (let id of this._allControllerIDs) {
-                        WT_MapController.setSyncMode(id, mode, this.controllerID);
+                        WT_MapController.setSyncMode(id, mode, this.getControllerID());
                     }
                     break;
             }
         }
-    }
-
-    static getRangeValueText(range) {
-        let result = range.compare(WT_Unit.FOOT.createNumber(1000));
-        if (range.compare(WT_Unit.FOOT.createNumber(1000)) <= 0) {
-            return range.asUnit(WT_Unit.FOOT).toFixed(0) + "FT";
-        } else {
-            return range.refNumber + "NM";
-        }
-    }
-
-    static getRangeValuesDisplayToMax(max) {
-        let values = [];
-        for (let i = 0; i < WT_G3x5NavMap.MAP_RANGE_LEVELS.length && WT_G3x5NavMap.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
-            values.push(WT_G3x5_TSCMapSettings.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[i]));
-        }
-        return values;
     }
 }
 WT_G3x5_TSCMapSettings.ORIENTATION_TEXTS = [
@@ -420,7 +396,7 @@ class WT_G3x5_TSCMapSettingsTab {
     _createContext() {
         return {
             instrument: this._settingsPage.gps,
-            controllerID: this._settingsPage.controllerID,
+            getControllerID: this._settingsPage.getControllerID.bind(this._settingsPage),
             homePageGroup: this._settingsPage.homePageGroup,
             homePageName: this._settingsPage.homePageName
         };
@@ -599,11 +575,11 @@ class WT_G3x5_TSCMapSettingsToggleTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 
     _onToggleButtonPressed() {
-        WT_MapController.setSettingValue(this.context.controllerID, this._toggleSettingKey, !WT_MapController.getSettingValue(this.context.controllerID, this._toggleSettingKey, false), true);
+        WT_MapController.setSettingValue(this.context.getControllerID(), this._toggleSettingKey, !WT_MapController.getSettingValue(this.context.getControllerID(), this._toggleSettingKey, false), true);
     }
 
     _updateToggleButton() {
-        this._toggleButton.toggle = WT_MapController.getSettingValue(this.context.controllerID, this._toggleSettingKey, false) ? "on" : "off";
+        this._toggleButton.toggle = WT_MapController.getSettingValue(this.context.getControllerID(), this._toggleSettingKey, false) ? "on" : "off";
     }
 
     onUpdate() {
@@ -638,10 +614,10 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
             title: this._rangeWindowTitleText,
             subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
-            callback: this._setRangeSetting.bind(this, this.context.controllerID),
+            callback: this._setRangeSetting.bind(this, this.context.getControllerID()),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.controllerID, this._rangeKey),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._rangeKey),
             homePageGroup: this.context.homePageGroup,
             homePageName: this.context.homePageName
         };
@@ -662,7 +638,7 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _updateRangeButton() {
-        this._rangeButton.labelText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.controllerID, this._rangeKey)]);
+        this._rangeButton.labelText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.getControllerID(), this._rangeKey)]);
     }
 
     onUpdate() {
@@ -714,7 +690,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     }
 
     _initTypeWindowContext() {
-        let elementHandler = new WT_G3x5_TSCRangeTypeSelectionElementHandler(this.context.controllerID, this._rangeTypeNames, this._rangeKeys);
+        let elementHandler = new WT_G3x5_TSCRangeTypeSelectionElementHandler(this.context.getControllerID, this._rangeTypeNames, this._rangeKeys);
         this._typeWindowContext = {
             title: this._typeWindowTitleText,
             subclass: "standardDynamicSelectionListWindow",
@@ -739,7 +715,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
                 callback: this._setRangeSetting.bind(this, i),
                 elementConstructor: elementHandler,
                 elementUpdater: elementHandler,
-                currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.controllerID, this._rangeKeys[i]),
+                currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID(), this._rangeKeys[i]),
                 homePageGroup: this.context.homePageGroup,
                 homePageName: this.context.homePageName
             };
@@ -752,7 +728,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     }
 
     _setRangeSetting(index, value) {
-        WT_MapController.setSettingValue(this.context.controllerID, this._rangeKeys[index], value, true);
+        WT_MapController.setSettingValue(this.context.getControllerID(), this._rangeKeys[index], value, true);
     }
 
     _onRangeTypeButtonPressed() {
@@ -768,8 +744,8 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
 }
 
 class WT_G3x5_TSCRangeTypeSelectionElementHandler {
-    constructor(controllerID, typeNames, rangeKeys) {
-        this._controllerID = controllerID;
+    constructor(getControllerID, typeNames, rangeKeys) {
+        this._getControllerID = getControllerID;
         this._typeNames = Array.from(typeNames);
         this._rangeKeys = Array.from(rangeKeys);
     }
@@ -794,7 +770,7 @@ class WT_G3x5_TSCRangeTypeSelectionElementHandler {
     }
 
     update(index, elem) {
-        Avionics.Utils.diffAndSet(elem.value, WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._controllerID, this._rangeKeys[index])]));
+        Avionics.Utils.diffAndSet(elem.value, WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])]));
     }
 }
 
@@ -822,14 +798,14 @@ class WT_G3x5_TSCMapSettingsTrackVectorTabRow extends WT_G3x5_TSCMapSettingsTogg
             callback: this._setLookaheadSetting.bind(this),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.controllerID, this._lookaheadSettingKey),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._lookaheadSettingKey),
             homePageGroup: this.context.homePageGroup,
             homePageName: this.context.homePageName
         };
     }
 
     _setLookaheadSetting(value) {
-        WT_MapController.setSettingValue(this.context.controllerID, this._lookaheadSettingKey, value, true);
+        WT_MapController.setSettingValue(this.context.getControllerID(), this._lookaheadSettingKey, value, true);
     }
 
     _onLookaheadButtonPressed() {
@@ -843,7 +819,7 @@ class WT_G3x5_TSCMapSettingsTrackVectorTabRow extends WT_G3x5_TSCMapSettingsTogg
     }
 
     _updateLookaheadButton() {
-        this._lookaheadButton.labelText = WT_G3x5_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText(this._lookaheadValues[WT_MapController.getSettingValue(this.context.controllerID, this._lookaheadSettingKey)]);
+        this._lookaheadButton.labelText = WT_G3x5_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText(this._lookaheadValues[WT_MapController.getSettingValue(this.context.getControllerID(), this._lookaheadSettingKey)]);
     }
 
     onUpdate() {
@@ -876,18 +852,18 @@ class WT_G3x5_TSCMapSettingsFuelRingTabRow extends WT_G3x5_TSCMapSettingsToggleT
     }
 
     _onReserveButtonPressed() {
-        let currentSettingValue = WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey) * 60000;
+        let currentSettingValue = WT_MapController.getSettingValue(this.context.getControllerID(), this._reserveTimeSettingKey) * 60000;
         this.context.instrument.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
         this.context.instrument.switchToPopUpPage(this.context.instrument.timeKeyboard);
     }
 
     _setReserveTimeSetting(value) {
         let reserveTime = Math.max(1, Math.round(value / 60000));
-        WT_MapController.setSettingValue(this.context.controllerID, this._reserveTimeSettingKey, reserveTime, true);
+        WT_MapController.setSettingValue(this.context.getControllerID(), this._reserveTimeSettingKey, reserveTime, true);
     }
 
     _updateReserveButton() {
-        this._reserveButton.labelText = WT_G3x5_TSCMapSettingsFuelRingTabRow.getFuelRingReserveTimeText(WT_MapController.getSettingValue(this.context.controllerID, this._reserveTimeSettingKey));
+        this._reserveButton.labelText = WT_G3x5_TSCMapSettingsFuelRingTabRow.getFuelRingReserveTimeText(WT_MapController.getSettingValue(this.context.getControllerID(), this._reserveTimeSettingKey));
     }
 
     onUpdate() {
@@ -938,14 +914,14 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
             callback: this._setModeSetting.bind(this),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.controllerID, this._modeSettingKey),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._modeSettingKey),
             homePageGroup: this.context.homePageGroup,
             homePageName: this.context.homePageName
         };
     }
 
     _setModeSetting(value) {
-        WT_MapController.setSettingValue(this.context.controllerID, this._modeSettingKey, value, true);
+        WT_MapController.setSettingValue(this.context.getControllerID(), this._modeSettingKey, value, true);
     }
 
     _onModeButtonPressed() {
@@ -959,7 +935,7 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 
     _updateModeButton() {
-        this._modeButton.valueText = WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.controllerID, this._modeSettingKey)];
+        this._modeButton.valueText = WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.getControllerID(), this._modeSettingKey)];
     }
 
     onUpdate() {
@@ -969,12 +945,12 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
 }
 
 class WT_G3x5_TSCMapSettingIndexGetter {
-    constructor(controllerID, key) {
-        this._controllerID = controllerID;
+    constructor(getControllerID, key) {
+        this._getControllerID = getControllerID;
         this._key = key;
     }
 
     getCurrentIndex() {
-        return WT_MapController.getSettingValue(this._controllerID, this._key);
+        return WT_MapController.getSettingValue(this._getControllerID(), this._key);
     }
 }
