@@ -444,7 +444,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     getDCLTRValue() {
-        return WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS[this.innerMap.dcltrSetting.getValue()];
+        return WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS[this.innerMap.navMap.dcltrSetting.getValue()];
     }
 
     toggleTerrain() {
