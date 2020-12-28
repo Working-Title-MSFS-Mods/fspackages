@@ -7,12 +7,6 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._icaoSearchers = icaoSearchers;
         this._flightPlanManager = flightPlanManager;
 
-        this._controller = new WT_DataStoreController(instrumentID, null);
-        this._controller.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._controller));
-        this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
-        this._controller.init();
-        this._controller.update();
-
         this._mode = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL;
 
         this._updateCounter = 0;
@@ -52,6 +46,10 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
     init(root) {
         this._htmlElement = root;
 
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._controller));
+        this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
+
         /**
          * @type {WT_G3x5_MFDHalfPane}
          */
@@ -62,7 +60,8 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
          */
         this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, "RIGHT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager);
 
-        this._setMode(this._mode);
+        this._controller.init();
+        this._controller.update();
     }
 
     _onModeSettingChanged(setting, newValue, oldValue) {
@@ -237,7 +236,7 @@ class WT_G3x5_MFDHalfPane {
     }
 
     _setControl(value) {
-
+        this.htmlElement.setControl(value);
     }
 
     _setDisplayMode(mode) {
@@ -280,7 +279,6 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
 
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.content.cloneNode(true));
-
     }
 
     connectedCallback() {
@@ -293,8 +291,20 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
         this._titledPane.titleText = title;
     }
 
-    setColor(color) {
-        this._titledPane.style.backgroundColor = color;
+    setControl(value) {
+        switch (value) {
+            case WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT:
+                this._titledPane.setAttribute("control", "left");
+                break;
+            case WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT:
+                this._titledPane.setAttribute("control", "right");
+                break;
+            case WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT:
+                this._titledPane.setAttribute("control", "both");
+                break;
+            default:
+                this._titledPane.setAttribute("control", "none");
+        }
     }
 
     setDisplay(display) {
@@ -333,7 +343,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                 right: 1px;
                 top: 1px;
                 bottom: 1px;
-                border: solid 1px black;
+                border: solid 1px white;
                 border-radius: 3px;
             }
                 slot {
@@ -342,6 +352,24 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                     width: 100%;
                     height: 100%;
                 }
+            #titledpane[control=left] {
+                position: absolute;
+                background-color: #97d9d5;
+                --pane-title-border-width: 0px;
+                border: solid 1px black;
+            }
+            #titledpane[control=right] {
+                position: absolute;
+                background-color: #d08dff;
+                --pane-title-border-width: 0px;
+                border: solid 1px black;
+            }
+            #titledpane[control=both] {
+                position: absolute;
+                background-color: #2c22ff;
+                --pane-title-border-width: 0px;
+                border: solid 1px black;
+            }
     </style>
     <div id="wrapper">
         <pane-titled id="titledpane" titletext="">
@@ -368,7 +396,7 @@ WT_G3x5_MFDMainPaneModeSetting.Mode = {
 }
 
 class WT_G3x5_MFDHalfPaneControlSetting extends WT_DataStoreSetting {
-    constructor(controller, defaultValue = 0, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
+    constructor(controller, defaultValue = WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
         super(controller, key, defaultValue, autoUpdate, isPersistent);
     }
 
@@ -390,6 +418,9 @@ class WT_G3x5_MFDHalfPaneControlSetting extends WT_DataStoreSetting {
     }
 }
 WT_G3x5_MFDHalfPaneControlSetting.KEY = "WT_MFDHalfPane_Control"
+/**
+ * @enum {Number}
+ */
 WT_G3x5_MFDHalfPaneControlSetting.Touchscreen = {
     LEFT: 1,
     RIGHT: 1 << 1
