@@ -23,6 +23,7 @@ class WT_OptionsManager {
             default: optionDef.default === undefined ? undefined : optionDef.default,
             auto: optionDef.auto === undefined ? false : optionDef.auto,
             observed: optionDef.observed === undefined ? false : optionDef.observed,
+            equals: optionDef.equals,
             readOnly: optionDef.readOnly === undefined ? false : optionDef.readOnly
         };
 
@@ -33,9 +34,16 @@ class WT_OptionsManager {
             };
             if (!this._optionDefs[opt].readOnly) {
                 if (this._optionDefs[opt].observed) {
+                    let equals = this._optionDefs[opt].equals
                     definition["set"] = function(value) {
+                        let changed = false;
                         let old = this[`_${opt}`];
-                        if (old !== value) {
+                        if (equals) {
+                            changed = !equals(old, value);
+                        } else {
+                            changed = (value !== old);
+                        }
+                        if (changed) {
                             this[`_${opt}`] = value;
                             this.onOptionChanged(opt, old, value);
                         }
@@ -133,3 +141,20 @@ class WT_OptionsManager {
         return optionsObj;
     }
 }
+
+/**
+ * @typedef {WT_OptionsDefinition}
+ * @property {*} [default] - the default (initial) value of the option. Undefined by default.
+ * @property {Boolean} [auto] - whether to automatically create a getter and setter for the option. False by default.
+ * @property {Boolean} [observed] - whether to observe the option for changes. False by default. When an observed option changes values,
+ *                                  a call is made to the .onOptionChanged() method of the option's parent object. This operation is only
+ *                                  performed automatically if the option's auto property is set to true.
+ * @property {Function} [equals] - an optional equality function to use when determining equality for two values of the option. The
+ *                                 function should accept two arguments and return true if and only if the two arguments are to be
+ *                                 considered equal. Used to determine whether .onOptionChanged() should be called when the option's value
+ *                                 is set. If an explicit comparator function is not provided, then the built-in strict equality (===)
+ *                                 operator is used.
+ * @property {Boolean} [readonly] - whether the option is considered to be read-only. False by default. Read-only options can (optionally) have a
+ *                                  default value, but otherwise cannot be changed via the .setOptions() method. Additionally, if the auto property
+ *                                  for the option is true, a setter will not be created for the option.
+ */
