@@ -330,7 +330,9 @@ class WT_TSCImageButton extends WT_TSCButton {
         this._style.appendChild(document.createTextNode(`
             #img {
                 position: absolute;
-                max-width: 50%;
+                left: 50%;
+                transform: translateX(-50%);
+                max-width: 90%;
                 top: 5%;
                 height: 50%;
             }
@@ -362,6 +364,13 @@ class WT_TSCImageButton extends WT_TSCButton {
 
     set imgSrc(value) {
         this.setAttribute("imgsrc", value);
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        super.attributeChangedCallback(name, oldValue, newValue);
+        if (name === "imgsrc") {
+            this._img.src = newValue;
+        }
     }
 }
 
