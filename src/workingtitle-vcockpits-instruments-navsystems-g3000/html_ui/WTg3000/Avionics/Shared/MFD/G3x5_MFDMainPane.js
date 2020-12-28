@@ -93,6 +93,10 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
     onEvent(event) {
     }
 }
+WT_G3x5_MFDMainPane.LEFT_TSC_COLOR = "#97d9d5";
+WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR = "#d08dff";
+WT_G3x5_MFDMainPane.BOTH_TSC_COLOR = "#2c22ff";
+
 
 class WT_G3000MFDMainPaneHTMLElement extends HTMLElement {
     constructor() {
@@ -353,19 +357,19 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                 }
             #titledpane[control=left] {
                 position: absolute;
-                background-color: #97d9d5;
+                background-color: ${WT_G3x5_MFDMainPane.LEFT_TSC_COLOR};
                 --pane-title-border-color: transparent;
                 border: solid 1px black;
             }
             #titledpane[control=right] {
                 position: absolute;
-                background-color: #d08dff;
+                background-color: ${WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR};
                 --pane-title-border-color: transparent;
                 border: solid 1px black;
             }
             #titledpane[control=both] {
                 position: absolute;
-                background-color: #2c22ff;
+                background-color: ${WT_G3x5_MFDMainPane.BOTH_TSC_COLOR};
                 --pane-title-border-color: transparent;
                 border: solid 1px black;
             }
