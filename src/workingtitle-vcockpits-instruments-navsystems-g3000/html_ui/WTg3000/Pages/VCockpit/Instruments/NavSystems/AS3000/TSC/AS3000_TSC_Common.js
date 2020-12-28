@@ -84,6 +84,10 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    get mfdHalfPaneControlID() {
+        return this._mfdHalfPaneControlID;
+    }
+
     get mfdMainPaneSettings() {
         return this._mfdMainPaneSettings;
     }
@@ -102,6 +106,10 @@ class AS3000_TSC extends NavSystemTouch {
         } else {
             return this._mfdHalfPaneControl;
         }
+    }
+
+    getActiveMFDHalfPaneSettings() {
+        return this.getMFDPaneControl() === "LEFT" ? this._mfdLeftPaneSettings : this._mfdRightPaneSettings;
     }
 
     isLightingControlAllowed() {
@@ -542,12 +550,10 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     init(root) {
-        this.mapButton = this.gps.getChildById("MapButton");
-        this.mapButton_image = this.mapButton.getElementsByClassName("img")[0];
-        this.mapButton_text = this.mapButton.getElementsByClassName("title")[0];
-        this.weatherButton = this.gps.getChildById("WeatherButton");
-        this.weatherButton_image = this.weatherButton.getElementsByClassName("img")[0];
-        this.weatherButton_text = this.weatherButton.getElementsByClassName("title")[0];
+        this._mapButton = this.gps.getChildById("MapButton");
+        this._mapButtonTitle = this._mapButton.getElementsByClassName("label")[0];
+        this._weatherButton = this.gps.getChildById("WeatherButton");
+        this._weatherButtonTitle = this._weatherButton.getElementsByClassName("label")[0];
         this.directToButton = this.gps.getChildById("DirectToButton");
         this.FlightPlanButton = this.gps.getChildById("FlightPlanButton");
         this.procButton = this.gps.getChildById("ProcButton");
@@ -556,11 +562,8 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.WaypointsInfoButton = this.gps.getChildById("WaypointInfoButton");
         this.aircraftSystemsButton = this.gps.getChildById("AircraftSystemsButton");
         this.utilitiesButton = this.gps.getChildById("UtilitiesButton");
-        this.updateMapButtons();
-        this.gps.makeButton(this.mapButton, this.mapSwitch.bind(this, 0));
-        this.gps.makeButton(this.weatherButton, this._openWeatherPage.bind(this));
-        //this.gps.makeButton(this.mapButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Map Settings"));
-        //this.gps.makeButton(this.weatherButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Weather"));
+        this.gps.makeButton(this._mapButton, this._onMapButtonPressed.bind(this));
+        this.gps.makeButton(this._weatherButton, this._onWeatherButtonPressed.bind(this));
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
         this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
         this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
@@ -571,9 +574,15 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this.utilitiesButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Utilities"));
 
         this.gps.mfdMainPaneSettings.mode.addListener(this._onMainPaneModeChanged.bind(this));
+        this.gps.mfdLeftPaneSettings.control.addListener(this._onPaneControlChanged.bind(this));
+        this.gps.mfdRightPaneSettings.control.addListener(this._onPaneControlChanged.bind(this));
+        this.gps.mfdLeftPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
+        this.gps.mfdRightPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
+
+        this._updateMapWeatherButtons();
     }
 
-    _openWeatherPage() {
+    _openWeatherSelectPage() {
         if (this.gps.getMFDPaneControl() === "LEFT") {
             this.gps.SwitchToPageName("MFD", "Weather Radar Settings Left");
         } else {
@@ -581,47 +590,62 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         }
     }
 
-    mapSwitch(_mapIndex) {
-        let currMap = SimVar.GetSimVarValue("L:AS3000_MFD_Current_Map", "number");
-        if (currMap == _mapIndex) {
-            switch (_mapIndex) {
-                case 0:
-                    this.gps.SwitchToPageName("MFD", "Map Settings");
-                    break;
-                case 2:
-                    this.gps.SwitchToPageName("MFD", "Weather Selection");
-                    break;
-            }
-        }
-        else {
-            SimVar.SetSimVarValue("L:AS3000_MFD_Current_Map", "number", _mapIndex);
-        }
-        this.updateMapButtons(_mapIndex);
+    _openMapSettingsPage() {
+        this.gps.SwitchToPageName("MFD", "Map Settings");
     }
 
-    updateMapButtons(_newIndex = undefined) {
-        let currMap = _newIndex == undefined ? SimVar.GetSimVarValue("L:AS3000_MFD_Current_Map", "number") : _newIndex;
-        if (currMap == 0) {
-            Avionics.Utils.diffAndSet(this.mapButton_text, "Map Settings");
-            Avionics.Utils.diffAndSetAttribute(this.mapButton, "state", "Active");
+    _onMapButtonPressed() {
+        let settings = this.gps.getActiveMFDHalfPaneSettings();
+        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+            this._openMapSettingsPage();
+        } else {
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
         }
-        else {
-            Avionics.Utils.diffAndSet(this.mapButton_text, "Map");
-            Avionics.Utils.diffAndSetAttribute(this.mapButton, "state", "");
+    }
+
+    _onWeatherButtonPressed() {
+        let settings = this.gps.getActiveMFDHalfPaneSettings();
+        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
+            this._openWeatherSelectPage();
+        } else {
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER);
         }
-        if (currMap == 2) {
-            Avionics.Utils.diffAndSet(this.weatherButton_text, "Weather Selection");
-            Avionics.Utils.diffAndSetAttribute(this.weatherButton, "state", "Active");
+    }
+
+    _updateMapWeatherButtons() {
+        let display = this.gps.getActiveMFDHalfPaneSettings().display.getValue();
+        switch (display) {
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+                this._mapButton.setAttribute("state", "Active");
+                this._mapButtonTitle.innerHTML = "Map Settings";
+                this._weatherButton.setAttribute("state", "");
+                this._weatherButtonTitle.innerHTML = "Weather";
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+                this._weatherButton.setAttribute("state", "Active");
+                this._weatherButtonTitle.innerHTML = "Weather<br>Selection";
+                this._mapButton.setAttribute("state", "");
+                this._mapButtonTitle.innerHTML = "Map";
+                break;
         }
-        else {
-            Avionics.Utils.diffAndSet(this.weatherButton_text, "Weather");
-            Avionics.Utils.diffAndSetAttribute(this.weatherButton, "state", "");
+    }
+
+    _onPaneControlChanged(setting, newValue, oldValue) {
+        if (this.gps.mfdHalfPaneControlID !== undefined && ((newValue & this.gps.mfdHalfPaneControlID) !== (oldValue & this.gps.mfdHalfPaneControlID))) {
+            this._updateMapWeatherButtons();
+        }
+    }
+
+    _onPaneDisplayChanged(setting, newValue, oldValue) {
+        if (setting === this.gps.getActiveMFDHalfPaneSettings().display) {
+            this._updateMapWeatherButtons();
         }
     }
 
     _onMainPaneModeChanged(setting, newValue, oldValue) {
         if (this.gps && this.gps.getCurrentPage().name === "MFD Home") {
             this._updateNavButtons();
+            this._updateMapWeatherButtons();
         }
     }
 
