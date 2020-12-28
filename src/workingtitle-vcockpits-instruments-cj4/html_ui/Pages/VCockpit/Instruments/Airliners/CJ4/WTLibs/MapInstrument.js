@@ -20,6 +20,7 @@ class SmartIterator {
         return NaN;
     }
 }
+
 class MapInstrument extends ISvgMapRootElement {
     constructor() {
         super();
@@ -730,35 +731,30 @@ class MapInstrument extends ISvgMapRootElement {
                             let airport = this.airportLoader.waypoints[i];
                             if (airport && airport.infos instanceof AirportInfo) {
                                 if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                    // if (this.getDeclutteredRange() <= this.airportMaxRanges[airport.infos.getClassSize()]) {
                                         this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
-                                    // }
                                 }
                             }
                         }
                     }
-                    if (this.showVORs) { // && (this.getDeclutteredRange() <= this.vorMaxRange || this.getDeclutteredRange() < this.minimizedVorMaxRange)) {
+                    if (this.showVORs) { 
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                             let vor = this.vorLoader.waypoints[i];
-                            vor.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.vorMaxRange;
                             if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
                                 this.navMap.mapElements.push(vor.getSvgElement(this.navMap.index));
                             }
                         }
                     }
-                    if (this.showNDBs && (this.getDeclutteredRange() <= this.ndbMaxRange || this.getDeclutteredRange() < this.minimizedNdbMaxRange)) {
+                    if (this.showNDBs && (this.rangeIndex < this.ndbMaxRange)) {
                         for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                             let ndb = this.ndbLoader.waypoints[i];
-                            ndb.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.ndbMaxRange;
                             if (this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
                                 this.navMap.mapElements.push(ndb.getSvgElement(this.navMap.index));
                             }
                         }
                     }
-                    if (this.showIntersections && (this.getDeclutteredRange() <= this.intersectionMaxRange || this.getDeclutteredRange() < this.minimizedIntersectionMaxRange)) {
+                    if (this.showIntersections && (this.rangeIndex < this.intersectionMaxRange)) {
                         for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                             let intersection = this.intersectionLoader.waypoints[i];
-                            intersection.getSvgElement(this.navMap.index).minimize = this.getDeclutteredRange() > this.intersectionMaxRange;
                             if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
                                 this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
                             }
@@ -1621,16 +1617,17 @@ class MapInstrument extends ISvgMapRootElement {
         return _range.toFixed(decimals + 1);
     }
 }
+
 MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
 
-MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
+MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = false;
 
-MapInstrument.INT_RANGE_DEFAULT = 15;
+MapInstrument.INT_RANGE_DEFAULT = 4;
 MapInstrument.INT_RANGE_MIN_DEFAULT = 0;
 MapInstrument.VOR_RANGE_DEFAULT = 200;
 MapInstrument.VOR_RANGE_MIN_DEFAULT = 0;
-MapInstrument.NDB_RANGE_DEFAULT = 100;
+MapInstrument.NDB_RANGE_DEFAULT = 4;
 MapInstrument.NDB_RANGE_MIN_DEFAULT = 0;
 MapInstrument.AIRPORT_RANGES_DEFAULT = [35, 100, Infinity];
 MapInstrument.CITY_RANGES_DEFAULT = [1500, 200, 100];

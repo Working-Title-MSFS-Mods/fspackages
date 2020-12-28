@@ -2917,12 +2917,6 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showNDBs = false;
         this.map.instrument.showAirports = false;
         this.map.instrument.showAirspaces = false;
-        this.map.instrument.intersectionMaxRange = Infinity;
-        this.map.instrument.vorMaxRange = Infinity;
-        this.map.instrument.ndbMaxRange = Infinity;
-        this.map.instrument.smallAirportMaxRange = Infinity;
-        this.map.instrument.medAirportMaxRange = Infinity;
-        this.map.instrument.largeAirportMaxRange = Infinity;
         this.map.instrument.setZoom(0);
     }
     onUpdate(_deltaTime) {
