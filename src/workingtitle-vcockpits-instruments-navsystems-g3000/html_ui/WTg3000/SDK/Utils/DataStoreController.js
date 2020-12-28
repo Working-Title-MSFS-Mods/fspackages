@@ -148,11 +148,7 @@ class WT_DataStoreSetting {
      * @param {*} value - the new value.
      */
     setValue(value) {
-        let oldValue = this.getValue();
         WTDataStore.set(this._fullDataStoreKey, value);
-        if (oldValue !== value) {
-            this._onValueChanged(value, oldValue);
-        }
     }
 
     /**

@@ -9,7 +9,7 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
         super(homePageGroup, homePageName);
         this._instrumentID = instrumentID;
 
-        this._allControllerIDs = ["PFD", "MFD"];
+        this._allControllerIDs = ["PFD", "MFD-LEFT", "MFD-RIGHT"];
 
         this.orientationButtonName = orientationButtonName;
         this.syncButtonName = syncButtonName;
@@ -92,7 +92,7 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
     }
 
     getControllerID() {
-        return `${this.instrumentID}-${this.gps.getMFDPaneControl()}`;
+        return this.instrumentID;
     }
 
     init(root) {
@@ -255,6 +255,12 @@ WT_G3x5_TSCMapSettings.SYNC_TEXTS = [
     "All"
 ];
 
+class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
+    getControllerID() {
+        return `${this.instrumentID}-${this.gps.getMFDPaneControl()}`;
+    }
+}
+
 class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
     init(root) {
         this.window = root;
@@ -272,8 +278,8 @@ class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
 
     onEnter() {
         this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this._onBackPressed.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this._onHomePressed.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(_deltaTime) {
@@ -312,11 +318,11 @@ class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
         WT_MapController.setSettingValue(this._controllerID, WT_MapDCLTRSetting.KEY_DEFAULT, newValue, true);
     }
 
-    back() {
+    _onBackPressed() {
         this.gps.goBack();
     }
 
-    backHome() {
+    _onHomePressed() {
         this.gps.closePopUpElement();
         this.gps.SwitchToPageName(this._homePageGroup, this._homePageName);
     }

@@ -71,8 +71,17 @@ class WTDataStore {
     static set(key, value) {
         const storeKey = WTDataStore.getStoreKey(key);
         const stringValue = JSON.stringify(value);
+        let oldValue = GetStoredData(storeKey);
         SetStoredData(storeKey, stringValue);
         window.localStorage.setItem(`WTDataStore.${storeKey}`, JSON.stringify(value));
+        if (value !== oldValue) {
+            oldValue = JSON.parse(oldValue);
+            for (let entry of WTDataStore.listeners) {
+                if (key.startsWith(entry.prefix)) {
+                    entry.listener(key, value, oldValue);
+                }
+            }
+        }
         return value;
     }
 
@@ -100,16 +109,17 @@ class WTDataStore {
      * Adds a listener to be called when a data store value is updated on another instrument
      * The listener is called with (key, value, previousValue) as arguments
      * @param {function} listener
-     * @param {string|null} prefix
+     * @param {string} prefix
      */
-    static addListener(listener, prefix = null) {
+    static addListener(listener, prefix = "") {
         const windowListener = event => {
-            let storagePrefix = `WTDataStore.${WTDataStore.getStoreKey()}${prefix ? prefix : ""}`;
+            let storagePrefix = `WTDataStore.${WTDataStore.getStoreKey()}${prefix}`;
             if (event.key.startsWith(storagePrefix)) {
                 listener(event.key.substr(storagePrefix.length), JSON.parse(event.newValue), JSON.parse(event.oldValue));
             }
         };
         window.addEventListener("storage", windowListener);
+        WTDataStore.listeners.push({prefix: prefix, windowListener: windowListener, listener: listener});
         return windowListener;
     }
 
@@ -118,7 +128,13 @@ class WTDataStore {
      * @param {function} listener
      */
     static removeListener(listener) {
-        window.removeEventListener("storage", listener);
+        let index = WTDataStore.listeners.findIndex(entry => entry.listener === listener);
+        if (index < 0) {
+            return;
+        }
+
+        window.removeEventListener("storage", WTDataStore.listeners[index].windowListener);
+        WTDataStore.listeners.splice(index, 1);
     }
 }
 WTDataStore.listeners = [];
