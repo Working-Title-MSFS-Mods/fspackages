@@ -56,12 +56,14 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
         this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
-        this._mfdMainPaneSettings.controller.update();
+        this._mfdMainPaneSettings.mode.addListener(this._onMainPaneModeChanged.bind(this));
 
         this._mfdLeftPaneSettings = {controller: new WT_DataStoreController("MFD-LEFT", null)};
         this._mfdRightPaneSettings = {controller: new WT_DataStoreController("MFD-RIGHT", null)};
         this._initHalfPaneController(this._mfdLeftPaneSettings);
         this._initHalfPaneController(this._mfdRightPaneSettings);
+
+        this._mfdMainPaneSettings.controller.update();
 
         this._initLightingControl();
 
@@ -269,6 +271,15 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _onMainPaneModeChanged(setting, newValue, oldValue) {
+        if (newValue === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
+            this._setMFDHalfPaneControl("LEFT");
+        } else {
+            let defaultControl = this._mfdHalfPaneControlID === WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT ? "LEFT" : "RIGHT";
+            this._setMFDHalfPaneControl(defaultControl);
+        }
+    }
+
     _handleNavigationEvent(event) {
         switch (event) {
             case "SoftKey_1":
@@ -305,7 +316,7 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _setMFDHalfPanePaneControl(value) {
+    _setMFDHalfPaneControl(value) {
         if (this._mfdHalfPaneControl === value || this._mfdHalfPaneControlID === undefined) {
             return;
         }
@@ -315,9 +326,11 @@ class AS3000_TSC extends NavSystemTouch {
             case "LEFT":
                 this.mfdRightPaneSettings.control.removeControl(this._mfdHalfPaneControlID);
                 this.mfdLeftPaneSettings.control.addControl(this._mfdHalfPaneControlID);
+                break;
             case "RIGHT":
                 this.mfdLeftPaneSettings.control.removeControl(this._mfdHalfPaneControlID);
                 this.mfdRightPaneSettings.control.addControl(this._mfdHalfPaneControlID);
+                break;
         }
         this.SwitchToPageName("MFD", "MFD Home");
     }
@@ -325,10 +338,10 @@ class AS3000_TSC extends NavSystemTouch {
     _switchMFDHalfPaneControl() {
         switch (this._mfdHalfPaneControl) {
             case "LEFT":
-                this._setMFDHalfPanePaneControl("RIGHT");
+                this._setMFDHalfPaneControl("RIGHT");
                 break;
             case "RIGHT":
-                this._setMFDHalfPanePaneControl("LEFT");
+                this._setMFDHalfPaneControl("LEFT");
                 break;
         }
     }
