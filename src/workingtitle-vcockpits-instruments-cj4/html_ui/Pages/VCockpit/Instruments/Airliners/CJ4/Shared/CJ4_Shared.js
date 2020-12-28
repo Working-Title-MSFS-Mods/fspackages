@@ -2898,7 +2898,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
         this.isExtended = undefined;
-        this.zoomRanges = [10, 20, 40, 80, 160, 320];
+        this.zoomRanges = [5, 10, 25, 50, 100, 200, 300, 600];
         this.zoomFactor = 1.0;
         this.symbols = -1;
         this.symbolsToSimvar = false;
