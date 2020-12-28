@@ -54,13 +54,51 @@ class AS3000_TSC extends NavSystemTouch {
         this.history = [];
         this.initDuration = 4000;
 
-        this.initLightingControl();
+        this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
+        this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
+        this._mfdMainPaneSettings.controller.update();
+
+        this._mfdLeftPaneSettings = {controller: new WT_DataStoreController("MFD-LEFT", null)};
+        this._mfdRightPaneSettings = {controller: new WT_DataStoreController("MFD-RIGHT", null)};
+        this._initHalfPaneController(this._mfdLeftPaneSettings);
+        this._initHalfPaneController(this._mfdRightPaneSettings);
+
+        this._initLightingControl();
+
+        this._mfdHalfPaneControl = "LEFT";
+        this._mfdHalfPaneControlID;
     }
 
-    initLightingControl() {
+    _initHalfPaneController(paneSettings) {
+        paneSettings.controller.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.controller));
+        paneSettings.controller.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.controller));
+        paneSettings.controller.update();
+    }
+
+    _initLightingControl() {
         if (this.isLightingControlAllowed()) {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
+        }
+    }
+
+    get mfdMainPaneSettings() {
+        return this._mfdMainPaneSettings;
+    }
+
+    get mfdLeftPaneSettings() {
+        return this._mfdLeftPaneSettings;
+    }
+
+    get mfdRightPaneSettings() {
+        return this._mfdRightPaneSettings;
+    }
+
+    getMFDPaneControl() {
+        if (this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
+            return "LEFT";
+        } else {
+            return this._mfdHalfPaneControl;
         }
     }
 
@@ -96,9 +134,9 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("PFD Settings", "PFDSettings", new AS3000_TSC_PFDSettings()),
             ]),
             new NavSystemPageGroup("MFD", this, [
-                new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
+                this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
                 new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMapSettings(
-                    "MFD", "MFD Home", "MFD-LEFT",
+                    "MFD", "MFD Home", "MFD",
                     "MFDMapOrientationButton",
                     "MFDMapSyncButton",
                     "MFDMapDetailButton",
@@ -106,7 +144,8 @@ class AS3000_TSC extends NavSystemTouch {
                 )),
                 //new NavSystemPage("Weather", "WeatherSettings", new AS3000_TSC_WeatherSettings()),
                 //new NavSystemPage("Weather Selection", "WeatherSelection", new AS3000_TSC_WeatherSelection()),
-                new NavSystemPage("Weather Radar Settings", "WeatherRadarSettings", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
+                new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
+                new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-RIGHT")),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
@@ -182,6 +221,8 @@ class AS3000_TSC extends NavSystemTouch {
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
 
+        this._mfdHalfPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
+
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
@@ -202,7 +243,8 @@ class AS3000_TSC extends NavSystemTouch {
             this.terrainAlerts.reset();
     }
     onUpdate() {
-        let title = this.getCurrentPage().name;
+        let currentPage = this.getCurrentPage();
+        let title = currentPage.title ? currentPage.title : currentPage.name;
         if (this.pageTitle.innerHTML != title) {
             this.pageTitle.innerHTML = title;
         }
@@ -226,9 +268,9 @@ class AS3000_TSC extends NavSystemTouch {
                 break;
         }
     }
-    onEvent(_event) {
-        super.onEvent(_event);
-        switch (_event) {
+
+    _handleNavigationEvent(event) {
+        switch (event) {
             case "SoftKey_1":
                 this.SwitchToPageName("PFD", "PFD Home");
                 this.closePopUpElement();
@@ -245,14 +287,15 @@ class AS3000_TSC extends NavSystemTouch {
                 this.history = [];
                 break;
         }
-        if (this.getCurrentPageGroup().name == "MFD" && this.popUpElement != this.mapPointerControl && this.getCurrentPage().name !== "Weather Radar Settings") {
-            switch (_event) {
+    }
+
+    _handleZoomEvent(event) {
+        if (this.getCurrentPageGroup().name == "MFD" && this.popUpElement != this.mapPointerControl && this.getCurrentPage().title !== "Weather Radar Settings") {
+            switch (event) {
                 case "BottomKnob_Small_INC":
-                    //LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_RNG_Dezoom");
                     this.changeMapRange(1);
                     break;
                 case "BottomKnob_Small_DEC":
-                    //LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_RNG_Zoom");
                     this.changeMapRange(-1);
                     break;
                 case "BottomKnob_Push":
@@ -260,6 +303,53 @@ class AS3000_TSC extends NavSystemTouch {
                     break;
             }
         }
+    }
+
+    _setMFDHalfPanePaneControl(value) {
+        if (this._mfdHalfPaneControl === value || this._mfdHalfPaneControlID === undefined) {
+            return;
+        }
+
+        this._mfdHalfPaneControl = value;
+        switch (this._mfdHalfPaneControl) {
+            case "LEFT":
+                this.mfdRightPaneSettings.control.removeControl(this._mfdHalfPaneControlID);
+                this.mfdLeftPaneSettings.control.addControl(this._mfdHalfPaneControlID);
+            case "RIGHT":
+                this.mfdLeftPaneSettings.control.removeControl(this._mfdHalfPaneControlID);
+                this.mfdRightPaneSettings.control.addControl(this._mfdHalfPaneControlID);
+        }
+        this.SwitchToPageName("MFD", "MFD Home");
+    }
+
+    _switchMFDHalfPaneControl() {
+        switch (this._mfdHalfPaneControl) {
+            case "LEFT":
+                this._setMFDHalfPanePaneControl("RIGHT");
+                break;
+            case "RIGHT":
+                this._setMFDHalfPanePaneControl("LEFT");
+                break;
+        }
+    }
+
+    _handleControlEvent(event) {
+        if (this.getCurrentPageGroup().name === "MFD" && this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF) {
+            switch (event) {
+                case "TopKnob_Small_INC":
+                case "TopKnob_Small_DEC":
+                    this._switchMFDHalfPaneControl();
+                    break;
+            }
+        }
+    }
+
+    onEvent(event) {
+        super.onEvent(event);
+
+        this._handleNavigationEvent(event);
+        this._handleZoomEvent(event);
+        this._handleControlEvent(event);
     }
 
     changeMapRange(delta) {
@@ -286,7 +376,7 @@ class AS3000_TSC extends NavSystemTouch {
         let data = new AS3000_TSC_NavButton_Data();
         data.title = _title;
         data.callback = _callback;
-        data.imagePath = "/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/" + _imagePath;
+        data.imagePath = "/WTg3000/SDK/TSC/Images/" + _imagePath;
         data.isActive = true;
         this.navButtons[_id - 1].setState(data, _fromPopUp);
     }
@@ -437,6 +527,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         super(...arguments);
         this.lastMode = 0;
     }
+
     init(root) {
         this.mapButton = this.gps.getChildById("MapButton");
         this.mapButton_image = this.mapButton.getElementsByClassName("img")[0];
@@ -454,7 +545,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.utilitiesButton = this.gps.getChildById("UtilitiesButton");
         this.updateMapButtons();
         this.gps.makeButton(this.mapButton, this.mapSwitch.bind(this, 0));
-        this.gps.makeButton(this.weatherButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Weather Radar Settings"));
+        this.gps.makeButton(this.weatherButton, this._openWeatherPage.bind(this));
         //this.gps.makeButton(this.mapButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Map Settings"));
         //this.gps.makeButton(this.weatherButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Weather"));
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
@@ -465,7 +556,18 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this.WaypointsInfoButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Waypoint Info"));
         this.gps.makeButton(this.aircraftSystemsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Aircraft Systems"));
         this.gps.makeButton(this.utilitiesButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Utilities"));
+
+        this.gps.mfdMainPaneSettings.mode.addListener(this._onMainPaneModeChanged.bind(this));
     }
+
+    _openWeatherPage() {
+        if (this.gps.getMFDPaneControl() === "LEFT") {
+            this.gps.SwitchToPageName("MFD", "Weather Radar Settings Left");
+        } else {
+            this.gps.SwitchToPageName("MFD", "Weather Radar Settings Right");
+        }
+    }
+
     mapSwitch(_mapIndex) {
         let currMap = SimVar.GetSimVarValue("L:AS3000_MFD_Current_Map", "number");
         if (currMap == _mapIndex) {
@@ -483,6 +585,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         }
         this.updateMapButtons(_mapIndex);
     }
+
     updateMapButtons(_newIndex = undefined) {
         let currMap = _newIndex == undefined ? SimVar.GetSimVarValue("L:AS3000_MFD_Current_Map", "number") : _newIndex;
         if (currMap == 0) {
@@ -502,10 +605,32 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
             Avionics.Utils.diffAndSetAttribute(this.weatherButton, "state", "");
         }
     }
+
+    _onMainPaneModeChanged(setting, newValue, oldValue) {
+        if (this.gps && this.gps.getCurrentPage().name === "MFD Home") {
+            this._updateNavButtons();
+        }
+    }
+
+    _setMainPaneMode(mode) {
+        this.gps.mfdMainPaneSettings.mode.setValue(mode);
+    }
+
+    _updateNavButtons() {
+        if (this.gps.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
+            this.gps.activateNavButton(4, "Half", this._setMainPaneMode.bind(this, WT_G3x5_MFDMainPaneModeSetting.Mode.HALF), false, "ICON_TSC_BUTTONBAR_HALF_SMALL.png");
+        } else {
+            this.gps.activateNavButton(4, "Full", this._setMainPaneMode.bind(this, WT_G3x5_MFDMainPaneModeSetting.Mode.FULL), false, "ICON_TSC_BUTTONBAR_FULL_SMALL.png");
+        }
+    }
+
     onEnter() {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+ Push: Pan");
+
+        this._updateNavButtons();
     }
+
     onUpdate(_deltaTime) {
         let mapMode = SimVar.GetSimVarValue("L:AS3000_MFD_Current_Map", "number");
         if (mapMode != this.lastMode) {
@@ -513,8 +638,11 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
             this.lastMode = mapMode;
         }
     }
+
     onExit() {
+        this.gps.deactivateNavButton(4);
     }
+
     onEvent(_event) {
     }
 }
@@ -539,8 +667,8 @@ class AS3000_TSC_WeatherSelection extends NavSystemElement {
         }
     }
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onUpdate(_deltaTime) {
         let weatherMapMode = SimVar.GetSimVarValue("L:AS3000_MFD_Current_WeatherMap", "number");
@@ -611,8 +739,8 @@ class AS3000_TSC_DirectTo extends NavSystemTouch_DirectTo {
         super.onEnter();
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+ Push: Pan");
-        this.gps.activateNavButton(1, "Cancel", this.gps.goBack.bind(this.gps), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Cancel", this.gps.goBack.bind(this.gps), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onExit() {
         super.onExit();
@@ -710,10 +838,10 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
 
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
 
     onExit() {
@@ -917,8 +1045,8 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
 class AS3000_TSC_Procedures extends NavSystemTouch_Procedures {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onExit() {
         super.onExit();
@@ -935,8 +1063,8 @@ class AS3000_TSC_Procedures extends NavSystemTouch_Procedures {
 class AS3000_TSC_DepartureSelection extends NavSystemTouch_DepartureSelection {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onExit() {
         super.onExit();
@@ -956,8 +1084,8 @@ class AS3000_TSC_DepartureSelection extends NavSystemTouch_DepartureSelection {
 class AS3000_TSC_ArrivalSelection extends NavSystemTouch_ArrivalSelection {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onExit() {
         super.onExit();
@@ -977,8 +1105,8 @@ class AS3000_TSC_ArrivalSelection extends NavSystemTouch_ArrivalSelection {
 class AS3000_TSC_ApproachSelection extends NavSystemTouch_ApproachSelection {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onExit() {
         super.onExit();
@@ -1006,8 +1134,8 @@ class AS3000_TSC_AircraftSystems extends NavSystemElement {
         this.gps.makeButton(this.lightingButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Lighting Configuration"));
     }
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onUpdate(_deltaTime) {
     }
@@ -1048,8 +1176,8 @@ class AS3000_TSC_LightingConfig extends NavSystemElement {
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(deltaTime) {
@@ -1112,8 +1240,8 @@ class AS3000_TSC_Utilities extends NavSystemElement {
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(_deltaTime) {
@@ -1149,8 +1277,8 @@ class AS3000_TSC_UtilitiesSetup extends NavSystemElement {
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(_deltaTime) {
@@ -1193,8 +1321,8 @@ class AS3000_TSC_AvionicsSettings extends NavSystemElement {
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(_deltaTime) {
@@ -1317,8 +1445,8 @@ class AS3000_TSC_WaypointInfo extends NavSystemElement {
         this.gps.makeButton(this.airportBtn, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Airport Info"));
     }
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onUpdate(_deltaTime) {
     }
@@ -1390,15 +1518,15 @@ class AS3000_TSC_AirportInfo extends NavSystemElement {
         this.tabbedContent.init(root.getElementsByClassName("tabContainer")[0]);
     }
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
         if (this.currPage == "Freqs") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpFreq.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownFreq.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+            this.gps.activateNavButton(5, "Up", this.scrollUpFreq.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+            this.gps.activateNavButton(6, "Down", this.scrollDownFreq.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
         }
         else if (this.currPage == "Runways") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpRunways.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownRunways.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+            this.gps.activateNavButton(5, "Up", this.scrollUpRunways.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+            this.gps.activateNavButton(6, "Down", this.scrollDownRunways.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
         }
         if (this.airport && this.showInMap) {
             let infos = this.airport.infos;
@@ -1599,12 +1727,12 @@ class AS3000_TSC_AirportInfo extends NavSystemElement {
         _button.setAttribute("state", "White");
         this.activeTab = _button;
         if (_page == "Freqs") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpFreq.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownFreq.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+            this.gps.activateNavButton(5, "Up", this.scrollUpFreq.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+            this.gps.activateNavButton(6, "Down", this.scrollDownFreq.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
         }
         else if (this.currPage == "Runways") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpRunways.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownRunways.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+            this.gps.activateNavButton(5, "Up", this.scrollUpRunways.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+            this.gps.activateNavButton(6, "Down", this.scrollDownRunways.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
         }
     }
     frequencyButtonCallback(_freqLine) {
@@ -1675,8 +1803,8 @@ class AS3000_TSC_NRST extends NavSystemElement {
     onEnter() {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+ Push: Pan");
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onUpdate(_deltaTime) {
     }
@@ -1770,10 +1898,10 @@ class AS3000_TSC_NRST_Airport extends NavSystemElement {
         this.gps.makeButton(this.showOnMap_button, this.showOnMapToggle.bind(this));
     }
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
     onUpdate(_deltaTime) {
         if (this.scrollElement.elementSize == 0) {
@@ -1908,10 +2036,10 @@ class AS3000_TSC_NRST_Airport extends NavSystemElement {
 class AS3000_TSC_NRST_Intersection extends NavSystemTouch_NRST_Intersection {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
     onExit() {
         super.onExit();
@@ -1958,10 +2086,10 @@ class AS3000_TSC_NRST_Intersection extends NavSystemTouch_NRST_Intersection {
 class AS3000_TSC_NRST_VOR extends NavSystemTouch_NRST_VOR {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
     onExit() {
         super.onExit();
@@ -2010,10 +2138,10 @@ class AS3000_TSC_NRST_VOR extends NavSystemTouch_NRST_VOR {
 class AS3000_TSC_NRST_NDB extends NavSystemTouch_NRST_NDB {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
     onExit() {
         super.onExit();
@@ -2296,8 +2424,8 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         switch (this.inputIndex) {
             case -1:
             case 0:
-                this.gps.activateNavButton(1, "Cancel", this.comFreqCancel.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-                this.gps.activateNavButton(6, "Enter", this.comFreqValidate.bind(this), false, "Icons/ICON_MAP_ENTER.png");
+                this.gps.activateNavButton(1, "Cancel", this.comFreqCancel.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+                this.gps.activateNavButton(6, "Enter", this.comFreqValidate.bind(this), false, "ICON_TSC_BUTTONBAR_ENTER.png");
                 if (_digit == 1) {
                     this.inputIndex = 1;
                     this.currentInput = 118000;
@@ -2430,9 +2558,9 @@ class AS3000_TSC_Transponder extends NavSystemTouch_Transponder {
 
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateCode.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Cancel", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validateCode.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
         this.gps.setTopKnobText("Data Entry Push: Enter", true);
         this.gps.setBottomKnobText("", true);
     }
@@ -2560,10 +2688,10 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
 
     onEnter() {
         this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), true, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), true, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), true, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), true, "ICON_TSC_BUTTONBAR_DOWN.png");
         this.gps.setTopKnobText(this.lines[this.selectedLine].topKnobText, true);
         this.gps.setBottomKnobText(this.lines[this.selectedLine].bottomKnobText, true);
     }
@@ -2782,9 +2910,9 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
 class AS3000_TSC_FrequencyKeyboard extends NavSystemTouch_FrequencyKeyboard {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Cancel", this.cancelEdit.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
         this.gps.deactivateNavButton(5);
     }
 
@@ -2867,9 +2995,9 @@ class AS3000_TSC_FrequencyKeyboard extends NavSystemTouch_FrequencyKeyboard {
 class AS3000_TSC_TimeKeyboard extends NavSystemTouch_TimeKeyboard {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
         this.gps.deactivateNavButton(5);
     }
 
@@ -2939,9 +3067,9 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
         this.window.setAttribute("state", "Active");
         this.isInputing = false;
         this.digits = [0, 0, 0];
-        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
         this.gps.deactivateNavButton(5);
     }
     onUpdate(_deltaTime) {
@@ -3018,9 +3146,9 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
 class AS3000_TSC_AltitudeKeyboard extends NavSystemTouch_AltitudeKeyboard {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
         this.gps.deactivateNavButton(5);
     }
     onExit() {
@@ -3036,9 +3164,9 @@ class AS3000_TSC_AltitudeKeyboard extends NavSystemTouch_AltitudeKeyboard {
 class AS3000_TSC_FullKeyboard extends NavSystemTouch_FullKeyboard {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.cancel.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validate.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Back", this.cancel.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validate.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
     }
     onExit() {
         super.onExit();
@@ -3156,10 +3284,10 @@ class AS3000_TSC_InsertBeforeWaypoint extends NavSystemElement {
     onEnter() {
         this.gps.currFlightPlanManager.updateFlightPlan();
         this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), true, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), true, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
     onUpdate(_deltaTime) {
         if (this.scrollElement.elementSize == 0) {
@@ -3223,10 +3351,10 @@ class AS3000_TSC_InsertBeforeWaypoint extends NavSystemElement {
 class AS3000_TSC_DuplicateWaypointSelection extends NavSystemTouch_DuplicateWaypointSelection {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), true, "Icons/ICON_MAP_CB_UP_ARROW_1.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), true, "Icons/ICON_MAP_CB_DOWN_ARROW_1.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
     }
     onExit() {
         super.onExit();
@@ -3278,8 +3406,8 @@ class AS3000_TSC_Timers extends NavSystemElement {
         this.gps.makeButton(this.Timer, this.openKeyboard.bind(this));
     }
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
     onUpdate(_deltaTime) {
         if (this.isCountingDown) {
@@ -3401,9 +3529,9 @@ class AS3000_TSC_Minimums extends NavSystemElement {
     }
     onEnter() {
         this.isEditing = false;
-        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "Icons/ICON_MAP_ENTER.png");
+        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
     }
     onUpdate(_deltaTime) {
         if (this.isEditing) {
@@ -3548,8 +3676,8 @@ class AS3000_TSC_PFDSettings extends NavSystemElement {
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(_deltaTime) {
@@ -3786,8 +3914,8 @@ class AS3000_TSC_SpeedBugs extends NavSystemElement {
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(_deltaTime) {
@@ -4063,8 +4191,8 @@ class AS3000_MapPointerControl extends NavSystemElement {
 
     onEnter() {
         this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.gps.goBack.bind(this.gps), false, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.gps.goBack.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
         this.gps.setTopKnobText("Pan/Point Push: Pan Off");
         this.gps.setBottomKnobText("-Range+ Push: Pan Off");
 

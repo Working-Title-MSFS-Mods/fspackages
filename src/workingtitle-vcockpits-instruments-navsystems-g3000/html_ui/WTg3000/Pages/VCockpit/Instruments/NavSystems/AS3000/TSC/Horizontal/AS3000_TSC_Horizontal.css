@@ -53,7 +53,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettings] #WeatherRadarSettings,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfo] #AirportInfo,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Nearest] #Nearest,
@@ -305,30 +306,30 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettin
         font-size: 4vh;
     }
 
-as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings tsc-weatherradarsettings-mode {
+as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-mode {
     position: absolute;
     left: 1%;
     top: 1%;
     width: 25%;
     height: 98%;
 }
-as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings tsc-weatherradarsettings-controls {
+as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-controls {
     position: absolute;
     left: 27%;
     top: 1%;
     width: 43%;
     height: 98%;
 }
-as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings tsc-weatherradarsettings-features {
+as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-features {
     position: absolute;
     right: 4%;
     top: 1%;
     width: 25%;
     height: 98%;
 }
-    as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings .weatherRadarModeButton,
-    as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings .weatherRadarControlsButton,
-    as3000-tsc-horizontal-element #Electricity #WeatherRadarSettings .weatherRadarFeaturesButton {
+    as3000-tsc-horizontal-element #Electricity .weatherRadarSettings .weatherRadarModeButton,
+    as3000-tsc-horizontal-element #Electricity .weatherRadarSettings .weatherRadarControlsButton,
+    as3000-tsc-horizontal-element #Electricity .weatherRadarSettings .weatherRadarFeaturesButton {
         height: 16vh;
         margin: 1vh 0.5vh;
     }

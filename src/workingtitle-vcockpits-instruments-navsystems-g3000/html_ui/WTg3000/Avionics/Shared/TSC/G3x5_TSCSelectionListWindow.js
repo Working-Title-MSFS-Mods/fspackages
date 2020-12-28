@@ -1,8 +1,8 @@
 class WT_G3x5_TSCSelectionListWindow extends WT_TSCSelectionListWindow {
     onEnter() {
         super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_BACK_1.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "Icons/ICON_MAP_BUTTONBAR_HOME.png");
+        this.gps.activateNavButton(1, "Back", this.back.bind(this), true, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), true, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onExit() {
