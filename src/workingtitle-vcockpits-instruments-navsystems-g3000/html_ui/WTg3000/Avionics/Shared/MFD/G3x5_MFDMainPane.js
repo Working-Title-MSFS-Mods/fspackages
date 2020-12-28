@@ -13,7 +13,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._controller.init();
         this._controller.update();
 
-        this._mode;
+        this._mode = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL;
 
         this._updateCounter = 0;
     }
@@ -62,7 +62,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
          */
         this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, "RIGHT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager);
 
-        this._setMode(WT_G3x5_MFDMainPaneModeSetting.Mode.FULL);
+        this._setMode(this._mode);
     }
 
     _onModeSettingChanged(setting, newValue, oldValue) {
@@ -71,8 +71,10 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
 
     _setMode(mode) {
         let halfRefresh = mode === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF;
-        this._left.setHalfRefresh(halfRefresh);
-        this._right.setHalfRefresh(halfRefresh);
+        if (this._left) {
+            this._left.setHalfRefresh(halfRefresh);
+            this._right.setHalfRefresh(halfRefresh);
+        }
         this.htmlElement.setMode(mode);
         this._mode = mode;
     }
