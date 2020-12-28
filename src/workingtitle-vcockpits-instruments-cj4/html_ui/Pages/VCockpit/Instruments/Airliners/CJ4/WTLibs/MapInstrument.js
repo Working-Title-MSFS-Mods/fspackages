@@ -412,11 +412,11 @@ class MapInstrument extends ISvgMapRootElement {
                 this.mapRangeElement.classList.add("hide");
                 this.mapOrientationElement.classList.add("hide");
             }
-            this.mapNearestAirportListNoRunway = new NearestAirportList(this.instrument);
-            this.mapNearestIntersectionList = new NearestIntersectionList(this.instrument);
-            this.mapNearestNDBList = new NearestNDBList(this.instrument);
-            this.mapNearestVorList = new NearestVORList(this.instrument);
-            this.testAirspaceList = new NearestAirspaceList(this.instrument);
+            // this.mapNearestAirportListNoRunway = new NearestAirportList(this.instrument);
+            // this.mapNearestIntersectionList = new NearestIntersectionList(this.instrument);
+            // this.mapNearestNDBList = new NearestNDBList(this.instrument);
+            // this.mapNearestVorList = new NearestVORList(this.instrument);
+            // this.testAirspaceList = new NearestAirspaceList(this.instrument);
             this.roadNetwork = new SvgRoadNetworkElement();
             this.cityManager = new SvgCityManager(this.navMap);
             this.airwayIterator = 0;
@@ -425,9 +425,13 @@ class MapInstrument extends ISvgMapRootElement {
             this.roadsBuffer = [];
             this.drawCounter = 0;
             this.airportLoader = new AirportLoader(this.instrument, false);
+            this.airportLoader.maxItemsSearchCount = 20;
             this.intersectionLoader = new IntersectionLoader(this.instrument);
+            this.intersectionLoader.maxItemsSearchCount = 20;
             this.vorLoader = new VORLoader(this.instrument);
+            this.vorLoader.maxItemsSearchCount = 20;
             this.ndbLoader = new NDBLoader(this.instrument);
+            this.ndbLoader.maxItemsSearchCount = 20;
             this.nearestAirspacesLoader = new NearestAirspacesLoader(this.instrument);
             this.nearestAirspacesLoader.onNewAirspaceAddedCallback = (airspace) => {
                 if (airspace) {
@@ -619,13 +623,12 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.navMap.lastCenterCoordinates)
                     this.bingMap.setParams({ lla: this.navMap.lastCenterCoordinates, radius: bingRadius });
             }
-            if (this.navMap.centerCoordinates && (this.drawCounter % 10 === 1)) {
+            if (this.navMap.centerCoordinates) {
                 let centerCoordinates = this.navMap.centerCoordinates;
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
                     this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.airportLoader.maxItemsSearchCount = 20;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -634,7 +637,6 @@ class MapInstrument extends ISvgMapRootElement {
                     this.intersectionLoader.searchLat = centerCoordinates.lat;
                     this.intersectionLoader.searchLong = centerCoordinates.long;
                     this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.intersectionLoader.maxItemsSearchCount = 20;
                     this.intersectionLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.intersectionLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.intersectionLoader.update();
@@ -643,7 +645,6 @@ class MapInstrument extends ISvgMapRootElement {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
                     this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.vorLoader.maxItemsSearchCount = 20;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -652,7 +653,6 @@ class MapInstrument extends ISvgMapRootElement {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
                     this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
-                    this.ndbLoader.maxItemsSearchCount = 20;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
