@@ -527,7 +527,7 @@ class CJ4_FMC_LegsPage {
     }
 
     async parseWaypointInput(value, referenceIndex) {
-        let fullLatLong = /([NS])([0-8][0-9])([0-5][0-9](?:\.\d{1,2})?)([EW])([0-1][0-7][0-9])([0-5][0-9](?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
+        let fullLatLong = /([NS])([0-8][0-9])([0-5][0-9](?:\.\d{1,2})?)([EW])((?:[0][0-9][0-9])|(?:[1][0-7][0-9]))([0-5][0-9](?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
         let shorhandLatLongEnd = /([0-8][0-9])([0-9][0-9]|[1][0-8][0-9])([NSEW])/;
         let shorthandLatLongMid = /([0-8][0-9])([NSEW])([1][0-8][0-9]|[0-9][0-9])/;
         let placeBearingDistance = /(\w{3,5})([0-3][0-9][0-9])\/(\d{1,3}(?:\.\d{1})?)(?:\/(\w{0,5}))?/;
