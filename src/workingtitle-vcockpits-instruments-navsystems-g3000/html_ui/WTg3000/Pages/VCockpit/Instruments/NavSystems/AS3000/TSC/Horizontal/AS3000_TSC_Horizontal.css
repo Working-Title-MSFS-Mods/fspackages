@@ -1175,77 +1175,100 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
           bottom: -25%;
           height: 40%;
           z-index: 2; }
-    as3000-tsc-horizontal-element #Electricity #NavigationBar {
-      position: absolute;
-      right: 10%;
-      width: 12%;
-      height: 100%;
-      background: linear-gradient(to right, #48575e, rgba(72, 87, 94, 0) 90%);
-      border-left: solid 5px white;
-      border-right: solid 5px white;
-      background-color: #2b4049; }
-      as3000-tsc-horizontal-element #Electricity #NavigationBar .gradientButton {
+
+as3000-tsc-horizontal-element #Electricity #NavigationBar {
+    position: absolute;
+    right: 10%;
+    width: 12%;
+    height: 100%;
+    background: linear-gradient(to right, #48575e, rgba(72, 87, 94, 0) 90%);
+    border-left: solid 5px white;
+    border-right: solid 5px white;
+    background-color: #2b4049;
+}
+    as3000-tsc-horizontal-element #Electricity #NavigationBar .gradientButton {
         width: 100%;
         left: -5%;
         height: 14.8%;
         margin-top: 2vh;
-        margin-bottom: 0vh; }
-    as3000-tsc-horizontal-element #Electricity #SoftKeys {
-      position: absolute;
-      right: 0%;
-      width: 10%;
-      height: 100%;
-      background: linear-gradient(to right, #90b5bf, #4e7a8a);
-      font-size: 3.5vh;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: 30% 1fr 18% 12% 23%; }
-      as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer {
+        margin-bottom: 0vh;
+    }
+
+as3000-tsc-horizontal-element #Electricity #SoftKeys {
+    position: absolute;
+    right: 0%;
+    width: 10%;
+    height: 100%;
+    background: linear-gradient(to right, #90b5bf, #4e7a8a);
+    font-size: 3.5vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 30% 1fr 18% 12% 23%;
+}
+    as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer {
         position: relative;
         text-align: center;
         background: transparent;
         width: 100%;
-        height: 100%; }
-      as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer:first-child {
-        border-bottom: 0.5vh solid black; }
-      as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer:last-child {
-        border-top: 0.5vh solid black; }
+        height: 100%;
+    }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer:first-child {
+            border-bottom: 0.5vh solid black;
+        }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer:last-child {
+            border-top: 0.5vh solid black;
+        }
         as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer .softkey {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          color: black; }
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: black;
+        }
         as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          right: 0;
-          width: 98%;
-          padding: 1vh 0;
-          border: 0.2vh solid rgba(0, 0, 0, 0);
-          display: flex;
-          flex-flow: row nowrap;
-          justify-content: center;
-          align-items: center; }
-          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyLabel {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 0;
+            width: 98%;
+            padding: 1vh 0;
+            border: 0.2vh solid rgba(0, 0, 0, 0);
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+        }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyLabel {
             width: 60%;
             text-align: center;
             color: black;
             font-size: 4vh;
-            font-weight: bold; }
-          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyArrow {
+            font-weight: bold;
+        }
+        as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkeyArrow {
             width: 4vh;
             height: 4vh;
             background-color: black;
             -webkit-clip-path: polygon(0 0, 100% 50%, 0 100%);
-            margin-left: 2vh; }
+            margin-left: 2vh;
+        }
         as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] {
-          background-color: black;
-          border-color: grey; }
-          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyLabel {
-            color: white; }
-          as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyArrow {
-            background-color: green; }
+            background-color: black;
+            border-color: grey;
+        }
+            as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyLabel {
+                color: white;
+            }
+            as3000-tsc-horizontal-element #Electricity #SoftKeys .interactiveSoftkeyContainer .softkey[state="Selected"] .softkeyArrow {
+                background-color: green;
+            }
+
+as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
+    position: absolute;
+    left: 10%;
+    width: 80%;
+    top: 25%;
+    height: 50%;
+}
 
     as3000-tsc-horizontal-element #Electricity #TransponderWindow #transponder_ModeSelect {
       position: absolute;
