@@ -74,7 +74,8 @@ class CJ4NavModeSelector {
       vpath: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number"), () => NavModeEvent.VPATH_CHANGED),
       gs_arm: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean"), () => NavModeEvent.GS_ARM_CHANGED),
       gs_active: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean"), () => NavModeEvent.GS_ACTIVE_CHANGED),
-      hdg_lock: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean"), () => NavModeEvent.HDG_LOCK_CHANGED)
+      hdg_lock: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean"), () => NavModeEvent.HDG_LOCK_CHANGED),
+      toga: new ValueStateTracker(() => Simplane.getAutoPilotTOGAActive(), () => NavModeEvent.TOGA_CHANGED)
     };
 
     /** The event handlers for each event type. */
@@ -97,7 +98,8 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.GS_ACTIVE_CHANGED}`]: this.handleGSActiveChanged.bind(this),
       [`${NavModeEvent.VNAV_REQUEST_SLOT_1}`]: this.handleVnavRequestSlot1.bind(this),
       [`${NavModeEvent.VNAV_REQUEST_SLOT_2}`]: this.handleVnavRequestSlot2.bind(this),
-      [`${NavModeEvent.HDG_LOCK_CHANGED}`]: this.handleHeadingLockChanged.bind(this)
+      [`${NavModeEvent.HDG_LOCK_CHANGED}`]: this.handleHeadingLockChanged.bind(this),
+      [`${NavModeEvent.TOGA_CHANGED}`]: this.handleTogaChanged.bind(this)
     };
 
     this.initialize();
@@ -110,7 +112,6 @@ class CJ4NavModeSelector {
     if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 1) {
       SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
     }
-
 
     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "number") == 1) {
       SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
@@ -131,6 +132,7 @@ class CJ4NavModeSelector {
     if (SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "number") == 1) {
       SimVar.SetSimVarValue("K:AP_BC_HOLD", "number", 0);
     }
+
   }
 
   /**
@@ -225,6 +227,8 @@ class CJ4NavModeSelector {
 
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
+      case VerticalNavModeState.TO:
+      case VerticalNavModeState.GA:
       case VerticalNavModeState.FLC:
       case VerticalNavModeState.ALTC:
       case VerticalNavModeState.ALT:
@@ -280,6 +284,8 @@ class CJ4NavModeSelector {
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.VS:
+      case VerticalNavModeState.TO:
+      case VerticalNavModeState.GA:
       case VerticalNavModeState.ALTC:
       case VerticalNavModeState.ALT:
         SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
@@ -384,6 +390,69 @@ class CJ4NavModeSelector {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
     // console.log("handleAlt2Changed: " + this.selectedAlt2);
     this.setProperVerticalArmedStates();
+  }
+
+  /**
+   * Handles when the pitch ref changes in the sim.
+   */
+  handleTogaChanged() {
+    
+
+    // if (Math.round(this.pitchRef) == -10) { //TOGA BUTTON PUSHED?
+      
+    //   if (Simplane.getIsGrounded()) { //PLANE IS ON THE GROUND?
+    //     console.log("on ground setting TO mode");
+    //     SimVar.SetSimVarValue("K:AP_ATT_HOLD", "number", 1).then( () => {
+    //       const pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
+    //       const times = Math.abs(-10 - pitchRef) / 0.203;
+    //       for (let i = 0; i < times; i++) {
+    //         SimVar.SetSimVarValue("K:AP_PITCH_REF_INC_UP", "number", 1);
+    //         }
+    //       this.currentVerticalActiveState = VerticalNavModeState.TO;
+    //     });
+    //   }
+    //   else {
+  
+    //     switch (this.currentVerticalActiveState) {
+    //       case VerticalNavModeState.FLC:
+    //       case VerticalNavModeState.TO:
+    //       case VerticalNavModeState.ALT:
+    //       case VerticalNavModeState.ALTC:
+    //       case VerticalNavModeState.ALTS:
+    //       case VerticalNavModeState.ALTV:
+    //         console.log("ignore TOGA");
+    //         break;
+    //       case VerticalNavModeState.GS:
+    //         SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
+    //       case VerticalNavModeState.NONE:
+    //       case VerticalNavModeState.VS:
+    //       case VerticalNavModeState.PATH:
+    //       case VerticalNavModeState.NOPATH:
+    //       case VerticalNavModeState.GP:
+    //       case VerticalNavModeState.GA:
+    //       case VerticalNavModeState.PTCH:
+    //         console.log("in air setting GA mode");
+    //         if (this.isVNAVOn) {
+    //           this.isVNAVOn = false;
+    //           SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
+    //           SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    //           SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+    //         }
+    //         SimVar.SetSimVarValue("K:AP_ATT_HOLD", "number", 1).then( () => {
+    //           const pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
+    //           const times = Math.abs(-7 - pitchRef) / 0.203;
+    //           for (let i = 0; i < times; i++) {
+    //             SimVar.SetSimVarValue("K:AP_PITCH_REF_INC_UP", "number", 1);
+    //             }
+    //           this.currentVerticalActiveState = VerticalNavModeState.GA;
+    //         });
+    //         break;
+    //     }
+    //   }
+    //   this.setProperVerticalArmedStates();
+    // }
+
+    
   }
 
   /**
@@ -880,6 +949,8 @@ VerticalNavModeState.ALTS = 'ALTS';
 VerticalNavModeState.ALTV = 'ALTV';
 VerticalNavModeState.PATH = 'PATH';
 VerticalNavModeState.NOPATH = 'NOPATH';
+VerticalNavModeState.TO = 'TO';
+VerticalNavModeState.GA = 'GA';
 
 class VPathState { }
 VPathState.NONE = 0;
@@ -915,6 +986,7 @@ NavModeEvent.GS_ACTIVE_CHANGED = 'gs_active_changed';
 NavModeEvent.VNAV_REQUEST_SLOT_1 = 'vnav_request_slot_1';
 NavModeEvent.VNAV_REQUEST_SLOT_2 = 'vnav_request_slot_2';
 NavModeEvent.HDG_LOCK_CHANGED = 'hdg_lock_changed';
+NavModeEvent.TOGA_CHANGED = 'toga_changed';
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';

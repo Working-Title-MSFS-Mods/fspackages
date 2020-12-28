@@ -568,4 +568,209 @@
 		</Switch>
 	</Template>
 
+	<Template Name="ASOBO_AUTOPILOT_Knob_VerticalSpeed_SubTemplate">
+		<DefaultTemplateParameters>
+			<NODE_ID>AUTOPILOT_Knob_VerticalSpeed#SUFFIX_ID#</NODE_ID>
+			<ANIM_NAME>AUTOPILOT_Knob_VerticalSpeed#SUFFIX_ID#</ANIM_NAME>
+			<ANIM_NAME_PUSHPULL>AUTOPILOT_Knob_VerticalSpeed_PushPull#SUFFIX_ID#</ANIM_NAME_PUSHPULL>
+			<Condition Valid="SEPARATED_INTERACTION">
+				<HITBOX_UP_NODE_ID>AUTOPILOT_Knob_VerticalSpeed_DN#SUFFIX_ID#</HITBOX_UP_NODE_ID>
+				<HITBOX_DOWN_NODE_ID>AUTOPILOT_Knob_VerticalSpeed_UP#SUFFIX_ID#</HITBOX_DOWN_NODE_ID>
+			</Condition>
+			<PART_ID>AUTOPILOT_Knob_VerticalSpeed</PART_ID>
+			<WWISE_EVENT>autopilot_verticalspeed_knob</WWISE_EVENT>
+			<COUNT>36</COUNT>
+			<Condition Check="AIRBUS_TYPE">
+				<True>
+					<CLOCKWISE_DIR>INC</CLOCKWISE_DIR>
+					<ANTICLOCKWISE_DIR>DEC</ANTICLOCKWISE_DIR>
+					<MACH_INCREMENT>1</MACH_INCREMENT>
+					<SPEED_INCREMENT>1</SPEED_INCREMENT>
+					<VS_INCREMENT>100</VS_INCREMENT>
+				</True>
+				<False>
+					<ANIMTIP_0>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_DECREASE</ANIMTIP_0>
+					<ANIMTIP_0_ON_CURSOR>UpArrow</ANIMTIP_0_ON_CURSOR>
+					<ANIMTIP_1>TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_INCREASE</ANIMTIP_1>
+					<ANIMTIP_1_ON_CURSOR>DownArrow</ANIMTIP_1_ON_CURSOR>
+					<Switch>
+						<Case Valid="UP_DEC_DN_INC">
+							<CLOCKWISE_DIR>INC</CLOCKWISE_DIR>
+							<ANTICLOCKWISE_DIR>DEC</ANTICLOCKWISE_DIR>
+							<Condition Check="UP_DEC_DN_INC" Match="INVERT_ANIM">
+								<INVERT_ANIM>True</INVERT_ANIM>
+							</Condition>
+							<MACH_INCREMENT>1</MACH_INCREMENT>
+							<SPEED_INCREMENT>1</SPEED_INCREMENT>
+							<VS_INCREMENT>100</VS_INCREMENT>
+						</Case>
+						<Default>
+							<CLOCKWISE_DIR>DEC</CLOCKWISE_DIR>
+							<ANTICLOCKWISE_DIR>INC</ANTICLOCKWISE_DIR>
+							<MACH_INCREMENT>-1</MACH_INCREMENT>
+							<SPEED_INCREMENT>-1</SPEED_INCREMENT>
+							<VS_INCREMENT>-100</VS_INCREMENT>
+						</Default>
+					</Switch>
+				</False>
+				<True>
+					<CLOCKWISE_DIR>DEC</CLOCKWISE_DIR>
+					<ANTICLOCKWISE_DIR>INC</ANTICLOCKWISE_DIR>
+				</True>
+			</Condition>
+				<Switch>
+					<Case Valid="SEPARATED_INTERACTION">
+					</Case>
+					<Default>
+						<SWITCH_DIRECTION>Vertical</SWITCH_DIRECTION>
+					</Default>
+				</Switch>
+			<THRESHOLD_Y_MOUSE>0.005</THRESHOLD_Y_MOUSE>
+		</DefaultTemplateParameters>
+		<OverrideTemplateParameters>
+			<Condition Valid="SET_AIRSPEED_ON_FLC">
+				<True>
+					<!-- The Dir is voluntarily inverted for SPD and MACH -->
+					<CLOCKWISE_CODE_DEFAULT_IM>
+						(A:AUTOPILOT FLIGHT LEVEL CHANGE, Bool) if{
+							(L:XMLVAR_AirSpeedIsInMach) if{
+								(&gt;K:AP_MACH_VAR_#ANTICLOCKWISE_DIR#)
+							} els{
+								(&gt;K:AP_SPD_VAR_#ANTICLOCKWISE_DIR#)
+							}
+						} els{
+							(&gt;K:AP_VS_VAR_#CLOCKWISE_DIR#)
+						}
+					</CLOCKWISE_CODE_DEFAULT_IM>
+					<ANTICLOCKWISE_CODE_DEFAULT_IM>
+						(A:AUTOPILOT FLIGHT LEVEL CHANGE, Bool) if{
+							(L:XMLVAR_AirSpeedIsInMach) if{
+								(&gt;K:AP_MACH_VAR_#CLOCKWISE_DIR#)
+							} els{
+								(&gt;K:AP_SPD_VAR_#CLOCKWISE_DIR#)
+							}
+						} els{
+							(&gt;K:AP_VS_VAR_#ANTICLOCKWISE_DIR#)
+						}
+					</ANTICLOCKWISE_CODE_DEFAULT_IM>
+					<CLOCKWISE_CODE_DRAG_IM>
+						(A:AUTOPILOT FLIGHT LEVEL CHANGE, Bool) if{
+							(L:XMLVAR_AirSpeedIsInMach) if{
+								(A:AUTOPILOT MACH HOLD VAR, number) #MACH_INCREMENT# -1 * + 0 max (&gt;K:AP_MACH_VAR_SET)
+							} els{
+								(A:AUTOPILOT AIRSPEED HOLD VAR, knot) #SPEED_INCREMENT# -1 * + 0 max (&gt;K:AP_SPD_VAR_SET)
+							}
+						} els{
+							(A:AUTOPILOT VERTICAL HOLD VAR, feet per minute) #VS_INCREMENT# + (&gt;K:AP_VS_VAR_SET_ENGLISH)
+						}
+					</CLOCKWISE_CODE_DRAG_IM>
+					<ANTICLOCKWISE_CODE_DRAG_IM>
+						(A:AUTOPILOT FLIGHT LEVEL CHANGE, Bool) if{
+							(L:XMLVAR_AirSpeedIsInMach) if{
+								(A:AUTOPILOT MACH HOLD VAR, number) #MACH_INCREMENT# + 0 max (&gt;K:AP_MACH_VAR_SET)
+							} els{
+								(A:AUTOPILOT AIRSPEED HOLD VAR, knot) #SPEED_INCREMENT# + 0 max (&gt;K:AP_SPD_VAR_SET)
+							}
+						} els{
+							(A:AUTOPILOT VERTICAL HOLD VAR, feet per minute) #VS_INCREMENT# -1 * + (&gt;K:AP_VS_VAR_SET_ENGLISH)
+						}
+					</ANTICLOCKWISE_CODE_DRAG_IM>
+					<!-- A CHECK -->
+					<ANIMTIP_0>%((A:AUTOPILOT FLIGHT LEVEL CHANGE, Bool))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_SPEED_INCREASE%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_DECREASE%{end}</ANIMTIP_0>
+					<ANIMTIP_0_ON_CURSOR>UpArrow</ANIMTIP_0_ON_CURSOR>
+					<ANIMTIP_1>%((A:AUTOPILOT FLIGHT LEVEL CHANGE, Bool))%{if}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_SPEED_DECREASE%{else}TT:COCKPIT.TOOLTIPS.AUTOPILOT_PANEL_VS_INCREASE%{end}</ANIMTIP_1>
+					<ANIMTIP_1_ON_CURSOR>DownArrow</ANIMTIP_1_ON_CURSOR>
+				</True>
+				<False>
+					<!--  
+					<CLOCKWISE_CODE_DEFAULT_IM>(&gt;K:AP_VS_VAR_#CLOCKWISE_DIR#)</CLOCKWISE_CODE_DEFAULT_IM>
+					<ANTICLOCKWISE_CODE_DEFAULT_IM>(&gt;K:AP_VS_VAR_#ANTICLOCKWISE_DIR#)</ANTICLOCKWISE_CODE_DEFAULT_IM>
+					-->
+					<CLOCKWISE_CODE_DEFAULT_IM>
+						(A:AUTOPILOT VERTICAL HOLD, Bool) if{
+							(&gt;K:AP_VS_VAR_#CLOCKWISE_DIR#)
+						} els{
+							(&gt;K:AP_PITCH_REF_INC_UP)
+						}
+					</CLOCKWISE_CODE_DEFAULT_IM>
+					<ANTICLOCKWISE_CODE_DEFAULT_IM>
+						(A:AUTOPILOT VERTICAL HOLD, Bool) if{
+							(&gt;K:AP_VS_VAR_#ANTICLOCKWISE_DIR#)
+						} els{
+							(&gt;K:AP_PITCH_REF_INC_DN)
+						}
+					</ANTICLOCKWISE_CODE_DEFAULT_IM>
+					<CLOCKWISE_CODE_DRAG_IM>
+						(A:AUTOPILOT VERTICAL HOLD, Bool) if{
+							(&gt;K:AP_VS_VAR_#CLOCKWISE_DIR#)
+						} els{
+							(&gt;K:AP_PITCH_REF_INC_UP)
+						}
+					</CLOCKWISE_CODE_DRAG_IM>
+					<ANTICLOCKWISE_CODE_DRAG_IM>
+						(A:AUTOPILOT VERTICAL HOLD, Bool) if{
+							(&gt;K:AP_VS_VAR_#ANTICLOCKWISE_DIR#)
+						} els{
+							(&gt;K:AP_PITCH_REF_INC_DN)
+						}
+					</ANTICLOCKWISE_CODE_DRAG_IM>
+					<!--<CLOCKWISE_CODE_DRAG_IM>(A:AUTOPILOT VERTICAL HOLD VAR, feet per minute) #VS_INCREMENT# + (&gt;K:AP_VS_VAR_SET_ENGLISH)</CLOCKWISE_CODE_DRAG_IM>
+					<ANTICLOCKWISE_CODE_DRAG_IM>(A:AUTOPILOT VERTICAL HOLD VAR, feet per minute) #VS_INCREMENT# -1 * + (&gt;K:AP_VS_VAR_SET_ENGLISH)</ANTICLOCKWISE_CODE_DRAG_IM>
+					-->
+				</False>
+			</Condition>
+			<Condition Check="HITBOX_UP_NODE_ID">
+				<SEPARATED_INTERACTION>True</SEPARATED_INTERACTION>
+			</Condition>
+		</OverrideTemplateParameters>
+		<EditableTemplateParameters>
+			<AddParams>
+				<ANIM_NAME></ANIM_NAME>
+				<ANIM_NAME_PUSHPULL></ANIM_NAME_PUSHPULL>
+			</AddParams>
+			<AddOptions>
+				<HITBOX_UP_NODE_ID></HITBOX_UP_NODE_ID>
+				<HITBOX_DOWN_NODE_ID></HITBOX_DOWN_NODE_ID>
+				<AIRBUS_TYPE></AIRBUS_TYPE>
+			</AddOptions>
+		</EditableTemplateParameters>
+
+		<Switch>
+			<Case Valid="SEPARATED_INTERACTION">
+				<UseTemplate Name = "ASOBO_GT_Knob_Infinite_SeparatedInteraction">
+					<SWITCH_DIRECTION>Vertical</SWITCH_DIRECTION>
+				</UseTemplate>
+			</Case>
+			<Case Check="AIRBUS_TYPE">
+				<Component ID="#NODE_ID#" Node="#NODE_ID#">
+					<UseTemplate Name="ASOBO_GT_Knob_Infinite_PushPull">
+						<CLOCKWISE_CODE>
+							2 (&gt;K:AP_VS_VAR_INC)
+							(&gt;H:A320_Neo_FCU_VS_INC)
+						</CLOCKWISE_CODE>
+						<ANTICLOCKWISE_CODE>
+							2 (&gt;K:AP_VS_VAR_DEC)
+							(&gt;H:A320_Neo_FCU_VS_DEC)
+						</ANTICLOCKWISE_CODE>
+						<PULL_CODE>
+							(&gt;H:A320_Neo_FCU_VS_HOLD)
+						</PULL_CODE>
+						<PUSH_CODE>
+							(&gt;H:A320_Neo_FCU_VS_ZERO)
+						</PUSH_CODE>
+						<CENTER_RADIUS>0</CENTER_RADIUS>
+					</UseTemplate>
+				</Component>
+			</Case>
+			<Default>
+				<Component ID="#NODE_ID#" Node="#NODE_ID#">
+					<UseTemplate Name="ASOBO_GT_Knob_Infinite">
+						<SWITCH_DIRECTION>Vertical</SWITCH_DIRECTION>
+						<IS_WHEEL>True</IS_WHEEL>
+					</UseTemplate>
+				</Component>
+			</Default>
+		</Switch>
+	</Template>
+
 </ModelBehaviors>
