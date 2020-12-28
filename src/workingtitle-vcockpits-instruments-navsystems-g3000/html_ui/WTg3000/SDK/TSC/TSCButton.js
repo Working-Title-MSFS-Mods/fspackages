@@ -3,6 +3,7 @@ class WT_TSCButton extends HTMLElement {
         super();
 
         let wrapperStyle = this._initWrapperStyle();
+        let labelBoxStyle = this._initLabelBoxStyle();
         let labelStyle = this._initLabelStyle();
 
         this._style = document.createElement("style");
@@ -26,15 +27,19 @@ class WT_TSCButton extends HTMLElement {
             }
 
             ${wrapperStyle}
+            ${labelBoxStyle}
             ${labelStyle}
         `);
         this._style.appendChild(baseStyle);
 
         this._wrapper = document.createElement("div");
         this._wrapper.id = "wrapper";
+        this._labelBox = document.createElement("div");
+        this._labelBox.id = "labelbox";
         this._label = document.createElement("div");
         this._label.id = "label";
-        this._wrapper.appendChild(this._label);
+        this._labelBox.appendChild(this._label);
+        this._wrapper.appendChild(this._labelBox);
 
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._wrapper);
@@ -54,6 +59,16 @@ class WT_TSCButton extends HTMLElement {
                 top: 1%;
                 right: 1%;
                 bottom: 1%;
+            }
+        `;
+    }
+
+    _initLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                width: 100%;
+                height: 100%;
             }
         `;
     }
@@ -203,13 +218,13 @@ class WT_TSCStatusBarButton extends WT_TSCButton {
         this._wrapper.appendChild(this._statusBar);
     }
 
-    _initLabelStyle() {
+    _initLabelBoxStyle() {
         return `
-            #label {
+            #labelbox {
                 position: absolute;
                 width: 100%;
-                top: 35%;
-                transform: translateY(-50%);
+                top: 0%;
+                bottom: 30%;
             }
         `;
     }
@@ -245,28 +260,39 @@ class WT_TSCValueButton extends WT_TSCButton {
         super();
 
         this._style.appendChild(document.createTextNode(`
-            #value {
+            #valuebox {
                 position: absolute;
                 width: 100%;
                 top: 55%;
+                bottom: 0%;
+            }
+
+            #value {
+                position: absolute;
+                width: 100%;
+                top: 50%;
+                transform: translateY(-50%);
                 color: var(--value-color, #67e8ef);
                 font-size: var(--value-font-size, 1em);
             }
         `));
 
+        this._valueBox = document.createElement("div");
+        this._valueBox.id = "valuebox";
         this._value = document.createElement("div");
         this._value.id = "value";
+        this._valueBox.appendChild(this._value);
 
-        this._wrapper.appendChild(this._value);
+        this._wrapper.appendChild(this._valueBox);
     }
 
-    _initLabelStyle() {
+    _initLabelBoxStyle() {
         return `
-            #label {
+            #labelbox {
                 position: absolute;
                 width: 100%;
-                top: 20%;
-                transform: translateY(-50%);
+                top: 0%;
+                bottom: 60%;
             }
         `;
     }
@@ -296,3 +322,71 @@ class WT_TSCValueButton extends WT_TSCButton {
 }
 
 customElements.define("tsc-button-value", WT_TSCValueButton);
+
+class WT_TSCImageButton extends WT_TSCButton {
+    constructor() {
+        super();
+
+        this._style.appendChild(document.createTextNode(`
+            #img {
+                position: absolute;
+                max-width: 50%;
+                top: 5%;
+                height: 50%;
+            }
+        `));
+
+        this._img = document.createElement("img");
+        this._img.id = "img";
+        this._wrapper.appendChild(this._img);
+    }
+
+    _initLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                width: 100%;
+                top: 55%;
+                bottom: 5%;
+            }
+        `;
+    }
+
+    static get observedAttributes() {
+        return [...WT_TSCButton.observedAttributes, "imgsrc"];
+    }
+
+    get imgSrc() {
+        return this._img.src;
+    }
+
+    set imgSrc(value) {
+        this.setAttribute("imgsrc", value);
+    }
+}
+
+customElements.define("tsc-button-img", WT_TSCImageButton);
+
+class WT_TSCContentButton extends WT_TSCButton {
+    constructor() {
+        super();
+
+        this._content = document.createElement("slot");
+        this._content.name = "content";
+        this._content.style.display = "block";
+        this._content.style.width = "100%";
+        this._content.style.height = "100%";
+
+        this._wrapper.appendChild(this._content);
+    }
+
+    _initLabelBoxStyle() {
+        return `
+            #labelbox {
+                display: none;
+            }
+        `;
+    }
+}
+
+customElements.define("tsc-button-content", WT_TSCContentButton);

@@ -173,8 +173,6 @@ class WT_G3x5_MFDHalfPane {
         this._controller.addSetting(this._displaySetting = new WT_G3x5_MFDHalfPaneDisplaySetting(this._controller));
         this._controlSetting.addListener(this._onControlSettingChanged.bind(this));
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
-        this._controller.init();
-        this._controller.update();
 
         this._navMap = new WT_G3x5NavMap(id, icaoWaypointFactory, icaoSearchers, flightPlanManager);
         this._weatherRadar = new WT_G3x5WeatherRadar(id);
@@ -184,10 +182,13 @@ class WT_G3x5_MFDHalfPane {
 
         this._refreshCounter = 0;
 
+        this._initChildren();
+
         this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
         this._setControl(defaultControl);
 
-        this._initChildren();
+        this._controller.init();
+        this._controller.update();
     }
 
     _initChildren() {
@@ -245,16 +246,12 @@ class WT_G3x5_MFDHalfPane {
 
     _setDisplayMode(mode) {
         this._displayMode = mode;
-        this.htmlElement.setDisplay(mode);
-    }
-
-    _updateDisplayMode() {
-        if (this._weatherRadar.isVisible() && this._displayMode !== WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
-            this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER);
-        } else if (!this._weatherRadar.isVisible() && this._displayMode === WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
+        if (mode === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
             this._weatherRadar.sleepBing();
-            this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        } else {
+            this._weatherRadar.wakeBing();
         }
+        this.htmlElement.setDisplay(mode);
     }
 
     _updateChildren() {
@@ -269,8 +266,6 @@ class WT_G3x5_MFDHalfPane {
     }
 
     update(updateCycle) {
-        this._updateDisplayMode();
-
         if (!this.halfRefresh() || updateCycle === 0) {
             this._updateChildren();
         }
