@@ -104,13 +104,18 @@ class SvgWaypointElement extends SvgMapElement {
         return 0;
     }
 
+    idgrp(map) {
+        return this.id(map) + "-group-" + map.index;
+    }
+
     createDraw(map) {
         let isActiveWaypoint = this.isActiveWaypoint();
-
+        this._group = document.createElementNS(Avionics.SVG.NS, "g");
+        this._group.id = this.idgrp(map);
+        this._group.setAttribute("hasTextBox", "true");
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
         this._image.id = this.id(map);
         this._image.classList.add(this.class() + "-icon");
-        this._image.setAttribute("hasTextBox", "true");
         this._image.setAttribute("width", "100%");
         this._image.setAttribute("height", "100%");
         if (!isActiveWaypoint) {
@@ -136,7 +141,9 @@ class SvgWaypointElement extends SvgMapElement {
         let iconSize = this.getIconSize(map) + 4;
         this._image.setAttribute("width", fastToFixed(iconSize, 0));
         this._image.setAttribute("height", fastToFixed(iconSize, 0));
-        return this._image;
+        this._group.appendChild(this._image);
+        this._group.appendChild(this._label.createDraw(map));
+        return this._group;
     }
 
     updateDraw(map) {
@@ -199,8 +206,8 @@ class SvgWaypointElement extends SvgMapElement {
                 iconSize *= (this.minimize ? 0.5 : 1);
                 let x = (this.x - iconSize * 0.5) + 2;
                 let y = (this.y - iconSize * 0.5) + 2;
-                this.svgElement.setAttribute("x", x + "");
-                this.svgElement.setAttribute("y", y + "");
+                this._image.setAttribute("x", x + "");
+                this._image.setAttribute("y", y + "");
                 if (this.source instanceof AirportInfo) {
                     let a = this.source.longestRunwayDirection;
                     if (isNaN(a) && this.source.runways[0]) {
@@ -211,15 +218,17 @@ class SvgWaypointElement extends SvgMapElement {
                     }
                 }
                 if (isFinite(this._alpha)) {
-                    this.svgElement.setAttribute("transform", "rotate(" + this._alpha.toFixed(0) + " " + this.x.toFixed(0) + " " + this.y.toFixed(0) + ")");
+                    this._image.setAttribute("transform", "rotate(" + this._alpha.toFixed(0) + " " + this.x.toFixed(0) + " " + this.y.toFixed(0) + ")");
                 }
             }
         }
+        this._label.updateDraw(map);
     }
 }
 
-class SvgWaypointTextElement {
+class SvgWaypointTextElement extends SvgMapElement {
     constructor(waypointElement) {
+        super();
         this.waypointElement = waypointElement;
         this._label;
         this.textOffsetRatio = 0.25;
@@ -255,7 +264,7 @@ class SvgWaypointTextElement {
 
     updateDraw(map) {
         if (!this._label) {
-            this.createLabel(map);
+            this.createDraw(map);
         }
 
         let isActiveWaypoint = this.waypointElement.isActiveWaypoint();
@@ -283,9 +292,10 @@ class SvgWaypointTextElement {
                 }
             }
         }
+
     }
 
-    createLabel(map) {
+    createDraw(map) {
         let fontSize = this.waypointElement.getLabelFontSize(map);
         let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
@@ -300,6 +310,7 @@ class SvgWaypointTextElement {
         }
         let isActiveWaypoint = this.waypointElement.source.ident === ident;
         this._refreshLabel(map, isActiveWaypoint);
+        return this._label;
     }
 
     _refreshLabel(map, isActiveWaypoint) {
@@ -322,6 +333,7 @@ class SvgWaypointTextElement {
             canvas.setAttribute("width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
             canvas.setAttribute("height", (this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
             this._label.appendChild(canvas);
+
         } else {
             canvas = this._label.getElementsByClassName("labelCanvas")[0];
         }
