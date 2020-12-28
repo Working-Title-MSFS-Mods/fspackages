@@ -145,7 +145,7 @@ class AS3000_TSC extends NavSystemTouch {
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
-                new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMapSettings(
+                new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings(
                     "MFD", "MFD Home", "MFD",
                     "MFDMapOrientationButton",
                     "MFDMapSyncButton",
