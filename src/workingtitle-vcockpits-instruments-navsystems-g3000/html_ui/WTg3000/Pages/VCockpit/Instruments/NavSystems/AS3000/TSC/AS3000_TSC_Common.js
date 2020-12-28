@@ -134,6 +134,10 @@ class AS3000_TSC extends NavSystemTouch {
         this.pfdSoftkey = this.getChildById("SoftKey_2");
         this.mfdSoftkey = this.getChildById("SoftKey_3");
         this.navcomSoftkey = this.getChildById("SoftKey_4");
+
+        this._mfdPagesLeft = {};
+        this._mfdPagesRight = {};
+
         this.pageGroups = [
             new NavSystemPageGroup("PFD", this, [
                 new NavSystemPage("PFD Home", "PFDHome", new AS3000_TSC_PFDHome()),
@@ -151,17 +155,17 @@ class AS3000_TSC extends NavSystemTouch {
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
-                new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings(
+                this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings(
                     "MFD", "MFD Home", "MFD",
                     "MFDMapOrientationButton",
                     "MFDMapSyncButton",
                     "MFDMapDetailButton",
                     true
                 )),
-                new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
-                new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
-                new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
-                new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-RIGHT")),
+                this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
+                this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
+                this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
+                this._mfdPagesRight.weatherRadar = new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-RIGHT")),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
@@ -244,6 +248,10 @@ class AS3000_TSC extends NavSystemTouch {
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
+    }
+
+    getActiveMFDPages() {
+        return this.getMFDPaneControl() === "LEFT" ? this._mfdPagesLeft : this._mfdPagesRight;
     }
 
     parseXMLConfig() {
@@ -339,17 +347,34 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _changeMapRange(delta) {
+        let controllerID = `MFD-${this.getMFDPaneControl()}`;
+        let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
+        WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
+    }
+
     _handleZoomEvent(event) {
-        if (this.getCurrentPageGroup().name == "MFD" && this.popUpElement != this.mapPointerControl && this.getCurrentPage().title !== "Weather Radar Settings") {
+        if (this.getCurrentPageGroup().name !== "MFD") {
+            return;
+        }
+
+        if (this.getActiveMFDHalfPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
             switch (event) {
                 case "BottomKnob_Small_INC":
-                    this.changeMapRange(1);
+                    this._changeMapRange(1);
                     break;
                 case "BottomKnob_Small_DEC":
-                    this.changeMapRange(-1);
+                    this._changeMapRange(-1);
                     break;
-                case "BottomKnob_Push":
-                    this.switchToPopUpPage(this.mapPointerControl);
+            }
+        } else {
+            switch (event) {
+                case "BottomKnob_Small_INC":
+                    this.getActiveMFDPages().weatherRadar.element.changeRange(1);
+                    break;
+                case "BottomKnob_Small_DEC":
+                    this.getActiveMFDPages().weatherRadar.element.changeRange(-1);
                     break;
             }
         }
@@ -372,6 +397,7 @@ class AS3000_TSC extends NavSystemTouch {
                 break;
         }
         if (this.getCurrentPageGroup().name === "MFD") {
+            this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
     }
@@ -401,15 +427,14 @@ class AS3000_TSC extends NavSystemTouch {
     onEvent(event) {
         super.onEvent(event);
 
+        if (event === "BottomKnob_Push") {
+            this.switchToPopUpPage(this.mapPointerControl);
+            return;
+        }
+
         this._handleNavigationEvent(event);
         this._handleZoomEvent(event);
         this._handleControlEvent(event);
-    }
-
-    changeMapRange(delta) {
-        let currentIndex = WT_MapController.getSettingValue("MFD-LEFT", WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapController.setSettingValue("MFD-LEFT", WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
     goBack() {
@@ -4261,7 +4286,7 @@ class AS3000_MapPointerControl extends NavSystemElement {
 
     onEnter() {
         this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.gps.goBack.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.gps.activateNavButton(1, "Back", this.gps.goBack.bind(this.gps), false, "ICON_TSC_BUTTONBAR_BACK.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
         this.gps.setTopKnobText("Pan/Point Push: Pan Off");
         this.gps.setBottomKnobText("-Range+ Push: Pan Off");
@@ -4300,12 +4325,6 @@ class AS3000_MapPointerControl extends NavSystemElement {
                 break;
             case "TopKnob_Push":
                 this.gps.goBack();
-                break;
-            case "BottomKnob_Small_INC":
-                this.gps.changeMapRange(1);
-                break;
-            case "BottomKnob_Small_DEC":
-                this.gps.changeMapRange(-1);
                 break;
             case "BottomKnob_Push":
                 this.gps.goBack();
