@@ -60,24 +60,9 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
         this._radarMode.update();
     }
 
-    _changeRange(delta) {
+    changeRange(delta) {
         let target = Math.max(0, Math.min(this._rangeSetting.ranges.length - 1, this._rangeSetting.getValue() + delta));
         this._rangeSetting.setValue(target);
-    }
-
-    onEvent(event) {
-        if (this._modeSetting === WT_WeatherRadarModel.Mode.STANDBY) {
-            return;
-        }
-
-        switch (event) {
-            case "BottomKnob_Small_INC":
-                this._changeRange(1);
-                break;
-            case "BottomKnob_Small_DEC":
-                this._changeRange(-1);
-                break;
-        }
     }
 }
 
