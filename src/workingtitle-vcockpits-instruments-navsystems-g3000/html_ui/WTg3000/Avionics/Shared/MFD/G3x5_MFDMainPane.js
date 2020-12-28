@@ -354,19 +354,19 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
             #titledpane[control=left] {
                 position: absolute;
                 background-color: #97d9d5;
-                --pane-title-border-width: 0px;
+                --pane-title-border-color: transparent;
                 border: solid 1px black;
             }
             #titledpane[control=right] {
                 position: absolute;
                 background-color: #d08dff;
-                --pane-title-border-width: 0px;
+                --pane-title-border-color: transparent;
                 border: solid 1px black;
             }
             #titledpane[control=both] {
                 position: absolute;
                 background-color: #2c22ff;
-                --pane-title-border-width: 0px;
+                --pane-title-border-color: transparent;
                 border: solid 1px black;
             }
     </style>
