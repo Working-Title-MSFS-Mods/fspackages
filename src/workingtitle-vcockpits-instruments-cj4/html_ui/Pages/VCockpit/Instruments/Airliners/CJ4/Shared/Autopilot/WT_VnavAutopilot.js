@@ -339,6 +339,7 @@ class WT_VnavAutopilot {
                     setVerticalSpeed = desiredVerticalSpeed;
                 }
             }
+            setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
             Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
         }
     }
