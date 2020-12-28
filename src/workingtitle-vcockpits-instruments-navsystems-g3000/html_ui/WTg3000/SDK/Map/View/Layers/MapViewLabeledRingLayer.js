@@ -221,6 +221,8 @@ class WT_MapViewRing {
         this._center = new WT_GVector2(0, 0);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRing.OPTIONS_DEF);
+
+        this._tempVector = new WT_GVector2(0, 0);
     }
 
     /**
@@ -232,9 +234,11 @@ class WT_MapViewRing {
     }
 
     set center(newValue) {
-        let oldValue = this.center;
-        this._center.set(newValue);
-        this.onOptionChanged("center", oldValue, newValue);
+        if (!this.center.equals(newValue)) {
+            let oldValue = this._tempVector.set(this.center);
+            this._center.set(newValue);
+            this.onOptionChanged("center", oldValue, newValue);
+        }
     }
 
     _isInView(width, height, margin = 0) {
@@ -268,15 +272,7 @@ class WT_MapViewRing {
     }
 
     onOptionChanged(name, oldValue, newValue) {
-        if (this._needRedraw) {
-            return;
-        }
-
-        let needRedraw = true;
-        if (name === "center" && oldValue && newValue) {
-            needRedraw = !newValue.equals(oldValue);
-        }
-        this._needRedraw = needRedraw;
+        this._needRedraw = true;
     }
 
     /**
@@ -373,6 +369,8 @@ class WT_MapViewRingLabel {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRingLabel.OPTIONS_DEF);
 
         this._needRedraw = true;
+
+        this._tempVector = new WT_GVector2(0, 0);
     }
 
     _createLabel() {
@@ -398,9 +396,11 @@ class WT_MapViewRingLabel {
     }
 
     set center(newValue) {
-        let oldValue = this.center;
-        this._center.set(newValue);
-        this.onOptionChanged("center", oldValue, newValue);
+        if (!this.center.equals(newValue)) {
+            let oldValue = this._tempVector.set(this.center);
+            this._center.set(newValue);
+            this.onOptionChanged("center", oldValue, newValue);
+        }
     }
 
     /**
@@ -421,15 +421,7 @@ class WT_MapViewRingLabel {
     }
 
     onOptionChanged(name, oldValue, newValue) {
-        if (this._needRedraw) {
-            return;
-        }
-
-        let needRedraw = true;
-        if (name === "center" && oldValue && newValue) {
-            needRedraw = !newValue.equals(oldValue);
-        }
-        this._needRedraw = needRedraw;
+        this._needRedraw = true;
     }
 
     /**
