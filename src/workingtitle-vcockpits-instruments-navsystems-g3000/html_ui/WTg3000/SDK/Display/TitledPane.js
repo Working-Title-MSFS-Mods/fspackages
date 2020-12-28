@@ -43,7 +43,7 @@ WT_TitledPane.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
-            background-color: #97d9d5;
+            background-color: black;
         }
 
         #container {
@@ -57,32 +57,42 @@ WT_TitledPane.TEMPLATE.innerHTML = `
                 top: calc(var(--pane-border-width, 0.5vh) * 0.5);
                 right: var(--pane-border-width, 0.5vh);
                 bottom: var(--pane-border-width, 0.5vh);
+                display: grid;
+                grid-template-columns: auto;
+                grid-template-rows: calc(var(--pane-title-font-size, 1.5vh) * 1.3 + var(--pane-border-width, 0.5vh) + var(--pane-title-border-width, 1px) * 2) auto;
             }
-                #title {
-                    position: absolute;
-                    top: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: auto;
-                    height: auto;
-                    color: var(--pane-title-color, white);
-                    text-align: center;
-                    font-size: var(--pane-title-font-size, 1.75vh);
-                    background-color: var(--pane-title-bg-color, black);
-                    padding: 0.05em 0.1em;
+                #titlebox {
+                    display: block;
+                    position: relative;
+                    margin: var(--pane-title-border-width, 1px);
+                    border: var(--pane-title-border-width, 1px) solid var(--pane-title-border-color, white);
                 }
+                    #title {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: auto;
+                        height: auto;
+                        color: var(--pane-title-color, white);
+                        text-align: center;
+                        font-size: var(--pane-title-font-size, 1.75vh);
+                        background-color: var(--pane-title-bg-color, black);
+                        padding: 0.05em 0.1em;
+                    }
                 #content {
                     display: block;
-                    position: absolute;
+                    position: relative;
                     width: 100%;
-                    height: calc(100% - var(--pane-title-font-size, 1.5vh) * 1.3 - var(--pane-border-width, 0.5vh) / 2);
-                    bottom: 0%;
+                    height: 100%;
                 }
 
     </style>
     <div id="container">
         <div id="inner">
-            <div id="title"></div>
+            <div id="titlebox">
+                <div id="title"></div>
+            </div>
             <slot id="content" name="content"></slot>
         </div>
     </div>
