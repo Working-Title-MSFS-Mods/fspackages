@@ -166,8 +166,10 @@ class WT_G3x5_MFDHalfPane {
 
         let id = `${instrumentID}-${halfPaneID}`;
 
+        let defaultControl = halfPaneID === "LEFT" ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT : 0;
+
         this._controller = new WT_DataStoreController(id, null);
-        this._controller.addSetting(this._controlSetting = new WT_G3x5_MFDHalfPaneControlSetting(this._controller));
+        this._controller.addSetting(this._controlSetting = new WT_G3x5_MFDHalfPaneControlSetting(this._controller, defaultControl));
         this._controller.addSetting(this._displaySetting = new WT_G3x5_MFDHalfPaneDisplaySetting(this._controller));
         this._controlSetting.addListener(this._onControlSettingChanged.bind(this));
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
@@ -182,13 +184,15 @@ class WT_G3x5_MFDHalfPane {
 
         this._refreshCounter = 0;
 
-        this._init();
+        this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        this._setControl(defaultControl);
+
+        this._initChildren();
     }
 
-    _init() {
+    _initChildren() {
         this._navMap.init(this.htmlElement);
         this._weatherRadar.init(this.htmlElement);
-        this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
     }
 
     /**
@@ -396,7 +400,7 @@ WT_G3x5_MFDMainPaneModeSetting.Mode = {
 }
 
 class WT_G3x5_MFDHalfPaneControlSetting extends WT_DataStoreSetting {
-    constructor(controller, defaultValue = WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
+    constructor(controller, defaultValue = 0, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
         super(controller, key, defaultValue, autoUpdate, isPersistent);
     }
 
