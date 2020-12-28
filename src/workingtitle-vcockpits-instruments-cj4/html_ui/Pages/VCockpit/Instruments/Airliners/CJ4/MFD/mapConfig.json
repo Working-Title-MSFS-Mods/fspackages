@@ -20,6 +20,11 @@
   "waypointLabelDistance": 0,
   "waypointIconSize": 28,
 
+  "vorLabelColor": "cyan",
+  "ndbLabelColor": "cyan",
+  "airportLabelColor": "cyan",
+  "intersectionLabelColor": "cyan",
+
   "preventLabelOverlap": false,
 
   "cityLabelFontSize": 24,
