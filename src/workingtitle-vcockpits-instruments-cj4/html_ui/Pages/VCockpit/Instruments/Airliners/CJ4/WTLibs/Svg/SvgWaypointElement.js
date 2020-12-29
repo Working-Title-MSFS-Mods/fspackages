@@ -104,17 +104,17 @@ class SvgWaypointElement extends SvgMapElement {
         return 0;
     }
 
-    idgrp(map) {
+    idimg(map) {
         return this.id(map) + "-group-" + map.index;
     }
 
     createDraw(map) {
         let isActiveWaypoint = this.isActiveWaypoint();
         this._group = document.createElementNS(Avionics.SVG.NS, "g");
-        this._group.id = this.idgrp(map);
+        this._group.id = this.id(map);
         this._group.setAttribute("hasTextBox", "true");
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
-        this._image.id = this.id(map);
+        this._image.id = this.idimg(map);
         this._image.classList.add(this.class() + "-icon");
         this._image.setAttribute("width", "100%");
         this._image.setAttribute("height", "100%");
@@ -163,9 +163,9 @@ class SvgWaypointElement extends SvgMapElement {
         let isActiveWaypoint = this.isActiveWaypoint();
 
         if (this._image === undefined) {
-            this._image = document.getElementById(this.id(map));
+            this._image = document.getElementById(this.idimg(map));
         }
-        this._lastIsActiveWaypoint = (this._image.getAttribute("lastIsActiveWaypoint") === "true");
+        this._lastIsActiveWaypoint = this._image !== undefined && (this._image.getAttribute("lastIsActiveWaypoint") === "true");
 
         if (isActiveWaypoint != this._lastIsActiveWaypoint) {
             if (this._image) {
