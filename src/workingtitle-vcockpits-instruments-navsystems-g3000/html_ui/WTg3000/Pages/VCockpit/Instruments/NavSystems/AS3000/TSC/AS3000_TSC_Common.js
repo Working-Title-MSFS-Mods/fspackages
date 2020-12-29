@@ -122,6 +122,10 @@ class AS3000_TSC extends NavSystemTouch {
 
     get templateID() { return "AS3000_TSC"; }
 
+    _initMFDPaneControlID() {
+        this._mfdHalfPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
+    }
+
     _initMFDPaneSelectDisplay() {
         this._mfdPaneSelectDisplay = this.getChildById("Softkey_1_Container").querySelector(`tsc-mfdpaneselectdisplay`);
         this._mfdPaneSelectDisplay.selectColor = this.urlConfig.index === 1 ? WT_G3x5_MFDMainPane.LEFT_TSC_COLOR : WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR;
@@ -241,8 +245,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
 
-        this._mfdHalfPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
-
+        this._initMFDPaneControlID();
         this._initMFDPaneSelectDisplay();
 
         Include.addScript("/JS/debug.js", function () {

@@ -348,140 +348,11 @@
                             </div>
                         </div>
                         <div class="tabContentContainer MapSettingsTabContentContainer" id="PFDMapSettingsTabContentContainer">
-                            <div class="tabContent MapSensorTab" state="Active">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton valueButton MapSettingsTabRowButtonLeft">
-                                            <div class="upperTitle">Terrain</div>
-                                            <div class="lowerValue"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapInsetTab" state="Inactive">
-                                <div class="gradientButton">
-                                    <div class="mainText">Map Inset</div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapAviationTab" state="Inactive">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Airspaces</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Airports</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">VOR</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">INT</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">NDB</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapLandTab" state="Inactive">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Roads</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Cities</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapOtherTab" state="Inactive">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">North Up<br>Above</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Track Vector</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Wind Vector</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="dummy"></div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Fuel Rng (Rsv)</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Range to<br>Altitude</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="dummy"></div>
-                                    </div>
-                                </div>
-                            </div>
+                            <tsc-mapsettings-tab class="tabContent MapSensorTab" state="Active"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapInsetTab" state="Inactive"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapAviationTab" state="Inactive"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapLandTab" state="Inactive"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapOtherTab" state="Inactive"></tsc-mapsettings-tab>
                         </div>
                     </div>
                 </div>
@@ -525,8 +396,8 @@
                 <div class="tscPage" id="MFDHome">
                     <div class="line">
                         <div class="gradientButton" id="MapButton">
-                            <img class="img" src="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png" />
-                            <img class="img active" src="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SETTINGS_1.png" />
+                            <img class="img" src="/WTg3000/SDK/TSC/Images/ICON_TSC_MAP.png" />
+                            <img class="img active" src="/WTg3000/SDK/TSC/Images/ICON_TSC_MAP_SETTINGS.png" />
                             <div class="label">Map</div>
                         </div>
                         <div class="gradientButton" id="TraficButton" state="Greyed">
@@ -534,8 +405,8 @@
                             <div class="label">Traffic</div>
                         </div>
                         <div class="gradientButton" id="WeatherButton">
-                            <img class="img" src="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_WEATHER.png" />
-                            <img class="img active" src="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_WEATHER_SETTINGS_1.png" />
+                            <img class="img" src="/WTg3000/SDK/TSC/Images/ICON_TSC_WEATHER.png" />
+                            <img class="img active" src="/WTg3000/SDK/TSC/Images/ICON_TSC_WEATHER_SELECTION.png" />
                             <div class="label">Weather</div>
                         </div>
                         <div class="gradientButton" id="TAWSButton" state="Greyed">
@@ -631,158 +502,25 @@
                             </div>
                         </div>
                         <div class="tabContentContainer MapSettingsTabContentContainer" id="MFDMapSettingsTabContentContainer">
-                            <div class="tabContent MapSensorTab" state="Active">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton valueButton MapSettingsTabRowButtonLeft">
-                                            <div class="upperTitle">Terrain</div>
-                                            <div class="lowerValue"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapInsetTab" state="Inactive">
-                                <div class="gradientButton">
-                                    <div class="mainText">Map Inset</div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapAviationTab" state="Inactive">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Airspaces</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Airports</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">VOR</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">INT</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">NDB</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapLandTab" state="Inactive">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Roads</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Active">
-                                            <div class="mainText">Cities</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText">Settings</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tabContent MapOtherTab" state="Inactive">
-                                <div class="mapSettingsGrid">
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">North Up<br>Above</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Track Vector</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Wind Vector</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="dummy"></div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Fuel Rng (Rsv)</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="gradientButton MapSettingsTabRowButtonRight">
-                                            <div class="statusText"></div>
-                                        </div>
-                                    </div>
-                                    <div class="MapSettingsTabRow">
-                                        <div class="gradientButton statusToggleButton MapSettingsTabRowButtonLeft" state="Inactive">
-                                            <div class="mainText">Range to<br>Altitude</div>
-                                            <div class="statusBar"></div>
-                                        </div>
-                                        <div class="dummy"></div>
-                                    </div>
-                                </div>
-                            </div>
+                            <tsc-mapsettings-tab class="tabContent MapSensorTab" state="Active"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapInsetTab" state="Inactive"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapAviationTab" state="Inactive"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapLandTab" state="Inactive"></tsc-mapsettings-tab>
+                            <tsc-mapsettings-tab class="tabContent MapOtherTab" state="Inactive"></tsc-mapsettings-tab>
                         </div>
                     </div>
                 </div>
-                <div class="tscPage" id="WeatherSelection">
-                    <div class="line">
-                        <div class="gradientButton" id="NexradButton">
-                            <img class="img" src="" />
-                            <div class="label">NEXRAD</div>
-                        </div>
-                        <div class="gradientButton" id="WxRadarButton">
-                            <img class="img" src="" />
-                            <div class="label">WX RADAR Horizontal</div>
-                        </div>
-                        <div class="gradientButton" id="WxRadarVertButton">
-                            <img class="img" src="" />
-                            <div class="label">WX RADAR Vertical</div>
-                        </div>
-                    </div>
+                <div class="tscPage weatherSelection" id="WeatherSelectionLeft">
+                    <tsc-weatherselection></tsc-weatherselection>
+                </div>
+                <div class="tscPage weatherSelection" id="WeatherSelectionRight">
+                    <tsc-weatherselection></tsc-weatherselection>
+                </div>
+                <div class="tscPage weatherRadarSettings" id="WeatherRadarSettingsLeft">
+                    <tsc-weatherradarsettings></tsc-weatherradarsettings>
+                </div>
+                <div class="tscPage weatherRadarSettings" id="WeatherRadarSettingsRight">
+                    <tsc-weatherradarsettings></tsc-weatherradarsettings>
                 </div>
                 <div class="tscPage" id="DirectTo">
                     <div class="tabContainer">
@@ -2491,10 +2229,14 @@
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow" state="Inactive">
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow1" state="Inactive">
                 <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
                 <div class="content">
                 </div>
+            </div>
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow2" state="Inactive">
+                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+                <div class="content"></div>
             </div>
             <div class="PopUpWindow Transparent SelectionListWindow" id="AoASelect" state="Inactive">
                 <div class="WindowTitle">AOA Settings</div>
@@ -2634,22 +2376,36 @@
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Utils/DataStore.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Utils/DataStoreController.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreController.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Math/NumberUnit.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Math/GVector2.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Math/GVector2.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCButton.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionListWindow.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapController.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapPointerSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapTerrainModeSetting.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapAutoNorthUpSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapSymbolShowSetting.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapTrackVectorSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapFuelRingSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/Shared/Map/Controller/MapAltitudeInterceptSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapController.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapPointerSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapTerrainModeSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAutoNorthUpSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapSymbolShowSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapTrackVectorSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapWindDataShowSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapFuelRingSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAltitudeInterceptSetting.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
@@ -2658,14 +2414,19 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/TouchScrollController.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/TouchDynamicSelectionListWindow.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/MapElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/AS3000_Common.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSelectionListWindow.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherSelection.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Vertical/AS3000_TSC_Vertical.js"></script>
