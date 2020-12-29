@@ -14,6 +14,8 @@ class AS3000_MFD extends NavSystem {
 
         this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
+
+        this._citySearcher = new WT_CitySearcher(AS3000_MFD.CITY_DATA_PATH);
     }
 
     get IsGlassCockpit() { return true; }
@@ -51,6 +53,15 @@ class AS3000_MFD extends NavSystem {
         return this._fpm;
     }
 
+    /**
+     * @readonly
+     * @property {WT_CitySearcher} citySearcher
+     * @type {WT_CitySearcher}
+     */
+    get citySearcher() {
+        return this._citySearcher;
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -61,7 +72,7 @@ class AS3000_MFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new AS3000_MFD_NavDataBar(this.flightPlanManager)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
-                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager))
+                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager, this.citySearcher))
             ]),
         ];
 
@@ -97,6 +108,7 @@ class AS3000_MFD extends NavSystem {
     }
 }
 AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL = 2; // seconds
+AS3000_MFD.CITY_DATA_PATH = "/WTg3000/SDK/Data/cities.json";
 
 class AS3000_MFD_NavDataField {
     constructor(rootElement) {
