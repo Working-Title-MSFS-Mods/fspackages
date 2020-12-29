@@ -725,18 +725,73 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
+
+                    if (this.flightPlanManager && this.bIsFlightPlanVisible) {
+                        if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
+                            this.navMap.mapElements.push(this.tmpFlightPlanElement);
+                            let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
+                            if (lTmpFlightPlan > 1) {
+                                for (let i = 0; i < lTmpFlightPlan; i++) {
+                                    let waypoint = this.flightPlanManager.getWaypoint(i, 1);
+                                    if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
+                                        if (waypoint.getSvgElement(this.navMap.index)) {
+                                            if (!this.navMap.mapElements.find(w => {
+                                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                            })) {
+                                                waypoint.isInFlightPlan = true;
+                                                this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        let l = this.flightPlanManager.getWaypointsCount();
+                        if (l > 1) {
+
+                            this.navMap.mapElements.push(this.flightPlanElement);
+                            this.navMap.mapElements.push(...this.updateFplnWaypoints());
+                        }
+
+                        const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
+                        if (todDist > 0) {
+                            this.updateTodWaypoint();
+                            if (this._todWaypoint) {
+                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
+                            }
+                        }
+
+                        if (this.flightPlanManager.getIsDirectTo()) {
+                            this.directToElement.llaRequested = this.flightPlanManager.getDirecToOrigin();
+                            this.directToElement.targetWaypoint = this.flightPlanManager.getDirectToTarget();
+                            this.directToElement.planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
+                            this.navMap.mapElements.push(this.directToElement);
+                        }
+                        if (this.tmpDirectToElement) {
+                            this.navMap.mapElements.push(this.tmpDirectToElement);
+                        }
+                        this.navMap.mapElements.push(...this.backOnTracks);
+                        if ((SimVar.GetSimVarValue("L:FLIGHTPLAN_USE_DECEL_WAYPOINT", "number") === 1) && this.flightPlanManager.decelWaypoint) {
+                            this.navMap.mapElements.push(this.flightPlanManager.decelWaypoint.getSvgElement(this.navMap.index));
+                        }
+                        if (this.debugApproachFlightPlanElement) {
+                            this.navMap.mapElements.push(this.debugApproachFlightPlanElement);
+                        }
+                    }
+
                     let margin = 0.05;
                     if (this.showAirports) {
                         for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
                             let airport = this.airportLoader.waypoints[i];
                             if (airport && airport.infos instanceof AirportInfo) {
                                 if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                        this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
+                                    this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
                                 }
                             }
                         }
                     }
-                    if (this.showVORs) { 
+                    if (this.showVORs) {
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                             let vor = this.vorLoader.waypoints[i];
                             if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
@@ -793,61 +848,8 @@ class MapInstrument extends ISvgMapRootElement {
                             this.navMap.mapElements.push(this.rangeCompassElement);
                         }
                     }
-                    if (this.flightPlanManager && this.bIsFlightPlanVisible) {
-                        if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
-                            this.navMap.mapElements.push(this.tmpFlightPlanElement);
-                            let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
-                            if (lTmpFlightPlan > 1) {
-                                for (let i = 0; i < lTmpFlightPlan; i++) {
-                                    let waypoint = this.flightPlanManager.getWaypoint(i, 1);
-                                    if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
-                                        if (waypoint.getSvgElement(this.navMap.index)) {
-                                            if (!this.navMap.mapElements.find(w => {
-                                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
-                                            })) {
-                                                waypoint.isInFlightPlan = true;
-                                                this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        let l = this.flightPlanManager.getWaypointsCount();
-                        if (l > 1) {
-
-                            this.navMap.mapElements.push(this.flightPlanElement);
-                            this.navMap.mapElements.push(...this.updateFplnWaypoints());
-                        }
-
-                        const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
-                        if (todDist > 0) {
-                            this.updateTodWaypoint();
-                            if (this._todWaypoint) {
-                                this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
-                            }
-                        }
-
-                        if (this.flightPlanManager.getIsDirectTo()) {
-                            this.directToElement.llaRequested = this.flightPlanManager.getDirecToOrigin();
-                            this.directToElement.targetWaypoint = this.flightPlanManager.getDirectToTarget();
-                            this.directToElement.planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-                            this.navMap.mapElements.push(this.directToElement);
-                        }
-                        if (this.tmpDirectToElement) {
-                            this.navMap.mapElements.push(this.tmpDirectToElement);
-                        }
-                        this.navMap.mapElements.push(...this.backOnTracks);
-                        if ((SimVar.GetSimVarValue("L:FLIGHTPLAN_USE_DECEL_WAYPOINT", "number") === 1) && this.flightPlanManager.decelWaypoint) {
-                            this.navMap.mapElements.push(this.flightPlanManager.decelWaypoint.getSvgElement(this.navMap.index));
-                        }
-                        if (this.debugApproachFlightPlanElement) {
-                            this.navMap.mapElements.push(this.debugApproachFlightPlanElement);
-                        }
-                    }
-                    this.navMap.mapElements.push(...this.maskElements);
-                    this.navMap.mapElements.push(...this.topOfCurveElements);
+                    // this.navMap.mapElements.push(...this.maskElements);
+                    // this.navMap.mapElements.push(...this.topOfCurveElements);
                     this.navMap.mapElements = this.navMap.mapElements.sort((a, b) => { return b.sortIndex - a.sortIndex; });
                 }
                 else {
