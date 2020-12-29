@@ -295,19 +295,21 @@ class WT_ProcedureLeg {
     _initFromData(data) {
         this._altitudeDescription = data.altDesc;
         switch (data.altDesc) {
+            case WT_ProcedureLeg.AltitudeDescription.NONE:
+                this._altitudeConstraint = WT_AltitudeConstraint.NO_CONSTRAINT;
+                break;
             case WT_ProcedureLeg.AltitudeDescription.AT:
-                this._altitudeCeiling = new WT_NumberUnit(data.altitude1, WT_Unit.METER);
-                this._altitudeFloor = this._altitudeCeiling;
+                this._altitudeConstraint = new WT_AtAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
-            case WT_ProcedureLeg.AltitudeDescription.ABOVE:
-                this._altitudeFloor = new WT_NumberUnit(data.altitude1, WT_Unit.METER);
+            case WT_ProcedureLeg.AltitudeDescription.AT_OR_ABOVE:
+                this._altitudeConstraint = new WT_AtOrAboveAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
-            case WT_ProcedureLeg.AltitudeDescription.BELOW:
-                this._altitudeCeiling = new WT_NumberUnit(data.altitude1, WT_Unit.METER);
+            case WT_ProcedureLeg.AltitudeDescription.AT_OR_BELOW:
+                this._altitudeConstraint = new WT_AtOrBelowAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
-            case WT_ProcedureLeg.AltitudeDescription.ABOVE_BELOW:
-                this._altitudeCeiling = new WT_NumberUnit(data.altitude1, WT_Unit.METER);
-                this._altitudeFloor = new WT_NumberUnit(data.altitude2, WT_Unit.METER);
+            case WT_ProcedureLeg.AltitudeDescription.BETWEEN:
+                this._altitudeConstraint = new WT_AtAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude2), WT_ProcedureLeg._tempMeter2.set(data.altitude1));
+                break;
         }
     }
 
@@ -340,20 +342,11 @@ class WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} altitudeCeiling - the altitude ceiling of this leg, if one exists.
-     * @type {WT_NumberUnitReadOnly}
+     * @property {WT_AltitudeConstraint} altitudeConstraint - the altitude constraint of this leg.
+     * @type {WT_AltitudeConstraint}
      */
-    get altitudeCeiling() {
-        return this._altitudeCeiling ? this._altitudeCeiling.readonly() : undefined;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnitReadOnly} altitudeFloor - the altitude floor of this leg, if one exists.
-     * @type {WT_NumberUnitReadOnly}
-     */
-    get altitudeFloor() {
-        return this._altitudeFloor ? this._altitudeFloor.readonly() : undefined;
+    get altitudeConstraint() {
+        return this._altitudeConstraint;
     }
 
     /**
@@ -376,6 +369,8 @@ class WT_ProcedureLeg {
         return Promise.reject();
     }
 }
+WT_ProcedureLeg._tempMeter1 = WT_Unit.METER.createNumber(0);
+WT_ProcedureLeg._tempMeter2 = WT_Unit.METER.createNumber(0);
 /**
  * @enum {Number}
  */
@@ -396,9 +391,9 @@ WT_ProcedureLeg.Type = {
 WT_ProcedureLeg.AltitudeDescription = {
     NONE: 0,
     AT: 1,
-    ABOVE: 2,
-    BELOW: 3,
-    ABOVE_BELOW: 4
+    AT_OR_ABOVE: 2,
+    AT_OR_BELOW: 3,
+    BETWEEN: 4
 };
 
 /**
