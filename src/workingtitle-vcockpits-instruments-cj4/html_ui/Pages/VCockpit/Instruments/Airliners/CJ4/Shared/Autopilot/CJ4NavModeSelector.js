@@ -404,16 +404,25 @@ class CJ4NavModeSelector {
         this.currentVerticalActiveState = VerticalNavModeState.TO;
       }
       else {
+        if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+          console.log("is approach");
+          if (this.approachMode === WT_ApproachType.ILS) {
+            SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
+          }
+        }
         if (this.isVNAVOn) {
           this.isVNAVOn = false;
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
           SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
           SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
           SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         }
         this.currentVerticalActiveState = VerticalNavModeState.GA;
       }
+      this.currentLateralActiveState = LateralNavModeState.ROLL;
       this.setProperVerticalArmedStates();
     }
+
 
     // if (Math.round(this.pitchRef) == -10) { //TOGA BUTTON PUSHED?
       
