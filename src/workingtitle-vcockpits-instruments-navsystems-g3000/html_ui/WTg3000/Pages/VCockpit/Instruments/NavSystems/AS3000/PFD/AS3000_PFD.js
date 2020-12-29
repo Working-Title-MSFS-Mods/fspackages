@@ -13,6 +13,8 @@ class AS3000_PFD extends NavSystem {
 
         this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
+
+        this._citySearcher = new WT_CitySearcher(AS3000_PFD.CITY_DATA_PATH);
     }
 
     get IsGlassCockpit() { return true; }
@@ -50,6 +52,15 @@ class AS3000_PFD extends NavSystem {
         return this._fpm;
     }
 
+    /**
+     * @readonly
+     * @property {WT_CitySearcher} citySearcher
+     * @type {WT_CitySearcher}
+     */
+    get citySearcher() {
+        return this._citySearcher;
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.mainPage = new AS3000_PFD_MainPage();
@@ -59,7 +70,7 @@ class AS3000_PFD extends NavSystem {
             ]),
         ];
         this.warnings = new PFD_Warnings();
-        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT, this.citySearcher)));
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this.warnings));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
@@ -129,6 +140,7 @@ class AS3000_PFD extends NavSystem {
     }
 }
 AS3000_PFD.FLIGHT_PLAN_SYNC_INTERVAL = 2;
+AS3000_PFD.CITY_DATA_PATH = "/WTg3000/SDK/Data/cities.json";
 
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
     constructor(_name = "", _callback = null, _statusCB = null, _valueCB = null, _stateCB = null) {
@@ -167,13 +179,13 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
 }
 
 class AS3000_PFD_InnerMap extends NavSystemElement {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher) {
         super();
 
         this.gpsWasInReversionaryMode = false;
         this.enabled = true;
 
-        this._navMap = new WT_G3x5NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, AS3000_PFD_InnerMap.LAYER_OPTIONS);
     }
 
     /**

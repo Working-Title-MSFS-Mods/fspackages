@@ -1,11 +1,12 @@
 class WT_G3x5NavMap {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, layerOptions = WT_G3x5NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, layerOptions = WT_G3x5NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._layerOptions = layerOptions;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
+        this._citySearcher = citySearcher;
     }
 
     /**
@@ -114,7 +115,7 @@ class WT_G3x5NavMap {
 
         this.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
-        this.view.addLayer(new WT_MapViewCityLayer(labelManager));
+        this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5MapViewFlightPlanLegStyleChooser()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));

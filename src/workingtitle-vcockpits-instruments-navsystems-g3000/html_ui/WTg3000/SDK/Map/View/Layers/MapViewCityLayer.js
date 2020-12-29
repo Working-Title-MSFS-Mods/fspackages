@@ -1,5 +1,12 @@
 class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
-    constructor(labelManager, className = WT_MapViewCityLayer.CLASS_DEFAULT, configName = WT_MapViewCityLayer.CONFIG_NAME_DEFAULT) {
+    /**
+     *
+     * @param {WT_CitySearcher} citySearcher
+     * @param {WT_MapViewTextLabelManager} labelManager
+     * @param {String} [className]
+     * @param {String} [configName]
+     */
+    constructor(citySearcher, labelManager, className = WT_MapViewCityLayer.CLASS_DEFAULT, configName = WT_MapViewCityLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._labelManager = labelManager;
@@ -23,7 +30,8 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         this.addSubLayer(this._cityLayers[1]);
         this.addSubLayer(this._cityLayers[0]);
 
-        this._searcher = new WT_CitySearcher(WT_MapViewCityLayer.DATA_PATH);
+        this._searcher = citySearcher;
+
         /**
          * @type {WT_MapViewRenderQueue[]}
          */
@@ -304,7 +312,6 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewCityLayer.CLASS_DEFAULT = "cityLayer";
 WT_MapViewCityLayer.CONFIG_NAME_DEFAULT = "cities";
-WT_MapViewCityLayer.DATA_PATH = "/WTg3000/SDK/Data/cities.json";
 WT_MapViewCityLayer.LABEL_CACHE_SIZE = 1000;
 WT_MapViewCityLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewCityLayer.REDRAW_DELAY = 500 // ms
