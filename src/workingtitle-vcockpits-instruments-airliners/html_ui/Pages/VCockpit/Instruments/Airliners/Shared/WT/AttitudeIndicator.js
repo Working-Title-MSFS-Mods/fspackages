@@ -1607,7 +1607,8 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 }
             }
             else {
-                this.crossPointersGroup.setAttribute("display", "none");
+                this.crossPointersPitch.setAttribute("display", "none");
+                this.crossPointersBank.setAttribute("display", "none");
                 this.cj4_FlightDirector.setAttribute("display", "none");
             }
         }
