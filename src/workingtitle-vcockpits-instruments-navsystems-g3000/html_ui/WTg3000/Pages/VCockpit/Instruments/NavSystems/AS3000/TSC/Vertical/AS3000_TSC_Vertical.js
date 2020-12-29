@@ -54,6 +54,16 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         this.arrowLineWidth = lineWidth;
         this.arrowHeadWidth = headWidth;
     }
+
+    _initMFDPaneControlID() {
+        this._mfdHalfPaneControlID = this.urlConfig.index === 1 ? 0 : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT;
+    }
+
+    _initMFDPaneSelectDisplay() {
+    }
+
+    _updateMFDPaneSelectDisplay() {
+    }
 }
 
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
@@ -130,7 +140,7 @@ class AS3000_TSC_Vertical_AirspeedReference extends AS3000_TSC_AirspeedReference
 class AS3000_TSC_Vertical_SpeedBugs extends AS3000_TSC_SpeedBugs {
     constructor() {
         super(...arguments);
-        this.tabbedContent = new AS3000_TSC_TabbedContent(this);
+        this.tabbedContent = new WT_TSCTabbedContent(this);
     }
 
     initAirspeedReference(valueButton, statusButton, refSpeed, name, tab) {
