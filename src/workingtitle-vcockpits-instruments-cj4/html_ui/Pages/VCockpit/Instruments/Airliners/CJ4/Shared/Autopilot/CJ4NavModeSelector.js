@@ -226,9 +226,10 @@ class CJ4NavModeSelector {
     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
 
     switch (this.currentVerticalActiveState) {
-      case VerticalNavModeState.PTCH:
       case VerticalNavModeState.TO:
       case VerticalNavModeState.GA:
+        SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
+      case VerticalNavModeState.PTCH:
       case VerticalNavModeState.FLC:
       case VerticalNavModeState.ALTC:
       case VerticalNavModeState.ALT:
@@ -280,12 +281,12 @@ class CJ4NavModeSelector {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
     }
 
-
     switch (this.currentVerticalActiveState) {
-      case VerticalNavModeState.PTCH:
-      case VerticalNavModeState.VS:
       case VerticalNavModeState.TO:
       case VerticalNavModeState.GA:
+        SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
+      case VerticalNavModeState.PTCH:
+      case VerticalNavModeState.VS:
       case VerticalNavModeState.ALTC:
       case VerticalNavModeState.ALT:
         SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
@@ -397,6 +398,22 @@ class CJ4NavModeSelector {
    */
   handleTogaChanged() {
     
+    if (this._inputDataStates.toga.state) {
+      if (Simplane.getIsGrounded()) { //PLANE IS ON THE GROUND?
+        console.log("on ground setting TO mode");
+        this.currentVerticalActiveState = VerticalNavModeState.TO;
+      }
+      else {
+        if (this.isVNAVOn) {
+          this.isVNAVOn = false;
+          SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
+          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+          SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        }
+        this.currentVerticalActiveState = VerticalNavModeState.GA;
+      }
+      this.setProperVerticalArmedStates();
+    }
 
     // if (Math.round(this.pitchRef) == -10) { //TOGA BUTTON PUSHED?
       
@@ -753,6 +770,11 @@ class CJ4NavModeSelector {
     this.isAltitudeLocked = this._inputDataStates.altLocked.state;
 
     if (this.isAltitudeLocked) {
+
+      if (this.currentVerticalActiveState === VerticalNavModeState.TO || this.currentVerticalActiveState === VerticalNavModeState.GA) {
+        SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
+      }
+
       this.currentVerticalActiveState = VerticalNavModeState.ALTC;
 
       Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
