@@ -1072,7 +1072,7 @@ class WaypointLoader {
         if (!this._isLoadingItems) {
             this.maxItemsSearchCount = Math.min(this.maxItemsSearchCount, this.waypointsCountLimit);
             while (this.waypoints.length > this.waypointsCountLimit) {
-                this.waypoints.splice(0, this.waypointsCountLimit-this.waypoints.length);
+                this.waypoints.splice(0, 1);
             }
         }
         if (!this._isLoadingItems) {

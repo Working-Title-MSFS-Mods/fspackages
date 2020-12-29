@@ -427,12 +427,16 @@ class MapInstrument extends ISvgMapRootElement {
             this.drawCounter = 0;
             this.airportLoader = new AirportLoader(this.instrument, false);
             this.airportLoader.maxItemsSearchCount = 20;
+            this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.intersectionLoader = new IntersectionLoader(this.instrument);
             this.intersectionLoader.maxItemsSearchCount = 20;
+            this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.vorLoader = new VORLoader(this.instrument);
             this.vorLoader.maxItemsSearchCount = 20;
+            this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.ndbLoader = new NDBLoader(this.instrument);
             this.ndbLoader.maxItemsSearchCount = 20;
+            this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.nearestAirspacesLoader = new NearestAirspacesLoader(this.instrument);
             this.nearestAirspacesLoader.onNewAirspaceAddedCallback = (airspace) => {
                 if (airspace) {
@@ -624,12 +628,11 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.navMap.lastCenterCoordinates)
                     this.bingMap.setParams({ lla: this.navMap.lastCenterCoordinates, radius: bingRadius });
             }
-            if (this.navMap.centerCoordinates) {
-                let centerCoordinates = this.navMap.centerCoordinates;
+            if (typeof CJ4_MFD === 'function' && planeLla && (this.drawCounter % 2 === 1)) {
+                let centerCoordinates = planeLla;
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
-                    this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.airportLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.airportLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.airportLoader.update();
@@ -637,7 +640,6 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showIntersections) {
                     this.intersectionLoader.searchLat = centerCoordinates.lat;
                     this.intersectionLoader.searchLong = centerCoordinates.long;
-                    this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.intersectionLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.intersectionLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.intersectionLoader.update();
@@ -645,7 +647,6 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showVORs) {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
-                    this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.vorLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.vorLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.vorLoader.update();
@@ -653,7 +654,6 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.showNDBs) {
                     this.ndbLoader.searchLat = centerCoordinates.lat;
                     this.ndbLoader.searchLong = centerCoordinates.long;
-                    this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
                     this.ndbLoader.currentMapAngularHeight = this.navMap.angularHeight;
                     this.ndbLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.ndbLoader.update();
