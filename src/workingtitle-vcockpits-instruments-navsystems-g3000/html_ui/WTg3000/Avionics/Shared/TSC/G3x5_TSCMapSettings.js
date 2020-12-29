@@ -721,7 +721,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
                 callback: this._setRangeSetting.bind(this, i),
                 elementConstructor: elementHandler,
                 elementUpdater: elementHandler,
-                currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID(), this._rangeKeys[i]),
+                currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._rangeKeys[i]),
                 homePageGroup: this.context.homePageGroup,
                 homePageName: this.context.homePageName
             };
