@@ -4,7 +4,8 @@ class WT_MapController extends WT_DataStoreController {
 
         this._view = view;
 
-        WTDataStore.addListener(this._onSyncIDChanged.bind(this), `${this.id}.${WT_MapController.SYNC_ID_PENDING_KEY}`);
+        WTDataStore.addListener(this._onSyncPendingChanged.bind(this), `${this.id}.${WT_MapController.SYNC_ID_PENDING_KEY}`);
+        WTDataStore.addListener(this._onSyncActiveChanged.bind(this), `${this.id}.${WT_MapController.SYNC_ID_ACTIVE_KEY}`);
     }
 
     /**
@@ -16,7 +17,7 @@ class WT_MapController extends WT_DataStoreController {
         return this._view;
     }
 
-    _onSyncIDChanged(key, newValue, oldValue) {
+    _onSyncPendingChanged(key, newValue, oldValue) {
         let syncID = newValue;
         if (syncID) {
             let source = WT_MapController._getSyncSource(syncID);
@@ -31,8 +32,24 @@ class WT_MapController extends WT_DataStoreController {
         WTDataStore.set(`${this.id}.${WT_MapController.SYNC_ID_ACTIVE_KEY}`, syncID);
     }
 
+    _onSyncActiveChanged(key, newValue, oldValue) {
+        let syncID = newValue;
+        if (syncID) {
+            let source = WT_MapController._getSyncSource(syncID);
+            if (source !== this.id) {
+                for (let setting of this._settings) {
+                    if (setting.isSyncable) {
+                        setting.syncFrom(syncID);
+                    }
+                }
+            }
+        }
+    }
+
     _onSyncRecordChanged(syncID, setting, key, newValue, oldValue) {
-        setting.syncFrom(syncID);
+        if (WT_MapController._getActiveSyncID(this.id) === syncID) {
+            setting.syncFrom(syncID);
+        }
     }
 
     _registerSyncListenerHelper(root, current) {
@@ -98,10 +115,10 @@ class WT_MapController extends WT_DataStoreController {
     static setSyncMode(controllerID, syncMode, sourceID) {
         let syncID = WT_MapController.SyncID[syncMode];
         WTDataStore.set(`${controllerID}.${WT_MapController.SYNC_MODE_KEY}`, syncMode);
-        WTDataStore.set(`${controllerID}.${WT_MapController.SYNC_ID_PENDING_KEY}`, syncID);
         if (syncMode !== WT_MapController.SyncMode.OFF) {
             WTDataStore.set(`${syncID}.${WT_MapController.SYNC_SOURCE_KEY}`, sourceID);
         }
+        WTDataStore.set(`${controllerID}.${WT_MapController.SYNC_ID_PENDING_KEY}`, syncID);
     }
 }
 WT_MapController.SYNC_MODE_KEY = "WT_Map_Sync_Mode";
@@ -173,11 +190,7 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @param {*} value - the new value.
      */
     setValue(value) {
-        let oldValue = this.getValue();
         WT_MapController.setSettingValue(this._controller.id, this.key, value, this.isSyncable);
-        if (oldValue !== value) {
-            this._onValueChanged(value, oldValue);
-        }
     }
 
     /**
@@ -185,12 +198,8 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @param {String} syncID - the ID of the sync record from which to copy.
      */
     syncFrom(syncID) {
-        let oldValue = this.getValue();
         let newValue = WT_DataStoreController.getSettingValue(syncID, this.key, this.defaultValue);
         WTDataStore.set(this._fullDataStoreKey, newValue);
-        if (oldValue !== newValue) {
-            this._onValueChanged(newValue, oldValue);
-        }
     }
 
     /**
