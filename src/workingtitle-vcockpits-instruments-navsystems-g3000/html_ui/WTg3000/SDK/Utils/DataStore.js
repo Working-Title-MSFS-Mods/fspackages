@@ -74,7 +74,7 @@ class WTDataStore {
         let oldValue = GetStoredData(storeKey);
         SetStoredData(storeKey, stringValue);
         window.localStorage.setItem(`WTDataStore.${storeKey}`, JSON.stringify(value));
-        if (value !== oldValue) {
+        if (stringValue !== oldValue) {
             oldValue = JSON.parse(oldValue);
             for (let entry of WTDataStore.listeners) {
                 if (key.startsWith(entry.prefix)) {
