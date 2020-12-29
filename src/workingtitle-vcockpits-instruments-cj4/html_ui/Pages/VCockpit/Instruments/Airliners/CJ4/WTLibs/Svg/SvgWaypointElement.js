@@ -127,7 +127,7 @@ class SvgWaypointElement extends SvgMapElement {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
             }
             else if (!isInFpln) {
-                console.log("create " + this.source.ident + " " + this.imageFileName());
+                // console.log("create " + this.source.ident + " " + this.imageFileName());
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg") + "?cb=4");
             } else {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
@@ -294,7 +294,7 @@ class SvgWaypointTextElement extends SvgMapElement {
 
     createDraw(map) {
         let fontSize = this.waypointElement.getLabelFontSize(map);
-        let text = this.waypointElement.ident + "/3473";
+        let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
         let ctx = c.getContext("2d", { alpha: false });
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
@@ -318,7 +318,7 @@ class SvgWaypointTextElement extends SvgMapElement {
             this._needRepaint = true;
         }
         let fontSize = this.waypointElement.getLabelFontSize(map);
-        let text = this.waypointElement.ident + "/3473";
+        let text = this.waypointElement.ident;
         let canvas;
         if (!this._label) {
             this._label = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
