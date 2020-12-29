@@ -203,7 +203,6 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        console.log("takeoff mode: " + Simplane.getAutoPilotTOGAActive());
 
         let now = performance.now();
         let dt = now - this._lastUpdateTime;
