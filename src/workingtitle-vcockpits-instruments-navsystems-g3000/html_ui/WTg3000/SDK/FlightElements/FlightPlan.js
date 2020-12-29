@@ -14,7 +14,7 @@ class WT_FlightPlan {
         this._originLeg = null;
         this._destinationLeg = null;
 
-        this._enroute = new WT_FlightPlanSequence();
+        this._enroute = new WT_FlightPlanEnroute();
 
         /**
          * @type {WT_FlightPlanDeparture}
@@ -1408,6 +1408,12 @@ class WT_FlightPlanAirwaySequence extends WT_FlightPlanSequence {
 
     copy() {
         return new WT_FlightPlanAirwaySequence(this.airway, this._copyElements(), null, this._segment);
+    }
+}
+
+class WT_FlightPlanEnroute extends WT_FlightPlanSequence {
+    constructor(legs, parent) {
+        super(legs, parent, WT_FlightPlan.Segment.ENROUTE);
     }
 }
 
