@@ -1,11 +1,12 @@
 class WT_G3x5_MFDMainPane extends NavSystemElement {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher) {
         super();
 
         this._instrumentID = instrumentID;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._flightPlanManager = flightPlanManager;
+        this._citySearcher = citySearcher;
 
         this._mode = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL;
 
@@ -53,12 +54,12 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         /**
          * @type {WT_G3x5_MFDHalfPane}
          */
-        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, "LEFT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager);
+        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, "LEFT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher);
 
         /**
          * @type {WT_G3x5_MFDHalfPane}
          */
-        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, "RIGHT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager);
+        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, "RIGHT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher);
 
         this._controller.init();
         this._controller.update();
@@ -165,7 +166,7 @@ WT_G3000MFDMainPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
 customElements.define("mfd-mainpane", WT_G3000MFDMainPaneHTMLElement);
 
 class WT_G3x5_MFDHalfPane {
-    constructor(htmlElement, instrumentID, halfPaneID, icaoWaypointFactory, icaoSearchers, flightPlanManager) {
+    constructor(htmlElement, instrumentID, halfPaneID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher) {
         this._htmlElement = htmlElement;
 
         let id = `${instrumentID}-${halfPaneID}`;
@@ -178,7 +179,7 @@ class WT_G3x5_MFDHalfPane {
         this._controlSetting.addListener(this._onControlSettingChanged.bind(this));
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
 
-        this._navMap = new WT_G3x5NavMap(id, icaoWaypointFactory, icaoSearchers, flightPlanManager);
+        this._navMap = new WT_G3x5NavMap(id, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher);
         this._weatherRadar = new WT_G3x5WeatherRadar(id);
 
         this._displayMode;
