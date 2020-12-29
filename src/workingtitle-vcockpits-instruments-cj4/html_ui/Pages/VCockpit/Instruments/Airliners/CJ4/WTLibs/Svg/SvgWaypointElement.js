@@ -217,9 +217,6 @@ class SvgWaypointElement extends SvgMapElement {
                         this._alpha = a - 45;
                     }
                 }
-                if (isFinite(this._alpha)) {
-                    this._image.setAttribute("transform", "rotate(" + this._alpha.toFixed(0) + " " + this.x.toFixed(0) + " " + this.y.toFixed(0) + ")");
-                }
             }
         }
         this._label.updateDraw(map);
@@ -282,7 +279,7 @@ class SvgWaypointTextElement extends SvgMapElement {
                 let y = (this.waypointElement.y - iconSize * 0.5);
 
                 if (this._label) {
-                    let textX = (x + iconSize * 0.5 - this._textWidth * 0.5 + map.config.waypointLabelDistanceX + 6);
+                    let textX = (x + map.config.waypointLabelDistanceX - 10);
                     let textY = y - map.config.waypointLabelDistance + 4;
                     this._label.setAttribute("x", textX);
                     this._label.setAttribute("y", textY);
@@ -297,7 +294,7 @@ class SvgWaypointTextElement extends SvgMapElement {
 
     createDraw(map) {
         let fontSize = this.waypointElement.getLabelFontSize(map);
-        let text = this.waypointElement.ident;
+        let text = this.waypointElement.ident + "/3473";
         let c = document.createElement("canvas");
         let ctx = c.getContext("2d", { alpha: false });
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
@@ -321,7 +318,7 @@ class SvgWaypointTextElement extends SvgMapElement {
             this._needRepaint = true;
         }
         let fontSize = this.waypointElement.getLabelFontSize(map);
-        let text = this.waypointElement.ident;
+        let text = this.waypointElement.ident + "/3473";
         let canvas;
         if (!this._label) {
             this._label = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
@@ -369,10 +366,9 @@ class SvgWaypointTextElement extends SvgMapElement {
         else {
             context.fillStyle = "magenta";
         }
+        context.textAlign = "start";
         context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
-        context.strokeStyle = map.config.waypointLabelStrokeColor;
         context.lineWidth = map.config.waypointLabelStrokeWidth * 2;
-        context.strokeText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
         context.fillText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
     }
 }
