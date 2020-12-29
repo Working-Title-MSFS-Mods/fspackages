@@ -15,6 +15,7 @@ class WT_FlightPlan {
         this._destinationLeg = null;
 
         this._enroute = new WT_FlightPlanEnroute();
+        this._enroute._setFlightPlan(this);
 
         /**
          * @type {WT_FlightPlanDeparture}
@@ -228,9 +229,13 @@ class WT_FlightPlan {
         eventData.newOrigin = origin;
         if (this._originLeg) {
             this._originLeg._index = -1;
+            this._originLeg._setFlightPlan(null);
         }
         this._origin = origin;
-        this._originLeg = origin ? new WT_FlightPlanWaypointFixLeg(origin, null, WT_FlightPlan.Segment.ORIGIN) : null;
+        this._originLeg = origin ? new WT_FlightPlanOriginDest(origin, null, WT_FlightPlan.Segment.ORIGIN) : null;
+        if (origin) {
+            this._originLeg._setFlightPlan(this);
+        }
     }
 
     _changeDeparture(departure, eventData) {
@@ -247,8 +252,12 @@ class WT_FlightPlan {
             for (let leg of this._departure.legs()) {
                 leg._index = -1;
             }
+            this._departure._setFlightPlan(null);
         }
         this._departure = departure;
+        if (departure) {
+            this._departure._setFlightPlan(this);
+        }
     }
 
     _changeArrival(arrival, eventData) {
@@ -265,8 +274,12 @@ class WT_FlightPlan {
             for (let leg of this._arrival.legs()) {
                 leg._index = -1;
             }
+            this._arrival._setFlightPlan(null);
         }
         this._arrival = arrival;
+        if (arrival) {
+            this._arrival._setFlightPlan(this);
+        }
     }
 
     _changeApproach(approach, eventData) {
@@ -283,8 +296,12 @@ class WT_FlightPlan {
             for (let leg of this._approach.legs()) {
                 leg._index = -1;
             }
+            this._approach._setFlightPlan(null);
         }
         this._approach = approach;
+        if (approach) {
+            this._approach._setFlightPlan(this);
+        }
     }
 
     _changeDestination(destination, eventData) {
@@ -299,9 +316,13 @@ class WT_FlightPlan {
         eventData.newDestination = destination;
         if (this._destinationLeg) {
             this._destinationLeg._index = -1;
+            this._destinationLeg._setFlightPlan(null);
         }
         this._destination = destination;
-        this._destinationLeg = destination ? new WT_FlightPlanWaypointFixLeg(destination, WT_FlightPlan.Segment.DESTINATION) : null;
+        this._destinationLeg = destination ? new WT_FlightPlanOriginDest(destination, WT_FlightPlan.Segment.DESTINATION) : null;
+        if (destination) {
+            this._destinationLeg._setFlightPlan(this);
+        }
     }
 
     /**
@@ -695,7 +716,9 @@ class WT_FlightPlan {
             eventData.elementsRemoved[segmentElement.segment] = [];
         }
         for (let i = index; i < index + count && i < segmentElement.length(); i++) {
-            eventData.elementsRemoved[segmentElement.segment].push({element: segmentElement.getElement(i), index: i});
+            let removed = segmentElement.getElement(i);
+            removed._index = -1;
+            eventData.elementsRemoved[segmentElement.segment].push({element: removed, index: i});
         }
         segmentElement._removeByIndex(index, count);
     }
@@ -882,6 +905,16 @@ class WT_FlightPlan {
         this._fireEvent(eventData);
     }
 
+    _onLegAltitudeConstraintChanged(leg, newValue, oldValue) {
+        if (!newValue.equals(oldValue)) {
+            this._fireEvent({
+                type: WT_FlightPlanEvent.LEG_ALTITUDE_CHANGED,
+                oldAltitudeConstraint: oldValue,
+                newAltitudeConstraint: newValue
+            });
+        }
+    }
+
     _fireEvent(eventData) {
         if (eventData.types === 0) {
             return;
@@ -989,6 +1022,14 @@ class WT_FlightPlanEvent {
     get elementsRemoved() {
         return this._data.elementsRemoved;
     }
+
+    get oldAltitudeConstraint() {
+        return this._data.oldAltitudeConstraint;
+    }
+
+    get newAltitudeConstraint() {
+        return this._data.newAltitudeConstraint;
+    }
 }
 /**
  * @enum {Number}
@@ -1017,7 +1058,7 @@ class WT_FlightPlanElement {
      */
     constructor(parent, segment) {
         this._parent = null;
-        this._root = null;
+        this._flightPlan = null;
         this._segment = (typeof segment === "number") ? segment : null;
         this._setParent(parent);
         /**
@@ -1039,11 +1080,11 @@ class WT_FlightPlanElement {
 
     /**
      * @readonly
-     * @property {WT_FlightPlanElement} root
-     * @type {WT_FlightPlanElement}
+     * @property {WT_FlightPlan} flightPlan
+     * @type {WT_FlightPlan}
      */
-    get root() {
-        return this._root;
+    get flightPlan() {
+        return this.parent ? this.parent.flightPlan : this._flightPlan;
     }
 
     /**
@@ -1129,8 +1170,10 @@ class WT_FlightPlanElement {
 }
 
 class WT_FlightPlanLeg extends WT_FlightPlanElement {
-    constructor(parent, segment) {
+    constructor(parent, segment, altitudeConstraint) {
         super(parent, segment);
+
+        this._altitudeConstraint = altitudeConstraint ? altitudeConstraint : WT_AltitudeConstraint.NO_CONSTRAINT;
         this._desiredTrack;
         this._index = -1;
     }
@@ -1173,11 +1216,30 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
     }
 
     /**
-     * @readonly
-     * @property {Number} desiredTrack
-     * @type {Number}
+     *
+     * @returns {WT_AltitudeConstraint}
      */
-    get desiredTrack() {
+    getAltitudeConstraint() {
+        return this._altitudeConstraint;
+    }
+
+    /**
+     *
+     * @param {WT_AltitudeConstraint} constraint
+     */
+    setAltitudeConstraint(constraint) {
+        let old = this._altitudeConstraint;
+        this._altitudeConstraint = constraint;
+        if (this.flightPlan) {
+            this.flightPlan._onLegAltitudeConstraintChanged(this, constraint, old);
+        }
+    }
+
+    /**
+     *
+     * @returns {Number}
+     */
+    desiredTrack() {
         return this._desiredTrack;
     }
 
@@ -1235,6 +1297,8 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
     constructor(procedureLeg, fix, parent, segment) {
         super(fix, parent, segment);
         this._procedureLeg = procedureLeg;
+
+        this.setAltitudeConstraint(procedureLeg.altitudeConstraint);
     }
 
     /**
@@ -1261,6 +1325,12 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
 
     equals(other) {
         return super.equals(other) && (other instanceof WT_FlightPlanProcedureLeg);
+    }
+}
+
+class WT_FlightPlanOriginDest extends WT_FlightPlanWaypointFixLeg {
+    _setFlightPlan(flightPlan) {
+        this._flightPlan = flightPlan;
     }
 }
 
@@ -1411,13 +1481,19 @@ class WT_FlightPlanAirwaySequence extends WT_FlightPlanSequence {
     }
 }
 
-class WT_FlightPlanEnroute extends WT_FlightPlanSequence {
+class WT_FlightPlanSegment extends WT_FlightPlanSequence {
+    _setFlightPlan(flightPlan) {
+        this._flightPlan = flightPlan;
+    }
+}
+
+class WT_FlightPlanEnroute extends WT_FlightPlanSegment {
     constructor(legs, parent) {
         super(legs, parent, WT_FlightPlan.Segment.ENROUTE);
     }
 }
 
-class WT_FlightPlanProcedure extends WT_FlightPlanSequence {
+class WT_FlightPlanProcedureSegment extends WT_FlightPlanSegment {
     constructor(procedure, legs, parent, segment) {
         super(legs, parent, segment);
         this._procedure = procedure;
@@ -1433,7 +1509,7 @@ class WT_FlightPlanProcedure extends WT_FlightPlanSequence {
     }
 }
 
-class WT_FlightPlanDepartureArrival extends WT_FlightPlanProcedure {
+class WT_FlightPlanDepartureArrival extends WT_FlightPlanProcedureSegment {
     constructor(procedure, runwayTransitionIndex, enrouteTransitionIndex, legs, parent, segment) {
         super(procedure, legs, parent, segment);
 
@@ -1488,7 +1564,7 @@ class WT_FlightPlanArrival extends WT_FlightPlanDepartureArrival {
     }
 }
 
-class WT_FlightPlanApproach extends WT_FlightPlanProcedure {
+class WT_FlightPlanApproach extends WT_FlightPlanProcedureSegment {
     constructor(approach, transitionIndex, legs, parent, segment) {
         super(approach, legs, parent, segment);
 
