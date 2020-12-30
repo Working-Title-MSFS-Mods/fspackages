@@ -28,7 +28,7 @@ as3000-tsc-horizontal-element {
       top: 0%;
       left: 0%;
       height: 8%;
-      width: 80%;
+      width: 78%;
       background-color: #141619;
       background-image: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BACKGROUND.png");
       color: white;
@@ -37,7 +37,7 @@ as3000-tsc-horizontal-element {
     as3000-tsc-horizontal-element #Electricity #PagesDisplay {
       position: absolute;
       height: 92.1%;
-      width: 80%;
+      width: 78%;
       left: 0%;
       bottom: 0%;
       background-image: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
@@ -294,7 +294,7 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettin
 as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight {
     position: absolute;
     top: 2.5%;
-    right: 3.5%;
+    right: 1.5%;
     height: 95%;
     width: 70%;
 }
@@ -310,18 +310,28 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettin
         font-size: 4vh;
     }
 
-as3000-tsc-horizontal-element #Electricity .mapPointerControl #touchpad {
+as3000-tsc-horizontal-element #Electricity .mapPointerControl tsc-mappointercontrol {
     position: absolute;
-    left: 5vh;
-    right: 5vh;
-    top: 15vh;
-    bottom: 5vh;
-    height: auto;
-    width: auto;
-    border: 0.4vh solid white;
-    border-radius: 3vh;
-    background-size: 10vh 10vh;
-    background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px); }
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    background-color: black;
+}
+    as3000-tsc-horizontal-element #Electricity .mapPointerControl #touchpad {
+        position: absolute;
+        left: 1%;
+        right: 1%;
+        top: 18vh;
+        bottom: 1%;
+        height: auto;
+        width: auto;
+        border: 0.4vh solid white;
+        border-radius: 3vh;
+        background-size: 8vh 8vh;
+        background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
+        background-position: center;
+    }
 
 as3000-tsc-horizontal-element #Electricity .weatherSelection tsc-button-img {
     width: 27vh;
@@ -340,14 +350,14 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
     position: absolute;
     left: 27%;
     top: 1%;
-    width: 43%;
+    width: 45%;
     height: 98%;
 }
 as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-features {
     position: absolute;
-    right: 4%;
+    right: 1%;
     top: 1%;
-    width: 25%;
+    width: 26%;
     height: 98%;
 }
     as3000-tsc-horizontal-element #Electricity .weatherRadarSettings .weatherRadarModeButton,
@@ -361,7 +371,7 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
         top: 2.5%;
         left: 1%;
         height: 95%;
-        width: 95%; }
+        width: 98%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #DirectTo .tabSelect .tabButton {
             height: 15vh;
             margin: 1vh 0; }
@@ -478,7 +488,7 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
         top: 1%;
         left: 1%;
         height: 98%;
-        width: 95%;
+        width: 98%;
         display: flex;
         flex-flow: row nowrap; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tabSelect .tabButton {
@@ -535,7 +545,7 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
         position: absolute;
         height: 97%;
         left: 17%;
-        width: 80%; }
+        width: 82%; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable thead {
             font-size: 4vh;
             height: 7vh;
@@ -883,7 +893,7 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
         position: absolute;
         left: 1%;
         top: 18%;
-        width: 96%;
+        width: 98%;
         height: 80%; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .tabButton {
             height: 15vh;
@@ -991,7 +1001,7 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer {
         left: 1%;
-        width: 96%;
+        width: 98%;
         height: 100%;
         position: relative;
         padding: 0.5vh; }
