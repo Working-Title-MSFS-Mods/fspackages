@@ -744,10 +744,14 @@ class CJ4_Altimeter extends NavSystemElement {
     }
 }
 class CJ4_Attitude extends NavSystemElement {
+    // constructor() {
+    //     this.wtFlightDirectorBankValue = 0;
+    // }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
         this.svg.aircraft = Aircraft.CJ4;
         this.svg.gps = this.gps;
+        this.wtFlightDirectorBankValue = 0;
     }
     onEnter() {
     }
@@ -762,7 +766,21 @@ class CJ4_Attitude extends NavSystemElement {
         this.svg.setAttribute("radio_altitude", Simplane.getAltitudeAboveGround().toString());
         this.svg.setAttribute("flight_director-active", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "true" : "false");
         this.svg.setAttribute("flight_director-pitch", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"));
-        this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
+        const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
+        //const bank = apMasterActive ? SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree") : -1 * SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number");
+        if (apMasterActive) {
+            this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
+        } else {
+            const bank = SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number");
+            let setBank = bank;
+            if (Math.abs(this.wtFlightDirectorBankValue - bank) > 0.5) {
+                setBank = bank < this.wtFlightDirectorBankValue + 0.5 ? this.wtFlightDirectorBankValue - 0.5 :  bank > this.wtFlightDirectorBankValue ? this.wtFlightDirectorBankValue + 1 : bank;
+            }
+            // console.log("wtFlightDirectorBankValue " + this.wtFlightDirectorBankValue);
+            // console.log("setBank " + setBank);
+            this.wtFlightDirectorBankValue = setBank;
+            this.svg.setAttribute("flight_director-bank", (-1 * setBank));
+        }
         this.svg.setAttribute("half_bank-active", SimVar.GetSimVarValue("AUTOPILOT MAX BANK", "degree").toFixed(0));
     }
     onExit() {

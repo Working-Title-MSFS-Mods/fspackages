@@ -354,18 +354,40 @@ class CJ4_FMC_VNavSetupPage {
             const hdgHold = SimVar.GetSimVarValue("L:AP_HEADING_HOLD_ACTIVE", "number");
             const setHeading = SimVar.GetSimVarValue("L:WT_TEMP_SETHEADING", "number");
             const hdgOn = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") == 1 ? "YES[green]" : "NO[white]";
+            const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
+            const bank = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degrees");
+            const bankex = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK EX1", "degrees");
+            const pitch = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degrees");
+            const pitchex = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH EX1", "degrees");
+            const wtBankFD = SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number");
+            const cdi = SimVar.GetSimVarValue("NAV CDI:1", "number");
+            const loc = SimVar.GetSimVarValue("NAV LOCALIZER:1", "degrees");
+            const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
 
 
             fmc._templateRenderer.setTemplateRaw([
+                // ["", "", " WT [blue]" + lnavActive],
+                // [" ACT WPT[blue]", "DISTANCE [blue]"],
+                // [activeWaypointIdent, wptDistance + " NM"],
+                // [" DTK[blue]", "XTK [blue]"],
+                // [dtk + "°", xtk + " NM"],
+                // [" HDG IDX[blue]", "HDG LOCK [blue]"],
+                // [hdgIndex + "", hdgLock + "°"],
+                // [" HDG LOCK:1[blue]", "HDG LOCK:2 [blue]"],
+                // [hdgLock1 + "°", hdgLock2 + "°"],
+                // [" HDG HLD VAL[blue]", "SET HDG [blue]"],
+                // [hdgHold + "", setHeading.toFixed(0) + ""],
+                // ["HDG ON? [blue]" + hdgOn],
+                // ["<BACK", "VNAV MONITOR>"]
                 ["", "", " WT [blue]" + lnavActive],
                 [" ACT WPT[blue]", "DISTANCE [blue]"],
                 [activeWaypointIdent, wptDistance + " NM"],
                 [" DTK[blue]", "XTK [blue]"],
                 [dtk + "°", xtk + " NM"],
-                [" HDG IDX[blue]", "HDG LOCK [blue]"],
-                [hdgIndex + "", hdgLock + "°"],
-                [" HDG LOCK:1[blue]", "HDG LOCK:2 [blue]"],
-                [hdgLock1 + "°", hdgLock2 + "°"],
+                [" FD Simvar[blue]", "NAV[blue]", "BANK[blue]"],
+                [fdOn ? "TRUE" : "FALSE", "NAV:" + nav, bank.toFixed(1) + "°"],
+                ["WT BANK[blue]", "CDI[blue]", "LOC[blue]"],
+                [wtBankFD.toFixed(1) + "°", cdi.toFixed(1) + "", loc.toFixed(0) + "°"],
                 [" HDG HLD VAL[blue]", "SET HDG [blue]"],
                 [hdgHold + "", setHeading.toFixed(0) + ""],
                 ["HDG ON? [blue]" + hdgOn],
