@@ -141,8 +141,8 @@ class WT_FlightPlanAsoboInterface {
         await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", index);
         await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
         if (flightPlan.hasOrigin() && flightPlan.hasDestination()) {
-            await Coherent.call("SET_ORIGIN", flightPlan.getOrigin().icao);
-            await Coherent.call("SET_DESTINATION", flightPlan.getDestination().icao);
+            await Coherent.call("SET_ORIGIN", flightPlan.getOrigin().waypoint.icao);
+            await Coherent.call("SET_DESTINATION", flightPlan.getDestination().waypoint.icao);
             let count = 1;
             for (let leg of flightPlan.getEnroute().legs()) {
                 let waypoint = leg.fix;

@@ -372,8 +372,8 @@ class WT_MapViewFlightPlanCanvasRenderer {
         }
 
         let bounds = projectionRenderer.viewClipExtent;
-        let origin = this.flightPlan.getOrigin();
-        let destination = this.flightPlan.getDestination();
+        let origin = this.flightPlan.getOrigin().waypoint;
+        let destination = this.flightPlan.getDestination().waypoint;
         if (origin && projectionRenderer.isInViewBounds(origin.location, bounds, 0.05)) {
             this._waypointsRendered.add(origin);
         }
