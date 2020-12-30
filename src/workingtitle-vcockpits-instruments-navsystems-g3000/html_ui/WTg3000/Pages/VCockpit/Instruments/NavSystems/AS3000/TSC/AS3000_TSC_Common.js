@@ -56,12 +56,15 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
         this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
-        this._mfdMainPaneSettings.mode.addListener(this._onMainPaneModeChanged.bind(this));
+        this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
 
         this._mfdLeftPaneSettings = {controller: new WT_DataStoreController("MFD-LEFT", null)};
         this._mfdRightPaneSettings = {controller: new WT_DataStoreController("MFD-RIGHT", null)};
         this._initHalfPaneController(this._mfdLeftPaneSettings);
         this._initHalfPaneController(this._mfdRightPaneSettings);
+
+        this._mfdLeftPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
+        this._mfdRightPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
 
         this._mfdMainPaneSettings.controller.update();
 
@@ -166,6 +169,8 @@ class AS3000_TSC extends NavSystemTouch {
                     "MFDMapDetailButton",
                     true
                 )),
+                this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", "LEFT")),
+                this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", "RIGHT")),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
                 this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
@@ -321,12 +326,27 @@ class AS3000_TSC extends NavSystemTouch {
         this._updateMFDPaneSelectDisplay();
     }
 
-    _onMainPaneModeChanged(setting, newValue, oldValue) {
+    _onMFDMainPaneModeChanged(setting, newValue, oldValue) {
         if (newValue === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
             this._setMFDHalfPaneControl("LEFT");
         } else {
             let defaultControl = this._mfdHalfPaneControlID === WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT ? "LEFT" : "RIGHT";
             this._setMFDHalfPaneControl(defaultControl);
+        }
+    }
+
+    _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
+        if (setting === this.getActiveMFDHalfPaneSettings().display) {
+            let currentPage = this.getCurrentPage();
+            if (newValue !== WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP &&
+                (currentPage.name === "Map Settings" || currentPage.title === "Map Pointer Control")) {
+                this.closePopUpElement();
+                this.SwitchToPageName("MFD", "MFD Home");
+            } else if (newValue !== WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER &&
+                (currentPage.title === "Weather Selection" || currentPage.title === "Weather Radar Settings")) {
+                this.closePopUpElement();
+                this.SwitchToPageName("MFD", "MFD Home");
+            }
         }
     }
 
@@ -427,17 +447,20 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _handleMapPointerEvent(event) {
+        if (event === "BottomKnob_Push" && this.getCurrentPageGroup().name === "MFD" && this.getActiveMFDHalfPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", this.getActiveMFDPages().mapPointerControl.name);
+        }
+    }
+
     onEvent(event) {
         super.onEvent(event);
-
-        if (event === "BottomKnob_Push") {
-            this.switchToPopUpPage(this.mapPointerControl);
-            return;
-        }
 
         this._handleNavigationEvent(event);
         this._handleZoomEvent(event);
         this._handleControlEvent(event);
+        this._handleMapPointerEvent(event);
     }
 
     goBack() {

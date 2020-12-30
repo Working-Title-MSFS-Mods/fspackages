@@ -53,6 +53,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
@@ -307,6 +309,19 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettin
         height: 16vh;
         font-size: 4vh;
     }
+
+as3000-tsc-horizontal-element #Electricity .mapPointerControl #touchpad {
+    position: absolute;
+    left: 5vh;
+    right: 5vh;
+    top: 15vh;
+    bottom: 5vh;
+    height: auto;
+    width: auto;
+    border: 0.4vh solid white;
+    border-radius: 3vh;
+    background-size: 10vh 10vh;
+    background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px); }
 
 as3000-tsc-horizontal-element #Electricity .weatherSelection tsc-button-img {
     width: 27vh;
@@ -1878,19 +1893,6 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         position: absolute;
         top: 20%;
         left: 30%; }
-
-    as3000-tsc-horizontal-element #Electricity #MapPointerControl #TouchPad {
-      position: absolute;
-      left: 5vh;
-      right: 5vh;
-      top: 15vh;
-      bottom: 5vh;
-      height: auto;
-      width: auto;
-      border: 0.4vh solid white;
-      border-radius: 3vh;
-      background-size: 10vh 10vh;
-      background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px); }
 
     as3000-tsc-horizontal-element #Electricity #SelectionList .contentContainer {
       position: absolute;
