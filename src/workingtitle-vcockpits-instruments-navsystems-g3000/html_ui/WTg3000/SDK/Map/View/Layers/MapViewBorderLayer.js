@@ -1,4 +1,12 @@
+/**
+ * Borders and labels for countries and states/provinces.
+ */
 class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
+    /**
+     * @param {WT_MapViewTextLabelManager} labelManager - the label manager to use for labels.
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(labelManager, className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
@@ -32,16 +40,13 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._lastTime = 0;
     }
 
+    /**
+     * @readonly
+     * @property {Boolean} isReady - whether this layer has finished loading data and is ready to render.
+     * @type {Boolean}
+     */
     get isReady() {
         return this._isReady;
-    }
-
-    get labelManager() {
-        return this._labelManager;
-    }
-
-    get projectionRenderer() {
-        return this._projectionRenderer;
     }
 
     _loadBorderJSON(path) {
@@ -111,11 +116,17 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._isReady = true;
     }
 
-    isVisible(data) {
-        return data.model.borders.show;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.borders.show;
     }
 
-    onConfigLoaded(data) {
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onConfigLoaded(state) {
         for (let property of WT_MapViewBorderLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
@@ -139,6 +150,11 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
                bottom >= bounds[0].y;
     }
 
+    /**
+     * Selects an LOD level for a given map view window resolution.
+     * @param {WT_NumberUnit} viewResolution - the resolution of the map view window, expressed as the geographic distance covered by one pixel.
+     * @returns {Number} an LOD level.
+     */
     _selectLOD(viewResolution) {
         for (let i = WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS.length - 1; i >= 0; i--) {
             if (viewResolution.compare(WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS[i]) >= 0) {
@@ -148,7 +164,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         return 0;
     }
 
-    _enqueueFeaturesToDraw(data, features, lod) {
+    _enqueueFeaturesToDraw(state, features, lod) {
         let clipExtent = this._borderLayer.buffer.projectionRenderer.viewClipExtent;
         let temp = [[0, 0], [0, 0]];
         for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this._borderLayer.buffer.projectionRenderer, clipExtent, temp))) {
@@ -213,7 +229,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
     _clearLabels() {
         for (let label of this._labelsToShow.values()) {
-            this.labelManager.remove(label);
+            this._labelManager.remove(label);
         }
         this._labelsToShow.clear();
     }
@@ -239,6 +255,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         label.fontOutlineColor = outlineColor;
     }
 
+    /**
+     *
+     * @param {Iterable<WT_MapViewBorderLabel>} newLabelsToShow
+     */
     _updateLabelsToShow(newLabelsToShow) {
         this._clearLabels();
         for (let label of newLabelsToShow) {
@@ -248,10 +268,14 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
                 this._setLabelStyles(label, this.stateFontSize, this.stateFontColor, this.stateFontOutlineWidth, this.stateFontOutlineColor);
             }
             this._labelsToShow.add(label);
-            this.labelManager.add(label);
+            this._labelManager.add(label);
         }
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
     _updateLabels(state) {
         let tempArrays = [[0, 0], [0, 0]];
         let tempVector = new WT_GVector2(0, 0);
@@ -311,7 +335,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     *
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
@@ -394,14 +417,27 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
         this._anchor.set(0.5, 0.5);
     }
 
+    /**
+     * @readonly
+     * @property {Object} feature - this label's feature.
+     * @type {Object}
+     */
     get feature() {
         return this._feature;
     }
 
+    /**
+     * @readonly
+     * @property {Number} featureClass - the class (admin0 or admin1) of this label's feature.
+     * @type {Number}
+     */
     get featureClass() {
         return this._featureClass;
     }
 
+    /**
+     * @param {WT_MapViewState} state
+     */
     update(state) {
         state.projection.project(this._geoPosition, this._position);
 
@@ -427,6 +463,9 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
         return new WT_MapViewBorderLabel(featureInfo, featureClass, text, priority);
     }
 }
+/**
+ * @enum {Number}
+ */
 WT_MapViewBorderLabel.Class = {
     ADMIN0: "Admin-0 map subunit",
     ADMIN1: "Admin-1 scale rank"
@@ -437,6 +476,14 @@ class WT_MapViewBorderLabelCache {
         this._cache = new Map();
     }
 
+    /**
+     * Gets a label for a feature. If one cannot be found in the cache, a new label is added to the cache and
+     * returned.
+     * @param {WT_Waypoint} featureInfo - the GeoJSON featureInfo object for the feature.
+     * @param {Number} admin0Priority - the priority of admin0 feature labels.
+     * @param {Number} admin1Priority - the priority of admin1 feature labels.
+     * @returns {WT_MapViewBorderLabel} a feature label.
+     */
     getLabel(featureInfo, admin0Priority, admin1Priority) {
         let existing = this._cache.get(featureInfo);
         if (!existing) {
