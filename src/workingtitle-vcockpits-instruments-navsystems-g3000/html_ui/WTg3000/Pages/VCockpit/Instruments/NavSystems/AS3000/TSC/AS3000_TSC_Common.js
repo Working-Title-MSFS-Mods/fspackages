@@ -229,8 +229,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.loadFrequencyWindow.setGPS(this);
         this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointInfo_WaypointOptions", new AS3000_TSC_WaypointOptions());
         this.waypointOptions.setGPS(this);
-        this.mapPointerControl = new NavSystemElementContainer("Map Pointer Control", "MapPointerControl", new AS3000_MapPointerControl());
-        this.mapPointerControl.setGPS(this);
         this.confirmationWindow = new AS3000_TSC_ConfirmationWindow();
         this.terrainAlerts = new AS3000_TSC_TerrainAlert();
         this.addIndependentElementContainer(new NavSystemElementContainer("Terrain Alert", "terrainAlert", this.terrainAlerts));
@@ -287,7 +285,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _updateMFDPaneSelectDisplay() {
-        if (this.getCurrentPageGroup().name === "MFD" && (this.popUpElement != this.mapPointerControl)) {
+        if (this.getCurrentPageGroup().name === "MFD" && this.getCurrentPage().title !== "Map Pointer Control") {
             if (this._mfdPaneSelectDisplay.style.display !== "block") {
                 this._mfdPaneSelectDisplay.style.display = "block";
             }
@@ -437,7 +435,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _handleControlEvent(event) {
-        if (this.getCurrentPageGroup().name === "MFD" && this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF && this.popUpElement != this.mapPointerControl) {
+        if (this.getCurrentPageGroup().name === "MFD" && this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF && this.getCurrentPage().title !== "Map Pointer Control") {
             switch (event) {
                 case "TopKnob_Small_INC":
                 case "TopKnob_Small_DEC":
@@ -4291,98 +4289,6 @@ class AS3000_TSC_WaypointOptions extends NavSystemElement {
     }
     showInMapToggle() {
         this.showInMap_CB();
-    }
-}
-class AS3000_MapPointerControl extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this._isMouseDown = false;
-        this._lastMousePos = new WT_GVector2(0, 0);
-        this._tempVector = new WT_GVector2(0, 0);
-    }
-
-    init(root) {
-        this.window = root;
-        this.touchPad = this.gps.getChildById("TouchPad");
-        this.touchPad.addEventListener("mousemove", this.onMouseMove.bind(this));
-        this.touchPad.addEventListener("mousedown", this.onClickBegin.bind(this));
-        this.touchPad.addEventListener("mouseup", this.onClickEnd.bind(this));
-        this.touchPad.addEventListener("mouseleave", this.onClickEnd.bind(this));
-    }
-
-    onEnter() {
-        this.window.setAttribute("state", "Active");
-        this.gps.activateNavButton(1, "Back", this.gps.goBack.bind(this.gps), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.setTopKnobText("Pan/Point Push: Pan Off");
-        this.gps.setBottomKnobText("-Range+ Push: Pan Off");
-
-        WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.SHOW_KEY, true);
-    }
-
-    onUpdate(_deltaTime) {
-    }
-
-    onExit() {
-        this._isMouseDown = false;
-
-        this.window.setAttribute("state", "Inactive");
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-        this.gps.setTopKnobText("");
-        this.gps.setBottomKnobText("-Range+ Push: Pan");
-
-        WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.SHOW_KEY, false);
-    }
-
-    onEvent(event) {
-        switch (event) {
-            case "TopKnob_Small_INC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanUp");
-                break;
-            case "TopKnob_Small_DEC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanDown");
-                break;
-            case "TopKnob_Large_INC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanRight");
-                break;
-            case "TopKnob_Large_DEC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanLeft");
-                break;
-            case "TopKnob_Push":
-                this.gps.goBack();
-                break;
-            case "BottomKnob_Push":
-                this.gps.goBack();
-                break;
-        }
-    }
-
-    backHome() {
-        this.gps.closePopUpElement();
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-
-    onMouseMove(event) {
-        if (this._isMouseDown) {
-            let delta = this._tempVector.set(event.clientX, event.clientY).subtract(this._lastMousePos);
-            if (delta.length > 5) {
-                let deltaX = WT_MapController.getSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_X_KEY, 0) + delta.x;
-                let deltaY = WT_MapController.getSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_Y_KEY, 0) + delta.y;
-                WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_X_KEY, deltaX);
-                WT_MapController.setSettingValue("MFD-LEFT", WT_MapPointerSettingGroup.DELTA_Y_KEY, deltaY);
-                this._lastMousePos.set(event.clientX, event.clientY);
-            }
-        }
-    }
-
-    onClickBegin(event) {
-        this._isMouseDown = true;
-        this._lastMousePos.set(event.clientX, event.clientY);
-    }
-
-    onClickEnd() {
-        this._isMouseDown = false;
     }
 }
 //# sourceMappingURL=AS3000_TSC_Common.js.map
