@@ -447,8 +447,9 @@ class WT_BaseVnav {
                 for (let i = approach.length - 2; i >= 0; i--) {
                     const waypoint = approach[i];
                     let altDesc = waypoint.legAltitudeDescription;
+                    const distance = lastApproachWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
                     console.log(waypoint.icao + " " + waypoint.legAltitudeDescription + " " + waypoint.legAltitude1 + " " + waypoint.legAltitude2);
-                    if (altDesc > 0 && altDesc < 3 && waypoint.legAltitude1 > 0) { // FAF
+                    if (altDesc > 0 && altDesc < 3 && waypoint.legAltitude1 > 0 && distance > 3) { // FAF
                         this._fafAltitude = waypoint.legAltitude1;
                         this._fafDistance = lastApproachWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
                         console.log("found FAF: " + waypoint.icao + " " + this._fafAltitude);
