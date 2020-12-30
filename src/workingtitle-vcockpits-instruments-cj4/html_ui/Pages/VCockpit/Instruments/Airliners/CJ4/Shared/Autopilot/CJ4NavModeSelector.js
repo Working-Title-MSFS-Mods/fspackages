@@ -375,7 +375,9 @@ class CJ4NavModeSelector {
    */
   handleAlt1Changed() {
     this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
-    // console.log("handleAlt1Changed: " + this.selectedAlt1);
+    if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTC) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+    }
     this.setProperVerticalArmedStates();
   }
 
@@ -384,7 +386,6 @@ class CJ4NavModeSelector {
    */
   handleAlt2Changed() {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
-    // console.log("handleAlt2Changed: " + this.selectedAlt2);
     this.setProperVerticalArmedStates();
   }
 
