@@ -1,4 +1,12 @@
+/**
+ * A layer for rendering text labels.
+ */
 class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
+    /**
+     * @param {WT_MapViewTextLabelManager} manager - the manager from which to get labels to render.
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(manager, className = WT_MapViewTextLabelLayer.CLASS_DEFAULT, configName = WT_MapViewTextLabelLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
@@ -8,10 +16,11 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
         this.addSubLayer(this._textLayer);
     }
 
-    get textLayer() {
-        return this._textLayer;
-    }
-
+    /**
+     * @readonly
+     * @property {WT_MapViewTextLabelManager} manager - this layer's label manager.
+     * @type {WT_MapViewTextLabelManager}
+     */
     get manager() {
         return this._manager;
     }
@@ -27,22 +36,29 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
                 return value;
             }
         )
-        this.textLayer.buffer.clear();
+        this._textLayer.buffer.clear();
         for (let label of labels) {
-            label.draw(data, this.textLayer.buffer.context);
+            label.draw(data, this._textLayer.buffer.context);
         }
-        this.textLayer.display.clear();
-        this.textLayer.copyBufferToCanvas();
+        this._textLayer.display.clear();
+        this._textLayer.copyBufferToCanvas();
     }
 
-    onUpdate(data) {
-        this.manager.onUpdate(data);
-        this._drawLabels(data, this.manager.getVisibleLabels());
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        this.manager.onUpdate(state);
+        this._drawLabels(state, this.manager.getVisibleLabels());
     }
 }
 WT_MapViewTextLabelLayer.CLASS_DEFAULT = "textLabelLayer";
 WT_MapViewTextLabelLayer.CONFIG_NAME_DEFAULT = "textLabel";
 
+/**
+ * A manager for text labels. Labels are tracked and optionally culled to avoid overlap based on their label priority.
+ * Labels with lower priority are culled before labels with higher priority.
+ */
 class WT_MapViewTextLabelManager {
     constructor(opts = {}) {
         this.perfModeThreshold = WT_MapViewTextLabelManager.PERFORMANCE_MODE_THRESHOLD_DEFAULT;
@@ -74,10 +90,18 @@ class WT_MapViewTextLabelManager {
         }
     }
 
+    /**
+     * Gets the labels belonging to this manager that are currently visible.
+     * @returns {IterableIterator<WT_MapViewTextLabel>} an iterable over the currently visible labels belonging to this manager.
+     */
     getVisibleLabels() {
         return new WT_MapViewManagedTextLabelIterator(this._visibleLabels.values());
     }
 
+    /**
+     * Adds a label to this manager to be tracked.
+     * @param {WT_MapViewTextLabel} label - the text label to add.
+     */
     add(label) {
         let existing = this._managedLabels.get(label);
         if (!existing) {
@@ -87,6 +111,10 @@ class WT_MapViewTextLabelManager {
         }
     }
 
+    /**
+     * Removes a label from this manager.
+     * @param {WT_MapViewTextLabel} label - the text label to remove.
+     */
     remove(label) {
         let toRemove = this._managedLabels.get(label);
         if (toRemove) {
@@ -168,22 +196,22 @@ class WT_MapViewTextLabelManager {
         return queries;
     }
 
-    _updateVisibleLabels(data) {
+    _updateVisibleLabels(state) {
         for (let visible of this._visibleLabels.values()) {
-            visible.label.update(data);
+            visible.label.update(state);
         }
     }
 
-    _updateAllLabels(data) {
+    _updateAllLabels(state) {
         for (let managedLabel of this._managedLabels.values()) {
-            managedLabel.label.update(data);
+            managedLabel.label.update(state);
         }
     }
 
-    _showAll(data) {
+    _showAll(state) {
         for (let managedLabel of this._managedLabels.values()) {
             managedLabel.collisions.clear();
-            managedLabel.label.update(data);
+            managedLabel.label.update(state);
             this._visibleLabels.add(managedLabel);
             managedLabel.show = true;
         }
@@ -220,7 +248,7 @@ class WT_MapViewTextLabelManager {
         }
     }
 
-    _startUpdateCollisions(data) {
+    _startUpdateCollisions(state) {
         this._visibleLabels.clear();
 
         for (let label of this._toRemoveBuffer.values()) {
@@ -245,7 +273,7 @@ class WT_MapViewTextLabelManager {
         );
         this._collisionUpdateHead = 0;
         for (let managedLabel of this._collisionUpdateBuffer) {
-            managedLabel.label.update(data);
+            managedLabel.label.update(state);
             managedLabel.collisions.clear();
         }
         this._doUpdateCollisions();
@@ -275,13 +303,16 @@ class WT_MapViewTextLabelManager {
         return this._toAddBuffer.size > 0 || this._toRemoveBuffer.size > 0;
     }
 
-    onUpdate(data) {
-        let currentTime = data.currentTime / 1000;
+    /**
+     * @param {WT_MapViewState} state
+     */
+    onUpdate(state) {
+        let currentTime = state.currentTime / 1000;
         let preventOverlapChanged = this._preventOverlapChanged;
         this._preventOverlapChanged = false;
 
         if (this.preventOverlap) {
-            if (!data.projection.range.equals(this._lastRange)) {
+            if (!state.projection.range.equals(this._lastRange)) {
                 // map zoom changed -> clear all labels and start timer
                 for (let managedText of this._managedLabels.values()) {
                     managedText.show = false;
@@ -289,7 +320,7 @@ class WT_MapViewTextLabelManager {
                 this._visibleLabels.clear();
                 this._mapZoomTimer = this.mapZoomUpdateDelay;
                 this._lastTime = currentTime;
-                this._lastRange.set(data.projection.range);
+                this._lastRange.set(state.projection.range);
                 return;
             }
 
@@ -298,19 +329,19 @@ class WT_MapViewTextLabelManager {
                 this._mapZoomTimer -= dt;
                 if (this._mapZoomTimer <= 0) {
                     // map zoom change timer expired -> update collisions
-                    this._startUpdateCollisions(data);
-                    this._updateVisibleLabels(data);
+                    this._startUpdateCollisions(state);
+                    this._updateVisibleLabels(state);
                     return;
                 }
                 this._lastTime = currentTime;
                 return;
             }
 
-            let rotationDelta = Math.abs(data.projection.rotation - this._lastRotation);
+            let rotationDelta = Math.abs(state.projection.rotation - this._lastRotation);
             rotationDelta = Math.min(rotationDelta, 360 - rotationDelta);
             if (rotationDelta >= this.rotationThreshold) {
-                this._lastRotation = data.projection.rotation;
-                this._startUpdateCollisions(data);
+                this._lastRotation = state.projection.rotation;
+                this._startUpdateCollisions(state);
                 return;
             }
 
@@ -320,14 +351,14 @@ class WT_MapViewTextLabelManager {
                 (this._toRemoveBuffer.size + this._toAddBuffer.size > this.addRemoveForceUpdateThreshold);
 
             if (forceUpdateCollisions) {
-                this._startUpdateCollisions(data);
-                this._updateVisibleLabels(data);
+                this._startUpdateCollisions(state);
+                this._updateVisibleLabels(state);
                 return;
             }
 
             if (this._isUpdatingCollisions()) {
                 this._doUpdateCollisions();
-                this._updateVisibleLabels(data);
+                this._updateVisibleLabels(state);
                 return;
             }
         } else {
@@ -338,9 +369,9 @@ class WT_MapViewTextLabelManager {
         }
 
         if (this._isAddingRemoving()) {
-            this._doAddRemove(data);
+            this._doAddRemove(state);
         } else {
-            this._updateVisibleLabels(data);
+            this._updateVisibleLabels(state);
         }
     }
 }
@@ -363,14 +394,29 @@ class WT_MapViewManagedTextLabel {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewManagedTextLabel.OPTIONS_DEF);
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewTextLabel} label - this label.
+     * @type {WT_MapViewTextLabel}
+     */
     get label() {
         return this._label;
     }
 
+    /**
+     * @readonly
+     * @property {Set<WT_MapViewManagedTextLabel>} collisions - the set of labels that collide with this one.
+     * @type {Set<WT_MapViewManagedTextLabel>}
+     */
     get collisions() {
         return this._collisions;
     }
 
+    /**
+     * Checks whether this label collides with another.
+     * @param {WT_MapViewManagedTextLabel} other - the other label.
+     * @returns {Boolean} whether this label collides with the other.
+     */
     doesCollide(other) {
         let thisBounds = this.label.bounds;
         let otherBounds = other.label.bounds;
