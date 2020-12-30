@@ -690,8 +690,6 @@ class CJ4NavModeSelector {
     if (this.isAltitudeLocked) {
       this.currentVerticalActiveState = VerticalNavModeState.ALTC;
 
-      Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
-      Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
     }
 
     if (!this.isAltitudeLocked && (this.currentVerticalActiveState === VerticalNavModeState.ALTC || this.currentVerticalActiveState === VerticalNavModeState.ALT)) {
@@ -716,6 +714,14 @@ class CJ4NavModeSelector {
       }
       if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+      }
+
+      //MOVED SETTING 0 VS rates from ALT CAP TO ALT CAPTURED
+      if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:1", "feet per minute") != 0) {
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
+      }
+      if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute") != 0) {
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
       }
     }
   }
