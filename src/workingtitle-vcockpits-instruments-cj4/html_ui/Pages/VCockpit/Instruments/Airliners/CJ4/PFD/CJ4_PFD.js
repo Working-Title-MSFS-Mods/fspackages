@@ -825,6 +825,9 @@ class CJ4_APDisplay extends NavSystemElement {
         if (apMasterActive && !ydActive) {
             SimVar.SetSimVarValue("K:YAW_DAMPER_TOGGLE", "number", 1);
         }
+        if (apMasterActive && !flightDirector) {
+            SimVar.SetSimVarValue("K:TOGGLE_FLIGHT_DIRECTOR", "number", 1);
+        }
         if (apMasterActive) {
             Avionics.Utils.diffAndSet(this.AP_YDStatus, "");
             this.AP_FDIndicatorArrow.setAttribute("state", "Engaged");
