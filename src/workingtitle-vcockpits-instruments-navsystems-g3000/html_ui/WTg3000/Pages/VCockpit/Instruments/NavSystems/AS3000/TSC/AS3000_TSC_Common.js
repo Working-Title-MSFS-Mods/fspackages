@@ -479,7 +479,7 @@ class AS3000_TSC extends NavSystemTouch {
         let data = new AS3000_TSC_NavButton_Data();
         data.title = _title;
         data.callback = _callback;
-        data.imagePath = "/WTg3000/SDK/TSC/Images/" + _imagePath;
+        data.imagePath = "/WTg3000/SDK/Assets/Images/TSC/" + _imagePath;
         data.isActive = true;
         this.navButtons[_id - 1].setState(data, _fromPopUp);
     }

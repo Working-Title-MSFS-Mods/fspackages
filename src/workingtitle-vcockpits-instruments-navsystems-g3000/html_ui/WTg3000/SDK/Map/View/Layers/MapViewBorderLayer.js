@@ -328,7 +328,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
 WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT = "border";
-WT_MapViewBorderLayer.DATA_FILE_PATH = "/WTg3000/SDK/Data/borders.json";
+WT_MapViewBorderLayer.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/borders.json";
 WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS = [
     Number.MIN_VALUE,
     0.00000003,

@@ -35,7 +35,7 @@ class WT_G3x5_TSCWeatherSelection extends WT_G3x5_TSCPageElement {
         this.gps.SwitchToPageName(this.homePageGroup, this._wxRadarSettingsPageName);
     }
 }
-WT_G3x5_TSCWeatherSelection.WX_RADAR_IMAGE_PATH = "/WTg3000/SDK/TSC/Images/ICON_TSC_WX_RADAR_SETTINGS.png";
+WT_G3x5_TSCWeatherSelection.WX_RADAR_IMAGE_PATH = "/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_WX_RADAR_SETTINGS.png";
 
 class WT_G3x5_TSCWeatherSelectionHTMLElement extends HTMLElement {
     constructor() {

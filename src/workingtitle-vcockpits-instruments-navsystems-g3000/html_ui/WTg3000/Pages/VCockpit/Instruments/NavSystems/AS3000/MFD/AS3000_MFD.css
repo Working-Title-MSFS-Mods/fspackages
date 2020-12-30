@@ -23,13 +23,13 @@
 
 @font-face {
     font-family: "Roboto-Regular";
-    src: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Regular.ttf") format("truetype");
+    src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: "Roboto-Regular";
-    src: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Fonts/Roboto-Bold.ttf") format("truetype");
+    src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Bold.ttf") format("truetype");
     font-weight: bold;
     font-style: normal;
 }
