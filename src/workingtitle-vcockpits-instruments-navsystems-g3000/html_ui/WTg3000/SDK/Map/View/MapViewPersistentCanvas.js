@@ -1,4 +1,14 @@
+/**
+ * A canvas sub-layer that is meant to be redrawn periodically and transformed between redraws to compensate
+ * for changes in the map view. Invalidation occurs when transformations are no longer sufficient for compensation.
+ * This sub-layer contains both an offscreen buffer and a display canvas which may be redrawn independently of each
+ * other.
+ */
 class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
+    /**
+     * @param {Number} overdrawFactor - the factor with which to overdraw the map viewing window. A factor of at least
+     *                                  sqrt(2) is required to avoid invalidations with rotation alone.
+     */
     constructor(overdrawFactor) {
         super(true, true);
 
@@ -255,24 +265,63 @@ class WT_MapViewPersistenCanvasDrawable extends WT_MapViewCanvasDrawable {
         this._isInvalid = false;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewPersistenCanvasDrawableReference} reference - the parameters of the projection with which this drawable was last redrawn.
+     * @type {WT_MapViewPersistenCanvasDrawableReference}
+     */
     get reference() {
         return this._reference;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapViewPersistenCanvasDrawableTransform} transform - the properties of this drawable's current compensatory transformation.
+     * @type {WT_MapViewPersistenCanvasDrawableTransform}
+     */
     get transform() {
         return this._transform;
     }
 
+    /**
+     * @readonly
+     * @property {Boolean} reference - whether this drawable is invalid.
+     * @type {Boolean}
+     */
     get isInvalid() {
         return this._isInvalid;
     }
 
+    /**
+     * @readonly
+     * @property {WT_MapProjectionRenderer} projectionRenderer - the projection renderer used to render to this drawable.
+     * @type {WT_MapProjectionRenderer}
+     */
     get projectionRenderer() {
         return this._projectionRenderer;
     }
 
+    /**
+     * Invalidates this drawable.
+     */
     invalidate() {
         this._isInvalid = true;
         this.clear();
     }
 }
+
+/**
+ * @typedef WT_MapViewPersistenCanvasDrawableReference
+ * @property {WT_NumberUnitReadOnly} range - the projection's range.
+ * @property {WT_GeoPointReadOnly} center - the projection's center.
+ * @property {Number} scale - the projection's nominal scale factor.
+ * @property {Number} rotation - the projection's post-projected rotation angle.
+ */
+
+ /**
+ * @typedef WT_MapViewPersistenCanvasDrawableTransform
+ * @property {Number} scale - the transformation's scaling factor.
+ * @property {Number} rotation - the transformation's rotation angle.
+ * @property {WT_GVector2ReadOnly} offset - the transformation's translation, in pixels.
+ * @property {Number} margin - the margin, in pixels, available for translation without invalidation.
+ */
