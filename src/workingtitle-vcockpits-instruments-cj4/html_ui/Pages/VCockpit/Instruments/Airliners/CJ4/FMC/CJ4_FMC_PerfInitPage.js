@@ -7,7 +7,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             ["<PERF INIT", "FUEL MGMT>"],
             [""],
-            ["<VNAV SETUP[disabled]", "FLT LOG>"], //Page 3, 4, 5 ----12
+            ["<VNAV SETUP", "FLT LOG>"], //Page 3, 4, 5 ----12
             [""],
             ["<TAKEOFF", "APPROACH>"], //Page 6, 7, 8 ---13, 14, 15
             [""],
@@ -18,7 +18,7 @@ class CJ4_FMC_PerfInitPage {
             ["        --- KT[s-text white]"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.onLeftInput[1] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onLeftInput[2] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
