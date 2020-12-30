@@ -548,16 +548,18 @@ class CJ4_FMC extends FMCMainDisplay {
                         const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
                         const correctionAngle = 0.23 * cdi;
                         const desiredHeading = loc + correctionAngle;
-                        const normalizedDesiredHeading = desiredHeading < 0 ? 360 + desiredHeading : desiredHeading >= 360 ? desiredHeading - 360 : desiredHeading;
-                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, normalizedDesiredHeading);
+                        const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+                        const windCorrectedHeading = this._lnav.normalizeCourse(desiredHeading - this._lnav.calculateWindCorrection(desiredHeading, airspeedTrue));
+                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
                         this.driveFlightDirector(deltaAngle, bank);
                     } else if (signal && !isIls) {
                         const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
                         const obs = SimVar.GetSimVarValue("NAV OBS:" + nav, "degrees");
                         const correctionAngle = 0.23 * cdi;
                         const desiredHeading = obs + correctionAngle;
-                        const normalizedDesiredHeading = desiredHeading < 0 ? 360 + desiredHeading : desiredHeading >= 360 ? desiredHeading - 360 : desiredHeading;
-                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, normalizedDesiredHeading);
+                        const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+                        const windCorrectedHeading = this._lnav.normalizeCourse(desiredHeading - this._lnav.calculateWindCorrection(desiredHeading, airspeedTrue));
+                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
                         this.driveFlightDirector(deltaAngle, bank);
                     } else {
                         if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
