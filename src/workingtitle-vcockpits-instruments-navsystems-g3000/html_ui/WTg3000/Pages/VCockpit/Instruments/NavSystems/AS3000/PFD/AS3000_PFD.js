@@ -140,7 +140,7 @@ class AS3000_PFD extends NavSystem {
     }
 }
 AS3000_PFD.FLIGHT_PLAN_SYNC_INTERVAL = 2;
-AS3000_PFD.CITY_DATA_PATH = "/WTg3000/SDK/Data/cities.json";
+AS3000_PFD.CITY_DATA_PATH = "/WTg3000/SDK/Assets/Data/cities.json";
 
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
     constructor(_name = "", _callback = null, _statusCB = null, _valueCB = null, _stateCB = null) {

@@ -108,7 +108,7 @@ class AS3000_MFD extends NavSystem {
     }
 }
 AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL = 2; // seconds
-AS3000_MFD.CITY_DATA_PATH = "/WTg3000/SDK/Data/cities.json";
+AS3000_MFD.CITY_DATA_PATH = "/WTg3000/SDK/Assets/Data/cities.json";
 
 class AS3000_MFD_NavDataField {
     constructor(rootElement) {
