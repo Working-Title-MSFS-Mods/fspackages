@@ -421,6 +421,8 @@ class CJ4NavModeSelector {
       }
       this.currentLateralActiveState = LateralNavModeState.ROLL;
       this.setProperVerticalArmedStates();
+    } else {
+      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
     }
 
 
