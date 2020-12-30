@@ -30,7 +30,7 @@ as3000-tsc-horizontal-element {
       height: 8%;
       width: 78%;
       background-color: #141619;
-      background-image: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BACKGROUND.png");
+      background-image: url("/WTg3000/SDK/Assets/Images/TSC/TITLE_BACKGROUND.png");
       color: white;
       font-size: 4.5vh;
       text-align: center; }
@@ -40,7 +40,7 @@ as3000-tsc-horizontal-element {
       width: 78%;
       left: 0%;
       bottom: 0%;
-      background-image: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
+      background-image: url("/WTg3000/SDK/Assets/Images/TSC/BACKGROUND.png");
       background-color: #141619; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=PFDHome] #PFDHome,
@@ -1919,12 +1919,12 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
     as3000-tsc-horizontal-element #Electricity .PopUpWindow {
       width: 78%;
       height: 100%;
-      background-image: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/BACKGROUND.png");
+      background-image: url("/WTg3000/SDK/Assets/Images/TSC/BACKGROUND.png");
       z-index: 10; }
       as3000-tsc-horizontal-element #Electricity .PopUpWindow .WindowTitle {
         height: 8%;
         width: 100%;
-        background-image: url("/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/TITLE_BOX.png");
+        background-image: url("/WTg3000/SDK/Assets/Images/TSC/TITLE_BOX.png");
         font-size: 4.5vh; }
     as3000-tsc-horizontal-element #Electricity .Transparent {
       background-image: none; }
