@@ -918,7 +918,7 @@ class Jet_NDCompass extends HTMLElement {
             range.text.setAttribute("fill", _color);
             range.text.setAttribute("font-size", _size.toString());
             range.text.setAttribute("font-family", "Roboto-Light");
-            range.text.setAttribute("text-anchor", "middle");
+            range.text.setAttribute("text-anchor", "left");
             range.text.setAttribute("alignment-baseline", "central");
             range.factor = _rangeFactor;
             range.removeInteger = _removeInteger;

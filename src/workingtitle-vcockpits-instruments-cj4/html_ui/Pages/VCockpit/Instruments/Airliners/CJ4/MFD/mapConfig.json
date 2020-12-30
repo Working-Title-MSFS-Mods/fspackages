@@ -80,7 +80,7 @@
   "railwayWidth": 2,
   "railwayDashLength": 6,
 
-  "netBingTextureResolution": 512,
+  "netBingTextureResolution": 1024,
   "netBingAltitudeColors1": [],
   "netBingWaterColor1": "#0000ff",
   "netBingHeightColor1": [
