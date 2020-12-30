@@ -635,6 +635,7 @@ class CJ4_FMC_InitRefIndexPage {
             fmc.flightPlanManager.resumeSync();
             fmc.flightPlanManager.setActiveWaypointIndex(1);
             fmc.setMsg("FPLN LOADED[green]");
+            SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
             CJ4_FMC_RoutePage.ShowPage1(fmc);
         };
 

@@ -599,7 +599,22 @@ export class ManagedFlightPlan {
       }
 
       if (runway) {
-        const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation}`, runway.endCoordinates);
+        const selectedRunwayMod = runway.designation.slice(-1);
+        let selectedRunwayOutput = undefined;
+        if (selectedRunwayMod == "L" || selectedRunwayMod == "C" || selectedRunwayMod == "R") {
+          if (runway.designation.length == 2) {
+            selectedRunwayOutput = "0" + runway.designation;
+          } else {
+            selectedRunwayOutput = runway.designation;
+          }
+        } else {
+          if (runway.designation.length == 2) {
+            selectedRunwayOutput = runway.designation;
+          } else {
+            selectedRunwayOutput = "0" + runway.designation;
+          }
+        }
+        const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.endCoordinates);
         runwayWaypoint.legAltitudeDescription = 1;
         runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
         runwayWaypoint.isRunway = true;
@@ -724,13 +739,28 @@ export class ManagedFlightPlan {
       }
 
       if (runway) {
+        const selectedRunwayMod = runway.designation.slice(-1);
+        let selectedRunwayOutput = undefined;
+        if (selectedRunwayMod == "L" || selectedRunwayMod == "C" || selectedRunwayMod == "R") {
+          if (runway.designation.length == 2) {
+            selectedRunwayOutput = "0" + runway.designation;
+          } else {
+            selectedRunwayOutput = runway.designation;
+          }
+        } else {
+          if (runway.designation.length == 2) {
+            selectedRunwayOutput = runway.designation;
+          } else {
+            selectedRunwayOutput = "0" + runway.designation;
+          }
+        }
         if (approachIndex === -1 && destinationRunwayIndex !== -1 && destinationRunwayExtension !== -1) {
-          const runwayExtensionWaypoint = procedure.buildWaypoint(`RX${runway.designation.padStart(3, '0')}`,
+          const runwayExtensionWaypoint = procedure.buildWaypoint(`RX${selectedRunwayOutput}`,
             Avionics.Utils.bearingDistanceToCoordinates(runway.direction + 180, destinationRunwayExtension, runway.beginningCoordinates.lat, runway.beginningCoordinates.long));
           this.addWaypoint(runwayExtensionWaypoint);
         }
 
-        const runwayWaypoint = procedure.buildWaypoint(`RW${runway.designation.padStart(3, '0')}`, runway.beginningCoordinates);
+        const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.beginningCoordinates);
         runwayWaypoint.legAltitudeDescription = 1;
         runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
         runwayWaypoint.isRunway = true;

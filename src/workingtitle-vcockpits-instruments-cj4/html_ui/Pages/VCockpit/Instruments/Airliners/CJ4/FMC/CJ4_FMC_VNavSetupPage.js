@@ -214,6 +214,8 @@ class CJ4_FMC_VNavSetupPage {
         let vnavTargetDistance = 0;
         let topOfDescent = 0;
         let distanceToTod = 0;
+        let gpExists = false;
+        let gpAngle = 0;
 
         //RUN ACTUAL VNAV PATH CONTROL
         if (fmc._vnav) {
@@ -228,6 +230,8 @@ class CJ4_FMC_VNavSetupPage {
                     vnavTargetDistance = parseFloat(parsedVnavValues.vnavTargetDistance);
                     topOfDescent = parseFloat(parsedVnavValues.topOfDescent);
                     distanceToTod = parseFloat(parsedVnavValues.distanceToTod);
+                    gpExists = parsedVnavValues.gpExists;
+                    gpAngle = parseFloat(parsedVnavValues.gpAngle);
                 }
                 const altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                 const desiredFPA = WTDataStore.get('CJ4_vpa', 3);

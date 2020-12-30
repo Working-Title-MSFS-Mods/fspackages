@@ -593,6 +593,20 @@ export class FlightPlanManager {
   }
 
   /**
+   * Adds a user waypoint to the current flight plan.
+   * @param waypoint The user waypoint to add.
+   * @param index The index to add the waypoint at in the flight plan.
+   * @param callback A callback to call once the operation completes.
+   */
+  public async addUserWaypoint(waypoint: WayPoint, index = Infinity, callback = () => { }): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    currentFlightPlan.addWaypoint(waypoint, index);
+
+    this._updateFlightPlanVersion();
+    callback();
+  }
+
+  /**
    * Sets the altitude for a waypoint in the current flight plan.
    * @param altitude The altitude to set for the waypoint.
    * @param index The index of the waypoint to set.

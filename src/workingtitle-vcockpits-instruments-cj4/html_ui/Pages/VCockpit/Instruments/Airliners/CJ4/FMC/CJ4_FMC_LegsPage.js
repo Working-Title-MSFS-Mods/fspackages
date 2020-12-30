@@ -64,11 +64,42 @@ class CJ4_FMC_LegsPage {
         let offset = Math.floor((this._currentPage - 1) * 5);
         let allWaypoints = this._fmc.flightPlanManager.getAllWaypoints();
         this._wayPointsToRender = this.buildLegs(allWaypoints, this._activeWptIndex);
+        let flightplanFPA = WTDataStore.get('CJ4_vpa', 3);
+        let runwayIndex = undefined;
+        let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
+        console.log("gpAngle legs page: " + gpAngle);
+        const inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
+        const inhibitText = inhibitSequence ? "AUTO[s-text white]" + "/[white]" + "INHIBIT[green]" : "AUTO[green]" + "/[white]" + "INHIBIT[s-text white]";
+
+        //FIND RUNWAY INDEX
+        console.log("_wayPointsToRender.length: " + this._wayPointsToRender.length);
+        if (allWaypoints[allWaypoints.length - 2].isRunway) {
+            runwayIndex = this._wayPointsToRender.length - 2;
+            console.log("runway found: " + runwayIndex);
+        }
 
         this._pageCount = Math.floor((this._wayPointsToRender.length - 1) / 5) + 1;
         for (let i = 0; i < 5; i++) {
 
             let waypoint = this._wayPointsToRender[i + offset];
+            //GET FPA
+            let segment = undefined;
+            if (waypoint && waypoint.fix && (waypoint.fix.icao != "$EMPTY" || waypoint.fix.icao != "$DISCO")) {
+                segment = this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoint.fix);
+            }
+            let waypointFPA = 0;
+            if (segment && (segment.type == SegmentType.Arrival || segment.type == SegmentType.Approach) && waypoint.fix.legAltitudeDescription > 0) {
+                waypointFPA = flightplanFPA;
+            }
+            if (runwayIndex) {
+                if (i + offset == runwayIndex) {
+                    waypointFPA = gpAngle > 0 ? gpAngle : flightplanFPA;
+                }
+                if ((i + offset == runwayIndex - 1 || i + offset == runwayIndex - 2) && waypoint.fix.legAltitudeDescription == 0) {
+                    waypointFPA = gpAngle > 0 ? gpAngle : flightplanFPA;
+                }
+            }
+            //EXISTING ->
             if (waypoint && waypoint.fix && waypoint.fix.icao === "$EMPTY") {
                 this._rows[2 * i + 1] = ["-----"];
             }
@@ -87,12 +118,17 @@ class CJ4_FMC_LegsPage {
 
                 // format distance
                 distance = (distance < 100) ? distance.toFixed(1) : distance.toFixed(0);
+                const fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
 
                 if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
-                        this._rows[2 * i + 1] = ["(DIR)[blue]"];
+                        this._rows[2 * i + 1][0] = "(DIR)[blue]";
+                        this._rows[2 * i][1] = "SEQUENCE [s-text blue]";
+                        this._rows[2 * i + 1][1] = inhibitText;
                     } else {
-                        this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[blue]" : "USR[blue]"];
+                        this._rows[2 * i + 1][0] = waypoint.fix.ident != "" ? waypoint.fix.ident + "[blue]" : "USR[blue]";
+                        this._rows[2 * i][1] = "SEQUENCE [s-text blue]";
+                        this._rows[2 * i + 1][1] = inhibitText;
                     }
                 }
                 else if (isActWpt) {
@@ -100,7 +136,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i] = [" THEN[magenta]"];
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -[magenta]"];
                     } else {
-                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]"];
+                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]" + fpaText];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[magenta]" : "USR[magenta]"];
                     }
                 }
@@ -110,7 +146,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -"];
                     }
                     else {
-                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM"];
+                        this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[shite]" + fpaText];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"];
                     }
                 }
@@ -144,11 +180,22 @@ class CJ4_FMC_LegsPage {
 
     buildLegs(waypoints, activeWaypointIndex) {
         const displayWaypoints = [];
-        for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
-            displayWaypoints.push({ index: i, fix: waypoints[i] });
+        let runwayExists = false;
+        let runwayIndex = 0;
 
-            if (waypoints[i].endsInDiscontinuity) {
-                displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
+        for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
+
+            if (waypoints[i].isRunway && this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoints[i]).type == SegmentType.Approach) {
+                runwayExists = true;
+                runwayIndex = i;
+            }
+            if (runwayExists && i == runwayIndex + 1) {
+                console.log("skipping destination waypoint");
+            } else {
+                displayWaypoints.push({ index: i, fix: waypoints[i] });
+                if (waypoints[i].endsInDiscontinuity) {
+                    displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
+                }
             }
         }
 
@@ -177,84 +224,14 @@ class CJ4_FMC_LegsPage {
                         return;
                     }
 
-                    let re = /(\d*)\/(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
-                    // 1 = speed
-                    // 2 = F/FL
-                    // 3 = ALT
-                    // 4 = A/B
-                    // 5 = F/FL
-                    // 6 = ALT
-                    // 7 = A/B
-                    let match = value.match(re);
-                    if (!match) {
-                        // no match, input without speed?
-                        re = /()(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
-                        match = value.match(re);
-                        if (!match) return;
-                        // if "alt" is < 500 and no FL its a speed
-                        if (match[2] === "" && match[3] !== "" && isFinite(match[3])) {
-                            const speed = Number(match[3]);
-                            if (speed < 500) {
-                                match[1] = speed;
-                                match[3] = "";
-                            }
-                        }
-                    }
-
-                    // speed
-                    if (match[1] !== "") {
-                        const speed = Number(match[1]);
-                        if (isFinite(speed) && speed > 0 && speed < 500) {
-                            waypoint.speedConstraint = speed;
-                        }
-                    }
-
-                    // alt 1
-                    if (match[3] !== "") {
-                        const fl = match[2];
-                        let alt = Number(match[3]);
-                        if (isFinite(alt)) {
-                            const multi = (fl === "F" || fl === "FL") ? 100 : 1;
-                            alt *= multi;
-                            if (alt >= -1300 || alt <= 65000) {
-                                waypoint.legAltitude1 = alt;
-                            }
-                            // alt desc
-                            if (match[4] !== "") {
-                                waypoint.legAltitudeDescription = (match[4] === "A") ? 2 : 3;
-                            }
-                            else {
-                                waypoint.legAltitudeDescription = 1;
-                            }
-                        }
-                    }
-
-                    // alt 2
-                    if (match[6] !== "") {
-                        const fl = match[5];
-                        let alt = Number(match[6]);
-                        if (isFinite(alt)) {
-                            const multi = (fl === "F" || fl === "FL") ? 100 : 1;
-                            alt *= multi;
-                            if (alt >= -1300 || alt <= 65000) {
-                                waypoint.legAltitude2 = alt;
-                            }
-                            // alt desc
-                            if (match[7] !== "") {
-                                waypoint.legAltitudeDescription = 4;
-                            } else {
-                                waypoint.legAltitudeDescription = 1;
-                            }
-                        }
-                    }
+                    this.parseConstraintInput(value, waypoint);
 
                     this._fmc.flightPlanManager._updateFlightPlanVersion();
                     this.resetAfterOp();
                 };
             }
 
-            // ENROUTE
-            this._fmc.onLeftInput[i] = () => {
+            this._fmc.onLeftInput[i] = async () => {
                 let offset = Math.floor((this._currentPage - 1) * 5);
                 let waypoint = this._wayPointsToRender[i + offset];
 
@@ -268,19 +245,14 @@ class CJ4_FMC_LegsPage {
                 let value = this._fmc.inOut;
                 let selectedWpIndex = waypoint.index;
 
-                // Can't mod first blue line
-                // TODO this should be possible later to set it as FROM for intercept TO
-                if (i == 0 && this._currentPage == 1) {
-                    this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
-                    return;
-                }
-
                 // Mode evaluation
                 if (value == "")
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                 else if (value === FMCMainDisplay.clrValue)
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.DELETE;
-                else if (value.length > 0 && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.EXISTING)
+                else if (value.includes("/") && this._fmc.selectMode === CJ4_FMC_LegsPage.SELECT_MODE.EXISTING) // looks like user waypoint, go to new
+                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
+                else if (value.length > 0 && this._fmc.selectMode !== CJ4_FMC_LegsPage.SELECT_MODE.EXISTING) // scratchpad not empty, nothing selected, must be new wpt
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NEW;
 
                 // only allow insert new on add line
@@ -302,6 +274,9 @@ class CJ4_FMC_LegsPage {
                             this._fmc.selectedWaypoint = waypoint;
                             this._fmc.inOut = waypoint.fix.ident;
                             this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.EXISTING;
+                        }
+                        else if (i == 0 && this._currentPage == 1) {
+                            this._fmc.showErrorMessage("UNABLE SEL FROM WPT");
                         }
                         break;
                     }
@@ -355,6 +330,17 @@ class CJ4_FMC_LegsPage {
                                 }
                             }
                         }
+                        else if (i == 0 && this._currentPage == 1) {
+                            let scratchPadWaypointIndex = this._fmc.selectedWaypoint.index;
+                            console.log("modifying from line");
+                            console.log("scratchPadWaypointIndex: " + scratchPadWaypointIndex);
+                            this._fmc.setMsg("Working...");
+                            this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                this._fmc.flightPlanManager.setActiveWaypointIndex(scratchPadWaypointIndex + 1, () => {
+                                    this.resetAfterOp();
+                                });
+                            });
+                        }
                         break;
                     }
                     case CJ4_FMC_LegsPage.SELECT_MODE.NEW: {
@@ -370,22 +356,38 @@ class CJ4_FMC_LegsPage {
                                     return;
                                 }
                             }
-                            this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
-                                if (isSuccess) {
-                                    let isDirectTo = (i == 1 && this._currentPage == 1);
-                                    if (isDirectTo) {
-                                        let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
-                                        this._fmc.activateDirectToWaypoint(wp, () => {
-                                            this.resetAfterOp();
-                                        });
-                                    } else
+                            let scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : undefined;
+                            const userWaypoint = await this.parseWaypointInput(value, scratchPadWaypointIndex);
+                            if (userWaypoint) {
+                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
                                         this.resetAfterOp();
-                                } else {
-                                    this._fmc.fpHasChanged = false;
-                                    this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                                    this._fmc.eraseTemporaryFlightPlan();
-                                }
-                            });
+                                    });
+                                });
+                            }
+                            else {
+                                this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                    if (isSuccess) {
+                                        let isDirectTo = (i == 1 && this._currentPage == 1);
+                                        if (isDirectTo) {
+                                            let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
+                                            this._fmc.activateDirectToWaypoint(wp, () => {
+                                                this.resetAfterOp();
+                                            });
+                                        } else
+                                            this.resetAfterOp();
+                                    }
+                                    else {
+                                        this._fmc.fpHasChanged = false;
+                                        this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                        this._fmc.setMsg();
+                                        this._fmc.eraseTemporaryFlightPlan();
+                                    }
+                                });
+                            }
+                        }
+                        else if (i == 0 && this._currentPage == 1) {
+                            this._fmc.showErrorMessage("UNABLE ADD FROM WPT");
                         }
                         break;
                     }
@@ -411,7 +413,7 @@ class CJ4_FMC_LegsPage {
                             });
                         }
                         else {
-                            this._fmc.showErrorMessage("UNABLE MOD FROM WPT");
+                            this._fmc.showErrorMessage("UNABLE DEL FROM WPT");
                         }
                         break;
                     }
@@ -436,6 +438,13 @@ class CJ4_FMC_LegsPage {
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                     this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
+            }
+        };
+        this._fmc.onRightInput[0] = () => {
+            if (this._currentPage == 1) {
+                let currentInhibit = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number");
+                let setInhibit = currentInhibit == 1 ? 0 : 1;
+                SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", setInhibit).then(() => { this.resetAfterOp(); });
             }
         };
 
@@ -515,6 +524,198 @@ class CJ4_FMC_LegsPage {
         altitudeConstraint = altitudeConstraint.padStart(6, " ");
 
         return speedConstraint + "/" + altitudeConstraint + "[green]";
+    }
+
+    async parseWaypointInput(value, referenceIndex) {
+        let fullLatLong = /([NS])([0-8][0-9])([0-5][0-9](?:\.\d{1,2})?)([EW])((?:[0][0-9][0-9])|(?:[1][0-7][0-9]))([0-5][0-9](?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
+        let shorhandLatLongEnd = /([0-8][0-9])([0-9][0-9]|[1][0-8][0-9])([NSEW])/;
+        let shorthandLatLongMid = /([0-8][0-9])([NSEW])([1][0-8][0-9]|[0-9][0-9])/;
+        let placeBearingDistance = /(\w{3,5})([0-3][0-9][0-9])\/(\d{1,3}(?:\.\d{1})?)(?:\/(\w{0,5}))?/;
+        let alongTrackOffset = /(\w{3,5})\/(?:(\-*\d{0,3}\.*\d{0,1}))?(?:\/(\w{0,5}))?/;
+
+        let matchFullLatLong = value.match(fullLatLong);
+        let matchShorhandLatLongEnd = value.match(shorhandLatLongEnd);
+        let matchShorthandLatLongMid = value.match(shorthandLatLongMid);
+        let matchPlaceBearingDistance = value.match(placeBearingDistance);
+        let matchAlongTrackOffset = value.match(alongTrackOffset);
+
+        let procMatch = (item, defaultVal) => {
+            return (item === undefined) ? defaultVal : item;
+        };
+
+        let newWaypoint = undefined;
+
+        if (matchFullLatLong) {
+            console.log("match full lat long");
+            // 1 = N/S
+            // 2 = LAT DEG
+            // 3 = LAT MINS
+            // 4 = E/W
+            // 5 = LONG DEG
+            // 6 = LONG MINS
+            // 7 = IDENT
+            const latitude = matchFullLatLong[1] == "S" ? 0 - parseInt(matchFullLatLong[2]) - (parseFloat(matchFullLatLong[3]) / 60)
+                : parseInt(matchFullLatLong[2]) + (parseFloat(matchFullLatLong[3]) / 60);
+            const longitude = matchFullLatLong[4] == "W" ? 0 - parseInt(matchFullLatLong[5]) - (parseFloat(matchFullLatLong[6]) / 60)
+                : parseInt(matchFullLatLong[5]) + (parseFloat(matchFullLatLong[6]) / 60);
+            const coordinates = new LatLongAlt(latitude, longitude, 0);
+            const ident = procMatch(matchFullLatLong[7], matchFullLatLong[1] + matchFullLatLong[2].slice(0, 2) + matchFullLatLong[4] + matchFullLatLong[5] + matchFullLatLong[6].slice(0, 2));
+
+            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+
+
+        }
+        else if (matchShorhandLatLongEnd) {
+            // 1 = LAT DEG
+            // 2 = LONG DEG
+            // 3 = N/E/S/W (N = N:W; E = N:E; S = S:E; W = S:W)
+            const direction = matchShorhandLatLongEnd[3];
+
+            const latitude = direction == "S" || direction == "W" ? 0 - parseInt(matchShorhandLatLongEnd[1])
+                : parseInt(matchShorhandLatLongEnd[1]);
+            const longitude = direction == "N" || direction == "W" ? 0 - parseInt(matchShorhandLatLongEnd[2])
+                : parseInt(matchShorhandLatLongEnd[2]);
+            const coordinates = new LatLongAlt(latitude, longitude, 0);
+            const ident = matchShorhandLatLongEnd[1] + matchShorhandLatLongEnd[2] + direction;
+
+            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+
+        }
+        else if (matchShorthandLatLongMid) {
+            // 1 = LAT DEG
+            // 2 = N/E/S/W (N = N:W; E = N:E; S = S:E; W = S:W)
+            // 3 = LONG DEG
+            const direction = matchShorthandLatLongMid[2];
+
+            const latitude = direction == "S" || direction == "W" ? 0 - parseInt(matchShorthandLatLongMid[1])
+                : parseInt(matchShorthandLatLongMid[1]);
+            const longitude = direction == "N" || direction == "W" ? 0 - 100 - parseInt(matchShorthandLatLongMid[3])
+                : 100 + parseInt(matchShorthandLatLongMid[3]);
+            const coordinates = new LatLongAlt(latitude, longitude, 0);
+            const ident = matchShorthandLatLongMid[1] + direction + matchShorthandLatLongMid[3];
+
+            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+        }
+        else if (matchPlaceBearingDistance) {
+            // 1 = Reference Ident
+            // 2 = Bearing from Reference
+            // 3 = Distance from Reference
+            // 4 = Ident
+
+            let referenceWaypoint = this._fmc.flightPlanManager.getAllWaypoints().find(x => x.ident === matchPlaceBearingDistance[1]);
+            if(referenceWaypoint === undefined){
+                let getWpt = (refWpt) => {
+                    return new Promise(resolve => {
+                        this._fmc.getOrSelectWaypointByIdent(refWpt, (w) => resolve(w));
+                    });
+                };
+    
+                referenceWaypoint = await getWpt(matchPlaceBearingDistance[1]);
+            }
+
+            if(referenceWaypoint !== undefined){
+                const referenceCoordinates = referenceWaypoint.infos.coordinates;
+                const bearing = parseInt(matchPlaceBearingDistance[2]);
+                const distance = parseFloat(matchPlaceBearingDistance[3]);
+                const ident = procMatch(matchPlaceBearingDistance[4], matchPlaceBearingDistance[1] + matchPlaceBearingDistance[2] + "/" + matchPlaceBearingDistance[3]);
+    
+                newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);  
+            }
+        }
+        else if (matchAlongTrackOffset) {
+            // 1 = Reference Ident
+            // 2 = Distance from Reference
+            // 3 = Ident
+
+            if(referenceIndex === undefined){
+                referenceIndex = this._fmc.flightPlanManager.getAllWaypoints().findIndex(x => x.ident === matchAlongTrackOffset[1]);
+            }
+
+            if(referenceIndex > -1){
+                const ident = procMatch(matchAlongTrackOffset[3], matchAlongTrackOffset[1] + "/" + matchAlongTrackOffset[2]);
+                const distance = parseFloat(matchAlongTrackOffset[2]);
+                console.log("ident " + ident);
+                console.log("referenceIndex " + referenceIndex);
+                console.log("distance " + distance);
+    
+                newWaypoint = WaypointBuilder.fromPlaceAlongFlightPlan(ident, referenceIndex, distance, this._fmc, this._fmc.flightPlanManager);
+            }
+        }
+
+        return newWaypoint;
+    }
+
+    parseConstraintInput(value, waypoint) {
+        let re = /(\d*)\/(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
+        // 1 = speed
+        // 2 = F/FL
+        // 3 = ALT
+        // 4 = A/B
+        // 5 = F/FL
+        // 6 = ALT
+        // 7 = A/B
+        let match = value.match(re);
+        if (!match) {
+            // no match, input without speed?
+            re = /()(F?|FL?)(\d+)([AB]?)(F?|FL?)(\d+)?([AB]?)/;
+            match = value.match(re);
+            if (!match) return;
+            // if "alt" is < 500 and no FL its a speed
+            if (match[2] === "" && match[3] !== "" && isFinite(match[3])) {
+                const speed = Number(match[3]);
+                if (speed < 500) {
+                    match[1] = speed;
+                    match[3] = "";
+                }
+            }
+        }
+
+        // speed
+        if (match[1] !== "") {
+            const speed = Number(match[1]);
+            if (isFinite(speed) && speed > 0 && speed < 500) {
+                waypoint.speedConstraint = speed;
+            }
+        }
+
+        // alt 1
+        if (match[3] !== "") {
+            const fl = match[2];
+            let alt = Number(match[3]);
+            if (isFinite(alt)) {
+                const multi = (fl === "F" || fl === "FL") ? 100 : 1;
+                alt *= multi;
+                if (alt >= -1300 || alt <= 65000) {
+                    waypoint.legAltitude1 = alt;
+                }
+                // alt desc
+                if (match[4] !== "") {
+                    waypoint.legAltitudeDescription = (match[4] === "A") ? 2 : 3;
+                }
+                else {
+                    waypoint.legAltitudeDescription = 1;
+                }
+            }
+        }
+
+        // alt 2
+        if (match[6] !== "") {
+            const fl = match[5];
+            let alt = Number(match[6]);
+            if (isFinite(alt)) {
+                const multi = (fl === "F" || fl === "FL") ? 100 : 1;
+                alt *= multi;
+                if (alt >= -1300 || alt <= 65000) {
+                    waypoint.legAltitude2 = alt;
+                }
+                // alt desc
+                if (match[7] !== "") {
+                    waypoint.legAltitudeDescription = 4;
+                } else {
+                    waypoint.legAltitudeDescription = 1;
+                }
+            }
+        }
     }
 
     static ShowPage1(fmc) {
