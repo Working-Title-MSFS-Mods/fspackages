@@ -396,6 +396,7 @@ class CJ4_FMC_RoutePage {
                 if (result) {
                     this._fmc.setMsg();
                     this._fmc.fpHasChanged = true;
+                    SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
                     this.update(true);
                 }
             });
