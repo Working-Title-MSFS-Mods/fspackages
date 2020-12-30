@@ -908,7 +908,7 @@ class Jet_NDCompass extends HTMLElement {
         path += "A " + radius + " " + radius + " 0 0 " + (reverse ? 0 : 1) + " " + beginX + " " + beginY;
         return path;
     }
-    addMapRange(_parent, _x, _y, _color, _size, _withBg, _rangeFactor, _removeInteger) {
+    addMapRange(_parent, _x, _y, _color, _size, _withBg, _rangeFactor, _removeInteger, textAnchor = "left") {
         let range = new Jet_NDCompass_Range();
         {
             range.text = document.createElementNS(Avionics.SVG.NS, "text");
@@ -918,7 +918,7 @@ class Jet_NDCompass extends HTMLElement {
             range.text.setAttribute("fill", _color);
             range.text.setAttribute("font-size", _size.toString());
             range.text.setAttribute("font-family", "Roboto-Light");
-            range.text.setAttribute("text-anchor", "left");
+            range.text.setAttribute("text-anchor", textAnchor);
             range.text.setAttribute("alignment-baseline", "central");
             range.factor = _rangeFactor;
             range.removeInteger = _removeInteger;

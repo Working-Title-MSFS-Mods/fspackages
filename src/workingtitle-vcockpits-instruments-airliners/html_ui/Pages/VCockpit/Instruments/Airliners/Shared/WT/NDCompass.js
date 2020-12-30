@@ -69,7 +69,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.addMapRange(fixedGroup, 10 - vec.x, 50 - vec.y, "white", "26", false, 1.0, false);
                 var smallCircleRadius = 170;
                 vec.SetNorm(smallCircleRadius * 0.82);
-                this.addMapRange(fixedGroup, 5 - vec.x, 42 - vec.y, "white", "26", false, 0.5, false);
+                this.addMapRange(fixedGroup, 15 - vec.x, 42 - vec.y, "white", "26", false, 0.5, false, "middle");
                 {
                     let circle = document.createElementNS(Avionics.SVG.NS, "path");
                     circle.setAttribute("d", "M -98 -36 A 170 170 0 1 1 -111 -9");
