@@ -1,10 +1,18 @@
+/**
+ * A renderer that draws waypoints to an HTML canvas element. Waypoints can be rendered in one of multiple contexts: normal, as part of
+ * an airway, as part of a flight plan, as the active waypoint in a flight plan, and as a highlighted waypoint. For the renderer to draw
+ * a waypoint, the waypoint must first be registered with the renderer. Waypoints may be registered under multiple waypoint contexts.
+ * However, a waypoint will only be rendered in one context at any point in time, chosen based on the following order of precedence:
+ * highlighted > active flight plan > flight plan > normal > airway.
+ */
 class WT_MapViewWaypointCanvasRenderer {
     /**
-     *
-     * @param {WT_MapViewTextLabelManager} labelManager
-     * @param {Number} [normalCacheSize]
-     * @param {Number} [flightPlanCacheSize]
-     * @param {Number} [highlightCacheSize]
+     * @param {WT_MapViewTextLabelManager} labelManager - the label manager to use for waypoint labels.
+     * @param {Number} [normalCacheSize] - the size of the icon and label caches to use for waypoints rendered in the normal context.
+     * @param {Number} [airwayCacheSize] - the size of the icon and label caches to use for waypoints rendered in the airway context.
+     * @param {Number} [flightPlanCacheSize] - the size of the icon and label caches to use for waypoints rendered in the flight plan context.
+     * @param {Number} [flightPlanActiveCacheSize] - the size of the icon and label caches to use for waypoints rendered in the active flight plan waypoint context.
+     * @param {Number} [highlightCacheSize] - the size of the icon and label caches to use for waypoints rendered in the highlighted waypoint context.
      */
     constructor(labelManager, normalCacheSize = WT_MapViewWaypointCanvasRenderer.NORMAL_CACHE_SIZE, airwayCacheSize = WT_MapViewWaypointCanvasRenderer.AIRWAY_CACHE_SIZE, flightPlanCacheSize = WT_MapViewWaypointCanvasRenderer.FLIGHT_PLAN_CACHE_SIZE, flightPlanActiveCacheSize = WT_MapViewWaypointCanvasRenderer.FLIGHT_PLAN_ACTIVE_CACHE_SIZE = 20, highlightCacheSize = WT_MapViewWaypointCanvasRenderer.HIGHLIGHT_CACHE_SIZE) {
         this._labelManager = labelManager;
@@ -53,9 +61,9 @@ class WT_MapViewWaypointCanvasRenderer {
     }
 
     /**
-     *
-     * @param {Number} context
-     * @param {CanvasRenderingContext2D} canvasContext
+     * Sets the HTML canvas rendering context for a waypoint context.
+     * @param {Number} context - the waypoint context.
+     * @param {CanvasRenderingContext2D} canvasContext - an HTML canvas 2D rendering context.
      */
     setCanvasContext(context, canvasContext) {
         switch (context) {
@@ -78,9 +86,10 @@ class WT_MapViewWaypointCanvasRenderer {
     }
 
     /**
-     *
-     * @param {Number} context
-     * @param {{isVisible(state:WT_MapViewState, waypoint:WT_Waypoint)}} handler
+     * Sets the handler that determines if a waypoint is visible for a waypoint context.
+     * @param {Number} context - the waypoint context.
+     * @param {{isVisible(state:WT_MapViewState, waypoint:WT_Waypoint):Boolean}} handler - an object that determines if a waypoint should be visible by
+     *                                                                                     implementing the .isVisible(state, waypoint) method.
      */
     setVisibilityHandler(context, handler) {
         switch (context) {
@@ -103,9 +112,11 @@ class WT_MapViewWaypointCanvasRenderer {
     }
 
     /**
-     *
-     * @param {Number} context
-     * @param {{getOptions(state:WT_MapViewState, waypoint:WT_Waypoint)}} handler
+     * Sets the handler that sets style options for waypoint icons and labels for a waypoint context.
+     * @param {Number} context - the waypoint context.
+     * @param {{getOptions(state:WT_MapViewState, waypoint:WT_Waypoint):{icon:Object, label: Object}}} handler - an object that returns an object defining
+     *                                                                                                           style options for both icons and labels
+     *                                                                                                           via the .getOptions(state, waypoint) method.
      */
     setStyleOptionHandler(context, handler) {
         switch (context) {
@@ -127,15 +138,24 @@ class WT_MapViewWaypointCanvasRenderer {
         }
     }
 
+    /**
+     * Sets the boundary outside of which waypoints rendered in the normal context will be deprecated. The boundary
+     * is defined using the map projection's viewing window coordinates.
+     * @param {WT_GVector2[]} bounds - the new deprecation bounds, as a two-element array. Index 0 should contain the
+     *                                 coordinates for the top-left corner, and index 1 should contain the coordinates
+     *                                 for the bottom-right corner.
+     */
     setDeprecateBounds(bounds) {
         this._deprecateBounds[0].set(bounds[0]);
         this._deprecateBounds[1].set(bounds[1]);
     }
 
     /**
-     *
-     * @param {WT_Waypoint} waypoint
-     * @param {Number} [context]
+     * Checks if a waypoint is registered with this renderer. A context or contexts can be optionally specified such
+     * that the method will only return true if the waypoint is registered under those specific contexts.
+     * @param {WT_Waypoint} waypoint - a waypoint.
+     * @param {Number} [context] - the specific context(s) to check.
+     * @returns {Boolean} whether the waypoint is registered with this renderer.
      */
     isRegistered(waypoint, context) {
         let entry = this._registered.get(waypoint.uniqueID);
@@ -150,9 +170,11 @@ class WT_MapViewWaypointCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_Waypoint} waypoint
-     * @param {Number} context
+     * Registers a waypoint with this renderer under a specific context or contexts. Registered waypoints will be drawn as
+     * appropriate the next time this renderer's .update() method is called. Registering a waypoint under a context under
+     * which it is already registered has no effect.
+     * @param {WT_Waypoint} waypoint - the waypoint to register.
+     * @param {Number} context - the context(s) under which the waypoint should be registered.
      */
     register(waypoint, context) {
         if (context === 0) {
@@ -169,21 +191,22 @@ class WT_MapViewWaypointCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapViewWaypointCanvasRendererEntry} entry
+     * Deletes and cleans up a registered waypoint entry.
+     * @param {WT_MapViewWaypointCanvasRendererEntry} entry - the entry to delete.
      */
     _deleteEntry(entry) {
-        let showLabel = entry.showLabel();
+        let showLabel = entry.showLabel;
         if (showLabel) {
-            this._labelManager.remove(entry.label());
+            this._labelManager.remove(entry.label);
         }
         this._registered.delete(entry.waypoint.uniqueID);
     }
 
     /**
-     *
-     * @param {WT_Waypoint} waypoint
-     * @param {Number} context
+     * Deregisters a waypoint with this render from a specific context or contexts. Once a waypoint is deregistered from
+     * a context, it will no longer be rendered in that context the next this renderer's update() method is called.
+     * @param {WT_Waypoint} waypoint - the waypoint to deregister.
+     * @param {Number} context - the context(s) from which the waypoint should be deregistered.
      */
     deregister(waypoint, context) {
         let entry = this._registered.get(waypoint.uniqueID);
@@ -198,15 +221,15 @@ class WT_MapViewWaypointCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapViewState} state
+     * Redraws waypoints registered with this renderer.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     update(state) {
         let iconsToDraw = [];
         let toRemove = [];
         for (let entry of this._registered.values()) {
             entry.update(state);
-            if (entry.showIcon()) {
+            if (entry.showIcon) {
                 iconsToDraw.push(entry);
             }
 
@@ -219,9 +242,9 @@ class WT_MapViewWaypointCanvasRenderer {
             this._canvasContexts[prop].clearRect(0, 0, state.projection.viewWidth, state.projection.viewHeight);
         }
 
-        iconsToDraw.sort((a, b) => a.icon().priority - b.icon().priority);
+        iconsToDraw.sort((a, b) => a.icon.priority - b.icon.priority);
         for (let entry of iconsToDraw) {
-            let icon = entry.icon();
+            let icon = entry.icon;
             switch(entry.lastShowContext) {
                 case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
                     icon.draw(state, this._canvasContexts.normal);
@@ -270,12 +293,14 @@ WT_MapViewWaypointCanvasRenderer.Context = {
     ALL: (1 << 5) - 1
 }
 
+/**
+ * An entry for a waypoint registered with a WT_MapViewWaypointCanvasRenderer.
+ */
 class WT_MapViewWaypointCanvasRendererEntry {
     /**
-     *
-     * @param {WT_MapViewWaypointCanvasRenderer} renderer
-     * @param {WT_Waypoint} waypoint
-     * @param {Number} context
+     * @param {WT_MapViewWaypointCanvasRenderer} renderer - the renderer to which the new entry belongs.
+     * @param {WT_Waypoint} waypoint - the waypoint associated with the new entry.
+     * @param {Number} context - the waypoint context(s) of the new entry.
      */
     constructor(renderer, waypoint, context) {
         this._renderer = renderer;
@@ -294,7 +319,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
     /**
      * @readonly
-     * @property {WT_Waypoint} waypoint
+     * @property {WT_Waypoint} waypoint - the waypoint associated with this entry.
      * @type {WT_Waypoint}
      */
     get waypoint() {
@@ -303,7 +328,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
     /**
      * @readonly
-     * @property {Number} context
+     * @property {Number} context - the waypoint context(s) associated with this entry.
      * @type {Number}
      */
     get context() {
@@ -312,7 +337,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
     /**
      * @readonly
-     * @property {Number} lastShownContext
+     * @property {Number} lastShownContext - the context in which this entry's waypoint was last rendered.
      * @type {Number}
      */
     get lastShowContext() {
@@ -321,29 +346,57 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
     /**
      * @readonly
-     * @property {Boolean} isDeprecated
+     * @property {Boolean} isDeprecated - whether this entry is deprecated.
      * @type {Boolean}
      */
     get isDeprecated() {
         return this._isDeprecated;
     }
 
-    showIcon() {
+    /**
+     * @readonly
+     * @property {Boolean} showIcon - whether this entry's waypoint icon is currently visible.
+     * @type {Boolean}
+     */
+    get showIcon() {
         return this._showIcon;
     }
 
-    showLabel() {
+    /**
+     * @readonly
+     * @property {Boolean} showLabel - whether this entry's waypoint label is currently visible.
+     * @type {Boolean}
+     */
+    get showLabel() {
         return this._showLabel;
     }
 
-    icon() {
+    /**
+     * @readonly
+     * @property {WT_MapViewWaypointIcon} icon - this entry's waypoint icon.
+     * @type {WT_MapViewWaypointIcon}
+     */
+    get icon() {
         return this._icon;
     }
 
-    label() {
+    /**
+     * @readonly
+     * @property {WT_MapViewWaypointLabel} label - this entry's waypoint label.
+     * @type {WT_MapViewWaypointLabel}
+     */
+    get label() {
         return this._label;
     }
 
+    /**
+     * Checks whether this entry is associated with any of the specified contexts. Optionally, this method can also check if
+     * this entry's waypoint was last rendered in any of the specified contexts instead.
+     * @param {Number} context - the contexts against which to check.
+     * @param {Boolean} [lastShown] - whether to check the context in which this entry's waypoint was last rendered instead of
+     *                                the current contexts associated with this entry. False by default.
+     * @returns {Boolean} whether the check passed.
+     */
     isAnyContext(context, lastShown = false) {
         let toCompare;
         if (lastShown) {
@@ -354,6 +407,14 @@ class WT_MapViewWaypointCanvasRendererEntry {
         return (toCompare & context) !== 0;
     }
 
+    /**
+     * Checks whether this entry is associated with only the specified context(s). Optionally, this method can also check if
+     * this entry's waypoint was last rendered in only the specified context(s) instead.
+     * @param {Number} context - the context(s) against which to check.
+     * @param {Boolean} [lastShown] - whether to check the context in which this entry's waypoint was last rendered instead of
+     *                                the current contexts associated with this entry. False by default.
+     * @returns {Boolean} whether the check passed.
+     */
     isOnlyContext(context, lastShown = false) {
         let toCompare;
         if (lastShown) {
@@ -364,6 +425,14 @@ class WT_MapViewWaypointCanvasRendererEntry {
         return toCompare === context;
     }
 
+    /**
+     * Checks whether this entry is associated with all the specified context(s). Optionally, this method can also check if
+     * this entry's waypoint was last rendered in all the specified context(s) instead.
+     * @param {Number} context - the context(s) against which to check.
+     * @param {Boolean} [lastShown] - whether to check the context in which this entry's waypoint was last rendered instead of
+     *                                the current contexts associated with this entry. False by default.
+     * @returns {Boolean} whether the check passed.
+     */
     isAllContexts(context, lastShown = false) {
         let toCompare;
         if (lastShown) {
@@ -374,10 +443,18 @@ class WT_MapViewWaypointCanvasRendererEntry {
         return (toCompare & context) === context;
     }
 
+    /**
+     * Adds a waypoint context or contexts to this entry.
+     * @param {Number} context - the context(s) to add.
+     */
     addContext(context) {
         this._context = this._context | context;
     }
 
+    /**
+     * Removes a waypoint context or contexts to this entry.
+     * @param {Number} context - the context(s) to remove.
+     */
     removeContext(context) {
         this._context = this._context & ~context;
     }
@@ -446,8 +523,11 @@ class WT_MapViewWaypointCanvasRendererEntry {
     }
 
     /**
-     *
-     * @param {WT_MapViewState} state
+     * Updates this entry. An appropriate waypoint context is selected for this entry's waypoint, then the icon and label are
+     * updated as appropriate for the chosen context. If the waypoint's label should be visible, it is added to the appropriate
+     * label manager. Of note, this method will not draw the waypoint icon to a canvas element; it will simply ensure the
+     * .showIcon property returns the correct value depending on whether the icon should be visible.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     update(state) {
         let hide = false;
