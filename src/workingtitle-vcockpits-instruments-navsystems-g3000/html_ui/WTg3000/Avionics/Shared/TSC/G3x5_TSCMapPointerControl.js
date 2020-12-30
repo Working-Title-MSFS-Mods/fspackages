@@ -130,8 +130,12 @@ WT_G3x5_TSCMapPointerControlHTMLElement.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
+            position: relative;
             width: 100%;
             height: 100%;
+            background-color: black;
+            border: 5px solid #454b4e;
+            border-radius: 3px;
         }
 
         #touchpad {
