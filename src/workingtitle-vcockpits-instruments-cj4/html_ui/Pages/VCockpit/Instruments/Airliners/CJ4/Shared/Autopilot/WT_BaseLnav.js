@@ -125,7 +125,6 @@ class WT_BaseLnav {
             //LNAV CAN RUN, UPDATE DATA
             this._groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
             const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-
             const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
 
             this._activeWaypointDist = Avionics.Utils.computeGreatCircleDistance(planePosLatLong, this._activeWaypoint.infos.coordinates);
@@ -147,7 +146,7 @@ class WT_BaseLnav {
 
             //Remove heading instruction inhibition when near desired track
             const windCorrectedDtk = this.normalizeCourse(this._dtk - this.calculateWindCorrection(this._dtk, airspeedTrue));
-            if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 15) {
+            if (Math.abs(Avionics.Utils.angleDiff(windCorrectedDtk, planeHeading)) < 25) { //CWB adjusted from 15 to 25 to reduce the oversteer
                 this._isTurnCompleting = false;
                 this._executeInhibited = false;
             }
