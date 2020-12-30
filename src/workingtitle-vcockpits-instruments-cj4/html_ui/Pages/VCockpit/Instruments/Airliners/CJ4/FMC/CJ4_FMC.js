@@ -525,8 +525,68 @@ class CJ4_FMC extends FMCMainDisplay {
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
+            //TAKEOFF MODE HEADING SET (constant update to current heading when on takeoff roll)
+            if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO && Simplane.getIsGrounded()) {
+                Coherent.call("HEADING_BUG_SET", 1, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
+            }
+
+            //WT MANUAL BANK FD
+            const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
+            if (fdOn && !this._apMasterStatus) {
+                let bank = 0;
+                const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees');
+                const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
+                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV) {
+                    let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
+                    this.driveFlightDirector(deltaAngle, bank);
+                }
+                else if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                    const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
+                    const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + nav, "bool");
+                    const isIls = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + nav, "bool");
+                    const isLnav = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
+                    if (isLnav) {
+                        let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
+                        this.driveFlightDirector(deltaAngle, bank);
+                    } 
+                    else if (signal && isIls) {
+                        const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
+                        const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
+                        const correctionAngle = 0.23 * cdi;
+                        const desiredHeading = loc + correctionAngle;
+                        const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+                        const windCorrectedHeading = this._lnav.normalizeCourse(desiredHeading - this._lnav.calculateWindCorrection(desiredHeading, airspeedTrue));
+                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
+                        this.driveFlightDirector(deltaAngle, bank);
+                    } else if (signal && !isIls) {
+                        const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
+                        const obs = SimVar.GetSimVarValue("NAV OBS:" + nav, "degrees");
+                        const correctionAngle = 0.23 * cdi;
+                        const desiredHeading = obs + correctionAngle;
+                        const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+                        const windCorrectedHeading = this._lnav.normalizeCourse(desiredHeading - this._lnav.calculateWindCorrection(desiredHeading, airspeedTrue));
+                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
+                        this.driveFlightDirector(deltaAngle, bank);
+                    } else {
+                        if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
+                            this.driveFlightDirector(0, 0);
+                        }
+                    }
+                } 
+                else {
+                    if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
+                        this.driveFlightDirector(0, 0);
+                    }
+                }
+            }
             this.updateAutopilotCooldown = this._apCooldown;
         }
+    }
+
+    driveFlightDirector(deltaAngle, bank = 0) {
+        bank = 1.5 * deltaAngle;
+        bank = bank < -30 ? -30 : bank > 30 ? 30 : bank;
+        SimVar.SetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number", bank);
     }
 
     //add new method to find correct runway designation (with leading 0)
