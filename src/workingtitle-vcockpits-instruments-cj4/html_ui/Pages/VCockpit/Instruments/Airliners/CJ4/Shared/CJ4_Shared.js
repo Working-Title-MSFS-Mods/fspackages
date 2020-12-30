@@ -2917,7 +2917,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showNDBs = false;
         this.map.instrument.showAirports = false;
         this.map.instrument.showAirspaces = false;
-        this.map.instrument.setZoom(0);
+        this.map.instrument.setZoom(1);
+        SimVar.SetSimVarValue("L:CJ4_MAP_ZOOM", "number", 1);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
