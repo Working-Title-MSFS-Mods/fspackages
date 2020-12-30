@@ -2652,7 +2652,7 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         // Set ETA
                         let previousWaypointETAValue;
-                        if (previousWaypoint && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
+                        if (previousWaypoint && flightPlanManager.getOrigin() !== undefined && previousWaypoint.ident != flightPlanManager.getOrigin().ident) {
                             if (this.previousWaypoint == undefined || this.previousWaypoint.ident != previousWaypoint.ident) {
                                 const seconds = Number.parseInt(UTCTime);
                                 previousWaypointETAValue = Utils.SecondsToDisplayTime(seconds, true, false, false);
@@ -2886,6 +2886,7 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["AIRPORTS"] = 4] = "AIRPORTS";
     CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
     CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
+    CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
 class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -2897,7 +2898,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
         this.isExtended = undefined;
-        this.zoomRanges = [10, 20, 40, 80, 160, 320];
+        this.zoomRanges = [5, 10, 25, 50, 100, 200, 300];
         this.zoomFactor = 1.0;
         this.symbols = -1;
         this.symbolsToSimvar = false;
@@ -2916,13 +2917,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showNDBs = false;
         this.map.instrument.showAirports = false;
         this.map.instrument.showAirspaces = false;
-        this.map.instrument.intersectionMaxRange = Infinity;
-        this.map.instrument.vorMaxRange = Infinity;
-        this.map.instrument.ndbMaxRange = Infinity;
-        this.map.instrument.smallAirportMaxRange = Infinity;
-        this.map.instrument.medAirportMaxRange = Infinity;
-        this.map.instrument.largeAirportMaxRange = Infinity;
-        this.map.instrument.setZoom(0);
+        this.map.instrument.setZoom(1);
+        SimVar.SetSimVarValue("L:CJ4_MAP_ZOOM", "number", 1);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -3067,7 +3063,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showAirspaces = (this.symbols & (1 << CJ4_MapSymbol.AIRSPACES)) ? true : false;
         this.map.instrument.showAirways = (this.symbols & (1 << CJ4_MapSymbol.AIRWAYS)) ? true : false;
         this.map.instrument.showVORs = (this.symbols & (1 << CJ4_MapSymbol.NAVAIDS)) ? true : false;
-        this.map.instrument.showNDBs = (this.symbols & (1 << CJ4_MapSymbol.NAVAIDS)) ? true : false;
+        this.map.instrument.showNDBs = (this.symbols & (1 << CJ4_MapSymbol.NDBS)) ? true : false;
         this.map.instrument.showAirports = (this.symbols & (1 << CJ4_MapSymbol.AIRPORTS)) ? true : false;
         this.map.instrument.showIntersections = (this.symbols & (1 << CJ4_MapSymbol.INTERSECTS)) ? true : false;
     }

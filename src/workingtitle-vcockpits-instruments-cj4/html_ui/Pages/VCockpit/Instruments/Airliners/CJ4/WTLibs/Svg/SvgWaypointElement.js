@@ -16,6 +16,8 @@ class SvgWaypointElement extends SvgMapElement {
         this.source = source;
 
         this._label = new SvgWaypointTextElement(this);
+        this.isInFpln = false;
+        this._lastIsInFpln = false;
     }
 
     appendToMap(map) {
@@ -104,23 +106,30 @@ class SvgWaypointElement extends SvgMapElement {
         return 0;
     }
 
+    idimg(map) {
+        return this.id(map) + "-group-" + map.index;
+    }
+
     createDraw(map) {
         let isActiveWaypoint = this.isActiveWaypoint();
-
+        this._group = document.createElementNS(Avionics.SVG.NS, "g");
+        this._group.id = this.id(map);
+        this._group.setAttribute("hasTextBox", "true");
         this._image = document.createElementNS(Avionics.SVG.NS, "image");
-        this._image.id = this.id(map);
+        this._image.id = this.idimg(map);
         this._image.classList.add(this.class() + "-icon");
-        this._image.setAttribute("hasTextBox", "true");
         this._image.setAttribute("width", "100%");
         this._image.setAttribute("height", "100%");
         if (!isActiveWaypoint) {
-            const isInFpln = FlightPlanManager.DEBUG_INSTANCE.getAllWaypoints().indexOf(x => x.ident == this.source.ident) > -1;
-            this._image.setAttribute("isInFpln", isInFpln.toString());
+            const fpIdx = SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number");
+            this.isInFpln = FlightPlanManager.DEBUG_INSTANCE.getAllWaypoints(fpIdx).findIndex(x => x.ident == this.source.ident) > -1;
+            this._image.setAttribute("isInFpln", this.isInFpln.toString());
             if (this.ident === "TOD") {
-                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg?cb=3434444444444544");
+                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
             }
-            else if (!isInFpln) {
-                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+            else if (!this.isInFpln) {
+                // console.log("create " + this.source.ident + " " + this.imageFileName());
+                this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg") + "?cb=4");
             } else {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
             }
@@ -128,12 +137,16 @@ class SvgWaypointElement extends SvgMapElement {
         else {
             this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.svg");
         }
+        this._lastIsInFpln = this.isInFpln;
+        this._image.setAttribute("lastIsInFpln", this._lastIsInFpln.toString());
         this._lastIsActiveWaypoint = isActiveWaypoint;
         this._image.setAttribute("lastIsActiveWaypoint", isActiveWaypoint.toString());
         let iconSize = this.getIconSize(map) + 4;
         this._image.setAttribute("width", fastToFixed(iconSize, 0));
         this._image.setAttribute("height", fastToFixed(iconSize, 0));
-        return this._image;
+        this._group.appendChild(this._image);
+        this._group.appendChild(this._label.createDraw(map));
+        return this._group;
     }
 
     updateDraw(map) {
@@ -153,18 +166,22 @@ class SvgWaypointElement extends SvgMapElement {
         let isActiveWaypoint = this.isActiveWaypoint();
 
         if (this._image === undefined) {
-            this._image = document.getElementById(this.id(map));
+            this._image = document.getElementById(this.idimg(map));
+            const fpIdx = SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number");
+            this.isInFpln = FlightPlanManager.DEBUG_INSTANCE.getAllWaypoints(fpIdx).findIndex(x => x.ident == this.source.ident) > -1;
+            this._image.setAttribute("isInFpln", this.isInFpln.toString());
         }
         this._lastIsActiveWaypoint = (this._image.getAttribute("lastIsActiveWaypoint") === "true");
+        this._lastIsInFpln = (this._image.getAttribute("lastIsInFpln") === "true");
 
-        if (isActiveWaypoint != this._lastIsActiveWaypoint) {
+        if (isActiveWaypoint !== this._lastIsActiveWaypoint || this.isInFpln !== this._lastIsInFpln) {
             if (this._image) {
                 if (!isActiveWaypoint) {
                     if (this.ident === "TOD") {
-                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg?cb=3444444444443");
+                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
                     }
-                    else if ((this._image.getAttribute("isInFpln") !== "true")) {
-                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg"));
+                    else if (!this.isInFpln) {
+                        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + this.imageFileName().replace(".png", ".svg") + "?cb=44");
                     } else {
                         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_FLIGHTPLAN.svg");
                     }
@@ -173,6 +190,8 @@ class SvgWaypointElement extends SvgMapElement {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_INTERSECTION_ACTIVE.svg");
                 }
             }
+            this._image.setAttribute("lastIsInFpln", this.isInFpln.toString());
+            this._lastIsInFpln = this.isInFpln;
             this._image.setAttribute("lastIsActiveWaypoint", isActiveWaypoint.toString());
             this._lastIsActiveWaypoint = isActiveWaypoint;
         }
@@ -196,8 +215,8 @@ class SvgWaypointElement extends SvgMapElement {
                 iconSize *= (this.minimize ? 0.5 : 1);
                 let x = (this.x - iconSize * 0.5) + 2;
                 let y = (this.y - iconSize * 0.5) + 2;
-                this.svgElement.setAttribute("x", x + "");
-                this.svgElement.setAttribute("y", y + "");
+                this._image.setAttribute("x", x + "");
+                this._image.setAttribute("y", y + "");
                 if (this.source instanceof AirportInfo) {
                     let a = this.source.longestRunwayDirection;
                     if (isNaN(a) && this.source.runways[0]) {
@@ -207,16 +226,15 @@ class SvgWaypointElement extends SvgMapElement {
                         this._alpha = a - 45;
                     }
                 }
-                if (isFinite(this._alpha)) {
-                    this.svgElement.setAttribute("transform", "rotate(" + this._alpha.toFixed(0) + " " + this.x.toFixed(0) + " " + this.y.toFixed(0) + ")");
-                }
             }
         }
+        this._label.updateDraw(map);
     }
 }
 
-class SvgWaypointTextElement {
+class SvgWaypointTextElement extends SvgMapElement {
     constructor(waypointElement) {
+        super();
         this.waypointElement = waypointElement;
         this._label;
         this.textOffsetRatio = 0.25;
@@ -252,7 +270,7 @@ class SvgWaypointTextElement {
 
     updateDraw(map) {
         if (!this._label) {
-            this.createLabel(map);
+            this.createDraw(map);
         }
 
         let isActiveWaypoint = this.waypointElement.isActiveWaypoint();
@@ -270,7 +288,7 @@ class SvgWaypointTextElement {
                 let y = (this.waypointElement.y - iconSize * 0.5);
 
                 if (this._label) {
-                    let textX = (x + iconSize * 0.5 - this._textWidth * 0.5 + map.config.waypointLabelDistanceX + 6);
+                    let textX = (x + map.config.waypointLabelDistanceX - 10);
                     let textY = y - map.config.waypointLabelDistance + 4;
                     this._label.setAttribute("x", textX);
                     this._label.setAttribute("y", textY);
@@ -280,9 +298,10 @@ class SvgWaypointTextElement {
                 }
             }
         }
+
     }
 
-    createLabel(map) {
+    createDraw(map) {
         let fontSize = this.waypointElement.getLabelFontSize(map);
         let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
@@ -297,6 +316,7 @@ class SvgWaypointTextElement {
         }
         let isActiveWaypoint = this.waypointElement.source.ident === ident;
         this._refreshLabel(map, isActiveWaypoint);
+        return this._label;
     }
 
     _refreshLabel(map, isActiveWaypoint) {
@@ -319,6 +339,7 @@ class SvgWaypointTextElement {
             canvas.setAttribute("width", (this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight).toFixed(0) + "px");
             canvas.setAttribute("height", (this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom).toFixed(0) + "px");
             this._label.appendChild(canvas);
+
         } else {
             canvas = this._label.getElementsByClassName("labelCanvas")[0];
         }
@@ -335,16 +356,19 @@ class SvgWaypointTextElement {
             if (this.waypointElement.ident === "TOD") {
                 context.fillStyle = "#11d011";
             }
-            else if (this.source instanceof IntersectionInfo) {
+            else if(this.waypointElement.isInFpln === true){
+                context.fillStyle = map.config.waypointLabelColor;
+            }
+            else if (this.waypointElement.source instanceof IntersectionInfo) {
                 context.fillStyle = map.config.intersectionLabelColor;
             }
-            else if (this.source instanceof VORInfo) {
+            else if (this.waypointElement.source instanceof VORInfo) {
                 context.fillStyle = map.config.vorLabelColor;
             }
-            else if (this.source instanceof NDBInfo) {
+            else if (this.waypointElement.source instanceof NDBInfo) {
                 context.fillStyle = map.config.ndbLabelColor;
             }
-            else if (this.source instanceof AirportInfo) {
+            else if (this.waypointElement.source instanceof AirportInfo) {
                 context.fillStyle = map.config.airportLabelColor;
             }
             else {
@@ -354,10 +378,9 @@ class SvgWaypointTextElement {
         else {
             context.fillStyle = "magenta";
         }
+        context.textAlign = "start";
         context.font = fontSize + "px " + map.config.waypointLabelFontFamily;
-        context.strokeStyle = map.config.waypointLabelStrokeColor;
         context.lineWidth = map.config.waypointLabelStrokeWidth * 2;
-        context.strokeText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
         context.fillText(text, map.config.waypointLabelBackgroundPaddingLeft, this._textHeight + map.config.waypointLabelBackgroundPaddingTop);
     }
 }

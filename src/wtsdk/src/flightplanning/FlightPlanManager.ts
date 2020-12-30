@@ -62,6 +62,13 @@ export class FlightPlanManager {
     this.__currentFlightPlanIndex = value;
   }
 
+  /**
+   * Gets the current stored version of the flight plan.
+   */
+  public get CurrentFlightPlanVersion() {
+    return this._currentFlightPlanVersion
+  }
+
   public update(_deltaTime: number): void {
 
   }
