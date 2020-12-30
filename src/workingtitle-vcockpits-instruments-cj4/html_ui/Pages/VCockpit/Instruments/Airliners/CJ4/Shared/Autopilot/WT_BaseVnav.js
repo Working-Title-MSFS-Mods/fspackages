@@ -48,6 +48,11 @@ class WT_BaseVnav {
         this._vnavConstraintWaypoint = undefined;
         this._vnavConstraintType = undefined;
         this._firstApproachWaypointConstraint = undefined;
+        this._fafAltitude = undefined;
+        this._fafDistance = undefined;
+        this._gpAngle = undefined;
+        this._gpExists = false;
+        this._approachRunwayWaypoint = undefined;
 
         this._pathCalculating = false;
 
@@ -87,6 +92,13 @@ class WT_BaseVnav {
      * Update data if needed.
      */
     update() {
+        //UPDATE GP LVAR
+        if (this._gpExists) {
+            SimVar.SetSimVarValue("L:WT_CJ4_GP_ANGLE", "number", this._gpAngle);
+        } else {
+            SimVar.SetSimVarValue("L:WT_CJ4_GP_ANGLE", "number", 0);
+        }
+        
 
         //CAN VNAV EVEN RUN?
         this._destination = this._fpm.getDestination();
@@ -187,18 +199,47 @@ class WT_BaseVnav {
             //BUILD VPATH DESCENT PROFILE -- This only needs to be updated when flight plan changed or when active VNAV waypoint changes
             if (this._currentFlightSegment.type != SegmentType.Departure && (this._flightPlanChanged || this._vnavTargetChanged)) {
                 //console.log("build profile started");
-                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
-                    this.buildGlidepath();
-                }
-                else {
-                    this.buildDescentProfile();
-                }
-                
+                // if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                //     this.buildGlidepath();
+                // }
+                // else {
+                //     this.buildDescentProfile();
+                // }
+                this.buildDescentProfile();
                 //console.log(`profile written: ${this._vnavTargetWaypoint && this._vnavTargetWaypoint.ident} ${this._vnavTargetAltitude}`);
             }
 
+            //BUILD GLIDE PATH
+            if (this._fpm.isLoadedApproach()) {
+                if (this._flightPlanChanged || this._vnavTargetChanged || this._gpExists === false) {
+                    this.buildGlidepath();
+                }
+            } else {
+                this._approachRunwayWaypoint = undefined;
+                this._gpAngle = undefined;
+                this._gpExists = false;
+            }
+
             //TRACK ALTITUDE DEVIATION
-            if (this._currentFlightSegment.type != SegmentType.Departure && this._vnavTargetAltitude && this._vnavTargetWaypoint) {
+            if (this._currentFlightSegment.type == SegmentType.Approach && this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._gpExists) {
+                //IF GP MODE ACTIVE
+                let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+                this._vnavTargetWaypoint = this._approachRunwayWaypoint;
+                this._vnavTargetDistance = Avionics.Utils.computeDistance(currPos, this._vnavTargetWaypoint.infos.coordinates);
+                this._vnavTargetAltitude = this._approachRunwayWaypoint.legAltitude1;
+                this._desiredAltitude = this._vnavTargetAltitude + (Math.tan(this._gpAngle * (Math.PI / 180)) * this._vnavTargetDistance * 6076.12);
+                
+                this._altitude = SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
+                this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._gpAngle * (Math.PI / 180)))) / 6076.12;
+
+                this._altDeviation = this._altitude - this._desiredAltitude;
+                this._distanceToTod = this._topOfDescent < 0 ? 0 : this._vnavTargetDistance > this._topOfDescent ? (this._vnavTargetDistance - this._topOfDescent) : 0;
+                SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this._altDeviation);
+                this._pathCalculating = true;
+                this.setTodWaypoint(false);
+            }
+            else if (this._currentFlightSegment.type != SegmentType.Departure && this._vnavTargetAltitude && this._vnavTargetWaypoint) {
+                //VNAV MODE ACTIVE
                 if (this._valuesUpdated == false) {
                     this.updateValues();
                 }
@@ -382,7 +423,9 @@ class WT_BaseVnav {
             vnavTargetAltitude: this._vnavTargetAltitude,
             vnavTargetDistance: this._vnavTargetDistance,
             topOfDescent: this._topOfDescent,
-            distanceToTod: this._distanceToTod
+            distanceToTod: this._distanceToTod,
+            gpExists: this._gpExists,
+            gpAngle: this._gpAngle
         };
         WTDataStore.set('CJ4_vnavValues', JSON.stringify(vnavValues));
     }
@@ -395,19 +438,39 @@ class WT_BaseVnav {
 
     buildGlidepath() {
         const approach = this._fpm.getApproachWaypoints();
-
         if (approach.length > 0) {
             const lastApproachWaypoint = approach[approach.length - 1];
 
             if (lastApproachWaypoint.isRunway) {
-                this._vnavTargetDistance = Avionics.Utils.computeGreatCircleDistance(lastApproachWaypoint.infos.coordinates, this._currPos);
-                this._vnavTargetAltitude = lastApproachWaypoint.legAltitude1;
+                this._approachRunwayWaypoint = lastApproachWaypoint;
+                //FIND FAF
+                for (let i = approach.length - 2; i >= 0; i--) {
+                    const waypoint = approach[i];
+                    let altDesc = waypoint.legAltitudeDescription;
+                    const distance = lastApproachWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
+                    console.log(waypoint.icao + " " + waypoint.legAltitudeDescription + " " + waypoint.legAltitude1 + " " + waypoint.legAltitude2);
+                    if (altDesc > 0 && altDesc < 3 && waypoint.legAltitude1 > 0 && distance > 3) { // FAF
+                        this._fafAltitude = waypoint.legAltitude1;
+                        this._fafDistance = lastApproachWaypoint.cumulativeDistanceInFP - waypoint.cumulativeDistanceInFP;
+                        console.log("found FAF: " + waypoint.icao + " " + this._fafAltitude);
+                        break;
+                    }
+                }
+                //CALC GP ANGLE
+                const altitudeDifference = this._fafAltitude - lastApproachWaypoint.legAltitude1;
+                this._gpAngle = (180 / Math.PI) * (Math.atan(altitudeDifference / (this._fafDistance * 6076.12)));
+                console.log("gp angle set: " + this._gpAngle);
+                this._gpExists = true;
 
-                this._vnavTargetWaypoint = lastApproachWaypoint;
-                this._topOfDescent = ((this._altitude - this._vnavTargetAltitude) / (Math.tan(this._desiredFPA * (Math.PI / 180)))) / 6076.12;
-
-                this._vnavTargetChanged = true;
+            } else {
+                this._gpExists = false;
+                this._approachRunwayWaypoint = undefined;
+                this._gpAngle = 0;
             }
+        } else {
+            this._gpExists = false;
+            this._approachRunwayWaypoint = undefined;
+            this._gpAngle = 0;
         }
     }
 }

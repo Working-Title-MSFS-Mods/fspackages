@@ -214,6 +214,8 @@ class CJ4_FMC_VNavSetupPage {
         let vnavTargetDistance = 0;
         let topOfDescent = 0;
         let distanceToTod = 0;
+        let gpExists = false;
+        let gpAngle = 0;
 
         //RUN ACTUAL VNAV PATH CONTROL
         if (fmc._vnav) {
@@ -228,6 +230,8 @@ class CJ4_FMC_VNavSetupPage {
                     vnavTargetDistance = parseFloat(parsedVnavValues.vnavTargetDistance);
                     topOfDescent = parseFloat(parsedVnavValues.topOfDescent);
                     distanceToTod = parseFloat(parsedVnavValues.distanceToTod);
+                    gpExists = parsedVnavValues.gpExists;
+                    gpAngle = parseFloat(parsedVnavValues.gpAngle);
                 }
                 const altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                 const desiredFPA = WTDataStore.get('CJ4_vpa', 3);
@@ -265,11 +269,13 @@ class CJ4_FMC_VNavSetupPage {
                     [pathArm == 1 ? "YES[green]" : "NO", inhibit == 1 ? "YES[green]" : "NO", pathActive == 1 ? "YES[green]" : "NO"],
                     ["ALTDEV [blue]", "TOD[blue]", " ALT/VS SLOT[blue]"],
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
-                    ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
-                    [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
+                    // ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
+                    // [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
+                    ["GP EXISTS[blue]", "GP ANGLE"],
+                    [gpExists ? "YES[green]" : "NO", gpAngle > 0 ? gpAngle.toFixed(1) + "°[green]" : "N/A", "AGP: " + SimVar.GetSimVarValue("L:WT_TEMP_ACTIVE_FPA", "number").toFixed(1)],
                     ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    ["ALK:" + altLock, "OBEY? [white]" + obeyConstraint == 1 ? "Y[green]" : "N", "CSTR? [white]" + constraint == 1 ? "Y[green]" : "N"],
+                    ["ALK:" + altLock, "OBEY?" + obeyConstraint == 1 ? "Y[green]" : "N", "CSTR?" + constraint == 1 ? "Y[green]" : "N"],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
 
