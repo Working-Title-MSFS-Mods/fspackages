@@ -222,13 +222,14 @@ class CJ4NavModeSelector {
    */
   handleVSPressed() {
     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-
+    
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.FLC:
       case VerticalNavModeState.ALTC:
       case VerticalNavModeState.ALT:
         SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
         this.currentVerticalActiveState = VerticalNavModeState.VS;
         break;
@@ -250,6 +251,7 @@ class CJ4NavModeSelector {
         break;
       case VerticalNavModeState.PATH:
         SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
         this.currentVerticalActiveState = VerticalNavModeState.VS;
         break;
     }
