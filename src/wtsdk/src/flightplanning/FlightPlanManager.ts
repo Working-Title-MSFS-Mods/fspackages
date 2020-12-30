@@ -260,7 +260,6 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[fplnIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
-      Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index + 1);
 
       if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan
         && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
