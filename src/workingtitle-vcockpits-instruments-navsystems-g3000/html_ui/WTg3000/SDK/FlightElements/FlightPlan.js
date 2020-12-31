@@ -402,16 +402,12 @@ class WT_FlightPlan {
      * @param {Number} enrouteTransitionIndex
      */
     async _setDeparture(departure, runwayTransitionIndex, enrouteTransitionIndex) {
-        let runwayTransition;
-        let runway;
-        if (runwayTransitionIndex >= 0) {
-            runwayTransition = departure.runwayTransitions.getByIndex(runwayTransitionIndex);
-            runway = runwayTransition.runway;
-        }
+        let runwayTransition = departure.runwayTransitions.getByIndex(runwayTransitionIndex);
         let enrouteTransition = departure.enrouteTransitions.getByIndex(enrouteTransitionIndex);
 
         let legs = [];
         if (runwayTransition) {
+            let runway = runwayTransition.runway;
             legs.push(new WT_FlightPlanWaypointFixLeg(new WT_CustomWaypoint(runway.designation, runway.end))); // runway fix
             await this._buildLegsFromProcedure(runwayTransition.legs, legs);
         }
@@ -481,10 +477,7 @@ class WT_FlightPlan {
      */
     async _setArrival(arrival, enrouteTransitionIndex, runwayTransitionIndex) {
         let enrouteTransition = arrival.enrouteTransitions.getByIndex(enrouteTransitionIndex);
-        let runwayTransition;
-        if (runwayTransitionIndex >= 0) {
-            runwayTransition = arrival.runwayTransitions.getByIndex(runwayTransitionIndex);
-        }
+        let runwayTransition = arrival.runwayTransitions.getByIndex(runwayTransitionIndex);
 
         let legs = [];
         if (enrouteTransition) {
