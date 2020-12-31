@@ -121,6 +121,7 @@ class WT_GeoPoint {
             let lat2 = other.lat * Avionics.Utils.DEG2RAD;
             let long1 = this.long * Avionics.Utils.DEG2RAD;
             let long2 = other.long * Avionics.Utils.DEG2RAD;
+            let deltaLat = lat2 - lat1;
             let deltaLong = long2 - long1;
 
             let deltaPsi = WT_GeoPoint._deltaPsi(lat1, lat2);
@@ -182,13 +183,19 @@ class WT_GeoPoint {
         let deltaLat = distance * Math.cos(bearingRad);
         let offsetLat = lat + deltaLat;
 
-        let deltaPsi = WT_GeoPoint._deltaPsi(lat, offsetLat);
-        let correction = WT_GeoPoint._rhumbCorrection(deltaPsi, lat, offsetLat);
-        let deltaLong = distance * Math.sin(bearingRad) / correction;
-        let offsetLong = long + deltaLong;
+        if (Math.abs(offsetLat) >= Math.PI / 2) {
+            // you can't technically go past the poles along a rhumb line, so we will simply terminate the path at the pole
+            offsetLat = Math.sign(offsetLat) * 90;
+            offsetLong = 0; // since longitude is meaningless at the poles, we'll arbitrarily pick a longitude of 0 degrees.
+        } else {
+            let deltaPsi = WT_GeoPoint._deltaPsi(lat, offsetLat);
+            let correction = WT_GeoPoint._rhumbCorrection(deltaPsi, lat, offsetLat);
+            let deltaLong = distance * Math.sin(bearingRad) / correction;
+            let offsetLong = long + deltaLong;
 
-        offsetLat *= Avionics.Utils.RAD2DEG;
-        offsetLong *= Avionics.Utils.RAD2DEG;
+            offsetLat *= Avionics.Utils.RAD2DEG;
+            offsetLong *= Avionics.Utils.RAD2DEG;
+        }
 
         if (mutate) {
             return this.set(offsetLat, offsetLong);
