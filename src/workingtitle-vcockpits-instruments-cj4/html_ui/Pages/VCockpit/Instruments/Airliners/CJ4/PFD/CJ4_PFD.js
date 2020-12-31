@@ -251,7 +251,6 @@ class CJ4_PFD extends BaseAirliners {
         if (this.isMachActive != isMachActive) {
             this.isMachActive = isMachActive;
             if (isMachActive) {
-                // let mach = SimVar.GetGameVarValue("FROM KIAS TO MACH", "number", SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR:1", "knots"));
                 Coherent.call("AP_MACH_VAR_SET", 0, cruiseMach);
             }
             else {
@@ -264,7 +263,6 @@ class CJ4_PFD extends BaseAirliners {
             const machAirspeed = Simplane.getAutoPilotMachHoldValue();
             if (this.isMachActive && this._machAirpeed == machAirspeed && this._machSyncTimer < 0) {
                 this._machAirpeed = machAirspeed;
-                //Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
                 Coherent.call("AP_MACH_VAR_SET", 0, machAirspeed);
                 this._machSyncTimer = this.MACH_SYNC_TIME;
             }
@@ -281,29 +279,12 @@ class CJ4_PFD extends BaseAirliners {
                     this.radioNav.setRADIONAVSource(NavSource.VOR1);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 1;
-
-                    // const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
-                    // if (apOnGPS) {
-                    //     SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
-                    //         .then(() => SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1));
-                    // }
-
-                    //UPDATED FOR WT LNAV
-                    // SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", 0);
-                    // if (SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1) {
-                    //     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 0) {
-                    //         SimVar.SetSimVarValue('K:AP_NAV1_HOLD', 'number', 1);
-                    //     }
-                    // }
-                    // SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1);
-
                     this.onModeChanged();
                 }
                 else if ((this.mapNavigationMode == Jet_NDCompass_Navigation.VOR || this.mapNavigationMode == Jet_NDCompass_Navigation.ILS) && this.mapNavigationSource == 1) {
                     this.radioNav.setRADIONAVSource(NavSource.VOR2);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 2;
-
                     SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 2);
                     this.onModeChanged();
                 }
@@ -311,20 +292,6 @@ class CJ4_PFD extends BaseAirliners {
                     this.radioNav.setRADIONAVSource(NavSource.GPS);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
                     this.mapNavigationSource = 0;
-
-                    // const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
-                    // if (!apOnGPS) {
-                    //     SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0)
-                    // }
-
-                    //UPDATED FOR WT LNAV
-                    // SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", 1);
-                    // if (SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1) {
-                    //     if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") == 1) {
-                    //         SimVar.SetSimVarValue('K:AP_NAV1_HOLD', 'number', 0);
-                    //     }
-                    // }
-
                     this.onModeChanged();
                 }
                 break;
@@ -680,7 +647,6 @@ class CJ4_VSpeed extends NavSystemElement {
         }
 
         let donutVSpeed = SimVar.GetSimVarValue("L:WT_CJ4_DONUT", "number");
-        //if (Simplane.getAutoPilotVerticalSpeedHoldActive() && fmaValues.verticalMode === 'VPATH') {
         if (Math.abs(donutVSpeed) > 100) {
             this.vsi.setAttribute("vnav_vspeed", donutVSpeed.toString());
             this.vsi.setAttribute("vnav_vspeed_active", "true");
@@ -773,7 +739,6 @@ class CJ4_Attitude extends NavSystemElement {
         this.svg.setAttribute("flight_director-active", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "true" : "false");
         this.svg.setAttribute("flight_director-pitch", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"));
         const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
-        //const bank = apMasterActive ? SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree") : -1 * SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number");
         if (apMasterActive) {
             this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
         } else {
@@ -916,19 +881,31 @@ class CJ4_ILS extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (!this.altWentAbove500) {
-            let altitude = Simplane.getAltitudeAboveGround();
-            if (altitude >= 500)
-                this.altWentAbove500 = true;
-        }
+        console.log("onupdate");
         if (this.ils) {
-            let showIls = false;
-            let localizer = this.gps.radioNav.getBestILSBeacon(true);
-            if ((localizer.id != 0 && this.altWentAbove500) || (this.gps.currFlightPlanManager.isActiveApproach() && Simplane.getAutoPilotApproachType() == 10)) {
-                showIls = true;
+            this.altWentAbove500 = true;
+            console.log("this.ils");
+            let showLoc = 0;
+            let showGs = 0;
+
+            
+            console.log("this.gps.mapNavigationSource: " + this.gps.mapNavigationSource);
+            if (this.gps.mapNavigationSource === 1 || this.gps.mapNavigationSource === 2) {
+                const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.gps.mapNavigationSource, "bool");
+                const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.gps.mapNavigationSource, "bool");
+                showLoc = isLoc ? 1 : 0;
+                showGs = isGs ? 1 : 0;
             }
-            this.ils.showLocalizer(showIls);
-            this.ils.showGlideslope(showIls);
+            else if (this.gps.mapNavigationSource === 0) {
+                const isVnav = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") > 0;
+                const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
+                const isPpos = this.gps.mapDisplayMode === 4;
+                showLoc = isRnav || isPpos ? 2 : 0;
+                showGs = isVnav ? 2 : 0;
+            }
+
+            this.ils.showLocalizer(showLoc, this.gps.mapNavigationSource);
+            this.ils.showGlideslope(showGs);
             this.ils.update(_deltaTime);
         }
     }

@@ -374,8 +374,15 @@ class WT_BaseLnav {
     getFinalApproachFixDistance(planeCoords) {
         const approach = this._fpm.getApproachWaypoints();
         if (approach.length > 1) {
-            const finalApproachFix = approach[approach.length - 2];
-            const finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
+            const destination = approach[approach.length - 1];
+            const destinationDistance = destination.cumulativeDistanceInFp;
+            console.log("destination distance: " + destinationDistance);
+            let finalApproachFix = approach[approach.length - 2];
+            let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
+            if (finalApproachFixDistance < 3 && approach.length >= 3) {
+                finalApproachFix = approach[approach.length - 3];
+            }
+            finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
 
             return finalApproachFixDistance;
         }
@@ -393,7 +400,7 @@ class WT_BaseLnav {
         const currentWaypoint = this._fpm.getActiveWaypoint();
         const runway = this.getRunway();
 
-        if (fafDistance <= 2 || (currentWaypoint && currentWaypoint.isRunway)) {
+        if (fafDistance <= 3 || (currentWaypoint && currentWaypoint.isRunway)) {
             if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._navModeSelector.approachMode === WT_ApproachType.RNAV) {
                 return NavSensitivity.APPROACHLPV;
             }
