@@ -3,7 +3,7 @@ class AS3000_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
 
-        this._icaoWaypointFactory = new WT_ICAOWaypointFactory(this);
+        this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._icaoSearchers = {
             airport: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.AIRPORT),
             vor: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.VOR),

@@ -4,7 +4,7 @@ class AS3000_MFD extends NavSystem {
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
 
-        this._icaoWaypointFactory = new WT_ICAOWaypointFactory(this);
+        this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._icaoSearchers = {
             airport: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.AIRPORT),
             vor: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.VOR),
