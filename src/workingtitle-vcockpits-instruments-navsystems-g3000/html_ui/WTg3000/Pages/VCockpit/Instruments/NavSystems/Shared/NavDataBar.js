@@ -57,7 +57,7 @@ class WT_NavDataBar extends NavSystemElement {
         let utcFormatter = new WT_TimeFormatter(utcOpts);
 
         let flightPlanManager = this._fpm;
-        let airplaneModel = WT_AirplaneModel.INSTANCE;
+        let airplaneModel = WT_PlayerAirplane.INSTANCE;
 
         this._infos = {
             BRG: new WT_NavInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.BRG, new WT_NumberUnit(0, WT_Unit.DEGREE), "PLANE HEADING DEGREES MAGNETIC", "degree", bearingFormatter),
