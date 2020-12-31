@@ -1,5 +1,32 @@
 # Changelog
 
+### v0.4.0-beta1
+**New Features**
+- \[MFD\] Added MFD "HALF" mode, which splits the MFD into left and right panes.
+  - To toggle between FULL and HALF modes, navigate to MFD Home using the touchscreen controllers and press the "FULL" or "HALF" button in the navigation bar.
+  - In FULL mode, both touchscreen controllers control the only pane that is displayed.
+  - In HALF mode, each touchscreen controller controls one pane at a time. For each touchscreen controller, the pane that is currently selected can be visualized in the label bar next to the upper knob (in the upper-right corner of the screen). Two boxes represent the left and right panes. The currently selected pane is highlighted in either cyan (GTC1) or purple (GTC2). The pane that is not selected appears black.
+  - To switch the pane selected by a touchscreen controller, turn the inner upper knob.
+  - In the MFD display, the border of each half pane changes color depending on which touchscreen controller has selected it. The border will be black if it is selected by neither controller, cyan if selected by GTC1, purple if selected by GTC2, and blue if selected by both.
+  - To improve performance, in HALF mode each pane is updated at half refresh rate.
+- \[NavMap\] Added ability to show airways.
+  - Airways can be toggled on/off by navigating to PFD Home -> PFD Map Settings -> "Aviation" tab, or MFD Home -> Map Settings -> "Aviation" tab.
+- \[NavMap\] Added ability to show country and state/province borders and labels.
+  - Country borders/labels are always visible. State/province borders/labels can be toggled on/off by navigating to PFD Home -> PFD Map Settings -> "Land" tab, or MFD Home -> Map Settings -> "Land" tab.
+- \[NavMap\] Added the Map Pointer Information display for when the map pointer is active. The display shows the distance and bearing from the aircraft's current position to the pointer's position, and the lat/long coordinates of the pointer's position.
+- \[NavMap\] Added the mini compass heading indicator (top-left corner).
+
+**Changed Features**
+- \[NavMap\] Updated flight plan path rendering to more closely match the real-life Garmin units.
+- \[NavMap\] Updated waypoint icons to more closely match those found in the real-life Garmin units.
+- \[NavMap\] Changed the controls for NEXRAD overlay. These can now be found in the appropriate Map Settings menu, under the "Sensor" tab.
+- \[Weather Radar\] Changed the controls for the weather radar (WX radar). Navigating to MFD Home -> Weather Selection -> WX Radar will now open a new settings page.
+
+**Fixes**
+- \[PFD\] The inset map no longer bleeds through its borders.
+- \[NavMap\] Map symbols (cities, waypoints, etc) are now better aligned with the terrain texture at high latitudes and when zoomed out.
+- \[Weather Radar\] In Vertical Scan mode, the vertical scale is now correctly labeled.
+
 ### v0.3.4
 **Fixes**
 - \[NavMap\] The map now correctly draws approach waypoints and paths.
