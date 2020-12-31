@@ -48,6 +48,11 @@ export class FlightPlanManager {
           await FlightPlanAsoboSync.LoadFromGame(this);
         }
         this.resumeSync();
+
+        // ctd magic sauce?
+        Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", 0);
+        Coherent.call("RECOMPUTE_ACTIVE_WAYPOINT_INDEX");
+
       }.bind(this));
     }
 
