@@ -472,7 +472,6 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             let bankConversion = (currentPlaneBank - fdBank) * 2;
             if (this.cj4_FlightDirectorActive) {
                 if (this.cj4_FlightDirectorStyle == 0) {
-                    console.log("setting style 0");
                     this.crossPointersGroup.setAttribute("display", "none");
                     this.crossPointersPitch.setAttribute("display", "none");
                     this.crossPointersBank.setAttribute("display", "none");
@@ -480,7 +479,6 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     this.cj4_FlightDirector.setAttribute("transform", "rotate(" + (-this.cj4_FlightDirectorBank) + ") translate(0 " + ((this.pitchAngle - this.cj4_FlightDirectorPitch) * this.pitchAngleFactor) + ")");
                     this.cj4_FlightDirector.setAttribute("display", "");
                 } else if (this.cj4_FlightDirectorStyle == 1) {
-                    console.log("setting style 1");
                     this.cj4_FlightDirector.setAttribute("display", "none");
                     this.vBarAircraftSymbol.setAttribute("display", "none");
                     this.crossPointersGroup.setAttribute("display", "");

@@ -783,8 +783,6 @@ class CJ4_Attitude extends NavSystemElement {
             if (Math.abs(this.wtFlightDirectorBankValue - bank) > 0.5) {
                 setBank = bank < this.wtFlightDirectorBankValue + 0.5 ? this.wtFlightDirectorBankValue - 0.5 :  bank > this.wtFlightDirectorBankValue ? this.wtFlightDirectorBankValue + 1 : bank;
             }
-            // console.log("wtFlightDirectorBankValue " + this.wtFlightDirectorBankValue);
-            // console.log("setBank " + setBank);
             this.wtFlightDirectorBankValue = setBank;
             this.svg.setAttribute("flight_director-bank", (-1 * setBank));
         }
