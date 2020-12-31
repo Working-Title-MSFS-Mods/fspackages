@@ -371,6 +371,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.loc_mainGroup.setAttribute("visibility", "hidden");
             this.loc_cursorShapeLeft.removeAttribute("visibility");
             this.loc_cursorShapeRight.removeAttribute("visibility");
+            this.lateral_snowFlake.removeAttribute("visibility");
         }
     }
     showGlideslope(_val) {
@@ -382,6 +383,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.gs_mainGroup.setAttribute("visibility", "hidden");
             this.gs_cursorShapeUp.removeAttribute("visibility");
             this.gs_cursorShapeDown.removeAttribute("visibility");
+            this.vertical_snowFlake.removeAttribute("visibility");
         }
     }
     showNavInfo(_val) {
