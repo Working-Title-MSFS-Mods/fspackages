@@ -441,10 +441,17 @@ class CJ4NavModeSelector {
    * Handles when the selected altitude in altitude lock slot 1 changes in the sim.
    */
   handleAlt1Changed() {
-    this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
+    if (this._inputDataStates.selectedAlt1.state < 0) {
+      this.selectedAlt1 = 0;
+      Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 0);
+    } else {
+      this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
+    }
+    
     if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTC) {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
     }
+     
     this.setProperVerticalArmedStates();
   }
 
