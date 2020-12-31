@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.3.4
+### Latest version: v0.4.0-beta1
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,42 +8,31 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.3.4.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.4.0-beta1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-### Release Highlights (v0.3.4)
-- Fixed nav map not drawing approach paths.
-- Fixed PFD autopilot display not flashing appropriate warnings (e.g. when the autopilot is disengaged).
-
-#### Highlights for v0.3.1
-- Improved compatibility with the WorkingTitle CJ4 mod.
-- Fixed an issue where on the navigational map, waypoints in a flight plan sometimes had missing labels.
-- City labels no longer appear in the weather radar screens.
-
-#### Highlights for v0.3.0
-
-- Now fully compatible with the Cessna Citation Longitude.
-- The touchscreen controller UI style has been completely revamped through integration of StuTozer/ElectrikKar's Touchscreen Restyled Mod as well as numerous additional changes.
-- The MFD navigation data bar is now customizable.
+### Release Highlights (v0.4.0-beta1)
+- Added MFD "HALF" mode, which splits the MFD into left and right panes.
+- New navigational map features:
+  - Airways.
+  - Country and state/province borders and labels.
+  - Map Pointer Information display.
+- Updated flight plan rendering and waypoint icons to more closely resemble the real-life units.
+- New weather radar displays and settings menu.
 
 **Fixes**
-- \[Misc\] Display brightness is now saved between sessions for the TBM 930.
-- \[PFD\] The Terrain softkey no longer displays a value of "undefined".
-- \[PFD\] Terrain mode and DCLTR settings for the inset map now save correctly between sessions.
-- \[TSC\] Fixed an issue where the pressing the down button in the active flight plan page would cause a CTD under certain circumstances. Also generally improved the scroll behavior in the active flight plan page.
-- \[NavMap\] Fixed a bug where the track vector overlay would disappear under certain conditions.
-- \[NavMap\] Performance optimizations for the city display.
-- \[NAVCOM\] Fixed a bug where changing the ADF frequency in the touchscreen controller's Audio/Radio page would lead to unexpected changes in NAV frequencies.
+- \[PFD\] The inset map no longer bleeds through its borders.
+- \[NavMap\] Map symbols (cities, waypoints, etc) are now better aligned with the terrain texture at high latitudes and when zoomed out.
+- \[Weather Radar\] In Vertical Scan mode, the vertical scale is now correctly labeled.
 
 ### Known Issues
 - \[Stability\] The game will CTD when clearing origin and destination from the flight plan and attempting to enter a new origin/destination.
-- \[Stability\] (Vanilla issue) Sometimes the PFD will freeze when transitioning to an approach loaded into the flight plan. The PFD may unfreeze when you reach the second waypoint in the approach.
-- \[Stability\] (Vanilla issue) The game sometimes freezes or CTDs when editing the flight plan using the touchscreen controller flight plan menu.
 - \[PFD\] (Vanilla issue) Co-pilot PFD softkeys are nonfunctional in the TBM 930.
-- \[NavMap\] (Vanilla issue) The road overlay for the navigational map will sometimes fail to draw roads close to the aircraft, instead prioritizing roads farther away. This usually only happens when the map range is set to large values (>100 NM).
-- \[NavMap\] (Vanilla issue) Sometimes airport symbols will not update on the navmap. Zooming in then back out will usually fix it.
-- \[NavMap\] At large map ranges (>250 NM), map symbols may not line up correctly with the underlying terrain. This is because the terrain map is projected differently from the symbols. The effect is worse at the edges of the map and also worse at high latitudes.
+- \[NavMap\] Roads and airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
+- \[NavMap\] The flight plan renderer currently does not draw turn anticipation arcs or turn to intercept legs. These will be added later.
+- \[NavMap\] The "Show In Map" option in the Airport Info menu has been temporarily disabled.
+- \[NavMap\] All airport waypoints are shown as if they are serviced, regardless of whether they actually are. This is because waypoint data from the game is currently missing this information.
 
 ### FAQ
 - **Q**: I copied the mod folder to my Community folder but don't get any of the new features. What do I do?
@@ -53,9 +42,11 @@ To install, copy the `workingtitle-g3000` folder from the zip file into your `Co
 - **Q**: When I copy the mod folder to my Community folder, why do I get an error saying the file path name is too long?
   - **A**: This is a Windows issue. By default, Windows limits file paths to 260 characters. You can disable this limit by modifying the system registry (not as scary as it sounds). Tutorials for how to do so can easily be found with a Google (or Bing) search.
 - **Q**: Why do I sometimes get low performance/FPS with the mod?
-  - **A**: The biggest performance impact of the mod is the display of features and especially *text labels* on the navigational map. This is technically also true with vanilla, but the mod increases the number of features and therefore labels that can be displayed on the map at once, which exaggerates the issue. To limit the performance impact, toggle map features off or change their max range settings so that the map is not cluttered with too many features at once.
+  - **A**: The single largest performance sink (when it comes to avionics) is the navigational map. The mod actually uses a completely new code base for the navmap that is _more_ performant than the default. However, the mod also allows many more features to be drawn on the map than is possible with the unmodded map (as well as allowing for two independent navmaps to be displayed on the MFD), which is where performance can start to suffer. Generally, the more _waypoints_ and _text labels_ drawn on the map, the greater the impact on performance.
 
 ### Credits
 - Custom city database is sourced from simplemaps (simplemaps.com/data/world-cities) under the CC Attribution 4.0 license.
+- Border data is sourced from Natural Earth (www.naturalearthdata.com).
 - Thank you to StuTozer/ElectrikKar for allowing us to integrate his Touchscreen Restyled Mod.
 - This mod uses the Roboto font (designed by Christian Robertson), licensed under Apache 2.0.
+- This mod uses the d3-array, d3-geo, and topojson libraries.
