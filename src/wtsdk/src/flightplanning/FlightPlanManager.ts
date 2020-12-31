@@ -4,6 +4,7 @@ import { FlightPlanSegment } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { LZUTF8, WTDataStore } from 'WorkingTitle'
 import * as _LZUTF8 from '../utils/LzUtf8'
+import { HoldDetails } from './HoldDetails';
 
 /**
  * A system for managing flight plan data used by various instruments.
@@ -267,7 +268,6 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[fplnIndex];
     if (index >= 0 && index < currentFlightPlan.length) {
       currentFlightPlan.activeWaypointIndex = index;
-
       if (currentFlightPlan.directTo.isActive && currentFlightPlan.directTo.waypointIsInFlightPlan
         && currentFlightPlan.activeWaypointIndex > currentFlightPlan.directTo.planWaypointIndex) {
         currentFlightPlan.directTo.isActive = false;
@@ -1352,6 +1352,39 @@ export class FlightPlanManager {
   }
 
   public getCoordinatesHeadingAtDistanceAlongFlightPlan(distance) {
+  }
+
+  /**
+   * Adds a hold at the specified waypoint index in the flight plan.
+   * @param index The waypoint index to hold at.
+   * @param details The details of the hold to execute.
+   */
+  public async addHoldAtWaypointIndex(index: number, details: HoldDetails): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    const waypoint = currentFlightPlan.getWaypoint(index);
+
+    if (waypoint) {
+      waypoint.hasHold = true;
+      waypoint.holdDetails = details;
+
+      await this._updateFlightPlanVersion();
+    }
+  }
+
+  /**
+   * Deletes a hold at the specified waypoint index in the flight plan.
+   * @param index The waypoint index to delete the hold at.
+   */
+  public async deleteHoldAtWaypointIndex(index: number): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    const waypoint = currentFlightPlan.getWaypoint(index);
+
+    if (waypoint) {
+      waypoint.hasHold = false;
+      waypoint.holdDetails = undefined;
+
+      await this._updateFlightPlanVersion();
+    }
   }
 
   /**

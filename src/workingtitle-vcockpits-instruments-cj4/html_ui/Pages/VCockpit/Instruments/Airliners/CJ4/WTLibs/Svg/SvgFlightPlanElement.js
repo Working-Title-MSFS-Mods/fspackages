@@ -108,7 +108,45 @@ class SvgFlightPlanElement extends SvgMapElement {
             prevWaypoint = waypoint;
         }
 
+        for (let i = 0; i < waypoints.length; i++) {
+            const waypoint = waypoints[i];
+            if (waypoint.hasHold) {
+
+                let course = waypoint.holdDetails.holdCourse;
+                if (!waypoint.holdDetails.isHoldCourseTrue) {
+                    const magVar = GeoMath.getMagvar(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
+                    course = AutopilotMath.normalizeHeading(course + magVar);
+                }
+
+                const corners = HoldsDirector.calculateHoldFixes(waypoint.infos.coordinates, waypoint.holdDetails)
+                    .map(c => map.coordinatesToXY(c));
+
+                context.moveTo(corners[0].x, corners[0].y);
+                this.drawHoldArc(corners[0], corners[1], context);
+                context.lineTo(corners[2].x, corners[2].y);
+                this.drawHoldArc(corners[2], corners[3], context);
+                context.lineTo(corners[0].x, corners[0].y);
+            }
+        }
+
         context.stroke();
+    }
+
+    /**
+     * 
+     * @param {Vec2} p1 
+     * @param {Vec2} p2 
+     * @param {CanvasRenderingContext2D} context 
+     */
+    drawHoldArc(p1, p2, context) {
+        const cx = (p1.x + p2.x) / 2;
+        const cy = (p1.y + p2.y) / 2;
+        const radius = p1.Distance(p2) / 2;
+
+        const a1 = Math.atan2(p1.y - cy, p1.x - cx);
+        const a2 = Math.atan2(p2.y - cy, p2.x - cx);
+
+        context.arc(cx, cy, radius, a1, a2);
     }
 
     setAsDashed(_val, _force = false) {

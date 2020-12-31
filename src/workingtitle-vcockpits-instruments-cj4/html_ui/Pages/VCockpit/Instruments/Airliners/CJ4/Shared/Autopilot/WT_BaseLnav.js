@@ -90,6 +90,26 @@ class WT_BaseLnav {
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
         this._inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
 
+        if (this._activeWaypoint.hasHold) {
+            if (!this._holdsDirector) {
+                this._holdsDirector = new HoldsDirector(this._fpm, this.flightplan.activeWaypointIndex);
+            }
+
+            this._holdsDirector.update();
+            return;
+        }
+
+        if (this._previousWaypoint.hasHold) {
+            if (!this._holdsDirector) {
+                this._holdsDirector = new HoldsDirector(this._fpm, this.flightplan.activeWaypointIndex - 1);
+                this._holdsDirector.update();
+            }
+            else if (this._holdsDirector && this._holdsDirector.state !== HoldsDirectorState.NONE) {
+                this._holdsDirector.update();
+                return;
+            }
+        }
+
         const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
         if (flightPlanVersion !== this._currentFlightPlanVersion) {
             if (this._waypointSequenced) {
