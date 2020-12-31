@@ -536,11 +536,11 @@ class CJ4_FMC extends FMCMainDisplay {
                 let bank = 0;
                 const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees');
                 const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
-                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV) {
+                if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV)) {
                     let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
                     this.driveFlightDirector(deltaAngle, bank);
                 }
-                else if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                else if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
                     const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
                     const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + nav, "bool");
                     const isIls = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + nav, "bool");
