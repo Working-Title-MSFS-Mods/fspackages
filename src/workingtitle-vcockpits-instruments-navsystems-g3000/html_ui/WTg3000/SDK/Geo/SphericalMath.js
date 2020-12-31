@@ -222,8 +222,8 @@ class WT_GreatCircle extends WT_SmallCircle {
     }
 
     /**
-     * Creates a new great circle that contains two points. There are two possible great circles that contain any two unique points
-     * that differ only by their directionality (equivalently, the sign of their normal vectors or their winding). The order of
+     * Creates a new great circle that contains two points. There are two possible great circles that contain any two unique points;
+     * these circles differ only by their directionality (equivalently, the sign of their normal vectors or their winding). The order of
      * points passed to this method and the right-hand rule determines which of the two is returned.
      * @param {WT_GeoPoint} point1 - the first point that lies on the new great circle.
      * @param {WT_GeoPoint} point2 - the second point that lies on the new great circle.
@@ -305,7 +305,7 @@ class WT_RhumbLine {
 
     /**
      * Calculates and returns the intersection point of this rhumb line and another. Two rhumb lines can intersect at exactly zero,
-     * one, or infinite points. The first and last cases, no results are returned.
+     * one, or infinite points. For the first and last cases, no results are returned.
      * @param {WT_RhumbLine} other - the other rhumb line to test for an intersection.
      * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the result. If this argument is no supplied, then a
      *                                    new WT_GVector3 object will be created. If an object is supplied and there are no results
@@ -327,7 +327,7 @@ class WT_RhumbLine {
 
     /**
      * Calculates and returns the intersection point of this rhumb line and another. Two rhumb lines can intersect at exactly zero,
-     * one, or infinite points. The first and last cases, no results are returned.
+     * one, or infinite points. For the first and last cases, no results are returned.
      * @param {WT_RhumbLine} other - the other rhumb line to test for an intersection.
      * @param {WT_GeoPoint} [reference] - a WT_GeoPoint object in which to store the result. If this argument is no supplied, then a
      *                                    new WT_GeoPoint object will be created. If an object is supplied and there are no results
@@ -370,21 +370,21 @@ class WT_RhumbLine {
      * @returns {WT_RhumbLine} a rhumb line.
      */
     static createFromPoints(point1, point2) {
-        WT_RhumbLine._tempArray[1] = point1.lat;
-        WT_RhumbLine._tempArray[0] = point1.long;
-        let projected1 = WT_RhumbLine._PROJECTION(WT_RhumbLine._tempArray, WT_RhumbLine._tempArray);
-        let vector1 = WT_RhumbLine._tempVector2.set(projected1[0], projected1[1]);
-
         WT_RhumbLine._tempArray[1] = point2.lat;
         WT_RhumbLine._tempArray[0] = point2.long;
         let projected2 = WT_RhumbLine._PROJECTION(WT_RhumbLine._tempArray, WT_RhumbLine._tempArray);
-        let delta = vector1.subtract(projected2[0], projected2[1]);
+        let vector2 = WT_RhumbLine._tempVector2.set(projected2[0], projected2[1]);
+
+        WT_RhumbLine._tempArray[1] = point1.lat;
+        WT_RhumbLine._tempArray[0] = point1.long;
+        let projected1 = WT_RhumbLine._PROJECTION(WT_RhumbLine._tempArray, WT_RhumbLine._tempArray);
+        let delta = vector2.subtract(projected1[0], projected1[1]);
         let a = -delta.y;
         let b = delta.x;
         if (a === 0 && b === 0) {
             return undefined;
         }
-        let c = -(a * projected2[0] + b * projected2[1]);
+        let c = -(a * projected1[0] + b * projected1[1]);
         return new WT_RhumbLine(WT_RhumbLine._tempVector3.set(a, b, c));
     }
 }
