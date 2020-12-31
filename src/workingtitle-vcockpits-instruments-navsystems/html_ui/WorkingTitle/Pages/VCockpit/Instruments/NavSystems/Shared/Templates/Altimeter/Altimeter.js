@@ -308,6 +308,7 @@ class Altimeter extends HTMLElement {
             background.setAttribute("width", "250");
             background.setAttribute("height", "50");
             background.setAttribute("fill", "#1a1d21");
+            background.id = "BaroReferenceContainer";
             this.root.appendChild(background);
             this.baroText = document.createElementNS(Avionics.SVG.NS, "text");
             this.baroText.setAttribute("x", "125");
@@ -317,6 +318,7 @@ class Altimeter extends HTMLElement {
             this.baroText.setAttribute("font-family", "Roboto-Bold");
             this.baroText.setAttribute("text-anchor", "middle");
             this.baroText.textContent = "--.--IN";
+            this.baroText.id = "BaroReference";
             this.root.appendChild(this.baroText);
         }
         {

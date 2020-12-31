@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --bodyHeightScale: 1; }
 
 @keyframes TemporaryShow {
@@ -1610,11 +1610,11 @@ as3x-touch-element {
         top: 0%;
         left: 30%;
         width: 39%; }
-    as3x-touch-element #MFD #timeKeyboard #TK_Bksp, as3x-touch-element #MFD #timeKeyboard #SK_Bksp, as3x-touch-element #MFD #timeKeyboard #AK_Bksp, as3x-touch-element #MFD #speedKeyboard #TK_Bksp, as3x-touch-element #MFD #speedKeyboard #SK_Bksp, as3x-touch-element #MFD #speedKeyboard #AK_Bksp, as3x-touch-element #MFD #altitudeKeyboard #TK_Bksp, as3x-touch-element #MFD #altitudeKeyboard #SK_Bksp, as3x-touch-element #MFD #altitudeKeyboard #AK_Bksp {
+    as3x-touch-element #MFD #timeKeyboard #TK_Bksp, as3x-touch-element #MFD #timeKeyboard #SK_Bksp, as3x-touch-element #MFD #timeKeyboard #AK_Bksp, as3x-touch-element #MFD #speedKeyboard #TK_Bksp, as3x-touch-element #MFD #speedKeyboard #SK_Bksp, as3x-touch-element #MFD #speedKeyboard #AK_Bksp, as3x-touch-element #MFD #altitudeKeyboard #TK_Bksp, as3x-touch-element #MFD #altitudeKeyboard #SK_Bksp, as3x-touch-element #MFD #altitudeKeyboard #AK_Bksp, as3x-touch-element #MFD #BaroSetting #BARO_Bksp {
       position: absolute;
       width: 20%;
       right: 5%; }
-    as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay, as3x-touch-element #MFD #timeKeyboard #SK_Display, as3x-touch-element #MFD #timeKeyboard #AK_Display, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay, as3x-touch-element #MFD #speedKeyboard #SK_Display, as3x-touch-element #MFD #speedKeyboard #AK_Display, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay, as3x-touch-element #MFD #altitudeKeyboard #SK_Display, as3x-touch-element #MFD #altitudeKeyboard #AK_Display {
+    as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay, as3x-touch-element #MFD #timeKeyboard #SK_Display, as3x-touch-element #MFD #timeKeyboard #AK_Display, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay, as3x-touch-element #MFD #speedKeyboard #SK_Display, as3x-touch-element #MFD #speedKeyboard #AK_Display, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay, as3x-touch-element #MFD #altitudeKeyboard #SK_Display, as3x-touch-element #MFD #altitudeKeyboard #AK_Display, as3x-touch-element #MFD #BaroSetting #BARO_Display {
       position: absolute;
       width: 30%;
       left: 35%;
@@ -1624,26 +1624,26 @@ as3x-touch-element {
       padding-top: 0.6vh;
       text-align: center;
       font-size: 4.2vh; }
-      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .Writed, as3x-touch-element #MFD #timeKeyboard #SK_Display .Writed, as3x-touch-element #MFD #timeKeyboard #AK_Display .Writed, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .Writed, as3x-touch-element #MFD #speedKeyboard #SK_Display .Writed, as3x-touch-element #MFD #speedKeyboard #AK_Display .Writed, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .Writed, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .Writed, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .Writed {
+      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .Writed, as3x-touch-element #MFD #timeKeyboard #SK_Display .Writed, as3x-touch-element #MFD #timeKeyboard #AK_Display .Writed, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .Writed, as3x-touch-element #MFD #speedKeyboard #SK_Display .Writed, as3x-touch-element #MFD #speedKeyboard #AK_Display .Writed, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .Writed, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .Writed, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .Writed, as3x-touch-element #MFD #BaroSetting #BARO_Display .Writed {
         background-color: none;
         color: aqua; }
-      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .ToWrite, as3x-touch-element #MFD #timeKeyboard #SK_Display .ToWrite, as3x-touch-element #MFD #timeKeyboard #AK_Display .ToWrite, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .ToWrite, as3x-touch-element #MFD #speedKeyboard #SK_Display .ToWrite, as3x-touch-element #MFD #speedKeyboard #AK_Display .ToWrite, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .ToWrite, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .ToWrite, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .ToWrite {
+      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .ToWrite, as3x-touch-element #MFD #timeKeyboard #SK_Display .ToWrite, as3x-touch-element #MFD #timeKeyboard #AK_Display .ToWrite, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .ToWrite, as3x-touch-element #MFD #speedKeyboard #SK_Display .ToWrite, as3x-touch-element #MFD #speedKeyboard #AK_Display .ToWrite, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .ToWrite, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .ToWrite, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .ToWrite, as3x-touch-element #MFD #BaroSetting #BARO_Display .ToWrite {
         background-color: none;
         color: dimgray; }
-      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .Writing, as3x-touch-element #MFD #timeKeyboard #SK_Display .Writing, as3x-touch-element #MFD #timeKeyboard #AK_Display .Writing, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .Writing, as3x-touch-element #MFD #speedKeyboard #SK_Display .Writing, as3x-touch-element #MFD #speedKeyboard #AK_Display .Writing, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .Writing, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .Writing, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .Writing {
+      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .Writing, as3x-touch-element #MFD #timeKeyboard #SK_Display .Writing, as3x-touch-element #MFD #timeKeyboard #AK_Display .Writing, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .Writing, as3x-touch-element #MFD #speedKeyboard #SK_Display .Writing, as3x-touch-element #MFD #speedKeyboard #AK_Display .Writing, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .Writing, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .Writing, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .Writing, as3x-touch-element #MFD #BaroSetting #BARO_Display .Writing {
         animation: SelectedCharBlinkFreqEdit 1s infinite;
         min-width: 0.5vw;
         min-height: 3.6vh;
         display: inline-block; }
-      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .Fixed, as3x-touch-element #MFD #timeKeyboard #SK_Display .Fixed, as3x-touch-element #MFD #timeKeyboard #AK_Display .Fixed, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .Fixed, as3x-touch-element #MFD #speedKeyboard #SK_Display .Fixed, as3x-touch-element #MFD #speedKeyboard #AK_Display .Fixed, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .Fixed, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .Fixed, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .Fixed {
+      as3x-touch-element #MFD #timeKeyboard #TK_TimeDisplay .Fixed, as3x-touch-element #MFD #timeKeyboard #SK_Display .Fixed, as3x-touch-element #MFD #timeKeyboard #AK_Display .Fixed, as3x-touch-element #MFD #speedKeyboard #TK_TimeDisplay .Fixed, as3x-touch-element #MFD #speedKeyboard #SK_Display .Fixed, as3x-touch-element #MFD #speedKeyboard #AK_Display .Fixed, as3x-touch-element #MFD #altitudeKeyboard #TK_TimeDisplay .Fixed, as3x-touch-element #MFD #altitudeKeyboard #SK_Display .Fixed, as3x-touch-element #MFD #altitudeKeyboard #AK_Display .Fixed, as3x-touch-element #MFD #BaroSetting #BARO_Display .Fixed {
         background-color: aqua; }
-    as3x-touch-element #MFD #timeKeyboard #KeyBoard, as3x-touch-element #MFD #speedKeyboard #KeyBoard, as3x-touch-element #MFD #altitudeKeyboard #KeyBoard {
+    as3x-touch-element #MFD #timeKeyboard #KeyBoard, as3x-touch-element #MFD #speedKeyboard #KeyBoard, as3x-touch-element #MFD #altitudeKeyboard #KeyBoard, as3x-touch-element #MFD #BaroSetting #KeyBoard {
       position: absolute;
       top: 20%;
       height: 60%;
       width: 60%;
       left: 23%; }
-      as3x-touch-element #MFD #timeKeyboard #KeyBoard .roundButton, as3x-touch-element #MFD #speedKeyboard #KeyBoard .roundButton, as3x-touch-element #MFD #altitudeKeyboard #KeyBoard .roundButton {
+      as3x-touch-element #MFD #timeKeyboard #KeyBoard .roundButton, as3x-touch-element #MFD #speedKeyboard #KeyBoard .roundButton, as3x-touch-element #MFD #altitudeKeyboard #KeyBoard .roundButton, as3x-touch-element #MFD #BaroSetting #KeyBoard .roundButton {
         width: 9vh;
         height: 9vh;
         line-height: 9vh;
@@ -1661,6 +1661,42 @@ as3x-touch-element {
       position: absolute;
       bottom: 2%;
       right: 2%; }
+
+as3x-touch-element #MFD #BaroSetting .gradientButton #BARO_STD .mainText {
+    position: absolute;
+    top: 45%;
+    height: 12vh;
+    margin-top: -3vh;
+    font-size: 2.4vh;
+}
+
+as3x-touch-element #MFD #BaroSetting .BottomButtons .gradientButton {
+    position: absolute;
+    bottom: 2%;
+    width: 30%;
+}
+
+as3x-touch-element #MFD #BaroSetting .BottomButtons #BARO_Enter {
+    right: 2%;
+}
+
+as3x-touch-element #MFD #BaroSetting .BottomButtons #BARO_Cancel {
+    left: 2%;
+}
+
+as3x-touch-element #MFD #BaroSetting #BARO_STD {
+    position: absolute;
+    left: 6%;
+    top: 7%;
+    width: 20%;
+}
+
+as3x-touch-element #MFD #BaroSetting #BARO_Bksp {
+    position: absolute;
+    right: 6%;
+    top: 7%;
+}
+
     as3x-touch-element #MFD #fullKeyboard #Keyboard_LetterTable,
     as3x-touch-element #MFD #fullKeyboard #Keyboard_NumberTable {
       display: none; }
@@ -2161,6 +2197,18 @@ as3x-touch-element {
       line-height: 3.5vh;
       background: none;
       vertical-align: bottom; }
+    as3x-touch-element .gradientButton .small-title {
+        position: absolute;
+        height: 20%;
+        width: 100%;
+        bottom: 4%;
+        text-align: center;
+        color: white;
+        font-size: 2.0vh;
+        line-height: 2.0vh;
+        background: none;
+        vertical-align: bottom;
+    }
     as3x-touch-element .gradientButton .topText {
       color: white;
       text-align: left;

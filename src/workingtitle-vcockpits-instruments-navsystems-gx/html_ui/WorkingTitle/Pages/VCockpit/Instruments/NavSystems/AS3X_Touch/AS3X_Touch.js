@@ -60,6 +60,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.mapMenu.setGPS(this);
         this.afcsMenu = new NavSystemElementContainer("AFCS Menu", "AFCS_Menu", new AS3X_Touch_AFCSMenu());
         this.afcsMenu.setGPS(this);
+        this.baroSetting = new NavSystemElementContainer("BaroSetting", "BaroSetting", new AS3X_Touch_BaroSetting());
+        this.baroSetting.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
         this.fullKeyboard.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3X_Touch_DuplicateWaypointSelection());
@@ -124,6 +126,17 @@ class AS3X_Touch extends NavSystemTouch {
                 this.switchToPopUpPage(this.afcsMenu);
             }
         }.bind(this));
+
+        let baroPopupFunc = function () {
+            if (this.popUpElement == this.baroSetting) {
+                this.closePopUpElement();
+            }
+            else {
+                this.switchToPopUpPage(this.baroSetting);
+            }
+        }.bind(this);
+        this.makeButton(this.getChildById("BaroReference"), baroPopupFunc);
+        this.makeButton(this.getChildById("BaroReferenceContainer"), baroPopupFunc);
         this.maxUpdateBudget = 12;
         this.autoPitotHeat = false;
     }
@@ -936,6 +949,169 @@ class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
         Avionics.Utils.diffAndSetAttribute(this.topo, "state", this._map.getIsolines() ? "Active" : "");
         Avionics.Utils.diffAndSet(this.titleRange, `(${this._map.getRangeText()}nm)`);
         Avionics.Utils.diffAndSetAttribute(this.rangeAuto, "state", this._map.getAutoRange() ? "Active" : "");
+    }
+}
+class AS3X_Touch_BaroSetting extends AS3X_Touch_Popup {
+    constructor() {
+        super(...arguments);
+        this.maxChars = 4;
+        this.needUpdate = true;
+        this.currentIndex = -1;
+        this.currentValue = [-1, -1, -1, -1];
+        this.displayedValue = "__.__IN";
+    }
+    init(_root) {
+        super.init(_root);
+        this.display = this.gps.getChildById("BARO_Display");
+        this.enterButton = this.gps.getChildById("BARO_Enter");
+        this.setStdButton = this.gps.getChildById("BARO_STD");
+        this.cancelButton = this.gps.getChildById("BARO_Cancel");
+        this.backspaceButton = this.gps.getChildById("BARO_Bksp");
+        this.KN_0 = this.gps.getChildById("BARO_0");
+        this.KN_1 = this.gps.getChildById("BARO_1");
+        this.KN_2 = this.gps.getChildById("BARO_2");
+        this.KN_3 = this.gps.getChildById("BARO_3");
+        this.KN_4 = this.gps.getChildById("BARO_4");
+        this.KN_5 = this.gps.getChildById("BARO_5");
+        this.KN_6 = this.gps.getChildById("BARO_6");
+        this.KN_7 = this.gps.getChildById("BARO_7");
+        this.KN_8 = this.gps.getChildById("BARO_8");
+        this.KN_9 = this.gps.getChildById("BARO_9");
+
+        this.gps.makeButton(this.enterButton, this.enter.bind(this));
+        this.gps.makeButton(this.setStdButton, this.setStdPressure.bind(this));
+        this.gps.makeButton(this.cancelButton, this.cancel.bind(this));
+        this.gps.makeButton(this.backspaceButton, this.backspace.bind(this));
+        this.gps.makeButton(this.KN_0, this.numberPressed.bind(this, 0));
+        this.gps.makeButton(this.KN_1, this.numberPressed.bind(this, 1));
+        this.gps.makeButton(this.KN_2, this.numberPressed.bind(this, 2));
+        this.gps.makeButton(this.KN_3, this.numberPressed.bind(this, 3));
+        this.gps.makeButton(this.KN_4, this.numberPressed.bind(this, 4));
+        this.gps.makeButton(this.KN_5, this.numberPressed.bind(this, 5));
+        this.gps.makeButton(this.KN_6, this.numberPressed.bind(this, 6));
+        this.gps.makeButton(this.KN_7, this.numberPressed.bind(this, 7));
+        this.gps.makeButton(this.KN_8, this.numberPressed.bind(this, 8));
+        this.gps.makeButton(this.KN_9, this.numberPressed.bind(this, 9));
+    }
+    onEnter() {
+        super.onEnter();
+        this.needUpdate = true;
+        this.currentIndex = -1;
+        this.currentValue = [-1, -1, -1, -1];
+        this.displayedValue = "__.__IN";
+    }
+    cancel() {
+        this.gps.closePopUpElement();
+    }
+    enter() {
+        if (this.enterButton.getAttribute("state") == "Greyed")
+            return;
+
+        const inToMbConst = 33.8639;
+
+        let pressure = this.buildPressureValue(this.currentValue);
+        let pressureInMb = pressure * inToMbConst;
+
+        SimVar.SetSimVarValue("K:0:KOHLSMAN_SET", "number", 16 * pressureInMb);
+        this.cancel();
+    }
+    validateCurrentValues() {
+        const minPressure = 27.99;
+        const maxPressure = 32.01;
+
+        if (this.currentIndex < 4)
+            return false;
+
+        let pressure = this.buildPressureValue(this.currentValue);
+        if ((pressure < minPressure) || (pressure > maxPressure))
+            return false;
+
+        return true;
+    }
+    buildPressureValue(_values) {
+        const coef = [10, 1, 0.1, 0.01];
+
+        let val = 0;
+        for (let i = 0; i < _values.length; i++) {
+            val += (_values[i] == -1 ? 0 : _values[i]) * coef[i];
+        }
+        return val;
+    }
+    onUpdate() {
+        if (this.needUpdate) {
+            if (this.currentIndex == -1) {
+                this.display.innerHTML = '<span class="NoEdit">' + this.displayedValue + '</span>';
+            }
+            else {
+                let rxIndex = this.currentIndex;
+                let rxLeft = this.currentValue.length - this.currentIndex;
+                if (this.currentIndex >= 2) {
+                    rxIndex += 1; // Skip "."
+                    rxLeft = (rxLeft == 0 ? 0 : rxLeft - 1);
+                }
+                var regex = new RegExp('^(.{' + rxIndex + '})(.{0,1})(.{' + rxLeft + '})');
+
+                const replaceWrited = '<span class="Writed">$1</span>';
+                const replaceCursor = '<span class="Writing">$2</span>';
+                const replaceToWrite = '<span class = "ToWrite">$3</span>';
+                const replaceSuffix = '<span class="Writed">IN</span>';
+
+                var replace = replaceWrited;
+                if (this.currentIndex < 4) {
+                    replace += replaceCursor;
+                }
+                replace += replaceToWrite + replaceSuffix;
+
+                var pressure = "";
+                let digitsLeft = this.currentValue.length;
+                let count = 0;
+                while (digitsLeft > 0) {
+                    if (count++ == 2) {
+                        pressure += ".";
+                    }
+
+                    let idx = this.currentValue.length - digitsLeft--;
+                    pressure += (this.currentValue[idx] == -1 ? "_" : this.currentValue[idx]);
+                }
+
+                this.displayedValue = pressure.replace(regex, replace);
+                this.display.innerHTML = this.displayedValue;
+            }
+
+            if (this.validateCurrentValues()) {
+                this.enterButton.setAttribute("state", "");
+            }
+            else {
+                this.enterButton.setAttribute("state", "Greyed");
+            }
+
+            this.needUpdate = false;
+        }
+    }
+    numberPressed(_number) {
+        if (this.currentIndex == -1) {
+            this.currentValue = [-1, -1, -1, -1];
+            this.currentIndex = 0;
+        }
+        if (this.currentIndex < 4) {
+            this.currentValue[this.currentIndex] = _number;
+            this.currentIndex++;
+        }
+        this.needUpdate = true;
+    }
+    backspace() {
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+            for (let i = this.currentIndex; i < this.currentValue.length; i++) {
+                this.currentValue[i] = -1;
+            }
+            this.needUpdate = true;
+        }
+    }
+    setStdPressure() {
+        this.currentIndex = 4;
+        this.currentValue = [2, 9, 9, 2];
+        this.needUpdate = true;
     }
 }
 class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
