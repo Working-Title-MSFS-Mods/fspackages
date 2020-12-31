@@ -13,7 +13,6 @@
 	<Behaviors>
 		<Include ModelBehaviorFile="Asobo\Common.xml"/>
 		<Include ModelBehaviorFile="Asobo\NAVCOM\NavComSystem.xml"/>
-		<Include ModelBehaviorFile="Asobo\NAVCOM\NavComSystem.xml"/>
 		<Include ModelBehaviorFile="Asobo\Airliner\FMC.xml"/>
 		<Include ModelBehaviorFile="Asobo\GlassCockpit\AS3000.xml"/>
 		<Include ModelBehaviorFile="Asobo_CJ4\Index.xml"/>
@@ -133,6 +132,33 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_AudioPanel_Composite_Template">
 				<CONTAINER_ID>2</CONTAINER_ID>
+			</UseTemplate>
+
+			<UseTemplate Name="ASOBO_AUDIO_Button_Template">
+				<ANIM_NAME>AudioPanel_Push_COM_1_1</ANIM_NAME>
+				<NODE_ID>AudioPanel_Push_COM_1_1</NODE_ID>
+				<INDICATOR_NODE_ID>AudioPanel_Push_COM_1_Active_1</INDICATOR_NODE_ID>
+				<ID>COM1</ID>
+				<LEFT_SINGLE_CODE>
+					(A:COM RECEIVE:1, bool) ! (&gt;K:COM1_RECEIVE_SELECT)
+				</LEFT_SINGLE_CODE>
+				<EMISSIVE_INDICATOR_CODE>(A:COM RECEIVE:1, bool)</EMISSIVE_INDICATOR_CODE>
+
+				<TOOLTIPID>%((A:COM RECEIVE:1, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_OFF%{end}</TOOLTIPID>
+
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_AUDIO_Button_Template">
+				<ANIM_NAME>AudioPanel_Push_COM_2_1</ANIM_NAME>
+				<NODE_ID>AudioPanel_Push_COM_2_1</NODE_ID>
+				<INDICATOR_NODE_ID>AudioPanel_Push_COM_2_Active_1</INDICATOR_NODE_ID>
+				<ID>COM2</ID>
+				<LEFT_SINGLE_CODE>
+					(A:COM RECEIVE:2, bool) ! (&gt;K:COM2_RECEIVE_SELECT)
+				</LEFT_SINGLE_CODE>
+				<EMISSIVE_INDICATOR_CODE>(A:COM RECEIVE:2, bool)</EMISSIVE_INDICATOR_CODE>
+
+				<TOOLTIPID>%((A:COM RECEIVE:2, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_OFF%{end}</TOOLTIPID>
+
 			</UseTemplate>
 		</Component>
 
