@@ -45,10 +45,10 @@ class WT_MapModel {
     /**
      * @readonly
      * @property {WT_AirplaneModel} airplane - a model object that allows access to properties of the player airplane.
-     * @type {WT_AirplaneModel}
+     * @type {WT_PlayerAirplane}
      */
     get airplane() {
-        return WT_AirplaneModel.INSTANCE;
+        return WT_PlayerAirplane.INSTANCE;
     }
 
     /**
