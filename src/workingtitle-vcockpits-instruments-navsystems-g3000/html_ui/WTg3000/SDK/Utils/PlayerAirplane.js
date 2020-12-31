@@ -1,4 +1,4 @@
-class WT_AirplaneModel {
+class WT_PlayerAirplane {
     constructor() {
         this._type = this._getAircraftType();
     }
@@ -6,11 +6,11 @@ class WT_AirplaneModel {
     _getAircraftType() {
         switch (SimVar.GetSimVarValue("ATC MODEL", "string")) {
             case "TT:ATCCOM.AC_MODEL_TBM9.0.text":
-                return WT_AirplaneModel.Type.TBM930;
+                return WT_PlayerAirplane.Type.TBM930;
             case "TT:ATCCOM.AC_MODEL_C700.0.text":
-                return WT_AirplaneModel.Type.CITATION_LONGITUDE;
+                return WT_PlayerAirplane.Type.CITATION_LONGITUDE;
             default:
-                return WT_AirplaneModel.Type.UNKNOWN;
+                return WT_PlayerAirplane.Type.UNKNOWN;
         }
     }
 
@@ -158,7 +158,7 @@ class WT_AirplaneModel {
         let numEngines = this.engineCount();
         let fuelFlow = reference ? reference.set(0) : new WT_NumberUnit(0, WT_Unit.GPH);
         for (let i = 0; i < numEngines; i++) {
-            fuelFlow.add(this.fuelFlow(i, WT_AirplaneModel._tempGPH));
+            fuelFlow.add(this.fuelFlow(i, WT_PlayerAirplane._tempGPH));
         }
         return fuelFlow;
     }
@@ -175,13 +175,13 @@ class WT_AirplaneModel {
         return reference ? reference.set(ff, WT_Unit.GPH) : new WT_NumberUnit(ff, WT_Unit.GPH);
     }
 }
-WT_AirplaneModel._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH);
+WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH);
 /**
  * @enum {Number}
  */
-WT_AirplaneModel.Type = {
+WT_PlayerAirplane.Type = {
     UNKNOWN: 0,
     TBM930: 1,
     CITATION_LONGITUDE: 2
 };
-WT_AirplaneModel.INSTANCE = new WT_AirplaneModel();
+WT_PlayerAirplane.INSTANCE = new WT_PlayerAirplane();

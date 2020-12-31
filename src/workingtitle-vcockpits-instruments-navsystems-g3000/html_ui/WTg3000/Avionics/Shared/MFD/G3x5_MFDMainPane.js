@@ -174,7 +174,7 @@ class WT_G3x5_MFDHalfPane {
         // TODO: find a more elegant way to do this
         let defaultControl;
         if (halfPaneID === "LEFT") {
-            defaultControl = WT_AirplaneModel.INSTANCE.type() === WT_AirplaneModel.Type.TBM930 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT;
+            defaultControl = WT_PlayerAirplane.INSTANCE.type() === WT_PlayerAirplane.Type.TBM930 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT;
         } else {
             defaultControl = 0;
         }

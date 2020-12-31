@@ -3,7 +3,7 @@ class WT_FlightPlanManager {
         this._active = new WT_FlightPlan(icaoWaypointFactory);
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
         this._directTo = new WT_DirectTo();
-        this._airplaneModel = WT_AirplaneModel.INSTANCE;
+        this._airplaneModel = WT_PlayerAirplane.INSTANCE;
 
         this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
 
