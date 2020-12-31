@@ -132,28 +132,20 @@ class CJ4_FMC extends FMCMainDisplay {
                 this.onExecPage();
             }
             else {
-                // console.log("onExec Else");
                 this._isRouteActivated = false;
-                // console.log("onExec else this._isRouteActivated = false");
                 this.fpHasChanged = false;
-                // console.log("onExec else this.fpHasChanged = false");
                 this.messageBox = "";
-                // console.log("onExec else this.messageBox.innerHTML");
                 this._activatingDirectTo = false;
-                // console.log("onExec else this._activatingDirectTo = false");
             }
         };
         this.onExecPage = undefined;
         this.onExecDefault = () => {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
-                // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
                     this.copyAirwaySelections();
                     this._isRouteActivated = false;
                     SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                    // console.log("done with onExec insert temp");
                     this.fpHasChanged = false;
-                    // console.log("this.fpHasChanged = false");
                     this.messageBox = "";
                     if (this.refreshPageCallback) {
                         this.refreshPageCallback();
@@ -161,16 +153,13 @@ class CJ4_FMC extends FMCMainDisplay {
                 });
             }
             else {
-                // console.log("running onExecDefault else");
                 this.fpHasChanged = false;
-                // console.log("fpHasChanged = false");
                 this.messageBox = "";
                 this._isRouteActivated = false;
                 SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                 if (this.refreshPageCallback) {
                     this._activatingDirectTo = false;
                     this.fpHasChanged = false;
-                    // console.log("Else refreshPageCallback");
                     this.refreshPageCallback();
                 }
             }
@@ -428,21 +417,15 @@ class CJ4_FMC extends FMCMainDisplay {
     //function added to set arrival and runway transition
     setArrivalAndRunwayIndex(arrivalIndex, enrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
-            console.log("Setting Landing Runway");
             let landingRunway = this.flightPlanManager.getApproachRunway();
-            console.log("Set Landing Runway");
             this.flightPlanManager.setArrivalProcIndex(arrivalIndex, () => {
-                console.log("Set Arrival Procedure Index");
                 this.flightPlanManager.setArrivalEnRouteTransitionIndex(enrouteTransitionIndex, () => {
-                    console.log("Set Enroute Transition Index");
                     if (landingRunway) {
-                        console.log("If Landing Runway");
                         let arrival = this.flightPlanManager.getArrival();
                         let arrivalRunwayIndex = arrival.runwayTransitions.findIndex(t => {
                             return t.name.indexOf(landingRunway.designation) != -1;
                         });
                         if (arrivalRunwayIndex >= -1) {
-                            console.log("Setting Arrival Runway Index");
                             return this.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
                                 return callback(true);
                             });
@@ -536,11 +519,11 @@ class CJ4_FMC extends FMCMainDisplay {
                 let bank = 0;
                 const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees');
                 const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
-                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV) {
+                if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV)) {
                     let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
                     this.driveFlightDirector(deltaAngle, bank);
                 }
-                else if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                else if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
                     const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
                     const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + nav, "bool");
                     const isIls = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + nav, "bool");
