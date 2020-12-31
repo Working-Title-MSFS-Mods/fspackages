@@ -226,46 +226,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
     update(_deltaTime) {
 
-
-    //     let navCheck = SimVar.GetSimVarValue('L:RADIONAV_SOURCE', 'Number');
-    //     if (this.locVisible === 1) {
-    //         this.gs_cursorShapeUp.setAttribute("display", "none");
-    //         this.gs_cursorShapeDown.setAttribute("display", "none");
-    //         this.loc_cursorShapeRight.setAttribute("display", "none");
-    //         this.loc_cursorShapeLeft.setAttribute("display", "none");
-    //         this.lateral_snowFlake.setAttribute("display", "");
-    //         this.vertical_snowFlake.setAttribute("display", "");
-
-    //         // The snowflake should only show when in FMS and in either PPOS or flying an RNAV approach. But we can't detect mapDisplayMode through this
-
-    //         /*if (this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
-    //             this.loc_mainGroup.setAttribute("display", "");
-    //         } else {
-    //             this.loc_mainGroup.setAttribute("display", "none");
-    //         }*/ 
-
-    //     } else {
-    //         this.gs_cursorShapeUp.setAttribute("display", "");
-    //         this.gs_cursorShapeDown.setAttribute("display", "");
-    //         this.loc_cursorShapeRight.setAttribute("display", "");
-    //         this.loc_cursorShapeLeft.setAttribute("display", "");
-    //         this.lateral_snowFlake.setAttribute("display", "none");
-    //         this.vertical_snowFlake.setAttribute("display", "none");
-    //    }
-
-       
-
         if (this.gsVisible > 0 || this.locVisible > 0 || this.infoVisible) {
-
             const navSensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
-
-            // let localizer = this.gps.radioNav.getBestILSBeacon();
-            // let isApproachLoaded = Simplane.getAutoPilotApproachLoaded();
-            // let approachType = Simplane.getAutoPilotApproachType();
-            
-            /*if (this.gs_cursorGroup && this.gsVisible && navCheck === 1) {
-                console.log("We are in Nav");
-            }*/
 
             //GLIDESLOPE/LPV/VNAV INDICATOR
             if (this.gs_cursorGroup && this.gsVisible > 0) {
@@ -317,14 +279,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                         this.gs_cursorShapeUp.setAttribute("visibility", "visible");
                         this.gs_cursorShapeDown.setAttribute("visibility", "visible");
                     }
-                    // this.gs_glidePathCursorUp.setAttribute("visibility", "hidden");
-                    // this.gs_glidePathCursorDown.setAttribute("visibility", "hidden");
+
                     }
                 else {
                     this.gs_cursorShapeUp.setAttribute("visibility", "hidden");
                     this.gs_cursorShapeDown.setAttribute("visibility", "hidden");
-                    // this.gs_glidePathCursorUp.setAttribute("visibility", "hidden");
-                    // this.gs_glidePathCursorDown.setAttribute("visibility", "hidden");
+
                 }
             } else {
                 this.gs_cursorShapeUp.setAttribute("visibility", "hidden");
