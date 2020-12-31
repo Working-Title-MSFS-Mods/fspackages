@@ -454,6 +454,10 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", (baroUnits == "HPA") ? 1 : 0);
         let mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
+
+        let fltDirStatus = _dict.get(CJ4_PopupMenu_Key.FLT_DIR);
+        SimVar.SetSimVarValue("L:WT_CJ4_FLT_DIR_STATUS", "Bool", (fltDirStatus == "X-PTR") ? 1 : 0);
+
         let aoaSetting = _dict.get(CJ4_PopupMenu_Key.AOA);
         if (aoaSetting) {
             if (aoaSetting == "AUTO") {
@@ -552,6 +556,8 @@ class CJ4_PFD extends BaseAirliners {
         let baroHPA = SimVar.GetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool");
         _dict.set(CJ4_PopupMenu_Key.UNITS_PRESS, (baroHPA) ? "HPA" : "IN");
         _dict.set(CJ4_PopupMenu_Key.UNITS_MTR_ALT, (this.horizon.isMTRSVisible()) ? "ON" : "OFF");
+        let fltDirStatus = SimVar.GetSimVarValue("L:WT_CJ4_FLT_DIR_STATUS", "Bool");
+        _dict.set(CJ4_PopupMenu_Key.FLT_DIR, (fltDirStatus) ? "X-PTR" : "V-BAR");
         let aoaSettingFill = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number").toFixed(0);
         if (aoaSettingFill) {
             if (aoaSettingFill == 0) {
