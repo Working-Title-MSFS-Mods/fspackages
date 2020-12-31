@@ -113,7 +113,7 @@ class WT_FlightPlanAsoboInterface {
         let drctDestination = null;
 
         let firstICAO = data.waypoints[0].icao;
-        if (!(firstICAO[0] === "U" && data.waypoints.length === 2)) {
+        if (!(firstICAO[0] === "U" && data.waypoints.length === 2 && data.approachIndex < 0)) {
             await this._syncFlightPlan(flightPlan, data);
         } else {
             flightPlan.clear();
@@ -191,7 +191,11 @@ class WT_FlightPlanAsoboInterface {
 
         let legs;
         if (isApproachActive) {
-            legs = flightPlan.getApproach().legs();
+            if (flightPlan.hasApproach()) {
+                legs = flightPlan.getApproach().legs();
+            } else {
+                return null;
+            }
         } else {
             legs = flightPlan.legs();
         }
