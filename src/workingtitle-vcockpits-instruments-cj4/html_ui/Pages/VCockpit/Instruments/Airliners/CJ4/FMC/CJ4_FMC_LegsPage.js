@@ -179,12 +179,22 @@ class CJ4_FMC_LegsPage {
         }
 
         let modStr = this._fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
+        let holdActive = false;
+        let holdExiting = false;
+
+        const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+
+        if (holdsDirector) {
+            const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+            holdActive = holdsDirector.isHoldActive(holdIndex);
+            holdExiting = holdsDirector.isHoldExiting(holdIndex);
+        }
 
         this._fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " LEGS[blue]", this._currentPage.toFixed(0) + "/" + Math.max(1, this._pageCount.toFixed(0)) + " [blue]"],
             ...this._rows,
-            [`${this._isAddingHold ? '---------HOLD AT--------' : '------------------------'}[blue]`],
-            [`${this._isAddingHold ? '□□□□□' : this._lsk6Field}`, "LEG WIND>"]
+            [`${this._isAddingHold ? '---------HOLD AT--------' : holdExiting ? '-------EXIT ARMED-------' : '------------------------'}[blue]`],
+            [`${this._isAddingHold ? '□□□□□' : holdExiting ? '<CANCEL EXIT' : holdActive ? '<EXIT HOLD' : this._lsk6Field}`, "LEG WIND>"]
         ]);
     }
 
@@ -461,6 +471,17 @@ class CJ4_FMC_LegsPage {
 
     bindEvents() {
         this._fmc.onLeftInput[5] = () => {
+            let holdActive = false;
+            let holdExiting = false;
+
+            const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+
+            if (holdsDirector) {
+                const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+                holdActive = holdsDirector.isHoldActive(holdIndex);
+                holdExiting = holdsDirector.isHoldExiting(holdIndex);
+            }
+
             if (this._isAddingHold) {
                 this.addHold();
             }
@@ -470,6 +491,14 @@ class CJ4_FMC_LegsPage {
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                     this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
+            }
+            else if (holdExiting) {
+                holdsDirector.cancelHoldExit();
+                this.update(true);
+            }
+            else if (holdActive) {
+                holdsDirector.exitActiveHold();
+                this.update(true);
             }
         };
         this._fmc.onRightInput[0] = () => {

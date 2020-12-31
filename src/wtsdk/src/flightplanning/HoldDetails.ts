@@ -1,4 +1,4 @@
-import { Avionics, Simplane } from 'MSFS';
+import { Avionics, Simplane, SimVar } from 'MSFS';
 
 /**
  * Details of a hold procedure for a fix.
@@ -51,17 +51,17 @@ export class HoldDetails {
 
     details.holdCourse = course;
     details.holdSpeedType = HoldSpeedType.FAA;
-    details.legTime = 90;
-    details.speed = Simplane.getGroundSpeed();
+    details.legTime = 60;
+    details.speed = Math.max(Simplane.getGroundSpeed(), 140);
 
-    details.windDirection = 0;
-    details.windSpeed = 0;
+    details.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
+    details.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
 
     details.legDistance = details.legTime * (details.speed / 3600);
     details.turnDirection = HoldTurnDirection.Right;
 
     details.state = HoldState.None;
-    details.entryType = HoldDetails.calculateEntryType(course, courseTowardsHoldFix);
+    details.entryType = HoldDetails.calculateEntryType(course, courseTowardsHoldFix, details.turnDirection);
 
     return details;
   }
@@ -71,18 +71,32 @@ export class HoldDetails {
    * inbound course. See FMS guide page 14-21.
    * @param holdCourse The course that the hold will be flown with.
    * @param inboundCourse The course that is being flown towards the hold point.
+   * @param turnDirection The direction of the hold turn.
    * @returns The hold entry type for a given set of courses.
    */
-  static calculateEntryType(holdCourse: number, inboundCourse: number): HoldEntry {
+  static calculateEntryType(holdCourse: number, inboundCourse: number, turnDirection: HoldTurnDirection): HoldEntry {
     const courseDiff = Avionics.Utils.angleDiff(inboundCourse, holdCourse);
-    if (courseDiff >= -130 && courseDiff <= 70) {
-      return HoldEntry.Direct;
-    }
-    else if (courseDiff < -130 || courseDiff > 175) {
-      return HoldEntry.Teardrop;
+    if (turnDirection === HoldTurnDirection.Right) {
+      if (courseDiff >= -130 && courseDiff <= 70) {
+        return HoldEntry.Direct;
+      }
+      else if (courseDiff < -130 || courseDiff > 175) {
+        return HoldEntry.Teardrop;
+      }
+      else {
+        return HoldEntry.Parallel;
+      }
     }
     else {
-      return HoldEntry.Parallel;
+      if (courseDiff >= -130 && courseDiff <= 70) {
+        return HoldEntry.Direct;
+      }
+      else if (courseDiff > 70 || courseDiff < -175) {
+        return HoldEntry.Teardrop;
+      }
+      else {
+        return HoldEntry.Parallel;
+      }
     }
   }
 }

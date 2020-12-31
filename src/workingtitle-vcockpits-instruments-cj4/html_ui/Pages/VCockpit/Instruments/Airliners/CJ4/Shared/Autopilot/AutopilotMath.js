@@ -116,6 +116,24 @@ class AutopilotMath {
   }
 
   /**
+   * Calculates the distance the plane has traveled along the arc.
+   * @param {LatLongAlt} fromFix The location of the starting fix of the leg.
+   * @param {LatLongAlt} toFix The location of the ending fix of the leg. 
+   * @param {LatLongAlt} planeCoords The current plane location coordinates.
+   * @returns {number} The distance traveled, in NM.
+   */
+  static distanceAlongArc(fromFix, toFix, planeCoords) {
+    const cLat = (fromFix.lat + toFix.lat) / 2;
+    const cLon = (fromFix.long + toFix.long) / 2;
+    const radius = Avionics.Utils.computeGreatCircleDistance(fromFix, toFix) / 2;
+
+    const planeAngle = Math.atan2(planeCoords.lat - cLat, cLon - planeCoords.long);
+    const endAngle = Math.atan2(toFix.lat - cLat, cLon - toFix.long);
+
+    return Math.abs((endAngle - planeAngle) * radius);
+  }
+
+  /**
    * Normalizes a heading to a 0-360 range.
    * @param {number} heading The heading to normalize.
    * @returns {number} The normalized heading.

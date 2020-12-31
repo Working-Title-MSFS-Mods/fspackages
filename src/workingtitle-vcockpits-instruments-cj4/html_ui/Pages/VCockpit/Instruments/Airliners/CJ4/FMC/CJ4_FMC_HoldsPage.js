@@ -62,12 +62,17 @@ class CJ4_FMC_HoldsPage {
         }
   
         const currentHold = currentHolds[this._state.pageNumber - 1];
-        const eteSeconds = this.calculateETE(currentHold.index);
+        const eta = this.calculateETA(currentHold);
   
         this.bindFplnHoldInputs(currentHold, currentHolds.length);
-        this.renderFplnHold(currentHold, eteSeconds, currentHolds.length);
+        this.renderFplnHold(currentHold, eta, currentHolds.length);
       }
     }
+
+    this._fmc.registerPeriodicPageRefresh(() => {
+      this.update();
+      return true;
+    }, 1000, false);
   }
 
   /**
@@ -81,13 +86,18 @@ class CJ4_FMC_HoldsPage {
     this._fmc.onLeftInput[4] = () => this.changeHoldDistance(currentHold);
     
     this._fmc.onRightInput[0] = () => this.toggleSpeedType(currentHold);
+    this._fmc.onRightInput[3] = () => this.changeEFCTime(currentHold);
 
     if (numHolds < 6) {
       this._fmc.onRightInput[4] = () => CJ4_FMC_LegsPage.ShowPage1(this._fmc, true);
     }
 
-    if (this._state.fromWaypointIndex === currentHold.index) {
-      this._fmc.onRightInput[5] = () => this.handleExitHold(currentHold);
+    if (this.isHoldActive(currentHold)) {
+      this._fmc.onRightInput[5] = () => this.handleExitHold();
+    }
+
+    if (this.isHoldExiting(currentHold)) {
+      this._fmc.onRightInput[5] = () => this.handleCancelExit();
     }
 
     if (this._state.isModifying) {
@@ -167,7 +177,7 @@ class CJ4_FMC_HoldsPage {
     if (!isNaN(input)) {
       this._fmc.inOut = '';
 
-      const groundSpeed = Math.min(Simplane.getGroundSpeed(), 120);
+      const groundSpeed = Math.max(Simplane.getGroundSpeed(), 140);
       const distance = input * (groundSpeed / 60);
 
       this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
@@ -198,7 +208,7 @@ class CJ4_FMC_HoldsPage {
     if (!isNaN(input)) {
       this._fmc.inOut = '';
 
-      const groundSpeed = Math.min(Simplane.getGroundSpeed(), 120);
+      const groundSpeed = Math.max(Simplane.getGroundSpeed(), 120);
       const timeSeconds = input / (groundSpeed / 3600);
 
       this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
@@ -236,18 +246,31 @@ class CJ4_FMC_HoldsPage {
   }
 
   /**
+   * Updates the EFC time for the current hold.
+   * @param {{waypoint: WayPoint, index: number}} currentHold The current hold to change the EFC time for. 
+   */
+  changeEFCTime(currentHold) {
+    const pattern = /\d\d\d\d/;
+    if (pattern.test(this._fmc.inOut)) {
+      currentHold.waypoint.holdDetails.efcTime = this._fmc.inOut;
+    }
+    else {
+      this._fmc.showErrorMessage('INVALID ENTRY');
+    }
+  }
+
+  /**
    * Renders the FPLN HOLD page.
    * @param {{waypoint: WayPoint, index: number}} currentHold The current hold. 
-   * @param {number} eteSeconds The ETE to the hold fix in seconds.
+   * @param {Date} eta The ETA to arrive at the hold fix.
    * @param {number} numPages The total number of pages.
    */
-  renderFplnHold(currentHold, eteSeconds, numPages) {
+  renderFplnHold(currentHold, eta, numPages) {
     const actMod = this._state.isModifying ? 'MOD[white]' : 'ACT[blue]';
-    const ete = `${Math.floor(eteSeconds / 60)}:${eteSeconds % 60}`;
+    const etaDisplay = `${eta.getHours().toFixed(0).padStart(2, '0')}:${eta.getMinutes().toFixed(0).padStart(2, '0')}`;
 
     const holdDetails = currentHold.waypoint.holdDetails;
     const speedSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "ICAO"], holdDetails.holdSpeedType === HoldSpeedType.FAA ? 0 : 1);
-    
 
     const rows = [
       [`${actMod} FPLN HOLD[blue]`, `${this._state.pageNumber}/${numPages}[blue]`],
@@ -255,14 +278,14 @@ class CJ4_FMC_HoldsPage {
       [`${currentHold.waypoint.ident}`, speedSwitch, CJ4_FMC_HoldsPage.getEntryTypeString(holdDetails.entryType)],
       [' QUAD/RADIAL[blue]', 'MAX KIAS [blue]'],
       ['--/---°', this.getMaxKIAS(holdDetails).toFixed(0)],
-      [' INBD CRS/DIR[blue]', 'FIX ETE [blue]'],
-      [`${holdDetails.holdCourse.toFixed(0).padStart(3, '0')}${holdDetails.isHoldCourseTrue ? 'T' : ''}°/${holdDetails.turnDirection === HoldTurnDirection.Left ? 'L' : 'R'} TURN`, `${ete}[s-text]`],
+      [' INBD CRS/DIR[blue]', 'FIX ETA [blue]'],
+      [`${holdDetails.holdCourse.toFixed(0).padStart(3, '0')}${holdDetails.isHoldCourseTrue ? 'T' : ''}°/${holdDetails.turnDirection === HoldTurnDirection.Left ? 'L' : 'R'} TURN`, `${etaDisplay}[s-text]`],
       [' LEG TIME[blue]', 'EFC TIME [blue]'],
       [`${(holdDetails.legTime / 60).toFixed(1)}[d-text] MIN[s-text]`, '--:--'],
       [' LEG DIST[blue]'],
       [`${holdDetails.legDistance.toFixed(1)}[d-text] NM[s-text]`, `${numPages < 6 ? 'NEW HOLD>' : ''}`],
       ['------------------------[blue]'],
-      [`${this._state.isModifying ? '<CANCEL MOD' : ''}`, `${this._state.fromWaypointIndex === currentHold.index ? 'EXIT HOLD>' : ''}`]
+      [`${this._state.isModifying ? '<CANCEL MOD' : ''}`, `${this.isHoldActive(currentHold) ? 'EXIT HOLD>' : this.isHoldExiting(currentHold) ? 'CANCEL EXIT>': ''}`]
     ];
 
     this._fmc._templateRenderer.setTemplateRaw(rows);
@@ -325,18 +348,52 @@ class CJ4_FMC_HoldsPage {
 
   /**
    * Handles when EXIT HOLD is pressed.
-   * @param {{waypoint: WayPoint, index: number}} currentHold The current hold. 
    */
-  handleExitHold(currentHold) {
-    this._fmc.exitHoldAtIndex(currentHold.index);
+  handleExitHold() {
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    if (holdsDirector) {
+      holdsDirector.exitActiveHold();
+      this.update();
+    }
   }
 
   /**
    * Handles when CANCEL EXIT is pressed.
-   * @param {{waypoint: WayPoint, index: number}} currentHold The current hold. 
    */
-  handleCancelExit(currentHold) {
-    this._fmc.cancelExitHoldAtIndex(currentHold.index);
+  handleCancelExit() {
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    if (holdsDirector) {
+      holdsDirector.cancelHoldExit();
+      this.update();
+    }
+  }
+
+  /**
+   * Whether or not the current hold is active.
+   * @param {{waypoint: WayPoint, index: number}} currentHold The current hold.
+   * @returns {boolean} True if active, false otherwise.
+   */
+  isHoldActive(currentHold) {
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    if (holdsDirector) {
+      return holdsDirector.isHoldActive(currentHold.index);
+    }
+
+    return false;
+  }
+
+  /**
+   * Whether or not the current hold is exiting.
+   * @param {{waypoint: WayPoint, index: number}} currentHold The current hold.
+   * @returns {boolean} True if exiting, false otherwise.
+   */
+  isHoldExiting(currentHold) {
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    if (holdsDirector) {
+      return holdsDirector.isHoldExiting(currentHold.index);
+    }
+
+    return false;
   }
 
   /**
@@ -374,29 +431,45 @@ class CJ4_FMC_HoldsPage {
   }
 
   /**
-   * Calculates the estimated time enroute to the specified waypoint index for the hold.
-   * @param {number} index The waypoint index of the hold.
-   * @returns {number} The estimated time enroute to the hold, in seconds. 
+   * Calculates the estimated time of arrival at the specified hold.
+   * @param {{waypoint: WayPoint, index: number}} currentHold The current hold to change the course for.
+   * @returns {Date} The ETA to the hold fix. 
    */
-  calculateETE(index) {
-    const activeWaypointIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
-    const waypointsToHold = this._fmc.flightPlanManager.getAllWaypoints()
-      .slice(activeWaypointIndex, index - activeWaypointIndex);
+  calculateETA(currentHold) {
+
+    let simtime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+    const currentDate = new Date(0, 0, 0, 0, 0, 0);
+    const activeHoldIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
     
-    const planePosition = CJ4_FMC_HoldsPage.getPlanePosition();
-    const groundSpeed = Simplane.getGroundSpeed();
-    let distanceToHold = 0;
+    const groundSpeed = Math.max(Simplane.getGroundSpeed(), 140);
+    if (activeHoldIndex !== -1 && activeHoldIndex === currentHold.index) {
+      const eteSeconds = Math.round(SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number") / (groundSpeed / 3600));
+      currentDate.setSeconds(simtime + eteSeconds);
 
-    for (var i = 0; i < waypointsToHold.length; i++) {
-      if (i === 0) {
-        distanceToHold += Avionics.Utils.computeGreatCircleDistance(planePosition, waypointsToHold[i].infos.coordinates);
-      }
-      else {
-        distanceToHold += Avionics.Utils.computeGreatCircleDistance(waypointsToHold[i - 1].infos.coordinates, waypointsToHold[i].infos.coordinates);
-      }
+      return currentDate;
     }
+    else {
+      const activeWaypointIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+      const waypointsToHold = this._fmc.flightPlanManager.getAllWaypoints()
+        .slice(activeWaypointIndex, currentHold.index - activeWaypointIndex);
+      
+      const planePosition = CJ4_FMC_HoldsPage.getPlanePosition();
+      let distanceToHold = 0;
 
-    return Math.round(distanceToHold / (groundSpeed / 3600));
+      for (var i = 0; i < waypointsToHold.length; i++) {
+        if (i === 0) {
+          distanceToHold += Avionics.Utils.computeGreatCircleDistance(planePosition, waypointsToHold[i].infos.coordinates);
+        }
+        else {
+          distanceToHold += Avionics.Utils.computeGreatCircleDistance(waypointsToHold[i - 1].infos.coordinates, waypointsToHold[i].infos.coordinates);
+        }
+      }
+
+      const eteSeconds = Math.round(distanceToHold / (groundSpeed / 3600));
+      currentDate.setSeconds(simtime + eteSeconds);
+
+      return currentDate;
+    }
   }
 
   /**

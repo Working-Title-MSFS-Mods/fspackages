@@ -4,15 +4,14 @@ class HoldsDirector {
   /** 
    * Creates an instance of a HoldsDirector.
    * @param {FlightPlanManager} fpm An instance of the flight plan manager.
-   * @param {number} holdWaypointIndex The index of the waypoint to hold at.
    */
-  constructor(fpm, holdWaypointIndex) {
+  constructor(fpm) {
 
     /** The flight plan manager. */
     this.fpm = fpm;
 
     /** The hold waypoint index. */
-    this.holdWaypointIndex = holdWaypointIndex;
+    this.holdWaypointIndex = -1;
 
     /** The current flight plan version. */
     this.currentFlightPlanVersion = 0;
@@ -37,6 +36,12 @@ class HoldsDirector {
 
     /** The outbound leg for the hold. */
     this.outboundLeg = [];
+
+    /** The parallel entry leg for the hold. */
+    this.parallelLeg = [];
+
+    /** The direction of the turn. */
+    this.turnDirection = HoldTurnDirection.Right;
   }
 
   /**
@@ -54,7 +59,17 @@ class HoldsDirector {
       const trackToHold = new LatLon(prevFixCoords.lat, prevFixCoords.long).finalBearingTo(new LatLon(fixCoords.lat, fixCoords.long));
 
       if (this.state === HoldsDirectorState.NONE) {
-        this.state = HoldsDirector.calculateEntryState(holdDetails.holdCourse, trackToHold);
+        switch (holdDetails.entryType) {
+          case HoldEntry.Direct:
+            this.state = HoldsDirectorState.ENTRY_DIRECT_INBOUND;
+            break;
+          case HoldEntry.Teardrop:
+            this.state = HoldsDirectorState.ENTRY_TEARDROP_INBOUND;
+            break;
+          case HoldEntry.Parallel:
+            this.state = HoldsDirectorState.ENTRY_PARALLEL_INBOUND;
+            break;
+        }
       }
       
       this.fixCoords = fixCoords;
@@ -63,6 +78,9 @@ class HoldsDirector {
       const legFixes = HoldsDirector.calculateHoldFixes(fixCoords, holdDetails);
       this.inboundLeg = [legFixes[3], legFixes[0]];
       this.outboundLeg = [legFixes[1], legFixes[2]];
+      this.parallelLeg = [legFixes[4], legFixes[5]];
+
+      this.turnDirection = holdDetails.turnDirection;
     }
   }
 
@@ -85,10 +103,17 @@ class HoldsDirector {
   }
 
   /** 
-   * Updates the hold director. 
+   * Updates the hold director.
+   * @param {number} holdWaypointIndex The current waypoint index to hold at.
    */
-  update() {
+  update(holdWaypointIndex) {
     const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
+
+    if (this.holdWaypointIndex !== holdWaypointIndex) {
+      this.initializeHold();
+      this.holdWaypointIndex = holdWaypointIndex;
+    }
+
     if (flightPlanVersion !== this.currentFlightPlanVersion) {
       this.initializeHold();
       this.currentFlightPlanVersion = flightPlanVersion;
@@ -115,7 +140,13 @@ class HoldsDirector {
       case HoldsDirectorState.TURNING_INBOUND:
         this.handleInHold(planeState);
         break;
+      case HoldsDirectorState.EXITING:
+        this.handleExitingHold(planeState);
+        break;
     }
+
+    const distanceRemaining = this.calculateDistanceRemaining(planeState);
+    SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", distanceRemaining);
   }
 
   /**
@@ -143,21 +174,81 @@ class HoldsDirector {
    * Handles the direct entry state.
    * @param {AircraftState} planeState The current aircraft state.
    */
-  handleDirectEntry(planeState) {   
+  handleDirectEntry(planeState) {
     const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
-    const planeToFixTrack = Avionics.Utils.computeGreatCircleHeading(planeState.position, this.fixCoords);
 
-    const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
-
-    if (trackDiff > 90) {
-      HoldsDirector.setCourse(AutopilotMath.normalizeHeading(dtk + 45), planeState);
+    if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
       this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-      this.recalculateHold(planeState);
 
+      this.recalculateHold(planeState);
+      this.cancelAlert();
+
+      SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', this.holdWaypointIndex);
       this.state = HoldsDirectorState.TURNING_OUTBOUND;
     }
     else {
+      this.alertIfClose(planeState, this.fixCoords);
       this.trackLeg(this.prevFixCoords, this.fixCoords, planeState);
+    }
+  }
+
+  /**
+   * Handles the teardrop entry state.
+   * @param {AircraftState} planeState The current aircraft state.
+   */
+  handleTeardropEntry(planeState) {
+    if (this.state === HoldsDirectorState.ENTRY_TEARDROP_INBOUND) {
+      const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
+
+      if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
+        this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
+  
+        this.recalculateHold(planeState);
+        this.cancelAlert();
+  
+        SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', this.holdWaypointIndex);
+        this.state = HoldsDirectorState.OUTBOUND;
+      }
+      else {
+        this.alertIfClose(planeState, this.fixCoords);
+        this.trackLeg(this.prevFixCoords, this.fixCoords, planeState);
+      }
+    }
+  }
+
+  /**
+   * Handles the teardrop entry state.
+   * @param {AircraftState} planeState The current aircraft state.
+   */
+  handleParallelEntry(planeState) {
+
+    if (this.state === HoldsDirectorState.ENTRY_PARALLEL_INBOUND) {
+      const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
+
+      if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
+        this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
+  
+        this.recalculateHold(planeState);
+        this.cancelAlert();
+  
+        SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', this.holdWaypointIndex);
+        this.state = HoldsDirectorState.ENTRY_PARALLEL_OUTBOUND;
+      }
+      else {
+        this.alertIfClose(planeState, this.fixCoords);
+        this.trackLeg(this.prevFixCoords, this.fixCoords, planeState);
+      }
+    }
+    
+    if (this.state === HoldsDirectorState.ENTRY_PARALLEL_OUTBOUND) {
+      const dtk = AutopilotMath.desiredTrack(this.parallelLeg[0], this.parallelLeg[1], planeState.position);
+
+      if (this.isAbeam(dtk, planeState.position, this.parallelLeg[1])) {
+        this.state = HoldsDirectorState.INBOUND;
+      }
+      else {
+        this.trackLeg(this.parallelLeg[0], this.parallelLeg[1], planeState);
+      }
     }
   }
 
@@ -191,7 +282,6 @@ class HoldsDirector {
 
     if (this.state === HoldsDirectorState.TURNING_INBOUND) {
       const dtk = AutopilotMath.desiredTrack(this.inboundLeg[0], this.inboundLeg[1], planeState.position);
-      const trackDiff = Avionics.Utils.angleDiff(dtk, planeState.trueTrack);
 
       if (this.isAbeam(dtk, planeState.position, this.inboundLeg[0])) {
         this.state = HoldsDirectorState.INBOUND;
@@ -207,11 +297,54 @@ class HoldsDirector {
 
       if (this.isAbeam(dtk, planeState.position, this.inboundLeg[1])) {
         this.recalculateHold(planeState);
+        this.cancelAlert();
+
         this.state = HoldsDirectorState.TURNING_OUTBOUND;
       }
       else {
         this.trackLeg(this.inboundLeg[0], this.inboundLeg[1], planeState);
-      }
+        this.alertIfClose(planeState, this.inboundLeg[1]);
+      } 
+    }
+  }
+
+  /**
+   * Activates the waypoint alert if close enough to the provided fix.
+   * @param {AircraftState} planeState The current aircraft state.
+   * @param {LatLongAlt} fix The fix to alert for.
+   */
+  alertIfClose(planeState, fix) {
+    const alertDistance = 3 * (planeState.groundSpeed / 3600);
+    const fixDistance = Avionics.Utils.computeGreatCircleDistance(planeState.position, fix);
+
+    if (fixDistance <= alertDistance) {
+      SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
+    }
+  }
+
+  /**
+   * Cancels the waypoint alert.
+   */
+  cancelAlert() {
+    SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
+  }
+
+  /**
+   * Handles the exiting state.
+   * @param {AircraftState} planeState The current aircraft state. 
+   */
+  handleExitingHold(planeState) {
+    const dtk = AutopilotMath.desiredTrack(this.inboundLeg[0], this.inboundLeg[1], planeState.position);
+
+    if (this.isAbeam(dtk, planeState.position, this.inboundLeg[1])) {
+      this.cancelAlert();
+      SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', -1);
+
+      this.state = HoldsDirectorState.EXITED;
+    }
+    else {
+      this.alertIfClose(planeState, this.inboundLeg[1]);
+      this.trackLeg(this.inboundLeg[0], this.inboundLeg[1], planeState);
     }
   }
 
@@ -231,7 +364,6 @@ class HoldsDirector {
 
     SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", xtk);
     SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", correctedDtk);
-    SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", distanceRemaining);
 
     const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.NORMAL);
     const bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(planeState.position, legEnd);
@@ -251,13 +383,17 @@ class HoldsDirector {
    * @param {AircraftState} planeState The state of the aircraft.
    */
   trackArc(legStart, legEnd, planeState) {
-    const dtk = AutopilotMath.desiredTrackArc(legStart, legEnd, planeState.position);
-    const xtk = AutopilotMath.crossTrackArc(legStart, legEnd, planeState.position);
+    let dtk = AutopilotMath.desiredTrackArc(legStart, legEnd, planeState.position);
+    if (this.turnDirection === HoldTurnDirection.Left) {
+      dtk = AutopilotMath.normalizeHeading(dtk + 180);
+    }
 
-    const distanceRemaining = Avionics.Utils.computeGreatCircleDistance(planeState.position, legEnd);
-    const correctedDtk = GeoMath.correctMagvar(dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+    let xtk = AutopilotMath.crossTrackArc(legStart, legEnd, planeState.position);
+    if (this.turnDirection === HoldTurnDirection.Left) {
+      xtk = -1 * xtk;
+    }
 
-    const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.APPROACHLPV, 25);
+    const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.APPROACHLPV, 35);
     HoldsDirector.setCourse(AutopilotMath.normalizeHeading(dtk + interceptAngle), planeState);
   }
 
@@ -271,7 +407,71 @@ class HoldsDirector {
     const planeToFixTrack = Avionics.Utils.computeGreatCircleHeading(planePosition, fixCoords);
     const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
 
-    return trackDiff > 100;
+    return trackDiff > 91;
+  }
+
+  /**
+   * Exits the active hold.
+   */
+  exitActiveHold() {
+    this.state = HoldsDirectorState.EXITING;
+  }
+
+  /**
+   * Cancels exiting the hold at the hold fix.
+   */
+  cancelHoldExit() {
+    this.state = HoldsDirectorState.INBOUND;
+  }
+
+  /**
+   * Calculates the distance remaining to the hold fix.
+   * @param {AircraftState} planeState The current aircraft state.
+   * @returns {number} The distance remaining to the hold fix, in NM. 
+   */
+  calculateDistanceRemaining(planeState) {
+    const holdWaypoint = this.fpm.getFlightPlan(0).getWaypoint(this.holdWaypointIndex);
+    const legDistance = holdWaypoint.holdDetails.legDistance;
+    const turnDistance = Avionics.Utils.computeGreatCircleDistance(this.inboundLeg[1], this.outboundLeg[0]) * Math.PI;
+
+    let distance = (2 * legDistance) + turnDistance;
+    if (this.state === HoldsDirectorState.TURNING_OUTBOUND) {
+      return distance + AutopilotMath.distanceAlongArc(this.inboundLeg[1], this.outboundLeg[0], planeState.position);
+    }
+
+    distance -= legDistance;
+    if (this.state === HoldsDirectorState.OUTBOUND) {
+      return distance + Avionics.Utils.computeGreatCircleDistance(planeState.position, this.outboundLeg[1]);
+    }
+
+    distance -= turnDistance;
+    if (this.state === HoldsDirectorState.TURNING_INBOUND) {
+      return distance + AutopilotMath.distanceAlongArc(this.outboundLeg[1], this.inboundLeg[0], planeState.position);
+    }
+
+    return Avionics.Utils.computeGreatCircleDistance(planeState.position, this.inboundLeg[1]);
+  }
+
+  /**
+   * Whether or not the current waypoint index is in active hold.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if active, false otherwise.
+   */
+  isHoldActive(index) {
+    return this.holdWaypointIndex === index
+      && this.state !== HoldsDirectorState.NONE
+      && this.state !== HoldsDirectorState.EXITED
+      && this.state !== HoldsDirectorState.ENTRY_TEARDROP_INBOUND
+      && this.state !== HoldsDirectorState.ENTRY_PARALLEL_INBOUND;
+  }
+
+  /**
+   * Whether or not the current hold is exiting.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if exiting, false otherwise.
+   */
+  isHoldExiting(index) {
+    return this.holdWaypointIndex === index && this.state === HoldsDirectorState.EXITING;
   }
 
   /**
@@ -299,23 +499,32 @@ class HoldsDirector {
    * @param {LatLongAlt} holdFixCoords The coordinates of the hold fix.
    * @param {HoldDetails} holdDetails The details of the hold.
    * @param {AircraftState} planeState The true course that the hold will be flown with.
-   * @returns {LatLongAlt[]} The four hold corner positions calculated, clockwise starting with the hold fix coordinates.
+   * @returns {LatLongAlt[]} The four hold corner positions calculated, clockwise starting with the hold fix coordinates, plus 2
+   * parallel leg fixes.
    */
   static calculateHoldFixes(holdFixCoords, holdDetails) {
 
     const windComponents = AutopilotMath.windComponents(holdDetails.holdCourse, holdDetails.windDirection, holdDetails.windSpeed);
     const turnRadius = AutopilotMath.turnRadius(holdDetails.speed + Math.abs(windComponents.crosswind), 25);
 
-    const outboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + 90), turnRadius * 2, 
+    const turnDirection = holdDetails.turnDirection === HoldTurnDirection.Right ? 1 : -1;
+
+    const outboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 90)), turnRadius * 2, 
       holdFixCoords.lat, holdFixCoords.long);
     
-    const outboundEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + 180), holdDetails.legDistance,
+    const outboundEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance,
       outboundStart.lat, outboundStart.long);
     
-    const inboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + 180), holdDetails.legDistance,
+    const inboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance,
       holdFixCoords.lat, holdFixCoords.long);
 
-    return [holdFixCoords, outboundStart, outboundEnd, inboundStart];
+    const parallelStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * -90)), 1, 
+      holdFixCoords.lat, holdFixCoords.long);
+    
+    const parallelEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance, 
+      parallelStart.lat, parallelStart.long);
+
+    return [holdFixCoords, outboundStart, outboundEnd, inboundStart, parallelStart, parallelEnd];
   }
 
   /**
@@ -348,6 +557,8 @@ HoldsDirectorState.TURNING_OUTBOUND = 'TURNING_OUTBOUND';
 HoldsDirectorState.OUTBOUND = 'OUTBOUND';
 HoldsDirectorState.TURNING_INBOUND = 'TURNING_INBOUND';
 HoldsDirectorState.INBOUND = 'INBOUND';
+HoldsDirectorState.EXITING = 'EXITING';
+HoldsDirectorState.EXITED = 'EXITED';
 
 /**
  * The current state of the aircraft for LNAV.
