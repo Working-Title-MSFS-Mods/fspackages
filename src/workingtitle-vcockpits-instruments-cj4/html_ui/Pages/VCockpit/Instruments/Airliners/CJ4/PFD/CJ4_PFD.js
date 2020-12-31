@@ -909,19 +909,43 @@ class CJ4_ILS extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        if (!this.altWentAbove500) {
-            let altitude = Simplane.getAltitudeAboveGround();
-            if (altitude >= 500)
-                this.altWentAbove500 = true;
-        }
+        // if (!this.altWentAbove500) {
+        //     let altitude = Simplane.getAltitudeAboveGround();
+        //     if (altitude >= 500)
+        //         this.altWentAbove500 = true;
+        // }
+        console.log("onupdate");
         if (this.ils) {
-            let showIls = false;
-            let localizer = this.gps.radioNav.getBestILSBeacon(true);
-            if ((localizer.id != 0 && this.altWentAbove500) || (this.gps.currFlightPlanManager.isActiveApproach() && Simplane.getAutoPilotApproachType() == 10)) {
-                showIls = true;
+            this.altWentAbove500 = true;
+            console.log("this.ils");
+            let showLoc = 0;
+            let showGs = 0;
+
+            
+            console.log("this.gps.mapNavigationSource: " + this.gps.mapNavigationSource);
+            if (this.gps.mapNavigationSource === 1 || this.gps.mapNavigationSource === 2) {
+                const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.gps.mapNavigationSource, "bool");
+                const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.gps.mapNavigationSource, "bool");
+                showLoc = isLoc ? 1 : 0;
+                showGs = isGs ? 1 : 0;
             }
-            this.ils.showLocalizer(showIls);
-            this.ils.showGlideslope(showIls);
+            else if (this.gps.mapNavigationSource === 0) {
+                const isVnav = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") > 0;
+                const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
+                const isPpos = this.gps.mapDisplayMode === 4;
+                showLoc = isRnav || isPpos ? 2 : 0;
+                showGs = isVnav ? 2 : 0;
+            }
+
+
+            // let localizer = this.gps.radioNav.getBestILSBeacon(true);
+            // if ((localizer.id != 0 && this.altWentAbove500) || (this.gps.currFlightPlanManager.isActiveApproach() && Simplane.getAutoPilotApproachType() == 10)) {
+            //     showIls = true;
+            // }
+            console.log("showLoc: " + showLoc + " " + "showGs: " + showGs + " " + "navsource: " + this.gps.mapNavigationSource);
+
+            this.ils.showLocalizer(showLoc, this.gps.mapNavigationSource);
+            this.ils.showGlideslope(showGs);
             this.ils.update(_deltaTime);
         }
     }
