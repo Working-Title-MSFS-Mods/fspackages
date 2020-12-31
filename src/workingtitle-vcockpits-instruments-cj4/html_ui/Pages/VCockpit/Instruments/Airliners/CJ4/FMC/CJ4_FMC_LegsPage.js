@@ -73,7 +73,7 @@ class CJ4_FMC_LegsPage {
 
         //FIND RUNWAY INDEX
         console.log("_wayPointsToRender.length: " + this._wayPointsToRender.length);
-        if (allWaypoints[allWaypoints.length - 2].isRunway) {
+        if (allWaypoints.length > 1 && allWaypoints[allWaypoints.length - 2].isRunway) {
             runwayIndex = this._wayPointsToRender.length - 2;
             console.log("runway found: " + runwayIndex);
         }
