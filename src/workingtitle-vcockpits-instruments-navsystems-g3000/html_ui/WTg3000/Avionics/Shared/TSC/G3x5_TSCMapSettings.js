@@ -257,7 +257,7 @@ WT_G3x5_TSCMapSettings.SYNC_TEXTS = [
 
 class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
     getControllerID() {
-        return `${this.instrumentID}-${this.gps.getMFDPaneControl()}`;
+        return `${this.instrumentID}-${this.gps.getSelectedMFDPane()}`;
     }
 }
 
