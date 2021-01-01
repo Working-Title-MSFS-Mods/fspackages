@@ -1044,100 +1044,7 @@
                 </div>
 
                 <div class="tscPage" id="AirportInfo">
-                    <div class="line">
-                        <div class="gradientButton" id="AirportInfo_SelectedWaypoint">
-                            <div class="mainText">SELECT AIRPORT</div>
-                            <div class="mainValue"></div>
-                            <div class="title"></div>
-                            <img class="waypointSymbol"/>
-                        </div>
-                        <div class="gradientButton" id="AirportInfo_Options">
-                            <div class="mainText">Waypoint Options</div>
-                        </div>
-                    </div>
-                    <div class="tabContainer">
-                        <div class="tabSelect LeftTabs">
-                            <div class="tabButton tabButtonLeft" id="AirportInfo_InfoTab" state="Highlight">
-                                <div class="mainText">Info</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" id="AirportInfo_FreqsTab" state="">
-                                <div class="mainText">Freqs</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" id="AirportInfo_WeatherTab" state="Disabled">
-                                <div class="mainText">Weather</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" id="AirportInfo_AptDirTab" state="Disabled">
-                                <div class="mainText">APT DIR</div>
-                            </div>
-                        </div>
-                        <div class="tabContentContainer CenterDisplay">
-                            <div class="tabContent Info" state="Active">
-                                <div class="section">
-                                    <div class="city"></div>
-                                    <div class="region"></div>
-                                </div>
-                                <div class="section">
-                                    <div class="line">
-                                        <div class="bearing">
-                                            <div class="bearing_title">BRG</div>
-                                            <div class="bearing_value"></div>
-                                        </div>
-                                        <div class="distance">
-                                            <div class="distance_title">DIS</div>
-                                            <div class="distance_value"></div>
-                                        </div>
-                                    </div>
-                                    <div class="latitude"></div>
-                                    <div class="longitude"></div>
-                                </div>
-                                <div class="section line">
-                                    <div class="elev">
-                                        <div class="elev_title">Elev</div>
-                                        <div class="elev_value"></div>
-                                    </div>
-                                    <div class="time">
-                                        <div class="time_title">Time</div>
-                                        <div class="time_value"></div>
-                                    </div>
-                                </div>
-                                <div class="section line">
-                                    <div class="fuel">
-                                        <div class="fuel_title">Fuel</div>
-                                        <div class="fuel_value"></div>
-                                    </div>
-                                    <div class="privacy"></div>
-                                </div>
-                            </div>
-                            <div class="tabContent Freqs" state="Inactive">
-                            </div>
-                            <div class="tabContent Weather" state="Inactive">
-                            </div>
-                            <div class="tabContent APTDIR" state="Inactive">
-                            </div>
-                            <div class="tabContent Charts" state="Inactive">
-                            </div>
-                            <div class="tabContent Runways" state="Inactive">
-                            </div>
-                            <div class="tabContent NOTAMs" state="Inactive">
-                            </div>
-                            <div class="tabContent Proc" state="Inactive">
-                            </div>
-                        </div>
-                        <div class="tabSelect RightTabs">
-                            <div class="tabButton tabButtonRight" id="AirportInfo_ChartsTab" state="Disabled">
-                                <div class="mainText">Charts</div>
-                            </div>
-                            <div class="tabButton tabButtonRight" id="AirportInfo_RunwaysTab" state="">
-                                <div class="mainText">Runways</div>
-                            </div>
-                            <div class="tabButton tabButtonRight" id="AirportInfo_ChartNotamsTab" state="Disabled">
-                                <div class="mainText">Chart NOTAMs</div>
-                            </div>
-                            <div class="tabButton tabButtonRight" id="AirportInfo_ProcTab" state="Disabled">
-                                <div class="mainText">Proc</div>
-                            </div>
-                        </div>
-                    </div>
+                    <tsc-airportinfo></tsc-airportinfo>
                 </div>
 
                 <div class="tscPage" id="Nearest">
@@ -2556,10 +2463,31 @@
 <script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Math/GVector2.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Geo/GeoPoint.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Utils/PlayerAirplane.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/AltitudeConstraint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Waypoint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Airport.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Procedure.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/VOR.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/NDB.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Intersection.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Airway.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/ICAOWaypointFactory.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/ICAOSearcher.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlan.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/DirectTo.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanAsoboInterface.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanManager.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCButton.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCWaypointButton.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCBearingArrow.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
@@ -2593,12 +2521,15 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCTabbedView.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPopUpElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapPointerControl.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCAirportInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.js"></script>
