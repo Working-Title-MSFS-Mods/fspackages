@@ -8,6 +8,15 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
 
     /**
      * @readonly
+     * @property {NavSystemTouch} instrument
+     * @type {NavSystemTouch}
+     */
+    get instrument() {
+        return this.gps;
+    }
+
+    /**
+     * @readonly
      * @property {String} homePageGroup
      * @type {String}
      */
@@ -25,16 +34,16 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
     }
 
     _onBackPressed() {
-        this.gps.goBack();
+        this.instrument.goBack();
     }
 
     _onHomePressed() {
-        this.gps.SwitchToPageName(this.homePageGroup, this.homePageName);
+        this.instrument.SwitchToPageName(this.homePageGroup, this.homePageName);
     }
 
     onEnter() {
-        this.gps.activateNavButton(1, "Back", this._onBackPressed.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this._onHomePressed.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
+        this.instrument.activateNavButton(1, "Back", this._onBackPressed.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
+        this.instrument.activateNavButton(2, "Home", this._onHomePressed.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
     onUpdate(deltaTime) {
@@ -44,7 +53,7 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
     }
 
     onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
+        this.instrument.deactivateNavButton(1);
+        this.instrument.deactivateNavButton(2);
     }
 }

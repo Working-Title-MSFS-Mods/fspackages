@@ -609,7 +609,7 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _initRight() {
-        this._rangeButton = new WT_TSCButton();
+        this._rangeButton = new WT_TSCLabeledButton();
         this._rangeButton.addButtonListener(this._onRangeButtonPressed.bind(this));
         return this._rangeButton;
     }
@@ -689,7 +689,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     }
 
     _initRight() {
-        this._rangeTypeButton = new WT_TSCButton();
+        this._rangeTypeButton = new WT_TSCLabeledButton();
         this._rangeTypeButton.labelText = "Settings";
         this._rangeTypeButton.addButtonListener(this._onRangeTypeButtonPressed.bind(this));
         return this._rangeTypeButton;
@@ -790,7 +790,7 @@ class WT_G3x5_TSCMapSettingsTrackVectorTabRow extends WT_G3x5_TSCMapSettingsTogg
     }
 
     _initRight() {
-        this._lookaheadButton = new WT_TSCButton();
+        this._lookaheadButton = new WT_TSCLabeledButton();
         this._lookaheadButton.addButtonListener(this._onLookaheadButtonPressed.bind(this));
         return this._lookaheadButton;
     }
@@ -852,7 +852,7 @@ class WT_G3x5_TSCMapSettingsFuelRingTabRow extends WT_G3x5_TSCMapSettingsToggleT
     }
 
     _initRight() {
-        this._reserveButton = new WT_TSCButton();
+        this._reserveButton = new WT_TSCLabeledButton();
         this._reserveButton.addButtonListener(this._onReserveButtonPressed.bind(this));
         return this._reserveButton;
     }
