@@ -13,6 +13,7 @@ class WT_BaseLnav {
         this._fpm = fpm;
 
         this._navModeSelector = navModeSelector;
+        this._holdsDirector = new HoldsDirector(fpm);
 
         this._flightPlanVersion = undefined;
         this._activeWaypointChanged = true;
@@ -89,6 +90,15 @@ class WT_BaseLnav {
         this._previousWaypoint = this.flightplan.waypoints[this.flightplan.activeWaypointIndex - 1];
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
         this._inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
+
+        if ((this._activeWaypoint && this._activeWaypoint.hasHold) || (this._previousWaypoint && this._previousWaypoint.hasHold)) {
+            const holdWaypointIndex = (this._activeWaypoint && this._activeWaypoint.hasHold) ? this.flightplan.activeWaypointIndex : this.flightplan.activeWaypointIndex - 1;
+            this._holdsDirector.update(holdWaypointIndex);
+
+            if (this._holdsDirector.state !== HoldsDirectorState.NONE && this._holdsDirector.state !== HoldsDirectorState.EXITED) {
+                return;
+            }
+        }
 
         const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
         if (flightPlanVersion !== this._currentFlightPlanVersion) {

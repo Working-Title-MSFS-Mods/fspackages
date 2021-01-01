@@ -10,7 +10,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
-            ["<POS INIT", "HOLD>[disabled]"], //N/A ---- 12
+            ["<POS INIT", "HOLD>"], //N/A ---- 12
             [" FMS1[s-text]"],
             ["<VORDME CTL[disabled]", "PROG>"], //Page 6 ---- 13, 14
             [" FMS1[s-text]"],
@@ -25,7 +25,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc); };
         fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage11(fmc); };
-        fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage12(fmc); };
+        fmc.onRightInput[3] = () => { CJ4_FMC_HoldsPage.handleHoldPressed(fmc); };
         fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(fmc); };
@@ -364,25 +364,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage12(fmc) { //HOLD
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT LEGS[blue]", "1/1[blue] "],
-            ["FIX   ENTRY[blue]", "HOLD SPD[blue]"],
-            ["fix" + "   DIRECT", "FAA/ICAO"],
-            ["QUAD/RADIAL[blue]", "MAX KIAS[blue]"],
-            ["NW/290\xB0", "265"],
-            ["INBD CRS/DIR[blue]", "FIX ETA[blue]"],
-            ["110\xB0 / R TURN", "time"],
-            ["LEG TIME[blue]", "EFC TIME[blue]"],
-            ["2.2 MIN", "18:35"],
-            ["LEG DIST[blue]"],
-            ["15.0 NM", "NEW HOLD>"],
-            ["-------- HOLD AT -------[blue]"],
-            ["□□□□□", "LEG WIND>"]
-        ]);
-        fmc.updateSideButtonActiveStatus();
-    }
+
     //method to calculate ETE
     static calcETEseconds(distance, currGS) {
         return (distance / currGS) * 3600;

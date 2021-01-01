@@ -6,6 +6,8 @@ declare module "MSFS" {
     endsInDiscontinuity?: boolean;
     isVectors?: boolean;
     isRunway?: boolean;
+    hasHold?: boolean;
+    holdDetails: HoldDetails;
     infos: WayPointInfo;
     type: string;
     bearingInFP: number;
@@ -137,6 +139,7 @@ declare module "MSFS" {
 
   export class Simplane {
     static getHeadingMagnetic(): number;
+    static getGroundSpeed(): number;
   }
 
   export class EmptyCallback {

@@ -221,7 +221,19 @@ class Jet_MFD_NDInfo extends HTMLElement {
             forceUpdate = true;
         }
 
-        this.setWaypoint(Simplane.getNextWaypointName(), Math.round(Simplane.getNextWaypointTrack()), Simplane.getNextWaypointDistance(), Simplane.getNextWaypointETA(), forceUpdate);
+        const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+        const holdFix = FlightPlanManager.DEBUG_INSTANCE.getFlightPlan(0).getWaypoint(holdIndex);
+        if (holdFix && holdFix.holdDetails) {
+            const waypointName = holdFix.ident;
+            const waypointTrack = holdFix.holdDetails.holdCourse;
+
+            const distance = SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number");
+            this.setWaypoint(waypointName, Math.round(waypointTrack), distance, Simplane.getNextWaypointETA(), forceUpdate);
+        }
+        else {
+            this.setWaypoint(Simplane.getNextWaypointName(), Math.round(Simplane.getNextWaypointTrack()), Simplane.getNextWaypointDistance(), Simplane.getNextWaypointETA(), forceUpdate);
+        }
+
         this._previousNavMode = this._navMode;
     }
     setGroundSpeed(_speed, _force = false) {
@@ -699,7 +711,15 @@ class VORDMENavAid {
      * @param {Jet_NDCompass_Navigation} parentNavMode The navigation mode of the parent PFD/MFD map.
      */
     handleFMSModeUpdate(parentNavMode) {
-        const waypointName = Simplane.getNextWaypointName();
+    
+        let waypointName = Simplane.getNextWaypointName();
+
+        const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+        const holdFix = FlightPlanManager.DEBUG_INSTANCE.getFlightPlan(0).getWaypoint(holdIndex);
+        if (holdFix && holdFix.holdDetails) {
+            waypointName = holdFix.ident;
+        }
+
         const hasNav = waypointName !== null && waypointName !== undefined && waypointName !== '';
 
         if (this.hasNav !== hasNav) {
@@ -708,8 +728,14 @@ class VORDMENavAid {
         }
 
         let hideDistance = parentNavMode === Jet_NDCompass_Navigation.NAV;
-        this.setDistanceValue(hideDistance ? 0 : Simplane.getNextWaypointDistance());
 
+        if (holdFix && holdFix.holdDetails) {
+            this.setDistanceValue(hideDistance ? 0 : SimVar.GetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number"));
+        }
+        else {
+            this.setDistanceValue(hideDistance ? 0 : Simplane.getNextWaypointDistance());
+        }
+        
         if (hasNav) {
             const waypointBearing = Simplane.getNextWaypointTrack();
             const planeHeading = Simplane.getHeadingMagnetic();

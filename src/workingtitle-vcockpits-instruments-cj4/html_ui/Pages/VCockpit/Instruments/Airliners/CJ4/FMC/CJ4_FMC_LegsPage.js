@@ -6,9 +6,10 @@ let LegsPageInstance = undefined;
 
 class CJ4_FMC_LegsPage {
 
-    constructor(fmc) {
+    constructor(fmc, isAddingHold) {
         this._fmc = fmc;
         this._isDirty = true; // render on first run ofc
+        this._isAddingHold = isAddingHold;
 
         this._currentPage = 1;
         this._pageCount = 1;
@@ -135,7 +136,12 @@ class CJ4_FMC_LegsPage {
                     if (waypoint.fix.icao === '$DISCO') {
                         this._rows[2 * i] = [" THEN[magenta]"];
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -[magenta]"];
-                    } else {
+                    }
+                    else if (waypoint.fix.isHold) {
+                        this._rows[2 * i] = [" HOLD AT[magenta]"];
+                        this._rows[2 * i + 1] = [`${waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"}[magenta]`];
+                    }
+                    else {
                         this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[magenta]" + fpaText];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident + "[magenta]" : "USR[magenta]"];
                     }
@@ -144,6 +150,10 @@ class CJ4_FMC_LegsPage {
                     if (waypoint.fix.icao === '$DISCO') {
                         this._rows[2 * i] = [" THEN"];
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -"];
+                    }
+                    else if (waypoint.fix.isHold) {
+                        this._rows[2 * i] = [" HOLD AT"];
+                        this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"];
                     }
                     else {
                         this._rows[2 * i] = [" " + bearing.padStart(3, "0") + " " + distance.padStart(4, " ") + "NM[shite]" + fpaText];
@@ -169,12 +179,22 @@ class CJ4_FMC_LegsPage {
         }
 
         let modStr = this._fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
+        let holdActive = false;
+        let holdExiting = false;
+
+        const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+
+        if (holdsDirector) {
+            const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+            holdActive = holdsDirector.isHoldActive(holdIndex);
+            holdExiting = holdsDirector.isHoldExiting(holdIndex);
+        }
 
         this._fmc._templateRenderer.setTemplateRaw([
             [" " + modStr + " LEGS[blue]", this._currentPage.toFixed(0) + "/" + Math.max(1, this._pageCount.toFixed(0)) + " [blue]"],
             ...this._rows,
-            ["-------------------------[blue]"],
-            [this._lsk6Field + "", "LEG WIND>"]
+            [`${this._isAddingHold ? '---------HOLD AT--------' : holdExiting ? '-------EXIT ARMED-------' : '------------------------'}[blue]`],
+            [`${this._isAddingHold ? '□□□□□' : holdExiting ? '<CANCEL EXIT' : holdActive ? '<EXIT HOLD' : this._lsk6Field}`, "LEG WIND>"]
         ]);
     }
 
@@ -193,6 +213,10 @@ class CJ4_FMC_LegsPage {
                 console.log("skipping destination waypoint");
             } else {
                 displayWaypoints.push({ index: i, fix: waypoints[i] });
+                if (waypoints[i].hasHold) {
+                    displayWaypoints.push({index: i, fix: {ident: waypoints[i].ident, infos: waypoints[i].infos, isHold: true}});
+                }
+
                 if (waypoints[i].endsInDiscontinuity) {
                     displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
                 }
@@ -305,9 +329,14 @@ class CJ4_FMC_LegsPage {
                                         lskWaypointIndex += 1;
                                     }
                                     else {
-                                        this._fmc.showErrorMessage("UNABLE MOD DISCON");
+                                        this._fmc.showErrorMessage("INVALID DELETE");
                                         isMovable = false;
                                     }
+                                }
+
+                                if (waypoint.fix.isHold) {
+                                    this._fmc.flightPlanManager.deleteHoldAtWaypointIndex(waypoint.index);
+                                    lskWaypointIndex += 1;
                                 }
 
                                 if (isMovable) {
@@ -351,9 +380,15 @@ class CJ4_FMC_LegsPage {
                                     selectedWpIndex = Infinity;
                                 }
                                 if (waypoint.fix.icao === '$DISCO') {
-                                    this._fmc.showErrorMessage("UNABLE MOD DISCON");
-                                    this._fmc.setMsg();
-                                    return;
+                                    if (waypoint.fix.isRemovable) {
+                                        this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
+                                        selectedWpIndex += 1;
+                                    }
+                                    else {
+                                        this._fmc.showErrorMessage("INVALID DELETE");
+                                        this._fmc.setMsg();
+                                        return;
+                                    }   
                                 }
                             }
                             let scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : undefined;
@@ -402,8 +437,12 @@ class CJ4_FMC_LegsPage {
                                         this.resetAfterOp();
                                     }
                                     else {
-                                        this._fmc.showErrorMessage("UNABLE CLR DISCON");
+                                        this._fmc.showErrorMessage("INVALID DELETE");
                                     }
+                                }
+                                else if (waypoint.fix.isHold) {
+                                    this._fmc.flightPlanManager.deleteHoldAtWaypointIndex(waypoint.index);
+                                    this.resetAfterOp();
                                 }
                                 else {
                                     this._fmc.flightPlanManager.removeWaypoint(selectedWpIndex, false, () => {
@@ -432,12 +471,34 @@ class CJ4_FMC_LegsPage {
 
     bindEvents() {
         this._fmc.onLeftInput[5] = () => {
-            if (this._lsk6Field == "<CANCEL MOD") {
+            let holdActive = false;
+            let holdExiting = false;
+
+            const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+
+            if (holdsDirector) {
+                const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+                holdActive = holdsDirector.isHoldActive(holdIndex);
+                holdExiting = holdsDirector.isHoldExiting(holdIndex);
+            }
+
+            if (this._isAddingHold) {
+                this.addHold();
+            }
+            else if (this._lsk6Field == "<CANCEL MOD") {
                 if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
                     this._fmc.fpHasChanged = false;
                     this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
                     this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
                 }
+            }
+            else if (holdExiting) {
+                holdsDirector.cancelHoldExit();
+                this.update(true);
+            }
+            else if (holdActive) {
+                holdsDirector.exitActiveHold();
+                this.update(true);
             }
         };
         this._fmc.onRightInput[0] = () => {
@@ -478,6 +539,29 @@ class CJ4_FMC_LegsPage {
                 this.update(true);
             }
         };
+    }
+
+    addHold() {
+        /** @type {{waypoint: WayPoint, index: number}} */
+        const holdWaypoint = this._fmc.flightPlanManager.getAllWaypoints()
+            .map((waypoint, index) => ({waypoint, index}))
+            .slice(this._activeWptIndex)
+            .find(x => x.waypoint.ident === this._fmc.inOut);
+
+        if (holdWaypoint !== undefined) {
+
+            this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                const details = HoldDetails.createDefault(holdWaypoint.waypoint.bearingInFP, holdWaypoint.waypoint.bearingInFP);
+                this._fmc.flightPlanManager.addHoldAtWaypointIndex(holdWaypoint.index, details);
+                this._fmc.fpHasChanged = true;
+
+                this._fmc.inOut = '';
+                CJ4_FMC_HoldsPage.showHoldPage(this._fmc, holdWaypoint.waypoint.ident);
+            });
+        }
+        else {
+            this._fmc.showErrorMessage('INVALID ENTRY');
+        }
     }
 
     // TODO, later this could be in the base class
@@ -719,12 +803,12 @@ class CJ4_FMC_LegsPage {
         }
     }
 
-    static ShowPage1(fmc) {
+    static ShowPage1(fmc, isAddingHold = false) {
         // console.log("SHOW LEGS PAGE 1");
         fmc.clearDisplay();
 
         // create page instance and init 
-        LegsPageInstance = new CJ4_FMC_LegsPage(fmc);
+        LegsPageInstance = new CJ4_FMC_LegsPage(fmc, isAddingHold);
         LegsPageInstance.update();
     }
 
