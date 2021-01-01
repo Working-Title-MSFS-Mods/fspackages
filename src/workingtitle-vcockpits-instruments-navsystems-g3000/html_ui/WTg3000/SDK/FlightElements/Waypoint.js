@@ -22,6 +22,15 @@ class WT_Waypoint {
 
     /**
      * @readonly
+     * @property {String} name - the name of this waypoint.
+     * @type {String}
+     */
+    get name() {
+        return undefined;
+    }
+
+    /**
+     * @readonly
      * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
      * @type {WT_GeoPoint}
      */
@@ -57,6 +66,15 @@ class WT_CustomWaypoint extends WT_Waypoint {
      */
     get ident() {
         return this._ident;
+    }
+
+    /**
+     * @readonly
+     * @property {String} name - the name of this waypoint.
+     * @type {String}
+     */
+    get name() {
+        return this.ident;
     }
 
     /**

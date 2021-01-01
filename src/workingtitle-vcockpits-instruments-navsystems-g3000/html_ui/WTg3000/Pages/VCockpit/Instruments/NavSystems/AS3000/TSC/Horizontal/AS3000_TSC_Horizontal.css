@@ -868,136 +868,47 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
             height: 100%;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint {
-        width: 50%;
-        height: 15vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint .mainValue {
-          position: absolute;
-          left: 5%;
-          top: 0%;
-          font-size: 6vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint .title {
-          position: absolute;
-          left: 5%;
-          bottom: 0%;
-          width: 90%;
-          font-size: 4vh; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_SelectedWaypoint .waypointSymbol {
-          position: absolute;
-          right: 0%;
-          top: 0%; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo #AirportInfo_Options {
-        width: 20%;
-        height: 15vh; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer {
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-airportinfo {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .airportInfoHeader {
         position: absolute;
-        left: 1%;
-        top: 18%;
-        width: 98%;
-        height: 80%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .tabButton {
-            height: 15vh;
-            margin: 2.5vh 0; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay {
-          width: 70%;
-          font-size: 5vh;
-          line-height: 5vh;
-          margin: 0 -0.5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .city {
-            padding-left: 5%;
-            width: 95%;
-            height: 5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .section {
-            padding-top: 2vh;
-            padding-bottom: 2vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .region {
-            padding-left: 5%;
-            width: 95%;
-            height: 5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .bearing {
-            width: 45%;
-            text-align: center;
-            height: 10vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .distance {
-            width: 45%;
-            text-align: center;
-            height: 10vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .latitude {
-            width: 100%;
-            text-align: center;
-            height: 5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .longitude {
-            width: 100%;
-            text-align: center;
-            height: 5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .elev {
-            width: 45%;
-            text-align: center;
-            height: 10vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .time {
-            width: 45%;
-            right: 0%;
-            text-align: center;
-            height: 10vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .fuel {
-            width: 45%;
-            text-align: center;
-            height: 10vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Info .privacy {
-            width: 45%;
-            right: 0%;
-            text-align: center;
-            height: 10vh; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line {
-              height: 25%; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line .frequencyName {
-                position: absolute;
-                width: 50%;
-                height: 100%; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line .buttonContainer {
-                position: absolute;
-                width: 50%;
-                height: 100%;
-                right: 0%; }
-                as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Freqs .line .buttonContainer .gradientButton {
-                  position: absolute;
-                  top: 0.2vh;
-                  bottom: 0.2vh;
-                  right: 0.2vh;
-                  left: 0.2vh;
-                  width: auto;
-                  height: auto; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line {
-              height: 33.33%; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .name {
-                position: absolute;
-                top: 2%;
-                width: 100%;
-                height: 30%;
-                font-size: 6vh;
-                color: white; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .size {
-                position: absolute;
-                top: 32%;
-                width: 100%;
-                height: 20%;
-                font-size: 5vh;
-                color: white; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .surface {
-                position: absolute;
-                top: 62%;
-                width: 50%;
-                height: 20%;
-                font-size: 5vh;
-                color: white; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .tabContainer .CenterDisplay .Runways .line .lighting {
-                position: absolute;
-                top: 62%;
-                right: 0%;
-                width: 50%;
-                height: 20%;
-                font-size: 5vh;
-                color: white; }
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .airportInfoSelectButton {
+        width: 60vh;
+        height: 15vh;
+        font-size: 4vh;
+        margin-right: 1vh;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .airportInfoOptionsButton {
+        width: 23vh;
+        height: 15vh;
+        font-size: 4vh;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-tabbedview {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 16vh;
+        bottom: 1%;
+        --tab-content-width: 75vh;
+        --tab-content-height: 73vh;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-button-tab {
+        width: 23vh;
+        height: 15vh;
+        margin: 2.5vh 0;
+    }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer {
         left: 1%;

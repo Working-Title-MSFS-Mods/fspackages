@@ -18,20 +18,16 @@ class WT_Airport extends WT_ICAOWaypoint {
         return new WT_Approach(this, data.name, index, data);
     }
 
-    _initFromData(data) {
-        super._initFromData(data);
+    _calculateElevation(runwayData) {
+        if (!runwayData) {
+            return undefined;
+        }
 
-        this._class = data.airportClass;
-        this._privacy = data.airportPrivateType;
-        this._isTowered = data.towered;
-        this._fuel = `${data.fuel1} ${data.fuel2}`;
-        this._radarCoverage = data.radarCoverage;
-        this._runways = new WT_RunwayList(this._initRunways(data.runways));
-        this._size = this._calculateSize();
-
-        this._departures = new WT_ProcedureList(data.departures.map(this._departureMap.bind(this)));
-        this._arrivals = new WT_ProcedureList(data.arrivals.map(this._arrivalMap.bind(this)));
-        this._approaches = new WT_ProcedureList(data.approaches.map(this._approachMap.bind(this)));
+        let sum = 0;
+        for (let data of runwayData) {
+            sum += data.elevation;
+        }
+        return WT_Unit.METER.createNumber(sum / runwayData.length);
     }
 
     _initRunways(runwayData) {
@@ -91,10 +87,27 @@ class WT_Airport extends WT_ICAOWaypoint {
         return WT_Airport.Size.SMALL;
     }
 
+    _initFromData(data) {
+        super._initFromData(data);
+
+        this._class = data.airportClass;
+        this._privacy = data.airportPrivateType;
+        this._isTowered = data.towered;
+        this._fuel = `${data.fuel1} ${data.fuel2}`;
+        this._radarCoverage = data.radarCoverage;
+        this._elevation = this._calculateElevation(data.runways);
+        this._runways = new WT_RunwayList(this._initRunways(data.runways));
+        this._size = this._calculateSize();
+
+        this._departures = new WT_ProcedureList(data.departures.map(this._departureMap.bind(this)));
+        this._arrivals = new WT_ProcedureList(data.arrivals.map(this._arrivalMap.bind(this)));
+        this._approaches = new WT_ProcedureList(data.approaches.map(this._approachMap.bind(this)));
+    }
+
     /**
      * @readonly
-     * @property {Number} size - the size of this airport.
-     * @type {Number}
+     * @property {WT_Airport.Size} size - the size of this airport.
+     * @type {WT_Airport.Size}
      */
     get size() {
         return this._size;
@@ -138,6 +151,15 @@ class WT_Airport extends WT_ICAOWaypoint {
      */
     get radarCoverage() {
         return this._radarCoverage;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} elevation - the elevation of this airport.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get elevation() {
+        return this._elevation ? this._elevation.readonly() : undefined;
     }
 
     /**
