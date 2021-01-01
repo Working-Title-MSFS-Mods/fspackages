@@ -399,8 +399,9 @@ class WT_BaseLnav {
         const fafDistance = this.getFinalApproachFixDistance(planeCoords);
         const currentWaypoint = this._fpm.getActiveWaypoint();
         const runway = this.getRunway();
+        const segment = this._fpm.getSegmentFromWaypoint(currentWaypoint);
 
-        if (fafDistance <= 3 || (currentWaypoint && currentWaypoint.isRunway)) {
+        if ((fafDistance <= 3 || (currentWaypoint && currentWaypoint.isRunway)) && segment.type === SegmentType.Approach) {
             if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._navModeSelector.approachMode === WT_ApproachType.RNAV) {
                 return NavSensitivity.APPROACHLPV;
             }
