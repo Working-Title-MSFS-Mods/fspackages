@@ -276,6 +276,13 @@ class CJ4NavModeSelector {
       }
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
       SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+
+      SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
+      SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);
+      SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "knots", 0);
+      SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
+      SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
+      SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
     }
   }
 
