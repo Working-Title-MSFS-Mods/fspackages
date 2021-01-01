@@ -81,13 +81,8 @@ class WT_G3x5NavMap {
         return this._nexradShowSetting;
     }
 
-    init(root) {
-        let viewElement = root.querySelector(`map-view`);
+    init(viewElement) {
         this._model = new WT_MapModel();
-        if (!viewElement) {
-            viewElement = new WT_MapView();
-            root.appendChild(viewElement);
-        }
         this._view = viewElement;
         this.view.setModel(this.model);
         this._controller = new WT_MapController(this.instrumentID, this.model, this.view);

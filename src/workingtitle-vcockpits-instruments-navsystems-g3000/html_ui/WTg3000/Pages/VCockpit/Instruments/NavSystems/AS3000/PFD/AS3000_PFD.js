@@ -198,7 +198,7 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
     }
 
     init(root) {
-        this._navMap.init(root);
+        this._navMap.init(root.querySelector(`.insetMap`));
         this.mapContainer = this.gps.getChildById("InnerMap");
     }
 

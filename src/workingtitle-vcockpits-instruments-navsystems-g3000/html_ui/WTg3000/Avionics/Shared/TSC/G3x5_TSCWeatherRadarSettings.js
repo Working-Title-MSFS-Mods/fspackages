@@ -2,7 +2,7 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
     constructor(homePageGroup, homePageName, instrumentID, halfPaneID) {
         super(homePageGroup, homePageName);
 
-        this._controllerID = `${instrumentID}-${halfPaneID}`
+        this._controllerID = `${instrumentID}-${halfPaneID}`;
 
         this._model = new WT_WeatherRadarModel();
         this._controller = new WT_DataStoreController(this.controllerID, this.model);

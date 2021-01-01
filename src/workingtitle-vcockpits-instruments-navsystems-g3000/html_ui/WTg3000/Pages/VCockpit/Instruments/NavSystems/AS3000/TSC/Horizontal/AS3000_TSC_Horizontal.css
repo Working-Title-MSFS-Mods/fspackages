@@ -60,7 +60,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfo] #AirportInfo,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfoLeft] #AirportInfoLeft,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=Nearest] #Nearest,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=NearestAirport] #NearestAirport,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=NearestIntersection] #NearestIntersection,
@@ -868,14 +869,14 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
             height: 100%;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
-as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-airportinfo {
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-airportinfo {
     position: absolute;
     left: 1%;
     top: 1%;
     width: 98%;
     height: 98%;
 }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .airportInfoHeader {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .airportInfoHeader {
         position: absolute;
         top: 0;
         left: 50%;
@@ -884,18 +885,18 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-airpor
         flex-flow: row nowrap;
         justify-content: center;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .airportInfoSelectButton {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .airportInfoSelectButton {
         width: 60vh;
         height: 15vh;
         font-size: 4vh;
         margin-right: 1vh;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo .airportInfoOptionsButton {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .airportInfoOptionsButton {
         width: 23vh;
         height: 15vh;
         font-size: 4vh;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-tabbedview {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-tabbedview {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
@@ -904,7 +905,7 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-airpor
         --tab-content-width: 75vh;
         --tab-content-height: 73vh;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AirportInfo tsc-button-tab {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-button-tab {
         width: 23vh;
         height: 15vh;
         margin: 2.5vh 0;
