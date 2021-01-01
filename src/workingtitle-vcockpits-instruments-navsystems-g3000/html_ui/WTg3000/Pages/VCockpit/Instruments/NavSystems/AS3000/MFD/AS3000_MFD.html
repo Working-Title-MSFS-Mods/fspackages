@@ -74,6 +74,7 @@
                                 <weatherradar-view-scale></weatherradar-view-scale>
                                 <weatherradar-view-settings></weatherradar-view-settings>
                             </div>
+                            <map-view slot="waypointInfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
                         </mfd-halfpane>
                         <mfd-halfpane slot="right">
                             <map-view slot="navMap" class="navMap" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
@@ -82,6 +83,7 @@
                                 <weatherradar-view-scale></weatherradar-view-scale>
                                 <weatherradar-view-settings></weatherradar-view-settings>
                             </div>
+                            <map-view slot="waypointInfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
                         </mfd-halfpane>
                     </mfd-mainpane>
                 </div>
@@ -165,6 +167,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelBordersModule.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelCitiesModule.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointsModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointInfoModule.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/MapProjection.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/View/MapView.js"></script>
@@ -238,5 +241,6 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5MapViewFlightPlanLegStyleChooser.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WaypointInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>
