@@ -727,6 +727,13 @@ class MapInstrument extends ISvgMapRootElement {
                     }
 
                     if (this.flightPlanManager && this.bIsFlightPlanVisible) {
+                        let l = this.flightPlanManager.getWaypointsCount(0);
+                        if (l > 1) {
+
+                            this.navMap.mapElements.push(this.flightPlanElement);
+                            this.navMap.mapElements.push(...this.updateFplnWaypoints());
+                        }
+
                         if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
                             this.navMap.mapElements.push(this.tmpFlightPlanElement);
                             let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
@@ -745,13 +752,6 @@ class MapInstrument extends ISvgMapRootElement {
                                     }
                                 }
                             }
-                        }
-
-                        let l = this.flightPlanManager.getWaypointsCount();
-                        if (l > 1) {
-
-                            this.navMap.mapElements.push(this.flightPlanElement);
-                            this.navMap.mapElements.push(...this.updateFplnWaypoints());
                         }
 
                         const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
@@ -871,11 +871,11 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateFplnWaypoints() {
+        console.log(this._fplnNavMapElements.length);
         if (this._fplnVersion < this.flightPlanManager.CurrentFlightPlanVersion) {
-            let l = this.flightPlanManager.getWaypointsCount();
+            let l = this.flightPlanManager.getWaypointsCount(0);
             if (l > 1) {
                 this._fplnNavMapElements = [];
-                console.log("update flightplan svgs");
                 for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
                     let waypoint = this.flightPlanManager.getWaypoint(i, 0);
                     if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
@@ -1623,7 +1623,7 @@ class MapInstrument extends ISvgMapRootElement {
 MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
 MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
 
-MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = false;
+MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
 
 MapInstrument.INT_RANGE_DEFAULT = 4;
 MapInstrument.INT_RANGE_MIN_DEFAULT = 0;
