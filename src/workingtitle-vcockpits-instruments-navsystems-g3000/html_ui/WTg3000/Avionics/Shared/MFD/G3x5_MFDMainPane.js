@@ -54,12 +54,12 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         /**
          * @type {WT_G3x5_MFDHalfPane}
          */
-        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, "LEFT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher);
+        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher);
 
         /**
          * @type {WT_G3x5_MFDHalfPane}
          */
-        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, "RIGHT", this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher);
+        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher);
 
         this._controller.init();
         this._controller.update();
@@ -173,7 +173,7 @@ class WT_G3x5_MFDHalfPane {
 
         // TODO: find a more elegant way to do this
         let defaultControl;
-        if (halfPaneID === "LEFT") {
+        if (halfPaneID === WT_G3x5_MFDHalfPane.ID.LEFT) {
             defaultControl = WT_PlayerAirplane.INSTANCE.type() === WT_PlayerAirplane.Type.TBM930 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT | WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT;
         } else {
             defaultControl = 0;
@@ -281,6 +281,13 @@ class WT_G3x5_MFDHalfPane {
             this._updateChildren();
         }
     }
+}
+/**
+ * @enum {String}
+ */
+WT_G3x5_MFDHalfPane.ID = {
+    LEFT: "LEFT",
+    RIGHT: "RIGHT"
 }
 
 class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {

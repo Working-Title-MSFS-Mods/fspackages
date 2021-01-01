@@ -1,11 +1,11 @@
 class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, instrumentID) {
+    constructor(homePageGroup, homePageName, instrumentID, halfPaneID) {
         super(homePageGroup, homePageName);
 
-        this._instrumentID = instrumentID;
+        this._controllerID = `${instrumentID}-${halfPaneID}`
 
         this._model = new WT_WeatherRadarModel();
-        this._controller = new WT_DataStoreController(`${this.instrumentID}`, this.model);
+        this._controller = new WT_DataStoreController(this.controllerID, this.model);
 
         this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5WeatherRadar.MODE_KEY, WT_G3x5WeatherRadar.MODE_DEFAULT, true, false));
         this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5WeatherRadar.DISPLAY_KEY, WT_G3x5WeatherRadar.DISPLAY_DEFAULT, true, false));
@@ -18,11 +18,11 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {String} instrumentID - the ID of the radar this settings page controls.
+     * @property {String} controllerID - the ID of the radar this settings page controls.
      * @type {String}
      */
-    get instrumentID() {
-        return this._instrumentID;
+    get controllerID() {
+        return this._controllerID;
     }
 
     /**

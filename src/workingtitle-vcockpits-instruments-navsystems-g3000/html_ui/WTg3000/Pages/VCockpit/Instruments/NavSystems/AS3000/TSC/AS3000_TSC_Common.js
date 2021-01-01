@@ -66,8 +66,8 @@ class AS3000_TSC extends NavSystemTouch {
         this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
         this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
 
-        this._mfdLeftPaneSettings = {controller: new WT_DataStoreController("MFD-LEFT", null)};
-        this._mfdRightPaneSettings = {controller: new WT_DataStoreController("MFD-RIGHT", null)};
+        this._mfdLeftPaneSettings = {controller: new WT_DataStoreController(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
+        this._mfdRightPaneSettings = {controller: new WT_DataStoreController(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
         this._initHalfPaneController(this._mfdLeftPaneSettings);
         this._initHalfPaneController(this._mfdRightPaneSettings);
 
@@ -78,8 +78,8 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._initLightingControl();
 
-        this._mfdHalfPaneControl = "LEFT";
-        this._mfdHalfPaneControlID;
+        this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
+        this._mfdPaneControlID;
     }
 
     _initHalfPaneController(paneSettings) {
@@ -113,8 +113,8 @@ class AS3000_TSC extends NavSystemTouch {
         return this._icaoSearchers;
     }
 
-    get mfdHalfPaneControlID() {
-        return this._mfdHalfPaneControlID;
+    get mfdPaneControlID() {
+        return this._mfdPaneControlID;
     }
 
     get mfdMainPaneSettings() {
@@ -129,16 +129,16 @@ class AS3000_TSC extends NavSystemTouch {
         return this._mfdRightPaneSettings;
     }
 
-    getMFDPaneControl() {
+    getSelectedMFDPane() {
         if (this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
-            return "LEFT";
+            return WT_G3x5_MFDHalfPane.ID.LEFT;
         } else {
-            return this._mfdHalfPaneControl;
+            return this._selectedMfdPane;
         }
     }
 
-    getActiveMFDHalfPaneSettings() {
-        return this.getMFDPaneControl() === "LEFT" ? this._mfdLeftPaneSettings : this._mfdRightPaneSettings;
+    getSelectedMFDPaneSettings() {
+        return this.getSelectedMFDPane() === WT_G3x5_MFDHalfPane.ID.LEFT ? this._mfdLeftPaneSettings : this._mfdRightPaneSettings;
     }
 
     isLightingControlAllowed() {
@@ -152,7 +152,7 @@ class AS3000_TSC extends NavSystemTouch {
     get templateID() { return "AS3000_TSC"; }
 
     _initMFDPaneControlID() {
-        this._mfdHalfPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
+        this._mfdPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
     }
 
     _initMFDPaneSelectDisplay() {
@@ -195,12 +195,12 @@ class AS3000_TSC extends NavSystemTouch {
                     "MFDMapDetailButton",
                     true
                 )),
-                this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", "LEFT")),
-                this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", "RIGHT")),
+                this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
                 this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
-                this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-LEFT")),
-                this._mfdPagesRight.weatherRadar = new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD-RIGHT")),
+                this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.weatherRadar = new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
@@ -282,8 +282,8 @@ class AS3000_TSC extends NavSystemTouch {
         });
     }
 
-    getActiveMFDPages() {
-        return this.getMFDPaneControl() === "LEFT" ? this._mfdPagesLeft : this._mfdPagesRight;
+    getSelectedMFDPanePages() {
+        return this.getSelectedMFDPane() === WT_G3x5_MFDHalfPane.ID.LEFT ? this._mfdPagesLeft : this._mfdPagesRight;
     }
 
     parseXMLConfig() {
@@ -316,7 +316,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPaneSelectDisplay.style.display = "block";
             }
             this._mfdPaneSelectDisplay.setPaneMode(this._mfdMainPaneSettings.mode.getValue());
-            this._mfdPaneSelectDisplay.setSelected(this.getMFDPaneControl());
+            this._mfdPaneSelectDisplay.setSelected(this.getSelectedMFDPane());
         } else if (this._mfdPaneSelectDisplay.style.display !== "none") {
             this._mfdPaneSelectDisplay.style.display = "none";
         }
@@ -354,15 +354,15 @@ class AS3000_TSC extends NavSystemTouch {
 
     _onMFDMainPaneModeChanged(setting, newValue, oldValue) {
         if (newValue === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
-            this._setMFDHalfPaneControl("LEFT");
+            this._setSelectedMFDHalfPane(WT_G3x5_MFDHalfPane.ID.LEFT);
         } else {
-            let defaultControl = this._mfdHalfPaneControlID === WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT ? "LEFT" : "RIGHT";
-            this._setMFDHalfPaneControl(defaultControl);
+            let defaultControl = this._mfdPaneControlID === WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT ? WT_G3x5_MFDHalfPane.ID.LEFT : WT_G3x5_MFDHalfPane.ID.RIGHT;
+            this._setSelectedMFDHalfPane(defaultControl);
         }
     }
 
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
-        if (setting === this.getActiveMFDHalfPaneSettings().display) {
+        if (setting === this.getSelectedMFDPaneSettings().display) {
             let currentPage = this.getCurrentPage();
             if (newValue !== WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP &&
                 (currentPage.name === "Map Settings" || currentPage.title === "Map Pointer Control")) {
@@ -397,7 +397,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _changeMapRange(delta) {
-        let controllerID = `MFD-${this.getMFDPaneControl()}`;
+        let controllerID = `MFD-${this.getSelectedMFDPane()}`;
         let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
@@ -408,7 +408,7 @@ class AS3000_TSC extends NavSystemTouch {
             return;
         }
 
-        if (this.getActiveMFDHalfPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+        if (this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
             switch (event) {
                 case "BottomKnob_Small_INC":
                     this._changeMapRange(1);
@@ -420,29 +420,29 @@ class AS3000_TSC extends NavSystemTouch {
         } else {
             switch (event) {
                 case "BottomKnob_Small_INC":
-                    this.getActiveMFDPages().weatherRadar.element.changeRange(1);
+                    this.getSelectedMFDPanePages().weatherRadar.element.changeRange(1);
                     break;
                 case "BottomKnob_Small_DEC":
-                    this.getActiveMFDPages().weatherRadar.element.changeRange(-1);
+                    this.getSelectedMFDPanePages().weatherRadar.element.changeRange(-1);
                     break;
             }
         }
     }
 
-    _setMFDHalfPaneControl(value) {
-        if (this._mfdHalfPaneControl === value || this._mfdHalfPaneControlID === undefined) {
+    _setSelectedMFDHalfPane(value) {
+        if (this._selectedMfdPane === value || this._mfdPaneControlID === undefined) {
             return;
         }
 
-        this._mfdHalfPaneControl = value;
-        switch (this._mfdHalfPaneControl) {
-            case "LEFT":
-                this.mfdRightPaneSettings.control.removeControl(this._mfdHalfPaneControlID);
-                this.mfdLeftPaneSettings.control.addControl(this._mfdHalfPaneControlID);
+        this._selectedMfdPane = value;
+        switch (this._selectedMfdPane) {
+            case WT_G3x5_MFDHalfPane.ID.LEFT:
+                this.mfdRightPaneSettings.control.removeControl(this._mfdPaneControlID);
+                this.mfdLeftPaneSettings.control.addControl(this._mfdPaneControlID);
                 break;
-            case "RIGHT":
-                this.mfdLeftPaneSettings.control.removeControl(this._mfdHalfPaneControlID);
-                this.mfdRightPaneSettings.control.addControl(this._mfdHalfPaneControlID);
+            case WT_G3x5_MFDHalfPane.ID.RIGHT:
+                this.mfdLeftPaneSettings.control.removeControl(this._mfdPaneControlID);
+                this.mfdRightPaneSettings.control.addControl(this._mfdPaneControlID);
                 break;
         }
         if (this.getCurrentPageGroup().name === "MFD") {
@@ -452,12 +452,12 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _switchMFDHalfPaneControl() {
-        switch (this._mfdHalfPaneControl) {
-            case "LEFT":
-                this._setMFDHalfPaneControl("RIGHT");
+        switch (this._selectedMfdPane) {
+            case WT_G3x5_MFDHalfPane.ID.LEFT:
+                this._setSelectedMFDHalfPane(WT_G3x5_MFDHalfPane.ID.RIGHT);
                 break;
-            case "RIGHT":
-                this._setMFDHalfPaneControl("LEFT");
+            case WT_G3x5_MFDHalfPane.ID.RIGHT:
+                this._setSelectedMFDHalfPane(WT_G3x5_MFDHalfPane.ID.LEFT);
                 break;
         }
     }
@@ -474,9 +474,9 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _handleMapPointerEvent(event) {
-        if (event === "BottomKnob_Push" && this.getCurrentPageGroup().name === "MFD" && this.getActiveMFDHalfPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+        if (event === "BottomKnob_Push" && this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
             this.closePopUpElement();
-            this.SwitchToPageName("MFD", this.getActiveMFDPages().mapPointerControl.name);
+            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
         }
     }
 
@@ -693,11 +693,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _openWeatherSelectPage() {
-        if (this.gps.getMFDPaneControl() === "LEFT") {
-            this.gps.SwitchToPageName("MFD", "Weather Selection Left");
-        } else {
-            this.gps.SwitchToPageName("MFD", "Weather Selection Right");
-        }
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().weatherSelection.name);
     }
 
     _openMapSettingsPage() {
@@ -705,7 +701,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _onMapButtonPressed() {
-        let settings = this.gps.getActiveMFDHalfPaneSettings();
+        let settings = this.gps.getSelectedMFDPaneSettings();
         if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
             this._openMapSettingsPage();
         } else {
@@ -714,7 +710,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _onWeatherButtonPressed() {
-        let settings = this.gps.getActiveMFDHalfPaneSettings();
+        let settings = this.gps.getSelectedMFDPaneSettings();
         if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
             this._openWeatherSelectPage();
         } else {
@@ -723,7 +719,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _updateMapWeatherButtons() {
-        let display = this.gps.getActiveMFDHalfPaneSettings().display.getValue();
+        let display = this.gps.getSelectedMFDPaneSettings().display.getValue();
         switch (display) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._mapButton.setAttribute("state", "Active");
@@ -741,13 +737,13 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _onPaneControlChanged(setting, newValue, oldValue) {
-        if (this.gps.mfdHalfPaneControlID !== undefined && ((newValue & this.gps.mfdHalfPaneControlID) !== (oldValue & this.gps.mfdHalfPaneControlID))) {
+        if (this.gps.mfdPaneControlID !== undefined && ((newValue & this.gps.mfdPaneControlID) !== (oldValue & this.gps.mfdPaneControlID))) {
             this._updateMapWeatherButtons();
         }
     }
 
     _onPaneDisplayChanged(setting, newValue, oldValue) {
-        if (setting === this.gps.getActiveMFDHalfPaneSettings().display) {
+        if (setting === this.gps.getSelectedMFDPaneSettings().display) {
             this._updateMapWeatherButtons();
         }
     }
