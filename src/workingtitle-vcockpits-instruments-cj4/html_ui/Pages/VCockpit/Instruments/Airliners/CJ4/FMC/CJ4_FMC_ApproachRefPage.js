@@ -52,7 +52,7 @@ class CJ4_FMC_ApproachRefPage {
                 : crosswind < 0 ? "R"
                     : "";
             headwindDirection = headwind > 0 ? "H"
-                : crosswind < 0 ? "T"
+                : headwind < 0 ? "T"
                     : "";
             headwind = Math.abs(headwind);
             crosswind = Math.abs(crosswind);
