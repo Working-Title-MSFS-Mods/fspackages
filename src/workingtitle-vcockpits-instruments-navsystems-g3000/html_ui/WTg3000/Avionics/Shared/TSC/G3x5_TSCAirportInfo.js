@@ -1,8 +1,13 @@
 class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, icaoWaypointFactory) {
+    constructor(homePageGroup, homePageName, mfdPaneDisplaySetting, mfdPaneWaypointSetting, icaoWaypointFactory) {
         super(homePageGroup, homePageName);
 
+        this._mfdPaneDisplaySetting = mfdPaneDisplaySetting;
+        this._mfdPaneWaypointSetting = mfdPaneWaypointSetting;
         this._icaoWaypointFactory = icaoWaypointFactory;
+
+        this._mfdPaneDisplayLastMode = -1;
+        this._lastAirport = null;
     }
 
     _initSelectButton() {
@@ -10,6 +15,8 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 
     init(root) {
+        this.container.title = "Airport Info";
+
         /**
          * @type {WT_G3x5_TSCAirportInfoHTMLElement}
          */
@@ -40,6 +47,13 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         this._openKeyboard();
     }
 
+    onEnter() {
+        super.onEnter();
+
+        this._mfdPaneDisplayLastMode = this._mfdPaneDisplaySetting.getValue();
+        this._mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO);
+    }
+
     _updateTitle() {
         let airport = this._airportInfo.getAirport();
         let title;
@@ -59,16 +73,30 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         this.container.title = title;
     }
 
+    _updateMFDPaneWaypoint() {
+        let airport = this._airportInfo.getAirport();
+        if (airport === this._lastAirport) {
+            return;
+        }
+
+        this._mfdPaneWaypointSetting.setValue(airport ? airport.icao : "");
+        this._lastAirport = airport;
+    }
+
     onUpdate(deltaTime) {
         this._airportInfo.update();
         this._updateTitle();
+        this._updateMFDPaneWaypoint();
     }
 
     onExit() {
-        super.onExit();
+        if (this._mfdPaneDisplaySetting.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO) {
+            this._mfdPaneDisplaySetting.setValue(this._mfdPaneDisplayLastMode);
+        }
 
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
+        super.onExit();
     }
 }
 

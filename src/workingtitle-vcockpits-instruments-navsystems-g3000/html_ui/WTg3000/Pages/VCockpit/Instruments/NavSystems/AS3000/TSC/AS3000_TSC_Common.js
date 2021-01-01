@@ -51,6 +51,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.timer = new AS3000_TSC_Timers();
         this.speedBugs = this.createSpeedBugsPage();
         this.pfdPrefix = "AS3000_PFD_1";
+        this._isChangingPages = false;
         this.history = [];
         this.initDuration = 4000;
 
@@ -85,6 +86,7 @@ class AS3000_TSC extends NavSystemTouch {
     _initHalfPaneController(paneSettings) {
         paneSettings.controller.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.controller));
         paneSettings.controller.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.controller));
+        paneSettings.controller.addSetting(paneSettings.waypoint = new WT_G3x5_MFDHalfPaneWaypointSetting(paneSettings.controller));
         paneSettings.controller.update();
     }
 
@@ -208,7 +210,8 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
                 new NavSystemPage("Approach Selection", "ApproachSelection", new AS3000_TSC_ApproachSelection()),
                 new NavSystemPage("Waypoint Info", "WaypointsInfo", new AS3000_TSC_WaypointInfo()),
-                new NavSystemPage("Airport Info", "AirportInfo", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", this.icaoWaypointFactory)),
+                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
+                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
                 new NavSystemPage("Nearest", "Nearest", new AS3000_TSC_NRST()),
                 new NavSystemPage("Nearest Airport", "NearestAirport", new AS3000_TSC_NRST_Airport()),
                 new NavSystemPage("Nearest Intersection", "NearestIntersection", new AS3000_TSC_NRST_Intersection()),
@@ -361,17 +364,40 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _onMFDPaneNavMapDisplaySwitch(currentPage) {
+        if (currentPage.name !== "Map Settings" && currentPage.title !== "Map Pointer Control") {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
+    _onMFDPaneWeatherDisplaySwitch(currentPage) {
+        if (currentPage.title !== "Weather Selection" && currentPage.title !== "Weather Radar Settings") {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
+    _onMFDPaneAirportInfoDisplaySwitch(currentPage) {
+        if (currentPage.name !== "Airport Info Left" && currentPage.name !== "Airport Info Right") {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
-        if (setting === this.getSelectedMFDPaneSettings().display) {
+        if (!this._isChangingPages && setting === this.getSelectedMFDPaneSettings().display) {
             let currentPage = this.getCurrentPage();
-            if (newValue !== WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP &&
-                (currentPage.name === "Map Settings" || currentPage.title === "Map Pointer Control")) {
-                this.closePopUpElement();
-                this.SwitchToPageName("MFD", "MFD Home");
-            } else if (newValue !== WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER &&
-                (currentPage.title === "Weather Selection" || currentPage.title === "Weather Radar Settings")) {
-                this.closePopUpElement();
-                this.SwitchToPageName("MFD", "MFD Home");
+            switch (newValue) {
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+                    this._onMFDPaneNavMapDisplaySwitch(currentPage);
+                    break;
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+                    this._onMFDPaneWeatherDisplaySwitch(currentPage);
+                    break;
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
+                    this._onMFDPaneAirportInfoDisplaySwitch(currentPage);
+                    break;
             }
         }
     }
@@ -408,24 +434,27 @@ class AS3000_TSC extends NavSystemTouch {
             return;
         }
 
-        if (this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
-            switch (event) {
-                case "BottomKnob_Small_INC":
-                    this._changeMapRange(1);
-                    break;
-                case "BottomKnob_Small_DEC":
-                    this._changeMapRange(-1);
-                    break;
-            }
-        } else {
-            switch (event) {
-                case "BottomKnob_Small_INC":
-                    this.getSelectedMFDPanePages().weatherRadar.element.changeRange(1);
-                    break;
-                case "BottomKnob_Small_DEC":
-                    this.getSelectedMFDPanePages().weatherRadar.element.changeRange(-1);
-                    break;
-            }
+        switch (this.getSelectedMFDPaneSettings().display.getValue()) {
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this._changeMapRange(1);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this._changeMapRange(-1);
+                        break;
+                }
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this.getSelectedMFDPanePages().weatherRadar.element.changeRange(1);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this.getSelectedMFDPanePages().weatherRadar.element.changeRange(-1);
+                        break;
+                }
+                break;
         }
     }
 
@@ -494,8 +523,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.closePopUpElement();
         if (last.popUpPage) {
             this.switchToPopUpPage(last.popUpPage);
-        }
-        else {
+        } else {
             this.SwitchToPageName(last.menuName, last.pageName);
         }
         this.history.pop();
@@ -539,6 +567,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.rollBackKnobTexts();
     }
     SwitchToPageName(_menu, _page) {
+        this._isChangingPages = true;
         let historyPoint = new AS3000_TSC_PageInfos();
         if (!this.popUpElement) {
             historyPoint.menuName = this.getCurrentPageGroup().name;
@@ -546,14 +575,17 @@ class AS3000_TSC extends NavSystemTouch {
         }
         this.history.push(historyPoint);
         super.SwitchToPageName(_menu, _page);
+        this._isChangingPages = false;
     }
     switchToPopUpPage(_pageContainer) {
+        this._isChangingPages = true;
         let historyPoint = new AS3000_TSC_PageInfos();
         historyPoint.popUpPage = this.popUpElement;
         historyPoint.menuName = this.getCurrentPageGroup().name;
         historyPoint.pageName = this.getCurrentPage().name;
         this.history.push(historyPoint);
         super.switchToPopUpPage(_pageContainer);
+        this._isChangingPages = false;
     }
     openConfirmationWindow(_text, _button) {
         this.confirmationWindow.open(_text, _button);
@@ -733,6 +765,11 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
                 this._mapButton.setAttribute("state", "");
                 this._mapButtonTitle.innerHTML = "Map";
                 break;
+            default:
+                this._weatherButton.setAttribute("state", "");
+                this._weatherButtonTitle.innerHTML = "Weather";
+                this._mapButton.setAttribute("state", "");
+                this._mapButtonTitle.innerHTML = "Map";
         }
     }
 
@@ -1585,12 +1622,17 @@ class AS3000_TSC_WaypointInfo extends NavSystemElement {
         this.intBtn = this.gps.getChildById("WPInfoINT_Btn");
         this.vorBtn = this.gps.getChildById("WPInfoVOR_Btn");
         this.ndbBtn = this.gps.getChildById("WPInfoNDB_Btn");
-        this.gps.makeButton(this.airportBtn, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Airport Info"));
+        this.gps.makeButton(this.airportBtn, this._onAirportButtonPressed.bind(this));
     }
     onEnter() {
         this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
         this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
     }
+
+    _onAirportButtonPressed() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().airportInfo.name);
+    }
+
     onUpdate(_deltaTime) {
     }
     onExit() {
@@ -3319,12 +3361,10 @@ class AS3000_TSC_FullKeyboard extends NavSystemTouch_FullKeyboard {
     }
     cancel() {
         this.gps.goBack();
-        return true;
     }
     backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
         this.gps.closePopUpElement();
-        return true;
+        this.gps.SwitchToPageName("MFD", "MFD Home");
     }
     validate() {
         let nbMatched = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchMatchedIcaosNumber", "number", this.gps.instrumentIdentifier);
