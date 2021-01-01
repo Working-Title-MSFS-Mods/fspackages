@@ -42,8 +42,13 @@ class WT_VnavAutopilot {
     update() {
         //We are intercepting the constraint, inhibit execution until we change path conditions
         if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC && this._inhibitExecute !== true) {
-            this._inhibitExecute = true;
-            SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
+            if (this._navModeSelector.currentVerticalArmedStates[0] = VerticalNavModeState.GP) {
+                this._inhibitExecute = false;
+                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
+            } else {
+                this._inhibitExecute = true;
+                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
+            }
         }
 
         if (this._vnav._vnavCalculating) {
