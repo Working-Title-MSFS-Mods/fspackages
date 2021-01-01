@@ -739,6 +739,7 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
+    //METHOD TO RESET VSPEEDS ON NEW FPLN ENTRY/LOAD
     resetVspeeds() {
         SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);
@@ -746,6 +747,15 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
+    }
+
+    //METHOD TO RESET FUEL USED ON FLIGHT START AND ON FPLN LOAD AND WITH BUTTON PRESS IN FUEL MGMT
+    resetFuelUsed() {
+        const fuelWeight = 6.7;
+        const fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        const fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        this.initialFuelLeft = fuelQuantityLeft;
+        this.initialFuelRight = fuelQuantityRight;
     }
 
     updateFlightLog() {

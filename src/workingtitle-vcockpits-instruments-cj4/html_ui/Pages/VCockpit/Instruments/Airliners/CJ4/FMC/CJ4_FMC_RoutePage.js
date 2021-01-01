@@ -398,6 +398,7 @@ class CJ4_FMC_RoutePage {
                     this._fmc.fpHasChanged = true;
                     SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
                     this._fmc.resetVspeeds();
+                    this._fmc.resetFuelUsed();
                     this.update(true);
                 }
             });
