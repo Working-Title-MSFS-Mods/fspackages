@@ -167,6 +167,8 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
          * @type {WT_ICAOWaypoint}
          */
         this._waypoint = null;
+
+        this._aspectRatio = 1;
     }
 
     /**
@@ -224,7 +226,7 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
         if (waypoint && waypoint.type === WT_ICAOWaypoint.Type.AIRPORT) {
             let airportRadius = this._calculateAirportRadius(waypoint);
             if (airportRadius > 0) {
-                airportRadius *= 0.6;
+                airportRadius *= 0.6 * Math.max(1, 1 / this._aspectRatio);
                 range = WT_G3x5_WaypointInfo.MAP_RANGE_LEVELS.find(rangeLevel => rangeLevel.compare(airportRadius, WT_Unit.GA_RADIAN) >= 0);
             }
         }
@@ -255,6 +257,12 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
     }
 
     update() {
+        let aspectRatio = this.view.projection.viewWidth / this.view.projection.viewHeight;
+        if (aspectRatio !== this._aspectRatio) {
+            this._aspectRatio = aspectRatio;
+            this._setInitialRange(this._waypoint);
+        }
+
         this._updateWaypoint();
         this._updateTarget();
         this._updateRange();

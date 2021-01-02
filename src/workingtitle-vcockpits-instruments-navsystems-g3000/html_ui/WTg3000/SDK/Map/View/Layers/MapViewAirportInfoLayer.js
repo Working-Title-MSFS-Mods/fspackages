@@ -99,6 +99,8 @@ class WT_MapViewAirportInfoLayer extends WT_MapViewMultiLayer {
     }
 
     _updateRunwayLayer(state) {
+        this._runwayLayer.update(state);
+
         if (this._runwayLayer.display.isInvalid) {
             this._redrawRunways(state);
         }
