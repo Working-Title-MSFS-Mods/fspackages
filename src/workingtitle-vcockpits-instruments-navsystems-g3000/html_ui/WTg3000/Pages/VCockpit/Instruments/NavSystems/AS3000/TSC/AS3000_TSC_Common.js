@@ -365,21 +365,21 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _onMFDPaneNavMapDisplaySwitch(currentPage) {
-        if (currentPage.name !== "Map Settings" && currentPage.title !== "Map Pointer Control") {
+        if (this.getCurrentPageGroup().name === "MFD" && currentPage.name !== "Map Settings" && currentPage.title !== "Map Pointer Control") {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
     }
 
     _onMFDPaneWeatherDisplaySwitch(currentPage) {
-        if (currentPage.title !== "Weather Selection" && currentPage.title !== "Weather Radar Settings") {
+        if (this.getCurrentPageGroup().name === "MFD" && currentPage.title !== "Weather Selection" && currentPage.title !== "Weather Radar Settings") {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
     }
 
     _onMFDPaneAirportInfoDisplaySwitch(currentPage) {
-        if (currentPage.name !== "Airport Info Left" && currentPage.name !== "Airport Info Right") {
+        if (this.getCurrentPageGroup().name === "MFD" && currentPage.name !== "Airport Info Left" && currentPage.name !== "Airport Info Right") {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
