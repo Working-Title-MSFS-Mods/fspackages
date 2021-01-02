@@ -20,6 +20,7 @@ class WT_MapModelWaypointInfoModule extends WT_MapModelModule {
             return;
         }
 
+        this._waypointICAO = icao;
         this._waypointRequestID++;
         if (icao) {
             this._requestWaypoint(icao, this._waypointRequestID);
