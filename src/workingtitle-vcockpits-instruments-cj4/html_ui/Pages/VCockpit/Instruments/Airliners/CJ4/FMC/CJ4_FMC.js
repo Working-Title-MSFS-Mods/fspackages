@@ -100,6 +100,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
+            RegisterViewListener("JS_LISTENER_ATC");
 
             // RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
             // this.addEventListener("FlightStart", async function () {
@@ -289,6 +290,23 @@ class CJ4_FMC extends FMCMainDisplay {
         const apPrefix = "WT_CJ4_AP_";
         if (args[0].startsWith(apPrefix)) {
             this._navModeSelector.onNavChangedEvent(args[0].substring(apPrefix.length));
+        }
+
+        const comPrefix = "WT_CJ4_COM";
+        if (args[0].startsWith(comPrefix)) {
+            this.updateComSelect(args[0].substring(comPrefix.length, comPrefix.length+1));
+        }
+    }
+
+    /**
+     * Switch COMs and update according simvars
+     * @param {string} com The selected COM
+     */
+    updateComSelect(com) {
+        if (com === "1") {
+            Coherent.call("ATC_SWITCH_TO_COM_1").then(() => { SimVar.SetSimVarValue("K:COM2_RECEIVE_SELECT", "number", 1); });
+        } else {
+            Coherent.call("ATC_SWITCH_TO_COM_2").then(() => { SimVar.SetSimVarValue("K:COM1_RECEIVE_SELECT", "number", 1); });
         }
     }
 
@@ -548,7 +566,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     if (isLnav) {
                         let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
                         this.driveFlightDirector(deltaAngle, bank);
-                    } 
+                    }
                     else if (signal && isIls) {
                         const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
                         const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
@@ -572,7 +590,7 @@ class CJ4_FMC extends FMCMainDisplay {
                             this.driveFlightDirector(0, 0);
                         }
                     }
-                } 
+                }
                 else {
                     if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
                         this.driveFlightDirector(0, 0);
