@@ -134,7 +134,7 @@ WT_G3x5_TSCMapPointerControlHTMLElement.TEMPLATE.innerHTML = `
             width: 100%;
             height: 100%;
             background-color: black;
-            border: 5px solid #454b4e;
+            border: 3px solid #454b4e;
             border-radius: 3px;
         }
 

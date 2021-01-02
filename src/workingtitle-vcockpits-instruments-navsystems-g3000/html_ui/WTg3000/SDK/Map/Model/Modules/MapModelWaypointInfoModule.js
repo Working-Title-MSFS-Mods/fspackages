@@ -1,8 +1,50 @@
 class WT_MapModelWaypointInfoModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelWaypointInfoModule.NAME_DEFAULT) {
+    constructor(icaoWaypointFactory, name = WT_MapModelWaypointInfoModule.NAME_DEFAULT) {
         super(name);
 
+        this._icaoWaypointFactory = icaoWaypointFactory;
+
+        this._waypointICAO = "";
+        this._waypoint = null;
+        this._waypointRequestID = 0;
+
         this._optsManager.addOptions(WT_MapModelWaypointInfoModule.OPTIONS_DEF);
+    }
+
+    get waypointICAO() {
+        return this._waypointICAO;
+    }
+
+    set waypointICAO(icao) {
+        if (icao === this._waypointICAO) {
+            return;
+        }
+
+        this._waypointRequestID++;
+        if (icao) {
+            this._requestWaypoint(icao, this._waypointRequestID);
+        } else {
+            this._setWaypoint(null);
+        }
+    }
+
+    get waypoint() {
+        return this._waypoint;
+    }
+
+    _setWaypoint(waypoint) {
+        this._waypoint = waypoint;
+    }
+
+    async _requestWaypoint(icao, requestID) {
+        let waypoint = null;
+        try {
+            waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
+        } catch (e) {}
+
+        if (requestID === this._waypointRequestID) {
+            this._setWaypoint(waypoint);
+        }
     }
 }
 WT_MapModelWaypointInfoModule.NAME_DEFAULT = "waypointInfo";
@@ -18,5 +60,5 @@ WT_MapModelWaypointInfoModule.Mode = {
 }
 WT_MapModelWaypointInfoModule.OPTIONS_DEF = {
     mode: {default: WT_MapModelWaypointInfoModule.Mode.OFF, auto: true},
-    waypointICAO: {default: "", auto: true}
+    waypointICAO: {default: ""}
 };

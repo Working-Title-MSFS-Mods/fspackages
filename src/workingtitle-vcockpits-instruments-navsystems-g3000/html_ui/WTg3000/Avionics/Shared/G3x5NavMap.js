@@ -81,12 +81,7 @@ class WT_G3x5NavMap {
         return this._nexradShowSetting;
     }
 
-    init(viewElement) {
-        this._model = new WT_MapModel();
-        this._view = viewElement;
-        this.view.setModel(this.model);
-        this._controller = new WT_MapController(this.instrumentID, this.model, this.view);
-
+    _initModel() {
         this.model.addModule(new WT_MapModelUnitsModule());
         this.model.addModule(new WT_MapModelCrosshairModule());
         this.model.addModule(new WT_MapModelTerrainModule());
@@ -104,11 +99,13 @@ class WT_G3x5NavMap {
         this.model.addModule(new WT_MapModelBordersModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
         this.model.addModule(new WT_MapModelCitiesModule());
+    }
 
+    _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
-        this.view.addLayer(new WT_MapViewBingLayer(`${this.instrumentID}`));
+        this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
@@ -137,7 +134,9 @@ class WT_G3x5NavMap {
         if (this._layerOptions.miniCompass) {
             this.view.addLayer(new WT_MapViewMiniCompassLayer());
         }
+    }
 
+    _initController() {
         this.controller.addSetting(this._rangeTargetRotationController = new WT_G3000MapRangeTargetRotationController(this.controller));
         this.controller.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.controller));
         this.controller.addSetting(new WT_MapTrackVectorSettingGroup(this.controller));
@@ -212,6 +211,24 @@ class WT_G3x5NavMap {
 
         this.controller.init();
         this.controller.update();
+    }
+
+    init(viewElement) {
+        this._model = new WT_MapModel();
+        this._view = viewElement;
+        this.view.setModel(this.model);
+        this._controller = new WT_MapController(this.instrumentID, this.model, this.view);
+
+        this._initModel();
+        this._initView();
+        this._initController();
+    }
+
+    sleep() {
+        this._bingLayer.sleep();
+    }
+
+    wake() {
     }
 
     update() {

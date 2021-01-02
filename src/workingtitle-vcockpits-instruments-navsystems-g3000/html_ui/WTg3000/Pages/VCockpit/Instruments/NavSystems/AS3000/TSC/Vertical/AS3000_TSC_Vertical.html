@@ -510,6 +510,14 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="tscPage mapPointerControl" id="MapPointerControlLeft">
+                    <tsc-mappointercontrol></tsc-mappointercontrol>
+                </div>
+                <div class="tscPage mapPointerControl" id="MapPointerControlRight">
+                    <tsc-mappointercontrol></tsc-mappointercontrol>
+                </div>
+
                 <div class="tscPage weatherSelection" id="WeatherSelectionLeft">
                     <tsc-weatherselection></tsc-weatherselection>
                 </div>
@@ -1172,7 +1180,10 @@
                     </div>
                 </div>
 
-                <div class="tscPage" id="AirportInfo">
+                <div class="tscPage airportInfo" id="AirportInfoLeft">
+                    <tsc-airportinfo></tsc-airportinfo>
+                </div>
+                <div class="tscPage airportInfo" id="AirportInfoRight">
                     <tsc-airportinfo></tsc-airportinfo>
                 </div>
 
@@ -2124,10 +2135,6 @@
                         <div class="statusBar"></div>
                     </div>
                 </div>
-            </div>
-            <div class="PopUpWindow" id="MapPointerControl" state="Inactive">
-                <div class="WindowTitle">Map Pointer Control</div>
-                <div id="TouchPad"></div>
             </div>
             <div class="PopUpWindow" id="SelectionList" state="Inactive">
                 <div class="WindowTitle"></div>
