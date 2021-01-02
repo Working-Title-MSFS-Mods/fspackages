@@ -37,6 +37,16 @@ class WT_Waypoint {
     get location() {
         return undefined;
     }
+
+    /**
+     * Checks whether this waypoint is equivalent to another object. Returns true if and only if the other object
+     * is an WT_Waypoint object and shares the same uniqueID.
+     * @param {Object} other - another object.
+     * @returns {Boolean} whether this waypoint is equivalent to the other object.
+     */
+    equals(other) {
+        return other instanceof WT_Waypoint && this.uniqueID === other.uniqueID;
+    }
 }
 
 /**
