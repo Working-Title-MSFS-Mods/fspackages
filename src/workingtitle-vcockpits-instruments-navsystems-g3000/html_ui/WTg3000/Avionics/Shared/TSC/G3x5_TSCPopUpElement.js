@@ -30,6 +30,24 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
         return this._context;
     }
 
+    /**
+     * @readonly
+     * @property {String} homePageGroup
+     * @type {String}
+     */
+    get homePageGroup() {
+        return this.context ? this.context.homePageGroup : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {String} homePageName
+     * @type {String}
+     */
+    get homePageName() {
+        return this.context ? this.context.homePageName : undefined;
+    }
+
     init(root) {
         this._htmlElement = root;
     }
@@ -57,8 +75,6 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this._activateNavButtons();
         this._setVisible(true);
     }
@@ -77,8 +93,6 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     onExit() {
         this._setVisible(false);
         this._deactivateNavButtons();
-
-        super.onExit();
     }
 }
 

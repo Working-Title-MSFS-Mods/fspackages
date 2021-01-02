@@ -11,7 +11,7 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 
     _initSelectButton() {
-        this._airportInfo.selectButton.addButtonListener(this._onSelectButtonPressed.bind(this));
+        this._airportInfoHTMLElement.selectButton.addButtonListener(this._onSelectButtonPressed.bind(this));
     }
 
     init(root) {
@@ -20,7 +20,8 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         /**
          * @type {WT_G3x5_TSCAirportInfoHTMLElement}
          */
-        this._airportInfo = root.querySelector(`tsc-airportinfo`);
+        this._airportInfoHTMLElement = root.querySelector(`tsc-airportinfo`);
+        this._airportInfoHTMLElement.setParent(this);
 
         this._initSelectButton();
     }
@@ -29,11 +30,11 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         if (icao) {
             try {
                 let airport = await this._icaoWaypointFactory.getAirport(icao);
-                this._airportInfo.setAirport(airport);
+                this._airportInfoHTMLElement.setAirport(airport);
                 return;
             } catch (e) {}
         }
-        this._airportInfo.setAirport(null);
+        this._airportInfoHTMLElement.setAirport(null);
     }
 
     _openKeyboard() {
@@ -55,8 +56,8 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 
     _updateTitle() {
-        let airport = this._airportInfo.getAirport();
-        let activeTab = this._airportInfo.mainTabView.getActiveTab();
+        let airport = this._airportInfoHTMLElement.getAirport();
+        let activeTab = this._airportInfoHTMLElement.mainTabView.getActiveTab();
         let title;
         switch (activeTab ? activeTab.title : "") {
             case WT_G3x5_TSCAirportFreqTab.TITLE:
@@ -75,7 +76,7 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 
     _updateMFDPaneWaypoint() {
-        let airport = this._airportInfo.getAirport();
+        let airport = this._airportInfoHTMLElement.getAirport();
         if (airport === this._lastAirport) {
             return;
         }
@@ -85,7 +86,7 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 
     onUpdate(deltaTime) {
-        this._airportInfo.update();
+        this._airportInfoHTMLElement.update();
         this._updateTitle();
         this._updateMFDPaneWaypoint();
     }
@@ -107,6 +108,36 @@ class WT_G3x5_TSCAirportInfoPopUp extends WT_G3x5_TSCPopUpElement {
     }
 }
 
+class WT_G3x5_TSCAirportInfoTab extends WT_G3x5_TSCTabContent {
+    constructor(airportInfo, title) {
+        super(title);
+
+        this._airportInfo = airportInfo;
+        this._htmlElement = this._createHTMLElement();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_TSCAirportInfo} airportInfo
+     * @type {WT_G3x5_TSCAirportInfo}
+     */
+    get airportInfo() {
+        return this._airportInfo;
+    }
+
+    /**
+     * @readonly
+     * @property {HTMLElement} htmlElement
+     * @type {HTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    update() {
+    }
+}
+
 class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     constructor() {
         super();
@@ -118,6 +149,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
 
         this._airport = null;
 
+        this._isConnected = false;
         this._isInit = false;
     }
 
@@ -140,6 +172,20 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._main.classList.add(WT_G3x5_TSCAirportInfoHTMLElement.MAIN_VIEW_CLASS);
     }
 
+    /**
+     * @readonly
+     * @property {NavSystemElement} parent
+     * @type {NavSystemElement}
+     */
+    get parent() {
+        return this._parent;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_TSCWaypointButton} selectButton
+     * @type {WT_TSCWaypointButton}
+     */
     get selectButton() {
         return this._selectButton;
     }
@@ -162,11 +208,11 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     }
 
     _initTabs() {
-        this._infoTab = new WT_G3x5_TSCAirportInfoTab();
+        this._infoTab = new WT_G3x5_TSCAirportInfoInfoTab(this.parent);
         this._main.addTab(this._infoTab);
 
-        this._freqTab = new WT_G3x5_TSCAirportFreqTab();
-        this._main.addTab(this._freqTab, WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
+        this._freqTab = new WT_G3x5_TSCAirportFreqTab(this.parent);
+        this._main.addTab(this._freqTab, WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT);
 
         this._weatherTab = new WT_G3x5_TSCAirportWeatherTab();
         this._main.addTab(this._weatherTab, WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
@@ -177,7 +223,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._chartsTab = new WT_G3x5_TSCAirportChartsTab();
         this._main.addTab(this._chartsTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT, false);
 
-        this._runwaysTab = new WT_G3x5_TSCAirportRunwayTab();
+        this._runwaysTab = new WT_G3x5_TSCAirportRunwayTab(this.parent);
         this._main.addTab(this._runwaysTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT);
 
         this._notamTab = new WT_G3x5_TSCAirportNOTAMTab();
@@ -194,14 +240,29 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     _updateAirport() {
         this._selectButton.setWaypoint(this._airport);
         this._infoTab.setAirport(this._airport);
+        this._freqTab.setAirport(this._airport);
         this._runwaysTab.setAirport(this._airport);
+    }
+
+    _doInit() {
+        this._initTabs();
+        this._updateAirport();
+        this._isInit = true;
     }
 
     connectedCallback() {
         this._appendChildren();
-        this._initTabs();
-        this._updateAirport();
-        this._isInit = true;
+        this._isConnected = true;
+        if (this.parent) {
+            this._doInit();
+        }
+    }
+
+    setParent(parent) {
+        this._parent = parent;
+        if (this._isConnected) {
+            this._doInit();
+        }
     }
 
     getAirport() {
@@ -243,24 +304,13 @@ WT_G3x5_TSCAirportInfoHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define("tsc-airportinfo", WT_G3x5_TSCAirportInfoHTMLElement);
 
-class WT_G3x5_TSCAirportInfoTab extends WT_G3x5_TSCTabContent {
-    constructor() {
-        super(WT_G3x5_TSCAirportInfoTab.TITLE);
-
-        this._htmlElement = this._createHTMLElement();
+class WT_G3x5_TSCAirportInfoInfoTab extends WT_G3x5_TSCAirportInfoTab {
+    constructor(airportInfo) {
+        super(airportInfo, WT_G3x5_TSCAirportInfoInfoTab.TITLE);
     }
 
     _createHTMLElement() {
         return new WT_G3x5_TSCAirportInfoTabHTMLElement();
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_TSCAirportInfoTabHTMLElement} htmlElement
-     * @type {WT_G3x5_TSCAirportInfoTabHTMLElement}
-     */
-    get htmlElement() {
-        return this._htmlElement;
     }
 
     setAirport(airport) {
@@ -271,7 +321,7 @@ class WT_G3x5_TSCAirportInfoTab extends WT_G3x5_TSCTabContent {
         this.htmlElement.update();
     }
 }
-WT_G3x5_TSCAirportInfoTab.TITLE = "Info";
+WT_G3x5_TSCAirportInfoInfoTab.TITLE = "Info";
 
 class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
     constructor() {
@@ -434,7 +484,6 @@ WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.innerHTML = `
             width: 100%;
             height: 100%;
             background-color: black;
-            font-size: 4vh;
             color: white;
             text-align: center;
         }
@@ -558,27 +607,306 @@ WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define("tsc-airportinfo-info", WT_G3x5_TSCAirportInfoTabHTMLElement);
 
-class WT_G3x5_TSCAirportFreqTab extends WT_G3x5_TSCTabContent {
-    constructor() {
-        super(WT_G3x5_TSCAirportFreqTab.TITLE);
-
-        this._htmlElement = this._createHTMLElement();
+class WT_G3x5_TSCAirportFreqTab extends WT_G3x5_TSCAirportInfoTab {
+    constructor(airportInfo) {
+        super(airportInfo, WT_G3x5_TSCAirportFreqTab.TITLE);
     }
 
     _createHTMLElement() {
-        return document.createElement("div");
+        let element = new WT_G3x5_TSCAirportFreqTabHTMLElement();
+        element.setAirportInfo(this.airportInfo);
+        return element;
+    }
+
+    setAirport(airport) {
+        this.htmlElement.setAirport(airport);
+    }
+
+    update() {
+    }
+}
+WT_G3x5_TSCAirportFreqTab.TITLE = "Freqs";
+
+class WT_G3x5_TSCAirportFreqLine extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(WT_G3x5_TSCAirportFreqLine.TEMPLATE.content.cloneNode(true));
+
+        this._airportFreq = null;
+
+        this._isInit = false;
     }
 
     /**
      * @readonly
-     * @property {HTMLElement} htmlElement
-     * @type {HTMLElement}
+     * @property {NavSystemElement} airport
+     * @type {NavSystemElement}
      */
-    get htmlElement() {
-        return this._htmlElement;
+    get airportInfo() {
+        return this._airportInfo;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirportFrequency} runway
+     * @type {WT_AirportFrequency}
+     */
+    get airportFreq() {
+        return this._airportFreq;
+    }
+
+    _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+        this._name = this.shadowRoot.querySelector(`#name`);
+    }
+
+    _initButton() {
+        this._button = new WT_TSCLabeledButton();
+        this._button.id = "button";
+        this._wrapper.appendChild(this._button);
+        this._button.addButtonListener(this._onButtonPressed.bind(this));
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._initButton();
+        this._updateFrequency();
+        this._isInit = true;
+    }
+
+    setAirportInfo(airportInfo) {
+        this._airportInfo = airportInfo;
+    }
+
+    _onButtonPressed(button) {
+        if (!this.airportFreq) {
+            return;
+        }
+
+        let instrument = this.airportInfo.instrument;
+        let context = {
+            homePageGroup: this.airportInfo.homePageGroup,
+            homePageName: this.airportInfo.homePageName,
+            frequencyText: `${this.airportFreq.frequency.toString()} ${this.airportFreq.airport.ident} ${this.airportFreq.name}`,
+            frequency: this.airportFreq.frequency.bcd16,
+            isNav: this.airportFreq.frequency.MHz < 118
+        }
+        instrument.loadFrequencyWindow.element.setContext(context);
+        instrument.switchToPopUpPage(instrument.loadFrequencyWindow);
+    }
+
+    /**
+     *
+     * @param {WT_AirportFrequency} airportFreq
+     */
+    _updateButton(airportFreq) {
+        this._button.labelText = airportFreq.frequency.toString();
+    }
+
+    /**
+     *
+     * @param {WT_AirportFrequency} airportFreq
+     */
+    _updateName(airportFreq) {
+        this._name.innerHTML = airportFreq.name;
+    }
+
+    /**
+     *
+     * @param {WT_AirportFrequency} airportFreq
+     */
+    _showFrequencyInfo(airportFreq) {
+        this._updateName(airportFreq);
+        this._updateButton(airportFreq);
+    }
+
+    _clear() {
+        this._name.innerHTML = "";
+        this._button.labelText = "";
+    }
+
+    _updateFrequency() {
+        if (this.airportFreq) {
+            this._showFrequencyInfo(this.airportFreq);
+        } else {
+            this._clear();
+        }
+    }
+
+    /**
+     *
+     * @param {WT_AirportFrequency} airportFreq
+     */
+    setAirportFrequency(airportFreq) {
+        this._airportFreq = airportFreq;
+        if (this._isInit) {
+            this._updateFrequency();
+        }
     }
 }
-WT_G3x5_TSCAirportFreqTab.TITLE = "Freqs";
+WT_G3x5_TSCAirportFreqLine.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCAirportFreqLine.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            width: 100%;
+            border: solid 1px white;
+            border-radius: 5px;
+            margin: 0.25vh 0;
+        }
+
+        #wrapper {
+            position: relative;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: 60% 40%;
+        }
+            #name {
+                place-self: start start;
+                margin: 5%;
+                overflow: hidden;
+            }
+            #button {
+                place-self: center center;
+                width: 90%;
+                height: 90%;
+            }
+
+    </style>
+    <div id="wrapper">
+        <div id="name"></div>
+    </div>
+`;
+
+customElements.define("tsc-airportinfo-freqline", WT_G3x5_TSCAirportFreqLine);
+
+class WT_G3x5_TSCAirportFreqLineRecycler extends WT_HTMLElementRecycler {
+    _createElement() {
+        let line = new WT_G3x5_TSCAirportFreqLine();
+        line.setAirportInfo(this.parent.airportInfo);
+        line.classList.add(WT_G3x5_TSCAirportFreqTabHTMLElement.FREQ_LINE_CLASS);
+        line.slot = "freqs";
+        return line;
+    }
+}
+
+class WT_G3x5_TSCAirportFreqTabHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(WT_G3x5_TSCAirportFreqTabHTMLElement.TEMPLATE.content.cloneNode(true));
+
+        /**
+         * @type {WT_Airport}
+         */
+        this._airport = null;
+
+        /**
+         * @type {WT_HTMLElementRecycler<WT_G3x5_TSCRunwayButton>}
+         */
+        this._freqLineRecycler = new WT_G3x5_TSCAirportFreqLineRecycler(this);
+    }
+
+    /**
+     * @readonly
+     * @property {NavSystemElement} airport
+     * @type {NavSystemElement}
+     */
+    get airportInfo() {
+        return this._airportInfo;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Airport} airport
+     * @type {WT_Airport}
+     */
+    get airport() {
+        return this._airport;
+    }
+
+    setAirportInfo(airportInfo) {
+        this._airportInfo = airportInfo;
+    }
+
+    _updateFrequencies() {
+        this._freqLineRecycler.recycleAll();
+        if (!this.airport) {
+            return;
+        }
+
+        for (let airportFreq of this.airport.frequencies) {
+            let line = this._freqLineRecycler.request();
+            line.setAirportFrequency(airportFreq);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    setAirport(airport) {
+        if ((!airport && !this._airport) || (this.airport && this.airport.equals(airport))) {
+            return;
+        }
+
+        this._airport = airport;
+        this._updateFrequencies();
+    }
+}
+WT_G3x5_TSCAirportFreqTabHTMLElement.FREQ_LINE_CLASS = "freqLine";
+WT_G3x5_TSCAirportFreqTabHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCAirportFreqTabHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #wrapper {
+            position: absolute;
+            left: 2%;
+            width: 96%;
+            top: 2%;
+            height: 96%;
+            background-color: black;
+            overflow-x: hidden;
+            overflow-y: scroll;
+
+        }
+            #wrapper::-webkit-scrollbar {
+                width: 1vw;
+            }
+            #wrapper::-webkit-scrollbar-track {
+                background: none;
+            }
+            #wrapper::-webkit-scrollbar-thumb {
+                background: white;
+            }
+
+            #freqs {
+                position: relative;
+                width: 100%;
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: center;
+            }
+
+    </style>
+    <div id="wrapper">
+        <slot name="freqs" id="freqs"></slot>
+    </div>
+`;
+
+customElements.define("tsc-airportinfo-freqs", WT_G3x5_TSCAirportFreqTabHTMLElement);
 
 class WT_G3x5_TSCAirportWeatherTab extends WT_G3x5_TSCTabContent {
     constructor() {
@@ -646,31 +974,17 @@ class WT_G3x5_TSCAirportChartsTab extends WT_G3x5_TSCTabContent {
 }
 WT_G3x5_TSCAirportChartsTab.TITLE = "Charts";
 
-class WT_G3x5_TSCAirportRunwayTab extends WT_G3x5_TSCTabContent {
-    constructor() {
-        super(WT_G3x5_TSCAirportRunwayTab.TITLE);
-
-        this._htmlElement = this._createHTMLElement();
+class WT_G3x5_TSCAirportRunwayTab extends WT_G3x5_TSCAirportInfoTab {
+    constructor(airportInfo) {
+        super(airportInfo, WT_G3x5_TSCAirportRunwayTab.TITLE);
     }
 
     _createHTMLElement() {
         return new WT_G3x5_TSCAirportRunwaysTabHTMLElement();
     }
 
-    /**
-     * @readonly
-     * @property {HTMLElement} htmlElement
-     * @type {HTMLElement}
-     */
-    get htmlElement() {
-        return this._htmlElement;
-    }
-
     setAirport(airport) {
         this.htmlElement.setAirport(airport);
-    }
-
-    update() {
     }
 }
 WT_G3x5_TSCAirportRunwayTab.TITLE = "Runways";
@@ -892,6 +1206,15 @@ WT_G3x5_TSCRunwayButton.LIGHTING_TEXT = [
 
 customElements.define("tsc-button-runway", WT_G3x5_TSCRunwayButton);
 
+class WT_G3x5_TSCRunwayButtonRecycler extends WT_HTMLElementRecycler {
+    _createElement() {
+        let button = new WT_G3x5_TSCRunwayButton();
+        button.classList.add(WT_G3x5_TSCAirportRunwaysTabHTMLElement.BUTTON_CLASS);
+        button.slot = "buttons";
+        return button;
+    }
+}
+
 class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
     constructor() {
         super();
@@ -905,10 +1228,9 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
         this._airport = null;
 
         /**
-         * @type {WT_G3x5_TSCRunwayButton[]}
+         * @type {WT_HTMLElementRecycler<WT_G3x5_TSCRunwayButton>}
          */
-        this._buttons = [];
-        this._buttonsHead = 0;
+        this._buttonRecycler = new WT_G3x5_TSCRunwayButtonRecycler(this);
     }
 
     /**
@@ -920,31 +1242,8 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
         return this._airport;
     }
 
-    _clearButtons() {
-        for (let i = 0; i < this._buttonsHead; i++) {
-            this._buttons[i].style.display = "none";
-        }
-        this._buttonsHead = 0;
-    }
-
-    _requestButton() {
-        let button;
-        if (this._buttonsHead < this._buttons.length) {
-            button = this._buttons[this._buttonsHead];
-        } else {
-            button = new WT_G3x5_TSCRunwayButton();
-            button.classList.add(WT_G3x5_TSCAirportRunwaysTabHTMLElement.BUTTON_CLASS);
-            button.slot = "buttons";
-            this.appendChild(button);
-            this._buttons.push(button);
-        }
-        this._buttonsHead++;
-        button.style.display = "block";
-        return button;
-    }
-
     _updateRunways() {
-        this._clearButtons();
+        this._buttonRecycler.recycleAll();
         if (!this.airport) {
             return;
         }
@@ -953,7 +1252,7 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
         for (let runway of this.airport.runways) {
             let existing = added.find(compare => compare.pairDesignation === runway.pairDesignation);
             if (!existing) {
-                let button = this._requestButton();
+                let button = this._buttonRecycler.request();
                 button.setRunway(runway);
                 added.push(runway);
             }
@@ -988,7 +1287,6 @@ WT_G3x5_TSCAirportRunwaysTabHTMLElement.TEMPLATE.innerHTML = `
             position: relative;
             width: 100%;
             height: 100%;
-            font-size: 4vh;
             color: white;
             text-align: center;
         }

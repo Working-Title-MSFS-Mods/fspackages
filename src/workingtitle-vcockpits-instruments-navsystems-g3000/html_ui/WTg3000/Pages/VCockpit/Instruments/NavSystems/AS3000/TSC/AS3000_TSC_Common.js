@@ -254,7 +254,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.minimumSource.setGPS(this);
         this.duplicateWaypointSelection = new NavSystemElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3000_TSC_DuplicateWaypointSelection());
         this.duplicateWaypointSelection.setGPS(this);
-        this.loadFrequencyWindow = new NavSystemElementContainer("Frequency Window", "LoadFrequencyPopup", new AS3000_TSC_LoadFrequencyWindow());
+        this.loadFrequencyWindow = new NavSystemElementContainer("Frequency Window", "LoadFrequencyPopup", new WT_G3x5_TSCLoadFrequency());
         this.loadFrequencyWindow.setGPS(this);
         this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointInfo_WaypointOptions", new AS3000_TSC_WaypointOptions());
         this.waypointOptions.setGPS(this);
@@ -2316,7 +2316,14 @@ class AS3000_TSC_NRST_VOR extends NavSystemTouch_NRST_VOR {
     }
     clickOnFrequency(_index) {
         let infos = this.nearest.vors[_index];
-        this.gps.loadFrequencyWindow.element.setContext(infos.frequencyMHz.toFixed(2) + " " + infos.ident, infos.frequencyBCD16, true);
+        let context = {
+            homePageGroup: "MFD",
+            homePageParent: "MFD Home",
+            frequencyText: infos.frequencyMHz.toFixed(2) + " " + infos.ident,
+            frequency: infos.frequencyBCD16,
+            isNav: true
+        };
+        this.gps.loadFrequencyWindow.element.setContext(context);
         this.gps.switchToPopUpPage(this.gps.loadFrequencyWindow);
     }
 }
@@ -4233,9 +4240,10 @@ class AS3000_TSC_ConfirmationWindow extends NavSystemElement {
         this.window.setAttribute("state", "Inactive");
     }
 }
-class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
+class AS3000_TSC_LoadFrequencyWindow extends WT_G3x5_TSCPopUpElement {
     init(root) {
-        this.rootElem = root;
+        super.init(root);
+
         this.freqNameElem = root.getElementsByClassName("Frequency")[0];
         this.titleLeftElem = root.getElementsByClassName("titleLeft")[0];
         this.titleRightElem = root.getElementsByClassName("titleRight")[0];
@@ -4249,7 +4257,8 @@ class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
         this.gps.makeButton(this.rightStby, this.setStandbyRight.bind(this));
     }
     onEnter() {
-        this.rootElem.setAttribute("state", "Active");
+        super.onEnter();
+
         this.freqNameElem.textContent = this.frequencyText;
         if (this.isNav) {
             this.titleLeftElem.textContent = "NAV1";
@@ -4260,18 +4269,13 @@ class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
             this.titleRightElem.textContent = "COM2";
         }
     }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.rootElem.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
-    }
+
     setContext(_frequencyText, _frequencyBcd16, isNav) {
         this.frequencyText = _frequencyText;
         this.frequency = _frequencyBcd16;
         this.isNav = isNav;
     }
+
     setActiveLeft() {
         if (this.isNav) {
             SimVar.SetSimVarValue("K:NAV1_RADIO_SET", "Frequency BCD16", this.frequency);
@@ -4279,8 +4283,9 @@ class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
         else {
             SimVar.SetSimVarValue("K:COM_RADIO_SET", "Frequency BCD16", this.frequency);
         }
-        this.gps.goBack();
+        this.instrument.goBack();
     }
+
     setActiveRight() {
         if (this.isNav) {
             SimVar.SetSimVarValue("K:NAV2_RADIO_SET", "Frequency BCD16", this.frequency);
@@ -4288,8 +4293,9 @@ class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
         else {
             SimVar.SetSimVarValue("K:COM2_RADIO_SET", "Frequency BCD16", this.frequency);
         }
-        this.gps.goBack();
+        this.instrument.goBack();
     }
+
     setStandbyLeft() {
         if (this.isNav) {
             SimVar.SetSimVarValue("K:NAV1_STBY_SET", "Frequency BCD16", this.frequency);
@@ -4297,8 +4303,9 @@ class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
         else {
             SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET", "Frequency BCD16", this.frequency);
         }
-        this.gps.goBack();
+        this.instrument.goBack();
     }
+
     setStandbyRight() {
         if (this.isNav) {
             SimVar.SetSimVarValue("K:NAV2_STBY_SET", "Frequency BCD16", this.frequency);
@@ -4306,7 +4313,7 @@ class AS3000_TSC_LoadFrequencyWindow extends NavSystemElement {
         else {
             SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET", "Frequency BCD16", this.frequency);
         }
-        this.gps.goBack();
+        this.instrument.goBack();
     }
 }
 class AS3000_TSC_WaypointOptions extends NavSystemElement {

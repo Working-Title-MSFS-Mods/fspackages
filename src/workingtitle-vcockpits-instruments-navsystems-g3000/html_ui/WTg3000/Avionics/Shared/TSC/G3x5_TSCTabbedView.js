@@ -221,7 +221,6 @@ class WT_G3x5_TSCTabButton extends WT_TSCLabeledButton {
             :host {
                 display: block;
                 font-weight: bold;
-                font-size: 4vh;
                 position: relative;
                 margin: 0.5vh;
                 text-align: center;
