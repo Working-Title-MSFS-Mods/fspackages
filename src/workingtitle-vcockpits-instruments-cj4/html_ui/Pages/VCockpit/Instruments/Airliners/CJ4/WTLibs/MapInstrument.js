@@ -92,7 +92,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.cursorX = 50;
         this.cursorY = 50;
         this.bIsCursorDisplayed = false;
-        this.weatherRanges = [10, 20, 30, 40, 50, 60, 80, 100];
+        this.weatherRanges = [5, 10, 25, 50, 100, 200, 300];
         this.weatherHideGPS = false;
         this.isBushTrip = false;
 
@@ -871,7 +871,6 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateFplnWaypoints() {
-        console.log(this._fplnNavMapElements.length);
         if (this._fplnVersion < this.flightPlanManager.CurrentFlightPlanVersion) {
             let l = this.flightPlanManager.getWaypointsCount(0);
             if (l > 1) {
@@ -1621,7 +1620,7 @@ class MapInstrument extends ISvgMapRootElement {
 }
 
 MapInstrument.OVERDRAW_FACTOR_DEFAULT = Math.sqrt(2);
-MapInstrument.ZOOM_RANGES_DEFAULT = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200];
+MapInstrument.ZOOM_RANGES_DEFAULT = [5, 10, 25, 50, 100, 200, 300];
 
 MapInstrument.RANGE_DISPLAY_SHOW_DEFAULT = true;
 
