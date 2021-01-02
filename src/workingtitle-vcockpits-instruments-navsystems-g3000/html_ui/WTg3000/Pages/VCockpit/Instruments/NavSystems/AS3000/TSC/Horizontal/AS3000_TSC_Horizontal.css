@@ -910,6 +910,11 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-airpor
         height: 15vh;
         margin: 2.5vh 0;
     }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .runwayButton {
+        width: 90%;
+        height: 25vh;
+        margin: 0.25vh;
+    }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay .NrstContainer {
         left: 1%;

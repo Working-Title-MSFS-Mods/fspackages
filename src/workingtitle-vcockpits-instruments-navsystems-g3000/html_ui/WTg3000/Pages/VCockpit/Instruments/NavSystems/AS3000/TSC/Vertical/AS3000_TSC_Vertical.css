@@ -1034,6 +1034,12 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
             font-size: 3vh;
         }
 
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo .runwayButton {
+        width: 95%;
+        height: 18vh;
+        margin: 0.25vh;
+    }
+
       as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer {
         left: 1%;
         width: 96%;

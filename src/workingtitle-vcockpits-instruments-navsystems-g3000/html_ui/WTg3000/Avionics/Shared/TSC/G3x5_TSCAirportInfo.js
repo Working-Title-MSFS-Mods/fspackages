@@ -56,12 +56,13 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
 
     _updateTitle() {
         let airport = this._airportInfo.getAirport();
+        let activeTab = this._airportInfo.mainTabView.getActiveTab();
         let title;
-        switch (this._airportInfo.mainTabView.getActiveTab()) {
+        switch (activeTab ? activeTab.title : "") {
             case WT_G3x5_TSCAirportFreqTab.TITLE:
                 title = "Airport Frequencies";
                 break;
-            case WT_G3x5_TSCAirportRunwaysTab.TITLE:
+            case WT_G3x5_TSCAirportRunwayTab.TITLE:
                 title = "Airport Runway Info";
                 break;
             default:
@@ -175,8 +176,8 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._chartsTab = new WT_G3x5_TSCAirportChartsTab();
         this._main.addTab(this._chartsTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT, false);
 
-        this._runwaysTab = new WT_G3x5_TSCAirportRunwaysTab();
-        this._main.addTab(this._runwaysTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT, false);
+        this._runwaysTab = new WT_G3x5_TSCAirportRunwayTab();
+        this._main.addTab(this._runwaysTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT);
 
         this._notamTab = new WT_G3x5_TSCAirportNOTAMTab();
         this._main.addTab(this._notamTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT, false);
@@ -192,6 +193,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     _updateAirport() {
         this._selectButton.setWaypoint(this._airport);
         this._infoTab.setAirport(this._airport);
+        this._runwaysTab.setAirport(this._airport);
     }
 
     connectedCallback() {
@@ -642,15 +644,15 @@ class WT_G3x5_TSCAirportChartsTab extends WT_G3x5_TSCTabContent {
 }
 WT_G3x5_TSCAirportChartsTab.TITLE = "Charts";
 
-class WT_G3x5_TSCAirportRunwaysTab extends WT_G3x5_TSCTabContent {
+class WT_G3x5_TSCAirportRunwayTab extends WT_G3x5_TSCTabContent {
     constructor() {
-        super(WT_G3x5_TSCAirportRunwaysTab.TITLE);
+        super(WT_G3x5_TSCAirportRunwayTab.TITLE);
 
         this._htmlElement = this._createHTMLElement();
     }
 
     _createHTMLElement() {
-        return document.createElement("div");
+        return new WT_G3x5_TSCAirportRunwaysTabHTMLElement();
     }
 
     /**
@@ -661,8 +663,383 @@ class WT_G3x5_TSCAirportRunwaysTab extends WT_G3x5_TSCTabContent {
     get htmlElement() {
         return this._htmlElement;
     }
+
+    setAirport(airport) {
+        this.htmlElement.setAirport(airport);
+    }
+
+    update() {
+    }
 }
-WT_G3x5_TSCAirportRunwaysTab.TITLE = "Runways";
+WT_G3x5_TSCAirportRunwayTab.TITLE = "Runways";
+
+class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
+    constructor() {
+        super();
+
+        this._runway = null;
+
+        let distanceFormatterOpts = {
+            precision: 1,
+            unitCaps: true
+        };
+        let htmlFormatterOpts = {
+            numberUnitDelim: "",
+            classGetter: {
+                getNumberClassList() {
+                    return ["number"];
+                },
+                getUnitClassList() {
+                    return ["unit"];
+                }
+            }
+        };
+        this._distanceFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(distanceFormatterOpts), htmlFormatterOpts);
+
+        this._isInit = false;
+    }
+
+    _initWrapperStyle() {
+        return `
+            #wrapper {
+                position: absolute;
+                left: 1%;
+                top: 1%;
+                width: 99%;
+                height: 99%;
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: center;
+                align-items: center;
+            }
+        `;
+    }
+
+    _initDesignationStyle() {
+        return `
+            #designation {
+                font-size: 1.5em;
+            }
+        `;
+    }
+
+    _initSizeStyle() {
+        return `
+            .unit {
+                font-size: 0.75em;
+            }
+        `;
+    }
+
+    _initSurfaceStyle() {
+        return "";
+    }
+
+    _initLightingStyle() {
+        return "";
+    }
+
+    _createStyle() {
+        let style = super._createStyle();
+
+        let designationStyle = this._initDesignationStyle();
+        let sizeStyle = this._initSizeStyle();
+        let surfaceStyle = this._initSurfaceStyle();
+        let lightingStyle = this._initLightingStyle();
+
+        return`
+            ${style}
+            ${designationStyle}
+            ${sizeStyle}
+            ${surfaceStyle}
+            ${lightingStyle}
+        `;
+    }
+
+    _appendChildren() {
+        this._designation = document.createElement("div");
+        this._designation.id = "designation";
+        this._size = document.createElement("div");
+        this._size.id = "size";
+        this._surface = document.createElement("div");
+        this._surface.id = "surface";
+        this._lighting = document.createElement("div");
+        this._lighting.id = "lighting";
+
+        this._wrapper.appendChild(this._designation);
+        this._wrapper.appendChild(this._size);
+        this._wrapper.appendChild(this._surface);
+        this._wrapper.appendChild(this._lighting);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Runway} runway
+     * @type {WT_Runway}
+     */
+    get runway() {
+        return this._runway;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._updateRunway();
+        this._isInit = true;
+    }
+
+    /**
+     *
+     * @param {WT_Runway} runway
+     */
+    _updateDesignation(runway) {
+        this._designation.innerHTML = runway.pairDesignation;
+    }
+
+    /**
+     *
+     * @param {WT_Runway} runway
+     */
+    _updateSize(runway) {
+        let lengthText = this._distanceFormatter.getFormattedHTML(runway.length, WT_Unit.FOOT);
+        let widthText = this._distanceFormatter.getFormattedHTML(runway.width, WT_Unit.FOOT);
+        this._size.innerHTML = `${lengthText} x ${widthText}`;
+    }
+
+    /**
+     *
+     * @param {WT_Runway} runway
+     */
+    _updateSurface(runway) {
+        switch (runway.surface) {
+            case WT_Runway.Surface.CONCRETE:
+            case WT_Runway.Surface.ASPHALT:
+            case WT_Runway.Surface.STEEL:
+            case WT_Runway.Surface.TARMAC:
+                this._surface.innerHTML = "Hard";
+                break;
+            case WT_Runway.Surface.GRASS:
+            case WT_Runway.Surface.TURF:
+                this._surface.innerHTML = "Turf";
+                break;
+            case WT_Runway.Surface.DIRT:
+                this._surface.innerHTML = "Dirt";
+                break;
+            case WT_Runway.Surface.GRAVEL:
+            case WT_Runway.Surface.MACADAM:
+                this._surface.innerHTML = "Gravel";
+                break;
+            case WT_Runway.Surface.CORAL:
+            case WT_Runway.Surface.SAND:
+            case WT_Runway.Surface.SHALE:
+            case WT_Runway.Surface.SNOW:
+            case WT_Runway.Surface.ICE:
+                this._surface.innerHTML = "Soft";
+                break;
+            case WT_Runway.Surface.WATER:
+                this._surface.innerHTML = "Water";
+                break;
+            default:
+                this._surface.innerHTML = "Unknown";
+        }
+    }
+
+    /**
+     *
+     * @param {WT_Runway} runway
+     */
+    _updateLighting(runway) {
+        this._lighting.innerHTML = WT_G3x5_TSCRunwayButton.LIGHTING_TEXT[runway.lighting];
+    }
+
+    /**
+     *
+     * @param {WT_Runway} runway
+     */
+    _showRunwayInfo(runway) {
+        this._updateDesignation(runway);
+        this._updateSize(runway);
+        this._updateSurface(runway);
+        this._updateLighting(runway);
+    }
+
+    _clear() {
+        this._designation.innerHTML = "";
+        this._size.innerHTML = "";
+        this._surface.innerHTML = "";
+        this._lighting.innerHTML = "";
+    }
+
+    _updateRunway() {
+        if (this.runway) {
+            this._showRunwayInfo(this.runway);
+        } else {
+            this._clear();
+        }
+    }
+
+    /**
+     *
+     * @param {WT_Runway} runway
+     */
+    setRunway(runway) {
+        if ((!runway && !this.runway) || (runway && this.runway && runway.airport.equals(this.runway.airport) && runway.pairDesignation === this.runway.pairDesignation)) {
+            return;
+        }
+
+        this._runway = runway;
+        if (this._isInit) {
+            this._updateRunway();
+        }
+    }
+}
+WT_G3x5_TSCRunwayButton.LIGHTING_TEXT = [
+    "Unknown",
+    "No Lights",
+    "Part Time",
+    "Full Time",
+    "PCL"
+];
+
+customElements.define("tsc-button-runway", WT_G3x5_TSCRunwayButton);
+
+class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(WT_G3x5_TSCAirportRunwaysTabHTMLElement.TEMPLATE.content.cloneNode(true));
+
+        /**
+         * @type {WT_Airport}
+         */
+        this._airport = null;
+
+        /**
+         * @type {WT_G3x5_TSCRunwayButton[]}
+         */
+        this._buttons = [];
+        this._buttonsHead = 0;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Airport} airport
+     * @type {WT_Airport}
+     */
+    get airport() {
+        return this._airport;
+    }
+
+    _clearButtons() {
+        for (let i = 0; i < this._buttonsHead; i++) {
+            this._buttons[i].style.display = "none";
+        }
+        this._buttonsHead = 0;
+    }
+
+    _requestButton() {
+        let button;
+        if (this._buttonsHead < this._buttons.length) {
+            button = this._buttons[this._buttonsHead];
+        } else {
+            button = new WT_G3x5_TSCRunwayButton();
+            button.classList.add(WT_G3x5_TSCAirportRunwaysTabHTMLElement.BUTTON_CLASS);
+            button.slot = "buttons";
+            this.appendChild(button);
+            this._buttons.push(button);
+        }
+        this._buttonsHead++;
+        button.style.display = "block";
+        return button;
+    }
+
+    _updateRunways() {
+        this._clearButtons();
+        if (!this.airport) {
+            return;
+        }
+
+        let added = [];
+        for (let runway of this.airport.runways) {
+            let existing = added.find(compare => compare.pairDesignation === runway.pairDesignation);
+            if (!existing) {
+                let button = this._requestButton();
+                button.setRunway(runway);
+                added.push(runway);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    setAirport(airport) {
+        if ((!airport && !this._airport) || (this.airport && this.airport.equals(airport))) {
+            return;
+        }
+
+        this._airport = airport;
+        this._updateRunways();
+    }
+}
+WT_G3x5_TSCAirportRunwaysTabHTMLElement.BUTTON_CLASS = "runwayButton";
+WT_G3x5_TSCAirportRunwaysTabHTMLElement.PRIVACY_TEXT = [
+    "UNKNOWN",
+    "PUBLIC",
+    "MILITARY",
+    "PRIVATE"
+];
+WT_G3x5_TSCAirportRunwaysTabHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCAirportRunwaysTabHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            font-size: 4vh;
+            color: white;
+            text-align: center;
+        }
+
+        #wrapper {
+            position: absolute;
+            left: 2%;
+            width: 96%;
+            top: 2%;
+            height: 96%;
+            background-color: black;
+            overflow-x: hidden;
+            overflow-y: scroll;
+
+        }
+            #wrapper::-webkit-scrollbar {
+                width: 1vw;
+            }
+            #wrapper::-webkit-scrollbar-track {
+                background: none;
+            }
+            #wrapper::-webkit-scrollbar-thumb {
+                background: white;
+            }
+
+            #buttons {
+                position: relative;
+                width: 100%;
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: center;
+            }
+
+    </style>
+    <div id="wrapper">
+        <slot name="buttons" id="buttons"></slot>
+    </div>
+`;
+
+customElements.define("tsc-airportinfo-runways", WT_G3x5_TSCAirportRunwaysTabHTMLElement);
 
 class WT_G3x5_TSCAirportNOTAMTab extends WT_G3x5_TSCTabContent {
     constructor() {

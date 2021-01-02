@@ -127,7 +127,7 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
      * @returns {WT_G3x5_TSCTabContent}
      */
     getActiveTab() {
-        return this._activeTabEntry.tab;
+        return this._activeTabEntry ? this._activeTabEntry.tab : null;
     }
 
     setActiveTab(tab) {
