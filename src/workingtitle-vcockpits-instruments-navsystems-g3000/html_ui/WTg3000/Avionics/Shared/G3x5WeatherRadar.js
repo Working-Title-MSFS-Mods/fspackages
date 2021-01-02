@@ -52,12 +52,12 @@ class WT_G3x5WeatherRadar {
         this.controller.update();
     }
 
-    wakeBing() {
-        this._radarView.wake();
+    sleep() {
+        this._radarView.sleep();
     }
 
-    sleepBing() {
-        this._radarView.sleep();
+    wake() {
+        this._radarView.wake();
     }
 
     _checkStandby() {
@@ -70,7 +70,7 @@ class WT_G3x5WeatherRadar {
         this._checkStandby();
 
         if (!this._radarView.isAwake()) {
-            this.wakeBing();
+            this.wake();
         }
 
         this._radarView.update();

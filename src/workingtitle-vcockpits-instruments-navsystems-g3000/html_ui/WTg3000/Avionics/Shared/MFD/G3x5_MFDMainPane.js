@@ -264,11 +264,34 @@ class WT_G3x5_MFDHalfPane {
         this.htmlElement.setControl(value);
     }
 
-    _updateWeatherSleep() {
-        if (this._displayMode === WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
-            this._weatherRadar.wakeBing();
-        } else {
-            this._weatherRadar.sleepBing();
+    _updateSleepWake(oldDisplay, newDisplay) {
+        switch (oldDisplay) {
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+                this._navMap.sleep();
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+                this._weatherRadar.sleep();
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
+                this._waypointInfo.sleep();
+                break;
+        }
+        switch (newDisplay) {
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+                this._navMap.wake();
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+                this._weatherRadar.wake();
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
+                this._waypointInfo.wake();
+                break;
         }
     }
 
@@ -294,8 +317,9 @@ class WT_G3x5_MFDHalfPane {
     }
 
     _setDisplayMode(mode) {
+        let old = this._displayMode;
         this._displayMode = mode;
-        this._updateWeatherSleep();
+        this._updateSleepWake(old, mode);
         this._updateMapWaypoint();
         this.htmlElement.setDisplay(mode);
     }

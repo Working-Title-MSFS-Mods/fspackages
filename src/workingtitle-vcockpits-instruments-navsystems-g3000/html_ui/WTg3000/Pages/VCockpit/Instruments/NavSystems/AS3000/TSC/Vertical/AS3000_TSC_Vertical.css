@@ -159,13 +159,16 @@
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelection] #WeatherSelection,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfo] #AirportInfo,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfoLeft] #AirportInfoLeft,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Nearest] #Nearest,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestAirport] #NearestAirport,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestIntersection] #NearestIntersection,
@@ -461,6 +464,28 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .MapSettings
     as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .MapSettingsRight .tabContentContainer .tabContent tsc-mapsettings-tabrow {
         height: 12vh;
         font-size: 3vh;
+    }
+
+as3000-tsc-vertical-element #Electricity .mapPointerControl tsc-mappointercontrol {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+}
+    as3000-tsc-vertical-element #Electricity .mapPointerControl #touchpad {
+        position: absolute;
+        left: 1%;
+        right: 1%;
+        top: 13vh;
+        bottom: 1%;
+        height: auto;
+        width: auto;
+        border: 0.25vh solid white;
+        border-radius: 2vh;
+        background-size: 5vh 5vh;
+        background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
+        background-position: center;
     }
 
 as3000-tsc-vertical-element #Electricity .weatherSelection tsc-button-img {
@@ -963,14 +988,14 @@ as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradars
                 as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .longName {
                   font-size: 3vh; }
 
-as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo tsc-airportinfo {
+as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airportinfo {
     position: absolute;
     left: 1%;
     top: 1%;
     width: 98%;
     height: 98%;
 }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .airportInfoHeader {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo .airportInfoHeader {
         position: absolute;
         top: 0;
         left: 50%;
@@ -979,18 +1004,18 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo tsc-airporti
         flex-flow: row nowrap;
         justify-content: center;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .airportInfoSelectButton {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo .airportInfoSelectButton {
         width: 40vh;
         height: 10vh;
         font-size: 3vh;
         margin-right: 0.5vh;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .airportInfoOptionsButton {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo .airportInfoOptionsButton {
         width: 15vh;
         height: 10vh;
         font-size: 3vh;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo tsc-tabbedview {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-tabbedview {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
@@ -999,13 +1024,13 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo tsc-airporti
         --tab-content-width: 42vh;
         --tab-content-height: 48vh;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo tsc-button-tab {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-button-tab {
         width: 15vh;
         height: 10.5vh;
         margin: 1.5vh 0;
         font-size: 3vh;
     }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo .tab {
+        as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo .tab {
             font-size: 3vh;
         }
 
@@ -1715,19 +1740,6 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AirportInfo tsc-airporti
         position: absolute;
         top: 20%;
         left: 30%; }
-
-    as3000-tsc-vertical-element #Electricity #MapPointerControl #TouchPad {
-      position: absolute;
-      left: 3vh;
-      right: 3vh;
-      top: 9vh;
-      bottom: 3vh;
-      height: auto;
-      width: auto;
-      border: 0.3vh solid white;
-      border-radius: 1.8vh;
-      background-size: 6vh 6vh;
-      background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px); }
 
     as3000-tsc-vertical-element #Electricity #SelectionList .contentContainer {
       position: absolute;

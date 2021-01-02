@@ -384,8 +384,27 @@ class WT_Runway {
 
     /**
      * @readonly
-     * @property {WT_GeoPoint} location - the lat/long coordinates of the center of this runway.
-     * @type {WT_GeoPoint}
+     * @property {String} pairDesignation - the designation of the runway pair that contains this runway, or simply this runway's designation if
+     *                                      this runway has no reciprocal.
+     * @type {String}
+     */
+    get pairDesignation() {
+        return this._pairDesignation;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Runway} reciprocal - the runway that is the opposite of this runway, if one exists.
+     * @type {WT_Runway}
+     */
+    get reciprocal() {
+        return this._reciprocal;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GeoPointReadOnly} location - the lat/long coordinates of the center of this runway.
+     * @type {WT_GeoPointReadOnly}
      */
     get location() {
         return this._location.readonly();
@@ -393,8 +412,8 @@ class WT_Runway {
 
     /**
      * @readonly
-     * @property {WT_GeoPoint} start - the lat/long coordinates of the start of this runway.
-     * @type {WT_GeoPoint}
+     * @property {WT_GeoPointReadOnly} start - the lat/long coordinates of the start of this runway.
+     * @type {WT_GeoPointReadOnly}
      */
     get start() {
         return this._start.readonly();
@@ -402,8 +421,8 @@ class WT_Runway {
 
     /**
      * @readonly
-     * @property {WT_GeoPoint} end - the lat/long coordinates of the end of this runway.
-     * @type {WT_GeoPoint}
+     * @property {WT_GeoPointReadOnly} end - the lat/long coordinates of the end of this runway.
+     * @type {WT_GeoPointReadOnly}
      */
     get end() {
         return this._end.readonly();
@@ -476,6 +495,16 @@ class WT_Runway {
         let returnValue = [new WT_Runway(airport, designations[0], data, false)];
         if (designations.length > 1) {
             returnValue.push(new WT_Runway(airport, designations[1], data, true));
+
+            let pairDesignation = `${returnValue[0].designation}-${returnValue[1].designation}`;
+
+            returnValue[0]._pairDesignation = pairDesignation;
+            returnValue[0]._reciprocal = returnValue[1];
+            returnValue[1]._pairDesignation = pairDesignation;
+            returnValue[1]._reciprocal = returnValue[0];
+        } else {
+            returnValue[0]._pairDesignation = returnValue[0].designation;
+            returnValue[0]._reciprocal = null;
         }
         return returnValue;
     }
