@@ -14,6 +14,12 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         this._airportInfoHTMLElement.selectButton.addButtonListener(this._onSelectButtonPressed.bind(this));
     }
 
+    _initOptionsButton() {
+        let button = this._airportInfoHTMLElement.optionsButton;
+        button.enabled = "false";
+        this._airportInfoHTMLElement.optionsButton.addButtonListener(this._onOptionsButtonPressed.bind(this));
+    }
+
     init(root) {
         this.container.title = "Airport Info";
 
@@ -24,17 +30,18 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         this._airportInfoHTMLElement.setParent(this);
 
         this._initSelectButton();
+        this._initOptionsButton();
     }
 
     async _onKeyboardClosed(icao) {
         if (icao) {
             try {
                 let airport = await this._icaoWaypointFactory.getAirport(icao);
-                this._airportInfoHTMLElement.setAirport(airport);
+                this._setAirport(airport);
                 return;
             } catch (e) {}
         }
-        this._airportInfoHTMLElement.setAirport(null);
+        this._setAirport(null);
     }
 
     _openKeyboard() {
@@ -46,6 +53,25 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
 
     _onSelectButtonPressed(button) {
         this._openKeyboard();
+    }
+
+    _openWaypointOptionsWindow() {
+        let context = {
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            icao: this._airportInfoHTMLElement.getAirport().icao
+        }
+        this.instrument.waypointOptions.element.setContext(context);
+        this.instrument.switchToPopUpPage(this.instrument.waypointOptions);
+    }
+
+    _onOptionsButtonPressed(button) {
+        this._openWaypointOptionsWindow();
+    }
+
+    _setAirport(airport) {
+        this._airportInfoHTMLElement.optionsButton.enabled = airport ? "true" : "false";
+        this._airportInfoHTMLElement.setAirport(airport);
     }
 
     onEnter() {
@@ -96,6 +122,10 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
             this._mfdPaneDisplaySetting.setValue(this._mfdPaneDisplayLastMode);
         }
 
+        // TODO: Implement a more sane way to push data to direct to page.
+        let airport = this._airportInfoHTMLElement.getAirport();
+        this.instrument.lastRelevantICAO = airport ? airport.icao : null;
+
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
         super.onExit();
@@ -105,36 +135,6 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
 class WT_G3x5_TSCAirportInfoPopUp extends WT_G3x5_TSCPopUpElement {
     init(root) {
         this._airportInfo = root.querySelector(`tsc-airportinfo`);
-    }
-}
-
-class WT_G3x5_TSCAirportInfoTab extends WT_G3x5_TSCTabContent {
-    constructor(airportInfo, title) {
-        super(title);
-
-        this._airportInfo = airportInfo;
-        this._htmlElement = this._createHTMLElement();
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_TSCAirportInfo} airportInfo
-     * @type {WT_G3x5_TSCAirportInfo}
-     */
-    get airportInfo() {
-        return this._airportInfo;
-    }
-
-    /**
-     * @readonly
-     * @property {HTMLElement} htmlElement
-     * @type {HTMLElement}
-     */
-    get htmlElement() {
-        return this._htmlElement;
-    }
-
-    update() {
     }
 }
 
@@ -188,6 +188,15 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
      */
     get selectButton() {
         return this._selectButton;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_TSCLabeledButton} optionsButton
+     * @type {WT_TSCLabeledButton}
+     */
+    get optionsButton() {
+        return this._optionsButton;
     }
 
     /**
@@ -303,6 +312,36 @@ WT_G3x5_TSCAirportInfoHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define("tsc-airportinfo", WT_G3x5_TSCAirportInfoHTMLElement);
+
+class WT_G3x5_TSCAirportInfoTab extends WT_G3x5_TSCTabContent {
+    constructor(airportInfo, title) {
+        super(title);
+
+        this._airportInfo = airportInfo;
+        this._htmlElement = this._createHTMLElement();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_TSCAirportInfo} airportInfo
+     * @type {WT_G3x5_TSCAirportInfo}
+     */
+    get airportInfo() {
+        return this._airportInfo;
+    }
+
+    /**
+     * @readonly
+     * @property {HTMLElement} htmlElement
+     * @type {HTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    update() {
+    }
+}
 
 class WT_G3x5_TSCAirportInfoInfoTab extends WT_G3x5_TSCAirportInfoTab {
     constructor(airportInfo) {
