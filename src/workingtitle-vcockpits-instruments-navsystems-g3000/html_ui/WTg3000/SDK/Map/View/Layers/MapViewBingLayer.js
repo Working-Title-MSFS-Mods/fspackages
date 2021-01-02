@@ -18,6 +18,11 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         return this._bingMap;
     }
 
+    sleep() {
+        this._bingMap.setConfig(0);
+        this._bingMap.showWeather(EWeatherRadar.OFF, 0);
+    }
+
     /**
      * @param {WT_MapViewState} state
      */
@@ -40,7 +45,6 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         for (let i = 0; i < this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME].length; i++) {
             this._bingMap.addConfig(new WT_BingMapConfigParser(this.config[WT_MapViewBingLayer.CONFIG_BING_CONFIGS_NAME][i]).parse());
         }
-        this._bingMap.setConfig(1);
     }
 
     /**

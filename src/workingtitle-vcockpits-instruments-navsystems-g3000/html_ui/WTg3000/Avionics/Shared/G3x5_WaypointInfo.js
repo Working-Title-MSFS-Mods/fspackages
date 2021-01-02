@@ -69,7 +69,7 @@ class WT_G3x5_WaypointInfo {
         this.model.addModule(new WT_MapModelOrientationModule());
         this.model.addModule(new WT_MapModelRangeRingModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
-        this.model.addModule(this._waypointInfoModule = new WT_MapModelWaypointInfoModule());
+        this.model.addModule(this._waypointInfoModule = new WT_MapModelWaypointInfoModule(this._icaoWaypointFactory));
 
         this.model.crosshair.show = true;
         this.model.terrain.mode = WT_MapModelTerrainModule.TerrainMode.OFF;
@@ -86,8 +86,10 @@ class WT_G3x5_WaypointInfo {
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
+        let runwayRenderer = new WT_MapViewRunwayCanvasRenderer(labelManager);
 
-        this.view.addLayer(new WT_MapViewBingLayer(this.instrumentID));
+        this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.instrumentID));
+        this.view.addLayer(new WT_MapViewAirportInfoLayer(runwayRenderer));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewRangeRingLayer());
@@ -98,7 +100,7 @@ class WT_G3x5_WaypointInfo {
     }
 
     _initController() {
-        this.controller.addSetting(this._rangeTargetController = new WT_G3x5_WaypointInfoRangeTargetController(this.controller, this._icaoWaypointFactory));
+        this.controller.addSetting(this._rangeTargetController = new WT_G3x5_WaypointInfoRangeTargetController(this.controller));
 
         this.controller.init();
         this.controller.update();
@@ -113,6 +115,13 @@ class WT_G3x5_WaypointInfo {
         this._initModel();
         this._initView();
         this._initController();
+    }
+
+    sleep() {
+        this._bingLayer.sleep();
+    }
+
+    wake() {
     }
 
     update() {
@@ -158,8 +167,6 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
          * @type {WT_ICAOWaypoint}
          */
         this._waypoint = null;
-
-        this._waypointRequestID = 0;
     }
 
     /**
@@ -234,29 +241,13 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
         this._waypoint = waypoint;
     }
 
-    async _requestWaypoint(icao, requestID) {
-        let waypoint = null;
-        try {
-            waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
-        } catch (e) {}
-
-        if (requestID === this._waypointRequestID) {
-            this._setWaypoint(waypoint);
-        }
-    }
-
     _updateWaypoint() {
-        let waypointICAO = this.model.waypointInfo.waypointICAO;
-        if (this._waypoint === null && waypointICAO === "" || (this._waypoint && this._waypoint.icao === waypointICAO)) {
+        let waypoint = this.model.waypointInfo.waypoint;
+        if (this._waypoint === null && waypoint === null || (this._waypoint && waypoint && this._waypoint.uniqueID === waypoint.uniqueID)) {
             return;
         }
 
-        this._waypointRequestID++;
-        if (waypointICAO) {
-            this._requestWaypoint(waypointICAO, this._waypointRequestID);
-        } else {
-            this._setWaypoint(null);
-        }
+        this._setWaypoint(waypoint);
     }
 
     _updateTarget() {
