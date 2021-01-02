@@ -128,6 +128,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._selectButton = new WT_TSCWaypointButton();
         this._selectButton.classList.add(WT_G3x5_TSCAirportInfoHTMLElement.SELECT_BUTTON_CLASS);
         this._selectButton.emptyText = "Select Airport";
+        this._selectButton.setIconSrcFactory(new WT_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCAirportInfoHTMLElement.WAYPOINT_ICON_PATH));
         this._header.appendChild(this._selectButton);
 
         this._optionsButton = new WT_TSCLabeledButton();
@@ -222,6 +223,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._main.getActiveTab().update();
     }
 }
+WT_G3x5_TSCAirportInfoHTMLElement.WAYPOINT_ICON_PATH = "/WTg3000/SDK/Assets/Images/TSC/Waypoints";
 WT_G3x5_TSCAirportInfoHTMLElement.HEADER_CLASS = "airportInfoHeader";
 WT_G3x5_TSCAirportInfoHTMLElement.SELECT_BUTTON_CLASS = "airportInfoSelectButton";
 WT_G3x5_TSCAirportInfoHTMLElement.OPTIONS_BUTTON_CLASS = "airportInfoOptionsButton";
