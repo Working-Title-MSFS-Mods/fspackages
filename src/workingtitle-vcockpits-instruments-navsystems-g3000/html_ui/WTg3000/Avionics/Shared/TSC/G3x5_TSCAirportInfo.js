@@ -818,31 +818,31 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
             case WT_Runway.Surface.ASPHALT:
             case WT_Runway.Surface.STEEL:
             case WT_Runway.Surface.TARMAC:
-                this._surface.innerHTML = "Hard";
+                this._surface.innerHTML = "Hard Surface";
                 break;
             case WT_Runway.Surface.GRASS:
             case WT_Runway.Surface.TURF:
-                this._surface.innerHTML = "Turf";
+                this._surface.innerHTML = "Turf Surface";
                 break;
             case WT_Runway.Surface.DIRT:
-                this._surface.innerHTML = "Dirt";
+                this._surface.innerHTML = "Dirt Surface";
                 break;
             case WT_Runway.Surface.GRAVEL:
             case WT_Runway.Surface.MACADAM:
-                this._surface.innerHTML = "Gravel";
+                this._surface.innerHTML = "Gravel Surface";
                 break;
             case WT_Runway.Surface.CORAL:
             case WT_Runway.Surface.SAND:
             case WT_Runway.Surface.SHALE:
             case WT_Runway.Surface.SNOW:
             case WT_Runway.Surface.ICE:
-                this._surface.innerHTML = "Soft";
+                this._surface.innerHTML = "Soft Surface";
                 break;
             case WT_Runway.Surface.WATER:
                 this._surface.innerHTML = "Water";
                 break;
             default:
-                this._surface.innerHTML = "Unknown";
+                this._surface.innerHTML = "Unknown Surface";
         }
     }
 
