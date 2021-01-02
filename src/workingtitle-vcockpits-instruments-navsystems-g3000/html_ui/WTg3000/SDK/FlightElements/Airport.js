@@ -539,25 +539,12 @@ WT_Runway.Lighting = {
  */
 WT_Runway.Surface = {
     UNKNOWN: 0,
-    CONCRETE: 1,
-    ASPHALT: 2,
-    GRASS: 101,
-    TURF: 102,
-    DIRT: 103,
-    CORAL: 104,
-    GRAVEL: 105,
-    OIL_TREATED: 106,
-    STEEL: 107,
-    BITUMINUS: 108,
-    BRICK: 109,
-    MACADAM: 110,
-    PLANKS: 111,
-    SAND: 112,
-    SHALE: 113,
-    TARMAC: 114,
-    SNOW: 115,
-    ICE: 116,
-    WATER: 201
+    GRASS: 1,           // either grass or turf
+    CONCRETE: 4,        // definitely a hard surface, but not sure about exact type
+    TURF: 12,           // either grass or turf
+    GRAVEL: 14,
+    ASPHALT: 17,        // definitely a hard surface, but not sure about exact type
+    DIRT: 21
 };
 
 /**
