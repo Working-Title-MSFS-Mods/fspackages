@@ -790,6 +790,10 @@ export class FlightPlanManager {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
+    if (this._flightPlans[flightPlanIndex] === undefined) {
+      return [];
+    }
+
     return this._flightPlans[flightPlanIndex].waypoints;
   }
 
