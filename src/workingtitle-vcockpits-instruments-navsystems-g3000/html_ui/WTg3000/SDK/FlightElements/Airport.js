@@ -30,6 +30,10 @@ class WT_Airport extends WT_ICAOWaypoint {
         return WT_Unit.METER.createNumber(sum / runwayData.length);
     }
 
+    _initFrequencies(freqData) {
+        return freqData.map(freq => new WT_AirportFrequency(this, freq.name, WT_Frequency.createFromMHz(freq.freqMHz)));
+    }
+
     _initRunways(runwayData) {
         if (!runwayData) {
             return [];
@@ -96,6 +100,7 @@ class WT_Airport extends WT_ICAOWaypoint {
         this._fuel = `${data.fuel1} ${data.fuel2}`;
         this._radarCoverage = data.radarCoverage;
         this._elevation = this._calculateElevation(data.runways);
+        this._frequencies = new WT_AirportFrequencyList(this._initFrequencies(data.frequencies));
         this._runways = new WT_RunwayList(this._initRunways(data.runways));
         this._size = this._calculateSize();
 
@@ -160,6 +165,15 @@ class WT_Airport extends WT_ICAOWaypoint {
      */
     get elevation() {
         return this._elevation ? this._elevation.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirportFrequencyList} runways - a list of frequencies associated with airport.
+     * @type {WT_AirportFrequencyList}
+     */
+    get frequencies() {
+        return this._frequencies;
     }
 
     /**
@@ -243,6 +257,79 @@ WT_Airport.RadarCoverage = {
     UNKNOWN: 0,
     NO: 1,
     YES: 2
+}
+
+class WT_AirportFrequency {
+    constructor(airport, name, frequency) {
+        this._airport = airport;
+        this._name = name;
+        this._frequency = frequency;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Airport} airport - the airport to which this frequency entry belongs.
+     * @type {WT_Airport}
+     */
+    get airport() {
+        return this._airport;
+    }
+
+    /**
+     * @readonly
+     * @property {String} name - the name of this airport frequency entry.
+     * @type {String}
+     */
+    get name() {
+        return this._name;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Frequency} name - the frequency of this airport frequency entry.
+     * @type {WT_Frequency}
+     */
+    get frequency() {
+        return this._frequency;
+    }
+}
+
+/**
+ * A list of airport frequencies.
+ */
+class WT_AirportFrequencyList {
+    /**
+     * @param {WT_AirportFrequency[]} frequencies - an array of frequencies with which to initialize this list.
+     */
+    constructor(frequencies) {
+        this._frequencies = frequencies;
+    }
+
+    /**
+     * Gets a frequency from this list by its index.
+     * @param {Number} index - the index of the frequency to get.
+     * @returns {WT_AirportFrequency} a frequency.
+     */
+    getByIndex(index) {
+        return this._frequencies[index];
+    }
+
+    /**
+     * Gets a frequency from this list by its name.
+     * @param {String} name - the name of the frequency to get.
+     * @returns {WT_AirportFrequency} a frequency.
+     */
+    getByName(name) {
+        let index = this._frequencies.findIndex(frequency => frequency.name === name);
+        return this.getByIndex(index);
+    }
+
+    /**
+     * @returns {Iterator<WT_AirportFrequency>}
+     */
+    [Symbol.iterator]() {
+        return this._frequencies.values();
+    }
 }
 
 /**

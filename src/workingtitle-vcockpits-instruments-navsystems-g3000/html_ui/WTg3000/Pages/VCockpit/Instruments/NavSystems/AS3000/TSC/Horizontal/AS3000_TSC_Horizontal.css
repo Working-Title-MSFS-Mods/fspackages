@@ -875,6 +875,7 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-airpor
     top: 1%;
     width: 98%;
     height: 98%;
+    font-size: 4vh;
 }
     as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .airportInfoHeader {
         position: absolute;
@@ -909,6 +910,10 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-airpor
         width: 23vh;
         height: 15vh;
         margin: 2.5vh 0;
+    }
+
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .freqLine {
+        height: 15vh;
     }
     as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo .runwayButton {
         width: 90%;
