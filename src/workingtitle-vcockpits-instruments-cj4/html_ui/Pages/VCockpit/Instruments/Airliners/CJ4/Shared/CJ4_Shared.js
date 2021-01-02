@@ -3717,7 +3717,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
                 this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
-                this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], [CJ4_PopupMenu_Key.MAP_RANGE]);
+                this.addList("RANGE", this.textSize, ["5", "10", "25", "50", "100", "200", "300"], [CJ4_PopupMenu_Key.MAP_RANGE]);
             }
             this.endSection();
             this.beginSection();
