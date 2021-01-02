@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.8.5 Changes
+# Working Title CJ4 v0.8.3 Changes
 
-Welcome to the Working Title CJ4 v0.8.5
+Welcome to the Working Title CJ4 v0.8.3. This is a point release to primarily address pitch oscillations during climb and cruise.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -19,16 +19,17 @@ To then load the plan into the FMS you can either enter it manually or use the _
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
 
 ## KEY FEATURES
-* ...
+* Adjustments to autopilot controller gains to address pitch oscillations
 
 ## FMS
-* ...
+* FMS will now continue to sequence even when the active nav source is not FMS
+* FMS will no longer sequence past the destination runway fix even if you fly beyond it
 
 ## FMC
-* ...
+* FPLN page will now properly accept airways following the departure fix
 
 ## Autopilot
-* ...
+* Adjusted pitch PID gains to eliminate oscillation under certain conditions
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.

@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.8.5 Changes
+# Working Title CJ4 v0.8.2 Changes
 
-Welcome to the Working Title CJ4 v0.8.5
+Welcome to the Working Title CJ4 v0.8.2. This is a point release to address compatibility with MSFS 1.12.13.0 (VR Update).
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -19,16 +19,15 @@ To then load the plan into the FMS you can either enter it manually or use the _
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
 
 ## KEY FEATURES
-* ...
-
-## FMS
-* ...
+* Compatibility with MSFS 1.12.13.0
 
 ## FMC
-* ...
+* Fixed an issue where FPLN and LEGS would not show modifications unless the page was changed under certain conditions
+* FMC should now be able to continue to be used even on page error in most circumstances
 
-## Autopilot
-* ...
+## Flight Plan Import
+* Fixed an issue where game flight plans with blank ICAO legs would cause the plan to fail to load
+* Simbrief plans with 3 letter ICAO airports prefixed with K should now properly load
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
