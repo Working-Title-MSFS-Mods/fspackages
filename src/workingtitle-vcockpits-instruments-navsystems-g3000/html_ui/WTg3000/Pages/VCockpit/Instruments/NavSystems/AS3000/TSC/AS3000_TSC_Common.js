@@ -256,7 +256,7 @@ class AS3000_TSC extends NavSystemTouch {
         this.duplicateWaypointSelection.setGPS(this);
         this.loadFrequencyWindow = new NavSystemElementContainer("Frequency Window", "LoadFrequencyPopup", new WT_G3x5_TSCLoadFrequency());
         this.loadFrequencyWindow.setGPS(this);
-        this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointInfo_WaypointOptions", new AS3000_TSC_WaypointOptions());
+        this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointInfo_WaypointOptions", new WT_G3x5_TSCWaypointOptions());
         this.waypointOptions.setGPS(this);
         this.confirmationWindow = new AS3000_TSC_ConfirmationWindow();
         this.terrainAlerts = new AS3000_TSC_TerrainAlert();
@@ -4238,128 +4238,6 @@ class AS3000_TSC_ConfirmationWindow extends NavSystemElement {
     }
     onClick() {
         this.window.setAttribute("state", "Inactive");
-    }
-}
-class AS3000_TSC_LoadFrequencyWindow extends WT_G3x5_TSCPopUpElement {
-    init(root) {
-        super.init(root);
-
-        this.freqNameElem = root.getElementsByClassName("Frequency")[0];
-        this.titleLeftElem = root.getElementsByClassName("titleLeft")[0];
-        this.titleRightElem = root.getElementsByClassName("titleRight")[0];
-        this.leftActive = root.getElementsByClassName("leftActiveBtn")[0];
-        this.rightActive = root.getElementsByClassName("rightActiveBtn")[0];
-        this.leftStby = root.getElementsByClassName("leftStandbyBtn")[0];
-        this.rightStby = root.getElementsByClassName("rightStandbyBtn")[0];
-        this.gps.makeButton(this.leftActive, this.setActiveLeft.bind(this));
-        this.gps.makeButton(this.rightActive, this.setActiveRight.bind(this));
-        this.gps.makeButton(this.leftStby, this.setStandbyLeft.bind(this));
-        this.gps.makeButton(this.rightStby, this.setStandbyRight.bind(this));
-    }
-    onEnter() {
-        super.onEnter();
-
-        this.freqNameElem.textContent = this.frequencyText;
-        if (this.isNav) {
-            this.titleLeftElem.textContent = "NAV1";
-            this.titleRightElem.textContent = "NAV2";
-        }
-        else {
-            this.titleLeftElem.textContent = "COM1";
-            this.titleRightElem.textContent = "COM2";
-        }
-    }
-
-    setContext(_frequencyText, _frequencyBcd16, isNav) {
-        this.frequencyText = _frequencyText;
-        this.frequency = _frequencyBcd16;
-        this.isNav = isNav;
-    }
-
-    setActiveLeft() {
-        if (this.isNav) {
-            SimVar.SetSimVarValue("K:NAV1_RADIO_SET", "Frequency BCD16", this.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM_RADIO_SET", "Frequency BCD16", this.frequency);
-        }
-        this.instrument.goBack();
-    }
-
-    setActiveRight() {
-        if (this.isNav) {
-            SimVar.SetSimVarValue("K:NAV2_RADIO_SET", "Frequency BCD16", this.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM2_RADIO_SET", "Frequency BCD16", this.frequency);
-        }
-        this.instrument.goBack();
-    }
-
-    setStandbyLeft() {
-        if (this.isNav) {
-            SimVar.SetSimVarValue("K:NAV1_STBY_SET", "Frequency BCD16", this.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET", "Frequency BCD16", this.frequency);
-        }
-        this.instrument.goBack();
-    }
-
-    setStandbyRight() {
-        if (this.isNav) {
-            SimVar.SetSimVarValue("K:NAV2_STBY_SET", "Frequency BCD16", this.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET", "Frequency BCD16", this.frequency);
-        }
-        this.instrument.goBack();
-    }
-}
-class AS3000_TSC_WaypointOptions extends NavSystemElement {
-    init(root) {
-        this.rootElement = root;
-        this.drct_btn = root.getElementsByClassName("drctButon")[0];
-        this.insertInFpl_btn = root.getElementsByClassName("flightPlanButon")[0];
-        this.showInMap_btn = root.getElementsByClassName("showOnMapButon")[0];
-        this.gps.makeButton(this.drct_btn, this.directTo.bind(this));
-        this.gps.makeButton(this.insertInFpl_btn, this.insertInFpl.bind(this));
-        this.gps.makeButton(this.showInMap_btn, this.showInMapToggle.bind(this));
-    }
-    onEnter() {
-        this.rootElement.setAttribute("state", "Active");
-    }
-    onUpdate(_deltaTime) {
-        Avionics.Utils.diffAndSetAttribute(this.showInMap_btn, "state", this.showInMapStatus_CB() ? "Active" : "");
-    }
-    onExit() {
-        this.rootElement.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
-    }
-    setContext(_icao, _showInMapStatus_CB, _showInMapToggle_CB) {
-        this.icao = _icao;
-        this.showInMap_CB = _showInMapToggle_CB;
-        this.showInMapStatus_CB = _showInMapStatus_CB;
-    }
-    directTo() {
-        this.gps.closePopUpElement();
-        this.gps.SwitchToPageName("MFD", "Direct To");
-    }
-    insertInFpl() {
-        this.gps.closePopUpElement();
-        this.gps.insertBeforeWaypoint.getElementOfType(AS3000_TSC_InsertBeforeWaypoint).setContext(this.insertInFplIndexSelectionCallback.bind(this));
-        this.gps.switchToPopUpPage(this.gps.insertBeforeWaypoint);
-    }
-    insertInFplIndexSelectionCallback(_index) {
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanNewWaypointICAO", "string", this.icao);
-        SimVar.SetSimVarValue("C:fs9gps:FlightPlanAddWaypoint", "number", _index).then(function () {
-            this.gps.currFlightPlanManager.updateFlightPlan();
-            this.gps.SwitchToPageName("MFD", "Active Flight Plan");
-        }.bind(this));
-    }
-    showInMapToggle() {
-        this.showInMap_CB();
     }
 }
 //# sourceMappingURL=AS3000_TSC_Common.js.map
