@@ -636,6 +636,3 @@ class WT_G3x5_MFDHalfPaneWaypointSetting extends WT_DataStoreSetting {
     }
 }
 WT_G3x5_MFDHalfPaneWaypointSetting.KEY = "WT_MFDHalfPane_Waypoint"
-/**
- * @enum {Number}
- */
