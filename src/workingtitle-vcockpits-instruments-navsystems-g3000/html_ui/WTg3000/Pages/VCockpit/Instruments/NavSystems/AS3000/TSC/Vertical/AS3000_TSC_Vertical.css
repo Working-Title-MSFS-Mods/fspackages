@@ -29,7 +29,7 @@
       left: 0%;
       height: 8%;
       width: 100%;
-      background-image: url("/WTg3000/SDK/Assets/Images/TSC/TITLE_BACKGROUND_VERTICAL.png");
+      background-image: url("/WTg3000/SDK/Assets/Images/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
       background-size: contain;
       background-position: center top;
       background-repeat: no-repeat;
@@ -1768,8 +1768,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         font-size: 3vh;
         height: 10%;
         width: 100%;
-        background-color: black;
-        background-image: url("/WTg3000/SDK/Assets/Images/TSC/TITLE_BOX_VERTICAL.png");
+        background-image: url("/WTg3000/SDK/Assets/Images/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
         background-size: contain;
         background-position: center top;
         background-repeat: no-repeat; }
