@@ -404,7 +404,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
               font-size: 26px;
               fill: green; }
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Wind {
-              font-size: 18px;
+              font-size: 20px;
               fill: magenta;
               text-anchor: end; }
           cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids svg {
