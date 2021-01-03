@@ -73,12 +73,19 @@ class WT_VnavAutopilot {
                 //IS THERE A NEW PATH?
                 if (this._vnav._newPath) {
                     console.log("GETTING NEW PATH");
-                    this._inhibitExecute = false;
-                    this._pathArm = false;
-                    this._pathArmAbove = false;
-                    this._pathActive = false;
-                    this._pathActivate = false;
-                    this._vnav._newPath = false;
+                    if (this._vnavTargetAltitude > this._vnav._vnavTargetAltitude && this._indicatedAltitude > this._vnavTargetAltitude + 100
+                        && this._vnav._altDeviation < -100) {
+                        console.log("Inhibiting during pre-intercept due to turn anticipation");
+                        this._inhibitExecute = true;
+                        return;
+                    } else {
+                        this._inhibitExecute = false;
+                        this._pathArm = false;
+                        this._pathArmAbove = false;
+                        this._pathActive = false;
+                        this._pathActivate = false;
+                        this._vnav._newPath = false;
+                    }
                 }
 
                 //CAN PATH ARM?
