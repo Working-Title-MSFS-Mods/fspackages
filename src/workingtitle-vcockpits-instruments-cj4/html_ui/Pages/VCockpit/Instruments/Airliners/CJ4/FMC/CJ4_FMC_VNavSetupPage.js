@@ -86,7 +86,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onLeftInput[1] = () => {
@@ -103,7 +103,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onRightInput[0] = () => {
@@ -116,7 +116,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onRightInput[2] = () => {
@@ -129,7 +129,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onRightInput[3] = () => {
