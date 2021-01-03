@@ -296,22 +296,6 @@
       top: 50%;
       transform: translateY(-50%); }
 
-.SelectionListWindow .content {
-      position: absolute;
-      background-color: black;
-      border: 0.4vh solid white;
-      padding: 2%;
-      overflow-y: scroll; }
-  .SelectionListWindow .content::-webkit-scrollbar {
-    width: 1vw; }
-  .SelectionListWindow .content::-webkit-scrollbar-track {
-    background: none; }
-  .SelectionListWindow .content::-webkit-scrollbar-thumb {
-    background: white; }
-  .SelectionListWindow .content .gradientButton {
-    width: 100%;
-    margin-bottom: 5%; }
-
 .dynamicSelectionListWindow .content {
   position: absolute;
   background-color: black;
@@ -655,62 +639,6 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
         align-items: center; }
         #AvionicsSettings #MFDFieldsTab .rowLabel {
           text-align: center; }
-
-#AirportInfo #AirportInfo_SelectedWaypoint .mainValue {
-  text-align: left;
-  color: #67e8ef; }
-#AirportInfo #AirportInfo_SelectedWaypoint .title {
-  text-align: left;
-  overflow-x: scroll; }
-#AirportInfo .tabContainer {
-  display: flex;
-  flex-flow: row nowrap; }
-#AirportInfo .tabSelect {
-  height: 100%;
-  flex-flow: column nowrap; }
-  #AirportInfo .tabContainer .CenterDisplay {
-    z-index: 2;
-    margin: 0 -0.5vh; }
-      #AirportInfo .tabContainer .CenterDisplay .Info .section {
-        width: 100%;
-        border-top: 2px solid white; }
-      #AirportInfo .tabContainer .CenterDisplay .Info .line {
-        width: 100%;
-        display: flex; }
-    #AirportInfo .tabContainer .CenterDisplay .Freqs {
-      width: 100%;
-      height: 100%;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      position: relative; }
-      #AirportInfo .tabContainer .CenterDisplay .Freqs::-webkit-scrollbar {
-        width: 1vw; }
-      #AirportInfo .tabContainer .CenterDisplay .Freqs::-webkit-scrollbar-track {
-        background: none; }
-      #AirportInfo .tabContainer .CenterDisplay .Freqs::-webkit-scrollbar-thumb {
-        background: white; }
-      #AirportInfo .tabContainer .CenterDisplay .Freqs .line {
-        position: relative;
-        display: flex;
-        border-bottom: 2px solid white; }
-        #AirportInfo .tabContainer .CenterDisplay .Freqs .line .frequencyName {
-          border-right: 2px solid white; }
-    #AirportInfo .tabContainer .CenterDisplay .Runways {
-      width: 100%;
-      height: 100%;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      position: relative; }
-      #AirportInfo .tabContainer .CenterDisplay .Runways::-webkit-scrollbar {
-        width: 1vw; }
-      #AirportInfo .tabContainer .CenterDisplay .Runways::-webkit-scrollbar-track {
-        background: none; }
-      #AirportInfo .tabContainer .CenterDisplay .Runways::-webkit-scrollbar-thumb {
-        background: white; }
-      #AirportInfo .tabContainer .CenterDisplay .Runways .line {
-        position: relative;
-        display: flex;
-        border-bottom: 2px solid white; }
 
 #WaypointInfo_WaypointOptions .content {
   position: absolute;
