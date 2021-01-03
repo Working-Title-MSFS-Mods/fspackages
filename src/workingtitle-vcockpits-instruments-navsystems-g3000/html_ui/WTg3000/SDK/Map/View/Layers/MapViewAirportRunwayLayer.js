@@ -1,10 +1,10 @@
-class WT_MapViewAirportInfoLayer extends WT_MapViewMultiLayer {
+class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
     /**
      * @param {WT_MapViewRunwayCanvasRenderer} runwayRenderer
      * @param {String} className
      * @param {String} configName
      */
-    constructor(runwayRenderer, className = WT_MapViewAirportInfoLayer.CLASS_DEFAULT, configName = WT_MapViewAirportInfoLayer.CONFIG_NAME_DEFAULT) {
+    constructor(runwayRenderer, className = WT_MapViewAirportRunwayLayer.CLASS_DEFAULT, configName = WT_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._runwayRenderer = runwayRenderer;
@@ -12,13 +12,9 @@ class WT_MapViewAirportInfoLayer extends WT_MapViewMultiLayer {
         this._runwayLayer = new WT_MapViewPersistentCanvas(1.05);
         this.addSubLayer(this._runwayLayer);
 
-        this._optsManager = new WT_OptionsManager(this, WT_MapViewAirportInfoLayer.OPTIONS_DEF);
+        this._optsManager = new WT_OptionsManager(this, WT_MapViewAirportRunwayLayer.OPTIONS_DEF);
 
         this._lastAirport = null;
-    }
-
-    _createHTMLElement() {
-        return document.createElement("div");
     }
 
     _initLabelStyleOptions() {
@@ -60,7 +56,7 @@ class WT_MapViewAirportInfoLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     onConfigLoaded(state) {
-        for (let property of WT_MapViewAirportInfoLayer.CONFIG_PROPERTIES) {
+        for (let property of WT_MapViewAirportRunwayLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
@@ -116,9 +112,9 @@ class WT_MapViewAirportInfoLayer extends WT_MapViewMultiLayer {
         this._updateRunwayLayer(state);
     }
 }
-WT_MapViewAirportInfoLayer.CLASS_DEFAULT = "airportInfoLayer";
-WT_MapViewAirportInfoLayer.CONFIG_NAME_DEFAULT = "airportInfo";
-WT_MapViewAirportInfoLayer.OPTIONS_DEF = {
+WT_MapViewAirportRunwayLayer.CLASS_DEFAULT = "airportRunwayLayer";
+WT_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT = "airportRunway";
+WT_MapViewAirportRunwayLayer.OPTIONS_DEF = {
     runwayFillColor: {default: "gray", auto: true},
     runwayOutlineWidth: {default: 1, auto: true},
     runwayOutlineColor: {default: "white", auto: true},
@@ -140,7 +136,7 @@ WT_MapViewAirportInfoLayer.OPTIONS_DEF = {
     runwayLabelBackgroundOutlineWidth: {default: 1, auto: true},
     runwayLabelBackgroundOutlineColor: {default: "blue", auto: true},
 };
-WT_MapViewAirportInfoLayer.CONFIG_PROPERTIES = [
+WT_MapViewAirportRunwayLayer.CONFIG_PROPERTIES = [
     "runwayFillColor",
     "runwayOutlineWidth",
     "runwayOutlineColor",

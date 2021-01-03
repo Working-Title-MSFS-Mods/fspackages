@@ -89,7 +89,7 @@ class WT_G3x5_WaypointInfo {
         let runwayRenderer = new WT_MapViewRunwayCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.instrumentID));
-        this.view.addLayer(new WT_MapViewAirportInfoLayer(runwayRenderer));
+        this.view.addLayer(new WT_MapViewAirportRunwayLayer(runwayRenderer));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewRangeRingLayer());
