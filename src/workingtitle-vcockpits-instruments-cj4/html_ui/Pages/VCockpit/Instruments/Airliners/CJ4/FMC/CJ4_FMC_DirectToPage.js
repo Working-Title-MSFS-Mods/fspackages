@@ -154,13 +154,10 @@ class CJ4_FMC_DirectToPage {
 
         let airportsFiltered = [...fmc._nearest.airports].filter(w => w.ident == "origin" || w.ident == "destination"
             || w.longestRunwayLength >= WT_ConvertUnit.setLength(minRunwayValue));
-        //console.log("airportsFiltered " + airportsFiltered.length);
 
         let airportsSorted = airportsFiltered.sort((a, b) => {
             let aDistance = parseFloat(a.distance);
             let bDistance = parseFloat(b.distance);
-            console.log(a.ident + " " + aDistance);
-            console.log(b.ident + " " + bDistance);
             return aDistance - bDistance;
         });
 
@@ -203,25 +200,17 @@ class CJ4_FMC_DirectToPage {
         const airportsNeeded = 5 - closestAirports.length;
         for (let i = 0; i < airportsNeeded; i++) {
             closestAirports.push(airportsSorted[i]);
-            console.log("closestAirports: " + closestAirports.length);
         }
 
         closestAirports = closestAirports.sort((a, b) => {
             let aDistance = parseFloat(a.distance);
             let bDistance = parseFloat(b.distance);
-            console.log(a.ident + " " + aDistance);
-            console.log(b.ident + " " + bDistance);
             return aDistance - bDistance;
         });
     
         let waypointsCell = [];
         let runwayCell = [];
         let waypointsBearing = [];
-
-        // const displayWaypoints = CJ4_FMC_DirectToPage.buildLegs(fmc, onDirect);
-        // let pageCount = Math.floor((displayWaypoints.length - 1) / 4) + 1;
-        // pageCount = pageCount < 1 ? 1 : pageCount;
-
 
         for (let i = 0; i < 5; i++) {
             let airport = closestAirports[i];
@@ -233,7 +222,6 @@ class CJ4_FMC_DirectToPage {
                 waypointsCell[i] = "<" + airport.ident.padEnd(4, " ") + "[magenta]   " + longestRunwayLength.padStart(8, " ");
                 waypointsBearing[i] = "" + bearing.toFixed(0).padStart(3, "0") + "°" + " /" + distance.toFixed(1);
                 runwayCell[i] = "RW" + longestRunway + ">";
-                console.log("icao " + airport.icao);
 
             }
             else {
@@ -242,7 +230,6 @@ class CJ4_FMC_DirectToPage {
             }
             fmc.onLeftInput[i] = () => {
                 if (waypointsCell[i] != "") {
-                    console.log("setting direct " + closestAirports[i].ident.padEnd(4));
                     fmc.setMsg("Working...");
                     fmc.flightPlanManager.pauseSync();
                     let icao = closestAirports[i].icao;
@@ -263,41 +250,6 @@ class CJ4_FMC_DirectToPage {
                 };
             }
         }
-
-
-
-    
-
-        // if (directWaypoint) {
-        //     fmc.fpHasChanged = true;
-        //     activateLine = "CANCEL DTO>";
-        //     fmc.onExecPage = () => {
-        //         if (fmc.fpHasChanged) {
-        //             fmc.activateRoute(() => {
-        //                 const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-        //                 fmc.flightPlanManager.addWaypoint(directWaypoint.icao, activeIndex, () => {
-        //                     let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-        //                     fmc.activateDirectToWaypoint(wp, () => {
-        //                         fmc._activatingDirectTo = true;
-        //                         fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-        //                         fmc.onExecDefault();
-        //                     });
-        //                 });
-        //             });
-        //         }
-        //     };
-
-            
-
-       
-        //     fmc.onRightInput[5] = () => {
-        //         directWaypointCell = "-----";
-        //         fmc.fpHasChanged = false;
-        //         //fmc.eraseTemporaryFlightPlan();
-        //         fmc.setMsg();
-        //         CJ4_FMC_DirectToPage.ShowPage(fmc);
-        //     };
-        // }
 
         // __LSB = leftsquarebracket // __RSB = rightsquarebrackt
         //modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
