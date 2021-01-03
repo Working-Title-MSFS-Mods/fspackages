@@ -250,6 +250,7 @@ public:
 
         FdCtrlInstance.init();
         isConnected = true;
+        SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
 
         return true;
     }
@@ -265,9 +266,6 @@ public:
         uint64_t timeDiff_ms = currTime_ms - this->prevTime_ms;
 
         if (isConnected == true) {
-            SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
-
-
             if (timeDiff_ms > 50) {
                 FdCtrlInstance.update(globalThrottleAxis, deltaTime);
                 this->prevTime_ms = currTime_ms;

@@ -305,7 +305,7 @@ class SvgWaypointTextElement extends SvgMapElement {
         let fontSize = this.waypointElement.getLabelFontSize(map);
         let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
-        let ctx = c.getContext("2d", { alpha: false });
+        let ctx = c.getContext("2d");
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
@@ -347,7 +347,7 @@ class SvgWaypointTextElement extends SvgMapElement {
             return;
         }
 
-        let context = canvas.getContext("2d", { alpha: false });
+        let context = canvas.getContext("2d");
         if (map.config.waypointLabelUseBackground) {
             context.fillStyle = "black";
             context.fillRect(0, 0, this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight, this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom);

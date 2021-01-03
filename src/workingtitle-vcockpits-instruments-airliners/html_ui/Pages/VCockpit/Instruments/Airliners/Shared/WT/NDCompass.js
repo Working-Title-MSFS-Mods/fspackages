@@ -66,7 +66,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 fixedGroup.appendChild(arc.svg);
                 let vec = new Vec2(1, 0.45);
                 vec.SetNorm(circleRadius * 0.92);
-                this.addMapRange(fixedGroup, 30 - vec.x, 50 - vec.y, "white", "26", false, 1.0, false, "middle");
+                this.addMapRange(fixedGroup, 30 - vec.x, 50 - vec.y, "white", "26", false, 1.0, false, "left");
                 var smallCircleRadius = 170;
                 vec.SetNorm(smallCircleRadius * 0.82);
                 this.addMapRange(fixedGroup, 40 - vec.x, 50 - vec.y, "white", "26", false, 0.5, false);

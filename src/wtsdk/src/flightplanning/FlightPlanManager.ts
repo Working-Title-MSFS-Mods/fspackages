@@ -1,5 +1,5 @@
 import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, Coherent } from 'MSFS';
-import { ManagedFlightPlan, GPS } from '../wtsdk';
+import { ManagedFlightPlan } from '../wtsdk';
 import { FlightPlanSegment } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { LZUTF8, WTDataStore } from 'WorkingTitle'
@@ -193,7 +193,7 @@ export class FlightPlanManager {
     this._flightPlans[index] = copiedFlightPlan;
 
     if (index === 0) {
-      await GPS.setActiveWaypoint(activeWaypointIndex);
+      //await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
     this._updateFlightPlanVersion();
@@ -212,7 +212,7 @@ export class FlightPlanManager {
     this._flightPlans[this._currentFlightPlanIndex] = copiedFlightPlan;
 
     if (this._currentFlightPlanIndex === 0) {
-      await GPS.setActiveWaypoint(activeWaypointIndex);
+      //await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
     this._updateFlightPlanVersion();
@@ -790,6 +790,10 @@ export class FlightPlanManager {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
+    if (this._flightPlans[flightPlanIndex] === undefined) {
+      return [];
+    }
+
     return this._flightPlans[flightPlanIndex].waypoints;
   }
 
@@ -1157,7 +1161,7 @@ export class FlightPlanManager {
   public async activateApproach(callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (!this.isActiveApproach()) {
-      await GPS.setActiveWaypoint(currentFlightPlan.approach.offset);
+      //await GPS.setActiveWaypoint(currentFlightPlan.approach.offset);
     }
 
     callback();

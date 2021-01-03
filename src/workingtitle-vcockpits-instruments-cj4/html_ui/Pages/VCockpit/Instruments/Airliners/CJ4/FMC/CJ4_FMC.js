@@ -101,6 +101,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
+            RegisterViewListener("JS_LISTENER_ATC");
 
             // RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
             // this.addEventListener("FlightStart", async function () {
@@ -539,7 +540,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     if (isLnav) {
                         let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
                         this.driveFlightDirector(deltaAngle, bank);
-                    } 
+                    }
                     else if (signal && isIls) {
                         const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
                         const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
@@ -563,7 +564,7 @@ class CJ4_FMC extends FMCMainDisplay {
                             this.driveFlightDirector(0, 0);
                         }
                     }
-                } 
+                }
                 else {
                     if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
                         this.driveFlightDirector(0, 0);
