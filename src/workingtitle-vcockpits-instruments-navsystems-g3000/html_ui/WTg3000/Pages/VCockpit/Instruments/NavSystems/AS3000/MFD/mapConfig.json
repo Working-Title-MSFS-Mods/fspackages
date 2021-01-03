@@ -113,6 +113,10 @@
         "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
     },
 
+    "waypointHighlight": {
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+    },
+
     "cities": {
         "iconFillColor": ["#7b8083", "#7b8083", "#7b8083"],
         "iconOutlineColor": ["#3f3f3f", "#3f3f3f", "#3f3f3f"]

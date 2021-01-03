@@ -70,6 +70,7 @@ class WT_G3x5_WaypointInfo {
         this.model.addModule(new WT_MapModelRangeRingModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
         this.model.addModule(this._waypointInfoModule = new WT_MapModelWaypointInfoModule(this._icaoWaypointFactory));
+        this.model.addModule(this._waypointHighlightModule = new WT_MapModelWaypointHighlightModule(this._icaoWaypointFactory));
 
         this.model.crosshair.show = true;
         this.model.terrain.mode = WT_MapModelTerrainModule.TerrainMode.OFF;
@@ -91,6 +92,7 @@ class WT_G3x5_WaypointInfo {
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.instrumentID));
         this.view.addLayer(new WT_MapViewAirportRunwayLayer(runwayRenderer));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
+        this.view.addLayer(new WT_MapViewWaypointHighlightLayer(waypointRenderer));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewCrosshairLayer());
@@ -240,6 +242,7 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
             this._target.set(0, 0);
         }
         this._setInitialRange(waypoint);
+        this.model.waypointHighlight.waypoint = waypoint;
         this._waypoint = waypoint;
     }
 

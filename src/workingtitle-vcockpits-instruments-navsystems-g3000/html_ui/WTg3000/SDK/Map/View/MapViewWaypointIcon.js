@@ -297,6 +297,10 @@ class WT_MapViewWaypointImageIconCachedFactory extends WT_MapViewWaypointImageIc
         this._cache.clear();
     }
 
+    _createIcon(waypoint, priority) {
+        return super.getIcon(waypoint, priority);
+    }
+
     /**
      * Gets an icon for a waypoint. If one cannot be found in the cache, a new icon is added to the cache and
      * returned.
@@ -307,7 +311,7 @@ class WT_MapViewWaypointImageIconCachedFactory extends WT_MapViewWaypointImageIc
     getIcon(waypoint, priority) {
         let existing = this._cache.get(waypoint.uniqueID);
         if (!existing) {
-            existing = super.getIcon(waypoint, priority);
+            existing = this._createIcon(waypoint, priority);
             this._cache.set(waypoint.uniqueID, existing);
             if (this._cache.size > this._size) {
                 this._cache.delete(this._cache.keys().next().value);

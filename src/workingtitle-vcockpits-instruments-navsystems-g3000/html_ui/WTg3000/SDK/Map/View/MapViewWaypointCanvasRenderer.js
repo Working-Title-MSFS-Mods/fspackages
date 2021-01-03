@@ -61,7 +61,7 @@ class WT_MapViewWaypointCanvasRenderer {
 
     /**
      * Sets the factory to use to create waypoint icons for a waypoint context.
-     * @param {Number} context - a waypoint context.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - a waypoint context.
      * @param {WT_MapViewWaypointIconFactory} factory - a waypoint icon factory.
      */
     setIconFactory(context, factory) {
@@ -86,7 +86,7 @@ class WT_MapViewWaypointCanvasRenderer {
 
     /**
      * Sets the factory to use to create waypoint albels for a waypoint context.
-     * @param {Number} context - a waypoint context.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - a waypoint context.
      * @param {WT_MapViewWaypointLabelFactory} factory - a waypoint label factory.
      */
     setLabelFactory(context, factory) {
@@ -111,7 +111,7 @@ class WT_MapViewWaypointCanvasRenderer {
 
     /**
      * Sets the HTML canvas rendering context for a waypoint context.
-     * @param {Number} context - the waypoint context.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - the waypoint context.
      * @param {CanvasRenderingContext2D} canvasContext - an HTML canvas 2D rendering context.
      */
     setCanvasContext(context, canvasContext) {
@@ -136,7 +136,7 @@ class WT_MapViewWaypointCanvasRenderer {
 
     /**
      * Sets the handler that determines if a waypoint is visible for a waypoint context.
-     * @param {Number} context - the waypoint context.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - the waypoint context.
      * @param {{isVisible(state:WT_MapViewState, waypoint:WT_Waypoint):Boolean}} handler - an object that determines if a waypoint should be visible by
      *                                                                                     implementing the .isVisible(state, waypoint) method.
      */
@@ -162,7 +162,7 @@ class WT_MapViewWaypointCanvasRenderer {
 
     /**
      * Sets the handler that sets style options for waypoint icons and labels for a waypoint context.
-     * @param {Number} context - the waypoint context.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - the waypoint context.
      * @param {{getOptions(state:WT_MapViewState, waypoint:WT_Waypoint):{icon:Object, label: Object}}} handler - an object that returns an object defining
      *                                                                                                           style options for both icons and labels
      *                                                                                                           via the .getOptions(state, waypoint) method.
@@ -389,8 +389,8 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
     /**
      * @readonly
-     * @property {Number} lastShownContext - the context in which this entry's waypoint was last rendered.
-     * @type {Number}
+     * @property {WT_MapViewWaypointCanvasRenderer.Context} lastShownContext - the context in which this entry's waypoint was last rendered.
+     * @type {WT_MapViewWaypointCanvasRenderer.Context}
      */
     get lastShowContext() {
         return this._lastShowContext;
@@ -514,7 +514,7 @@ class WT_MapViewWaypointCanvasRendererEntry {
     /**
      *
      * @param {WT_MapViewState} state
-     * @param {Number} showContext
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} showContext
      * @param {Boolean} showIcon
      * @param {Boolean} showLabel
      * @param {WT_MapViewWaypointIconFactory} [iconFactory]
