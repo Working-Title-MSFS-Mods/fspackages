@@ -186,7 +186,7 @@ class AS3000_TSC extends NavSystemTouch {
                     "PFDMapDetailButton",
                     false
                 )),
-                new NavSystemPage("PFD Settings", "PFDSettings", new AS3000_TSC_PFDSettings()),
+                new NavSystemPage("PFD Settings", "PFDSettings", new WT_G3000_TSCPFDSettings("PFD", "PFD Home", "PFD")),
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
@@ -267,12 +267,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.selectionListWindow1.setGPS(this);
         this.selectionListWindow2 = new NavSystemElementContainer("Dynamic Selection List Window 2", "DynamicSelectionListWindow2", new WT_G3x5_TSCSelectionListWindow());
         this.selectionListWindow2.setGPS(this);
-
-        //this.aoaSelect = new NavSystemElementContainer("AOA Settings", "AoASelect", new AS3000_TSC_HighlightSelectionListWindow());
-        //this.aoaSelect.setGPS(this);
-
-        //this.pfdWindSelect = new NavSystemElementContainer("Wind Settings", "PFDWindSelect", new AS3000_TSC_HighlightSelectionListWindow());
-        //this.pfdWindSelect.setGPS(this);
 
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);

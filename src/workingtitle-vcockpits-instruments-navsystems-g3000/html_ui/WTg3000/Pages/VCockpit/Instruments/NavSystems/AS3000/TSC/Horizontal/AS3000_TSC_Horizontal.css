@@ -255,21 +255,34 @@ as3000-tsc-horizontal-element {
           height: 80%;
           bottom: 0%; }
 
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .scrollContainer {
-        top: 2%;
-        right: 5%;
-        width: 60%;
-        height: 90%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer {
-          height: 100%;
-          width: 97%;
-          padding: 1vh;
-          grid-auto-rows: 24%;
-          grid-gap: 0.5vh 0; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line {
-            grid-template-columns: 40% 60%; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .buttonsContainer .line .lineTitle {
-              font-size: 5vh; }
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings {
+    width: 100%;
+    height: 100%;
+    font-size: 4vh;
+}
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsettings-g3000 {
+    width: 100%;
+    height: 100%;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings tsc-button-label {
+        font-size: 5vh;
+    }
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsettings-table {
+    position: absolute;
+    top: 2%;
+    right: 5%;
+    width: 60%;
+    height: 96%;
+    border-radius: 5px;
+    background: linear-gradient(#1f3445, black 10%);
+    background-color: black;
+    border: 3px solid #454b4e;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsettings-row {
+        height: 20vh;
+        --pfdsettings-row-left-width: 40%;
+        --pfdsettings-row-right-width: 60%;
+    }
 
 as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .MapSettingsLeft {
     position: absolute;

@@ -33,8 +33,8 @@ class WT_G3x5_TSCAirportInfoPage extends WT_G3x5_TSCPageElement {
         /**
          * @type {WT_G3x5_TSCAirportInfoHTMLElement}
          */
-        this._airportInfoHTMLElement = root.querySelector(`tsc-airportinfo`);
-        this._airportInfoHTMLElement.setParent(this);
+        this._htmlElement = root.querySelector(`tsc-airportinfo`);
+        this._htmlElement.setParent(this);
     }
 
     onEnter() {
@@ -45,7 +45,7 @@ class WT_G3x5_TSCAirportInfoPage extends WT_G3x5_TSCPageElement {
     }
 
     onUpdate(deltaTime) {
-        this._airportInfoHTMLElement.update();
+        this._htmlElement.update();
     }
 
     onExit() {
@@ -54,7 +54,7 @@ class WT_G3x5_TSCAirportInfoPage extends WT_G3x5_TSCPageElement {
         }
 
         // TODO: Implement a more sane way to push data to direct to page.
-        let airport = this._airportInfoHTMLElement.getAirport();
+        let airport = this._htmlElement.getAirport();
         this.instrument.lastRelevantICAO = airport ? airport.icao : null;
 
         this.instrument.deactivateNavButton(5);
@@ -95,12 +95,12 @@ class WT_G3x5_TSCAirportInfoPopUp extends WT_G3x5_TSCPopUpElement {
     init(root) {
         super.init(root);
 
-        this._airportInfoHTMLElement = root.querySelector(`tsc-airportinfo`);
-        this._airportInfoHTMLElement.setParent(this);
+        this._htmlElement = root.querySelector(`tsc-airportinfo`);
+        this._htmlElement.setParent(this);
     }
 
     onUpdate(deltaTime) {
-        this._airportInfoHTMLElement.update();
+        this._htmlElement.update();
     }
 }
 

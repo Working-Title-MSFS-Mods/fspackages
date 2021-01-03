@@ -1110,17 +1110,19 @@ class AS1000_Alerts extends NavSystemElement {
 class PFD_WindData extends NavSystemElement {
     constructor() {
         super(...arguments);
-        this.mode = WTDataStore.get("WindData.Mode", 0);
     }
+
     init(root) {
         this.svg = root;
-        SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
     }
+
     getCurrentMode() {
         return this.mode;
     }
+
     onEnter() {
     }
+
     onUpdate(_deltaTime) {
         let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
         if (onGround) {
@@ -1142,8 +1144,10 @@ class PFD_WindData extends NavSystemElement {
             }
         }
     }
+
     onExit() {
     }
+
     onEvent(_event) {
         switch (_event) {
             case "SoftKeys_Wind_Off":
@@ -1163,8 +1167,6 @@ class PFD_WindData extends NavSystemElement {
                 this.mode = 3;
                 break;
         }
-        SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
-        WTDataStore.set("WindData.Mode", this.mode);
     }
 }
 class MFD_WindData extends NavSystemElement {
