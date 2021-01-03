@@ -47,6 +47,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.setWind(0, 0, 0, true);
         this.setWaypoint("", 0, 0, 0, true);
         this.setMode(this._navMode, this._navSource, true);
+        this.jetdisplay;
     }
     update(_dTime) {
         this._dTime = _dTime / 1000;
@@ -105,7 +106,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
             this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
-        }      
+        }
     }
 
     /**
@@ -140,7 +141,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         break;
                 }
             }
-        }  
+        }
     }
 
     updatePFDMessage2() {
@@ -154,7 +155,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     this.pfdMessage2.textContent = 'TOD';
                     this.pfdMessage2.style.color = 'white';
                 }
-                
+
                 if (altDev < 400) {
                     this.pfdMessage2.classList.add('blinking');
                 }
@@ -177,9 +178,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
             if (this._navMode == Jet_NDCompass_Navigation.NAV) {
                 if (this.waypoint)
                     this.waypoint.style.display = "block";
-                    this.waypointName.textContent = this._name;
-                    this.waypointTrack.textContent = this._track;
-                    this.waypointDistance.textContent = this._distance;
+                this.waypointName.textContent = this._name;
+                this.waypointTrack.textContent = this._track;
+                this.waypointDistance.textContent = this._distance;
                 if (this.approach) {
                     this.approachType.textContent = "";
                     this.approachFreq.textContent = "";
@@ -206,10 +207,12 @@ class Jet_MFD_NDInfo extends HTMLElement {
      * @param {Jet_NDCompass_Display} style The map compass display style. 
      */
     onDisplayChange(style) {
+        this.jetdisplay = style;
+
         this.VORLeft.onDisplayChange(style);
         this.VORRight.onDisplayChange(style);
     }
-    
+
     updateSpeeds() {
         this.setGroundSpeed(Math.round(Simplane.getGroundSpeed()));
         this.setTrueAirSpeed(Math.round(Simplane.getTrueSpeed()));
@@ -253,6 +256,14 @@ class Jet_MFD_NDInfo extends HTMLElement {
         }
     }
     setWind(_windAngle, _windStrength, _planeAngle, _force = false) {
+        if (this.windArrow && this.windStrength) {
+            this.windStrength.style.display = (this.jetdisplay == Jet_NDCompass_Display.PLAN) ? 'none' : '';
+            this.windArrow.style.display = (this.jetdisplay == Jet_NDCompass_Display.PLAN) ? 'none' : '';
+            if (this.jetdisplay == Jet_NDCompass_Display.PLAN) {
+                return;
+            }
+        }
+
         var refreshWindAngle = ((_windAngle != this.currentWindAngle) || _force);
         var refreshWindStrength = ((_windStrength != this.currentWindStrength) || _force);
         var refreshWindArrow = (refreshWindAngle || refreshWindStrength || (_planeAngle != this.currentPlaneAngle) || _force);
@@ -389,7 +400,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                 const radioFix = this.gps.radioNav.getVORBeacon(this._navSource);
                 if (radioFix.name && radioFix.name.indexOf("ILS") !== -1) {
                     this._navMode = Jet_NDCompass_Navigation.ILS;
-                }       
+                }
             }
 
             switch (this._navMode) {
@@ -431,7 +442,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                                 if (hasLocalizer)
                                     type = "LOC";
                             }
-                            
+
                             if (vor.distance) {
                                 if (vor.distance < 100)
                                     vor.distance = vor.distance.toFixed(1);
@@ -552,7 +563,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         if (this.minimums) {
             let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
             this.minimums.textContent = baroSet;
-            this.minimums.parentElement.style.display = (baroSet==0) ? 'none' : '';
+            this.minimums.parentElement.style.display = (baroSet == 0) ? 'none' : '';
         }
     }
     getILSIdent() {
@@ -634,7 +645,7 @@ class VORDMENavAid {
 
         this.setMode(mode);
         switch (this.currentMode) {
-            case BearingPointerMode.VOR: {              
+            case BearingPointerMode.VOR: {
                 this.handleVORModeUpdate(_parentMode, _parentSource);
                 break;
             }
@@ -646,7 +657,7 @@ class VORDMENavAid {
                 this.handleFMSModeUpdate(_parentMode);
                 break;
             }
-        }    
+        }
     }
 
     /**
@@ -711,7 +722,7 @@ class VORDMENavAid {
      * @param {Jet_NDCompass_Navigation} parentNavMode The navigation mode of the parent PFD/MFD map.
      */
     handleFMSModeUpdate(parentNavMode) {
-    
+
         let waypointName = Simplane.getNextWaypointName();
 
         const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
@@ -735,7 +746,7 @@ class VORDMENavAid {
         else {
             this.setDistanceValue(hideDistance ? 0 : Simplane.getNextWaypointDistance());
         }
-        
+
         if (hasNav) {
             const waypointBearing = Simplane.getNextWaypointTrack();
             const planeHeading = Simplane.getHeadingMagnetic();
