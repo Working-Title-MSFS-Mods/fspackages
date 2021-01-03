@@ -161,8 +161,9 @@
 			<UseTemplate Name="ASOBO_GT_Update">
 				<FREQUENCY>1</FREQUENCY>
 				<UPDATE_CODE>
-				(A:COM VOLUME:1, Percent) (&gt;K:COM1_RECEIVE_SELECT)
-				(A:COM VOLUME:2, Percent) (&gt;K:COM2_RECEIVE_SELECT)
+				(A:COM VOLUME:1, Number) (&gt;K:COM1_RECEIVE_SELECT)
+				(A:COM VOLUME:2, Number) (&gt;K:COM2_RECEIVE_SELECT)
+				(A:COM RECEIVE:1, Number) (A:COM RECEIVE:2, Number) ==  (&gt;K:COM_RECEIVE_ALL_SET)
 				</UPDATE_CODE>
 			</UseTemplate>
 		</Component>
