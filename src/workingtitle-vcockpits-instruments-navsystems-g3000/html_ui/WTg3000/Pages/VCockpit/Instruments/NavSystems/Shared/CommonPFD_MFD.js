@@ -291,9 +291,6 @@ class PFD_Attitude extends NavSystemElement {
     constructor() {
         super(...arguments);
         this.vDir = new Vec2();
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
     }
     init(root) {
         this.svg = this.gps.getChildById("Horizon");
