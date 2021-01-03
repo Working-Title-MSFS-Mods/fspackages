@@ -386,7 +386,7 @@ class WT_BaseLnav {
         if (approach.length > 1) {
             const destination = approach[approach.length - 1];
             const destinationDistance = destination.cumulativeDistanceInFp;
-            console.log("destination distance: " + destinationDistance);
+            //console.log("destination distance: " + destinationDistance);
             let finalApproachFix = approach[approach.length - 2];
             let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
             if (finalApproachFixDistance < 3 && approach.length >= 3) {
