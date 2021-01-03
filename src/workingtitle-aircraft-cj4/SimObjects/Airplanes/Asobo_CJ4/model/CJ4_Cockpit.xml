@@ -553,7 +553,7 @@
 				<NODE_ID>PASSENGER_Knob_Air_1</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>knob_pressSource</NODE_ID>
+				<NODE_ID>KNOB_PRESSOURCE</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
@@ -829,7 +829,7 @@
 				<ANIMTIP_2>Set Climate Control to COMP ON</ANIMTIP_2>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
-				<ANIM_NAME>knob_pressSource</ANIM_NAME>
+				<ANIM_NAME>KNOB_PRESSOURCE</ANIM_NAME>
 				<NODE_ID>knob_pressSource</NODE_ID>
 				<PART_ID>knob_pressSource</PART_ID>
 				<WWISE_EVENT>climate_control_knob</WWISE_EVENT>
