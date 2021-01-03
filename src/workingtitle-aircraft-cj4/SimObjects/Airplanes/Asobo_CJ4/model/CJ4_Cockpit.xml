@@ -140,12 +140,11 @@
 				<INDICATOR_NODE_ID>AudioPanel_Push_COM_1_Active_1</INDICATOR_NODE_ID>
 				<ID>COM1</ID>
 				<LEFT_SINGLE_CODE>
-					1 (&gt;H:WT_CJ4_COM1_PRESSED)
+					0 (&gt;K:PILOT_TRANSMITTER_SET)
+					0 (&gt;K:COPILOT_TRANSMITTER_SET)
 				</LEFT_SINGLE_CODE>
 				<EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:1, bool)</EMISSIVE_INDICATOR_CODE>
-
 				<TOOLTIPID>%((A:COM TRANSMIT:1, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_OFF%{end}</TOOLTIPID>
-
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_AUDIO_Button_Template">
 				<ANIM_NAME>AudioPanel_Push_COM_2_1</ANIM_NAME>
@@ -153,12 +152,18 @@
 				<INDICATOR_NODE_ID>AudioPanel_Push_COM_2_Active_1</INDICATOR_NODE_ID>
 				<ID>COM2</ID>
 				<LEFT_SINGLE_CODE>
-					1 (&gt;H:WT_CJ4_COM2_PRESSED)
+					1 (&gt;K:PILOT_TRANSMITTER_SET)
+					1 (&gt;K:COPILOT_TRANSMITTER_SET)
 				</LEFT_SINGLE_CODE>
 				<EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:2, bool)</EMISSIVE_INDICATOR_CODE>
-
 				<TOOLTIPID>%((A:COM TRANSMIT:2, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_OFF%{end}</TOOLTIPID>
-
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Update">
+				<FREQUENCY>1</FREQUENCY>
+				<UPDATE_CODE>
+				(A:COM VOLUME:1, Percent) (&gt;K:COM1_RECEIVE_SELECT)
+				(A:COM VOLUME:2, Percent) (&gt;K:COM2_RECEIVE_SELECT)
+				</UPDATE_CODE>
 			</UseTemplate>
 		</Component>
 
@@ -547,7 +552,7 @@
 				<NODE_ID>PASSENGER_Knob_Air_1</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>KNOB_PRESSOURCE</NODE_ID>
+				<NODE_ID>knob_pressSource</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>PRESSURIZATION_Push_Control</NODE_ID>
@@ -823,7 +828,7 @@
 				<ANIMTIP_2>Set Climate Control to COMP ON</ANIMTIP_2>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
-				<ANIM_NAME>KNOB_PRESSOURCE</ANIM_NAME>
+				<ANIM_NAME>knob_pressSource</ANIM_NAME>
 				<NODE_ID>knob_pressSource</NODE_ID>
 				<PART_ID>knob_pressSource</PART_ID>
 				<WWISE_EVENT>climate_control_knob</WWISE_EVENT>
