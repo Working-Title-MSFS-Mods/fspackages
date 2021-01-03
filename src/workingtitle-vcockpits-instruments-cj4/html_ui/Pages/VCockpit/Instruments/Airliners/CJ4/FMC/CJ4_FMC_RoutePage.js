@@ -294,7 +294,7 @@ class CJ4_FMC_RoutePage {
     bindRowEvents(lskIdx) {
         if (this._currentPage > 0) {
             this._fmc.onLeftInput[lskIdx] = () => {
-                this._fmc.setMsg("Working...");
+                //this._fmc.setMsg("Working...");
                 const value = this._fmc.inOut;
                 this._fmc.clearUserInput();
                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {

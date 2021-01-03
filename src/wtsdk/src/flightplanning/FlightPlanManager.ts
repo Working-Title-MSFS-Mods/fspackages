@@ -1315,6 +1315,7 @@ export class FlightPlanManager {
     }
 
     this._updateFlightPlanVersion();
+    this.setActiveWaypointIndex(waypointIndex + 1);
     callback();
   }
 

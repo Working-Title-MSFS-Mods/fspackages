@@ -946,3 +946,10 @@ class Frequency {
         this.bcd16Value = _bcd16Value;
     }
 }
+
+// class FullDataAirport extends WayPoint {
+//     constructor(_instrument) {
+//         super(_instrument);
+//         this.type = "A";
+//     }
+// }
