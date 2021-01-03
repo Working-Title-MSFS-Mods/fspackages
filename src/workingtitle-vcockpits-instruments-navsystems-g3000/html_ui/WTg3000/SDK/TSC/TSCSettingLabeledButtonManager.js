@@ -1,7 +1,7 @@
-class WT_TSCSettingValueButtonManager {
+class WT_TSCSettingLabeledButtonManager {
     /**
      * @param {NavSystemTouch} instrument
-     * @param {WT_TSCValueButton} button
+     * @param {WT_TSCLabeledButton} button
      * @param {WT_DataStoreSetting} setting
      * @param {NavSystemElementContainer} selectionListWindow
      * @param {WT_TSCSelectionListWindowContext} context
@@ -31,8 +31,8 @@ class WT_TSCSettingValueButtonManager {
 
     /**
      * @readonly
-     * @property {WT_TSCValueButton} button
-     * @type {WT_TSCValueButton}
+     * @property {WT_TSCLabeledButton} button
+     * @type {WT_TSCLabeledButton}
      */
     get button() {
         return this._button;
@@ -57,7 +57,7 @@ class WT_TSCSettingValueButtonManager {
     }
 
     _updateButton(value) {
-        this.button.valueText = this._valueTextMapper(value);
+        this.button.labelText = this._valueTextMapper(value);
     }
 
     _onSettingChanged(setting, newValue, oldValue) {
