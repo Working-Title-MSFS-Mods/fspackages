@@ -14,11 +14,11 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} instrument
+     * @property {HTMLElement} popUpWindow
      * @type {HTMLElement}
      */
-    get htmlElement() {
-        return this._htmlElement;
+    get popUpWindow() {
+        return this._popUpWindow;
     }
 
     /**
@@ -49,7 +49,7 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     }
 
     init(root) {
-        this._htmlElement = root;
+        this._popUpWindow = root;
     }
 
     setContext(context) {
@@ -66,7 +66,7 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     }
 
     _setVisible(value) {
-        this.htmlElement.style.display = value ? "block" : "none";
+        this.popUpWindow.style.display = value ? "block" : "none";
     }
 
     _activateNavButtons() {

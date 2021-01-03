@@ -71,7 +71,7 @@ class AS3000_PFD extends NavSystem {
         ];
         this.warnings = new PFD_Warnings();
         this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT, this.citySearcher)));
-        this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new AS3000_PFD_WindData("PFD")));
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this.warnings));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
@@ -238,6 +238,54 @@ AS3000_PFD_InnerMap.LAYER_OPTIONS = {
     windData: false
 };
 
+class AS3000_PFD_WindData extends PFD_WindData {
+    constructor(instrumentID) {
+        super();
+
+        this._instrumentID = instrumentID;
+
+        this._initController();
+    }
+
+    _initController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._controller));
+        this.windModeSetting.addListener(this._onWindModeSettingChanged.bind(this));
+
+        this._controller.init();
+        this._setWindMode(this.windModeSetting.getValue());
+    }
+
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDWindModeSetting} windModeSetting
+     * @type {WT_G3x5_PFDWindModeSetting}
+     */
+    get windModeSetting() {
+        return this._windModeSetting;
+    }
+
+    _setWindMode(value) {
+        this.mode = value;
+    }
+
+    _onWindModeSettingChanged(setting, newValue, oldValue) {
+        this._setWindMode(newValue);
+    }
+
+    onEvent(event) {
+    }
+}
+
 class AS3000_PFD_MainPage extends NavSystemPage {
     constructor() {
         super("Main", "Mainframe", new AS3000_PFD_MainElement());
@@ -250,10 +298,10 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.windMenu = new SoftKeysMenu();
         this.altUnitsMenu = new SoftKeysMenu(); //ADDED G3000 MOD ADD new softkeymenu for change of BARO UNIT
         this.annunciations = new PFD_Annunciations();
-        this.attitude = new PFD_Attitude();
+        this.attitude = new AS3000_PFD_Attitude("PFD");
         this.mapInstrument = new MapInstrumentElement();
-        this.aoaIndicator = new AS3000_PFD_AngleOfAttackIndicator();
-        this.altimeter = new PFD_Altimeter();
+        this.aoaIndicator = new AS3000_PFD_AngleOfAttackIndicator("PFD");
+        this.altimeter = new AS3000_PFD_Altimeter("PFD");
         this.element = new NavSystemElementGroup([
             this.attitude,
             new PFD_Airspeed(),
@@ -277,7 +325,10 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     init() {
         super.init();
         this.hsi = this.gps.getChildById("Compass");
-        this.wind = this.gps.getElementOfType(PFD_WindData);
+        /**
+         * @type {AS3000_PFD_WindData}
+         */
+        this.wind = this.gps.getElementOfType(AS3000_PFD_WindData);
         this.mapInstrument.setGPS(this.gps);
         /**
          * @type {AS3000_PFD_InnerMap}
@@ -343,7 +394,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
         this.attitudeMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Pathways"),
-            new AS3000_PFD_SoftKeyElement("Synthetic Terrain", this.toggleSyntheticVision.bind(this), this.syntheticVisionCompare.bind(this, true)),
+            new AS3000_PFD_SoftKeyElement("Synthetic Terrain", this._toggleSyntheticVision.bind(this), this._softkeySyntheticVisionCompare.bind(this, true)),
             new AS3000_PFD_SoftKeyElement("Horizon Heading"),
             new AS3000_PFD_SoftKeyElement("Airport Signs"),
             new AS3000_PFD_SoftKeyElement(""),
@@ -357,7 +408,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
         this.otherPfdMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Wind", this.switchToMenu.bind(this, this.windMenu)),
-            new AS3000_PFD_SoftKeyElement("AOA", this.gps.computeEvent.bind(this.gps, "SoftKey_PFD_AoAMode"), null, this.aoaStatus.bind(this)),
+            new AS3000_PFD_SoftKeyElement("AOA", this._cycleAoAMode.bind(this), null, this._softkeyAoAStatus.bind(this)),
             new AS3000_PFD_SoftKeyElement("Altitude Units", this.switchToMenu.bind(this, this.altUnitsMenu)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
@@ -372,10 +423,10 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.windMenu.elements = [
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
-            new AS3000_PFD_SoftKeyElement("Option 1", this.gps.computeEvent.bind(this.gps, "SoftKeys_Wind_O1"), this.windModeCompare.bind(this, "1")),
-            new AS3000_PFD_SoftKeyElement("Option 2", this.gps.computeEvent.bind(this.gps, "SoftKeys_Wind_O2"), this.windModeCompare.bind(this, "2")),
-            new AS3000_PFD_SoftKeyElement("Option 3", this.gps.computeEvent.bind(this.gps, "SoftKeys_Wind_O3"), this.windModeCompare.bind(this, "3")),
-            new AS3000_PFD_SoftKeyElement("Off", this.gps.computeEvent.bind(this.gps, "SoftKeys_Wind_Off"), this.windModeCompare.bind(this, "0")),
+            new AS3000_PFD_SoftKeyElement("Option 1", this._setWindMode.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OPTION_1), this._softkeyWindModeCompare.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OPTION_1)),
+            new AS3000_PFD_SoftKeyElement("Option 2", this._setWindMode.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OPTION_2), this._softkeyWindModeCompare.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OPTION_2)),
+            new AS3000_PFD_SoftKeyElement("Option 3", this._setWindMode.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OPTION_3), this._softkeyWindModeCompare.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OPTION_3)),
+            new AS3000_PFD_SoftKeyElement("Off", this._setWindMode.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OFF), this._softkeyWindModeCompare.bind(this, WT_G3x5_PFDWindModeSetting.Mode.OFF)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
@@ -392,8 +443,8 @@ class AS3000_PFD_MainPage extends NavSystemPage {
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement("METERS"),
-            new AS3000_PFD_SoftKeyElement("IN", this.setBaroUnit.bind(this, 0), this.softkeyBaroStatus.bind(this, "IN")),
-            new AS3000_PFD_SoftKeyElement("HPA", this.setBaroUnit.bind(this, 1), this.softkeyBaroStatus.bind(this, "HPA")),
+            new AS3000_PFD_SoftKeyElement("IN", this._setBaroUnit.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG), this._softkeyBaroUnitCompare.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG)),
+            new AS3000_PFD_SoftKeyElement("HPA", this._setBaroUnit.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.HPA), this._softkeyBaroUnitCompare.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.HPA)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.otherPfdMenu)),
             new AS3000_PFD_SoftKeyElement("")
@@ -403,8 +454,6 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     onUpdate(_deltaTime) {
-        this.updateSVT();
-        this.updateBaroUnit();
     }
 
     reset() {
@@ -481,11 +530,11 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         return this.innerMap.navMap.nexradShowSetting.getValue() ? "NEXRAD" : "OFF";
     }
 
-    toggleSyntheticVision() {
-        AS3000_PFD_MainPage.setSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW, AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW) ^ 1);
+    _toggleSyntheticVision() {
+        this.attitude.svtShowSetting.setValue(!this.attitude.svtShowSetting.getValue());
     }
 
-    syntheticVisionCompare(_val) {
+    _softkeySyntheticVisionCompare(_val) {
         return this.attitude.syntheticVisionEnabled == _val;
     }
 
@@ -508,57 +557,38 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     navStatus() {
         return this.hsi.getAttribute("nav_source");
     }
-    windModeCompare(_comparison) {
-        return this.wind.getCurrentMode() == _comparison;
-    }
-    aoaStatus() {
-        switch (this.aoaIndicator.AoaMode) {
-            case 0:
-                return "OFF";
-                break;
-            case 1:
-                return "ON";
-                break;
-            case 2:
-                return "AUTO";
-                break;
-        }
+
+    _setWindMode(mode) {
+        this.wind.windModeSetting.setValue(mode);
     }
 
-    setBaroUnit(value) {
-        AS3000_PFD_MainPage.setSettingVar(AS3000_PFD_MainPage.VARNAME_BARO_UNIT, value);
+    _softkeyWindModeCompare(value) {
+        return this.wind.getCurrentMode() === value;
     }
 
-    //ADD START*** G3000 MOD ADD new softkeymenu for change of BARO UNIT
-    softkeyBaroStatus(_state) {
-        return this.altimeter.getCurrentBaroMode() == _state;
-    }
-    //ADD END***  G3000 MOD ADD new softkeymenu for change of BARO UNIT
-
-    updateSVT() {
-        this.attitude.syntheticVisionEnabled = AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW) == 1;
+    _cycleAoAMode() {
+        let value = this.aoaIndicator.aoaModeSetting.getValue();
+        value = (value + 1) % AS3000_PFD_MainPage.AOA_MODE_TEXT.length;
+        this.aoaIndicator.aoaModeSetting.setValue(value);
     }
 
-    updateBaroUnit() {
-        let desiredSetting = AS3000_PFD_MainPage.BARO_UNIT_VALUES[AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_BARO_UNIT)];
-        let currentSetting = this.altimeter.getCurrentBaroMode();
-        if (desiredSetting != currentSetting) {
-            this.gps.computeEvent(`SoftKeys_Baro_${desiredSetting}`);
-        }
+    _softkeyAoAStatus() {
+        return AS3000_PFD_MainPage.AOA_MODE_TEXT[this.aoaIndicator.getMode()];
     }
 
-    static getSettingVar(varName, defaultValue = 0) {
-        return WTDataStore.get(varName, defaultValue);
+    _setBaroUnit(value) {
+        this.altimeter.baroUnitsSetting.setValue(value);
     }
 
-    static setSettingVar(varName, value) {
-        WTDataStore.set(varName, value);
+    _softkeyBaroUnitCompare(value) {
+        return this.altimeter.getBaroUnitsMode() === value;
     }
 }
-AS3000_PFD_MainPage.VARNAME_SVT_SHOW = "PFD_SVT_Show";
-AS3000_PFD_MainPage.VARNAME_BARO_UNIT = "PFD_Altitude_Baro_Unit";
-AS3000_PFD_MainPage.BARO_UNIT_VALUES = ["IN", "HPA"];
-
+AS3000_PFD_MainPage.AOA_MODE_TEXT = [
+    "OFF",
+    "ON",
+    "AUTO"
+];
 
 class AS3000_PFD_MainElement extends NavSystemElement {
     init(root) {
@@ -574,11 +604,39 @@ class AS3000_PFD_MainElement extends NavSystemElement {
 }
 
 class AS3000_PFD_Attitude extends PFD_Attitude {
-    init(root) {
-        this.svg = this.gps.getChildById("Horizon");
+    constructor(instrumentID) {
+        super();
+
+        this._instrumentID = instrumentID;
+
+        this._initController();
     }
 
-    onEnter() {
+    _initController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._controller));
+        this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
+
+        this._controller.init();
+        this._setSVTShow(this.svtShowSetting.getValue());
+    }
+
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDSVTShowSetting} svtShowSetting
+     * @type {WT_G3x5_PFDSVTShowSetting}
+     */
+    get svtShowSetting() {
+        return this._svtShowSetting;
     }
 
     get syntheticVisionEnabled() {
@@ -586,10 +644,89 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
     }
 
     set syntheticVisionEnabled(enabled) {
-        this._syntheticVisionEnabled = enabled;
+    }
+
+    init(root) {
+        this.svg = this.gps.getChildById("Horizon");
+    }
+
+    _setSVTShow(value) {
+        this._syntheticVisionEnabled = value;
+    }
+
+    _onSVTShowSettingChanged(setting, newValue, oldValue) {
+        this._setSVTShow(newValue);
     }
 }
 
+class AS3000_PFD_Altimeter extends PFD_Altimeter {
+    constructor(instrumentID) {
+        super();
+
+        this._instrumentID = instrumentID;
+
+        this._isInit = false;
+
+        this._initController();
+    }
+
+    _initController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this._controller));
+        this.baroUnitsSetting.addListener(this._onBaroUnitsSettingChanged.bind(this));
+
+        this._controller.init();
+        this._baroUnits = this.baroUnitsSetting.getValue();
+    }
+
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDBaroUnitsSetting} baroUnitsSetting
+     * @type {WT_G3x5_PFDBaroUnitsSetting}
+     */
+    get baroUnitsSetting() {
+        return this._baroUnitsSetting;
+    }
+
+    getBaroUnitsMode() {
+        return this._baroUnits;
+    }
+
+    init(root) {
+        super.init(root);
+
+        this._updateBaroUnits();
+        this._isInit = true;
+    }
+
+    _updateBaroUnits() {
+        this.altimeterElement.setAttribute("baro-mode", this._baroUnits === WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG ? "IN" : "HPA");
+    }
+
+    _setBaroUnits(value) {
+        if (this._baroUnits === value) {
+            return;
+        }
+
+        this._baroUnits = value;
+        if (this._isInit) {
+            this._updateBaroUnits();
+        }
+    }
+
+    _onBaroUnitsSettingChanged(setting, newValue, oldValue) {
+        this._setBaroUnits(newValue);
+    }
+}
 
 class AS3000_PFD_Compass extends PFD_Compass {
     onEvent(_event) {
@@ -672,43 +809,85 @@ class AS3000_PFD_NavStatus extends PFD_NavStatus {
     }
 }
 class AS3000_PFD_AngleOfAttackIndicator extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.AoaMode = 1;
+    constructor(instrumentID) {
+        super();
+
+        this._instrumentID = instrumentID;
+
+        this._isInit = false;
+
+        this._initController();
     }
+
+    _initController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this._controller));
+        this.aoaModeSetting.addListener(this._onAoAModeSettingChanged.bind(this));
+
+        this._controller.init();
+        this._mode = this.aoaModeSetting.getValue();
+    }
+
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDAoAModeSetting} aoaModeSetting
+     * @type {WT_G3x5_PFDAoAModeSetting}
+     */
+    get aoaModeSetting() {
+        return this._aoaModeSetting;
+    }
+
+    getMode() {
+        return this._mode;
+    }
+
     init(root) {
-        this.AoaElement = this.gps.getChildById("AoA");
-        SimVar.SetSimVarValue("L:Glasscockpit_AOA_Mode", "number", this.AoaMode);
+        this._aoaElement = this.gps.getChildById("AoA");
+
+        this._updateMode();
+        this._isInit = true;
     }
+
+    _onAoAModeSettingChanged(setting, newValue, oldValue) {
+        this._setAoAMode(newValue);
+    }
+
+    _updateMode() {
+        let shouldShow = this._mode !== WT_G3x5_PFDAoAModeSetting.Mode.OFF;
+        this._aoaElement.style.display = shouldShow ? "block" : "none";
+    }
+
+    _setAoAMode(mode) {
+        if (mode === this._mode) {
+            return;
+        }
+
+        this._mode = mode;
+        if (this._isInit) {
+            this._updateMode();
+        }
+    }
+
     onEnter() {
     }
-    onUpdate(_deltaTime) {
-        this.AoaElement.setAttribute("aoa", Math.min(Math.max(Simplane.getAngleOfAttack(), 0), 16).toString());
+
+    onUpdate(deltaTime) {
+        this._aoaElement.setAttribute("aoa", Math.min(Math.max(Simplane.getAngleOfAttack(), 0), 16).toString());
     }
+
     onExit() {
     }
-    onEvent(_event) {
-        if (_event == "SoftKey_PFD_AoAMode") {
-            this.AoaMode = ((this.AoaMode + 1) % 3);
-        }
-        switch (_event) {
-            case "AOA_Off":
-                this.AoaMode = 0;
-                break;
-            case "AOA_On":
-                this.AoaMode = 1;
-                break;
-            case "AOA_Auto":
-                this.AoaMode = 2;
-                break;
-        }
-        if (this.AoaMode == 0) {
-            this.AoaElement.style.display = "none";
-        }
-        else {
-            this.AoaElement.style.display = "block";
-        }
-        SimVar.SetSimVarValue("L:Glasscockpit_AOA_Mode", "number", this.AoaMode);
+
+    onEvent(event) {
     }
 }
 registerInstrument("as3000-pfd-element", AS3000_PFD);

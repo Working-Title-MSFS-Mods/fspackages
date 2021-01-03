@@ -218,41 +218,6 @@
                     </div>
                 </div>
                 <div class="tscPage" id="PFDSettings">
-                    <div class="backgroundBox scrollContainer">
-                        <div class="buttonsContainer">
-                            <div class="line">
-                                <div class="lineTitle">AOA</div>
-                                <div class="gradientButton" id="AoaButton">
-                                    <div class="statusText">On</div>
-                                </div>
-                            </div>
-                            <div class="line">
-                                <div class="lineTitle">SVT<br>Terrain</div>
-                                <div class="gradientButton statusToggleButton" id="SVTButton">
-                                    <div class="mainText">Enable</div>
-                                    <div class="statusBar"></div>
-                                </div>
-                            </div>
-                            <div class="line">
-                                <div class="lineTitle">Wind</div>
-                                <div class="gradientButton" id="WindButton">
-                                    <div class="statusText">Off</div>
-                                </div>
-                            </div>
-                            <div class="line">
-                                <div class="lineTitle">COM Channel Spacing</div>
-                                <div class="gradientButton" id="ComSpacingButton" state="Greyed">
-                                    <div class="statusText">25 kHz</div>
-                                </div>
-                            </div>
-                            <div class="line">
-                                <div class="lineTitle">Baro<br>Select<br>Units</div>
-                                <div class="gradientButton" id="BaroUnitButton">
-                                    <div class="statusText"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="tscPage" id="MFDHome">
                     <div class="line">
@@ -2436,6 +2401,8 @@
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCWaypointButton.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCBearingArrow.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionListWindow.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingStatusBarButtonManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingLabeledButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
 
@@ -2467,6 +2434,7 @@
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCTabbedView.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
@@ -2474,13 +2442,14 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCLoadFrequency.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWaypointOptions.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapPointerControl.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherRadarSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCAirportInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/G3000_TSCPFDSettings.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/PFD/AS3000_PFD.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>
