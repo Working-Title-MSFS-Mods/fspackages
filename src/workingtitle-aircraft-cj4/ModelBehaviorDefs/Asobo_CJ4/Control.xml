@@ -117,6 +117,27 @@
         </UseTemplate>
     </Template>
 
+    <Template Name="ASOBO_FMC_Push_CLR_Template">
+        <DefaultTemplateParameters>
+            <NODE_ID_CLR>#FMC_NAME#_Push_CLR#SUFFIX_ID#</NODE_ID_CLR>
+            <ANIM_NAME_CLR>#FMC_NAME#_Push_CLR#SUFFIX_ID#</ANIM_NAME_CLR>
+        </DefaultTemplateParameters>
+        <EditableTemplateParameters>
+            <AddParams>
+                <NODE_ID_CLR></NODE_ID_CLR>
+                <ANIM_NAME_CLR></ANIM_NAME_CLR>
+            </AddParams>
+        </EditableTemplateParameters>
+
+        <UseTemplate Name="ASOBO_FMC_PushButton">
+            <HTML_EVENT_ID>CLR</HTML_EVENT_ID>
+		    <LONG_CLICK_TIME>1</LONG_CLICK_TIME>
+            <HAS_LONG_PRESS>True</HAS_LONG_PRESS>
+            <NODE_ID>#NODE_ID_CLR#</NODE_ID>
+            <ANIM_NAME>#ANIM_NAME_CLR#</ANIM_NAME>
+        </UseTemplate>
+    </Template>
+
     <!-- AP SUB ########################################### -->
     <Template Name="ASOBO_AUTOPILOT_Push_SubTemplate">
         <DefaultTemplateParameters>
