@@ -20,6 +20,7 @@ To install, copy the `workingtitle-g3000` folder from the zip file into your `Co
   - Map Pointer Information display.
 - Updated flight plan rendering and waypoint icons to more closely resemble the real-life units.
 - New weather radar displays and settings menu.
+- Support for Airport Info pane.
 
 **Fixes**
 - \[PFD\] The inset map no longer bleeds through its borders.
@@ -31,7 +32,6 @@ To install, copy the `workingtitle-g3000` folder from the zip file into your `Co
 - \[PFD\] (Vanilla issue) Co-pilot PFD softkeys are nonfunctional in the TBM 930.
 - \[NavMap\] Roads and airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
 - \[NavMap\] The flight plan renderer currently does not draw turn anticipation arcs or turn to intercept legs. These will be added later.
-- \[NavMap\] The "Show In Map" option in the Airport Info menu has been temporarily disabled.
 - \[NavMap\] All airport waypoints are shown as if they are serviced, regardless of whether they actually are. This is because waypoint data from the game is currently missing this information.
 
 ### FAQ

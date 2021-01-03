@@ -9,6 +9,9 @@
   - To switch the pane selected by a touchscreen controller, turn the inner upper knob.
   - In the MFD display, the border of each half pane changes color depending on which touchscreen controller has selected it. The border will be black if it is selected by neither controller, cyan if selected by GTC1, purple if selected by GTC2, and blue if selected by both.
   - To improve performance, in HALF mode each pane is updated at half refresh rate.
+- \[MFD\] Added support for the Airport Info pane.
+  - The currently selected MFD pane will automatically switch to the Airport Info pane when the GTC enters the Airport Info page. The MFD pane will switch back to the previous active pane when exiting the Airport Info page.
+  - The Airport Info pane automatically adjusts centering and zoom to show the currently selected airport in the Airport Info page. If no airport is selected, the pane will default to coordinates <0 N, 0 E>. Runways for the selected airport are drawn and labeled in the Airport Info Pane.
 - \[NavMap\] Added ability to show airways.
   - Airways can be toggled on/off by navigating to PFD Home -> PFD Map Settings -> "Aviation" tab, or MFD Home -> Map Settings -> "Aviation" tab.
 - \[NavMap\] Added ability to show country and state/province borders and labels.
@@ -20,7 +23,9 @@
 - \[NavMap\] Updated flight plan path rendering to more closely match the real-life Garmin units.
 - \[NavMap\] Updated waypoint icons to more closely match those found in the real-life Garmin units.
 - \[NavMap\] Changed the controls for NEXRAD overlay. These can now be found in the appropriate Map Settings menu, under the "Sensor" tab.
+- \[NavMap\] Tweaked absolute terrain colors.
 - \[Weather Radar\] Changed the controls for the weather radar (WX radar). Navigating to MFD Home -> Weather Selection -> WX Radar will now open a new settings page.
+- \[GTC\] Minor overhaul to the Airport Info page. The Runways tab now shows more accurate runway surface information (where data are available).
 
 **Fixes**
 - \[PFD\] The inset map no longer bleeds through its borders.
