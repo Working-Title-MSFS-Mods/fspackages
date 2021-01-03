@@ -639,7 +639,7 @@ class CJ4_VSpeed extends NavSystemElement {
         var vSpeed = Math.round(Simplane.getVerticalSpeed());
         this.vsi.setAttribute("vspeed", vSpeed.toString());
 
-        if (Simplane.getAutoPilotVerticalSpeedHoldActive() && (fmaValues.verticalMode !== 'VPATH' || fmaValues.verticalMode !== 'GP' || fmaValues.verticalMode !== 'VGP')) {
+        if (Simplane.getAutoPilotVerticalSpeedHoldActive() && (fmaValues.verticalMode === 'VS' || fmaValues.verticalMode === 'VVS')) {
             let selVSpeed = Math.round(Simplane.getAutoPilotVerticalSpeedHoldValue());
             this.vsi.setAttribute("selected_vspeed", selVSpeed.toString());
             this.vsi.setAttribute("selected_vspeed_active", "true");
