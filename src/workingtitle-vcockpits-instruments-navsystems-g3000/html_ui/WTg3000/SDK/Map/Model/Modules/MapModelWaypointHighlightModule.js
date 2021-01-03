@@ -1,5 +1,5 @@
-class WT_MapModelWaypointInfoModule extends WT_MapModelModule {
-    constructor(icaoWaypointFactory, name = WT_MapModelWaypointInfoModule.NAME_DEFAULT) {
+class WT_MapModelWaypointHighlightModule extends WT_MapModelModule {
+    constructor(icaoWaypointFactory, name = WT_MapModelWaypointHighlightModule.NAME_DEFAULT) {
         super(name);
 
         this._icaoWaypointFactory = icaoWaypointFactory;
@@ -8,7 +8,7 @@ class WT_MapModelWaypointInfoModule extends WT_MapModelModule {
         this._waypoint = null;
         this._waypointRequestID = 0;
 
-        this._optsManager.addOptions(WT_MapModelWaypointInfoModule.OPTIONS_DEF);
+        this._optsManager.addOptions(WT_MapModelWaypointHighlightModule.OPTIONS_DEF);
     }
 
     get waypointICAO() {
@@ -53,19 +53,8 @@ class WT_MapModelWaypointInfoModule extends WT_MapModelModule {
         }
     }
 }
-WT_MapModelWaypointInfoModule.NAME_DEFAULT = "waypointInfo";
-/**
- * @enum {Number}
- */
-WT_MapModelWaypointInfoModule.Mode = {
-    OFF: 0,
-    AIRPORT: 1,
-    VOR: 2,
-    NDB: 3,
-    INT: 4
-}
-WT_MapModelWaypointInfoModule.OPTIONS_DEF = {
-    mode: {default: WT_MapModelWaypointInfoModule.Mode.OFF, auto: true},
+WT_MapModelWaypointHighlightModule.NAME_DEFAULT = "waypointHighlight";
+WT_MapModelWaypointHighlightModule.OPTIONS_DEF = {
     waypointICAO: {default: ""},
     waypoint: {default: null}
 };
