@@ -323,6 +323,9 @@ class CJ4NavModeSelector {
         this.currentVerticalActiveState = VerticalNavModeState.VS;
         break;
     }
+    if (SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1 && SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1) {
+      SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+    }
     if (this.isVNAVOn) {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);
     }
