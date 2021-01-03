@@ -125,121 +125,120 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         }
     }
 
+    _setCommonLabelStyles(options) {
+        options.fontWeight = this.waypointLabelFontWeight;
+        options.fontSize = this.waypointLabelFontSize;
+        options.fontColor = this.waypointLabelFontColor;
+        options.fontOutlineWidth = this.waypointLabelFontOutlineWidth;
+        options.fontOutlineColor = this.waypointLabelFontOutlineColor;
+        options.showBackground = this.waypointLabelShowBackground;
+        if (options.showBackground) {
+            options.backgroundColor = this.waypointLabelBackgroundColor;
+            options.backgroundPadding = this.waypointLabelBackgroundPadding;
+            options.backgroundBorderRadius = this.waypointLabelBackgroundBorderRadius;
+            options.backgroundOutlineWidth = this.waypointLabelBackgroundOutlineWidth;
+            options.backgroundOutlineColor = this.waypointLabelBackgroundOutlineColor;
+        }
+    }
+
     _initStyleOptions() {
         this._airportStyles = [
             {
                 icon: {
                     priority: this.airportIconPriority,
-                    imageDir: this.iconDirectory,
                     size: this.airportIconSize
                 },
                 label: {
                     priority: this.airportLabelPriority,
                     alwaysShow: false,
                     offset: this.airportLabelOffset,
-                    fontSize: this.waypointLabelFontSize,
-                    fontColor: this.waypointLabelFontColor,
-                    fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                    fontOutlineColor: this.waypointLabelFontOutlineColor
                 }
             },
             {
                 icon: {
                     priority: this.airportIconPriority - 1,
-                    imageDir: this.iconDirectory,
                     size: this.airportIconSize
                 },
                 label: {
                     priority: this.airportLabelPriority - 1,
                     alwaysShow: false,
                     offset: this.airportLabelOffset,
-                    fontSize: this.waypointLabelFontSize,
-                    fontColor: this.waypointLabelFontColor,
-                    fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                    fontOutlineColor: this.waypointLabelFontOutlineColor
                 }
             },
             {
                 icon: {
                     priority: this.airportIconPriority - 2,
-                    imageDir: this.iconDirectory,
                     size: this.airportIconSize
                 },
                 label: {
                     priority: this.airportLabelPriority - 2,
                     alwaysShow: false,
                     offset: this.airportLabelOffset,
-                    fontSize: this.waypointLabelFontSize,
-                    fontColor: this.waypointLabelFontColor,
-                    fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                    fontOutlineColor: this.waypointLabelFontOutlineColor
                 }
             }
         ];
         this._vorStyle = {
             icon: {
                 priority: this.vorIconPriority,
-                imageDir: this.iconDirectory,
                 size: this.vorIconSize
             },
             label: {
                 priority: this.vorLabelPriority,
                 alwaysShow: false,
                 offset: this.vorLabelOffset,
-                fontSize: this.waypointLabelFontSize,
-                fontColor: this.waypointLabelFontColor,
-                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                fontOutlineColor: this.waypointLabelFontOutlineColor
             }
         };
         this._ndbStyle = {
             icon: {
                 priority: this.ndbIconPriority,
-                imageDir: this.iconDirectory,
                 size: this.ndbIconSize
             },
             label: {
                 priority: this.ndbLabelPriority,
                 alwaysShow: false,
                 offset: this.ndbLabelOffset,
-                fontSize: this.waypointLabelFontSize,
-                fontColor: this.waypointLabelFontColor,
-                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                fontOutlineColor: this.waypointLabelFontOutlineColor
             }
         };
         this._intStyle = {
             icon: {
                 priority: this.intIconPriority,
-                imageDir: this.iconDirectory,
                 size: this.intIconSize
             },
             label: {
                 priority: this.intLabelPriority,
                 alwaysShow: false,
                 offset: this.intLabelOffset,
-                fontSize: this.waypointLabelFontSize,
-                fontColor: this.waypointLabelFontColor,
-                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                fontOutlineColor: this.waypointLabelFontOutlineColor
             }
         };
         this._userStyle = {
             icon: {
                 priority: this.userIconPriority,
-                imageDir: this.iconDirectory,
                 size: this.userIconSize
             },
             label: {
                 priority: this.userLabelPriority,
                 alwaysShow: false,
                 offset: this.userLabelOffset,
-                fontSize: this.waypointLabelFontSize,
-                fontColor: this.waypointLabelFontColor,
-                fontOutlineWidth: this.waypointLabelFontOutlineWidth,
-                fontOutlineColor: this.waypointLabelFontOutlineColor
             }
         };
+
+        this._setCommonLabelStyles(this._airportStyles[0].label);
+        this._setCommonLabelStyles(this._airportStyles[1].label);
+        this._setCommonLabelStyles(this._airportStyles[2].label);
+        this._setCommonLabelStyles(this._vorStyle.label);
+        this._setCommonLabelStyles(this._ndbStyle.label);
+        this._setCommonLabelStyles(this._intStyle.label);
+        this._setCommonLabelStyles(this._userStyle.label);
+    }
+
+    _setWaypointRendererFactories() {
+        let factory = new WT_MapViewWaypointImageIconCachedFactory(WT_MapViewWaypointLayer.WAYPOINT_ICON_CACHE_SIZE, this.iconDirectory);
+        this._waypointRenderer.setIconFactory(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, factory);
+        this._waypointRenderer.setIconFactory(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, factory);
+
+        let labelFactory = new WT_MapViewWaypointIdentLabelCachedFactory(WT_MapViewWaypointLayer.WAYPOINT_LABEL_CACHE_SIZE);
+        this._waypointRenderer.setLabelFactory(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, labelFactory);
+        this._waypointRenderer.setLabelFactory(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, labelFactory);
     }
 
     _setWaypointRendererStyleHandlers() {
@@ -255,6 +254,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         for (let property of WT_MapViewWaypointLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
+        this._setWaypointRendererFactories();
         this._setWaypointRendererStyleHandlers();
     }
 
@@ -739,10 +739,17 @@ WT_MapViewWaypointLayer.OPTIONS_DEF = {
     ndbIconSize: {default: 30, auto: true},
     intIconSize: {default: 15, auto: true},
 
+    waypointLabelFontWeight: {default: "normal", auto: true},
     waypointLabelFontSize: {default: 15, auto: true},
     waypointLabelFontColor: {default: "white", auto: true},
     waypointLabelFontOutlineWidth: {default: 6, auto: true},
     waypointLabelFontOutlineColor: {default: "black", auto: true},
+    waypointLabelShowBackground: {default: false, auto: true},
+    waypointLabelBackgroundColor: {default: "white", auto: true},
+    waypointLabelBackgroundPadding: {default: [0], auto: true},
+    waypointLabelBackgroundBorderRadius: {default: 0, auto: true},
+    waypointLabelBackgroundOutlineWidth: {default: 0, auto: true},
+    waypointLabelBackgroundOutlineColor: {default: "black", auto: true},
 
     userIconPriority: {default: 15, auto: true},
     airportIconPriority: {default: 10, auto: true},
@@ -784,10 +791,17 @@ WT_MapViewWaypointLayer.CONFIG_PROPERTIES = [
     "vorIconSize",
     "ndbIconSize",
     "intIconSize",
+    "waypointLabelFontWeight",
     "waypointLabelFontSize",
     "waypointLabelFontColor",
     "waypointLabelFontOutlineWidth",
     "waypointLabelFontOutlineColor",
+    "waypointLabelShowBackground",
+    "waypointLabelBackgroundColor",
+    "waypointLabelBackgroundPadding",
+    "waypointLabelBackgroundBorderRadius",
+    "waypointLabelBackgroundOutlineWidth",
+    "waypointLabelBackgroundOutlineColor",
     "userLabelPriority",
     "airportLabelPriority",
     "vorLabelPriority",

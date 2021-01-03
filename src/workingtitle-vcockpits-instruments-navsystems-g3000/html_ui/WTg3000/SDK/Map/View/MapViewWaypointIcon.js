@@ -202,30 +202,99 @@ class WT_MapViewINTImageIcon extends WT_MapViewWaypointImageIcon {
 }
 
 /**
- * A cache for image-based waypoint icons.
+ * A factory for waypoint icons.
+ * @abstract
  */
-class WT_MapViewWaypointImageIconCache {
+class WT_MapViewWaypointIconFactory {
     /**
-     * @param {Number} size - the size of the new cache.
+     * Gets an icon for a waypoint.
+     * @param {WT_Waypoint} waypoint - the waypoint for which to get an icon.
+     * @param {Number} priority - the priority of the icon.
+     * @returns {WT_MapViewWaypointIcon} a waypoint icon.
      */
-    constructor(size) {
+    getIcon(waypoint, priority) {
+        return null;
+    }
+}
+
+/**
+ * A factory for image-based waypoint icons.
+ */
+class WT_MapViewWaypointImageIconFactory extends WT_MapViewWaypointIconFactory {
+    /**
+     * @param {String} [imageDir] - the path to the directory containing the images which the icons created by this factory will use.
+     */
+    constructor(imageDir) {
+        super();
+
+        this._imageDir = imageDir;
+    }
+
+    /**
+     * @readonly
+     * @property {String} imageDirectory - the path to the directory containing the images which the icons created by this factory will use.
+     * @type {String}
+     */
+    get imageDirectory() {
+        return this._imageDir;
+    }
+
+    /**
+     * Changes the path to the directory containing the images which the icons created by this factory will use.
+     * @param {String} imageDir - the new directory path.
+     */
+    setImageDirectory(imageDir) {
+        this._imageDir = imageDir;
+    }
+
+    /**
+     * Gets an icon for a waypoint.
+     * @param {WT_Waypoint} waypoint - the waypoint for which to get an icon.
+     * @param {Number} priority - the priority of the icon.
+     * @returns {WT_MapViewWaypointImageIcon} a waypoint icon.
+     */
+    getIcon(waypoint, priority) {
+        if (waypoint.icao) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return new WT_MapViewAirportImageIcon(waypoint, priority, this.imageDirectory);
+                case WT_ICAOWaypoint.Type.VOR:
+                    return new WT_MapViewVORImageIcon(waypoint, priority, this.imageDirectory);
+                case WT_ICAOWaypoint.Type.NDB:
+                    return new WT_MapViewNDBImageIcon(waypoint, priority, this.imageDirectory);
+                case WT_ICAOWaypoint.Type.INT:
+                    return new WT_MapViewINTImageIcon(waypoint, priority, this.imageDirectory);
+            }
+        }
+    }
+}
+
+/**
+ * A factory for image-based waypoint icons that caches icons for re-use after they have been created.
+ */
+class WT_MapViewWaypointImageIconCachedFactory extends WT_MapViewWaypointImageIconFactory {
+    /**
+     * @param {Number} size - the size of the new factory's cache.
+     * @param {String} [imageDir] - the path to the directory containing the images which the icons created by this factory will use.
+     */
+    constructor(size, imageDir) {
+        super(imageDir);
+
         this._cache = new Map();
         this._size = size;
     }
 
-    _createIconFromWaypoint(waypoint, priority, imageDir) {
-        if (waypoint.icao) {
-            switch (waypoint.type) {
-                case WT_ICAOWaypoint.Type.AIRPORT:
-                    return new WT_MapViewAirportImageIcon(waypoint, priority, imageDir);
-                case WT_ICAOWaypoint.Type.VOR:
-                    return new WT_MapViewVORImageIcon(waypoint, priority, imageDir);
-                case WT_ICAOWaypoint.Type.NDB:
-                    return new WT_MapViewNDBImageIcon(waypoint, priority, imageDir);
-                case WT_ICAOWaypoint.Type.INT:
-                    return new WT_MapViewINTImageIcon(waypoint, priority, imageDir);
-            }
+    /**
+     * Changes the path to the directory containing the images which the icons created by this factory will use.
+     * @param {String} imageDir - the new directory path.
+     */
+    setImageDirectory(imageDir) {
+        if (imageDir === this._imageDir) {
+            return;
         }
+
+        super.setImageDirectory(imageDir);
+        this._cache.clear();
     }
 
     /**
@@ -233,13 +302,12 @@ class WT_MapViewWaypointImageIconCache {
      * returned.
      * @param {WT_Waypoint} waypoint - the waypoint for which to get an icon.
      * @param {Number} priority - the priority of the icon, if a new one has to be created.
-     * @param {String} imageDir - the path to the directory where the icon image files are located.
      * @returns {WT_MapViewWaypointImageIcon} a waypoint icon.
      */
-    getIcon(waypoint, priority, imageDir) {
+    getIcon(waypoint, priority) {
         let existing = this._cache.get(waypoint.uniqueID);
         if (!existing) {
-            existing = this._createIconFromWaypoint(waypoint, priority, imageDir, priority);
+            existing = super.getIcon(waypoint, priority);
             this._cache.set(waypoint.uniqueID, existing);
             if (this._cache.size > this._size) {
                 this._cache.delete(this._cache.keys().next().value);

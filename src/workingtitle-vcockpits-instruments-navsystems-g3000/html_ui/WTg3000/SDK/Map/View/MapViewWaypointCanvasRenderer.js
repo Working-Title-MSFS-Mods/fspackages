@@ -8,37 +8,36 @@
 class WT_MapViewWaypointCanvasRenderer {
     /**
      * @param {WT_MapViewTextLabelManager} labelManager - the label manager to use for waypoint labels.
-     * @param {Number} [normalCacheSize] - the size of the icon and label caches to use for waypoints rendered in the normal context.
-     * @param {Number} [airwayCacheSize] - the size of the icon and label caches to use for waypoints rendered in the airway context.
-     * @param {Number} [flightPlanCacheSize] - the size of the icon and label caches to use for waypoints rendered in the flight plan context.
-     * @param {Number} [flightPlanActiveCacheSize] - the size of the icon and label caches to use for waypoints rendered in the active flight plan waypoint context.
-     * @param {Number} [highlightCacheSize] - the size of the icon and label caches to use for waypoints rendered in the highlighted waypoint context.
      */
-    constructor(labelManager, normalCacheSize = WT_MapViewWaypointCanvasRenderer.NORMAL_CACHE_SIZE, airwayCacheSize = WT_MapViewWaypointCanvasRenderer.AIRWAY_CACHE_SIZE, flightPlanCacheSize = WT_MapViewWaypointCanvasRenderer.FLIGHT_PLAN_CACHE_SIZE, flightPlanActiveCacheSize = WT_MapViewWaypointCanvasRenderer.FLIGHT_PLAN_ACTIVE_CACHE_SIZE = 20, highlightCacheSize = WT_MapViewWaypointCanvasRenderer.HIGHLIGHT_CACHE_SIZE) {
+    constructor(labelManager) {
         this._labelManager = labelManager;
-
-        this._iconCaches = {
-            normal: new WT_MapViewWaypointImageIconCache(normalCacheSize),
-            airway: new WT_MapViewWaypointImageIconCache(airwayCacheSize),
-            flightPlan: new WT_MapViewWaypointImageIconCache(flightPlanCacheSize),
-            flightPlanActive: new WT_MapViewWaypointImageIconCache(flightPlanActiveCacheSize),
-            highlight: new WT_MapViewWaypointImageIconCache(highlightCacheSize)
-        };
-        this._labelCaches = {
-            normal: new WT_MapViewWaypointLabelCache(normalCacheSize),
-            airway: new WT_MapViewWaypointLabelCache(airwayCacheSize),
-            flightPlan: new WT_MapViewWaypointLabelCache(flightPlanCacheSize),
-            flightPlanActive: new WT_MapViewWaypointLabelCache(flightPlanActiveCacheSize),
-            highlight: new WT_MapViewWaypointLabelCache(highlightCacheSize)
-        };
 
         /**
          * @type {Map<String,WT_MapViewWaypointCanvasRendererEntry>}
          */
         this._registered = new Map();
 
-        this._canvasContexts = {
+        this._iconFactories = {
+            normal: null,
+            airway: null,
+            flightPlan: null,
+            flightPlanActive: null,
+            highlight: null
+        };
+        this._labelFactories = {
+            normal: null,
+            airway: null,
+            flightPlan: null,
+            flightPlanActive: null,
+            highlight: null
+        };
 
+        this._canvasContexts = {
+            normal: null,
+            airway: null,
+            flightPlan: null,
+            flightPlanActive: null,
+            highlight: null
         };
 
         this._styleOptionHandlers = {
@@ -58,6 +57,56 @@ class WT_MapViewWaypointCanvasRenderer {
         };
 
         this._deprecateBounds = [new WT_GVector2(0, 0), new WT_GVector2(0, 0)];
+    }
+
+    /**
+     * Sets the factory to use to create waypoint icons for a waypoint context.
+     * @param {Number} context - a waypoint context.
+     * @param {WT_MapViewWaypointIconFactory} factory - a waypoint icon factory.
+     */
+    setIconFactory(context, factory) {
+        switch (context) {
+            case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
+                this._iconFactories.normal = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
+                this._iconFactories.airway = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
+                this._iconFactories.flightPlan = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
+                this._iconFactories.flightPlanActive = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
+                this._iconFactories.highlight = factory;
+                break;
+        }
+    }
+
+    /**
+     * Sets the factory to use to create waypoint albels for a waypoint context.
+     * @param {Number} context - a waypoint context.
+     * @param {WT_MapViewWaypointLabelFactory} factory - a waypoint label factory.
+     */
+    setLabelFactory(context, factory) {
+        switch (context) {
+            case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
+                this._labelFactories.normal = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
+                this._labelFactories.airway = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
+                this._labelFactories.flightPlan = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
+                this._labelFactories.flightPlanActive = factory;
+                break;
+            case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
+                this._labelFactories.highlight = factory;
+                break;
+        }
     }
 
     /**
@@ -239,7 +288,10 @@ class WT_MapViewWaypointCanvasRenderer {
         }
 
         for (let prop in this._canvasContexts) {
-            this._canvasContexts[prop].clearRect(0, 0, state.projection.viewWidth, state.projection.viewHeight);
+            let context = this._canvasContexts[prop];
+            if (context) {
+                context.clearRect(0, 0, state.projection.viewWidth, state.projection.viewHeight);
+            }
         }
 
         iconsToDraw.sort((a, b) => a.icon.priority - b.icon.priority);
@@ -465,11 +517,11 @@ class WT_MapViewWaypointCanvasRendererEntry {
      * @param {Number} showContext
      * @param {Boolean} showIcon
      * @param {Boolean} showLabel
-     * @param {WT_MapViewWaypointImageIconCache} [iconCache]
-     * @param {WT_MapViewWaypointLabelCache} [labelCache]
+     * @param {WT_MapViewWaypointIconFactory} [iconFactory]
+     * @param {WT_MapViewWaypointLabelFactory} [labelFactory]
      * @param {{getOptions(state:WT_MapViewState, waypoint:WT_Waypoint)}} [styleOptionHandler]
      */
-    _draw(state, showContext, showIcon, showLabel, iconCache, labelCache, styleOptionHandler) {
+    _draw(state, showContext, showIcon, showLabel, iconFactory, labelFactory, styleOptionHandler) {
         let needReplace = showContext !== this.lastShowContext;
         if (needReplace) {
             if (this._showLabel) {
@@ -478,9 +530,9 @@ class WT_MapViewWaypointCanvasRendererEntry {
 
             let options = styleOptionHandler.getOptions(state, this.waypoint);
 
-            this._icon = iconCache.getIcon(this.waypoint, options.icon.priority, options.icon.imageDir);
+            this._icon = iconFactory.getIcon(this.waypoint, options.icon.priority);
             this._icon.setOptions(options.icon);
-            this._label = labelCache.getLabel(this.waypoint, options.label.priority, options.label.alwaysShow);
+            this._label = labelFactory.getLabel(this.waypoint, options.label.priority, options.label.alwaysShow);
             this._label.setOptions(options.label);
             this._showLabel = false;
         }
@@ -573,10 +625,10 @@ class WT_MapViewWaypointCanvasRendererEntry {
         if (hide) {
             this._draw(state, this.lastShowContext, false, false);
         } else {
-            let iconCache = this._renderer._iconCaches[propertyName];
-            let labelCache = this._renderer._labelCaches[propertyName];
+            let iconFactory = this._renderer._iconFactories[propertyName];
+            let labelFactory = this._renderer._labelFactories[propertyName];
             let optionHandler = this._renderer._styleOptionHandlers[propertyName];
-            this._draw(state, showContext, showIcon, showLabel, iconCache, labelCache, optionHandler);
+            this._draw(state, showContext, showIcon, showLabel, iconFactory, labelFactory, optionHandler);
         }
 
         this._updateDeprecation(state);

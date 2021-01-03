@@ -18,9 +18,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         this._drctRenderer = new WT_MapViewDirectToCanvasRenderer();
         this._drctRenderer.setDirectTo(this._fpm.directTo);
 
-        this._iconCache = new WT_MapViewWaypointImageIconCache(WT_MapViewFlightPlanLayer.WAYPOINT_ICON_CACHE_SIZE);
-        this._labelCache = new WT_MapViewWaypointLabelCache(WT_MapViewFlightPlanLayer.WAYPOINT_LABEL_CACHE_SIZE);
-
         this._pathLayer = new WT_MapViewPersistentCanvas(WT_MapViewFlightPlanLayer.OVERDRAW_FACTOR);
         this._iconLayer = new WT_MapViewCanvas(true, true);
         this.addSubLayer(this._pathLayer);
@@ -88,16 +85,19 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     }
 
     _setCommonInactiveLabelStyles(options) {
-        options.fontWeight = this.waypointLabelFontWeight,
-        options.fontSize = this.waypointLabelFontSize,
-        options.fontColor = this.waypointLabelFontColor,
-        options.fontOutlineWidth = this.waypointLabelFontOutlineWidth,
-        options.fontOutlineColor = this.waypointLabelFontOutlineColor,
-        options.showBackground = this.waypointLabelShowBackground,
-        options.backgroundColor = this.waypointLabelBackgroundColor,
-        options.backgroundPadding = this.waypointLabelBackgroundPadding,
-        options.backgroundOutlineWidth = this.waypointLabelBackgroundOutlineWidth,
-        options.backgroundOutlineColor = this.waypointLabelBackgroundOutlineColor
+        options.fontWeight = this.waypointLabelFontWeight;
+        options.fontSize = this.waypointLabelFontSize;
+        options.fontColor = this.waypointLabelFontColor;
+        options.fontOutlineWidth = this.waypointLabelFontOutlineWidth;
+        options.fontOutlineColor = this.waypointLabelFontOutlineColor;
+        options.showBackground = this.waypointLabelShowBackground;
+        if (options.showBackground) {
+            options.backgroundColor = this.waypointLabelBackgroundColor;
+            options.backgroundPadding = this.waypointLabelBackgroundPadding;
+            options.backgroundBorderRadius = this.waypointLabelBackgroundBorderRadius;
+            options.backgroundOutlineWidth = this.waypointLabelBackgroundOutlineWidth;
+            options.backgroundOutlineColor = this.waypointLabelBackgroundOutlineColor;
+        }
     }
 
     _initInactiveStyleOptions() {
@@ -200,16 +200,19 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     }
 
     _setCommonActiveLabelStyles(options) {
-        options.fontWeight = this.activeLabelFontWeight,
-        options.fontSize = this.activeLabelFontSize,
-        options.fontColor = this.activeLabelFontColor,
-        options.fontOutlineWidth = this.activeLabelFontOutlineWidth,
-        options.fontOutlineColor = this.activeLabelFontOutlineColor,
-        options.showBackground = this.activeLabelShowBackground,
-        options.backgroundColor = this.activeLabelBackgroundColor,
-        options.backgroundPadding = this.activeLabelBackgroundPadding,
-        options.backgroundOutlineWidth = this.activeLabelBackgroundOutlineWidth,
-        options.backgroundOutlineColor = this.activeLabelBackgroundOutlineColor
+        options.fontWeight = this.activeLabelFontWeight;
+        options.fontSize = this.activeLabelFontSize;
+        options.fontColor = this.activeLabelFontColor;
+        options.fontOutlineWidth = this.activeLabelFontOutlineWidth;
+        options.fontOutlineColor = this.activeLabelFontOutlineColor;
+        options.showBackground = this.activeLabelShowBackground;
+        if (options.showBackground) {
+            options.backgroundColor = this.activeLabelBackgroundColor;
+            options.backgroundPadding = this.activeLabelBackgroundPadding;
+            options.backgroundBorderRadius = this.activeLabelBackgroundBorderRadius;
+            options.backgroundOutlineWidth = this.activeLabelBackgroundOutlineWidth;
+            options.backgroundOutlineColor = this.activeLabelBackgroundOutlineColor;
+        }
     }
 
     _initActiveStyleOptions() {
@@ -218,7 +221,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
                 {
                     icon: {
                         priority: this.airportIconPriority + 50,
-                        imageDir: this.iconDirectory,
                         size: this.airportIconSize
                     },
                     label: {
@@ -230,7 +232,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
                 {
                     icon: {
                         priority: this.airportIconPriority + 50 - 1,
-                        imageDir: this.iconDirectory,
                         size: this.airportIconSize
                     },
                     label: {
@@ -242,7 +243,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
                 {
                     icon: {
                         priority: this.airportIconPriority + 50 - 2,
-                        imageDir: this.iconDirectory,
                         size: this.airportIconSize
                     },
                     label: {
@@ -255,7 +255,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
             vor: {
                 icon: {
                     priority: this.vorIconPriority + 50,
-                    imageDir: this.iconDirectory,
                     size: this.vorIconSize
                 },
                 label: {
@@ -267,7 +266,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
             ndb: {
                 icon: {
                     priority: this.ndbIconPriority,
-                    imageDir: this.iconDirectory,
                     size: this.ndbIconSize
                 },
                 label: {
@@ -279,7 +277,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
             int: {
                 icon: {
                     priority: this.intIconPriority,
-                    imageDir: this.iconDirectory,
                     size: this.intIconSize
                 },
                 label: {
@@ -291,7 +288,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
             user: {
                 icon: {
                     priority: this.userIconPriority,
-                    imageDir: this.iconDirectory,
                     size: this.userIconSize
                 },
                 label: {
@@ -316,6 +312,16 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         this._initActiveStyleOptions();
     }
 
+    _setWaypointRendererFactories() {
+        let iconFactory = new WT_MapViewWaypointImageIconCachedFactory(WT_MapViewFlightPlanLayer.WAYPOINT_ICON_CACHE_SIZE, this.iconDirectory);
+        this._waypointRenderer.setIconFactory(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN, iconFactory);
+        this._waypointRenderer.setIconFactory(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE, iconFactory);
+
+        let labelFactory = new WT_MapViewWaypointIdentLabelCachedFactory(WT_MapViewFlightPlanLayer.WAYPOINT_LABEL_CACHE_SIZE);
+        this._waypointRenderer.setLabelFactory(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN, labelFactory);
+        this._waypointRenderer.setLabelFactory(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE, labelFactory);
+    }
+
     _setWaypointRendererStyleHandlers() {
         this._initStyleOptions();
         this._waypointRenderer.setStyleOptionHandler(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN, this._inactiveWaypointStyleHandler);
@@ -330,6 +336,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
             this._setPropertyFromConfig(property);
         }
         this._setFlightPlanRendererOpts(this.flightPlanOptions);
+        this._setWaypointRendererFactories();
         this._setWaypointRendererStyleHandlers();
     }
 
@@ -447,6 +454,7 @@ WT_MapViewFlightPlanLayer.OPTIONS_DEF = {
     waypointLabelShowBackground: {default: true, auto: true},
     waypointLabelBackgroundColor: {default: "white", auto: true},
     waypointLabelBackgroundPadding: {default: [1], auto: true},
+    waypointLabelBackgroundBorderRadius: {default: 0, auto: true},
     waypointLabelBackgroundOutlineWidth: {default: 1, auto: true},
     waypointLabelBackgroundOutlineColor: {default: "black", auto: true},
 
@@ -458,6 +466,7 @@ WT_MapViewFlightPlanLayer.OPTIONS_DEF = {
     activeLabelShowBackground: {default: true, auto: true},
     activeLabelBackgroundColor: {default: "black", auto: true},
     activeLabelBackgroundPadding: {default: [1], auto: true},
+    activeLabelBackgroundBorderRadius: {default: 0, auto: true},
     activeLabelBackgroundOutlineWidth: {default: 1, auto: true},
     activeLabelBackgroundOutlineColor: {default: "white", auto: true},
 
@@ -497,6 +506,7 @@ WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES = [
     "waypointLabelShowBackground",
     "waypointLabelBackgroundColor",
     "waypointLabelBackgroundPadding",
+    "waypointLabelBackgroundBorderRadius",
     "waypointLabelBackgroundOutlineWidth",
     "waypointLabelBackgroundOutlineColor",
     "activeLabelFontSize",
@@ -507,6 +517,7 @@ WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES = [
     "activeLabelShowBackground",
     "activeLabelBackgroundColor",
     "activeLabelBackgroundPadding",
+    "activeLabelBackgroundBorderRadius",
     "activeLabelBackgroundOutlineWidth",
     "activeLabelBackgroundOutlineColor",
     "waypointLabelAlwaysShow",
