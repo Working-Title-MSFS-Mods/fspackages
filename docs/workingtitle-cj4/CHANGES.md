@@ -19,16 +19,37 @@ To then load the plan into the FMS you can either enter it manually or use the _
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
 
 ## KEY FEATURES
-* ...
+* Holds
+* Course intercept, Point/Bearing/Distance fixes, Point/Distance fixes
+* Improved Flight Model (WIP) (Credit: Metzgergva)
+* Comm 2 can be used to transmit and receive.
 
 ## FMS
-* ...
+* Fixed DIR page (Adds nearest airports page and adjusts layout)
+* V-Speeds will reset when entering a new origin after landing.
+* Fuel used is now reset with new origin.
+* Fixed bug in approach ref not showing headwind/tailwind
+* Fixed cruise altitude cell in perf init from showing FL + 5 boxes
+* Holding CLR for 1/2 second or longer will clear the entire scratchpad
+* Fixed bug where it would go to perf init after vnav setup 3/3
 
-## FMC
-* ...
+## PFD/MFD
+* Added Cross Pointers (X-PTR) flight director and setting persistence on restart
+* Setting altimeter to hPA stays persistent on restart
+* Cyan vertical speed arrow is now removed when in GP or VPATH
+* Adjusted map ranges to realistic values (5, 10, 25, 50, 100, 200, 300, 600nm)
+* Corrected PPOS scaling
+* MFD Wind speed font size same as PFD
+* Fixed outer range display cut off
+* Added north label to PLAN view
+* Wind indicator hidden on PLAN view
 
 ## Autopilot
 * ...
+
+## Misc
+* AOA indicator only lights up on gear down or greater than flaps 15.
+* Standby attitude indicator (SAI) baro settings are changed to whatever is set in PFD.
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
