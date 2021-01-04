@@ -393,7 +393,7 @@ class HoldsDirector {
       xtk = -1 * xtk;
     }
 
-    const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.APPROACHLPV, 35);
+    const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.APPROACHLPV, 35) * 2;
     HoldsDirector.setCourse(AutopilotMath.normalizeHeading(dtk + interceptAngle), planeState);
   }
 

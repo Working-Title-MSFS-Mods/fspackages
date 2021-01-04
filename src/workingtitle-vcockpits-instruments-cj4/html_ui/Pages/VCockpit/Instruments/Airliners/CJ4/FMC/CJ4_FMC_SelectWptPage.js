@@ -32,8 +32,6 @@ class CJ4_FMC_SelectWptPage {
             let bLatLong = new LatLong(b.infos.coordinates.lat, b.infos.coordinates.long);
             let aDistance = new Number(Avionics.Utils.computeDistance(currPos, aLatLong));
             let bDistance = new Number(Avionics.Utils.computeDistance(currPos, bLatLong));
-            console.log(a.icao + " " + aDistance);
-            console.log(b.icao + " " + bDistance);
             return aDistance - bDistance;
         });
 

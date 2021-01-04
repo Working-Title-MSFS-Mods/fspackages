@@ -128,7 +128,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
         this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
         this.onExec = () => {
-            this.messageBox = "Working . . .";
             if (this.onExecPage) {
                 console.log("if this.onExecPage");
                 this.onExecPage();
@@ -136,7 +135,6 @@ class CJ4_FMC extends FMCMainDisplay {
             else {
                 this._isRouteActivated = false;
                 this.fpHasChanged = false;
-                this.messageBox = "";
                 this._activatingDirectTo = false;
             }
         };
@@ -146,17 +144,31 @@ class CJ4_FMC extends FMCMainDisplay {
                 this.insertTemporaryFlightPlan(() => {
                     this.copyAirwaySelections();
                     this._isRouteActivated = false;
-                    SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+                    this._activatingDirectToExisting = false;
                     this.fpHasChanged = false;
-                    this.messageBox = "";
+                    SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                     if (this.refreshPageCallback) {
                         this.refreshPageCallback();
                     }
                 });
             }
+            else if (this.getIsRouteActivated() && this._activatingDirectTo) {
+                const activeIndex = this.flightPlanManager.getActiveWaypointIndex();
+                this.insertTemporaryFlightPlan(() => {
+                    this.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                        this.copyAirwaySelections();
+                        this._isRouteActivated = false;
+                        this._activatingDirectToExisting = false;
+                        this.fpHasChanged = false;
+                        SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+                        if (this.refreshPageCallback) {
+                            this.refreshPageCallback();
+                        }
+                    });
+                });
+            }
             else {
                 this.fpHasChanged = false;
-                this.messageBox = "";
                 this._isRouteActivated = false;
                 SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                 if (this.refreshPageCallback) {
@@ -166,7 +178,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
             }
             this.onMsg = () => { CJ4_FMC_VNavSetupPage.ShowPage6(this); };
-            this._activatingDirectToExisting = false;
         };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
@@ -372,38 +383,15 @@ class CJ4_FMC extends FMCMainDisplay {
     getIsRouteActivated() {
         return this._isRouteActivated;
     }
-    activateRoute(callback = EmptyCallback.Void) {
+    activateRoute(directTo = false, callback = EmptyCallback.Void) {
+        if (directTo) {
+            this._activatingDirectTo = true;
+        }
         this._isRouteActivated = true;
         this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
+        this.setMsg();
         callback();
-    }
-    // TODO: remove this when we rewrite dirto
-    activateDirectToWaypoint(waypoint, callback = EmptyCallback.Void) {
-        let waypoints = this.flightPlanManager.getWaypoints();
-        let indexInFlightPlan = waypoints.findIndex(w => {
-            return w.icao === waypoint.icao;
-        });
-        let i = 1;
-        let removeWaypointMethod = (callback = EmptyCallback.Void) => {
-            if (i < indexInFlightPlan) {
-                this.flightPlanManager.removeWaypoint(1, i === indexInFlightPlan - 1, () => {
-                    i++;
-                    removeWaypointMethod(callback);
-                });
-            }
-            else {
-                callback();
-            }
-        };
-        console.log("running remove waypoint method");
-        removeWaypointMethod(() => {
-            this.flightPlanManager.activateDirectTo(waypoint.icao, () => {
-                console.log("activated direct to");
-                callback();
-            });
-        });
-        // callback();
     }
 
     //function added to set departure enroute transition index

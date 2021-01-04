@@ -200,6 +200,7 @@ class CJ4_FMC_RoutePage {
                 this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
                 if (value == "") {
+                    this._fmc.setMsg();
                     if (this._fmc.flightPlanManager.getOrigin()) {
                         this._fmc.inOut = this._fmc.flightPlanManager.getOrigin().ident;
                     }
@@ -213,6 +214,7 @@ class CJ4_FMC_RoutePage {
                 this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
                 if (value == "") {
+                    this._fmc.setMsg();
                     if (this._fmc.flightPlanManager.getDestination()) {
                         this._fmc.inOut = this._fmc.flightPlanManager.getDestination().ident;
                     }
