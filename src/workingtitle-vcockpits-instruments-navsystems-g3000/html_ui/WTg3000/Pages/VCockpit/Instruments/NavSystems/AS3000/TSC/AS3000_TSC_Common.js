@@ -222,7 +222,7 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
                 new NavSystemPage("Setup", "UtilitiesSetup", new AS3000_TSC_UtilitiesSetup()),
-                new NavSystemPage("Avionics Settings", "AvionicsSettings", new AS3000_TSC_AvionicsSettings())
+                new NavSystemPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD"))
             ]),
             new NavSystemPageGroup("NavCom", this, [
                 new NavSystemPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
@@ -273,6 +273,10 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._initMFDPaneControlID();
         this._initMFDPaneSelectDisplay();
+
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
 
     getSelectedMFDPanePages() {
@@ -1470,139 +1474,6 @@ class AS3000_TSC_UtilitiesSetup extends NavSystemElement {
     backHome() {
         this.gps.SwitchToPageName("MFD", "MFD Home");
         return true;
-    }
-}
-
-/*
- * Avionics Settings Page (via Utilities Setup)
- */
-class AS3000_TSC_AvionicsSettings extends NavSystemElement {
-    constructor() {
-        super();
-        this._tabs = [
-            new AS3000_TSC_AvionicsMFDFieldsTab(this, "MFDFieldsTab")
-        ];
-    }
-
-    init(root) {
-        for (let tab of this._tabs) {
-            tab.init(this.gps.getChildById(tab.elementId));
-        }
-    }
-
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-        for (let tab of this._tabs) {
-            tab.update();
-        }
-    }
-
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onEvent(_event) {
-    }
-
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        return true;
-    }
-}
-
-class AS3000_TSC_AvionicsMFDFieldsTab {
-    constructor(parentElement, elementId) {
-        this.parentElement = parentElement;
-        this.elementId = elementId;
-
-        this.infoIDs = ["BRG", "DIS", "DTG", "DTK", "END", "ENR", "ETA", "ETE", "FOB", "FOD", "GS", "LDG", "TAS", "TKE", "TRK", "XTK"];
-    }
-
-    init(container) {
-        this._buttons = Array.from(container.getElementsByClassName("gradientButton"));
-        this._shortNameText = this._buttons.map(button => button.getElementsByClassName("shortName")[0]);
-        this._longNameText = this._buttons.map(button => button.getElementsByClassName("longName")[0]);
-
-        for (let i = 0; i < this._buttons.length; i++) {
-            this.parentElement.gps.makeButton(this._buttons[i], this.onButtonClick.bind(this, i));
-        }
-    }
-
-    update() {
-        for (let i = 0; i < this._buttons.length; i++) {
-            let description = WT_NavDataBar.getFieldInfoDescription(i);
-            Avionics.Utils.diffAndSet(this._shortNameText[i], description.shortName);
-            Avionics.Utils.diffAndSet(this._longNameText[i], description.longName);
-        }
-    }
-
-    onButtonClick(index) {
-        let elementHandler = new AS3000_TSC_NavInfoFieldSelectionElementHandler(this.infoIDs.map(id => WT_NavDataBar.INFO_DESCRIPTION[id]), index);
-        let context = {
-            title: "Select MFD Data Bar Field",
-            subclass: "navDataBarDynamicSelectionListWindow",
-            closeOnSelect: true,
-            callback: this.setFieldInfo.bind(this, index),
-            elementConstructor: elementHandler,
-            elementUpdater: elementHandler,
-            currentIndexGetter: elementHandler,
-            homePageGroup: this.parentElement.homePageParent,
-            homePageName: this.parentElement.homePageName
-        };
-        this.parentElement.gps.selectionListWindow1.element.setContext(context);
-        this.parentElement.gps.switchToPopUpPage(this.parentElement.gps.selectionListWindow1);
-    }
-
-    setFieldInfo(fieldIndex, infoIndex) {
-        WT_NavDataBar.setFieldInfoIndex(fieldIndex, this.infoIDs[infoIndex]);
-    }
-}
-
-class AS3000_TSC_NavInfoFieldSelectionElementHandler {
-    constructor(descriptions, fieldIndex) {
-        this.descriptions = descriptions;
-        this.fieldIndex = fieldIndex;
-    }
-
-    nextElement(index) {
-        if (index >= this.descriptions.length) {
-            return null;
-        }
-
-        let elem = {
-            button: document.createElement("div"),
-            mainText: document.createElement("div"),
-            shortNameText: document.createElement("span"),
-            longNameText: document.createElement("span")
-        };
-        elem.button.setAttribute("class", "gradientButton");
-        elem.mainText.setAttribute("class", "mainText");
-        elem.shortNameText.setAttribute("class", "shortName");
-        elem.longNameText.setAttribute("class", "longName");
-        Avionics.Utils.diffAndSet(elem.shortNameText, this.descriptions[index].shortName);
-        Avionics.Utils.diffAndSet(elem.longNameText, this.descriptions[index].longName);
-        elem.mainText.appendChild(elem.shortNameText);
-        elem.mainText.appendChild(document.createElement("br"));
-        elem.mainText.appendChild(elem.longNameText);
-        elem.button.appendChild(elem.mainText);
-        return elem;
-    }
-
-    update(index, elem) {
-    }
-
-    getCurrentIndex() {
-        return this.descriptions.findIndex(description => description.shortName == WT_NavDataBar.getFieldInfoIndex(this.fieldIndex));
     }
 }
 

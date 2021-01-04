@@ -33,38 +33,6 @@
                 </div>
                 <div id="RightInfos">
                     <div id="NavDataBar">
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></span></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
-                        <div class="navDataField">
-                            <div class="title"></div>
-                            <div class="value"><span class="number"></span><span class="unit"></div>
-                        </div>
                     </div>
                     <mfd-mainpane id="MainPane">
                         <mfd-halfpane slot="left">
@@ -103,6 +71,7 @@
 
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/HTMLElementRecycler.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreController.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
@@ -227,6 +196,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Display/TitledPane.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Display/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/CircularGauge.js"></script>
@@ -242,11 +212,12 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5MapViewFlightPlanLegStyleChooser.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WaypointInfo.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDNavDataBar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>
