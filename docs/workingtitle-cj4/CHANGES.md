@@ -19,10 +19,24 @@ To then load the plan into the FMS you can either enter it manually or use the _
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan.
 
 ## KEY FEATURES
+* Added Cross Pointers flight director
+* Flight director works with AP off
+* Added Takeoff Go-Around (TOGA) mode
 * Holds
-* Course intercept, Point/Bearing/Distance fixes, Point/Distance fixes
+* Course intercept, Point/Bearing/Distance fixes, Point/Distance fixes, Lat/Lon fixes
 * Improved Flight Model (WIP) (Credit: Metzgergva)
 * Comm 2 can be used to transmit and receive.
+
+## Flight Plan Manager
+* Fixed errors where negative values would be returned for a leg course
+* When approach is loaded, destination airport is removed and the runway becomes the final waypoint
+* Added Auto/Inhibit to Legs page (Inhibit will not allow the FMS to sequence to next waypoint when you pass a fix)
+* Intercept a course on your flightplan (Can be done by dropping a fix on the blue FROM line, it will then draw a course line from that fix to the next fix in the flight plan)
+* Point/Bearing/Distance fixes are able to be created.  Can create a flightplan anywhere.  Syntax is "POINTXXX/DISTANCE".  Point is the fix followed immediately by 3 numbers for the bearing, a slash and then a distance value.  Alternatively, you could write "POINTXXX/DISTANCE/NAME" and name your new fix up to 5 custom characters.  Eg. JOBOB090/15.  Creates a fix 15nm from JOBOB on a 090 bearing.
+* Point/Distance fixes (Along-track offset).  A waypoint that is offset a specified distance and
+is either before or after a specified waypoint on the flight plan route.  A negative distance value will place the new fix before the reference fix.  Syntax: POINT/DISTANCE.  Eg. JOBOB/-15 
+* Holds.  Allows custom formats, will automatically detect entry pattern and execute.  
+
 
 ## FMS
 * Fixed DIR page (Adds nearest airports page and adjusts layout)
@@ -32,20 +46,27 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Fixed cruise altitude cell in perf init from showing FL + 5 boxes
 * Holding CLR for 1/2 second or longer will clear the entire scratchpad
 * Fixed bug where it would go to perf init after vnav setup 3/3
+* Fixed legs page blacking out with empty flight plan
 
 ## PFD/MFD
 * Added Cross Pointers (X-PTR) flight director and setting persistence on restart
 * Setting altimeter to hPA stays persistent on restart
 * Cyan vertical speed arrow is now removed when in GP or VPATH
-* Adjusted map ranges to realistic values (5, 10, 25, 50, 100, 200, 300, 600nm)
+* Adjusted map ranges to realistic values (5, 10, 25, 50, 100, 200, 300) (600nm soon)
 * Corrected PPOS scaling
 * MFD Wind speed font size same as PFD
 * Fixed outer range display cut off
 * Added north label to PLAN view
 * Wind indicator hidden on PLAN view
+* Various map draw improvements
 
 ## Autopilot
-* ...
+* Adjusted VS to round up in approach to prevent drifting under GP (Current AP workaround)
+* Added inhibit .1nm from runway threshold to prevent aircraft from flying towards center of airport
+* Added TOGA functionality.  When pressed on ground, provides 10 degree FD pitch up, runway heading tracking.  In the air, provides 10 degree pitch up and syncs current heading, disables approach, and more (Chris?).  Button to engage is the L FIRE BOTTLE.
+* When VS is engaged, it captures the current vertical speed.
+* AP goes to Roll/Pitch upon landing.
+* Approach sensitivity depends on approach segment type
 
 ## Misc
 * AOA indicator only lights up on gear down or greater than flaps 15.
@@ -65,4 +86,3 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * The FMS now builds turn anticipation into direct-to course projection. However, you will still encounter some overshoot beyond 90 or so degrees.
 * If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.
 
-### 🎅 Have fun! 🎅
