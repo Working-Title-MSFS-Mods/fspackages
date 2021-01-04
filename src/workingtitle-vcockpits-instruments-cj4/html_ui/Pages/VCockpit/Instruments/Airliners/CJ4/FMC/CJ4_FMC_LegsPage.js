@@ -698,13 +698,33 @@ class CJ4_FMC_LegsPage {
                 referenceWaypoint = await getWpt(matchPlaceBearingDistance[1]);
             }
 
+            const getIndexedName = (ident) => {
+                const waypoints = this._fmc.flightPlanManager.getAllWaypoints();
+                const identPrefix = ident.substr(0, 3);
+
+                let namingIndex;
+                let currentIndex = 1;
+
+                while (namingIndex === undefined) {
+                    const currentName = `${identPrefix}${String(currentIndex).padStart(2, '0')}`;
+                    const waypointIndex = waypoints.findIndex(x => x.ident === currentName);
+
+                    if (waypointIndex === -1) {
+                        return currentName;
+                    }
+                    else {
+                        currentIndex++;
+                    }
+                }
+            };
+
             if(referenceWaypoint !== undefined){
                 const referenceCoordinates = referenceWaypoint.infos.coordinates;
                 const bearing = parseInt(matchPlaceBearingDistance[2]);
                 const distance = parseFloat(matchPlaceBearingDistance[3]);
-                const ident = procMatch(matchPlaceBearingDistance[4], matchPlaceBearingDistance[1] + matchPlaceBearingDistance[2] + "/" + matchPlaceBearingDistance[3]);
+                const ident = procMatch(matchPlaceBearingDistance[4], getIndexedName(referenceWaypoint.ident));
     
-                newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);  
+                newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);
             }
         }
         else if (matchAlongTrackOffset) {
