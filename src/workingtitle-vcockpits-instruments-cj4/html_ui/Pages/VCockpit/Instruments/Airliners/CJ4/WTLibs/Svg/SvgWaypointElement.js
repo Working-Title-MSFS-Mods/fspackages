@@ -87,6 +87,11 @@ class SvgWaypointElement extends SvgMapElement {
     }
 
     isActiveWaypoint() {
+        const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+        const activeIndex = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIndex();
+        if (holdIndex != -1 && activeIndex == holdIndex + 1) {
+            return this.source.ident === FlightPlanManager.DEBUG_INSTANCE.getPreviousActiveWaypoint().ident;
+        }
         return this.source.ident === FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIdent();
     }
 
@@ -314,7 +319,18 @@ class SvgWaypointTextElement extends SvgMapElement {
         if (activeWaypoint) {
             ident = activeWaypoint.ident;
         }
-        let isActiveWaypoint = this.waypointElement.source.ident === ident;
+        let isActiveWaypoint = false;
+
+        //edit for holds
+        const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+        const activeIndex = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIndex();
+        if (holdIndex != -1 && activeIndex == holdIndex + 1) {
+            isActiveWaypoint = this.waypointElement.source.ident === FlightPlanManager.DEBUG_INSTANCE.getPreviousActiveWaypoint().ident;
+            
+        } else {
+            isActiveWaypoint = this.waypointElement.source.ident === ident;
+        }
+
         this._refreshLabel(map, isActiveWaypoint);
         return this._label;
     }

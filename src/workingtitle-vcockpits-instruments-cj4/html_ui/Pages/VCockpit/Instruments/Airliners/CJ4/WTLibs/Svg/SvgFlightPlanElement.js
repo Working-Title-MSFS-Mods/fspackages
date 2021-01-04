@@ -51,8 +51,16 @@ class SvgFlightPlanElement extends SvgMapElement {
                 const activeWaypointIndex = fpm.getActiveWaypointIndex();
 
                 if (waypoints.length > 1) {
-                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), map, 'magenta');
-                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map, 'white', (index !== 0));
+                    const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+                    const activeIndex = fpm.getActiveWaypointIndex();
+                    if (holdIndex != -1 && activeIndex == holdIndex + 1) {
+                        console.log("holdIndex " + holdIndex + " activeIndex " + activeIndex);
+                        this.buildPathFromWaypoints(waypoints.slice(holdIndex, holdIndex + 1), map, 'magenta', (index !== 0), true);
+                        this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1), map, 'white', (index !== 0), true);
+                    } else {
+                        this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), map, 'magenta');
+                        this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map, 'white', (index !== 0));
+                    }
                 }
             }
         }
@@ -64,7 +72,7 @@ class SvgFlightPlanElement extends SvgMapElement {
      * @param {MapInstrument} map The map instrument to convert coordinates with.
      * @returns {string} A path string.
      */
-    buildPathFromWaypoints(waypoints, map, style = 'white', isDashed = false) {
+    buildPathFromWaypoints(waypoints, map, style = 'white', isDashed = false, isHold = false) {
         const context = this._flightPathCanvas.getContext('2d');
         context.beginPath();
 
@@ -77,55 +85,61 @@ class SvgFlightPlanElement extends SvgMapElement {
         }
 
         let prevWaypoint;
-        for (let i = 0; i < waypoints.length; i++) {
-            const waypoint = waypoints[i];
-            const pos = map.coordinatesToXY(waypoint.infos.coordinates);
+        if (!isHold || (isHold && style == 'white')) {
+            for (let i = 0; i < waypoints.length; i++) {
+                const waypoint = waypoints[i];
+                const pos = map.coordinatesToXY(waypoint.infos.coordinates);
 
-            if (i === 0 || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
-                context.moveTo(pos.x, pos.y);
-            }
-            else {
-                //Draw great circle segments if more than 2 degrees longitude difference
-                const longDiff = Math.abs(waypoint.infos.coordinates.long - prevWaypoint.infos.coordinates.long);
-                if (longDiff > 2) {
-                    const numSegments = Math.floor(longDiff / 2);
-                    const startingLatLon = new LatLon(prevWaypoint.infos.coordinates.lat, prevWaypoint.infos.coordinates.long);
-                    const endingLatLon = new LatLon(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
-
-                    const segmentPercent = 1 / numSegments;
-                    for (let j = 0; j <= numSegments; j++) {
-                        const segmentEnd = startingLatLon.intermediatePointTo(endingLatLon, j * segmentPercent);
-                        const segmentEndVec = map.coordinatesToXY(new LatLongAlt(segmentEnd.lat, segmentEnd.lon));
-
-                        context.lineTo(segmentEndVec.x, segmentEndVec.y);
-                    }
+                if (i === 0 || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
+                    context.moveTo(pos.x, pos.y);
                 }
                 else {
-                    context.lineTo(pos.x, pos.y);
-                }
-            }
+                    //Draw great circle segments if more than 2 degrees longitude difference
+                    const longDiff = Math.abs(waypoint.infos.coordinates.long - prevWaypoint.infos.coordinates.long);
+                    if (longDiff > 2) {
+                        const numSegments = Math.floor(longDiff / 2);
+                        const startingLatLon = new LatLon(prevWaypoint.infos.coordinates.lat, prevWaypoint.infos.coordinates.long);
+                        const endingLatLon = new LatLon(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
 
-            prevWaypoint = waypoint;
+                        const segmentPercent = 1 / numSegments;
+                        for (let j = 0; j <= numSegments; j++) {
+                            const segmentEnd = startingLatLon.intermediatePointTo(endingLatLon, j * segmentPercent);
+                            const segmentEndVec = map.coordinatesToXY(new LatLongAlt(segmentEnd.lat, segmentEnd.lon));
+
+                            context.lineTo(segmentEndVec.x, segmentEndVec.y);
+                        }
+                    }
+                    else {
+                        context.lineTo(pos.x, pos.y);
+                    }
+                }
+
+                prevWaypoint = waypoint;
+            }
         }
 
-        for (let i = 0; i < waypoints.length; i++) {
-            const waypoint = waypoints[i];
-            if (waypoint.hasHold) {
+        if ((!isHold && style == 'white') || (isHold && style == 'magenta')) {
+            console.log("style " + style + (isHold ? " is hold" : ""));
 
-                let course = waypoint.holdDetails.holdCourse;
-                if (!waypoint.holdDetails.isHoldCourseTrue) {
-                    const magVar = GeoMath.getMagvar(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
-                    course = AutopilotMath.normalizeHeading(course + magVar);
+            for (let i = 0; i < waypoints.length; i++) {
+                const waypoint = waypoints[i];
+                if (waypoint.hasHold) {
+
+                    let course = waypoint.holdDetails.holdCourse;
+                    if (!waypoint.holdDetails.isHoldCourseTrue) {
+                        const magVar = GeoMath.getMagvar(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
+                        course = AutopilotMath.normalizeHeading(course + magVar);
+                    }
+
+                    const corners = HoldsDirector.calculateHoldFixes(waypoint.infos.coordinates, waypoint.holdDetails)
+                        .map(c => map.coordinatesToXY(c));
+
+                    context.moveTo(corners[0].x, corners[0].y);
+                    this.drawHoldArc(corners[0], corners[1], context, waypoint.holdDetails.turnDirection === 1);
+                    context.lineTo(corners[2].x, corners[2].y);
+                    this.drawHoldArc(corners[2], corners[3], context, waypoint.holdDetails.turnDirection === 1);
+                    context.lineTo(corners[0].x, corners[0].y);
                 }
-
-                const corners = HoldsDirector.calculateHoldFixes(waypoint.infos.coordinates, waypoint.holdDetails)
-                    .map(c => map.coordinatesToXY(c));
-
-                context.moveTo(corners[0].x, corners[0].y);
-                this.drawHoldArc(corners[0], corners[1], context, waypoint.holdDetails.turnDirection === 1);
-                context.lineTo(corners[2].x, corners[2].y);
-                this.drawHoldArc(corners[2], corners[3], context, waypoint.holdDetails.turnDirection === 1);
-                context.lineTo(corners[0].x, corners[0].y);
             }
         }
 
