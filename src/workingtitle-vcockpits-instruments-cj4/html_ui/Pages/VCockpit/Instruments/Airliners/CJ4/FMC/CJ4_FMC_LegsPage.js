@@ -284,7 +284,7 @@ class CJ4_FMC_LegsPage {
 
                 switch (this._fmc.selectMode) {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NONE: {
-                        // CANT SELECT MAGENTA OR BLUE ON PAGE 1
+                        // CANT SELECT BLUE ON PAGE 1
                         if (((i > 0 && this._currentPage == 1) || (this._currentPage > 1))) {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
@@ -423,10 +423,6 @@ class CJ4_FMC_LegsPage {
                                     if (isSuccess) {
                                         let isDirectTo = (i == 1 && this._currentPage == 1);
                                         if (isDirectTo) {
-                                            // let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
-                                            // this._fmc.activateDirectToWaypoint(wp, () => {
-                                            //     this.resetAfterOp();
-                                            // });
                                             const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
                                             fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                                 let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
