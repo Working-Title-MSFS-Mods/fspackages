@@ -497,38 +497,31 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
             height: 15vh;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tabContainer {
-        position: absolute;
-        top: 1%;
-        left: 1%;
-        height: 98%;
-        width: 98%;
-        display: flex;
-        flex-flow: row nowrap; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tabSelect .tabButton {
-            height: 15vh;
-            margin: 2vh 0; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .buttonsContainer {
-            position: absolute;
-            top: 1%;
-            bottom: 1%;
-            left: 1%;
-            right: 1%;
-            width: auto;
-            height: auto;
-            padding: 1vh;
-            grid-template-rows: repeat(8, 20vh);
-            grid-gap: 1vh 0; }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .row {
-              padding: 0.5vh;
-              grid-template-columns: 1fr 2fr; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .rowLabel {
-                font-size: 4vh; }
-              as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .gradientButton {
-                height: 98%;
-                width: 98%; }
-                as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings #MFDFieldsTab .longName {
-                  font-size: 4vh; }
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings {
+    font-size: 4vh;
+}
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-tabbedview {
+    position: absolute;
+    top: 1%;
+    left: 1%;
+    height: 98%;
+    width: 98%;
+    --tab-content-width: 106vh;
+    --tab-content-height: 88vh;
+}
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-button-tab {
+    width: 20vh;
+    height: 15vh;
+    margin: 2vh 0;
+}
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tab {
+    width: 100%;
+    height: 100%;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-mfdnavdatafieldrow {
+        height: 18vh;
+        margin: 0.25vh 0.5vh;
+    }
 
 @keyframes flightplanMenuEnter {
   0% {

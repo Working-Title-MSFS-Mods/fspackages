@@ -613,33 +613,6 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
         width: 100%;
         background: transparent; }
 
-#AvionicsSettings .tabContainer {
-  display: flex;
-  flex-flow: row nowrap; }
-  #AvionicsSettings #MFDFieldsTab .buttonsContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-    overflow-x: hidden;
-    overflow-y: scroll; }
-    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar {
-      width: 1vw; }
-    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar-track {
-      background: none; }
-    #AvionicsSettings #MFDFieldsTab .buttonsContainer::-webkit-scrollbar-thumb {
-      background: white; }
-      #AvionicsSettings #MFDFieldsTab .row {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        border: 1px solid grey;
-        border-radius: 4px;
-        display: grid;
-        grid-template-rows: 1fr;
-        justify-items: center;
-        align-items: center; }
-        #AvionicsSettings #MFDFieldsTab .rowLabel {
-          text-align: center; }
-
 #WaypointInfo_WaypointOptions .content {
   position: absolute;
   background-color: black;
