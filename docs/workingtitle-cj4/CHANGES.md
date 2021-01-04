@@ -35,6 +35,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Point/Bearing/Distance fixes are able to be created.  Can create a flightplan anywhere.  Syntax is "POINTXXX/DISTANCE".  Point is the fix followed immediately by 3 numbers for the bearing, a slash and then a distance value.  Alternatively, you could write "POINTXXX/DISTANCE/NAME" and name your new fix up to 5 custom characters.  Eg. JOBOB090/15.  Creates a fix 15nm from JOBOB on a 090 bearing.
 * Point/Distance fixes (Along-track offset).  A waypoint that is offset a specified distance and
 is either before or after a specified waypoint on the flight plan route.  A negative distance value will place the new fix before the reference fix.  Syntax: POINT/DISTANCE.  Eg. JOBOB/-15 
+* Latitude/Longitude fixes - TODO
 * Holds.  Allows custom formats, will automatically detect entry pattern and execute.  
 
 
