@@ -53,7 +53,7 @@ is either before or after a specified waypoint on the flight plan route.  A nega
 * Added Cross Pointers (X-PTR) flight director and setting persistence on restart
 * Setting altimeter to hPA stays persistent on restart
 * Cyan vertical speed arrow is now removed when in GP or VPATH
-* Adjusted map ranges to realistic values (5, 10, 25, 50, 100, 200, 300) (600nm soon)
+* Adjusted map ranges to realistic values (5, 10, 25, 50, 100, 200, 300, 600)
 * Corrected PPOS scaling
 * MFD Wind speed font size same as PFD
 * Fixed outer range display cut off
