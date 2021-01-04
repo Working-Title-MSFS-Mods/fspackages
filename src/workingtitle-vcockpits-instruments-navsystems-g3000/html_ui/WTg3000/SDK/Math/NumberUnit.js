@@ -652,9 +652,10 @@ class WT_NumberFormatter {
 
     _formatNumber(number) {
         let sign = number < 0 ? "-" : "+";
-        let formatted = Math.abs(number);
+        let abs = Math.abs(number);
+        let formatted = abs;
         if (this.precision != 0) {
-            formatted = this._roundFunc(number / this.precision) * this.precision;
+            formatted = this._roundFunc(abs / this.precision) * this.precision;
             let precisionString = this.precision + "";
             if (precisionString.indexOf(".") >= 0) {
                 formatted = formatted.toFixed(precisionString.length - precisionString.indexOf(".") - 1);
@@ -674,7 +675,7 @@ class WT_NumberFormatter {
         if (decimalIndex >= 0 && formatted.length - 1 > this.maxDigits) {
             let shift = Math.max(this.maxDigits - decimalIndex, 0);
             let precision = Math.pow(0.1, shift);
-            formatted = this._roundFunc(number / precision) * precision;
+            formatted = this._roundFunc(abs / precision) * precision;
             formatted = formatted.toFixed(shift);
         }
         formatted = formatted + "";
