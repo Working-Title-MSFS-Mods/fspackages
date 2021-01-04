@@ -199,8 +199,8 @@ as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBa
     padding: 0 1vw 0.25vh;
     font-family: "Roboto-Regular";
     font-weight: bold;
-    font-size: 2.75vh;
-    line-height: 1.5em;
+    font-size: 2.5vh;
+    line-height: 4.2vh;
 }
 
 as3000-mfd-element #Electricity #MainPane {
