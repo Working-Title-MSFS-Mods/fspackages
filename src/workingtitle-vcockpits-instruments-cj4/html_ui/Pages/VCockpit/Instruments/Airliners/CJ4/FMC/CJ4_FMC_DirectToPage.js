@@ -47,7 +47,15 @@ class CJ4_FMC_DirectToPage {
                     let inputLine = i - ((page - 1) * 4) + 1;
 
                     fmc.onLeftInput[inputLine] = () => {
-                        CJ4_FMC_DirectToPage.ShowPage1(fmc, waypoint, 1, true);
+                        fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                            fmc.activateDirectToWaypoint(waypoint, () => {
+                                fmc.setMsg();
+                                fmc._activatingDirectTo = true;
+                                fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                                fmc.onExecDefault();
+                            });
+                            fmc.setMsg();
+                        });
                     };
                 }
             }
@@ -97,29 +105,17 @@ class CJ4_FMC_DirectToPage {
                     }
                 });
             } else if (directWaypoint) {
-                if (directWaypointOnFlightplan) {
-                    fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                        fmc.activateDirectToWaypoint(directWaypoint, () => {
-                            fmc.setMsg();
+                const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+                fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                    fmc.flightPlanManager.addWaypoint(directWaypoint.icao, activeIndex, () => {
+                        let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
+                        fmc.activateDirectToWaypoint(wp, () => {
                             fmc._activatingDirectTo = true;
                             fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
                             fmc.onExecDefault();
                         });
-                        fmc.setMsg();
                     });
-                } else {
-                    const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                    fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                        fmc.flightPlanManager.addWaypoint(directWaypoint.icao, activeIndex, () => {
-                            let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-                            fmc.activateDirectToWaypoint(wp, () => {
-                                fmc._activatingDirectTo = true;
-                                fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                fmc.onExecDefault();
-                            });
-                        });
-                    });
-                }
+                });
             }
         }
         fmc.onRightInput[0] = () => {
