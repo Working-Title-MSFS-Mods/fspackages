@@ -316,13 +316,11 @@ class CJ4_FMC_LegsPage {
 
                             if (isDirectTo) { // DIRECT TO
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint.fix, () => {
-                                        this._fmc.setMsg();
-                                        this._fmc._activatingDirectTo = true;
-                                        this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                        this._fmc.onExecDefault();
+                                    this._fmc.flightPlanManager.activateDirectToByIndex(scratchPadWaypointIndex, () => {
+                                        this._fmc.activateRoute(true, () => {
+                                            this.resetAfterOp();
+                                        });
                                     });
-                                    this._fmc.setMsg();
                                 });
                             }
                             else { // MOVE TO POSITION IN FPLN
@@ -357,7 +355,9 @@ class CJ4_FMC_LegsPage {
                                     };
                                     this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                         removeWaypointForLegsMethod(() => {
-                                            this.resetAfterOp();
+                                            this._fmc.activateRoute(false, () => {
+                                                this.resetAfterOp();
+                                            });
                                         });
                                     });
                                 }
@@ -370,7 +370,9 @@ class CJ4_FMC_LegsPage {
                             this._fmc.setMsg("Working...");
                             this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                 this._fmc.flightPlanManager.setActiveWaypointIndex(scratchPadWaypointIndex + 1, () => {
-                                    this.resetAfterOp();
+                                    this._fmc.activateRoute(false, () => {
+                                        this.resetAfterOp();
+                                    });
                                 });
                             });
                         }
@@ -399,48 +401,47 @@ class CJ4_FMC_LegsPage {
                             const userWaypoint = await this.parseWaypointInput(value, scratchPadWaypointIndex);
                             if (userWaypoint) {
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, (isSuccess) => {
-                                        if (isSuccess) {
-                                            let isDirectTo = (i == 1 && this._currentPage == 1);
-                                            if (isDirectTo) {
-                                                const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                                                fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                                    let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-                                                    fmc.activateDirectToWaypoint(wp, () => {
-                                                        fmc._activatingDirectTo = true;
-                                                        fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                                        fmc.onExecDefault();
-                                                    });
+                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
+                                        let isDirectTo = (i == 1 && this._currentPage == 1);
+                                        if (isDirectTo) {
+                                            const activeIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+                                            this._fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                                                this._fmc.activateRoute(true, () => {
+                                                    this.resetAfterOp();
                                                 });
-                                            } else
+                                            });
+                                        } else {
+                                            this._fmc.activateRoute(false, () => {
                                                 this.resetAfterOp();
+                                            });
                                         }
                                     });
                                 });
                             }
                             else {
-                                this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
-                                    if (isSuccess) {
-                                        let isDirectTo = (i == 1 && this._currentPage == 1);
-                                        if (isDirectTo) {
-                                            const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                                let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-                                                fmc.activateDirectToWaypoint(wp, () => {
-                                                    fmc._activatingDirectTo = true;
-                                                    fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                                    fmc.onExecDefault();
+                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                    this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                        if (isSuccess) {
+                                            let isDirectTo = (i == 1 && this._currentPage == 1);
+                                            if (isDirectTo) {
+                                                const activeIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+                                                this._fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                                                    this._fmc.activateRoute(true, () => {
+                                                        this.resetAfterOp();
+                                                    });
                                                 });
-                                            });
-                                        } else
-                                            this.resetAfterOp();
-                                    }
-                                    else {
-                                        this._fmc.fpHasChanged = false;
-                                        this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                                        this._fmc.setMsg();
-                                        this._fmc.eraseTemporaryFlightPlan();
-                                    }
+                                            } else {
+                                                this._fmc.activateRoute(false, () => {
+                                                    this.resetAfterOp();
+                                                });
+                                            }
+                                        } else {
+                                            this._fmc.fpHasChanged = false;
+                                            this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                            this._fmc.setMsg();
+                                            this._fmc.eraseTemporaryFlightPlan(() => { this.resetAfterOp(); });
+                                        }
+                                    });
                                 });
                             }
                         }
@@ -457,7 +458,9 @@ class CJ4_FMC_LegsPage {
                                 if (waypoint.fix.icao === '$DISCO') {
                                     if (waypoint.fix.isRemovable) {
                                         this._fmc.flightPlanManager.clearDiscontinuity(waypoint.index);
-                                        this.resetAfterOp();
+                                        this._fmc.activateRoute(false, () => {
+                                            this.resetAfterOp();
+                                        });
                                     }
                                     else {
                                         this._fmc.showErrorMessage("INVALID DELETE");
@@ -465,11 +468,15 @@ class CJ4_FMC_LegsPage {
                                 }
                                 else if (waypoint.fix.isHold) {
                                     this._fmc.flightPlanManager.deleteHoldAtWaypointIndex(waypoint.index);
-                                    this.resetAfterOp();
+                                    this._fmc.activateRoute(false, () => {
+                                        this.resetAfterOp();
+                                    });
                                 }
                                 else {
                                     this._fmc.flightPlanManager.removeWaypoint(selectedWpIndex, false, () => {
-                                        this.resetAfterOp();
+                                        this._fmc.activateRoute(false, () => {
+                                            this.resetAfterOp();
+                                        });
                                     });
                                 }
                             });
@@ -534,10 +541,14 @@ class CJ4_FMC_LegsPage {
 
         // EXEC
         this._fmc.onExecPage = () => {
-            if (this._fmc.fpHasChanged) {
+            if (this._fmc.fpHasChanged && this._fmc._isRouteActivated) {
+                this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                this._fmc.onExecDefault();
+            }
+            else if (this._fmc.fpHasChanged) {
                 this._fmc.fpHasChanged = false;
                 this._fmc.activateRoute(() => {
-                    this._fmc.activatingDirectTo = false;
+                    //this._fmc.activatingDirectTo = false;
                     this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
                     this._fmc.onExecDefault();
                 });

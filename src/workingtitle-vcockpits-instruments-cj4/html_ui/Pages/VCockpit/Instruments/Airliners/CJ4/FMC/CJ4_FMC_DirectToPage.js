@@ -45,16 +45,14 @@ class CJ4_FMC_DirectToPage {
                     const trueHeading = Avionics.Utils.computeGreatCircleHeading(position, waypoint.infos.coordinates);
                     waypointsBearing[i] = fmc._lnav.normalizeCourse(GeoMath.correctMagvar(trueHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"))).toFixed(0) + "°[s-text blue]";
                     let inputLine = i - ((page - 1) * 4) + 1;
-
                     fmc.onLeftInput[inputLine] = () => {
+                        const waypointIndex = fmc.flightPlanManager.getWaypoints().indexOf(waypoint);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                            fmc.activateDirectToWaypoint(waypoint, () => {
-                                fmc.setMsg();
-                                fmc._activatingDirectTo = true;
-                                fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                fmc.onExecDefault();
+                            fmc.flightPlanManager.activateDirectToByIndex(waypointIndex, () => {
+                                fmc.activateRoute(true, () => {
+                                    fmc.onLegs();
+                                });
                             });
-                            fmc.setMsg();
                         });
                     };
                 }
@@ -108,19 +106,18 @@ class CJ4_FMC_DirectToPage {
                 const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
                 fmc.ensureCurrentFlightPlanIsTemporary(() => {
                     fmc.flightPlanManager.addWaypoint(directWaypoint.icao, activeIndex, () => {
-                        let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-                        fmc.activateDirectToWaypoint(wp, () => {
-                            fmc._activatingDirectTo = true;
-                            fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                            fmc.onExecDefault();
+                        fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                            fmc.activateRoute(true, () => {
+                                fmc.onLegs();
+                            });
                         });
                     });
                 });
             }
-        }
+        };
         fmc.onRightInput[0] = () => {
             CJ4_FMC_DirectToPage.ShowPage2(fmc);
-        }
+        };
         fmc.onNextPage = () => {
             if (page < pageCount) {
                 page++;
@@ -232,16 +229,13 @@ class CJ4_FMC_DirectToPage {
                         let icao = closestAirports[i].icao;
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             fmc.flightPlanManager.setDestination(icao, () => {
-                                let wp = fmc.flightPlanManager.getDestination();
-                                fmc.activateDirectToWaypoint(wp, () => {
-                                    fmc.setMsg();
-                                    fmc._activatingDirectTo = true;
-                                    fmc.refreshPageCallback = () => { fmc.onLegs(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                    fmc.onExecDefault();
+                                const destinationIndex = fmc.flightPlanManager.getAllWaypoints().length - 1;
+                                fmc.flightPlanManager.activateDirectToByIndex(destinationIndex, () => {
+                                    fmc.activateRoute(true, () => {
+                                        fmc.flightPlanManager.resumeSync();
+                                        fmc.onLegs();
+                                    });
                                 });
-                                fmc.setMsg();
-
-    
                             });
                         });
                     };
