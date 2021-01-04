@@ -285,7 +285,7 @@ class CJ4_FMC_LegsPage {
                 switch (this._fmc.selectMode) {
                     case CJ4_FMC_LegsPage.SELECT_MODE.NONE: {
                         // CANT SELECT MAGENTA OR BLUE ON PAGE 1
-                        if (((i > 1 && this._currentPage == 1) || (this._currentPage > 1))) {
+                        if (((i > 0 && this._currentPage == 1) || (this._currentPage > 1))) {
                             // SELECT EXISTING WAYPOINT FROM FLIGHT PLAN
                             this._approachWaypoints = this._fmc.flightPlanManager.getApproachWaypoints();
                             if (this._approachWaypoints.length > 0) {
@@ -315,10 +315,14 @@ class CJ4_FMC_LegsPage {
                             let isDirectTo = (i == 1 && this._currentPage == 1);
 
                             if (isDirectTo) { // DIRECT TO
-                                // this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                this._fmc.flightPlanManager.activateDirectTo(this._fmc.selectedWaypoint.fix.icao, () => {
-                                    this.resetAfterOp();
-                                    // });
+                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                    this._fmc.activateDirectToWaypoint(this._fmc.selectedWaypoint.fix, () => {
+                                        this._fmc.setMsg();
+                                        this._fmc._activatingDirectTo = true;
+                                        this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                                        this._fmc.onExecDefault();
+                                    });
+                                    this._fmc.setMsg();
                                 });
                             }
                             else { // MOVE TO POSITION IN FPLN
@@ -395,8 +399,22 @@ class CJ4_FMC_LegsPage {
                             const userWaypoint = await this.parseWaypointInput(value, scratchPadWaypointIndex);
                             if (userWaypoint) {
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
-                                        this.resetAfterOp();
+                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, (isSuccess) => {
+                                        if (isSuccess) {
+                                            let isDirectTo = (i == 1 && this._currentPage == 1);
+                                            if (isDirectTo) {
+                                                const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+                                                fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                                    let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
+                                                    fmc.activateDirectToWaypoint(wp, () => {
+                                                        fmc._activatingDirectTo = true;
+                                                        fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                                                        fmc.onExecDefault();
+                                                    });
+                                                });
+                                            } else
+                                                this.resetAfterOp();
+                                        }
                                     });
                                 });
                             }
@@ -405,9 +423,18 @@ class CJ4_FMC_LegsPage {
                                     if (isSuccess) {
                                         let isDirectTo = (i == 1 && this._currentPage == 1);
                                         if (isDirectTo) {
-                                            let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
-                                            this._fmc.activateDirectToWaypoint(wp, () => {
-                                                this.resetAfterOp();
+                                            // let wp = this._fmc.flightPlanManager.getWaypoint(selectedWpIndex);
+                                            // this._fmc.activateDirectToWaypoint(wp, () => {
+                                            //     this.resetAfterOp();
+                                            // });
+                                            const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+                                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                                let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
+                                                fmc.activateDirectToWaypoint(wp, () => {
+                                                    fmc._activatingDirectTo = true;
+                                                    fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                                                    fmc.onExecDefault();
+                                                });
                                             });
                                         } else
                                             this.resetAfterOp();
