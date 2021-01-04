@@ -114,7 +114,7 @@ class CJ4_FMC_LegsPage {
                     distance = this._distanceToActiveWpt;
                 }
                 else if (prevWaypoint && prevWaypoint.fix.infos && waypoint.fix.infos) {
-                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.fix.infos.coordinates, waypoint.fix.infos.coordinates));
+                    distance = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.fix.infos.coordinates, waypoint.fix.infos.coordinates);
                 }
 
                 // format distance
@@ -400,21 +400,19 @@ class CJ4_FMC_LegsPage {
                             if (userWaypoint) {
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                     this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, (isSuccess) => {
-                                        if (isSuccess) {
-                                            let isDirectTo = (i == 1 && this._currentPage == 1);
-                                            if (isDirectTo) {
-                                                const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                                                fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                                    let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-                                                    fmc.activateDirectToWaypoint(wp, () => {
-                                                        fmc._activatingDirectTo = true;
-                                                        fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                                        fmc.onExecDefault();
-                                                    });
+                                        let isDirectTo = (i == 1 && this._currentPage == 1);
+                                        if (isDirectTo) {
+                                            const activeIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+                                            this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                                let wp = this._fmc.flightPlanManager.getWaypoint(activeIndex);
+                                                this._fmc.activateDirectToWaypoint(wp, () => {
+                                                    this._fmc._activatingDirectTo = true;
+                                                    this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                                                    this._fmc.onExecDefault();
                                                 });
-                                            } else
-                                                this.resetAfterOp();
-                                        }
+                                            });
+                                        } else
+                                            this.resetAfterOp();
                                     });
                                 });
                             }
@@ -423,13 +421,13 @@ class CJ4_FMC_LegsPage {
                                     if (isSuccess) {
                                         let isDirectTo = (i == 1 && this._currentPage == 1);
                                         if (isDirectTo) {
-                                            const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                                let wp = fmc.flightPlanManager.getWaypoint(activeIndex);
-                                                fmc.activateDirectToWaypoint(wp, () => {
-                                                    fmc._activatingDirectTo = true;
-                                                    fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
-                                                    fmc.onExecDefault();
+                                            const activeIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+                                            this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                                let wp = this._fmc.flightPlanManager.getWaypoint(activeIndex);
+                                                this._fmc.activateDirectToWaypoint(wp, () => {
+                                                    this._fmc._activatingDirectTo = true;
+                                                    this._fmc.refreshPageCallback = () => { this.resetAfterOp(); }; // TODO this seems annoying, but this is how stuff works in cj4_fmc right now
+                                                    this._fmc.onExecDefault();
                                                 });
                                             });
                                         } else
@@ -651,6 +649,26 @@ class CJ4_FMC_LegsPage {
             return (item === undefined) ? defaultVal : item;
         };
 
+        const getIndexedName = (ident) => {
+            const waypoints = this._fmc.flightPlanManager.getAllWaypoints();
+            const identPrefix = ident.substr(0, 3);
+
+            let namingIndex;
+            let currentIndex = 1;
+
+            while (namingIndex === undefined) {
+                const currentName = `${identPrefix}${String(currentIndex).padStart(2, '0')}`;
+                const waypointIndex = waypoints.findIndex(x => x.ident === currentName);
+
+                if (waypointIndex === -1) {
+                    return currentName;
+                }
+                else {
+                    currentIndex++;
+                }
+            }
+        };
+
         let newWaypoint = undefined;
 
         if (matchFullLatLong) {
@@ -721,26 +739,6 @@ class CJ4_FMC_LegsPage {
                 referenceWaypoint = await getWpt(matchPlaceBearingDistance[1]);
             }
 
-            const getIndexedName = (ident) => {
-                const waypoints = this._fmc.flightPlanManager.getAllWaypoints();
-                const identPrefix = ident.substr(0, 3);
-
-                let namingIndex;
-                let currentIndex = 1;
-
-                while (namingIndex === undefined) {
-                    const currentName = `${identPrefix}${String(currentIndex).padStart(2, '0')}`;
-                    const waypointIndex = waypoints.findIndex(x => x.ident === currentName);
-
-                    if (waypointIndex === -1) {
-                        return currentName;
-                    }
-                    else {
-                        currentIndex++;
-                    }
-                }
-            };
-
             if(referenceWaypoint !== undefined){
                 const referenceCoordinates = referenceWaypoint.infos.coordinates;
                 const bearing = parseInt(matchPlaceBearingDistance[2]);
@@ -755,12 +753,10 @@ class CJ4_FMC_LegsPage {
             // 2 = Distance from Reference
             // 3 = Ident
 
-            if(referenceIndex === undefined){
-                referenceIndex = this._fmc.flightPlanManager.getAllWaypoints().findIndex(x => x.ident === matchAlongTrackOffset[1]);
-            }
+            referenceIndex = this._fmc.flightPlanManager.getAllWaypoints().findIndex(x => x.ident === matchAlongTrackOffset[1]);
 
             if(referenceIndex > -1){
-                const ident = procMatch(matchAlongTrackOffset[3], matchAlongTrackOffset[1] + "/" + matchAlongTrackOffset[2]);
+                const ident = procMatch(matchAlongTrackOffset[3], getIndexedName(this._fmc.flightPlanManager.getWaypoint(referenceIndex).ident));
                 const distance = parseFloat(matchAlongTrackOffset[2]);
                 console.log("ident " + ident);
                 console.log("referenceIndex " + referenceIndex);
