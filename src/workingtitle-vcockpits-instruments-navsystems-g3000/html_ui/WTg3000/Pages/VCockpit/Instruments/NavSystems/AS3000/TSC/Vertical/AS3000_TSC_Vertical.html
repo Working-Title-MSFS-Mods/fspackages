@@ -1037,79 +1037,6 @@
                     </div>
                 </div>
                 <div class="tscPage" id="AvionicsSettings">
-                    <div class="tabContainer">
-                        <div class="tabSelect">
-                            <div class="tabButton tabButtonLeft" state="Disabled">
-                                <div class="mainText">System</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" state="Disabled">
-                                <div class="mainText">Units</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" state="Disabled">
-                                <div class="mainText">Alerts</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" state="Highlight">
-                                <div class="mainText">MFD Fields</div>
-                            </div>
-                            <div class="tabButton tabButtonLeft" state="Disabled">
-                                <div class="mainText">Audio</div>
-                            </div>
-                        </div>
-                        <div class="tabContentContainer">
-                            <div class="tabContent" id="MFDFieldsTab">
-                                <div class="buttonsContainer">
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 1</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 2</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 3</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 4</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 5</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 6</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 7</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="rowLabel">MFD<br>Data Bar<br>Field 8</div>
-                                        <div class="gradientButton">
-                                            <div class="statusText"><span class="shortName"></span><br><span class="longName"></span></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="tscPage" id="WaypointsInfo">
@@ -2179,6 +2106,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingStatusBarButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingLabeledButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCScrollList.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
@@ -2197,6 +2125,8 @@
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Display/NavDataBar.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
 
@@ -2205,11 +2135,11 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/TouchScrollController.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavDataBar.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5WeatherRadar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDNavDataBar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCTabbedView.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
@@ -2222,6 +2152,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMapPointerControl.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCAvionicsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCAirportInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/G3000_TSCPFDSettings.js"></script>

@@ -69,12 +69,16 @@ class AS3000_MFD extends NavSystem {
         this.engines = new AS3000_Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engines);
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new AS3000_MFD_NavDataBar(this.flightPlanManager)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManager)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
                 new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager, this.citySearcher))
             ]),
         ];
+
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
 
     disconnectedCallback() {
@@ -105,60 +109,6 @@ class AS3000_MFD extends NavSystem {
 }
 AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL = 2; // seconds
 AS3000_MFD.CITY_DATA_PATH = "/WTg3000/SDK/Assets/Data/cities.json";
-
-class AS3000_MFD_NavDataField {
-    constructor(rootElement) {
-        this.rootElement = rootElement;
-
-        this._title = rootElement.getElementsByClassName("title")[0];
-        this._number = rootElement.getElementsByClassName("number")[0];
-        this._unit = rootElement.getElementsByClassName("unit")[0];
-    }
-
-    getInfo() {
-        return this._info;
-    }
-
-    setInfo(val) {
-        this._info = val;
-    }
-
-    update() {
-        if (!this._info) {
-            return;
-        }
-
-        Avionics.Utils.diffAndSet(this._title, this._info.shortName);
-        Avionics.Utils.diffAndSet(this._number, this._info.getDisplayNumber());
-        Avionics.Utils.diffAndSet(this._unit, this._info.getDisplayUnit());
-    }
-}
-
-class AS3000_MFD_NavDataBar extends WT_NavDataBar {
-    init(root) {
-        super.init(root);
-
-        this.dataFields = Array.from(root.getElementsByClassName("navDataField")).map(e => new AS3000_MFD_NavDataField(e));
-        for (let i = 0; i < this.dataFields.length; i++) {
-            let infoIndex = WT_NavDataBar.getFieldInfoIndex(i, "");
-            if (!infoIndex) {
-                infoIndex = AS3000_MFD_NavDataBar.DEFAULT_FIELDS[i];
-                WT_NavDataBar.setFieldInfoIndex(i, infoIndex);
-            }
-            this.dataFields[i].setInfo(this._infos[infoIndex]);
-        }
-    }
-
-    onEnter() {
-    }
-
-    onExit() {
-    }
-
-    onEvent(_event) {
-    }
-}
-AS3000_MFD_NavDataBar.DEFAULT_FIELDS = ["GS", "DTK", "TRK", "ETE", "BRG", "DIS", "END", "ETA"];
 
 class AS3000_Engine extends NavSystemElementContainer {
     constructor(_name, _root) {
