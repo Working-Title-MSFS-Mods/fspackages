@@ -114,7 +114,7 @@ class CJ4_FMC_LegsPage {
                     distance = this._distanceToActiveWpt;
                 }
                 else if (prevWaypoint && prevWaypoint.fix.infos && waypoint.fix.infos) {
-                    distance = Math.trunc(Avionics.Utils.computeDistance(prevWaypoint.fix.infos.coordinates, waypoint.fix.infos.coordinates));
+                    distance = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.fix.infos.coordinates, waypoint.fix.infos.coordinates);
                 }
 
                 // format distance
@@ -662,6 +662,26 @@ class CJ4_FMC_LegsPage {
             return (item === undefined) ? defaultVal : item;
         };
 
+        const getIndexedName = (ident) => {
+            const waypoints = this._fmc.flightPlanManager.getAllWaypoints();
+            const identPrefix = ident.substr(0, 3);
+
+            let namingIndex;
+            let currentIndex = 1;
+
+            while (namingIndex === undefined) {
+                const currentName = `${identPrefix}${String(currentIndex).padStart(2, '0')}`;
+                const waypointIndex = waypoints.findIndex(x => x.ident === currentName);
+
+                if (waypointIndex === -1) {
+                    return currentName;
+                }
+                else {
+                    currentIndex++;
+                }
+            }
+        };
+
         let newWaypoint = undefined;
 
         if (matchFullLatLong) {
@@ -732,26 +752,6 @@ class CJ4_FMC_LegsPage {
                 referenceWaypoint = await getWpt(matchPlaceBearingDistance[1]);
             }
 
-            const getIndexedName = (ident) => {
-                const waypoints = this._fmc.flightPlanManager.getAllWaypoints();
-                const identPrefix = ident.substr(0, 3);
-
-                let namingIndex;
-                let currentIndex = 1;
-
-                while (namingIndex === undefined) {
-                    const currentName = `${identPrefix}${String(currentIndex).padStart(2, '0')}`;
-                    const waypointIndex = waypoints.findIndex(x => x.ident === currentName);
-
-                    if (waypointIndex === -1) {
-                        return currentName;
-                    }
-                    else {
-                        currentIndex++;
-                    }
-                }
-            };
-
             if(referenceWaypoint !== undefined){
                 const referenceCoordinates = referenceWaypoint.infos.coordinates;
                 const bearing = parseInt(matchPlaceBearingDistance[2]);
@@ -766,12 +766,10 @@ class CJ4_FMC_LegsPage {
             // 2 = Distance from Reference
             // 3 = Ident
 
-            if(referenceIndex === undefined){
-                referenceIndex = this._fmc.flightPlanManager.getAllWaypoints().findIndex(x => x.ident === matchAlongTrackOffset[1]);
-            }
+            referenceIndex = this._fmc.flightPlanManager.getAllWaypoints().findIndex(x => x.ident === matchAlongTrackOffset[1]);
 
             if(referenceIndex > -1){
-                const ident = procMatch(matchAlongTrackOffset[3], matchAlongTrackOffset[1] + "/" + matchAlongTrackOffset[2]);
+                const ident = procMatch(matchAlongTrackOffset[3], getIndexedName(this._fmc.flightPlanManager.getWaypoint(referenceIndex).ident));
                 const distance = parseFloat(matchAlongTrackOffset[2]);
                 console.log("ident " + ident);
                 console.log("referenceIndex " + referenceIndex);

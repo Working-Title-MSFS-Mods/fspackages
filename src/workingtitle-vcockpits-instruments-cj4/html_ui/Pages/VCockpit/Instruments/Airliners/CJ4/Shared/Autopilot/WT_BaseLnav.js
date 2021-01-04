@@ -149,7 +149,7 @@ class WT_BaseLnav {
             const nextWptPos = new LatLon(this._activeWaypoint.infos.coordinates.lat, this._activeWaypoint.infos.coordinates.long);
 
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
-            this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
+            this._dtk = AutopilotMath.desiredTrack(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates, new LatLongAlt(this._planePos.lat, this._planePos.lon));
             const correctedDtk = this.normalizeCourse(GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees")));
 
             SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk);
