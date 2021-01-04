@@ -119,7 +119,7 @@ class WT_FlightPlanManager {
      */
     _distanceToDestination(activeLeg, reference) {
         let distance = this._distanceToActiveFix(activeLeg, reference);
-        return distance.add(this.activePlan.totalDistance()).subtract(activeLeg.cumulativeDistance);
+        return distance.add(this.activePlan.totalDistance()).subtract(activeLeg ? activeLeg.cumulativeDistance : 0);
     }
 
     /**
