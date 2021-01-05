@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.8.5 Changes
+# Working Title CJ4 v0.9.0 Changes
 
-Welcome to the Working Title CJ4 v0.8.5
+Welcome to the Working Title CJ4 v0.9.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -37,7 +37,6 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 is either before or after a specified waypoint on the flight plan route.  A negative distance value will place the new fix before the reference fix.  Syntax: POINT/DISTANCE.  Eg. JOBOB/-15 
 * Latitude/Longitude fixes - TODO
 * Holds.  Allows custom formats, will automatically detect entry pattern and execute.  
-
 
 ## FMS
 * Fixed DIR page (Adds nearest airports page and adjusts layout)
