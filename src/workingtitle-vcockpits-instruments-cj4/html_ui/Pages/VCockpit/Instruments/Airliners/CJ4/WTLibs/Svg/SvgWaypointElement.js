@@ -364,6 +364,7 @@ class SvgWaypointTextElement extends SvgMapElement {
         }
 
         let context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.width, canvas.height);
         if (map.config.waypointLabelUseBackground) {
             context.fillStyle = "black";
             context.fillRect(0, 0, this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight, this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom);
