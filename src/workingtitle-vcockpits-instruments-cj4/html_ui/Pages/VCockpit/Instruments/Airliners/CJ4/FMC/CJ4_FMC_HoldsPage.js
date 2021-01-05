@@ -343,11 +343,11 @@ class CJ4_FMC_HoldsPage {
    * Handles when EXEC is pressed.
    */
   handleExec() {
-    if (this._fmc.fpHasChanged) {
-      this._fmc.fpHasChanged = false;
+    if (this._fmc._fpHasChanged) {
+      this._fmc._fpHasChanged = false;
       this._state.isModifying = false;
       
-      this._fmc.activateRoute(() => {
+      this._fmc.activateRoute(false, () => {
           this.update();
           this._fmc.onExecDefault();
       });

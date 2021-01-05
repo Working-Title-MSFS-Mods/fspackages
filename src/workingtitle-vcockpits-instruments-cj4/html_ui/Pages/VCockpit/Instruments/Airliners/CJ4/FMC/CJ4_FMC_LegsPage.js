@@ -414,8 +414,7 @@ class CJ4_FMC_LegsPage {
                                     this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
                                         let isDirectTo = (i == 1 && this._currentPage == 1);
                                         if (isDirectTo) {
-                                            const activeIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
-                                            this._fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                                            this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
                                                 this._fmc.activateRoute(true, () => {
                                                     this.resetAfterOp();
                                                 });
@@ -434,8 +433,7 @@ class CJ4_FMC_LegsPage {
                                         if (isSuccess) {
                                             let isDirectTo = (i == 1 && this._currentPage == 1);
                                             if (isDirectTo) {
-                                                const activeIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
-                                                this._fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                                                this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
                                                     this._fmc.activateRoute(true, () => {
                                                         this.resetAfterOp();
                                                     });
