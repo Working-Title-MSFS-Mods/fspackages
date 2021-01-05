@@ -25,7 +25,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Holds
 * Course intercept, Point/Bearing/Distance fixes, Point/Distance fixes, Lat/Lon fixes
 * Improved Flight Model (WIP) (Credit: Metzgergva)
-* Comm 2 can be used to transmit and receive.
+* Reworked COM switch on audio panel.
 
 ## Flight Plan Manager
 * Fixed errors where negative values would be returned for a leg course
@@ -59,6 +59,8 @@ is either before or after a specified waypoint on the flight plan route.  A nega
 * Added north label to PLAN view
 * Wind indicator hidden on PLAN view
 * Various map draw improvements
+* Added icons for different VOR types and NDBs
+* Enabled map symbols are now drawn and updated around the current location
 
 ## Autopilot
 * Adjusted VS to round up in approach to prevent drifting under GP (Current AP workaround)
@@ -71,6 +73,8 @@ is either before or after a specified waypoint on the flight plan route.  A nega
 ## Misc
 * AOA indicator only lights up on gear down or greater than flaps 15.
 * Standby attitude indicator (SAI) baro settings are changed to whatever is set in PFD.
+* COM switches on the audio panel now allow to select the transmit COM channel
+* Mute "Knobs" will disable receive for the COM channel
 
 ## ⚠️ Known Issues
 * Sync to the game flightplan (ATC/VFR Map) is very much work in progress and turned off by default. You can enable this feature in MOD SETTINGS on the FMC.
