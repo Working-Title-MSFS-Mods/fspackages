@@ -243,7 +243,7 @@ class CJ4_FMC_LegsPage {
             let offsetRender = Math.floor((this._currentPage - 1) * 5);
             let wptRender = this._wayPointsToRender[i + offsetRender];
             // if its a real fix 
-            if (wptRender && (wptRender.fix.ident !== "$EMPTY" || wptRender.fix.ident !== "$DISCO")) {
+            if ((this._currentPage != 1 && i != 1) && wptRender && (wptRender.fix.ident !== "$EMPTY" || wptRender.fix.ident !== "$DISCO")) {
                 this._fmc.onRightInput[i] = () => {
                     let offset = Math.floor((this._currentPage - 1) * 5);
                     let wptIndex = this._wayPointsToRender[i + offset].index;
@@ -541,13 +541,14 @@ class CJ4_FMC_LegsPage {
                 this.update(true);
             }
         };
-        this._fmc.onRightInput[0] = () => {
-            if (this._currentPage == 1) {
+        if (this._currentPage == 1) {
+            this._fmc.onRightInput[0] = () => {
                 let currentInhibit = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number");
                 let setInhibit = currentInhibit == 1 ? 0 : 1;
                 SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", setInhibit).then(() => { this.resetAfterOp(); });
-            }
-        };
+            };
+        }
+
 
         // EXEC
         this._fmc.onExecPage = () => {
