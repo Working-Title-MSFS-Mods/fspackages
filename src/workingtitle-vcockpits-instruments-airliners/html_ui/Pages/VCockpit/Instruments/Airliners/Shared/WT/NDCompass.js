@@ -421,6 +421,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 noFpln.setAttribute("text-anchor", "middle");
                 noFpln.setAttribute("alignment-baseline", "central");
                 this.noFplnGroup.appendChild(noFpln);
+                this.noFplnGroup.setAttribute("visibility", "hidden");
                 this.root.appendChild(this.noFplnGroup);
             }
             {
