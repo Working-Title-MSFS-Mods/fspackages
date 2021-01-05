@@ -203,12 +203,12 @@ class CJ4_FMC_LegsPage {
         let runwayExists = false;
         let runwayIndex = 0;
 
-        let holdActive = false;
+        let holdExited = false;
         const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
 
         if (holdsDirector) {
             const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
-            holdActive = holdsDirector.isHoldActive(holdIndex);
+            holdExited = holdsDirector.isHoldExited(holdIndex);
         }
 
 
@@ -223,7 +223,7 @@ class CJ4_FMC_LegsPage {
                 console.log("skipping destination waypoint");
             } else {
                 displayWaypoints.push({ index: i, fix: waypoints[i] });
-                if (holdActive || (waypoints[i].hasHold && i > activeWaypointIndex - 1)) {
+                if (waypoints[i].hasHold && !(i === activeWaypointIndex - 1 && holdExited)) {
                     displayWaypoints.push({index: i, fix: {ident: waypoints[i].ident, infos: waypoints[i].infos, isHold: true}});
                 }
 

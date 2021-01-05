@@ -482,6 +482,15 @@ class HoldsDirector {
   }
 
   /**
+   * Whether or not the current hold has exited.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if exiting, false otherwise.
+   */
+  isHoldExited(index) {
+    return this.holdWaypointIndex === index && this.state === HoldsDirectorState.EXITED;
+  }
+
+  /**
    * Calculates a hold entry state given the hold course and current
    * inbound course. See FMS guide page 14-21.
    * @param {number} holdCourse The course that the hold will be flown with.

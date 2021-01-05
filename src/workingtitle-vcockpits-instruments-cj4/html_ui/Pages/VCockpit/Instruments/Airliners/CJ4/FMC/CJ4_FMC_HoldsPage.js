@@ -293,7 +293,7 @@ class CJ4_FMC_HoldsPage {
       [' LEG DIST[blue]'],
       [`${holdDetails.legDistance.toFixed(1)}[d-text] NM[s-text]`, `${numPages < 6 ? 'NEW HOLD>' : ''}`],
       ['------------------------[blue]'],
-      [`${this._state.isModifying ? '<CANCEL MOD' : ''}`, `${this.isHoldActive(currentHold) ? 'EXIT HOLD>' : this.isHoldExiting(currentHold) ? 'CANCEL EXIT>': ''}`]
+      [`${this._state.isModifying ? '<CANCEL MOD' : ''}`, `${this.isHoldExiting(currentHold) ? 'CANCEL EXIT>' : this.isHoldActive(currentHold) ? 'EXIT HOLD>' : ''}`]
     ];
 
     this._fmc._templateRenderer.setTemplateRaw(rows);
