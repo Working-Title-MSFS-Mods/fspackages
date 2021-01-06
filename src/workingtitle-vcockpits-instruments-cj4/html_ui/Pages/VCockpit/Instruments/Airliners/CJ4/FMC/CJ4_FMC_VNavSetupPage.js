@@ -274,10 +274,10 @@ class CJ4_FMC_VNavSetupPage {
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
                     ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
-                    // ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
-                    // [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    ["PTCH HLD[blue]", "TOGA[blue]", "PTCH REF[blue]"],
-                    [pitchHold ? "YES[green]" : "NO[white]", togaHold ? "YES[green]" : "NO[white]", pitchRef.toFixed(1) + "[white]"],
+                    ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
+                    [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
+                    // ["PTCH HLD[blue]", "TOGA[blue]", "PTCH REF[blue]"],
+                    // [pitchHold ? "YES[green]" : "NO[white]", togaHold ? "YES[green]" : "NO[white]", pitchRef.toFixed(1) + "[white]"],
                     ["ALK:" + altLock, "OBEY? [white]" + obeyConstraint == 1 ? "Y[green]" : "N", "CSTR? [white]" + constraint == 1 ? "Y[green]" : "N"],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
