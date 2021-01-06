@@ -54,7 +54,7 @@ class SvgFlightPlanElement extends SvgMapElement {
                     const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
                     const activeIndex = fpm.getActiveWaypointIndex();
                     if (holdIndex != -1 && activeIndex == holdIndex + 1) {
-                        console.log("holdIndex " + holdIndex + " activeIndex " + activeIndex);
+                        // console.log("holdIndex " + holdIndex + " activeIndex " + activeIndex);
                         this.buildPathFromWaypoints(waypoints.slice(holdIndex, holdIndex + 1), map, 'magenta', (index !== 0), true);
                         this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1), map, 'white', (index !== 0), true);
                     } else {
@@ -119,7 +119,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         }
 
         if ((!isHold && style == 'white') || (isHold && style == 'magenta')) {
-            console.log("style " + style + (isHold ? " is hold" : ""));
+            // console.log("style " + style + (isHold ? " is hold" : ""));
 
             for (let i = 0; i < waypoints.length; i++) {
                 const waypoint = waypoints[i];
