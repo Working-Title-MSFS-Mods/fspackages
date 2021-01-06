@@ -144,10 +144,10 @@ class WT_VnavAutopilot {
                 //IS PATH ACTIVE?
                 if (this._pathActive) {
                     //PATH MODE IS ACTIVE
-                    if (this._vnavTargetAltitude == this._vnav._vnavTargetAltitude) {
+                    if (Math.round(this._vnavTargetAltitude) == Math.round(this._vnav._vnavTargetAltitude)) {
                         //WE HAVE NOT PASSED THE TARGET YET 
                     }
-                    else if (this._vnav._vnavTargetAltitude > this._vnavTargetAltitude) {
+                    else if (this._vnav._vnavTargetAltitude > this._vnavTargetAltitude + 100) {
                         //ODD CASE WHERE NEXT CONSTRAINT IS HIGHER THAN CURRENT CONSTRAINT
                         this.setTargetAltitude(this._vnavTargetAltitude);
                         this.deactivate();
