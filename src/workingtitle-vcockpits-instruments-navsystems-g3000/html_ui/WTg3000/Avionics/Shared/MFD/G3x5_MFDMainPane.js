@@ -70,11 +70,18 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
     }
 
     _setMode(mode) {
-        let halfRefresh = mode === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF;
+        let isHalf = mode === WT_G3x5_MFDMainPaneModeSetting.Mode.HALF;
         if (this._left) {
-            this._left.setHalfRefresh(halfRefresh);
-            this._right.setHalfRefresh(halfRefresh);
+            this._left.setHalfRefresh(isHalf);
+            this._right.setHalfRefresh(isHalf);
+
+            if (isHalf) {
+                this._right.wake();
+            } else {
+                this._right.sleep();
+            }
         }
+
         this.htmlElement.setMode(mode);
         this._mode = mode;
     }
@@ -194,6 +201,7 @@ class WT_G3x5_MFDHalfPane {
         this._displayMode;
         this._waypointICAO = "";
         this._halfRefresh = false;
+        this._isAsleep = false;
 
         this._refreshCounter = 0;
 
@@ -252,7 +260,7 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {Boolean}
      */
-    halfRefresh() {
+    isHalfRefresh() {
         return this._halfRefresh;
     }
 
@@ -260,12 +268,8 @@ class WT_G3x5_MFDHalfPane {
         this._halfRefresh = value;
     }
 
-    _setControl(value) {
-        this.htmlElement.setControl(value);
-    }
-
-    _updateSleepWake(oldDisplay, newDisplay) {
-        switch (oldDisplay) {
+    _sleepPane(displayMode) {
+        switch (displayMode) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._navMap.sleep();
                 break;
@@ -279,7 +283,14 @@ class WT_G3x5_MFDHalfPane {
                 this._waypointInfo.sleep();
                 break;
         }
-        switch (newDisplay) {
+    }
+
+    sleep() {
+        this._sleepPane(this.displayMode());
+    }
+
+    _wakePane(displayMode) {
+        switch (displayMode) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._navMap.wake();
                 break;
@@ -293,6 +304,19 @@ class WT_G3x5_MFDHalfPane {
                 this._waypointInfo.wake();
                 break;
         }
+    }
+
+    wake() {
+        this._wakePane(this.displayMode());
+    }
+
+    _setControl(value) {
+        this.htmlElement.setControl(value);
+    }
+
+    _updateSleepWake(oldDisplay, newDisplay) {
+        this._sleepPane(oldDisplay);
+        this._wakePane(newDisplay);
     }
 
     _updateMapWaypoint() {
@@ -356,7 +380,7 @@ class WT_G3x5_MFDHalfPane {
     }
 
     update(updateCycle) {
-        if (!this.halfRefresh() || updateCycle === 0) {
+        if (!this.isHalfRefresh() || updateCycle === 0) {
             this._updateChildren();
         }
     }
