@@ -42,6 +42,8 @@ class HoldsDirector {
 
     /** The direction of the turn. */
     this.turnDirection = HoldTurnDirection.Right;
+
+    SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', -1);
   }
 
   /**
