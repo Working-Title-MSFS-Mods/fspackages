@@ -288,6 +288,7 @@ class CJ4_FMC_DirectToPage {
                 fmc.clearUserInput();
             }
             else {
+                fmc.clearUserInput();
                 fmc.showErrorMessage("INVALID");
             }
             { CJ4_FMC_DirectToPage.ShowPage2(fmc); }

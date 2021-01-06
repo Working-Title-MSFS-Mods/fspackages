@@ -68,15 +68,12 @@ class CJ4_FMC_LegsPage {
         let flightplanFPA = WTDataStore.get('CJ4_vpa', 3);
         let runwayIndex = undefined;
         let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
-        console.log("gpAngle legs page: " + gpAngle);
         const inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
         const inhibitText = inhibitSequence ? "AUTO[s-text white]" + "/[white]" + "INHIBIT[green]" : "AUTO[green]" + "/[white]" + "INHIBIT[s-text white]";
 
         //FIND RUNWAY INDEX
-        console.log("_wayPointsToRender.length: " + this._wayPointsToRender.length);
         if (allWaypoints.length > 1 && allWaypoints[allWaypoints.length - 2].isRunway) {
             runwayIndex = this._wayPointsToRender.length - 2;
-            console.log("runway found: " + runwayIndex);
         }
 
         this._pageCount = Math.floor((this._wayPointsToRender.length - 1) / 5) + 1;
@@ -170,7 +167,6 @@ class CJ4_FMC_LegsPage {
     }
 
     render() {
-        // console.log("RENDER LEGS");
 
         this._lsk6Field = "";
         if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -220,7 +216,7 @@ class CJ4_FMC_LegsPage {
                 runwayIndex = i;
             }
             if (runwayExists && i == runwayIndex + 1) {
-                console.log("skipping destination waypoint");
+                //console.log("skipping destination waypoint");
             } else {
                 displayWaypoints.push({ index: i, fix: waypoints[i] });
                 if (waypoints[i].hasHold && !(i === activeWaypointIndex - 1 && holdExited)) {
@@ -375,8 +371,8 @@ class CJ4_FMC_LegsPage {
                         }
                         else if (i == 0 && this._currentPage == 1) {
                             let scratchPadWaypointIndex = this._fmc.selectedWaypoint.index;
-                            console.log("modifying from line");
-                            console.log("scratchPadWaypointIndex: " + scratchPadWaypointIndex);
+                            // console.log("modifying from line");
+                            // console.log("scratchPadWaypointIndex: " + scratchPadWaypointIndex);
                             this._fmc.setMsg("Working...");
                             this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                 this._fmc.flightPlanManager.setActiveWaypointIndex(scratchPadWaypointIndex + 1, () => {
@@ -654,7 +650,6 @@ class CJ4_FMC_LegsPage {
     }
 
     async parseWaypointInput(value, referenceIndex) {
-        console.log("parse waypoint input");
         let fullLatLong = /([NS])([0-8][0-9])([0-5][0-9](?:\.\d{1,2})?)([EW])((?:[0][0-9][0-9])|(?:[1][0-7][0-9]))([0-5][0-9](?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
         let shorhandLatLongEnd = /([0-8][0-9])([0-9][0-9]|[1][0-8][0-9])([NSEW])/;
         let shorthandLatLongMid = /([0-8][0-9])([NSEW])([1][0-8][0-9]|[0-9][0-9])/;
@@ -780,9 +775,6 @@ class CJ4_FMC_LegsPage {
             if(referenceIndex > -1){
                 const ident = procMatch(matchAlongTrackOffset[3], getIndexedName(this._fmc.flightPlanManager.getWaypoint(referenceIndex).ident));
                 const distance = parseFloat(matchAlongTrackOffset[2]);
-                console.log("ident " + ident);
-                console.log("referenceIndex " + referenceIndex);
-                console.log("distance " + distance);
     
                 newWaypoint = WaypointBuilder.fromPlaceAlongFlightPlan(ident, referenceIndex, distance, this._fmc, this._fmc.flightPlanManager);
             }
@@ -865,7 +857,6 @@ class CJ4_FMC_LegsPage {
     }
 
     static ShowPage1(fmc, isAddingHold = false) {
-        // console.log("SHOW LEGS PAGE 1");
         fmc.clearDisplay();
 
         // create page instance and init 
