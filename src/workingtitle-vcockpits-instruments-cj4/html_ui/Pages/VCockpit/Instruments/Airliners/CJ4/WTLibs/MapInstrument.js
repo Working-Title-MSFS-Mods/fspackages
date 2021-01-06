@@ -428,15 +428,19 @@ class MapInstrument extends ISvgMapRootElement {
             this.airportLoader = new AirportLoader(this.instrument, false);
             this.airportLoader.maxItemsSearchCount = 20;
             this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
-            this.intersectionLoader = new IntersectionLoader(this.instrument);
-            this.intersectionLoader.maxItemsSearchCount = 20;
+            this.airportLoader.speed = 10000;
+            this.intersectionLoader = new IntersectionLoader(this.instrument, true);
+            this.intersectionLoader.maxItemsSearchCount = 60;
             this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
+            this.intersectionLoader.speed = 10000;
             this.vorLoader = new VORLoader(this.instrument);
             this.vorLoader.maxItemsSearchCount = 20;
             this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
+            this.vorLoader.speed = 10000;
             this.ndbLoader = new NDBLoader(this.instrument);
             this.ndbLoader.maxItemsSearchCount = 20;
             this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
+            this.ndbLoader.speed = 15000;
             this.nearestAirspacesLoader = new NearestAirspacesLoader(this.instrument);
             this.nearestAirspacesLoader.onNewAirspaceAddedCallback = (airspace) => {
                 if (airspace) {
