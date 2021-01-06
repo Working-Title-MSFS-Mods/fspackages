@@ -239,7 +239,7 @@ class CJ4_FMC_LegsPage {
             let offsetRender = Math.floor((this._currentPage - 1) * 5);
             let wptRender = this._wayPointsToRender[i + offsetRender];
             // if its a real fix 
-            if ((this._currentPage != 1 && i != 1) && wptRender && (wptRender.fix.ident !== "$EMPTY" || wptRender.fix.ident !== "$DISCO")) {
+            if (!(this._currentPage === 1 && i === 0) && wptRender && (wptRender.fix.ident !== "$EMPTY" || wptRender.fix.ident !== "$DISCO")) {
                 this._fmc.onRightInput[i] = () => {
                     let offset = Math.floor((this._currentPage - 1) * 5);
                     let wptIndex = this._wayPointsToRender[i + offset].index;
