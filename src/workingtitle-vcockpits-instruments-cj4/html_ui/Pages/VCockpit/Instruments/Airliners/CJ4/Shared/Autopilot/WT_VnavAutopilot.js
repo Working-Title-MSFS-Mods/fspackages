@@ -228,12 +228,9 @@ class WT_VnavAutopilot {
             if (Math.round(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
                 this.setTargetAltitude();
             }
-            if (this._navModeSelector.currentAltSlotIndex !=2 && this._vnav._altDeviation > 0) {
-                this._vnavAltSlot = 2;
-            }
-
-            // if (this._navModeSelector.currentVerticalActiveState != VerticalNavModeState.PATH) {
-            //     this.recalculate();
+            //ADDED for 0.9.0 and then reverted prior to release per CWB
+            // if (this._navModeSelector.currentAltSlotIndex !=2 && this._vnav._altDeviation > 0) {
+            //     this._vnavAltSlot = 2;
             // }
         }
         else if (this._pathArm) {
@@ -341,9 +338,10 @@ class WT_VnavAutopilot {
             }
             setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
             Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
-            if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1 && this._vnav._altDeviation > 0) {
-                SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
-              }
+            // ADDED for 0.9.0 but reverted per CWB
+            // if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1 && this._vnav._altDeviation > 0) {
+            //     SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+            //   }
         }
     }
 
