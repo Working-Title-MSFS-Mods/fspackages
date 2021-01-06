@@ -17,7 +17,6 @@
 #include "common.h"
 #include "FdController.h"
 #include <sys/time.h>
-#include <chrono>
 
 const int MIN_THR = -16384;
 const int MAX_THR = 16384;
@@ -29,7 +28,6 @@ class FdGauge
 {
 private:
 
-    uint64_t prevTime_ms = 0;
     bool isConnected = false;
 
     /// <summary>
@@ -261,17 +259,12 @@ public:
     /// <returns>True if successful, false otherwise.</returns>
     bool OnUpdate(double deltaTime)
     {
-        uint64_t currTime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        uint64_t timeDiff_ms = currTime_ms - this->prevTime_ms;
 
         if (isConnected == true) {
             SimConnect_CallDispatch(hSimConnect, HandleAxisEvent, this);
 
 
-            if (timeDiff_ms > 50) {
-                FdCtrlInstance.update(globalThrottleAxis, deltaTime);
-                this->prevTime_ms = currTime_ms;
-            }
+            FdCtrlInstance.update(globalThrottleAxis, deltaTime);
         }
 
         return true;
