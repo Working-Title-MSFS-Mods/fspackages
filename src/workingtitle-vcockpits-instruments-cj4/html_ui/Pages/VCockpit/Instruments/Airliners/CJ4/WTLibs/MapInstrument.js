@@ -735,26 +735,14 @@ class MapInstrument extends ISvgMapRootElement {
                         if (l > 1) {
 
                             this.navMap.mapElements.push(this.flightPlanElement);
-                            this.navMap.mapElements.push(...this.updateFplnWaypoints());
+                            this.updateFplnWaypoints(0);
                         }
 
                         if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
                             this.navMap.mapElements.push(this.tmpFlightPlanElement);
                             let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
                             if (lTmpFlightPlan > 1) {
-                                for (let i = 0; i < lTmpFlightPlan; i++) {
-                                    let waypoint = this.flightPlanManager.getWaypoint(i, 1);
-                                    if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
-                                        if (waypoint.getSvgElement(this.navMap.index)) {
-                                            if (!this.navMap.mapElements.find(w => {
-                                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
-                                            })) {
-                                                waypoint.isInFlightPlan = true;
-                                                this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
-                                            }
-                                        }
-                                    }
-                                }
+                                this.updateFplnWaypoints(1);
                             }
                         }
 
@@ -874,29 +862,24 @@ class MapInstrument extends ISvgMapRootElement {
             }
         }
     }
-    updateFplnWaypoints() {
-        if (this._fplnVersion < this.flightPlanManager.CurrentFlightPlanVersion) {
-            let l = this.flightPlanManager.getWaypointsCount(0);
-            if (l > 1) {
-                this._fplnNavMapElements = [];
-                for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
-                    let waypoint = this.flightPlanManager.getWaypoint(i, 0);
-                    if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
-                        if (waypoint.getSvgElement(this.navMap.index)) {
-                            if (!this.navMap.mapElements.find(w => {
-                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
-                            })) {
-                                waypoint.isInFlightPlan = true;
-                                this._fplnNavMapElements.push(waypoint.getSvgElement(this.navMap.index));
-                            }
+    updateFplnWaypoints(fplnIdx = 0) {
+        // if (this._fplnVersion < this.flightPlanManager.CurrentFlightPlanVersion) {
+        let l = this.flightPlanManager.getWaypointsCount(fplnIdx);
+        if (l > 1) {
+            for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
+                let waypoint = this.flightPlanManager.getWaypoint(i, fplnIdx);
+                if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI" && this.navMap.isLatLongInFrame(waypoint.infos.coordinates, 0.1)) {
+                    if (waypoint.getSvgElement(this.navMap.index)) {
+                        if (!this.navMap.mapElements.find(w => {
+                            return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                        })) {
+                            waypoint.isInFlightPlan = true;
+                            this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                         }
                     }
                 }
             }
-            this._fplnVersion = this.flightPlanManager.CurrentFlightPlanVersion;
         }
-
-        return this._fplnNavMapElements;
     }
     updateTodWaypoint() {
         const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
