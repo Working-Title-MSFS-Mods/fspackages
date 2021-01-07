@@ -794,21 +794,19 @@ class MapInstrument extends ISvgMapRootElement {
 
                     let margin = 0.05;
                     let maxElements = WTDataStore.get("WT_CJ4_MaxMapSymbols", 40);
-                    if (this.showAirports) {
-                        for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
-                            let airport = this.airportLoader.waypoints[i];
-                            if (airport && airport.infos instanceof AirportInfo) {
-                                if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                    this._displayMapElements.push(airport.getSvgElement(this.navMap.index));
-                                }
-                            }
-                        }
-                    }
                     if (this.showVORs) {
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                             let vor = this.vorLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
                                 this._displayMapElements.push(vor.getSvgElement(this.navMap.index));
+                            }
+                        }
+                    }
+                    if (this.showIntersections && (this.rangeIndex < this.intersectionMaxRange)) {
+                        for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
+                            let intersection = this.intersectionLoader.waypoints[i];
+                            if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
+                                this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
                             }
                         }
                     }
@@ -820,11 +818,13 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
-                    if (this.showIntersections && (this.rangeIndex < this.intersectionMaxRange)) {
-                        for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
-                            let intersection = this.intersectionLoader.waypoints[i];
-                            if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
-                                this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
+                    if (this.showAirports) {
+                        for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
+                            let airport = this.airportLoader.waypoints[i];
+                            if (airport && airport.infos instanceof AirportInfo) {
+                                if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
+                                    this._displayMapElements.push(airport.getSvgElement(this.navMap.index));
+                                }
                             }
                         }
                     }
