@@ -103,27 +103,27 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Corrected PPOS scaling
 * MFD Wind speed font size same as PFD
 * Fixed outer range display cut off
-* Added north label to PLAN view
+* Added (N)orth label to PLAN view
 * Wind indicator hidden on PLAN view
 * Various map draw improvements
-* Added icons for different VOR types and NDBs
+* Added correct icons for different VOR types and NDBs
 * Enabled map symbols are now drawn and updated around the current location
 * INTERS now only shows named and non terminal waypoints
 * Added display of terminal waypoints (to be enabled in FMC)
+* Map will show a maximum of 40 symbols as in the real unit (configurable in Defaults in later version)
 
 ## Misc
 * AOA indicator only lights up on gear down or greater than flaps 15.
 * Standby attitude indicator (SAI) baro settings are changed to whatever is set in PFD.
 
 ## ⚠️ Known Issues
-* Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected.
+* Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
+* On LEGS you cant enter airways properly when arrival/approach procedures are already selected (to be fixed soon).
 * Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse.
-* TOD sometimes will flash on the PFD during an approach.
-* Sometimes a heading to altitude instruction on takeoff will display further than the first RNAV fix on an RNAV departure procedure; in these cases the workaround is to cross-check the DP chart and remove the erronious waypoint either by deleting the heading to altitude fix or dropping the first RNAV fix onto the magenta line in the LEGS page.
+* Sometimes a heading to altitude instruction on takeoff will display further than the first RNAV fix on an RNAV departure procedure; in these cases the workaround is to cross-check the DP chart and remove the erroneous waypoint either by deleting the heading to altitude fix or dropping the first RNAV fix onto the magenta line in the LEGS page.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
 * Sometimes when turning more than 90 degrees onto an approach segment, VNAV might give a NOPATH condition because it sees that you are too high.  Engage FLC or VS and descend down and it should recapture the path.
-* The FMS now builds turn anticipation into direct-to course projection. However, you will still encounter some overshoot beyond 90 or so degrees.
 * If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.
 
