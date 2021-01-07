@@ -25,7 +25,7 @@ class MapInstrument extends ISvgMapRootElement {
     constructor() {
         super();
         this.intersectionMaxRange = MapInstrument.INT_RANGE_DEFAULT;
-        this.termWptsMaxRange = MapInstrument.INT_RANGE_DEFAULT -1;
+        this.termWptsMaxRange = MapInstrument.INT_RANGE_DEFAULT - 1;
         this.vorMaxRange = MapInstrument.VOR_RANGE_DEFAULT;
         this.ndbMaxRange = MapInstrument.NDB_RANGE_DEFAULT;
         this.minimizedIntersectionMaxRange = MapInstrument.INT_RANGE_MIN_DEFAULT;
@@ -798,7 +798,13 @@ class MapInstrument extends ISvgMapRootElement {
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                             let vor = this.vorLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
-                                this._displayMapElements.push(vor.getSvgElement(this.navMap.index));
+                                if (vor.getSvgElement(this.navMap.index)) {
+                                    if (!this.navMap.mapElements.find(w => {
+                                        return (w instanceof SvgWaypointElement) && w.source.ident === vor.ident;
+                                    })) {
+                                        this._displayMapElements.push(vor.getSvgElement(this.navMap.index));
+                                    }
+                                }
                             }
                         }
                     }
@@ -806,7 +812,13 @@ class MapInstrument extends ISvgMapRootElement {
                         for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                             let intersection = this.intersectionLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
-                                this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
+                                if (intersection.getSvgElement(this.navMap.index)) {
+                                    if (!this.navMap.mapElements.find(w => {
+                                        return (w instanceof SvgWaypointElement) && w.source.ident === intersection.ident;
+                                    })) {
+                                        this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
+                                    }
+                                }
                             }
                         }
                     }
@@ -814,7 +826,13 @@ class MapInstrument extends ISvgMapRootElement {
                         for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                             let ndb = this.ndbLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
-                                this._displayMapElements.push(ndb.getSvgElement(this.navMap.index));
+                                if (ndb.getSvgElement(this.navMap.index)) {
+                                    if (!this.navMap.mapElements.find(w => {
+                                        return (w instanceof SvgWaypointElement) && w.source.ident === ndb.ident;
+                                    })) {
+                                        this._displayMapElements.push(ndb.getSvgElement(this.navMap.index));
+                                    }
+                                }
                             }
                         }
                     }
@@ -823,7 +841,13 @@ class MapInstrument extends ISvgMapRootElement {
                             let airport = this.airportLoader.waypoints[i];
                             if (airport && airport.infos instanceof AirportInfo) {
                                 if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                    this._displayMapElements.push(airport.getSvgElement(this.navMap.index));
+                                    if (airport.getSvgElement(this.navMap.index)) {
+                                        if (!this.navMap.mapElements.find(w => {
+                                            return (w instanceof SvgWaypointElement) && w.source.ident === airport.ident;
+                                        })) {
+                                            this._displayMapElements.push(airport.getSvgElement(this.navMap.index));
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -832,7 +856,13 @@ class MapInstrument extends ISvgMapRootElement {
                         for (let i = 0; i < this.termWptsLoader.waypoints.length; i++) {
                             let intersection = this.termWptsLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
-                                this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
+                                if (intersection.getSvgElement(this.navMap.index)) {
+                                    if (!this.navMap.mapElements.find(w => {
+                                        return (w instanceof SvgWaypointElement) && w.source.ident === intersection.ident;
+                                    })) {
+                                        this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
+                                    }
+                                }
                             }
                         }
                     }
