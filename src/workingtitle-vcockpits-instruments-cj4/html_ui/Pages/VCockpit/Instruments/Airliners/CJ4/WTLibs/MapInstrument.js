@@ -430,7 +430,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.airportLoader.speed = 10000;
             this.intersectionLoader = new IntersectionLoader(this.instrument, true);
-            this.intersectionLoader.maxItemsSearchCount = 60;
+            this.intersectionLoader.maxItemsSearchCount = 40;
             this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.intersectionLoader.speed = 10000;
             this.vorLoader = new VORLoader(this.instrument);
@@ -1391,7 +1391,7 @@ class MapInstrument extends ISvgMapRootElement {
         return this.bingMap.getWeather();
     }
     setShowingWpt(_bool) {
-        this._showingWpt = _bool
+        this._showingWpt = _bool;
     }
     isDisplayingWeather() {
         if (this.bingMap && (this.bingMap.getWeather() != undefined && this.bingMap.getWeather() != EWeatherRadar.OFF))

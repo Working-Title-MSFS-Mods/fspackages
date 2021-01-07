@@ -1,8 +1,4 @@
-;
-;
-;
-;
-;
+
 class NearestAirspacesLoader {
     constructor(_instrument) {
         this.lla = new LatLongAlt;
@@ -1199,7 +1195,8 @@ class WaypointLoader {
      * @param {SimVar.SimVarBatch} batch Existing SimVarBatch object
      */
     addSimVarBatchValues(batch) {
-
+        // empty noop for overrides
+        return;
     }
 
     /**
@@ -1215,7 +1212,7 @@ class WaypointLoader {
     /**
      * Used to execute additional fs9gps commands to the search. To be overriden by loaders
      */
-    setCustomFs9Filter() {
+    async setCustomFs9Filter() {
         return new Promise(resolve => {
             // empty noop for overrides, called on max items update
             resolve();
@@ -1238,12 +1235,14 @@ class WaypointLoader {
                 this._locked = true;
                 SimVar.SetSimVarValue("C:fs9gps:" + this.SET_ORIGIN_LATITUDE, "degree latitude", this._searchOrigin.lat, this.instrument.instrumentIdentifier + "-loader").then(() => {
                     SimVar.SetSimVarValue("C:fs9gps:" + this.SET_ORIGIN_LONGITUDE, "degree longitude", this._searchOrigin.long, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                        this._lastSearchOriginSyncDate = t;
-                        this._locked = false;
-                        this._itemsCountNeedUpdate = true;
-                        this._hasUpdatedItems = false;
-                        this._lastSearchOriginLat = this._searchOrigin.lat;
-                        this._lastSearchOriginLong = this._searchOrigin.long;
+                        this.setCustomFs9Filter().then(() => {
+                            this._lastSearchOriginSyncDate = t;
+                            this._locked = false;
+                            this._itemsCountNeedUpdate = true;
+                            this._hasUpdatedItems = false;
+                            this._lastSearchOriginLat = this._searchOrigin.lat;
+                            this._lastSearchOriginLong = this._searchOrigin.long;
+                        });
                     });
                 });
                 return;
@@ -1270,21 +1269,19 @@ class WaypointLoader {
             if (this._maxItemsSearchCountNeedUpdate || (t - this._lastMaxItemsSearchCountSyncDate) > this.deprecationDelay) {
                 this._locked = true;
                 SimVar.SetSimVarValue("C:fs9gps:" + this.SET_MAX_ITEMS, "number", this.maxItemsSearchCount, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                    this.setCustomFs9Filter().then(() => {
-                        let trueMaxItemsSearchCount = SimVar.GetSimVarValue("C:fs9gps:" + this.GET_MAX_ITEMS, "number", this.instrument.instrumentIdentifier + "-loader");
-                        if (trueMaxItemsSearchCount === this.maxItemsSearchCount) {
-                            this._maxItemsSearchCountNeedUpdate = false;
-                            this._lastMaxItemsSearchCountSyncDate = t;
+                    let trueMaxItemsSearchCount = SimVar.GetSimVarValue("C:fs9gps:" + this.GET_MAX_ITEMS, "number", this.instrument.instrumentIdentifier + "-loader");
+                    if (trueMaxItemsSearchCount === this.maxItemsSearchCount) {
+                        this._maxItemsSearchCountNeedUpdate = false;
+                        this._lastMaxItemsSearchCountSyncDate = t;
+                        this._locked = false;
+                        this._itemsCountNeedUpdate = true;
+                        this._hasUpdatedItems = false;
+                    }
+                    else {
+                        setTimeout(() => {
                             this._locked = false;
-                            this._itemsCountNeedUpdate = true;
-                            this._hasUpdatedItems = false;
-                        }
-                        else {
-                            setTimeout(() => {
-                                this._locked = false;
-                            }, 1000);
-                        }
-                    });
+                        }, 1000);
+                    }
                 });
                 return;
             }
@@ -1532,21 +1529,15 @@ class IntersectionLoader extends WaypointLoader {
     }
 
     applyResultFilter(data) {
-        return data[1] === 1;
+        return true;
     }
 
-    setCustomFilter() {
+    async setCustomFs9Filter() {
         return new Promise(resolve => {
             if (this._showNamedOnly === true) {
-                // SimVar.SetSimVarValue("C:fs9gps:" + this.SET_INTERS_FILTER, "number", 2, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionRemoveIntersectionType", "number", 0, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                    SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionRemoveIntersectionType", "number", 1, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                        SimVar.SetSimVarValue("C:fs9gps:NearestIntersectionRemoveIntersectionType", "number", 2, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                            console.log(SimVar.GetSimVarValue("C:fs9gps:" + this.SET_INTERS_FILTER, "number", this.instrument.instrumentIdentifier + "-loader"));
-                            resolve();
-                        }).catch(console.log);
-                    });
-                });
+                SimVar.SetSimVarValue("C:fs9gps:" + this.SET_INTERS_FILTER, "number", 2, this.instrument.instrumentIdentifier + "-loader").then(() => {
+                    resolve();
+                }).catch(console.log);
             } else {
                 resolve();
             }
