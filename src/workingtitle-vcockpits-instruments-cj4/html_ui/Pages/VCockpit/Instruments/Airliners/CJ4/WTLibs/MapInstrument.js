@@ -25,6 +25,7 @@ class MapInstrument extends ISvgMapRootElement {
     constructor() {
         super();
         this.intersectionMaxRange = MapInstrument.INT_RANGE_DEFAULT;
+        this.termWptsMaxRange = MapInstrument.INT_RANGE_DEFAULT -1;
         this.vorMaxRange = MapInstrument.VOR_RANGE_DEFAULT;
         this.ndbMaxRange = MapInstrument.NDB_RANGE_DEFAULT;
         this.minimizedIntersectionMaxRange = MapInstrument.INT_RANGE_MIN_DEFAULT;
@@ -721,7 +722,7 @@ class MapInstrument extends ISvgMapRootElement {
             //         }
             //     }
             // }
-            if ((this.drawCounter % 10 === 1)) {
+            if ((this.drawCounter % 5 === 1)) {
                 this.navMap.mapElements = [];
                 this._displayMapElements = [];
                 if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
@@ -827,7 +828,7 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
-                    if (this.showTermWpts && (this.rangeIndex < this.intersectionMaxRange)) {
+                    if (this.showTermWpts && (this.rangeIndex < this.termWptsMaxRange)) {
                         for (let i = 0; i < this.termWptsLoader.waypoints.length; i++) {
                             let intersection = this.termWptsLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
