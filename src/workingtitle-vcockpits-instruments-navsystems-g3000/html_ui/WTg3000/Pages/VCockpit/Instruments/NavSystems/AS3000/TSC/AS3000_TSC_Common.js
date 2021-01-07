@@ -416,26 +416,40 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _changeMapRange(delta) {
+    _changeMFDMapRange(delta) {
         let controllerID = `MFD-${this.getSelectedMFDPane()}`;
         let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
-    _handleZoomEvent(event) {
-        if (this.getCurrentPageGroup().name !== "MFD") {
-            return;
-        }
+    _changePFDMapRange(delta) {
+        let controllerID = "PFD";
+        let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
+        WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
+    }
 
+    _handleZoomEventPFD(event) {
+        switch (event) {
+            case "BottomKnob_Small_INC":
+                this._changePFDMapRange(1);
+                break;
+            case "BottomKnob_Small_DEC":
+                this._changePFDMapRange(-1);
+                break;
+        }
+    }
+
+    _handleZoomEventMFD(event) {
         switch (this.getSelectedMFDPaneSettings().display.getValue()) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 switch (event) {
                     case "BottomKnob_Small_INC":
-                        this._changeMapRange(1);
+                        this._changeMFDMapRange(1);
                         break;
                     case "BottomKnob_Small_DEC":
-                        this._changeMapRange(-1);
+                        this._changeMFDMapRange(-1);
                         break;
                 }
                 break;
@@ -449,6 +463,14 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                 }
                 break;
+        }
+    }
+
+    _handleZoomEvent(event) {
+        if (this.getCurrentPageGroup().name === "PFD") {
+            this._handleZoomEventPFD(event);
+        } else if (this.getCurrentPageGroup().name === "MFD") {
+            this._handleZoomEventMFD(event);
         }
     }
 
@@ -620,7 +642,7 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
     }
     onEnter() {
         this.gps.setTopKnobText("");
-        this.gps.setBottomKnobText("");
+        this.gps.setBottomKnobText("-Range+ Push: Pan");
     }
     onUpdate(_deltaTime) {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {

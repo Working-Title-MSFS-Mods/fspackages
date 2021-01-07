@@ -64,6 +64,14 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
 
     _updateMFDPaneSelectDisplay() {
     }
+
+    _handleZoomEvent(event) {
+        if (this.popUpElement === this.audioRadioWindow || this.popUpElement === this.frequencyKeyboard) {
+            return;
+        }
+
+        super._handleZoomEvent(event);
+    }
 }
 
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
