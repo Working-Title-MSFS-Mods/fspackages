@@ -108,6 +108,8 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 * Various map draw improvements
 * Added icons for different VOR types and NDBs
 * Enabled map symbols are now drawn and updated around the current location
+* INTERS now only shows named and non terminal waypoints
+* Added display of terminal waypoints (to be enabled in FMC)
 
 ## Misc
 * AOA indicator only lights up on gear down or greater than flaps 15.
