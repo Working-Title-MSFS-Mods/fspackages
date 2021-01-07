@@ -69,7 +69,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["HI NAVAIDS[s-text disabled]", "SPEED[s-text disabled]"],
             [""],
-            [loNavaidsActive, altitudeActive + "[disabled]"],
+            [loNavaidsActive, altitudeActive + "[disabled s-text]"],
             [""],
             [intersectionsActive, airportsActive],
             [""],
