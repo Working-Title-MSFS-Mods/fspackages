@@ -46,9 +46,9 @@ class CJ4_FMC_FuelMgmtPageOne {
     }
 
     updateFuel() {
-        this._hours = Math.trunc((this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow).toFixed(0);
-        let hoursForResv = ((this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow);
-        this._minutes = ((((this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow) % 1) * 60).toFixed(0).toString().padStart(2, "0");
+        const hoursForResv = (this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow;
+        this._hours = Math.trunc(hoursForResv);
+        this._minutes = Math.trunc((hoursForResv % 1) * 60);
         let groundSpeed = Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"));
         this._rngToResv = (groundSpeed * hoursForResv).toFixed(0);
         this._spRng = ((1 / this._totalFuelFlow) * groundSpeed).toFixed(2).toString().substr(1);
@@ -78,7 +78,7 @@ class CJ4_FMC_FuelMgmtPageOne {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/3[blue] ", "FUEL MGMT[blue]"],
             [" FUEL[blue]", "TIME TO RESV[blue] "],
-            [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes],
+            [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes.toString().padStart(2, "0")],
             [" FUEL FLOW[blue]", "RNG TO RESV[blue] "],
             [" " + totalFuelFlowText, this._rngToResv + "[d-text]NM[s-text]"],
             [" RESERVES[blue]", "SP RNG[blue] "],
