@@ -1,5 +1,5 @@
 <ModelBehaviors>
-    <Include RelativeFile="Subtemplates\\Deice_Subtemplates.xml"/>
+    <!-- <Include RelativeFile="Subtemplates\\Deice_Subtemplates.xml"/> -->
     <!-- DEICE ################################################################ -->
     <Template Name="ASOBO_DEICE_Switch_Engine_Template">
         <DefaultTemplateParameters>

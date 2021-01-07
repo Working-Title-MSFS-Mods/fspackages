@@ -277,12 +277,6 @@ class CJ4NavModeSelector {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
       SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
 
-      SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
-      SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);
-      SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "knots", 0);
-      SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
-      SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
-      SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
     }
   }
 
@@ -328,6 +322,9 @@ class CJ4NavModeSelector {
         Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, Simplane.getVerticalSpeed());
         this.currentVerticalActiveState = VerticalNavModeState.VS;
         break;
+    }
+    if (SimVar.GetSimVarValue("L:WT_CJ4_VS_ON", "number") == 1 && SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1) {
+      SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
     if (this.isVNAVOn) {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this.vnavRequestedSlot);

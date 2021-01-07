@@ -801,6 +801,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
+            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             fmc.refreshPageCallback = () => CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
         };
         //end of CWB EXEC handling

@@ -87,6 +87,11 @@ class SvgWaypointElement extends SvgMapElement {
     }
 
     isActiveWaypoint() {
+        const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+        const activeIndex = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIndex();
+        if (holdIndex != -1 && activeIndex == holdIndex + 1) {
+            return this.source.ident === FlightPlanManager.DEBUG_INSTANCE.getPreviousActiveWaypoint().ident;
+        }
         return this.source.ident === FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIdent();
     }
 
@@ -305,7 +310,7 @@ class SvgWaypointTextElement extends SvgMapElement {
         let fontSize = this.waypointElement.getLabelFontSize(map);
         let text = this.waypointElement.ident;
         let c = document.createElement("canvas");
-        let ctx = c.getContext("2d", { alpha: false });
+        let ctx = c.getContext("2d");
         ctx.font = fontSize + "px " + map.config.waypointLabelFontFamily;
         this._textWidth = ctx.measureText(text).width;
         this._textHeight = fontSize * 0.675;
@@ -314,7 +319,18 @@ class SvgWaypointTextElement extends SvgMapElement {
         if (activeWaypoint) {
             ident = activeWaypoint.ident;
         }
-        let isActiveWaypoint = this.waypointElement.source.ident === ident;
+        let isActiveWaypoint = false;
+
+        //edit for holds
+        const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
+        const activeIndex = FlightPlanManager.DEBUG_INSTANCE.getActiveWaypointIndex();
+        if (holdIndex != -1 && activeIndex == holdIndex + 1) {
+            isActiveWaypoint = this.waypointElement.source.ident === FlightPlanManager.DEBUG_INSTANCE.getPreviousActiveWaypoint().ident;
+            
+        } else {
+            isActiveWaypoint = this.waypointElement.source.ident === ident;
+        }
+
         this._refreshLabel(map, isActiveWaypoint);
         return this._label;
     }
@@ -347,7 +363,8 @@ class SvgWaypointTextElement extends SvgMapElement {
             return;
         }
 
-        let context = canvas.getContext("2d", { alpha: false });
+        let context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.width, canvas.height);
         if (map.config.waypointLabelUseBackground) {
             context.fillStyle = "black";
             context.fillRect(0, 0, this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight, this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom);

@@ -200,6 +200,7 @@ class CJ4_FMC_RoutePage {
                 this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
                 if (value == "") {
+                    this._fmc.setMsg();
                     if (this._fmc.flightPlanManager.getOrigin()) {
                         this._fmc.inOut = this._fmc.flightPlanManager.getOrigin().ident;
                     }
@@ -213,6 +214,7 @@ class CJ4_FMC_RoutePage {
                 this._fmc.setMsg("Working...");
                 let value = this._fmc.inOut;
                 if (value == "") {
+                    this._fmc.setMsg();
                     if (this._fmc.flightPlanManager.getDestination()) {
                         this._fmc.inOut = this._fmc.flightPlanManager.getDestination().ident;
                     }
@@ -294,7 +296,7 @@ class CJ4_FMC_RoutePage {
     bindRowEvents(lskIdx) {
         if (this._currentPage > 0) {
             this._fmc.onLeftInput[lskIdx] = () => {
-                this._fmc.setMsg("Working...");
+                //this._fmc.setMsg("Working...");
                 const value = this._fmc.inOut;
                 this._fmc.clearUserInput();
                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
@@ -397,6 +399,8 @@ class CJ4_FMC_RoutePage {
                     this._fmc.setMsg();
                     this._fmc.fpHasChanged = true;
                     SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+                    this._fmc.resetVspeeds();
+                    this._fmc.resetFuelUsed();
                     this.update(true);
                 }
             });

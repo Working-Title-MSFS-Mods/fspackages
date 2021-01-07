@@ -42,14 +42,17 @@ class HoldsDirector {
 
     /** The direction of the turn. */
     this.turnDirection = HoldTurnDirection.Right;
+
+    SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', -1);
   }
 
   /**
    * Sets up the hold in the HoldsDirector.
+   * @param {number} holdWaypointIndex The index of the waypoint for the hold.
    */
-  initializeHold() {
-    const holdWaypoint = this.fpm.getFlightPlan(0).getWaypoint(this.holdWaypointIndex);
-    const prevWaypoint = this.fpm.getFlightPlan(0).getWaypoint(this.holdWaypointIndex - 1);
+  initializeHold(holdWaypointIndex) {
+    const holdWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex);
+    const prevWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex - 1);
 
     if (holdWaypoint && prevWaypoint) {
       const holdDetails = holdWaypoint.holdDetails;
@@ -110,12 +113,12 @@ class HoldsDirector {
     const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
 
     if (this.holdWaypointIndex !== holdWaypointIndex) {
-      this.initializeHold();
+      this.initializeHold(holdWaypointIndex);
       this.holdWaypointIndex = holdWaypointIndex;
     }
 
     if (flightPlanVersion !== this.currentFlightPlanVersion) {
-      this.initializeHold();
+      this.initializeHold(this.holdWaypointIndex);
       this.currentFlightPlanVersion = flightPlanVersion;
     }
 
@@ -389,11 +392,16 @@ class HoldsDirector {
     }
 
     let xtk = AutopilotMath.crossTrackArc(legStart, legEnd, planeState.position);
+    let interceptScalar = 0;
     if (this.turnDirection === HoldTurnDirection.Left) {
       xtk = -1 * xtk;
+      interceptScalar = Math.sign(xtk) === 1 ? 2 : .25;
+    }
+    else {
+      interceptScalar = Math.sign(xtk) === -1 ? 2 : .25;
     }
 
-    const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.APPROACHLPV, 35);
+    const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.APPROACHLPV, 35) * interceptScalar;
     HoldsDirector.setCourse(AutopilotMath.normalizeHeading(dtk + interceptAngle), planeState);
   }
 
@@ -462,7 +470,8 @@ class HoldsDirector {
       && this.state !== HoldsDirectorState.NONE
       && this.state !== HoldsDirectorState.EXITED
       && this.state !== HoldsDirectorState.ENTRY_TEARDROP_INBOUND
-      && this.state !== HoldsDirectorState.ENTRY_PARALLEL_INBOUND;
+      && this.state !== HoldsDirectorState.ENTRY_PARALLEL_INBOUND
+      && this.state !== HoldsDirectorState.ENTRY_DIRECT_INBOUND;
   }
 
   /**
@@ -472,6 +481,15 @@ class HoldsDirector {
    */
   isHoldExiting(index) {
     return this.holdWaypointIndex === index && this.state === HoldsDirectorState.EXITING;
+  }
+
+  /**
+   * Whether or not the current hold has exited.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if exiting, false otherwise.
+   */
+  isHoldExited(index) {
+    return this.holdWaypointIndex === index && this.state === HoldsDirectorState.EXITED;
   }
 
   /**

@@ -1,7 +1,6 @@
 import { SegmentType, FlightPlanSegment } from './FlightPlanSegment';
 import { LegsProcedure } from './LegsProcedure';
 import { RawDataMapper } from './RawDataMapper';
-import { GPS } from './GPS';
 import { ProcedureDetails } from './ProcedureDetails';
 import { DirectTo } from './DirectTo';
 import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar, OneWayRunway } from 'MSFS';
@@ -132,7 +131,7 @@ export class ManagedFlightPlan {
     this.procedureDetails = new ProcedureDetails();
     this.directTo = new DirectTo();
 
-    await GPS.clearPlan();
+    //await GPS.clearPlan();
     this._segments = [new FlightPlanSegment(SegmentType.Enroute, 0, [])];
   }
 
@@ -140,24 +139,24 @@ export class ManagedFlightPlan {
    * Syncs the flight plan to FS9GPS.
    */
   public async syncToGPS(): Promise<void> {
-    await GPS.clearPlan();
-    for (var i = 0; i < this.waypoints.length; i++) {
-      const waypoint = this.waypoints[i];
+    // await GPS.clearPlan();
+    // for (var i = 0; i < this.waypoints.length; i++) {
+    //   const waypoint = this.waypoints[i];
 
-      if (waypoint.icao && waypoint.icao.trim() !== '') {
-        await GPS.addIcaoWaypoint(waypoint.icao, i);
-      }
-      else {
-        await GPS.addUserWaypoint(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, i, waypoint.ident);
-      }
+    //   if (waypoint.icao && waypoint.icao.trim() !== '') {
+    //     await GPS.addIcaoWaypoint(waypoint.icao, i);
+    //   }
+    //   else {
+    //     await GPS.addUserWaypoint(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long, i, waypoint.ident);
+    //   }
 
-      if (waypoint.endsInDiscontinuity) {
-        break;
-      }
-    }
+    //   if (waypoint.endsInDiscontinuity) {
+    //     break;
+    //   }
+    // }
 
-    await GPS.setActiveWaypoint(this.activeWaypointIndex);
-    await GPS.logCurrentPlan();
+    // await GPS.setActiveWaypoint(this.activeWaypointIndex);
+    // await GPS.logCurrentPlan();
   }
 
   /**

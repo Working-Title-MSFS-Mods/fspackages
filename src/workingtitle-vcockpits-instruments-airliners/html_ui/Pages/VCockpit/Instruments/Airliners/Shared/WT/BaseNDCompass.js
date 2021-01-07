@@ -472,7 +472,6 @@ class Jet_NDCompass extends HTMLElement {
                         this.courseTOBorder.setAttribute("visibility", "visible");
                         this.courseFROM.setAttribute("visibility", "hidden");
                         this.courseFROMBorder.setAttribute("visibility", "hidden");
-                        console.log("NAV TO");
                     } else if (navFlag ==2) {
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");
@@ -480,7 +479,6 @@ class Jet_NDCompass extends HTMLElement {
                         this.courseFROMBorder.setAttribute("visibility", "visible");
                         this.courseFROM.setAttribute("transform", "translate(0 220)", "rotate(0 50 50)");
                         this.courseFROMBorder.setAttribute("transform", "translate(0 220)", "rotate(0 50 50)");
-                        console.log("NAV FROM")
                     }
                 }
 

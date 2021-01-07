@@ -515,8 +515,14 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
     }
     updateBaroPressure() {
         if (this.pressureSVG) {
-            var pressure = SimVar.GetSimVarValue("KOHLSMAN SETTING HG:2", "inches of mercury");
-            this.pressureSVG.textContent = pressure.toFixed(2) + " in";
+            const baroHpa = SimVar.GetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool");
+            if (baroHpa) {
+                var pressure = SimVar.GetSimVarValue("KOHLSMAN SETTING MB:2", "Millibars");
+                this.pressureSVG.textContent = pressure.toFixed(0) + " mb";
+            } else {
+                var pressure = SimVar.GetSimVarValue("KOHLSMAN SETTING HG:2", "inches of mercury");
+                this.pressureSVG.textContent = pressure.toFixed(2) + " in";
+            }
         }
     }
     updateGraduationScrolling(_altitude) {

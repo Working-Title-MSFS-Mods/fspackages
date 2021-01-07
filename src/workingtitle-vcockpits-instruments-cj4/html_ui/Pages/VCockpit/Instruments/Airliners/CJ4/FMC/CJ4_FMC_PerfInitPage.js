@@ -60,11 +60,13 @@ class CJ4_FMC_PerfInitPage {
         const grossWeightText = gwtValueUnit.Value.toFixed(0) + " " + gwtValueUnit.Unit + "[s-text]";
         const bowText = fmc.zFWActive == 1 ? " -----": " " + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText + "[s-text]";
         const paxText = fmc.zFWActive == 1 ? "--/--" : fmc.paxNumber + paxLabel;
+        const transitionFL = 180;
+        const cruiseAltText = crzAltCell == "□□□□□" ? "□□□□□" : crzAltCell < transitionFL ? crzAltCell * 100 : "FL" + crzAltCell;
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
-            [bowText, "FL" + crzAltCell],
+            [bowText, cruiseAltText + ""],
             [" PASS/WT[blue]"],
             [" " + paxText],
             [" CARGO[blue]", "= ZFW[blue] "],

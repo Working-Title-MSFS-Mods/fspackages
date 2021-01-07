@@ -42,8 +42,13 @@ class WT_VnavAutopilot {
     update() {
         //We are intercepting the constraint, inhibit execution until we change path conditions
         if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC && this._inhibitExecute !== true) {
-            this._inhibitExecute = true;
-            SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
+            if (this._navModeSelector.currentVerticalArmedStates[0] = VerticalNavModeState.GP) {
+                this._inhibitExecute = false;
+                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
+            } else {
+                this._inhibitExecute = true;
+                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
+            }
         }
 
         if (this._vnav._vnavCalculating) {
@@ -52,7 +57,6 @@ class WT_VnavAutopilot {
             //CONSTRAINT DATA
             if (this._vnav._vnavConstraintType) {
                 this._constraintExists = true;
-                // console.log("this._constraintExists = true");
             }
             else {
                 this._constraintExists = false;
@@ -67,13 +71,18 @@ class WT_VnavAutopilot {
 
                 //IS THERE A NEW PATH?
                 if (this._vnav._newPath) {
-                    console.log("GETTING NEW PATH");
-                    this._inhibitExecute = false;
-                    this._pathArm = false;
-                    this._pathArmAbove = false;
-                    this._pathActive = false;
-                    this._pathActivate = false;
-                    this._vnav._newPath = false;
+                    if (this._vnavTargetAltitude > this._vnav._vnavTargetAltitude && this._indicatedAltitude > this._vnavTargetAltitude + 100
+                        && this._vnav._altDeviation < -100) {
+                        this._inhibitExecute = true;
+                        return;
+                    } else {
+                        this._inhibitExecute = false;
+                        this._pathArm = false;
+                        this._pathArmAbove = false;
+                        this._pathActive = false;
+                        this._pathActivate = false;
+                        this._vnav._newPath = false;
+                    }
                 }
 
                 //CAN PATH ARM?
@@ -132,10 +141,10 @@ class WT_VnavAutopilot {
                 //IS PATH ACTIVE?
                 if (this._pathActive) {
                     //PATH MODE IS ACTIVE
-                    if (this._vnavTargetAltitude == this._vnav._vnavTargetAltitude) {
+                    if (Math.round(this._vnavTargetAltitude) == Math.round(this._vnav._vnavTargetAltitude)) {
                         //WE HAVE NOT PASSED THE TARGET YET 
                     }
-                    else if (this._vnav._vnavTargetAltitude > this._vnavTargetAltitude) {
+                    else if (this._vnav._vnavTargetAltitude > this._vnavTargetAltitude + 100) {
                         //ODD CASE WHERE NEXT CONSTRAINT IS HIGHER THAN CURRENT CONSTRAINT
                         this.setTargetAltitude(this._vnavTargetAltitude);
                         this.deactivate();
@@ -216,11 +225,12 @@ class WT_VnavAutopilot {
             if (pathStatusSimVar != 3) {
                 SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 3);
             }
-            if (this._navModeSelector.selectedAlt2 != this._vnavTargetAltitude) {
+            if (Math.round(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
                 this.setTargetAltitude();
             }
-            // if (this._navModeSelector.currentVerticalActiveState != VerticalNavModeState.PATH) {
-            //     this.recalculate();
+            //ADDED for 0.9.0 and then reverted prior to release per CWB
+            // if (this._navModeSelector.currentAltSlotIndex !=2 && this._vnav._altDeviation > 0) {
+            //     this._vnavAltSlot = 2;
             // }
         }
         else if (this._pathArm) {
@@ -252,7 +262,6 @@ class WT_VnavAutopilot {
         
         if (!this._pathActive && this._constraintExists) {
             //NO PATH, SET ALT CONSTRAINTS
-            // console.log("constraint exists execute");
             if (this._vnav._vnavConstraintWaypoint) {
                 const altSet2 = this._navModeSelector.selectedAlt2;
                 if (Math.round(altSet2) != Math.round(this._vnav._vnavConstraintAltitude) && (VerticalNavModeState.ALT || VerticalNavModeState.ALTC)) {
@@ -261,47 +270,36 @@ class WT_VnavAutopilot {
                 if (this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.PTCH
                      || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.VS 
                      || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.FLC) {
-                        // console.log("constraint execute in vertical mode");
                         const altSlot = this._navModeSelector.currentAltSlotIndex;
                         const altSet1 = this._navModeSelector.selectedAlt1;
                         if (Math.round(altSet2) != Math.round(this._vnav._vnavConstraintAltitude)) {
-                            // console.log("setting target alt: " + this._vnav._vnavConstraintAltitude);
                             this.setTargetAltitude(this._vnav._vnavConstraintAltitude);
                         }
                         if (this._vnav._currentFlightSegment.type == SegmentType.Departure) {
                             //CLIMB CONSTRAINTS
-                            // console.log("climb constraint");
                             this._obeyingConstraint = true;
                             if (altSet1 > altSet2 && (altSlot == 1 || altSlot == 3)) {
-                                // console.log("set slot 2");
                                 this._vnavAltSlot = 2;
                                 //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
                             }
                             else if (altSet1 <= altSet2 && altSlot == 2) {
-                                // console.log("set slot 1");
                                 this._vnavAltSlot = 1;
                                 //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
                             }
                         }
                         else if (this._vnav._currentFlightSegment.type != SegmentType.Departure) {
                             //DESCENT CONSTRAINTS
-                            // console.log("descent constraint");
                             this._obeyingConstraint = true;
                             if (altSet1 < altSet2 && altSlot == 1) {
-                                // console.log("set slot 2");
                                 this._vnavAltSlot = 2;
-                                //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
                             }
                             else if (altSet1 >= altSet2 && altSlot == 2) {
-                                // console.log("set slot 1");
                                 this._vnavAltSlot = 1;
-                                //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
                             }
                         }
                     }
             }
             else {
-                //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
                 SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
                 this._vnavAltSlot = 1;
             }
@@ -319,8 +317,7 @@ class WT_VnavAutopilot {
             const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(activeFPA * (Math.PI / 180));
             const maxVerticalSpeed = 101.2686667 * groundSpeed * Math.tan(6 * (Math.PI / 180));
             const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
-            //const selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
-            if (this._navModeSelector.selectedAlt2 != this._vnavTargetAltitude) {
+            if (Math.floor(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
                 this.setTargetAltitude();
             }
             if (this._vnav._vnavTargetDistance < 1 && this._vnav._vnavTargetDistance > 0) {
@@ -341,6 +338,10 @@ class WT_VnavAutopilot {
             }
             setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
             Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
+            // ADDED for 0.9.0 but reverted per CWB
+            // if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1 && this._vnav._altDeviation > 0) {
+            //     SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+            //   }
         }
     }
 
@@ -383,14 +384,13 @@ class WT_VnavAutopilot {
         }
         else {
             let isClimb = this._vnav._currentFlightSegment.type == SegmentType.Departure ? true : false;
-            console.log(isClimb ? "Climb Target Altitude" : "Not Climb Target Altitude");
 
             let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
             let updatedTargetAltitude = isClimb ? Math.min(targetAltitude, selectedAltitude) : Math.max(targetAltitude, selectedAltitude);
+            updatedTargetAltitude = Math.floor(updatedTargetAltitude);
 
-            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.round(updatedTargetAltitude), true);
-            //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-            console.log("updatedTargetAltitude: " + updatedTargetAltitude);
+            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.floor(updatedTargetAltitude), true);
+
             SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
         }
     }
@@ -445,14 +445,12 @@ class WT_VnavAutopilot {
 
     cancelConstraint() {
         //method to reset after adhereing to a constraint when no more constraints exist
-        // console.log("set slot 1 after passing constraints");
         this._vnavAltSlot = 1;
         this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_1);
         this._obeyingConstraint = false;
     }
 
     vnavAltSlotRequest() {
-        // console.log("this._vnavAltSlot: " + this._vnavAltSlot);
         const altSlot = this._navModeSelector.currentAltSlotIndex;
         if (this._vnavAltSlot == 1 && altSlot == 2) {
             this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_1);

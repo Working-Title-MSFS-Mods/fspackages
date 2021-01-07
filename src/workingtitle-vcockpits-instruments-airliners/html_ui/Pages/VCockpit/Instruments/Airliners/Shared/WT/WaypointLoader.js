@@ -1,8 +1,4 @@
-;
-;
-;
-;
-;
+
 class NearestAirspacesLoader {
     constructor(_instrument) {
         this.lla = new LatLongAlt;
@@ -1158,6 +1154,10 @@ class WaypointLoader {
         this.deprecationDelay /= 2;
         this.deprecationDelay = Math.max(this.deprecationDelay, WaypointLoader.DEPRECATION_DELAY_MIN);
     }
+    set speed(v) {
+        this.deprecationDelay = v;
+    }
+
     get maxItemsSearchCount() {
         return this._maxItemsSearchCount;
     }
@@ -1189,6 +1189,35 @@ class WaypointLoader {
     set searchLong(v) {
         this._searchOrigin.long = v;
     }
+
+    /**
+     * Used to add additional values to the batch. For use in applyResultFilter. To be overriden by loaders
+     * @param {SimVar.SimVarBatch} batch Existing SimVarBatch object
+     */
+    addSimVarBatchValues(batch) {
+        // empty noop for overrides
+        return;
+    }
+
+    /**
+     * Used to prefilter fs9gps result items. To be overriden by loaders
+     * @param {Array} data Array of waypoint result 
+     * @returns true if the result should stay
+     */
+    applyResultFilter(data) {
+        // empty noop for overrides
+        return true;
+    }
+
+    /**
+     * Used to execute additional fs9gps commands to the search. To be overriden by loaders
+     */
+    async setCustomFs9Filter() {
+        return new Promise(resolve => {
+            // empty noop for overrides, called on max items update
+            resolve();
+        });
+    }
     update() {
         if (this._locked) {
             return;
@@ -1206,12 +1235,14 @@ class WaypointLoader {
                 this._locked = true;
                 SimVar.SetSimVarValue("C:fs9gps:" + this.SET_ORIGIN_LATITUDE, "degree latitude", this._searchOrigin.lat, this.instrument.instrumentIdentifier + "-loader").then(() => {
                     SimVar.SetSimVarValue("C:fs9gps:" + this.SET_ORIGIN_LONGITUDE, "degree longitude", this._searchOrigin.long, this.instrument.instrumentIdentifier + "-loader").then(() => {
-                        this._lastSearchOriginSyncDate = t;
-                        this._locked = false;
-                        this._itemsCountNeedUpdate = true;
-                        this._hasUpdatedItems = false;
-                        this._lastSearchOriginLat = this._searchOrigin.lat;
-                        this._lastSearchOriginLong = this._searchOrigin.long;
+                        this.setCustomFs9Filter().then(() => {
+                            this._lastSearchOriginSyncDate = t;
+                            this._locked = false;
+                            this._itemsCountNeedUpdate = true;
+                            this._hasUpdatedItems = false;
+                            this._lastSearchOriginLat = this._searchOrigin.lat;
+                            this._lastSearchOriginLong = this._searchOrigin.long;
+                        });
                     });
                 });
                 return;
@@ -1274,11 +1305,14 @@ class WaypointLoader {
                         }
                         this.batch = new SimVar.SimVarBatch("C:fs9gps:" + this.GET_ITEMS_COUNT, "C:fs9gps:" + this.SET_ITEM_INDEX);
                         this.batch.add("C:fs9gps:" + this.GET_ITEM_ICAO, "string");
+                        this.addSimVarBatchValues(this.batch);
                     }
                     let icaos = [];
                     SimVar.GetSimVarArrayValues(this.batch, async (values) => {
                         for (let i = 0; i < values.length; i++) {
-                            icaos.push(values[i][0]);
+                            if (this.applyResultFilter(values[i]) === true) {
+                                icaos.push(values[i][0]);
+                            }
                         }
                         let waypoints = await this.createWaypointsCallback(icaos);
                         if (waypoints && waypoints.length > 0) {
@@ -1430,9 +1464,11 @@ class VORLoader extends WaypointLoader {
     }
 }
 class IntersectionLoader extends WaypointLoader {
-    constructor(_instrument) {
+    constructor(_instrument, showNamedOnly = false, showTermWpts = false, loadername = "IntersectionLoader") {
         super(_instrument);
-        this.loaderName = "IntersectionLoader";
+        this._showNamedOnly = showNamedOnly;
+        this._showTermWpts = showTermWpts;
+        this.loaderName = loadername;
         this.SET_ORIGIN_LATITUDE = "NearestIntersectionCurrentLatitude";
         this.SET_ORIGIN_LONGITUDE = "NearestIntersectionCurrentLongitude";
         this.SET_SEARCH_RANGE = "NearestIntersectionMaximumDistance";
@@ -1443,6 +1479,7 @@ class IntersectionLoader extends WaypointLoader {
         this.SET_ITEM_INDEX = "NearestIntersectionCurrentLine";
         this.GET_ITEM_ICAO = "NearestIntersectionCurrentIcao";
         this.GET_ITEM_IDENT = "NearestIntersectionCurrentIdent";
+        this.SET_INTERS_FILTER = "NearestIntersectionCurrentFilter";
         this.createCallback = async (ident) => {
             let intersection = new NearestIntersection(this.instrument);
             intersection.ident = ident;
@@ -1486,6 +1523,31 @@ class IntersectionLoader extends WaypointLoader {
             }
             return this.instrument.facilityLoader.getIntersections(icaosToLoad);
         };
+    }
+
+    addSimVarBatchValues(batch) {
+        batch.add("C:fs9gps:NearestIntersectionCurrentType", "number");
+    }
+
+    applyResultFilter(data) {
+        console.log(data[0]);
+        if (this._showTermWpts) {
+            return data[0][3] !== ' ';
+        } else {
+            return data[0][3] === ' ';
+        }
+    }
+
+    async setCustomFs9Filter() {
+        return new Promise(resolve => {
+            if (this._showNamedOnly === true) {
+                SimVar.SetSimVarValue("C:fs9gps:" + this.SET_INTERS_FILTER, "number", 2, this.instrument.instrumentIdentifier + "-loader").then(() => {
+                    resolve();
+                }).catch(console.log);
+            } else {
+                resolve();
+            }
+        });
     }
 }
 class AirportLoader extends WaypointLoader {
@@ -1538,7 +1600,7 @@ class AirportLoader extends WaypointLoader {
                 this.instrument.facilityLoader.getFacilityCB(icao, resolve);
             });
         };
-        if(loadFacility){
+        if (loadFacility) {
             this.createWaypointsCallback = async (icaos) => {
                 let icaosToLoad = [];
                 for (let i = 0; i < icaos.length; i++) {

@@ -639,7 +639,7 @@ class CJ4_VSpeed extends NavSystemElement {
         var vSpeed = Math.round(Simplane.getVerticalSpeed());
         this.vsi.setAttribute("vspeed", vSpeed.toString());
 
-        if (Simplane.getAutoPilotVerticalSpeedHoldActive() && fmaValues.verticalMode !== 'VPATH') {
+        if (Simplane.getAutoPilotVerticalSpeedHoldActive() && (fmaValues.verticalMode === 'VS' || fmaValues.verticalMode === 'VVS')) {
             let selVSpeed = Math.round(Simplane.getAutoPilotVerticalSpeedHoldValue());
             this.vsi.setAttribute("selected_vspeed", selVSpeed.toString());
             this.vsi.setAttribute("selected_vspeed_active", "true");
@@ -883,15 +883,11 @@ class CJ4_ILS extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        console.log("onupdate");
         if (this.ils) {
             this.altWentAbove500 = true;
-            console.log("this.ils");
             let showLoc = 0;
             let showGs = 0;
-
             
-            console.log("this.gps.mapNavigationSource: " + this.gps.mapNavigationSource);
             if (this.gps.mapNavigationSource === 1 || this.gps.mapNavigationSource === 2) {
                 const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.gps.mapNavigationSource, "bool");
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.gps.mapNavigationSource, "bool");

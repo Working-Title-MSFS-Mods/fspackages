@@ -2887,6 +2887,7 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
     CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
     CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
+    CJ4_MapSymbol[CJ4_MapSymbol["TERMWPTS"] = 8] = "TERMWPTS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
 class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -2898,7 +2899,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
         this.isExtended = undefined;
-        this.zoomRanges = [5, 10, 25, 50, 100, 200, 300];
+        this.zoomRanges = [5, 10, 25, 50, 100, 200, 300, 600];
         this.zoomFactor = 1.0;
         this.symbols = -1;
         this.symbolsToSimvar = false;
@@ -3066,6 +3067,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showNDBs = (this.symbols & (1 << CJ4_MapSymbol.NDBS)) ? true : false;
         this.map.instrument.showAirports = (this.symbols & (1 << CJ4_MapSymbol.AIRPORTS)) ? true : false;
         this.map.instrument.showIntersections = (this.symbols & (1 << CJ4_MapSymbol.INTERSECTS)) ? true : false;
+        this.map.instrument.showTermWpts = (this.symbols & (1 << CJ4_MapSymbol.TERMWPTS)) ? true : false;
     }
     getAdaptiveRanges() {
         let ranges = Array.from(this.zoomRanges);
@@ -3717,7 +3719,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
                 this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
-                this.addList("RANGE", this.textSize, ["10", "20", "40", "80", "160", "320"], [CJ4_PopupMenu_Key.MAP_RANGE]);
+                this.addList("RANGE", this.textSize, ["5", "10", "25", "50", "100", "200", "300"], [CJ4_PopupMenu_Key.MAP_RANGE]);
             }
             this.endSection();
             this.beginSection();

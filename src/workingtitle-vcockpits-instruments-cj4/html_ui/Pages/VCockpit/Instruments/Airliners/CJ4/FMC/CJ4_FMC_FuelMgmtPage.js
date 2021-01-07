@@ -225,8 +225,7 @@ class CJ4_FMC_FuelMgmtPageTwo {
 
     bindEvents() {
         this._fmc.onLeftInput[4] = () => {
-            this._fmc.initialFuelLeft = this._fuelQuantityLeft;
-            this._fmc.initialFuelRight = this._fuelQuantityRight;
+            this._fmc.resetFuelUsed();
         };
 
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(this._fmc); };

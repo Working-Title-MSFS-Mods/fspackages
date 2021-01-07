@@ -66,7 +66,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 fixedGroup.appendChild(arc.svg);
                 let vec = new Vec2(1, 0.45);
                 vec.SetNorm(circleRadius * 0.92);
-                this.addMapRange(fixedGroup, 30 - vec.x, 50 - vec.y, "white", "26", false, 1.0, false, "middle");
+                this.addMapRange(fixedGroup, 30 - vec.x, 50 - vec.y, "white", "26", false, 1.0, false, "left");
                 var smallCircleRadius = 170;
                 vec.SetNorm(smallCircleRadius * 0.82);
                 this.addMapRange(fixedGroup, 40 - vec.x, 50 - vec.y, "white", "26", false, 0.5, false);
@@ -421,6 +421,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 noFpln.setAttribute("text-anchor", "middle");
                 noFpln.setAttribute("alignment-baseline", "central");
                 this.noFplnGroup.appendChild(noFpln);
+                this.noFplnGroup.setAttribute("visibility", "hidden");
                 this.root.appendChild(this.noFplnGroup);
             }
             {
@@ -1589,6 +1590,20 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 vec.SetNorm(circleRadius * 0.87);
                 this.addMapRange(circleGroup, 490 - vec.x, 500 - vec.y, "white", "38", false, 1.0, false);
             }
+
+            {
+                let northLbl = document.createElementNS(Avionics.SVG.NS, "text");
+                northLbl.textContent = "N";
+                northLbl.setAttribute("x", "500");
+                northLbl.setAttribute("y", "155");
+                northLbl.setAttribute("fill", "white");
+                northLbl.setAttribute("font-size", "34");
+                northLbl.setAttribute("font-family", "Roboto-Bold");
+                northLbl.setAttribute("text-anchor", "middle");
+                northLbl.setAttribute("align", "center");
+                this.root.appendChild(northLbl);
+            }
+
             this.currentRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.currentRefGroup.setAttribute("id", "currentRefGroup");
             this.currentRefGroup.setAttribute("transform", "scale(1.5)");

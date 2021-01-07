@@ -61,7 +61,7 @@ export class WaypointBuilder {
     const destinationDistanceInFlightplan = fpm.getDestination().cumulativeDistanceInFP;
     console.log("destinationDistanceInFlightplan " + destinationDistanceInFlightplan);
 
-    const placeDistanceFromDestination = fpm.getWaypoint(placeIndex, 0, true).cumulativeDistanceInFP;
+    const placeDistanceFromDestination = fpm.getWaypoint(placeIndex, NaN, true).cumulativeDistanceInFP;
     console.log("placeDistanceFromDestination " + placeDistanceFromDestination);
 
     const distanceFromDestination = destinationDistanceInFlightplan - placeDistanceFromDestination - distance;

@@ -86,7 +86,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onLeftInput[1] = () => {
@@ -103,7 +103,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onRightInput[0] = () => {
@@ -116,7 +116,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onRightInput[2] = () => {
@@ -129,7 +129,7 @@ class CJ4_FMC_VNavSetupPage {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
-            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            CJ4_FMC_VNavSetupPage.ShowPage3(fmc);
         };
 
         fmc.onRightInput[3] = () => {
@@ -274,10 +274,10 @@ class CJ4_FMC_VNavSetupPage {
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
                     ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
                     [vsVar + "/" + vsVar1 + "/" + vsVar2 + "/" + vsVar3],
-                    // ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
-                    // [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
-                    ["PTCH HLD[blue]", "TOGA[blue]", "PTCH REF[blue]"],
-                    [pitchHold ? "YES[green]" : "NO[white]", togaHold ? "YES[green]" : "NO[white]", pitchRef.toFixed(1) + "[white]"],
+                    ["ALTVAR/VAR:1/VAR:2/VAR:3[blue]"],
+                    [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
+                    // ["PTCH HLD[blue]", "TOGA[blue]", "PTCH REF[blue]"],
+                    // [pitchHold ? "YES[green]" : "NO[white]", togaHold ? "YES[green]" : "NO[white]", pitchRef.toFixed(1) + "[white]"],
                     ["ALK:" + altLock, "OBEY? [white]" + obeyConstraint == 1 ? "Y[green]" : "N", "CSTR? [white]" + constraint == 1 ? "Y[green]" : "N"],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);

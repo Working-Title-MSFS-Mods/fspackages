@@ -1,5 +1,5 @@
 import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, Coherent } from 'MSFS';
-import { ManagedFlightPlan, GPS } from '../wtsdk';
+import { ManagedFlightPlan } from '../wtsdk';
 import { FlightPlanSegment } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { LZUTF8, WTDataStore } from 'WorkingTitle'
@@ -193,7 +193,7 @@ export class FlightPlanManager {
     this._flightPlans[index] = copiedFlightPlan;
 
     if (index === 0) {
-      await GPS.setActiveWaypoint(activeWaypointIndex);
+      //await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
     this._updateFlightPlanVersion();
@@ -212,7 +212,7 @@ export class FlightPlanManager {
     this._flightPlans[this._currentFlightPlanIndex] = copiedFlightPlan;
 
     if (this._currentFlightPlanIndex === 0) {
-      await GPS.setActiveWaypoint(activeWaypointIndex);
+      //await GPS.setActiveWaypoint(activeWaypointIndex);
     }
 
     this._updateFlightPlanVersion();
@@ -790,6 +790,10 @@ export class FlightPlanManager {
       flightPlanIndex = this._currentFlightPlanIndex;
     }
 
+    if (this._flightPlans[flightPlanIndex] === undefined) {
+      return [];
+    }
+
     return this._flightPlans[flightPlanIndex].waypoints;
   }
 
@@ -1157,7 +1161,7 @@ export class FlightPlanManager {
   public async activateApproach(callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (!this.isActiveApproach()) {
-      await GPS.setActiveWaypoint(currentFlightPlan.approach.offset);
+      //await GPS.setActiveWaypoint(currentFlightPlan.approach.offset);
     }
 
     callback();
@@ -1304,14 +1308,27 @@ export class FlightPlanManager {
    */
   public async activateDirectTo(icao: string, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
-
-    while (currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR") > -1) {
-      currentFlightPlan.removeWaypoint(currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR"));
-    }
-
     const waypointIndex = currentFlightPlan.waypoints.findIndex(w => w.icao === icao);
+
+    await this.activateDirectToByIndex(waypointIndex, callback);
+  }
+
+  /**
+   * Activates direct-to an existing waypoint in the flight plan.
+   * @param waypointIndex The index of the waypoint.
+   * @param callback A callback to call when the operation completes.
+   */
+  public async activateDirectToByIndex(waypointIndex: number, callback = EmptyCallback.Void): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    const waypoint = currentFlightPlan.getWaypoint(waypointIndex)
+
     if (waypointIndex !== -1) {
-      currentFlightPlan.addDirectTo(waypointIndex);
+      while (currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR") > -1) {
+        currentFlightPlan.removeWaypoint(currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR"));
+      }
+
+      const newWaypointIndex = currentFlightPlan.waypoints.findIndex(x => x === waypoint);
+      currentFlightPlan.addDirectTo(newWaypointIndex);
     }
 
     this._updateFlightPlanVersion();

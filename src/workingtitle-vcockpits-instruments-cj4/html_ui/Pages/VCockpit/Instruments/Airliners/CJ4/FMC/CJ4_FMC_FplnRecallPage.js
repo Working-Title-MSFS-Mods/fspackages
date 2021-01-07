@@ -55,6 +55,8 @@ class CJ4_FMC_FplnRecallPage {
                     fmc.flightPlanManager.resumeSync();
                     fmc.flightPlanManager.setActiveWaypointIndex(1);
                     SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+                    fmc.resetVspeeds();
+                    fmc.resetFuelUsed();
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
                 }

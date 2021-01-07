@@ -154,7 +154,7 @@ class CJ4_FMC_HoldsPage {
         newDetails.holdCourse = course;
         newDetails.isHoldCourseTrue = isTrueCourse;
         newDetails.turnDirection = isLeftTurn ? HoldTurnDirection.Left : HoldTurnDirection.Right;
-        newDetails.entryType = HoldDetails.calculateEntryType(course, currentHold.waypoint.bearingInFP);
+        newDetails.entryType = HoldDetails.calculateEntryType(course, currentHold.waypoint.bearingInFP, newDetails.turnDirection);
 
         this._state.isModifying = true;
         this._fmc.fpHasChanged = true;
@@ -250,9 +250,11 @@ class CJ4_FMC_HoldsPage {
    * @param {{waypoint: WayPoint, index: number}} currentHold The current hold to change the EFC time for. 
    */
   changeEFCTime(currentHold) {
-    const pattern = /\d\d\d\d/;
+    const pattern = /[0-2][0-9][0-5][0-9]/;
     if (pattern.test(this._fmc.inOut)) {
-      currentHold.waypoint.holdDetails.efcTime = this._fmc.inOut;
+      currentHold.waypoint.holdDetails.efcTime = parseInt(this._fmc.inOut);
+      this._fmc.inOut = '';
+      this.update();
     }
     else {
       this._fmc.showErrorMessage('INVALID ENTRY');
@@ -272,6 +274,12 @@ class CJ4_FMC_HoldsPage {
     const holdDetails = currentHold.waypoint.holdDetails;
     const speedSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "ICAO"], holdDetails.holdSpeedType === HoldSpeedType.FAA ? 0 : 1);
 
+    let efcTime = '--:--';
+    if (holdDetails.efcTime !== undefined) {
+      const efcTimeString = holdDetails.efcTime.toFixed(0);
+      efcTime = `${efcTimeString.substr(0, 2)}:${efcTimeString.substr(2, 2)}`;
+    }
+
     const rows = [
       [`${actMod} FPLN HOLD[blue]`, `${this._state.pageNumber}/${numPages}[blue]`],
       [' FIX[blue]', 'HOLD SPD [blue]', 'ENTRY[blue]'],
@@ -281,11 +289,11 @@ class CJ4_FMC_HoldsPage {
       [' INBD CRS/DIR[blue]', 'FIX ETA [blue]'],
       [`${holdDetails.holdCourse.toFixed(0).padStart(3, '0')}${holdDetails.isHoldCourseTrue ? 'T' : ''}°/${holdDetails.turnDirection === HoldTurnDirection.Left ? 'L' : 'R'} TURN`, `${etaDisplay}[s-text]`],
       [' LEG TIME[blue]', 'EFC TIME [blue]'],
-      [`${(holdDetails.legTime / 60).toFixed(1)}[d-text] MIN[s-text]`, '--:--'],
+      [`${(holdDetails.legTime / 60).toFixed(1)}[d-text] MIN[s-text]`, efcTime],
       [' LEG DIST[blue]'],
       [`${holdDetails.legDistance.toFixed(1)}[d-text] NM[s-text]`, `${numPages < 6 ? 'NEW HOLD>' : ''}`],
       ['------------------------[blue]'],
-      [`${this._state.isModifying ? '<CANCEL MOD' : ''}`, `${this.isHoldActive(currentHold) ? 'EXIT HOLD>' : this.isHoldExiting(currentHold) ? 'CANCEL EXIT>': ''}`]
+      [`${this._state.isModifying ? '<CANCEL MOD' : ''}`, `${this.isHoldExiting(currentHold) ? 'CANCEL EXIT>' : this.isHoldActive(currentHold) ? 'EXIT HOLD>' : ''}`]
     ];
 
     this._fmc._templateRenderer.setTemplateRaw(rows);
@@ -335,11 +343,11 @@ class CJ4_FMC_HoldsPage {
    * Handles when EXEC is pressed.
    */
   handleExec() {
-    if (this._fmc.fpHasChanged) {
-      this._fmc.fpHasChanged = false;
+    if (this._fmc._fpHasChanged) {
+      this._fmc._fpHasChanged = false;
       this._state.isModifying = false;
       
-      this._fmc.activateRoute(() => {
+      this._fmc.activateRoute(false, () => {
           this.update();
           this._fmc.onExecDefault();
       });

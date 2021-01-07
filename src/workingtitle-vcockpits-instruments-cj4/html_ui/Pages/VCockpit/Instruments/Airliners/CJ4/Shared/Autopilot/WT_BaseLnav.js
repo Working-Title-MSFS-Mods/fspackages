@@ -149,7 +149,7 @@ class WT_BaseLnav {
             const nextWptPos = new LatLon(this._activeWaypoint.infos.coordinates.lat, this._activeWaypoint.infos.coordinates.long);
 
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
-            this._dtk = Avionics.Utils.computeGreatCircleHeading(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates);
+            this._dtk = AutopilotMath.desiredTrack(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates, new LatLongAlt(this._planePos.lat, this._planePos.lon));
             const correctedDtk = this.normalizeCourse(GeoMath.correctMagvar(this._dtk, SimVar.GetSimVarValue("MAGVAR", "degrees")));
 
             SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", this._xtk);
@@ -386,7 +386,7 @@ class WT_BaseLnav {
         if (approach.length > 1) {
             const destination = approach[approach.length - 1];
             const destinationDistance = destination.cumulativeDistanceInFp;
-            console.log("destination distance: " + destinationDistance);
+            //console.log("destination distance: " + destinationDistance);
             let finalApproachFix = approach[approach.length - 2];
             let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
             if (finalApproachFixDistance < 3 && approach.length >= 3) {
@@ -411,7 +411,7 @@ class WT_BaseLnav {
         const runway = this.getRunway();
         const segment = this._fpm.getSegmentFromWaypoint(currentWaypoint);
 
-        if ((fafDistance <= 3 || (currentWaypoint && currentWaypoint.isRunway)) && segment.type === SegmentType.Approach) {
+        if (((fafDistance <= 3 || (currentWaypoint && currentWaypoint.isRunway))) && segment.type === SegmentType.Approach) {
             if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._navModeSelector.approachMode === WT_ApproachType.RNAV) {
                 return NavSensitivity.APPROACHLPV;
             }
