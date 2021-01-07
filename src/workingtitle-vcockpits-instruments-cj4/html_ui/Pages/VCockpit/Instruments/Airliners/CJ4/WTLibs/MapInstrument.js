@@ -326,9 +326,9 @@ class MapInstrument extends ISvgMapRootElement {
                 this.showIntersections = true;
             }
         }
-        else if(lowercaseName === "show-termwpts") {
+        else if (lowercaseName === "show-termwpts") {
             this.showTermWpts = false;
-            if(newValue === "true"){
+            if (newValue === "true") {
                 this.showTermWpts = true;
             }
         }
@@ -433,7 +433,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.roadsBuffer = [];
             this.drawCounter = 0;
             this.airportLoader = new AirportLoader(this.instrument, false);
-            this.airportLoader.maxItemsSearchCount = 20;
+            this.airportLoader.maxItemsSearchCount = 30;
             this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.airportLoader.speed = 10000;
             this.intersectionLoader = new IntersectionLoader(this.instrument, true, false);
@@ -445,11 +445,11 @@ class MapInstrument extends ISvgMapRootElement {
             this.termWptsLoader.searchRange = this.navMap.NMWidth;
             this.termWptsLoader.speed = 10000;
             this.vorLoader = new VORLoader(this.instrument);
-            this.vorLoader.maxItemsSearchCount = 20;
+            this.vorLoader.maxItemsSearchCount = 30;
             this.vorLoader.searchRange = this.navMap.NMWidth * 2;
             this.vorLoader.speed = 7500;
             this.ndbLoader = new NDBLoader(this.instrument);
-            this.ndbLoader.maxItemsSearchCount = 20;
+            this.ndbLoader.maxItemsSearchCount = 30;
             this.ndbLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.ndbLoader.speed = 15000;
             this.nearestAirspacesLoader = new NearestAirspacesLoader(this.instrument);
@@ -723,6 +723,7 @@ class MapInstrument extends ISvgMapRootElement {
             // }
             if ((this.drawCounter % 10 === 1)) {
                 this.navMap.mapElements = [];
+                this._displayMapElements = [];
                 if (!this.isDisplayingWeatherRadar() || !this.weatherHideGPS) {
                     /*
                      * Because of the weird way SvgRoadNetworkElement draws its subelements, when it gets removed from the map its subelements
@@ -791,12 +792,13 @@ class MapInstrument extends ISvgMapRootElement {
                     }
 
                     let margin = 0.05;
+                    let maxElements = WTDataStore.get("WT_CJ4_MaxMapSymbols", 40);
                     if (this.showAirports) {
                         for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
                             let airport = this.airportLoader.waypoints[i];
                             if (airport && airport.infos instanceof AirportInfo) {
-                                if (this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
-                                    this.navMap.mapElements.push(airport.getSvgElement(this.navMap.index));
+                                if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
+                                    this._displayMapElements.push(airport.getSvgElement(this.navMap.index));
                                 }
                             }
                         }
@@ -804,35 +806,38 @@ class MapInstrument extends ISvgMapRootElement {
                     if (this.showVORs) {
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
                             let vor = this.vorLoader.waypoints[i];
-                            if (this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
-                                this.navMap.mapElements.push(vor.getSvgElement(this.navMap.index));
+                            if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
+                                this._displayMapElements.push(vor.getSvgElement(this.navMap.index));
                             }
                         }
                     }
                     if (this.showNDBs && (this.rangeIndex < this.ndbMaxRange)) {
                         for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
                             let ndb = this.ndbLoader.waypoints[i];
-                            if (this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
-                                this.navMap.mapElements.push(ndb.getSvgElement(this.navMap.index));
+                            if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
+                                this._displayMapElements.push(ndb.getSvgElement(this.navMap.index));
                             }
                         }
                     }
                     if (this.showIntersections && (this.rangeIndex < this.intersectionMaxRange)) {
                         for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
                             let intersection = this.intersectionLoader.waypoints[i];
-                            if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
-                                this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
+                            if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
+                                this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
                             }
                         }
                     }
                     if (this.showTermWpts && (this.rangeIndex < this.intersectionMaxRange)) {
                         for (let i = 0; i < this.termWptsLoader.waypoints.length; i++) {
                             let intersection = this.termWptsLoader.waypoints[i];
-                            if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
-                                this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
+                            if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
+                                this._displayMapElements.push(intersection.getSvgElement(this.navMap.index));
                             }
                         }
                     }
+
+                    this.updateDisplayMapElements();
+
                     if (this.showCities) {
                         for (let city of this.cityManager.displayedCities) {
                             if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
@@ -932,6 +937,13 @@ class MapInstrument extends ISvgMapRootElement {
         }
         else {
             this._todWaypoint = undefined;
+        }
+    }
+    updateDisplayMapElements() {
+        let l = this._displayMapElements.length;
+        if (l > 0) {
+            let maxElements = Math.min(WTDataStore.get("WT_CJ4_MaxMapSymbols", 40), l);
+            this.navMap.mapElements.push(...this._displayMapElements.slice(0, maxElements));
         }
     }
     loadBingMapConfig() {
