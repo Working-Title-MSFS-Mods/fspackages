@@ -1464,10 +1464,11 @@ class VORLoader extends WaypointLoader {
     }
 }
 class IntersectionLoader extends WaypointLoader {
-    constructor(_instrument, showNamedOnly = false) {
+    constructor(_instrument, showNamedOnly = false, showTermWpts = false, loadername = "IntersectionLoader") {
         super(_instrument);
         this._showNamedOnly = showNamedOnly;
-        this.loaderName = "IntersectionLoader";
+        this._showTermWpts = showTermWpts;
+        this.loaderName = loadername;
         this.SET_ORIGIN_LATITUDE = "NearestIntersectionCurrentLatitude";
         this.SET_ORIGIN_LONGITUDE = "NearestIntersectionCurrentLongitude";
         this.SET_SEARCH_RANGE = "NearestIntersectionMaximumDistance";
@@ -1529,7 +1530,12 @@ class IntersectionLoader extends WaypointLoader {
     }
 
     applyResultFilter(data) {
-        return true;
+        console.log(data[0]);
+        if (this._showTermWpts) {
+            return data[0][3] !== ' ';
+        } else {
+            return data[0][3] === ' ';
+        }
     }
 
     async setCustomFs9Filter() {

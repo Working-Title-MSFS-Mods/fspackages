@@ -20,6 +20,7 @@
         "semi": [2, "always"]
     },
     "globals": {
+        "EBingReference": "writable",
         "Vec2": "writable",
         "AirportSize": "writable",
         "CitySize": "writable",

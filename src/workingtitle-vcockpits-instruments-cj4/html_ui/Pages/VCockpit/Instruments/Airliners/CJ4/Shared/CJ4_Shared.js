@@ -2887,6 +2887,7 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
     CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
     CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
+    CJ4_MapSymbol[CJ4_MapSymbol["TERMWPTS"] = 8] = "TERMWPTS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
 class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -3066,6 +3067,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showNDBs = (this.symbols & (1 << CJ4_MapSymbol.NDBS)) ? true : false;
         this.map.instrument.showAirports = (this.symbols & (1 << CJ4_MapSymbol.AIRPORTS)) ? true : false;
         this.map.instrument.showIntersections = (this.symbols & (1 << CJ4_MapSymbol.INTERSECTS)) ? true : false;
+        this.map.instrument.showTermWpts = (this.symbols & (1 << CJ4_MapSymbol.TERMWPTS)) ? true : false;
     }
     getAdaptiveRanges() {
         let ranges = Array.from(this.zoomRanges);

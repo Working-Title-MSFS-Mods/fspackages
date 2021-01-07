@@ -33,17 +33,18 @@ class MapInstrument extends ISvgMapRootElement {
         this.airportMaxRanges = MapInstrument.AIRPORT_RANGES_DEFAULT;
         this.cityMaxRanges = MapInstrument.CITY_RANGES_DEFAULT;
         this.npcAirplaneMaxRange = MapInstrument.PLANE_RANGE_DEFAULT;
-        this.showRoads = true;
-        this.showAirspaces = true;
-        this.showAirways = true;
+        this.showRoads = false;
+        this.showAirspaces = false;
+        this.showAirways = false;
         this.showFlightPlan = true;
-        this.showIntersections = true;
-        this.showVORs = true;
-        this.showNDBs = true;
-        this.showAirports = true;
-        this.showObstacles = true;
-        this.showCities = true;
-        this.showTraffic = true;
+        this.showIntersections = false;
+        this.showTermWpts = false;
+        this.showVORs = false;
+        this.showNDBs = false;
+        this.showAirports = false;
+        this.showObstacles = false;
+        this.showCities = false;
+        this.showTraffic = false;
         this.showConstraints = false;
         this._ranges = MapInstrument.ZOOM_RANGES_DEFAULT;
         this.rangeIndex = 4;
@@ -124,8 +125,7 @@ class MapInstrument extends ISvgMapRootElement {
         this.roadPrimaryMaxRange = MapInstrument.ROAD_PRIMARY_RANGE_DEFAULT;
 
         this._todWaypoint = undefined;
-        this._fplnVersion = -1;
-        this._fplnNavMapElements = [];
+        this._displayMapElements = [];
         // MOD END
     }
     get flightPlanManager() {
@@ -215,6 +215,7 @@ class MapInstrument extends ISvgMapRootElement {
             "show-constraints",
             "show-vors",
             "show-intersections",
+            "show-termwpts",
             "show-ndbs",
             "show-airports",
             "show-cities",
@@ -325,6 +326,12 @@ class MapInstrument extends ISvgMapRootElement {
                 this.showIntersections = true;
             }
         }
+        else if(lowercaseName === "show-termwpts") {
+            this.showTermWpts = false;
+            if(newValue === "true"){
+                this.showTermWpts = true;
+            }
+        }
         else if (lowercaseName === "show-ndbs") {
             this.showNDBs = false;
             if (newValue === "true") {
@@ -429,10 +436,14 @@ class MapInstrument extends ISvgMapRootElement {
             this.airportLoader.maxItemsSearchCount = 20;
             this.airportLoader.searchRange = this.navMap.NMWidth * 1.5;
             this.airportLoader.speed = 10000;
-            this.intersectionLoader = new IntersectionLoader(this.instrument, true);
-            this.intersectionLoader.maxItemsSearchCount = 40;
-            this.intersectionLoader.searchRange = this.navMap.NMWidth * 1.5;
+            this.intersectionLoader = new IntersectionLoader(this.instrument, true, false);
+            this.intersectionLoader.maxItemsSearchCount = 30;
+            this.intersectionLoader.searchRange = this.navMap.NMWidth * 2;
             this.intersectionLoader.speed = 10000;
+            this.termWptsLoader = new IntersectionLoader(this.instrument, true, true, "TermWptsLoader");
+            this.termWptsLoader.maxItemsSearchCount = 30;
+            this.termWptsLoader.searchRange = this.navMap.NMWidth;
+            this.termWptsLoader.speed = 10000;
             this.vorLoader = new VORLoader(this.instrument);
             this.vorLoader.maxItemsSearchCount = 20;
             this.vorLoader.searchRange = this.navMap.NMWidth * 1.5;
@@ -648,6 +659,13 @@ class MapInstrument extends ISvgMapRootElement {
                     this.intersectionLoader.currentMapAngularWidth = this.navMap.angularWidth;
                     this.intersectionLoader.update();
                 }
+                if (this.showTermWpts) {
+                    this.termWptsLoader.searchLat = centerCoordinates.lat;
+                    this.termWptsLoader.searchLong = centerCoordinates.long;
+                    this.termWptsLoader.currentMapAngularHeight = this.navMap.angularHeight;
+                    this.termWptsLoader.currentMapAngularWidth = this.navMap.angularWidth;
+                    this.termWptsLoader.update();
+                }
                 if (this.showVORs) {
                     this.vorLoader.searchLat = centerCoordinates.lat;
                     this.vorLoader.searchLong = centerCoordinates.long;
@@ -807,6 +825,14 @@ class MapInstrument extends ISvgMapRootElement {
                             }
                         }
                     }
+                    if (this.showTermWpts && (this.rangeIndex < this.intersectionMaxRange)) {
+                        for (let i = 0; i < this.termWptsLoader.waypoints.length; i++) {
+                            let intersection = this.termWptsLoader.waypoints[i];
+                            if (this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
+                                this.navMap.mapElements.push(intersection.getSvgElement(this.navMap.index));
+                            }
+                        }
+                    }
                     if (this.showCities) {
                         for (let city of this.cityManager.displayedCities) {
                             if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
@@ -863,7 +889,6 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateFplnWaypoints(fplnIdx = 0) {
-        // if (this._fplnVersion < this.flightPlanManager.CurrentFlightPlanVersion) {
         let l = this.flightPlanManager.getWaypointsCount(fplnIdx);
         if (l > 1) {
             for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
