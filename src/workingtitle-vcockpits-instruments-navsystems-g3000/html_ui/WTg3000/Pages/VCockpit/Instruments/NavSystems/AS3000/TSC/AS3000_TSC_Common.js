@@ -273,10 +273,6 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._initMFDPaneControlID();
         this._initMFDPaneSelectDisplay();
-
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
     }
 
     getSelectedMFDPanePages() {
