@@ -62,7 +62,7 @@ class WT_PFD_Wind_View extends WT_HTML_View {
                 rxjs.operators.tap(rotation => this.elements.mode1xArrow.setAttribute("transform", `rotate(${rotation})`)),
             ),
             model.xSpeed.pipe(
-                rxjs.operators.map(x => x.toFixed(0)),
+                rxjs.operators.map(x => Math.abs(x).toFixed(0)),
                 rxjs.operators.distinctUntilChanged(),
                 rxjs.operators.tap(text => this.elements.mode1xSpeed.textContent = text)
             ),
@@ -72,7 +72,7 @@ class WT_PFD_Wind_View extends WT_HTML_View {
                 rxjs.operators.tap(rotation => this.elements.mode1yArrow.setAttribute("transform", `rotate(${rotation})`)),
             ),
             model.ySpeed.pipe(
-                rxjs.operators.map(y => y.toFixed(0)),
+                rxjs.operators.map(y => Math.abs(y).toFixed(0)),
                 rxjs.operators.distinctUntilChanged(),
                 rxjs.operators.tap(text => this.elements.mode1ySpeed.textContent = text)
             ),
