@@ -1752,7 +1752,19 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(crossSpeed, cruiseMach);
         let nextFlapSpeed = Simplane.getNextFlapsExtendSpeed(this.aircraft) * crossSpeedFactor;
-        let maxSpeed = Simplane.getMaxSpeed(this.aircraft) * crossSpeedFactor;
+
+        const alt = Simplane.getAltitude();
+        let maxSpeed = 260;
+        if (alt >= 8000 && alt <= 27884) {
+            maxSpeed = 305;
+        }
+        else if (alt > 27884) {
+            const ambientPressure = SimVar.GetSimVarValue('AMBIENT PRESSURE', 'inHG');
+            const machScalar2 = Math.pow(0.77, 2);
+            const machScalar4 = Math.pow(0.77, 4);
+            maxSpeed = Math.sqrt(ambientPressure / 29.92) * Math.sqrt(1 + machScalar2 / 4 + machScalar4 / 40) * 0.77 * 661.5;
+        }
+
         let greenDot = Simplane.getGreenDotSpeed() * crossSpeedFactor;
         let lowestSelectableSpeed = Simplane.getLowestSelectableSpeed();
         let stallProtectionMin = Simplane.getStallProtectionMinSpeed();
@@ -1812,10 +1824,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         }
     }
     updateSpeedOverride(_dTime) {
-        if (Math.abs(this._maxSpeed - this._lastMaxSpeedOverride) >= 5) {
+        if (Math.abs(this._maxSpeed - this._lastMaxSpeedOverride) >= 0) {
             this._lastMaxSpeedOverrideTime += _dTime / 1000;
             if (this._lastMaxSpeedOverrideTime > 5) {
-                SimVar.SetGameVarValue("AIRCRAFT_MAXSPEED_OVERRIDE", "knots", this._maxSpeed);
+                SimVar.SetGameVarValue("AIRCRAFT_MAXSPEED_OVERRIDE", "knots", this._maxSpeed - 3);
                 this._lastMaxSpeedOverride = this._maxSpeed;
                 this._lastMaxSpeedOverrideTime = 0;
             }

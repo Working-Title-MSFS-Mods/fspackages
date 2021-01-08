@@ -91,13 +91,15 @@ class WT_BaseLnav {
         const navModeActive = SimVar.GetSimVarValue("L:WT_CJ4_NAV_ON", "number") == 1;
         this._inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
 
-        if ((this._activeWaypoint && this._activeWaypoint.hasHold) || (this._previousWaypoint && this._previousWaypoint.hasHold)) {
-            const holdWaypointIndex = (this._activeWaypoint && this._activeWaypoint.hasHold) ? this.flightplan.activeWaypointIndex : this.flightplan.activeWaypointIndex - 1;
-            this._holdsDirector.update(holdWaypointIndex);
+        if (this._activeWaypoint && this._activeWaypoint.hasHold && this._holdsDirector.isReadyOrEntering(this.flightplan.activeWaypointIndex)) {
+            this._holdsDirector.update(this.flightplan.activeWaypointIndex);
+        }
+        else if (this._previousWaypoint && this._previousWaypoint.hasHold && !this._holdsDirector.isHoldExited(this.flightplan.activeWaypointIndex - 1)) {
+            this._holdsDirector.update(this.flightplan.activeWaypointIndex - 1);
+        }
 
-            if (this._holdsDirector.state !== HoldsDirectorState.NONE && this._holdsDirector.state !== HoldsDirectorState.EXITED) {
-                return;
-            }
+        if (this._holdsDirector.state !== HoldsDirectorState.NONE && this._holdsDirector.state !== HoldsDirectorState.EXITED) {
+            return;
         }
 
         const flightPlanVersion = SimVar.GetSimVarValue('L:WT.FlightPlan.Version', 'number');
@@ -124,6 +126,8 @@ class WT_BaseLnav {
             }
         }
 
+        
+
         this._planePos = new LatLon(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
         const planePosLatLong = new LatLong(this._planePos.lat, this._planePos.lon);
 
@@ -147,6 +151,12 @@ class WT_BaseLnav {
 
             const prevWptPos = new LatLon(this._previousWaypoint.infos.coordinates.lat, this._previousWaypoint.infos.coordinates.long);
             const nextWptPos = new LatLon(this._activeWaypoint.infos.coordinates.lat, this._activeWaypoint.infos.coordinates.long);
+
+            //CASE WHERE WAYPOINTS OVERLAP
+            if (prevWptPos.distanceTo(nextWptPos) < 50) {
+                this._fpm.setActiveWaypointIndex(this.flightplan.activeWaypointIndex + 1, EmptyCallback.Void, 0);
+                return;
+            }
 
             this._xtk = this._planePos.crossTrackDistanceTo(prevWptPos, nextWptPos) * (0.000539957); //meters to NM conversion
             this._dtk = AutopilotMath.desiredTrack(this._previousWaypoint.infos.coordinates, this._activeWaypoint.infos.coordinates, new LatLongAlt(this._planePos.lat, this._planePos.lon));
