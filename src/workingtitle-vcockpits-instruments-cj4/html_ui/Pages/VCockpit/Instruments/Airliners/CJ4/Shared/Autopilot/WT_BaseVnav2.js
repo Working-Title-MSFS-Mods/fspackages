@@ -13,7 +13,7 @@ class WT_BaseVnav {
         this._fpm = fpm;
 
          /**
-         * The nav mode selector
+         * The FMC class
          * @type {CJ4_FMC}
          */
         this._fmc = fmc;
@@ -666,6 +666,9 @@ class PathSegment {
     }
 }
 
+/**
+ * VNAV States.
+ */
 class VnavState { }
 VnavState.NONE = 'NONE';
 VnavState.PATH = 'PATH';
