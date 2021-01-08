@@ -177,4 +177,34 @@ class AutopilotMath {
 
     return {headwind, crosswind};
   }
+
+  /**
+   * Gets the FPA for a given vertical and lateral distance.
+   * @param {number} verticalDistance The vertical distance in feet. 
+   * @param {number} lateralDistance The lateral distance in NM.
+   * @returns {number} The FPA in degrees.
+   */
+  static calculateFPA(verticalDistance, lateralDistance) {
+    return (180 / Math.PI) * (Math.atan(verticalDistance / (lateralDistance * 6076.12)));
+  }
+
+  /**
+   * Gets the FPTA DELTA for a given FPA and lateral distance.
+   * @param {number} fpa The FPA in degrees.
+   * @param {number} lateralDistance The lateral distance in NM.
+   * @returns {number} The delta altitude in feet.
+   */
+  static calculateFPTA(fpa, lateralDistance) {
+    return (Math.tan(fpa * (Math.PI / 180)) * lateralDistance * 6076.12);
+  }
+
+  /**
+   * Gets the DESCENT DISTANCE for a given FPA and vertical distance.
+   * @param {number} fpa The FPA in degrees 
+   * @param {number} verticalDistance The vertical distance in feet.
+   * @returns {number} The lateral distance in NM to descend the specified vertical distance at the specified FPA.
+   */
+  static calculateDescentDistance(fpa, verticalDistance) {
+    return ((verticalDistance) / (Math.tan(fpa * (Math.PI / 180)))) / 6076.12;
+  }
 }
