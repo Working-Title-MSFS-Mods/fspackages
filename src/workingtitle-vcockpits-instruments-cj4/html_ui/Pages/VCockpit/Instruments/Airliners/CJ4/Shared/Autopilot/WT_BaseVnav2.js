@@ -456,7 +456,12 @@ class WT_BaseVnav {
         const runwayAltitude = this._verticalFlightPlan[this._approachRunwayIndex].lowerConstraintAltitude;
         const desiredAltitude = runwayAltitude + AutopilotMath.calculateFPTA(this._approachGlidePath, runwayDistance);
         SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", (this.gpsAltitude - desiredAltitude));
-        return this.gpsAltitude - desiredAltitude;
+        const path = {
+            deviation: this.gpsAltitude - desiredAltitude,
+            fpa: this._approachGlidePath,
+            fpta: runwayAltitude
+        }
+        return path;
     }
 
     trackPath() {
@@ -467,7 +472,12 @@ class WT_BaseVnav {
         const distance = this.waypoints[flightPathTarget].cumulativeDistanceInFP - this._currentDistanceInFP;
         const desiredAltitude = fpta + AutopilotMath.calculateFPTA(fpa, distance);
         SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", (this.indicatedAltitude - desiredAltitude));
-        return this.indicatedAltitude - desiredAltitude;
+        const path = {
+            deviation: this.indicatedAltitude - desiredAltitude,
+            fpa: fpa,
+            fpta: fpta
+        }
+        return path;
     }
 
     getDistanceToTarget() {
