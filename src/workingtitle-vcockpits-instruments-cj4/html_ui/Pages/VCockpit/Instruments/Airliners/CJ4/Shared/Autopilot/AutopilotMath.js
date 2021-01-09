@@ -207,4 +207,14 @@ class AutopilotMath {
   static calculateDescentDistance(fpa, verticalDistance) {
     return ((verticalDistance) / (Math.tan(fpa * (Math.PI / 180)))) / 6076.12;
   }
+
+  /**
+   * Gets the DESCENT RATE for a given FPA and groundspeed.
+   * @param {number} fpa The FPA in degrees 
+   * @param {number} groundspeed The current groundspeed.
+   * @returns {number} The rate of descent required to descend at the specified FPA in ft/minute.
+   */
+  static calculateVerticaSpeed(fpa, groundspeed) {
+    return -101.2686667 * groundspeed * Math.tan(fpa * (Math.PI / 180));
+  }
 }
