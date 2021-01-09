@@ -1,7 +1,8 @@
 import { WayPoint, ProcedureLeg, BaseInstrument, LatLongAlt, IntersectionInfo, Avionics } from 'MSFS';
-import { GPS } from '../wtsdk';
+import { GPS, HoldDetails } from '../wtsdk';
 import { FixNamingScheme } from './FixNamingScheme';
 import { GeoMath } from './GeoMath';
+import { HoldTurnDirection } from './HoldDetails';
 import { RawDataMapper } from './RawDataMapper';
 
 /**
@@ -90,7 +91,7 @@ export class LegsProcedure {
       //Some procedures don't start with 15 (initial fix) but instead start with a heading and distance from
       //a fix: the procedure then starts with the fix exactly
       if (this._currentIndex === 0 && currentLeg.type === 10 && !this._addedProcedureStart) {
-        mappedLeg = this.mapExactFix(currentLeg);
+        mappedLeg = this.mapExactFix(currentLeg, this._legs[this._currentIndex + 1], this._previousFix);
         this._addedProcedureStart = true;
       }
       else {
@@ -103,7 +104,7 @@ export class LegsProcedure {
               //Only map if the fix is itself not a runway fix to avoid double
               //adding runway fixes
               if (currentLeg.fixIcao === '' || currentLeg.fixIcao[0] !== 'R') {
-                mappedLeg = this.mapOriginRadialForDistance(currentLeg, this._previousFix);
+                mappedLeg = this.mapOriginRadialForDistance(currentLeg, this._legs[this._currentIndex + 1], this._previousFix);
               }
               else {
                 isLegMappable = false;
@@ -127,7 +128,7 @@ export class LegsProcedure {
               break;
             case 15: {
               if (currentLeg.fixIcao[0] !== 'A') {
-                const leg = this.mapExactFix(currentLeg);
+                const leg = this.mapExactFix(currentLeg, this._legs[this._currentIndex + 1], this._previousFix);
                 const prevLeg = this._previousFix;
 
                 //If a type 15 (initial fix) comes up in the middle of a plan
@@ -148,7 +149,7 @@ export class LegsProcedure {
             case 7:
             case 17:
             case 18:
-              mappedLeg = this.mapExactFix(currentLeg);
+              mappedLeg = this.mapExactFix(currentLeg, this._legs[this._currentIndex + 1], this._previousFix);
               break;
             case 2:
             case 19:
@@ -181,6 +182,7 @@ export class LegsProcedure {
       return undefined;
     }
   }
+
 
   /**
    * Maps a heading until distance from origin leg.
@@ -232,12 +234,13 @@ export class LegsProcedure {
   /**
    * Maps a radial on the origin for a specified distance leg in the procedure.
    * @param leg The procedure leg to map.
+   * @param nextLeg The next leg in the procedure.
    * @param prevLeg The previously mapped leg.
    * @returns The mapped leg.
    */
-  public mapOriginRadialForDistance(leg: ProcedureLeg, prevLeg: WayPoint): WayPoint {
+  public mapOriginRadialForDistance(leg: ProcedureLeg, nextLeg: ProcedureLeg, prevLeg: WayPoint): WayPoint {
     if (leg.fixIcao.trim() !== '') {
-      return this.mapExactFix(leg);
+      return this.mapExactFix(leg, nextLeg, prevLeg);
     }
     else {
       const origin = this._facilities.get(leg.originIcao);
@@ -362,12 +365,26 @@ export class LegsProcedure {
   /**
    * Maps an exact fix leg in the procedure.
    * @param leg The procedure leg to map.
+   * @param nextLeg The next leg in the procedure.
+   * @param prevLeg The previous mapped leg in the procedure.
    * @returns The mapped leg.
    */
-  public mapExactFix(leg: ProcedureLeg): WayPoint {
+  public mapExactFix(leg: ProcedureLeg, nextLeg: ProcedureLeg, prevLeg: WayPoint): WayPoint {
     const facility = this._facilities.get(leg.fixIcao);
     if (facility) {
-      return RawDataMapper.toWaypoint(facility, this._instrument);
+      const waypoint = RawDataMapper.toWaypoint(facility, this._instrument);
+      if (nextLeg.type === 14) {
+        waypoint.hasHold = true;
+        const course = Avionics.Utils.computeGreatCircleHeading(waypoint.infos.coordinates, prevLeg.infos.coordinates);
+
+        const holdDetails = HoldDetails.createDefault(course, leg.course);
+        holdDetails.turnDirection = leg.turnDirection === 1 ? HoldTurnDirection.Left : HoldTurnDirection.Right;
+        holdDetails.entryType = HoldDetails.calculateEntryType(leg.course, course, holdDetails.turnDirection);
+
+        waypoint.holdDetails = holdDetails;
+      }
+
+      return waypoint;
     }
     else {
       const origin = this._facilities.get(leg.originIcao);

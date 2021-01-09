@@ -105,10 +105,12 @@ class CJ4_FMC_LegsPage {
                 if (waypointFPA) {
                     fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
                 }
+                else if (waypoint.isMissedApproachStart) {
+                    fpaText = ' MISSED APPR[white]';
+                }
 
                 // format distance
                 distance = (distance < 100) ? distance.toFixed(1) : distance.toFixed(0);
-
 
                 if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
@@ -199,18 +201,22 @@ class CJ4_FMC_LegsPage {
             holdExited = holdsDirector.isHoldExited(holdIndex);
         }
 
-
+        let previousSegment = undefined;
 
         for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
 
-            if (waypoints[i].isRunway && this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoints[i]).type == SegmentType.Approach) {
+            const destination = this._fmc.flightPlanManager.getDestination();
+            const currentSegment = this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoints[i]).type;
+
+            if (waypoints[i].isRunway && currentSegment === SegmentType.Approach) {
                 runwayExists = true;
                 runwayIndex = i;
             }
-            if (runwayExists && i == runwayIndex + 1) {
+            if (runwayExists && waypoints[i] === destination) {
                 //console.log("skipping destination waypoint");
             } else {
-                displayWaypoints.push({ index: i, fix: waypoints[i] });
+                const isFirstMissedApproachLeg = currentSegment === SegmentType.Missed && previousSegment === SegmentType.Approach;
+                displayWaypoints.push({ index: i, fix: waypoints[i], isMissedApproachStart: isFirstMissedApproachLeg });
                 if (waypoints[i].hasHold && !(i === activeWaypointIndex - 1 && holdExited)) {
                     displayWaypoints.push({index: i, fix: {ident: waypoints[i].ident, infos: waypoints[i].infos, isHold: true}});
                 }
@@ -218,6 +224,8 @@ class CJ4_FMC_LegsPage {
                 if (waypoints[i].endsInDiscontinuity) {
                     displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
                 }
+
+                previousSegment = currentSegment;
             }
         }
 

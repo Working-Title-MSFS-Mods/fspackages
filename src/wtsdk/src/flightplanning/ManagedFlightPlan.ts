@@ -770,9 +770,24 @@ export class ManagedFlightPlan {
         runwayWaypoint.isRunway = true;
 
         this.addWaypoint(runwayWaypoint);
+
+        if (approachIndex !== -1) {
+          const missedProcedure = new LegsProcedure(destinationInfo.approaches[approachIndex].missedLegs, runwayWaypoint, this._parentInstrument);
+          const segment = this.addSegment(SegmentType.Missed);
+
+          let index = segment.offset;
+          while (missedProcedure.hasNext()) {
+            const waypoint = await missedProcedure.getNext();
+            if (waypoint !== undefined) {
+              this.addWaypoint(waypoint, ++index, segment.type);
+            }
+          }
+        }
       }
     }
   }
+
+
 
   /**
    * Truncates a flight plan segment. If the active waypoint index is current in the segment,
