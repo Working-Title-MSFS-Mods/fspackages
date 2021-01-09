@@ -470,6 +470,18 @@ class WT_BaseVnav {
         return this.indicatedAltitude - desiredAltitude;
     }
 
+    getDistanceToTarget() {
+        const currentPathSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
+        const flightPathTarget = this._verticalFlightPlanSegments[currentPathSegment].targetIndex;
+        return this.waypoints[flightPathTarget].cumulativeDistanceInFP - this._currentDistanceInFP;
+    }
+
+    getTargetAltitude() {
+        const currentPathSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
+        const flightPathTarget = this._verticalFlightPlanSegments[currentPathSegment].targetIndex;
+        return this._verticalFlightPlan[flightPathTarget].waypointFPTA;
+    }
+
     calculateTod() {
         let todExists = false;
         let altitude = undefined;
