@@ -81,6 +81,7 @@ class WT_VnavAutopilot {
                 }
                 break;
             case VnavPathStatus.PATH_ACTIVE:
+                this.followPath()
                 break;
         }
 
@@ -181,6 +182,50 @@ class WT_VnavAutopilot {
                 }
         }
         return this._glidepathState;
+    }
+
+    followPath() {
+
+    }
+
+    followGlidepath() {
+        
+    }
+
+    commandVerticalSpeed() {
+        const activeFPA = (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists) ? this._vnav._gpAngle
+        : this._vnav._desiredFPA;
+        SimVar.SetSimVarValue("L:WT_TEMP_ACTIVE_FPA", "number", activeFPA);
+        let setVerticalSpeed = 0;
+        const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+        const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(activeFPA * (Math.PI / 180));
+        const maxVerticalSpeed = 101.2686667 * groundSpeed * Math.tan(6 * (Math.PI / 180));
+        const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
+        if (Math.floor(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
+            this.setTargetAltitude();
+        }
+        if (this._vnav._vnavTargetDistance < 1 && this._vnav._vnavTargetDistance > 0) {
+            setVerticalSpeed = desiredVerticalSpeed;
+        }
+        else {
+            if (this._vnav._altDeviation > 10) {
+                const correction = Math.min(Math.max((2.1 * this._vnav._altDeviation), 100), maxCorrection);
+                setVerticalSpeed = desiredVerticalSpeed - correction;
+            }
+            else if (this._vnav._altDeviation < -10) {
+                const correction = Math.min(Math.max((-2.1 * this._vnav._altDeviation), 100), (-1 * desiredVerticalSpeed));
+                setVerticalSpeed = desiredVerticalSpeed + correction;
+            }
+            else {
+                setVerticalSpeed = desiredVerticalSpeed;
+            }
+        }
+        setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
+        if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1 && this._vnav._altDeviation > 0) {
+            SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+        }
+
     }
 
     
