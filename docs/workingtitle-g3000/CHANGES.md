@@ -1,5 +1,13 @@
 # Changelog
 
+### v0.4.0-beta2
+**Fixes**
+- \[MFD\] Selecting the DTG field for the nav data bar no longer causes the MFD to freeze.
+- \[Weather Radar\] Turning NEXRAD on for the navigation map in the right MFD pane no longer interferes with the weather radar display in the left MFD pane when the right pane is not visible. (The interference still persists if both panes are visible).
+- \[GTC\] The lower knob (G3000) or right knob (G5000) now controls PFD inset map range when the touchscreen controller has the PFD home page or any of its subpages open.
+- \[GTC\] For the G5000, turning the right knob no longer changes map or weather radar range when a frequency select or audio/radio page is open.
+- \[Misc\] Negative numbers are now displayed correctly without an extra minus sign.
+
 ### v0.4.0-beta1
 **New Features**
 - \[MFD\] Added MFD "HALF" mode, which splits the MFD into left and right panes.
