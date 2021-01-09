@@ -69,6 +69,14 @@ class WT_VnavAutopilot {
         return this._navModeSelector.altSet2;
     }
 
+    get path() {
+        return this._vnav.trackPath();
+    }
+
+    get glidePath() {
+        return this._vnav.trackApproachGlidepath();
+    }
+
     /**
      * Run on first activation.
      */
@@ -97,10 +105,25 @@ class WT_VnavAutopilot {
                 }
                 break;
             case VnavPathStatus.PATH_ACTIVE:
-                if (this._pathInterceptStatus === PathInterceptStatus.NONE) {
-                    this.interceptPath();
-                }
                 this.followPath()
+                break;
+        }
+
+        switch(this._glidepathState) {
+            case GlidepathStatus.NONE:
+                break;
+            case GlidepathStatus.GP_CAN_ARM:
+                if (this._navModeSelector.currentLateralActiveState = LateralNavModeState.APPR) {
+                    this._glidepathState = GlidepathStatus.GP_ARMED;
+                }
+                break;
+            case GlidepathStatus.GP_ARMED:
+                if (this.canGlidepathActivate()) {
+                    this._glidepathState = GlidepathStatus.GP_ACTIVE;
+                }
+                break;
+            case GlidepathStatus.GP_ACTIVE:
+                this.followGlidepath()
                 break;
         }
 
@@ -154,17 +177,24 @@ class WT_VnavAutopilot {
         const altitudeDifference = this._vnav.indicatedAltitude - this._vnav.getTargetAltitude();
         const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
         const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
-        if (this._vnav.trackPath().deviation <= 1000 && altitudeDifference > 0
+        if (this.path.deviation <= 1000 && altitudeDifference > 0
             && this.verticalSpeed > reqVs && this.altSet2 < this._vnav.indicatedAltitude + 100) {
             return true;
-        } else if (this._vnav.trackPath().deviation > 1000 && this.verticalSpeed < reqVs && this.altSet2 < this._vnav.indicatedAltitude + 100) {
+        } else if (this.path.deviation > 1000 && this.verticalSpeed < reqVs && this.altSet2 < this._vnav.indicatedAltitude + 100) {
             return true;
         }
         return false;
     }
 
     canPathActivate() {
-        if (this._vnav.trackPath().deviation < 1000 && this._vnav.trackPath().deviation > -300) {
+        if (this.path.deviation < 1000 && this.path.deviation > -300) {
+            return true;
+        }
+        return false;
+    }
+
+    canGlidepathActivate() {
+        if (this.glidePath.deviation < 100 && this.glidePath.deviation > -300) {
             return true;
         }
         return false;
@@ -206,11 +236,10 @@ class WT_VnavAutopilot {
         return this._glidepathState;
     }
 
-    interceptPath() {
+    interceptPath(fpa) {
         switch(this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
-                const path = this._vnav.trackPath();
-                const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(path.fpa, this.groundSpeed);
+                const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
                 const deltaVS = desiredVerticalSpeed - this.verticalSpeed;
                 const intercept = {
                     verticalSpeed: 100 * Math.floor(this.verticalSpeed / 100),
@@ -236,27 +265,33 @@ class WT_VnavAutopilot {
                 if (this._pathInterceptValues.increments == 0) {
                     this._pathInterceptStatus = PathInterceptStatus.INTERCEPTED;
                     this._pathInterceptValues = undefined;
-                    this.followPath();
                 }
                 break;
         }
     }
 
     followPath() {
-        
-        const path = this._vnav.trackPath();
-        if (Math.floor(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
-            this.setTargetAltitude();
+        switch(this._pathInterceptStatus) {
+            case PathInterceptStatus.NONE:
+                this.setTargetAltitude(this.path.fpta);
+            case PathInterceptStatus.INTERCEPTING:
+                this.interceptPath(this.path.fpa);
+                break;
+            case PathInterceptStatus.INTERCEPTED:
+                this.commandVerticalSpeed(this.path.fpa, this.path.deviation);
         }
-        if (this._vnav._vnavTargetDistance < 1 && this._vnav._vnavTargetDistance > 0) {
-            setVerticalSpeed = desiredVerticalSpeed;
-        }
-        this.commandVerticalSpeed(path.fpa, path.deviation);
-
     }
 
     followGlidepath() {
-
+        switch(this._pathInterceptStatus) {
+            case PathInterceptStatus.NONE:
+                this.setTargetAltitude(this.path.fpta);
+            case PathInterceptStatus.INTERCEPTING:
+                this.interceptPath(this.path.fpa);
+                break;
+            case PathInterceptStatus.INTERCEPTED:
+                this.commandVerticalSpeed(this.path.fpa, this.path.deviation);
+        }
     }
 
     commandVerticalSpeed(fpa, deviation) {
@@ -276,13 +311,8 @@ class WT_VnavAutopilot {
         else {
             setVerticalSpeed = desiredVerticalSpeed;
         }
-
         setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
         Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
-        if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1 && this._vnav._altDeviation > 0) {
-            SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
-        }
-
     }
 
     
