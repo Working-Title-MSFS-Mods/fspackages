@@ -1,6 +1,6 @@
 # Working Title CJ4 v0.9.1 Changes
 
-Welcome to the Working Title CJ4 v0.9.1
+Welcome to the Working Title CJ4 v0.9.1. This is a hotfix release for 0.9.0 to fix the most pressing issues that came up after release.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -12,12 +12,15 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 
 ## Remarks to flight plan synchronization between the Game and FMS 
 The FP SYNC option is one way: it updates the simulator flight plan from the FMC. To load a plan into the FMS you can either enter it manually or use the _FPLN RECALL (GAME/SB)_ option in _IDX -> PAGE2 -> ROUTE MENU_
-
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan exactly.
 
 ## Bugfixes
-* Ingame ATC should now recognize battery on again
-* Fixed disappearing tracks on the map
+- Fixed issue where ATC window did not refresh electrical system status properly
+- Fixed issue where map lines would be improperly drawn in certain situations and zoom factors
+- Fixed issue where after flying one hold, LNAV would not fly any additional holds
+- Fixed issue where LNAV would skip to the last hold if holds were on back-to-back legs
+- Fixed speed tape overspeed indicator and warning speeds
+- LNAV should no longer wander back and forth in the case of overlapping or duplicate flight plan fixes
 
 ## ⚠️ Known Issues
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
