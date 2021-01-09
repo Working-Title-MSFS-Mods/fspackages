@@ -21,6 +21,8 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Fixed issue where LNAV would skip to the last hold if holds were on back-to-back legs
 - Fixed speed tape overspeed indicator and warning speeds
 - LNAV should no longer wander back and forth in the case of overlapping or duplicate flight plan fixes
+- Fix for DIRECT TO not reactivating the current dirto from the DTO page
+- Fix for DIRECT TO not working after one successful DTO
 
 ## ⚠️ Known Issues
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
