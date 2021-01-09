@@ -455,7 +455,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {
-                this._vnav = new WT_BaseVnav(this.flightPlanManager, this._navModeSelector);
+                this._vnav = new WT_BaseVnav(this.flightPlanManager, this);
                 this._vnav.activate();
             }
             else {
