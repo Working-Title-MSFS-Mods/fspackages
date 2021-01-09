@@ -61,7 +61,7 @@ class HoldsDirector {
 
       const trackToHold = new LatLon(prevFixCoords.lat, prevFixCoords.long).finalBearingTo(new LatLon(fixCoords.lat, fixCoords.long));
 
-      if (this.state === HoldsDirectorState.NONE) {
+      if (this.state === HoldsDirectorState.NONE || this.state === HoldsDirectorState.EXITED) {
         switch (holdDetails.entryType) {
           case HoldEntry.Direct:
             this.state = HoldsDirectorState.ENTRY_DIRECT_INBOUND;
@@ -458,6 +458,25 @@ class HoldsDirector {
     }
 
     return Avionics.Utils.computeGreatCircleDistance(planeState.position, this.inboundLeg[1]);
+  }
+
+  /**
+   * Checks whether the holds director is ready to accept a new hold fix
+   * or is curently entering the fix at the provided waypoint index.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if active, false otherwise. 
+   */
+  isReadyOrEntering(index) {
+    return this.state === HoldsDirectorState.NONE
+    || this.state === HoldsDirectorState.EXITED
+    || (
+      this.holdWaypointIndex === index
+        && (
+          this.state === HoldsDirectorState.ENTRY_TEARDROP_INBOUND
+          || this.state === HoldsDirectorState.ENTRY_PARALLEL_INBOUND
+          || this.state === HoldsDirectorState.ENTRY_DIRECT_INBOUND
+        )
+    );
   }
 
   /**

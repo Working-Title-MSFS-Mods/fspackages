@@ -88,10 +88,6 @@ class SvgFlightPlanElement extends SvgMapElement {
         if (!isHold || (isHold && style == 'white')) {
             for (let i = 0; i < waypoints.length; i++) {
                 const waypoint = waypoints[i];
-                if(prevWaypoint && !map.isLatLongInFrame(prevWaypoint.infos.coordinates, 0.1)){
-                    prevWaypoint = waypoint;
-                    continue;
-                }
                 const pos = map.coordinatesToXY(waypoint.infos.coordinates);
 
                 if (i === 0 || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
