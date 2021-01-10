@@ -720,7 +720,7 @@ class VORDMENavAid {
      */
     handleADFModeUpdate() {
         const hasNav = SimVar.GetSimVarValue("ADF SIGNAL:" + this.index, "number");
-        this.setIDValue(this.gps.radioNav.getADFActiveFrequency(this.index).toFixed(0));
+        this.setIDValue(this.gps.radioNav.getADFActiveFrequency(this.index).toFixed(1));
 
         if (this.hasNav !== hasNav) {
             this.pointer.style = hasNav ? '' : 'display: none';
