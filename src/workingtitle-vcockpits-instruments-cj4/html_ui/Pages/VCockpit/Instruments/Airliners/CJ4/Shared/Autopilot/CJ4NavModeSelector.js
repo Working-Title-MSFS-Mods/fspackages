@@ -1039,6 +1039,14 @@ class CJ4NavModeSelector {
       this.vnavRequestedSlot = 2;
     }
   }
+
+  /**
+   * Handles when vnav autopilot requests alt slot 3 in the sim autopilot.
+   */
+  handleVnavRequestSlot3() {
+    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+    this.vnavRequestedSlot = 3;
+  }
 }
 
 class LateralNavModeState { }

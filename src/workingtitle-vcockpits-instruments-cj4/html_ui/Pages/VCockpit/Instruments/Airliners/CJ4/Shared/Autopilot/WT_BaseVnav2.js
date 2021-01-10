@@ -350,9 +350,22 @@ class WT_BaseVnav {
             case false:
                 this._verticalFlightPlan[segmentStartIndex].waypointFPTA = AutopilotMath.calculateFPTA(bestFPA, lateralDistance);
         }
-        return new PathSegment(segmentStartIndex + 1, endingIndex, bestFPA);
+        const distanceToNextTod = this.checkIfSegmentEndsLevel(segment, segmentStartIndex, vwp.waypointFPTA);
+        return new PathSegment(segmentStartIndex + 1, endingIndex, bestFPA, distanceToNextTod);
     }
 
+    checkIfSegmentEndsLevel(segment, segmentStartIndex, fpta) {
+        if (segment > 0) {
+            const nextFPTA = this._verticalFlightPlan[this._verticalFlightPlanSegments[segment - 1].targetIndex].waypointFPTA;
+            const nextFPA = this._verticalFlightPlanSegments[segment - 1].fpa;
+            const distance = this.waypoints[this._verticalFlightPlanSegments[segment - 1].targetIndex].cumulativeDistanceInFP
+                - this.waypoints[segmentStartIndex].cumulativeDistanceInFP;
+            const descentDistance = AutopilotMath.calculateDescentDistance(nextFPA, fpta - nextFPTA);
+            const distanceToNextTod = distance - descentDistance > 0 ? distance - descentDistance : 0;
+            return distanceToNextTod;
+        }
+        return 0;
+    }
 
     parseConstraints(waypoint) {
         const constraints = {
@@ -580,6 +593,11 @@ class WT_BaseVnav {
         } 
         return undefined;
     }
+
+    setCheckPreselector() {
+        this._fmc.showErrorMessage("CHECK PRESELECTOR");
+    }
+
 }
 
 
@@ -666,7 +684,7 @@ class VerticalWaypoint {
  * A definition for vertical flight plan segments.
  */
 class PathSegment {
-    constructor(startIndex = undefined, targetIndex = undefined, fpa = undefined) {
+    constructor(startIndex = undefined, targetIndex = undefined, fpa = undefined, distanceToNextTod = 0) {
         
       /**
        * The first waypoint index of this segment.
@@ -685,6 +703,13 @@ class PathSegment {
        * @type {number}
        */
       this.fpa = fpa;
+
+      /**
+       * The distance from the end of this segment to the next TOD;
+       * 0 if it is a continuous descent or at the end of the path.
+       * @type {number}
+       */
+      this.distanceToNextTod = distanceToNextTod;
     }
 }
 

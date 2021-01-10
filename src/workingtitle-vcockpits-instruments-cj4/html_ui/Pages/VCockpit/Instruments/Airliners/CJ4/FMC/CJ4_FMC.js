@@ -55,7 +55,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
-        this._currentAP = undefined;
+        this._currentVerticalAutopilot = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
@@ -474,31 +474,14 @@ class CJ4_FMC extends FMCMainDisplay {
             this._navModeSelector.generateInputDataEvents();
             this._navModeSelector.processEvents();
 
-            if (this._navModeSelector.isVNAVOn === true) {
-                // vnav turned on
 
-                //ACTIVATE VNAV MODE
-                if (this._currentAP === undefined) {
-                    this._currentAP = new WT_VnavAutopilot(this._vnav, this._navModeSelector);
-                    this._currentAP.activate();
-                }
-                //UPDATE VNAV MODE
-                else {
-                    this._currentAP.update();
-                }
+            //RUN VERTICAL AP ALWAYS
+            if (this._currentVerticalAutopilot === undefined) {
+                this._currentVerticalAutopilot = new WT_VerticalAutopilot(this._vnav, this._navModeSelector);
+                this._currentVerticalAutopilot.activate();
             }
             else {
-                if (this._currentAP) {
-                    // vnav turned off, destroy it
-                    this._currentAP.deactivate();
-                    this._currentAP = undefined;
-                }
-            }
-
-            //SET FMC ALERT FOR TOD
-            if (SimVar.GetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool") == 1) {
-                this.showErrorMessage("CHECK PRESELECTOR");
-                SimVar.SetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool", 0);
+                this._currentVerticalAutopilot.update();
             }
 
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());

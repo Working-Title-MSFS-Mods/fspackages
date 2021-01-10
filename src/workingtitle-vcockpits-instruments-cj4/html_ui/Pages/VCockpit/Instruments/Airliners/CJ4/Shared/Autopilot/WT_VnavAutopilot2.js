@@ -1,4 +1,4 @@
-class WT_VnavAutopilot {
+class WT_VerticalAutopilot {
     constructor(vnav, modeSelector) {
 
         /**
@@ -35,13 +35,21 @@ class WT_VnavAutopilot {
         * Tracked Glidepath State
         * @type {GlidepathStatus}
         */
-        this._glidepathState = undefined;
+        this._glidepathStatus = GlidepathStatus.NONE;
 
         /**
         * Update Time for intercept logic
         * @type {number}
         */
         this._lastUpdateTime = undefined;
+
+        /**
+        * The altitude at which the aircraft should level
+        * (This value is a proxy for alt slot 2 and is monitored by this class and
+        * inserted to alt slot 2 only when a level-off is commanded by VNAV)
+        * @type {number}
+        */
+        this._targetAltitude = undefined;
 
     }
 
@@ -65,16 +73,114 @@ class WT_VnavAutopilot {
         return Math.round(Simplane.getVerticalSpeed());
     }
 
+    get altSet1() {
+        return this._navModeSelector.altSet1;
+    }
+
     get altSet2() {
         return this._navModeSelector.altSet2;
+    }
+
+    set altSet2(value) {
+        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.floor(value), true);
     }
 
     get path() {
         return this._vnav.trackPath();
     }
 
-    get glidePath() {
+    get glidepath() {
         return this._vnav.trackApproachGlidepath();
+    }
+
+    get verticalMode() {
+        return this._navModeSelector.currentVerticalActiveState;
+    }
+
+    get lateralMode() {
+        return this._navModeSelector.currentLateralActiveState;
+    }
+
+    get isVNAVOn() {
+        return this._navModeSelector.isVNAVOn;
+    }
+    set isVNAVOn(value) {
+        this._navModeSelector.isVNAVOn = value;
+    }
+
+    get constraintAltitude() {
+        return this._vnav._activeConstraintAltitude;
+    }
+
+    get altSlot() {
+        return this._navModeSelector.currentAltSlotIndex;
+    }
+
+    set altSlot(value) {
+        switch(value) {
+            case AltitudeSlot.SELECTED:
+                this._navModeSelector.handleVnavRequestSlot1();
+                break;
+            case AltitudeSlot.MANAGED:
+                this._navModeSelector.handleVnavRequestSlot2();
+                break;
+            case AltitudeSlot.LOCK:
+                this._navModeSelector.handleVnavRequestSlot3();
+                break;
+        }
+    }
+
+    get vsSlot() {
+        return SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
+    }
+
+    set vsSlot(value) {
+        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", value);
+    }
+
+    get vsSlot2Value() {
+        SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+    }
+
+    set vsSlot2Value(value) {
+        Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, value);
+    }
+
+    get targetAltitude() {
+        return this._targetAltitude;
+    }
+
+    set targetAltitude(value) {
+        this._targetAltitude = targetAltitude;
+    }
+
+    get indicatedAltitude() {
+        return this._vnav.indicatedAltitude;
+    }
+
+    get snowflake() {
+        let snowflake = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1;
+        return snowflake
+    }
+
+    set snowflake(value) {
+        let setValue = value === true ? 1 : 0;
+        SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', setValue);
+    }
+
+    get donut() {
+        return SimVar.GetSimVarValue("L:WT_CJ4_DONUT", "number");
+    }
+
+    set donut(value) {
+        let donutValue = Math.round(value);
+        SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", donutValue);
+    }
+
+    get currentSegment() {
+        const currentIndex = this._vnav.flightplan.activeWaypointIndex;
+        const currentSegmentIndex = this._vnav._verticalFlightPlan[currentIndex].segment;
+        return this._vnav._verticalFlightPlanSegments[currentSegmentIndex];
     }
 
     /**
@@ -89,7 +195,7 @@ class WT_VnavAutopilot {
      */
     update() {
         this._vnavState = this.checkVnavState(); 
-        this._glidepathState = this.checkGlidepathState();
+        this._glidepathStatus = this.checkGlidepathStatus();
 
         switch(this._vnavPathStatus) {
             case VnavPathStatus.NONE:
@@ -97,91 +203,91 @@ class WT_VnavAutopilot {
             case VnavPathStatus.PATH_EXISTS:
                 if (this.canPathArm()) {
                     this._vnavPathStatus = VnavPathStatus.PATH_ARMED;
-                }
+                } else {this.checkPreselector;}
                 break;
             case VnavPathStatus.PATH_ARMED:
+                if (!this.isVNAVOn) {
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    break;
+                }
                 if (this.canPathActivate()) {
                     this._vnavPathStatus = VnavPathStatus.PATH_ACTIVE;
+                    this._pathInterceptStatus = PathInterceptStatus.NONE;
+                    if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
+                        this._glidepathStatus = GlidepathStatus.NONE;
+                    }
                 }
                 break;
             case VnavPathStatus.PATH_ACTIVE:
+                if (!this.isVNAVOn) {
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    break;
+                }
                 this.followPath()
                 break;
         }
 
-        switch(this._glidepathState) {
+        switch(this._glidepathStatus) {
             case GlidepathStatus.NONE:
                 break;
             case GlidepathStatus.GP_CAN_ARM:
-                if (this._navModeSelector.currentLateralActiveState = LateralNavModeState.APPR) {
-                    this._glidepathState = GlidepathStatus.GP_ARMED;
+                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                    this._glidepathStatus = GlidepathStatus.GP_ARMED;
                 }
                 break;
             case GlidepathStatus.GP_ARMED:
+                if (this._navModeSelector.currentLateralActiveState !== LateralNavModeState.APPR) {
+                    this.cancelGlidepath();
+                    break;
+                }
                 if (this.canGlidepathActivate()) {
-                    this._glidepathState = GlidepathStatus.GP_ACTIVE;
+                    this._glidepathStatus = GlidepathStatus.GP_ACTIVE;
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    this._pathInterceptStatus = PathInterceptStatus.NONE;
+                    this.isVNAVOn = false;
                 }
                 break;
             case GlidepathStatus.GP_ACTIVE:
+                if (this._navModeSelector.currentLateralActiveState !== LateralNavModeState.APPR) {
+                    this.cancelGlidepath();
+                    break;
+                }
                 this.followGlidepath()
                 break;
         }
 
-
-
-
-
-
-        VnavPathStatus.NONE
-        VnavPathStatus.PATH_ARMED
-        VnavPathStatus.PATH_CAN_ARM
-        VnavPathStatus.PATH_ACTIVE
-
-        GlidepathStatus.NONE
-        GlidepathStatus.GP_CAN_ARM
-        GlidepathStatus.GP_ARMED
-        GlidepathStatus.GP_ACTIVE
-
-
-
-        PathInterceptStatus.NONE
-        PathInterceptStatus.INTERCEPTING
-        PathInterceptStatus.INTERCEPTED
-
-
-
-
-
-
-
-
-
-
-        //We are intercepting the constraint, inhibit execution until we change path conditions
-        if (this._pathActive === true && this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTC && this._inhibitExecute !== true) {
-            if (this._navModeSelector.currentVerticalArmedStates[0] = VerticalNavModeState.GP) {
-                this._inhibitExecute = false;
-                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
-            } else {
-                this._inhibitExecute = true;
-                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
-            }
+        switch(this.isVNAVOn) {
+            case false:
+                if (this.altSlot === AltitudeSlot.MANAGED) {
+                    this.altSlot = AltitudeSlot.SELECTED;
+                }
+                this.setDonut(0);
+                break;
+            case true:
+                if (this._vnavPathStatus !== VnavPathStatus.PATH_ACTIVE) {
+                    this.setConstraintAltitude();
+                }
         }
 
-
-        this.vnavAltSlotRequest();
+        this.setSnowflake();
+        this.monitorValues();
     }
 
     canPathArm() {
-        const distance = this._vnav.getDistanceToTarget();
-        const altitudeDifference = this._vnav.indicatedAltitude - this._vnav.getTargetAltitude();
-        const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
-        const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
-        if (this.path.deviation <= 1000 && altitudeDifference > 0
-            && this.verticalSpeed > reqVs && this.altSet2 < this._vnav.indicatedAltitude + 100) {
-            return true;
-        } else if (this.path.deviation > 1000 && this.verticalSpeed < reqVs && this.altSet2 < this._vnav.indicatedAltitude + 100) {
-            return true;
+        switch(this.isVNAVOn) {
+            case false:
+                break;
+            case true:
+                const distance = this._vnav.getDistanceToTarget();
+                const altitudeDifference = this.indicatedAltitude - this._vnav.getTargetAltitude();
+                const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
+                const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
+                if (this.path.deviation <= 1000 && altitudeDifference > 100
+                    && this.verticalSpeed > reqVs && this.altSet1 < this.indicatedAltitude + 100) {
+                    return true;
+                } else if (this.path.deviation > 1000 && this.verticalSpeed < reqVs && this.altSet1 < this.indicatedAltitude + 100) {
+                    return true;
+                }
         }
         return false;
     }
@@ -194,10 +300,15 @@ class WT_VnavAutopilot {
     }
 
     canGlidepathActivate() {
-        if (this.glidePath.deviation < 100 && this.glidePath.deviation > -300) {
+        if (this.glidepath.deviation < 100 && this.glidepath.deviation > -300) {
             return true;
         }
         return false;
+    }
+
+    cancelGlidepath() {
+        this._glidepathStatus = GlidepathStatus.NONE;
+        this.snowflake = false;
     }
 
     checkVnavState() {
@@ -209,18 +320,18 @@ class WT_VnavAutopilot {
                 if (this._vnavPathStatus === VnavPathStatus.NONE) {
                     this._vnavPathStatus = VnavPathStatus.PATH_EXISTS;
                 }
-                this._vnavState = vnavState;
+                this._vnavState = this.vnavState;
                 break;
             case VnavState.NONE:
                 this._vnavPathStatus = VnavPathStatus.NONE;
-                this._vnavState = vnavState;
+                this._vnavState = this.vnavState;
         }
-        return this.vnavState;
+        return this._vnavState;
     }
 
-    checkGlidepathState() {
-        const gp = this.glidePath != undefined && this.glidePath > 0;
-        switch(this._glidepathState) {
+    checkGlidepathStatus() {
+        const gp = this.glidepath != undefined && this.glidepath > 0;
+        switch(this._glidepathStatus) {
             case GlidepathStatus.NONE:
                 if (gp) {
                     return GlidepathStatus.GP_CAN_ARM;
@@ -233,13 +344,53 @@ class WT_VnavAutopilot {
                     return GlidepathStatus.NONE;
                 }
         }
-        return this._glidepathState;
+        return this._glidepathStatus;
+    }
+
+    manageAltitude() {
+        switch(this._pathInterceptStatus) {
+            case PathInterceptStatus.NONE:
+            case PathInterceptStatus.INTERCEPTING:
+                this.setManagedAltitude();
+            case PathInterceptStatus.INTERCEPTED:
+            case PathInterceptStatus.CONTINUOUS:
+                if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
+                    if (this.altSlot !== AltitudeSlot.MANAGED) {
+                        this.altSlot = AltitudeSlot.MANAGED;
+                    }
+                } else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
+                    if (this.altSlot !== AltitudeSlot.SELECTED) {
+                        this.altSlot = AltitudeSlot.SELECTED;
+                    }
+                    if (this.currentSegment.distanceToNextTod < 1) {
+                        this._pathInterceptStatus = PathInterceptStatus.CONTINUOUS;
+                    }
+                    else if (this.indicatedAltitude < this.targetAltitude + 500) {
+                        this.altSet2 = this.targetAltitude;
+                        this.altSlot = AltitudeSlot.MANAGED;
+                        this._pathInterceptStatus = PathInterceptStatus.LEVELING;
+                    } 
+                }
+                break;
+            case PathInterceptStatus.LEVELING:
+                if (this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALT) {
+                    this.vsSlot2Value = 0;
+                    this.vsSlot = 1;
+                    this.setManagedAltitude();
+                    this._pathInterceptStatus = PathInterceptStatus.NONE;
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    this.setDonut(0);
+                }
+                break;
+
+        }
     }
 
     interceptPath(fpa) {
         switch(this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
                 const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
+                this.setDonut(desiredVerticalSpeed);
                 const deltaVS = desiredVerticalSpeed - this.verticalSpeed;
                 const intercept = {
                     verticalSpeed: 100 * Math.floor(this.verticalSpeed / 100),
@@ -247,6 +398,8 @@ class WT_VnavAutopilot {
                 }
                 this._pathInterceptValues = intercept;
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
+                this.vsSlot2Value = this.verticalSpeed;
+                this.vsSlot = 2;
                 break;
             case PathInterceptStatus.INTERCEPTING:
                 let now = performance.now();
@@ -260,7 +413,7 @@ class WT_VnavAutopilot {
                         this._pathInterceptValues.verticalSpeed -= 100;
                         this._pathInterceptValues.increments += 1;
                     }
-                    Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, this._pathInterceptValues.verticalSpeed);
+                    this.vsSlot2Value = this._pathInterceptValues.verticalSpeed;
                 }
                 if (this._pathInterceptValues.increments == 0) {
                     this._pathInterceptStatus = PathInterceptStatus.INTERCEPTED;
@@ -273,24 +426,33 @@ class WT_VnavAutopilot {
     followPath() {
         switch(this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
-                this.setTargetAltitude(this.path.fpta);
+                this.targetAltitude = this.path.fpta;
+                this.manageAltitude();
             case PathInterceptStatus.INTERCEPTING:
                 this.interceptPath(this.path.fpa);
                 break;
             case PathInterceptStatus.INTERCEPTED:
+            case PathInterceptStatus.CONTINUOUS:
+                this.manageAltitude();
                 this.commandVerticalSpeed(this.path.fpa, this.path.deviation);
+                break;
+            case PathInterceptStatus.LEVELING:
+                this.manageAltitude();
+                break;
         }
     }
 
     followGlidepath() {
         switch(this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
-                this.setTargetAltitude(this.path.fpta);
+                this.targetAltitude = this.glidepath.fpta;
+                this.manageAltitude();
             case PathInterceptStatus.INTERCEPTING:
-                this.interceptPath(this.path.fpa);
+                this.interceptPath(this.glidepath.fpa);
                 break;
             case PathInterceptStatus.INTERCEPTED:
-                this.commandVerticalSpeed(this.path.fpa, this.path.deviation);
+                this.manageAltitude();
+                this.commandVerticalSpeed(this.glidepath.fpa, this.glidepath.deviation);
         }
     }
 
@@ -299,7 +461,7 @@ class WT_VnavAutopilot {
         const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
         const maxVerticalSpeed = -1 * AutopilotMath.calculateVerticaSpeed(6, this.groundSpeed);
         const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
-
+        
         if (deviation > 10) {
             const correction = Math.min(Math.max((2.1 * deviation), 100), maxCorrection);
             setVerticalSpeed = desiredVerticalSpeed - correction;
@@ -312,274 +474,61 @@ class WT_VnavAutopilot {
             setVerticalSpeed = desiredVerticalSpeed;
         }
         setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
-        Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
+        this.vsSlot2Value = setVerticalSpeed;
     }
 
-    
-    /**
-     * Execute.
-     */
-    execute() {
-        
-        this.checkPreselector();
-        this.setSnowflake();
-        this.setDonut();
+    setConstraintAltitude() {
+        this.targetAltitude = this.constraintAltitude;
+        this.setManagedAltitude(this.targetAltitude);
+        if (this.altSlot === AltitudeSlot.SELECTED) {
+            this.altSlot = AltitudeSlot.MANAGED;
+        }
+    }
 
-        this.monitorValues();
+    setManagedAltitude(altitude = -1000) {
+        if (Math.round(this.altSet2) != altitude) {
+            this.altSet2 = altitude;
+        }
+        //SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
+    }
 
-        
-
-        if (this._inhibitExecute) {
+    setSnowflake(value = undefined) {
+        if (value !== undefined && (value === true || value === false)) {
+            this.snowflake = value;
             return;
         }
-
-        // //TODO: SORT OUT THESE LVARS
-        // if (t == 2) {
-        //     SimVar.SetSimVarValue("L:WT_VNAV_ACTIVE", "number", 1); 
-
-        // } else {
-        //     if (SimVar.GetSimVarValue("L:WT_VNAV_ACTIVE", "number") != 0) {
-        //         SimVar.SetSimVarValue("L:WT_VNAV_ACTIVE", "number", 0); 
-        //     }
-        // }
-        
-        //EXECUTION CYCLE
-        const pathStatusSimVar = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number");
-        
-        if (this._pathActivate) {
-            //TIME TO ACTIVATE
-            this.setTargetAltitude();
-            this._pathActive = true;
-            this._pathActivate = false;
-            if (pathStatusSimVar != 3) {
-                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 3);
-            }
+        const isGlidepathActive = this._glidepathStatus === GlidepathStatus.GP_ARMED || this._glidepathStatus === GlidepathStatus.GP_ACTIVE ? true : false;
+        const isPathActive = this._vnavPathStatus === VnavPathStatus.PATH_ARMED || this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE ? true : false;
+        let newSnowflakeStatus = false;
+        if (isGlidepathActive || isPathActive) {
+            newSnowflakeStatus = true;
         }
-
-        if (this._pathActive) {
-            //RUNNING
-            if (pathStatusSimVar != 3) {
-                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 3);
-            }
-            if (Math.round(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
-                this.setTargetAltitude();
-            }
-            if (this._navModeSelector.currentAltSlotIndex !=2 && this._vnav._altDeviation > 0) {
-                this._vnavAltSlot = 2;
-            }
-
-            // if (this._navModeSelector.currentVerticalActiveState != VerticalNavModeState.PATH) {
-            //     this.recalculate();
-            // }
-        }
-        else if (this._pathArm) {
-            //ARM PATH MODE (FROM BELOW)
-            if (pathStatusSimVar != 1) {
-                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
-            }
-        }
-        else if (this._pathArmAbove) {
-            //ARM PATH MODE (FROM ABOVE)
-            const currentVS = Math.round(Simplane.getVerticalSpeed());
-            if (currentVS < this._pathFromAboveRequiredVs) {
-                if (pathStatusSimVar != 1) {
-                    SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 1);
-                }
-            }
-            else {
-                if (pathStatusSimVar != 2) {
-                    SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 2);
-                }
-            }
-        }
-        else {
-            if (pathStatusSimVar != 0) {
-                SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
-            }
-            this.recalculate();
-        }
-        
-        if (!this._pathActive && this._constraintExists) {
-            //NO PATH, SET ALT CONSTRAINTS
-            if (this._vnav._vnavConstraintWaypoint) {
-                const altSet2 = this._navModeSelector.selectedAlt2;
-                if (Math.round(altSet2) != Math.round(this._vnav._vnavConstraintAltitude) && (VerticalNavModeState.ALT || VerticalNavModeState.ALTC)) {
-                    this.setTargetAltitude(this._vnav._vnavConstraintAltitude);
-                }
-                if (this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.PTCH
-                     || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.VS 
-                     || this._navModeSelector.currentVerticalActiveState == VerticalNavModeState.FLC) {
-                        const altSlot = this._navModeSelector.currentAltSlotIndex;
-                        const altSet1 = this._navModeSelector.selectedAlt1;
-                        if (Math.round(altSet2) != Math.round(this._vnav._vnavConstraintAltitude)) {
-                            this.setTargetAltitude(this._vnav._vnavConstraintAltitude);
-                        }
-                        if (this._vnav._currentFlightSegment.type == SegmentType.Departure) {
-                            //CLIMB CONSTRAINTS
-                            this._obeyingConstraint = true;
-                            if (altSet1 > altSet2 && (altSlot == 1 || altSlot == 3)) {
-                                this._vnavAltSlot = 2;
-                                //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-                            }
-                            else if (altSet1 <= altSet2 && altSlot == 2) {
-                                this._vnavAltSlot = 1;
-                                //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-                            }
-                        }
-                        else if (this._vnav._currentFlightSegment.type != SegmentType.Departure) {
-                            //DESCENT CONSTRAINTS
-                            this._obeyingConstraint = true;
-                            if (altSet1 < altSet2 && altSlot == 1) {
-                                this._vnavAltSlot = 2;
-                            }
-                            else if (altSet1 >= altSet2 && altSlot == 2) {
-                                this._vnavAltSlot = 1;
-                            }
-                        }
-                    }
-            }
-            else {
-                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-                this._vnavAltSlot = 1;
-            }
-            if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute") != 0) {
-                Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
-            }
-        }
-        else if (this._pathActive) {
-            //SET VS FOR VNAV PATH
-            const activeFPA = (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists) ? this._vnav._gpAngle
-                : this._vnav._desiredFPA;
-            SimVar.SetSimVarValue("L:WT_TEMP_ACTIVE_FPA", "number", activeFPA);
-            let setVerticalSpeed = 0;
-            const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(activeFPA * (Math.PI / 180));
-            const maxVerticalSpeed = 101.2686667 * groundSpeed * Math.tan(6 * (Math.PI / 180));
-            const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
-            if (Math.floor(this._navModeSelector.selectedAlt2) != this._vnavTargetAltitude) {
-                this.setTargetAltitude();
-            }
-            if (this._vnav._vnavTargetDistance < 1 && this._vnav._vnavTargetDistance > 0) {
-                setVerticalSpeed = desiredVerticalSpeed;
-            }
-            else {
-                if (this._vnav._altDeviation > 10) {
-                    const correction = Math.min(Math.max((2.1 * this._vnav._altDeviation), 100), maxCorrection);
-                    setVerticalSpeed = desiredVerticalSpeed - correction;
-                }
-                else if (this._vnav._altDeviation < -10) {
-                    const correction = Math.min(Math.max((-2.1 * this._vnav._altDeviation), 100), (-1 * desiredVerticalSpeed));
-                    setVerticalSpeed = desiredVerticalSpeed + correction;
-                }
-                else {
-                    setVerticalSpeed = desiredVerticalSpeed;
-                }
-            }
-            setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
-            Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, setVerticalSpeed);
-            if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1 && this._vnav._altDeviation > 0) {
-                SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
-              }
+        if (this.snowflake !== newSnowflakeStatus) {
+            this.snowflake = newSnowflakeStatus;
         }
     }
 
-    /**
-     * Run when deactivated.
-     */
-    deactivate() {
-        this._constraintExists = false;
-        this._pathArm = false;
-        this._pathArmAbove = false;
-        this._pathActive = false;
-        this._pathActivate = false;
-        this._pathArmFired = false;
-        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-        SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', 0);
-        SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", 0);
-        return;
-    }
-
-    failed() {
-        this._constraintExists = false;
-        this._pathArm = false;
-        this._pathActive = false;
-        this._pathActivate = false;
-        this._pathArmFired = false;
-        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, this._vnav._altitude, true);
-        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-        SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', 0);
-        SimVar.SetSimVarValue("L:WT_VNAV_PATH_STATUS", "number", 0);
-        SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", 0);
-        return;
-    }
-
-    setTargetAltitude(targetAltitude = this._vnavTargetAltitude) {
-
-        if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
-            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.round(targetAltitude - 500), false);
-            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-        }
-        else {
-            let isClimb = this._vnav._currentFlightSegment.type == SegmentType.Departure ? true : false;
-
-            let selectedAltitude = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
-            let updatedTargetAltitude = isClimb ? Math.min(targetAltitude, selectedAltitude) : Math.max(targetAltitude, selectedAltitude);
-            updatedTargetAltitude = Math.floor(updatedTargetAltitude);
-
-            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, Math.floor(updatedTargetAltitude), true);
-
-            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
-        }
-    }
-
-    setSnowflake() {
-        //SET SNOWFLAKE -- TODO: NEED MORE RESTRICTIONS?
-        if (this._vnav._pathCalculating && Math.abs(this._vnav._altDeviation) < 1001) {
-            if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') != 1) {
-                SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', 1);
-            }
-        }
-        else {
-            if (SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1) {
-                SimVar.SetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number', 0);
-            }
-        }
-    }
-
-    setDonut() {
-        if (this._pathActive) {
-            const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            const activeFPA = (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR && this._vnav._gpExists) ? this._vnav._gpAngle
-            : this._vnav._desiredFPA;
-            const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(activeFPA * (Math.PI / 180));
-            SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", desiredVerticalSpeed); 
-        }
-        else if (this._vnav._vnavConstraintWaypoint && this._vnav._activeWaypointDist && this._vnav._distanceToTod < 50) {
-            const constraintDistance = this._vnav._vnavConstraintWaypoint.cumulativeDistanceInFP;
-            const currentDistance = this._vnav._activeWaypoint.cumulativeDistanceInFP - this._vnav._activeWaypointDist;
-            const distanceToConstraint = constraintDistance - currentDistance;
-            const altitudeDifference = this._indicatedAltitude - this._vnav._vnavConstraintAltitude;
-            const requiredFpa = (180 / Math.PI) * (Math.atan(altitudeDifference / (distanceToConstraint * 6076.12)));
-            const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-            const reqVs = -101.2686667 * groundSpeed * Math.tan(requiredFpa * (Math.PI / 180));
-            SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", reqVs); 
-        }
-        else {
-            SimVar.SetSimVarValue("L:WT_CJ4_DONUT", "number", 0);
+    setDonut(donutValue = 0, calculate = false) {
+        if (calculate) {
+            const index = this._vnav._activeConstraintIndex;
+            const lDistance = this._vnav.waypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
+            const vDistance = this.indicatedAltitude - this.targetAltitude;
+            const fpa = AutopilotMath.calculateFPA(vDistance, lDistance);
+            this.donut = Math.round(AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed));
+        } else if (Math.round(this.donut) != donutValue) {
+            this.donut = donutValue;
         }
     }
 
     checkPreselector() {
-        //FLAG "CHECK PRESELECTOR" IN FMC
-        const approachingTodDistance = 0.0125 * SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-        if (!this._pathArm && !this._pathArmFired && this._vnav._distanceToTod < approachingTodDistance && this._vnav._distanceToTod > 0) {
-            if (SimVar.GetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool") != 1) {
-                SimVar.SetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool", 1); 
-                this._pathArmFired = true;
-            }
+        const approachingTodDistance = 0.0125 * this.groundSpeed;
+        if (this.distanceToTod < approachingTodDistance && this.distanceToTod > 0) {
+            this._vnav.setCheckPreselector();
         }
     }
+
+    
+/////////////////////////////////////////////////////
 
     cancelConstraint() {
         //method to reset after adhereing to a constraint when no more constraints exist
@@ -608,12 +557,6 @@ class WT_VnavAutopilot {
     }
 
     monitorValues() {
-        
-        SimVar.SetSimVarValue("L:WT_VNAV_constraintExists", "number", this._constraintExists ? 1 : 0);
-        SimVar.SetSimVarValue("L:WT_VNAV_pathArm", "number", this._pathArm ? 1 : 0);
-        SimVar.SetSimVarValue("L:WT_VNAV_pathActive", "number", this._pathActive ? 1 : 0);
-        SimVar.SetSimVarValue("L:WT_VNAV_inhibitExecute", "number", this._inhibitExecute ? 1 : 0);
-        SimVar.SetSimVarValue("L:WT_VNAV_obeyingConstraint", "number", this._obeyingConstraint ? 1 : 0);
 
     }
 }
@@ -629,9 +572,16 @@ class PathInterceptStatus { }
 PathInterceptStatus.NONE = 'NONE';
 PathInterceptStatus.INTERCEPTING = 'INTERCEPTING';
 PathInterceptStatus.INTERCEPTED = 'INTERCEPTED';
+PathInterceptStatus.LEVELING = 'LEVELING';
+PathInterceptStatus.CONTINUOUS = 'CONTINUOUS';
 
 class GlidepathStatus { }
 GlidepathStatus.NONE = 'NONE';
 GlidepathStatus.GP_CAN_ARM = 'GP_CAN_ARM';
 GlidepathStatus.GP_ARMED = 'GP_ARMED';
 GlidepathStatus.GP_ACTIVE = 'GP_ACTIVE';
+
+class AltitudeSlot { }
+AltitudeSlot.SELECTED = 1;
+AltitudeSlot.MANAGED = 2;
+AltitudeSlot.LOCK = 3;
