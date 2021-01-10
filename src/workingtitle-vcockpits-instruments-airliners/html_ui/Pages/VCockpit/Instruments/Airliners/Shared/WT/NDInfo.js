@@ -410,7 +410,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         if (this._navSource == 0)
                             vor = this.gps.radioNav.getBestVORBeacon();
                         else {
-                            vor = this.gps.radioNav.getVORBeacon(this._navSource);
+                            vor = this.getVORBeacon(this._navSource);
                             vor.distance = this.getDMEDistance(this._navSource);
                         }
 
@@ -435,7 +435,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
                         if (vor.id > 0) {
                             freq = vor.freq.toFixed(2);
-                            course = Utils.leadingZeros(Math.round(vor.course), 3);
+                            if (SimVar.GetSimVarValue("NAV HAS NAV:" + vor.id, "Bool")) {
+                                course = Utils.leadingZeros(Math.round(vor.course), 3);
+                            }
+                            
                             ident = vor.ident;
                             if (this.aircraft == Aircraft.CJ4) {
                                 let hasLocalizer = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + vor.id, "Bool");
@@ -581,16 +584,24 @@ class Jet_MFD_NDInfo extends HTMLElement {
      */
     getVORBeacon(navRadioIndex) {
         this.gps.radioNav.navBeacon.reset();
-        let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:" + navRadioIndex, "Bool");
+        const hasNav = SimVar.GetSimVarValue("NAV HAS NAV:" + navRadioIndex, "Bool");
+        const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + navRadioIndex, "bool");
+        const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + navRadioIndex, "bool");
 
-        if (hasNav) {
+        if (hasNav || hasDME || hasCloseDME) {
             this.gps.radioNav.navBeacon.id = navRadioIndex;
             this.gps.radioNav.navBeacon.freq = SimVar.GetSimVarValue("NAV FREQUENCY:" + navRadioIndex, "MHz");
-            this.gps.radioNav.navBeacon.course = SimVar.GetSimVarValue("NAV OBS:" + navRadioIndex, "degree");
             this.gps.radioNav.navBeacon.name = SimVar.GetSimVarValue("NAV NAME:" + navRadioIndex, "string");
             this.gps.radioNav.navBeacon.ident = SimVar.GetSimVarValue("NAV IDENT:" + navRadioIndex, "string");
             if (SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool"))
                 this.gps.radioNav.navBeacon.course += 180;
+        }
+
+        if (hasNav) {
+            this.gps.radioNav.navBeacon.course = SimVar.GetSimVarValue("NAV OBS:" + navRadioIndex, "degree");
+        }
+        else {
+            this.gps.radioNav.navBeacon.course = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degrees");
         }
 
         return this.gps.radioNav.navBeacon;
@@ -668,19 +679,27 @@ class VORDMENavAid {
      */
     handleVORModeUpdate(parentNavMode, parentRadioIndex) {
         const ident = SimVar.GetSimVarValue("NAV IDENT:" + this.index, "string");
-        const hasNav = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
+        
+        const hasRadial = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
+        const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this.index, "bool");
+        const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + this.index, "bool");
 
-        if (this.hasNav !== hasNav) {
-            this.pointer.style = hasNav ? '' : 'display: none';
-            this.hasNav = hasNav;
+        const isTuned = hasRadial || hasDME || hasCloseDME;
+
+        if (this.hasNav !== isTuned) {
+            this.pointer.style = isTuned ? '' : 'display: none';
+            this.hasNav = isTuned;
         }
 
         let hideDistance = (parentNavMode === Jet_NDCompass_Navigation.VOR || parentNavMode === Jet_NDCompass_Navigation.ILS) && parentRadioIndex === this.index;
         this.setDistanceValue(hideDistance ? 0 : this.getDMEDistance(this.index));
 
-        if (hasNav) {
-            const navRadial = (SimVar.GetSimVarValue("NAV RADIAL:" + this.index, "degrees") + 180) % 360;
+        if (isTuned) {
             const planeHeading = Simplane.getHeadingMagnetic() % 360;
+            const navRadial = hasRadial
+                ? (SimVar.GetSimVarValue("NAV RADIAL:" + this.index, "degrees") + 180) % 360
+                : planeHeading;
+
             let rotation = (navRadial - planeHeading) % 360;
             if (rotation < 0) {
                 rotation += 360;
