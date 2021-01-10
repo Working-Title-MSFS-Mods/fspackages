@@ -181,13 +181,13 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         this.gpsWasInReversionaryMode = false;
         this.enabled = true;
 
-        this._navMap = new WT_G3x5NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, AS3000_PFD_InnerMap.LAYER_OPTIONS);
     }
 
     /**
      * @readonly
      * @property {WT_G3x5NavMap} navMap
-     * @type {WT_G3x5NavMap}
+     * @type {WT_G3x5_NavMap}
      */
     get navMap() {
         return this._navMap;
@@ -476,7 +476,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
 
     changeMapRange(delta) {
         let currentIndex = WT_MapController.getSettingValue(this.innerMap.navMap.instrumentID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         this.innerMap.navMap.rangeSetting.setValue(newIndex);
     }
 
@@ -495,25 +495,25 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     toggleDCLTR() {
         if (this.innerMap.isEnabled()) {
             let currentValue = this.innerMap.navMap.dcltrSetting.getValue();
-            let newValue = (currentValue + 1) % WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS.length;
+            let newValue = (currentValue + 1) % WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS.length;
             this.innerMap.navMap.dcltrSetting.setValue(newValue);
         }
     }
 
     getDCLTRValue() {
-        return WT_G3x5NavMap.DCLTR_DISPLAY_TEXTS[this.innerMap.navMap.dcltrSetting.getValue()];
+        return WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS[this.innerMap.navMap.dcltrSetting.getValue()];
     }
 
     toggleTerrain() {
         if (this.innerMap.isEnabled()) {
             let currentValue = this.innerMap.navMap.terrainSetting.getValue();
-            let newValue = (currentValue + 1) % WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
+            let newValue = (currentValue + 1) % WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
             this.innerMap.navMap.terrainSetting.setValue(newValue);
         }
     }
 
     getTerrainValue() {
-        return WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.innerMap.navMap.terrainSetting.getValue()];
+        return WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.innerMap.navMap.terrainSetting.getValue()];
     }
 
     toggleWX() {

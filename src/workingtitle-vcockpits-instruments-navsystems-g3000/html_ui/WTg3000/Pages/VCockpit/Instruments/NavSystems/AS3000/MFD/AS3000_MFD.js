@@ -75,6 +75,10 @@ class AS3000_MFD extends NavSystem {
                 new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager, this.citySearcher))
             ]),
         ];
+
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
 
     disconnectedCallback() {

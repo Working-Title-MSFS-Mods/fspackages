@@ -24,18 +24,18 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
         ];
 
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
-        this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3x5NavMap.NEXRAD_SHOW_KEY, WT_G3x5NavMap.NEXRAD_RANGE_KEY, WT_G3x5NavMap.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
+        this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3x5_NavMap.NEXRAD_SHOW_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
 
-        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("Airways", WT_G3x5NavMap.AIRWAY_SHOW_KEY, WT_G3x5NavMap.AIRWAY_RANGE_KEY, WT_G3x5NavMap.AIRWAY_RANGE_MAX, "Map Airway Range"));
+        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("Airways", WT_G3x5_NavMap.AIRWAY_SHOW_KEY, WT_G3x5_NavMap.AIRWAY_RANGE_KEY, WT_G3x5_NavMap.AIRWAY_RANGE_MAX, "Map Airway Range"));
         this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Airports",
-            WT_G3x5NavMap.AIRPORT_SHOW_KEY, [
-                WT_G3x5NavMap.AIRPORT_LARGE_RANGE_KEY,
-                WT_G3x5NavMap.AIRPORT_MEDIUM_RANGE_KEY,
-                WT_G3x5NavMap.AIRPORT_SMALL_RANGE_KEY
+            WT_G3x5_NavMap.AIRPORT_SHOW_KEY, [
+                WT_G3x5_NavMap.AIRPORT_LARGE_RANGE_KEY,
+                WT_G3x5_NavMap.AIRPORT_MEDIUM_RANGE_KEY,
+                WT_G3x5_NavMap.AIRPORT_SMALL_RANGE_KEY
             ], [
-                WT_G3x5NavMap.AIRPORT_LARGE_RANGE_MAX,
-                WT_G3x5NavMap.AIRPORT_MEDIUM_RANGE_MAX,
-                WT_G3x5NavMap.AIRPORT_SMALL_RANGE_MAX
+                WT_G3x5_NavMap.AIRPORT_LARGE_RANGE_MAX,
+                WT_G3x5_NavMap.AIRPORT_MEDIUM_RANGE_MAX,
+                WT_G3x5_NavMap.AIRPORT_SMALL_RANGE_MAX
             ], [
                 "Large Airport",
                 "Medium Airport",
@@ -46,19 +46,19 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
                 "Map Small Airport Range"
             ]
         ));
-        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("VOR", WT_G3x5NavMap.VOR_SHOW_KEY, WT_G3x5NavMap.VOR_RANGE_KEY, WT_G3x5NavMap.VOR_RANGE_MAX, "Map VOR Range"));
-        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("INT", WT_G3x5NavMap.INT_SHOW_KEY, WT_G3x5NavMap.INT_RANGE_KEY, WT_G3x5NavMap.INT_RANGE_MAX, "Map INT Range"));
-        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NDB", WT_G3x5NavMap.NDB_SHOW_KEY, WT_G3x5NavMap.NDB_RANGE_KEY, WT_G3x5NavMap.NDB_RANGE_MAX, "Map NDB Range"));
+        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("VOR", WT_G3x5_NavMap.VOR_SHOW_KEY, WT_G3x5_NavMap.VOR_RANGE_KEY, WT_G3x5_NavMap.VOR_RANGE_MAX, "Map VOR Range"));
+        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("INT", WT_G3x5_NavMap.INT_SHOW_KEY, WT_G3x5_NavMap.INT_RANGE_KEY, WT_G3x5_NavMap.INT_RANGE_MAX, "Map INT Range"));
+        this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NDB", WT_G3x5_NavMap.NDB_SHOW_KEY, WT_G3x5_NavMap.NDB_RANGE_KEY, WT_G3x5_NavMap.NDB_RANGE_MAX, "Map NDB Range"));
 
         this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Cities",
-            WT_G3x5NavMap.CITY_SHOW_KEY, [
-                WT_G3x5NavMap.CITY_LARGE_RANGE_KEY,
-                WT_G3x5NavMap.CITY_MEDIUM_RANGE_KEY,
-                WT_G3x5NavMap.CITY_SMALL_RANGE_KEY
+            WT_G3x5_NavMap.CITY_SHOW_KEY, [
+                WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY,
+                WT_G3x5_NavMap.CITY_MEDIUM_RANGE_KEY,
+                WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY
             ], [
-                WT_G3x5NavMap.CITY_LARGE_RANGE_MAX,
-                WT_G3x5NavMap.CITY_MEDIUM_RANGE_MAX,
-                WT_G3x5NavMap.CITY_SMALL_RANGE_MAX
+                WT_G3x5_NavMap.CITY_LARGE_RANGE_MAX,
+                WT_G3x5_NavMap.CITY_MEDIUM_RANGE_MAX,
+                WT_G3x5_NavMap.CITY_SMALL_RANGE_MAX
             ], [
                 "Large City",
                 "Medium City",
@@ -69,9 +69,9 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
                 "Map Small City Range"
             ]
         ));
-        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3x5NavMap.BORDERS_SHOW_KEY, WT_G3x5NavMap.BORDERS_RANGE_KEY, WT_G3x5NavMap.BORDERS_RANGE_MAX, "Map State/Province Range"));
+        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3x5_NavMap.BORDERS_SHOW_KEY, WT_G3x5_NavMap.BORDERS_RANGE_KEY, WT_G3x5_NavMap.BORDERS_RANGE_MAX, "Map State/Province Range"));
 
-        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
         if (useWindData) {
             this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
@@ -118,7 +118,7 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
     }
 
     initOrientationSetting() {
-        this._orientationWindowContext = this._createWindowContext("Map Orientation", WT_G3x5_TSCMapSettings.ORIENTATION_TEXTS, this.setOrientation.bind(this), WT_G3x5NavMap.ORIENTATION_KEY);
+        this._orientationWindowContext = this._createWindowContext("Map Orientation", WT_G3x5_TSCMapSettings.ORIENTATION_TEXTS, this.setOrientation.bind(this), WT_G3x5_NavMap.ORIENTATION_KEY);
         this._orientationButton = this.gps.getChildById(this.orientationButtonName);
         if (this._orientationButton) {
             this.orientationButtonValue = this._orientationButton.getElementsByClassName("lowerValue")[0];
@@ -166,16 +166,16 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
     // update helpers
 
     updateOrientationValue() {
-        let currentOrientation = WT_MapController.getSettingValue(this.getControllerID(), WT_G3x5NavMap.ORIENTATION_KEY);
+        let currentOrientation = WT_MapController.getSettingValue(this.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY);
         let newValue = "";
         switch (currentOrientation) {
-            case WT_G3x5NavMap.Orientation.HDG:
+            case WT_G3x5_NavMap.Orientation.HDG:
                 newValue = "Heading Up";
                 break;
-            case WT_G3x5NavMap.Orientation.TRK:
+            case WT_G3x5_NavMap.Orientation.TRK:
                 newValue = "Track Up";
                 break;
-            case WT_G3x5NavMap.Orientation.NORTH:
+            case WT_G3x5_NavMap.Orientation.NORTH:
                 newValue = "North Up";
                 break;
         }
@@ -223,7 +223,7 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
     // setter helpers
 
     setOrientation(value) {
-        WT_MapController.setSettingValue(this.getControllerID(), WT_G3x5NavMap.ORIENTATION_KEY, value, true);
+        WT_MapController.setSettingValue(this.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY, value, true);
         this.updateOrientationValue();
     }
 
@@ -644,7 +644,7 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _updateRangeButton() {
-        this._rangeButton.labelText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.getControllerID(), this._rangeKey)]);
+        this._rangeButton.labelText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.getControllerID(), this._rangeKey)]);
     }
 
     onUpdate() {
@@ -662,8 +662,8 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
 
     static getRangeValuesDisplayToMax(max) {
         let values = [];
-        for (let i = 0; i < WT_G3x5NavMap.MAP_RANGE_LEVELS.length && WT_G3x5NavMap.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
-            values.push(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[i]));
+        for (let i = 0; i < WT_G3x5_NavMap.MAP_RANGE_LEVELS.length && WT_G3x5_NavMap.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
+            values.push(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[i]));
         }
         return values;
     }
@@ -776,7 +776,7 @@ class WT_G3x5_TSCRangeTypeSelectionElementHandler {
     }
 
     update(index, elem) {
-        Avionics.Utils.diffAndSet(elem.value, WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])]));
+        Avionics.Utils.diffAndSet(elem.value, WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])]));
     }
 }
 
@@ -912,7 +912,7 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 
     _initWindowContext() {
-        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT);
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT);
         this._modeWindowContext = {
             title: "Map Terrain Displayed",
             subclass: "standardDynamicSelectionListWindow",
@@ -941,7 +941,7 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 
     _updateModeButton() {
-        this._modeButton.valueText = WT_G3x5NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.getControllerID(), this._modeSettingKey)];
+        this._modeButton.valueText = WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.getControllerID(), this._modeSettingKey)];
     }
 
     onUpdate() {
