@@ -7,11 +7,11 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
         this._model = new WT_WeatherRadarModel();
         this._controller = new WT_DataStoreController(this.controllerID, this.model);
 
-        this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5WeatherRadar.MODE_KEY, WT_G3x5WeatherRadar.MODE_DEFAULT, true, false));
-        this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5WeatherRadar.DISPLAY_KEY, WT_G3x5WeatherRadar.DISPLAY_DEFAULT, true, false));
-        this.controller.addSetting(this._scanModeSetting = new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5WeatherRadar.SCAN_MODE_KEY, WT_G3x5WeatherRadar.SCAN_MODE_DEFAULT, true, false));
-        this.controller.addSetting(this._bearingLineSetting = new WT_WeatherRadarSetting(this.controller, "showBearingLine", WT_G3x5WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
-        this.controller.addSetting(this._rangeSetting = new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5WeatherRadar.RANGES, WT_G3x5WeatherRadar.RANGE_DEFAULT));
+        this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5_WeatherRadar.MODE_KEY, WT_G3x5_WeatherRadar.MODE_DEFAULT, true, false));
+        this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5_WeatherRadar.DISPLAY_KEY, WT_G3x5_WeatherRadar.DISPLAY_DEFAULT, true, false));
+        this.controller.addSetting(this._scanModeSetting = new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5_WeatherRadar.SCAN_MODE_KEY, WT_G3x5_WeatherRadar.SCAN_MODE_DEFAULT, true, false));
+        this.controller.addSetting(this._bearingLineSetting = new WT_WeatherRadarSetting(this.controller, "showBearingLine", WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
+        this.controller.addSetting(this._rangeSetting = new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5_WeatherRadar.RANGES, WT_G3x5_WeatherRadar.RANGE_DEFAULT));
 
         this.controller.update();
     }

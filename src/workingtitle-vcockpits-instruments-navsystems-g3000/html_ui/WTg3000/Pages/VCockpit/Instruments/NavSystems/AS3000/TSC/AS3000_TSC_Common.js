@@ -273,6 +273,10 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._initMFDPaneControlID();
         this._initMFDPaneSelectDisplay();
+
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
 
     getSelectedMFDPanePages() {
@@ -415,14 +419,14 @@ class AS3000_TSC extends NavSystemTouch {
     _changeMFDMapRange(delta) {
         let controllerID = `MFD-${this.getSelectedMFDPane()}`;
         let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
     _changePFDMapRange(delta) {
         let controllerID = "PFD";
         let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5NavMap.MAP_RANGE_LEVELS.length - 1), 0);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
