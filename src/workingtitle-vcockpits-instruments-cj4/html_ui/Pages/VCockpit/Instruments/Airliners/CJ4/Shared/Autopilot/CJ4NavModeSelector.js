@@ -35,7 +35,10 @@ class CJ4NavModeSelector {
     this.isVNAVOn = false;
 
     /** The current VPath state. */
-    this.vPathState = VPathState.NONE;
+    this.vPathState = VnavPathStatus.NONE;
+
+    /** The current VPath state. */
+    this.glidepathState = GlidepathStatus.NONE;
 
     /** The current LNav mode state. */
     this.lNavModeState = LNavModeState.FMS;
@@ -71,7 +74,6 @@ class CJ4NavModeSelector {
       selectedAlt1: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"), () => NavModeEvent.SELECTED_ALT1_CHANGED),
       selectedAlt2: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"), () => NavModeEvent.SELECTED_ALT2_CHANGED),
       navmode: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number"), () => NavModeEvent.NAV_MODE_CHANGED),
-      vpath: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number"), () => NavModeEvent.VPATH_CHANGED),
       gs_arm: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean"), () => NavModeEvent.GS_ARM_CHANGED),
       gs_active: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean"), () => NavModeEvent.GS_ACTIVE_CHANGED),
       hdg_lock: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean"), () => NavModeEvent.HDG_LOCK_CHANGED),
@@ -90,7 +92,12 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.VNAV_PRESSED}`]: this.handleVNAVPressed.bind(this),
       [`${NavModeEvent.ALT_LOCK_CHANGED}`]: this.handleAltLockChanged.bind(this),
       [`${NavModeEvent.ALT_CAPTURED}`]: this.handleAltCaptured.bind(this),
-      [`${NavModeEvent.VPATH_CHANGED}`]: this.handleVPathChanged.bind(this),
+      [`${NavModeEvent.PATH_NONE}`]: this.handleVPathChanged(NavModeEvent.PATH_NONE).bind(this),
+      [`${NavModeEvent.PATH_ARM}`]: this.handleVPathChanged(NavModeEvent.PATH_ARM).bind(this),
+      [`${NavModeEvent.PATH_ACTIVE}`]: this.handleVPathChanged(NavModeEvent.PATH_ACTIVE).bind(this),
+      [`${NavModeEvent.GP_NONE}`]: this.handleGlidepathChanged(NavModeEvent.GP_NONE).bind(this),
+      [`${NavModeEvent.GP_ARM}`]: this.handleGlidepathChanged(NavModeEvent.GP_ARM).bind(this),
+      [`${NavModeEvent.GP_ACTIVE}`]: this.handleGlidepathChanged(NavModeEvent.GP_ACTIVE).bind(this),
       [`${NavModeEvent.ALT_SLOT_CHANGED}`]: this.handleAltSlotChanged.bind(this),
       [`${NavModeEvent.SELECTED_ALT1_CHANGED}`]: this.handleAlt1Changed.bind(this),
       [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this),
@@ -920,9 +927,46 @@ class CJ4NavModeSelector {
   }
 
   /**
+   * Handles when the Glidepath state changes.
+   */
+  handleGlidepathChanged(change) {
+
+    switch(change) {
+      case NavModeEvent.GP_NONE:
+        this.glidepathState = GlidepathStatus.NONE;
+        break;
+      case NavModeEvent.GP_ARM:
+        this.glidepathState = GlidepathStatus.GP_ARMED;
+
+        break;
+      case NavModeEvent.GP_ACTIVE:
+        this.glidepathState = GlidepathStatus.GP_ACTIVE;
+
+        break;
+    }
+
+
+  }
+  /**
    * Handles when the VPath state changes.
    */
-  handleVPathChanged() {
+  handleVPathChanged(change) {
+    
+    switch(change) {
+      case NavModeEvent.PATH_NONE:
+        this.vPathState = VnavPathStatus.NONE
+        break;
+      case NavModeEvent.PATH_ARM:
+        this.vPathState = VnavPathStatus.PATH_ARMED
+
+        break;
+      case NavModeEvent.PATH_ACTIVE:
+        this.vPathState = VnavPathStatus.PATH_ACTIVE
+
+        break;
+
+    }
+
     this.vPathState = this._inputDataStates.vpath.state;
     this.setProperVerticalArmedStates();
 
@@ -953,6 +997,8 @@ class CJ4NavModeSelector {
       }
     }
   }
+
+
 
   /**
    * Handles when the currently loaded approach has been changed.
@@ -1075,19 +1121,12 @@ VerticalNavModeState.NOPATH = 'NOPATH';
 VerticalNavModeState.TO = 'TO';
 VerticalNavModeState.GA = 'GA';
 
-class VPathState { }
-VPathState.NONE = 0;
-VPathState.ARMED = 1;
-VPathState.UNABLEARMED = 2;
-VPathState.ACTIVE = 3;
-
 class LNavModeState { }
 LNavModeState.FMS = 'fms';
 LNavModeState.NAV1 = 'nav1';
 LNavModeState.NAV2 = 'nav2';
 
 class NavModeEvent { }
-
 NavModeEvent.ALT_LOCK_CHANGED = 'alt_lock_changed';
 NavModeEvent.ALT_CAPTURED = 'alt_captured';
 NavModeEvent.NAV_PRESSED = 'NAV_PRESSED';
@@ -1100,7 +1139,6 @@ NavModeEvent.VS_PRESSED = 'VS_PRESSED';
 NavModeEvent.BC_PRESSED = 'BC_PRESSED';
 NavModeEvent.VNAV_PRESSED = 'VNAV_PRESSED';
 NavModeEvent.ALT_SLOT_CHANGED = 'alt_slot_changed';
-NavModeEvent.VPATH_CHANGED = 'vpath_changed';
 NavModeEvent.SELECTED_ALT1_CHANGED = 'selected_alt1_changed';
 NavModeEvent.SELECTED_ALT2_CHANGED = 'selected_alt2_changed';
 NavModeEvent.APPROACH_CHANGED = 'approach_changed';
@@ -1111,6 +1149,15 @@ NavModeEvent.VNAV_REQUEST_SLOT_2 = 'vnav_request_slot_2';
 NavModeEvent.HDG_LOCK_CHANGED = 'hdg_lock_changed';
 NavModeEvent.TOGA_CHANGED = 'toga_changed';
 NavModeEvent.GROUNDED = 'grounded';
+NavModeEvent.PATH_NONE = 'path_none';
+NavModeEvent.PATH_ARM = 'path_arm';
+NavModeEvent.PATH_ACTIVE = 'path_active';
+NavModeEvent.GP_NONE = 'gp_none';
+NavModeEvent.GP_ARM = 'gp_arm';
+NavModeEvent.GP_ACTIVE = 'gp_active';
+
+
+
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';

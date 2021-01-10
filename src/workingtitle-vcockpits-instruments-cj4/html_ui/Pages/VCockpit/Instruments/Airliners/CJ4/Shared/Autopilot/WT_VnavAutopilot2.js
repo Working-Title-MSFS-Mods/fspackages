@@ -183,6 +183,14 @@ class WT_VerticalAutopilot {
         return this._vnav._verticalFlightPlanSegments[currentSegmentIndex];
     }
 
+    get modeSelectorPathStatus() {
+        return this._navModeSelector.vPathState;
+    }
+
+    get modeSelectorGlidepathStatus() {
+        return this._navModeSelector.glidepathState;
+    }
+
     /**
      * Run on first activation.
      */
@@ -269,8 +277,45 @@ class WT_VerticalAutopilot {
                 }
         }
 
+        this.updateNavModeSelector();
         this.setSnowflake();
         this.monitorValues();
+    }
+
+    updateNavModeSelector() {
+        if (this.modeSelectorPathStatus !== this._vnavPathStatus) {
+            switch(this._vnavPathStatus) {
+                case VnavPathStatus.PATH_ACTIVE:
+                    this._navModeSelector.queueEvent(NavModeEvent.PATH_ACTIVE);
+                    break;
+                case VnavPathStatus.PATH_ARMED:
+                    this._navModeSelector.queueEvent(NavModeEvent.PATH_ARM);
+                    break;
+                case VnavPathStatus.PATH_EXISTS:
+                case VnavPathStatus.PATH_CAN_ARM:
+                case VnavPathStatus.NONE:
+                    if (this.modeSelectorPathStatus !== VnavPathStatus.NONE) {
+                        this._navModeSelector.queueEvent(NavModeEvent.PATH_NONE);
+                    }
+                    break;
+            }
+        }
+        if (this.modeSelectorGlidepathStatus !== this._glidepathStatus) {
+            switch(this._glidepathStatus) {
+                case GlidepathStatus.GP_ACTIVE:
+                    this._navModeSelector.queueEvent(NavModeEvent.GP_ACTIVE);
+                    break;
+                case GlidepathStatus.GP_ARMED:
+                    this._navModeSelector.queueEvent(NavModeEvent.GP_ARM);
+                    break;
+                case GlidepathStatus.GP_CAN_ARM:
+                case GlidepathStatus.NONE:
+                    if (this.modeSelectorGlidepathStatus !== GlidepathStatus.NONE) {
+                        this._navModeSelector.queueEvent(NavModeEvent.GP_NONE);
+                    }
+                    break;
+            }
+        }
     }
 
     canPathArm() {
