@@ -1,12 +1,35 @@
 class WT_G3x5_TSCAirportInfoPage extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, mfdPaneDisplaySetting, mfdPaneWaypointSetting, icaoWaypointFactory) {
+    constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPaneDisplaySetting, mfdPaneWaypointSetting, icaoWaypointFactory) {
         super(homePageGroup, homePageName);
+
+        let controllerID = `${instrumentID}-${halfPaneID}`;
+        this._controller = new WT_DataStoreController(controllerID, null);
+        this._controller.addSetting(this._icaoSetting = new WT_G3x5_TSCAirportInfoICAOSetting(this._controller));
+        this._controller.init();
 
         this._mfdPaneDisplaySetting = mfdPaneDisplaySetting;
         this._mfdPaneWaypointSetting = mfdPaneWaypointSetting;
         this._icaoWaypointFactory = icaoWaypointFactory;
 
         this._mfdPaneDisplayLastMode = -1;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_TSCAirportInfoICAOSetting} icaoSetting
+     * @type {WT_G3x5_TSCAirportInfoICAOSetting}
+     */
+    get icaoSetting() {
+        return this._icaoSetting;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_MFDHalfPaneDisplaySetting} mfdPaneDisplaySetting
+     * @type {WT_G3x5_MFDHalfPaneDisplaySetting}
+     */
+    get mfdPaneDisplaySetting() {
+        return this._mfdPaneDisplaySetting;
     }
 
     /**
@@ -37,22 +60,11 @@ class WT_G3x5_TSCAirportInfoPage extends WT_G3x5_TSCPageElement {
         this._htmlElement.setParent(this);
     }
 
-    onEnter() {
-        super.onEnter();
-
-        this._mfdPaneDisplayLastMode = this._mfdPaneDisplaySetting.getValue();
-        this._mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO);
-    }
-
     onUpdate(deltaTime) {
         this._htmlElement.update();
     }
 
     onExit() {
-        if (this._mfdPaneDisplaySetting.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO) {
-            this._mfdPaneDisplaySetting.setValue(this._mfdPaneDisplayLastMode);
-        }
-
         // TODO: Implement a more sane way to push data to direct to page.
         let airport = this._htmlElement.getAirport();
         this.instrument.lastRelevantICAO = airport ? airport.icao : null;
@@ -108,6 +120,13 @@ class WT_G3x5_TSCAirportInfoPopUp extends WT_G3x5_TSCPopUpElement {
  * @typedef {WT_G3x5_TSCAirportInfoPage|WT_G3x5_TSCAirportInfoPopUp} WT_G3x5_TSCAirportInfo
  */
 
+class WT_G3x5_TSCAirportInfoICAOSetting extends WT_DataStoreSetting {
+    constructor(controller, defaultValue = "", autoUpdate = false, isPersistent = false, key = WT_G3x5_TSCAirportInfoICAOSetting.KEY) {
+        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    }
+}
+WT_G3x5_TSCAirportInfoICAOSetting.KEY = "WT_TSCAirportInfo_ICAO";
+
 class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     constructor() {
         super();
@@ -121,6 +140,8 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
          * @type {WT_Airport}
          */
         this._airport = null;
+
+        this._icaoSettingListener = this._onICAOSettingChanged.bind(this);
 
         this._isConnected = false;
         this._isInit = false;
@@ -223,8 +244,6 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._procTab = new WT_G3x5_TSCAirportProcedureTab();
         this._main.addTab(this._procTab, WT_G3x5_TSCTabbedView.TabButtonPosition.RIGHT, false);
 
-        this._updateAirport();
-
         this._main.setActiveTab(this._infoTab);
     }
 
@@ -232,8 +251,8 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._initSelectButton();
         this._initOptionsButton();
         this._initTabs();
-        this._updateAirport();
         this._isInit = true;
+        this._setAirportFromICAO(this.parent.icaoSetting.getValue());
     }
 
     connectedCallback() {
@@ -245,13 +264,27 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     }
 
     setParent(parent) {
+        if (parent === this.parent) {
+            return;
+        }
+
+        if (this.parent) {
+            this.parent.icaoSetting.removeListener(this._icaoSettingListener);
+        }
         this._parent = parent;
+        if (this.parent) {
+            this.parent.icaoSetting.addListener(this._icaoSettingListener);
+        }
         if (this._isConnected) {
             this._doInit();
         }
     }
 
-    async _onKeyboardClosed(icao) {
+    _onICAOSettingChanged(setting, newValue, oldValue) {
+        this._setAirportFromICAO(newValue);
+    }
+
+    async _setAirportFromICAO(icao) {
         if (icao) {
             try {
                 let airport = await this.parent.icaoWaypointFactory.getAirport(icao);
@@ -260,6 +293,10 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
             } catch (e) {}
         }
         this.setAirport(null);
+    }
+
+    _onKeyboardClosed(icao) {
+        this._setAirportFromICAO(icao);
     }
 
     _openKeyboard() {
@@ -277,7 +314,10 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         let context = {
             homePageGroup: this.parent.homePageGroup,
             homePageName: this.parent.homePageName,
-            icao: this._airport.icao
+            icaoSetting: this.parent.icaoSetting,
+            mfdPaneDisplaySetting: this.parent.mfdPaneDisplaySetting,
+            showOnMapOnDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO,
+            showOnMapOffDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP
         }
         this.parent.instrument.waypointOptions.element.setContext(context);
         this.parent.instrument.switchToPopUpPage(this.parent.instrument.waypointOptions);
@@ -313,11 +353,18 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this.parent.mfdPaneWaypointSetting.setValue(this._airport ? this._airport.icao : "");
     }
 
+    _updateMFDPaneDisplay() {
+        if (!this._airport && this.parent.mfdPaneDisplaySetting.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO) {
+            this.parent.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        }
+    }
+
     _updateAirport() {
         this._updateSelectButton();
         this._updateOptionsButton();
         this._updateTabs();
         this._updateMFDPaneWaypoint();
+        this._updateMFDPaneDisplay();
     }
 
     setAirport(airport) {
@@ -326,6 +373,9 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         }
 
         this._airport = airport;
+        if (this.parent) {
+            this.parent.icaoSetting.setValue(this._airport ? this._airport.icao : "");
+        }
         if (this._isInit) {
             this._updateAirport();
         }
