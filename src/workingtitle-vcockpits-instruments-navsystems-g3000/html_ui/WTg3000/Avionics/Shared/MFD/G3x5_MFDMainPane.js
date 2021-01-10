@@ -194,8 +194,8 @@ class WT_G3x5_MFDHalfPane {
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
         this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
 
-        this._navMap = new WT_G3x5NavMap(id, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher);
-        this._weatherRadar = new WT_G3x5WeatherRadar(id);
+        this._navMap = new WT_G3x5_NavMap(id, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher);
+        this._weatherRadar = new WT_G3x5_WeatherRadar(id);
         this._waypointInfo = new WT_G3x5_WaypointInfo(id, icaoWaypointFactory, icaoSearchers);
 
         this._displayMode;
