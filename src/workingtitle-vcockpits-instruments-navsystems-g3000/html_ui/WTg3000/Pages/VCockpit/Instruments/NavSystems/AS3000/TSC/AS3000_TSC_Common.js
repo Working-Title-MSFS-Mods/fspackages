@@ -210,8 +210,8 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
                 new NavSystemPage("Approach Selection", "ApproachSelection", new AS3000_TSC_ApproachSelection()),
                 new NavSystemPage("Waypoint Info", "WaypointsInfo", new AS3000_TSC_WaypointInfo()),
-                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfoPage("MFD", "MFD Home", this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
-                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfoPage("MFD", "MFD Home", this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
+                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfoPage("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
+                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfoPage("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
                 new NavSystemPage("Nearest", "Nearest", new AS3000_TSC_NRST()),
                 new NavSystemPage("Nearest Airport", "NearestAirport", new AS3000_TSC_NRST_Airport()),
                 new NavSystemPage("Nearest Intersection", "NearestIntersection", new AS3000_TSC_NRST_Intersection()),
@@ -358,22 +358,15 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _onMFDPaneNavMapDisplaySwitch(currentPage) {
-        if (this.getCurrentPageGroup().name === "MFD" && currentPage.name !== "Map Settings" && currentPage.title !== "Map Pointer Control") {
+    _onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && currentPage.name === "Map Settings" && currentPage.title === "Map Pointer Control") {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
     }
 
-    _onMFDPaneWeatherDisplaySwitch(currentPage) {
-        if (this.getCurrentPageGroup().name === "MFD" && currentPage.title !== "Weather Selection" && currentPage.title !== "Weather Radar Settings") {
-            this.closePopUpElement();
-            this.SwitchToPageName("MFD", "MFD Home");
-        }
-    }
-
-    _onMFDPaneAirportInfoDisplaySwitch(currentPage) {
-        if (this.getCurrentPageGroup().name === "MFD" && currentPage.name !== "Airport Info Left" && currentPage.name !== "Airport Info Right") {
+    _onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && currentPage.title === "Weather Selection" && currentPage.title === "Weather Radar Settings") {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
@@ -381,16 +374,14 @@ class AS3000_TSC extends NavSystemTouch {
 
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
         if (!this._isChangingPages && setting === this.getSelectedMFDPaneSettings().display) {
+            let currentPageGroup = this.getCurrentPageGroup();
             let currentPage = this.getCurrentPage();
-            switch (newValue) {
+            switch (oldValue) {
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
-                    this._onMFDPaneNavMapDisplaySwitch(currentPage);
+                    this._onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage);
                     break;
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
-                    this._onMFDPaneWeatherDisplaySwitch(currentPage);
-                    break;
-                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
-                    this._onMFDPaneAirportInfoDisplaySwitch(currentPage);
+                    this._onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage);
                     break;
             }
         }

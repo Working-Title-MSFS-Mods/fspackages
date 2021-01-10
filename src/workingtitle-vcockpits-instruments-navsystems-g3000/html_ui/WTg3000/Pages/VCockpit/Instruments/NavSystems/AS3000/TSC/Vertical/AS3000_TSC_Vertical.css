@@ -1673,14 +1673,17 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         height: 15%;
         width: auto; }
 
-    as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content {
-      left: 25%;
-      top: 10%;
-      bottom: 2%;
-      width: 50%; }
-      as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .gradientButton {
+as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content {
+    left: 25%;
+    top: 10%;
+    bottom: 2%;
+    width: 50%;
+    font-size: 3vh;
+}
+    as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .button {
         width: 70%;
-        height: 12vh; }
+        height: 12vh;
+    }
 
     as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow {
       font-size: 3vh; }

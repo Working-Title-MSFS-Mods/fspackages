@@ -1747,14 +1747,17 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         height: 15%;
         width: auto; }
 
-    as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .content {
-      left: 25%;
-      top: 10%;
-      bottom: 2%;
-      width: 50%; }
-      as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .content .gradientButton {
+as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .content {
+    left: 25%;
+    top: 10%;
+    bottom: 2%;
+    width: 50%;
+    font-size: 4vh;
+}
+    as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .content .button {
         width: 70%;
-        height: 20vh; }
+        height: 20vh;
+    }
 
     as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow {
       font-size: 4.5vh; }
