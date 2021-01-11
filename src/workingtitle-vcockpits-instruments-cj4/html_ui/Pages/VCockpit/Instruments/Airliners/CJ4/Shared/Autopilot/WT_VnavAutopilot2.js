@@ -108,8 +108,8 @@ class WT_VerticalAutopilot {
         this._navModeSelector.isVNAVOn = value;
     }
 
-    get constraintAltitude() {
-        return this._vnav._activeConstraintAltitude;
+    get constraint() {
+        return this._vnav._activeConstraint;
     }
 
     get altSlot() {
@@ -119,10 +119,10 @@ class WT_VerticalAutopilot {
     set altSlot(value) {
         switch(value) {
             case AltitudeSlot.SELECTED:
-                this._navModeSelector.handleVnavRequestSlot1();
+                this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_1);
                 break;
             case AltitudeSlot.MANAGED:
-                this._navModeSelector.handleVnavRequestSlot2();
+                this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_2);
                 break;
             case AltitudeSlot.LOCK:
                 this._navModeSelector.handleVnavRequestSlot3();
@@ -151,7 +151,8 @@ class WT_VerticalAutopilot {
     }
 
     set targetAltitude(value) {
-        this._targetAltitude = targetAltitude;
+        this._targetAltitude = value;
+        this._navModeSelector.managedAltitudeTarget = this._targetAltitude;
     }
 
     get indicatedAltitude() {
@@ -189,6 +190,14 @@ class WT_VerticalAutopilot {
 
     get modeSelectorGlidepathStatus() {
         return this._navModeSelector.glidepathState;
+    }
+
+    set fmaVerticalArmedState(value) {
+        this._navModeSelector.setProperVerticalArmedStates(value);
+    }
+
+    set fmaVerticalActiveState(value) {
+        this._navModeSelector.setProperVerticalArmedStates(value);
     }
 
     /**
@@ -330,8 +339,13 @@ class WT_VerticalAutopilot {
                 if (this.path.deviation <= 1000 && altitudeDifference > 100
                     && this.verticalSpeed > reqVs && this.altSet1 < this.indicatedAltitude + 100) {
                     return true;
-                } else if (this.path.deviation > 1000 && this.verticalSpeed < reqVs && this.altSet1 < this.indicatedAltitude + 100) {
-                    return true;
+                } else if (this.path.deviation > 1000 && this.altSet1 < this.indicatedAltitude + 100) {
+                    if (this.verticalSpeed < reqVs) {
+                        this._navModeSelector.setProperVerticalArmedStates(VerticalNavModeState.PATH);
+                        return true;
+                    } else {
+                        this.setProperVerticalArmedStates(VerticalNavModeState.NOPATH);
+                    }
                 }
         }
         return false;
@@ -445,6 +459,7 @@ class WT_VerticalAutopilot {
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
                 this.vsSlot2Value = this.verticalSpeed;
                 this.vsSlot = 2;
+                this.updateNavModeSelector();
                 break;
             case PathInterceptStatus.INTERCEPTING:
                 let now = performance.now();
@@ -523,10 +538,23 @@ class WT_VerticalAutopilot {
     }
 
     setConstraintAltitude() {
-        this.targetAltitude = this.constraintAltitude;
-        this.setManagedAltitude(this.targetAltitude);
-        if (this.altSlot === AltitudeSlot.SELECTED) {
-            this.altSlot = AltitudeSlot.MANAGED;
+        let newAltSlot = AltitudeSlot.SELECTED;
+        if (this.constraint.index !== undefined) {
+            this.targetAltitude = this.constraint.altitude;
+            if (this.constraint.isClimb) {
+                if (this.targetAltitude < this.altSet1) {
+                    this.setManagedAltitude(this.targetAltitude);
+                    newAltSlot = AltitudeSlot.MANAGED;
+                }
+            } else {
+                if (this.targetAltitude > this.altSet1) {
+                    this.setManagedAltitude(this.targetAltitude);
+                    newAltSlot = AltitudeSlot.MANAGED;
+                }
+            }
+        }
+        if (this.altSlot !== AltitudeSlot.LOCK && this.altSlot !== newAltSlot) {
+            this.altSlot = newAltSlot;
         }
     }
 
@@ -555,11 +583,15 @@ class WT_VerticalAutopilot {
 
     setDonut(donutValue = 0, calculate = false) {
         if (calculate) {
-            const index = this._vnav._activeConstraintIndex;
-            const lDistance = this._vnav.waypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
-            const vDistance = this.indicatedAltitude - this.targetAltitude;
-            const fpa = AutopilotMath.calculateFPA(vDistance, lDistance);
-            this.donut = Math.round(AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed));
+            if (this.constraint.index !== undefined) {
+                const index = this.constraint.index;
+                const lDistance = this._vnav.waypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
+                const vDistance = this.indicatedAltitude - this.targetAltitude;
+                const fpa = AutopilotMath.calculateFPA(vDistance, lDistance);
+                this.donut = Math.round(AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed));
+            } else {
+                this.donut = 0;
+            }
         } else if (Math.round(this.donut) != donutValue) {
             this.donut = donutValue;
         }
