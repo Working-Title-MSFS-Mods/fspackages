@@ -1,12 +1,10 @@
 class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, instrumentID, useWindData) {
+    constructor(homePageGroup, homePageName, instrumentID) {
         super(homePageGroup, homePageName);
 
         this._instrumentID = instrumentID;
 
         this._allControllerIDs = ["PFD", "MFD-LEFT", "MFD-RIGHT"];
-
-        this._useWindData = useWindData;
     }
 
     /**
@@ -36,15 +34,6 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
         return this._allControllerIDs;
     }
 
-    /**
-     * @readonly
-     * @property {Boolean} useWindData
-     * @type {Boolean}
-     */
-    get useWindData() {
-        return this._useWindData;
-    }
-
     getControllerID() {
         return this.instrumentID;
     }
@@ -64,9 +53,41 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
     }
 }
 
+class WT_G3x5_TSCPFDMapSettings extends WT_G3x5_TSCMapSettings {
+    constructor(homePageGroup, homePageName, instrumentID) {
+        super(homePageGroup, homePageName, instrumentID);
+
+        this._initInsetMapController();
+    }
+
+    _initInsetMapController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._insetMapShowSetting = new WT_G3x5_PFDInsetMapShowSetting(this._controller));
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDInsetMapShowSetting} showSetting
+     * @type {WT_G3x5_PFDInsetMapShowSetting}
+     */
+    get insetMapShowSetting() {
+        return this._insetMapShowSetting;
+    }
+
+    _initHTMLElement() {
+        this._htmlElement = new WT_G3x5_TSCPFDMapSettingsHTMLElement();
+        this._htmlElement.setParentPage(this);
+    }
+}
+
 class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
     getControllerID() {
         return `${this.instrumentID}-${this.gps.getSelectedMFDPane()}`;
+    }
+
+    _initHTMLElement() {
+        this._htmlElement = new WT_G3x5_TSCMFDMapSettingsHTMLElement();
+        this._htmlElement.setParentPage(this);
     }
 }
 
@@ -140,15 +161,29 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
         this.appendChild(this._detailButton);
     }
 
-    _initTabs() {
+    _initLeftButtons() {
+        this._initOrientationButton();
+        this._initSyncButton();
+        this._initDetailButton();
+    }
+
+    _initSensorTab() {
         this._sensorTab = new WT_G3x5_TSCMapSettingsTab("Sensor", this.parentPage);
-        this._insetTab = new WT_G3x5_TSCMapSettingsTab("Inset Window", this.parentPage);
-        this._aviationTab = new WT_G3x5_TSCMapSettingsTab("Aviation", this.parentPage);
-        this._landTab = new WT_G3x5_TSCMapSettingsTab("Land", this.parentPage);
-        this._otherTab = new WT_G3x5_TSCMapSettingsTab("Other", this.parentPage);
 
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3x5_NavMap.NEXRAD_SHOW_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
+
+        this._tabbedContent.addTab(this._sensorTab);
+    }
+
+    _initInsetTab() {
+        this._insetTab = new WT_G3x5_TSCMapSettingsTab("Inset Window", this.parentPage);
+
+        this._tabbedContent.addTab(this._insetTab, WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
+    }
+
+    _initAviationTab() {
+        this._aviationTab = new WT_G3x5_TSCMapSettingsTab("Aviation", this.parentPage);
 
         this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("Airways", WT_G3x5_NavMap.AIRWAY_SHOW_KEY, WT_G3x5_NavMap.AIRWAY_RANGE_KEY, WT_G3x5_NavMap.AIRWAY_RANGE_MAX, "Map Airway Range"));
         this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Airports",
@@ -174,6 +209,12 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
         this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("INT", WT_G3x5_NavMap.INT_SHOW_KEY, WT_G3x5_NavMap.INT_RANGE_KEY, WT_G3x5_NavMap.INT_RANGE_MAX, "Map INT Range"));
         this._aviationTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NDB", WT_G3x5_NavMap.NDB_SHOW_KEY, WT_G3x5_NavMap.NDB_RANGE_KEY, WT_G3x5_NavMap.NDB_RANGE_MAX, "Map NDB Range"));
 
+        this._tabbedContent.addTab(this._aviationTab);
+    }
+
+    _initLandTab() {
+        this._landTab = new WT_G3x5_TSCMapSettingsTab("Land", this.parentPage);
+
         this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Cities",
             WT_G3x5_NavMap.CITY_SHOW_KEY, [
                 WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY,
@@ -195,19 +236,26 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
         ));
         this._landTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3x5_NavMap.BORDERS_SHOW_KEY, WT_G3x5_NavMap.BORDERS_RANGE_KEY, WT_G3x5_NavMap.BORDERS_RANGE_MAX, "Map State/Province Range"));
 
+        this._tabbedContent.addTab(this._landTab);
+    }
+
+    _initOtherTab() {
+        this._otherTab = new WT_G3x5_TSCMapSettingsTab("Other", this.parentPage);
+
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
-        if (this.parentPage.useWindData) {
-            this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
-        }
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsFuelRingTabRow("Fuel Rng (Rsv)", WT_MapFuelRingSettingGroup.SHOW_KEY, WT_MapFuelRingSettingGroup.RESERVE_KEY));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Range to<br>Altitude", WT_MapAltitudeInterceptSetting.SHOW_KEY_DEFAULT));
 
-        this._tabbedContent.addTab(this._sensorTab);
-        this._tabbedContent.addTab(this._insetTab, WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
-        this._tabbedContent.addTab(this._aviationTab);
-        this._tabbedContent.addTab(this._landTab);
         this._tabbedContent.addTab(this._otherTab);
+    }
+
+    _initTabs() {
+        this._initSensorTab();
+        this._initInsetTab();
+        this._initAviationTab();
+        this._initLandTab();
+        this._initOtherTab();
 
         this._tabbedContent.setActiveTabIndex(0);
     }
@@ -221,9 +269,7 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     }
 
     connectedCallback() {
-        this._initOrientationButton();
-        this._initSyncButton();
-        this._initDetailButton();
+        this._initLeftButtons();
         this._initTabbedContent();
     }
 
@@ -337,6 +383,56 @@ WT_G3x5_TSCMapSettingsHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define("tsc-mapsettings", WT_G3x5_TSCMapSettingsHTMLElement);
+
+class WT_G3x5_TSCPFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLElement {
+    _initInsetMapButton() {
+        this._insetMapButton = new WT_TSCStatusBarButton();
+        this._insetMapButton.classList.add(WT_G3x5_TSCMapSettingsHTMLElement.LEFT_BUTTON_CLASS);
+        this._insetMapButton.labelText = "Inset Map";
+        this._insetMapButton.addButtonListener(this._onInsetMapButtonPressed.bind(this));
+        this.parentPage.insetMapShowSetting.addListener(this._onInsetMapShowSettingChanged.bind(this));
+
+        this._insetMapButton.slot = "left";
+        this.appendChild(this._insetMapButton);
+
+        this._updateInsetMapButton();
+    }
+
+    _initLeftButtons() {
+        this._initInsetMapButton();
+        super._initLeftButtons();
+    }
+
+    _onInsetMapButtonPressed(button) {
+        this.parentPage.insetMapShowSetting.setValue(!this.parentPage.insetMapShowSetting.getValue());
+    }
+
+    _updateInsetMapButton() {
+        this._insetMapButton.toggle = this.parentPage.insetMapShowSetting.getValue() ? "on" : "off";
+    }
+
+    _onInsetMapShowSettingChanged(setting, newValue, oldValue) {
+        this._updateInsetMapButton();
+    }
+}
+
+customElements.define("tsc-pfdmapsettings", WT_G3x5_TSCPFDMapSettingsHTMLElement);
+
+class WT_G3x5_TSCMFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLElement {
+    _initOtherTab() {
+        this._otherTab = new WT_G3x5_TSCMapSettingsTab("Other", this.parentPage);
+
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsFuelRingTabRow("Fuel Rng (Rsv)", WT_MapFuelRingSettingGroup.SHOW_KEY, WT_MapFuelRingSettingGroup.RESERVE_KEY));
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Range to<br>Altitude", WT_MapAltitudeInterceptSetting.SHOW_KEY_DEFAULT));
+
+        this._tabbedContent.addTab(this._otherTab);
+    }
+}
+
+customElements.define("tsc-mfdmapsettings", WT_G3x5_TSCMFDMapSettingsHTMLElement);
 
 class WT_G3x5_TSCMapDetailButton extends WT_TSCLabeledButton {
     constructor() {
