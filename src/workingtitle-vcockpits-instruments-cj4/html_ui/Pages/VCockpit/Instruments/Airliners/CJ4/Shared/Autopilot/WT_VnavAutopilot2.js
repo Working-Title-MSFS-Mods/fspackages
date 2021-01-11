@@ -200,6 +200,10 @@ class WT_VerticalAutopilot {
         this._navModeSelector.setProperVerticalArmedStates(value);
     }
 
+    get approachMode() {
+        return this._navModeSelector.approachMode;
+    }
+
     /**
      * Run on first activation.
      */
@@ -220,6 +224,7 @@ class WT_VerticalAutopilot {
             case VnavPathStatus.PATH_EXISTS:
                 if (this.canPathArm()) {
                     this._vnavPathStatus = VnavPathStatus.PATH_ARMED;
+                    this.fmaVerticalArmedState = VerticalNavModeState.PATH;
                 } else {this.checkPreselector;}
                 break;
             case VnavPathStatus.PATH_ARMED:
@@ -229,6 +234,7 @@ class WT_VerticalAutopilot {
                 }
                 if (this.canPathActivate()) {
                     this._vnavPathStatus = VnavPathStatus.PATH_ACTIVE;
+                    this.fmaVerticalActiveState = VerticalNavModeState.PATH;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
                         this._glidepathStatus = GlidepathStatus.NONE;
@@ -248,12 +254,13 @@ class WT_VerticalAutopilot {
             case GlidepathStatus.NONE:
                 break;
             case GlidepathStatus.GP_CAN_ARM:
-                if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+                if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.RNAV) {
                     this._glidepathStatus = GlidepathStatus.GP_ARMED;
+                    this.fmaVerticalArmedState = VerticalNavModeState.GP;
                 }
                 break;
             case GlidepathStatus.GP_ARMED:
-                if (this._navModeSelector.currentLateralActiveState !== LateralNavModeState.APPR) {
+                if (this.lateralMode !== LateralNavModeState.APPR || this.approachMode !== WT_ApproachType.RNAV) {
                     this.cancelGlidepath();
                     break;
                 }
@@ -261,11 +268,12 @@ class WT_VerticalAutopilot {
                     this._glidepathStatus = GlidepathStatus.GP_ACTIVE;
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
+                    this.fmaVerticalActiveState = VerticalNavModeState.GP;
                     this.isVNAVOn = false;
                 }
                 break;
             case GlidepathStatus.GP_ACTIVE:
-                if (this._navModeSelector.currentLateralActiveState !== LateralNavModeState.APPR) {
+                if (this.lateralMode !== LateralNavModeState.APPR || this.approachMode !== WT_ApproachType.RNAV) {
                     this.cancelGlidepath();
                     break;
                 }
@@ -286,7 +294,6 @@ class WT_VerticalAutopilot {
                 }
         }
 
-        this.updateNavModeSelector();
         this.setSnowflake();
         this.monitorValues();
     }
@@ -341,10 +348,9 @@ class WT_VerticalAutopilot {
                     return true;
                 } else if (this.path.deviation > 1000 && this.altSet1 < this.indicatedAltitude + 100) {
                     if (this.verticalSpeed < reqVs) {
-                        this._navModeSelector.setProperVerticalArmedStates(VerticalNavModeState.PATH);
                         return true;
                     } else {
-                        this.setProperVerticalArmedStates(VerticalNavModeState.NOPATH);
+                        this.fmaVerticalArmedState = VerticalNavModeState.NOPATH;
                     }
                 }
         }

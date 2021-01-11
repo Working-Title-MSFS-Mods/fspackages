@@ -312,10 +312,10 @@ class CJ4NavModeSelector {
         break;
       case VerticalNavModeState.VS:
         SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-        if (this.vPathState === VPathState.ACTIVE) {
+        if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
           this.currentVerticalActiveState = VerticalNavModeState.PATH;
         }
-        else if (this.vPathState === VPathState.ARMED) {
+        else if (this.vPathState === VnavPathStatus.PATH_ARMED) {
           this.pushVerticalArmedMode(VerticalNavModeState.PATH);
           this.currentVerticalActiveState = VerticalNavModeState.PTCH;
 
@@ -380,10 +380,10 @@ class CJ4NavModeSelector {
         this.currentVerticalActiveState = VerticalNavModeState.FLC;
         break;
       case VerticalNavModeState.FLC:
-        if (this.vPathState === VPathState.ACTIVE) {
+        if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
           this.currentVerticalActiveState = VerticalNavModeState.PATH;
         }
-        else if (this.vPathState === VPathState.ARMED) {
+        else if (this.vPathState === VnavPathStatus.PATH_ARMED) {
           this.currentVerticalArmedStates.includes(VerticalNavModeState.PATH);
           this.currentVerticalActiveState = VerticalNavModeState.PTCH;
 
@@ -429,10 +429,7 @@ class CJ4NavModeSelector {
       this.isVNAVOn = !this.isVNAVOn;
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", this.isVNAVOn ? 1 : 0);
 
-      if (this.isVNAVOn) {
-        this.handleVPathChanged();
-      }
-      else {
+      if (!this.isVNAVOn) {
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
   
@@ -453,7 +450,7 @@ class CJ4NavModeSelector {
 
     //Prevent sim from changing to alt slot 1 automatically if we're trying to drive via
     //VNAV and PATH
-    if (this.currentAltSlotIndex === 1 && this.vPathState === VPathState.ACTIVE && (this.isVNAVOn === true || this.currentVerticalActiveState === VerticalNavModeState.GP)) {
+    if (this.currentAltSlotIndex === 1 && this.vPathState === VnavPathStatus.PATH_ACTIVE && (this.isVNAVOn === true || this.currentVerticalActiveState === VerticalNavModeState.GP)) {
       console.log("alt slot changed to 2 for path");
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
       this.currentAltSlotIndex = 2;
@@ -746,28 +743,28 @@ class CJ4NavModeSelector {
     
     const setProperVNAVState = () => {
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
+      this.isVNAVOn = false;
 
       switch(this.approachMode) {
         case WT_ApproachType.RNAV:
-          this.isVNAVOn = true;
+          
           SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
 
           if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 0) {
             SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
           }
 
-          if (this.vPathState === VPathState.ACTIVE) {
-            this.currentVerticalActiveState = VerticalNavModeState.GP;
-          }
-          else {
-            this.currentVerticalArmedStates = [VerticalNavModeState.GP];
-          }
+          // if (this.glidepathState === GlidepathStatus.GP_ACTIVE) {
+          //   this.currentVerticalActiveState = VerticalNavModeState.GP;
+          // }
+          // else if (this.glidepathState === GlidepathStatus.GP_ARMED)  {
+          //   this.currentVerticalArmedStates = [VerticalNavModeState.GP];
+          // }
 
           break;
         case WT_ApproachType.NONE:
         case WT_ApproachType.VISUAL:
         case WT_ApproachType.ILS: {
-          this.isVNAVOn = false;
           // console.log("ILS APPR");
           SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
           SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
@@ -849,7 +846,7 @@ class CJ4NavModeSelector {
       this.isVNAVOn = false;
       this.currentVerticalActiveState = VerticalNavModeState.PTCH;
 
-      if (this.vPathState === VPathState.ACTIVE) {
+      if (this.glidepathState === GlidepathStatus.GP_ACTIVE) {
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
       }
@@ -881,7 +878,7 @@ class CJ4NavModeSelector {
     }
 
     if (!this.isAltitudeLocked && (this.currentVerticalActiveState === VerticalNavModeState.ALTC || this.currentVerticalActiveState === VerticalNavModeState.ALT)) {
-      if (this.vPathState === VPathState.ACTIVE) {
+      if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
         this.currentVerticalActiveState = VerticalNavModeState.PATH;
       }
       else {
