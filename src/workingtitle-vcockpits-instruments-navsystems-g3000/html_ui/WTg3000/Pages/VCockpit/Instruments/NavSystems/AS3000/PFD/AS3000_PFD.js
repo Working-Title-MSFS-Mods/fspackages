@@ -178,10 +178,31 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
     constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher) {
         super();
 
-        this.gpsWasInReversionaryMode = false;
-        this.enabled = true;
+        this._instrumentID = instrumentID;
+        this._isEnabled = false;
 
         this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+
+        this._initController();
+
+        this._isInit = false;
+    }
+
+    _initController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._showSetting = new WT_G3x5_PFDInsetMapShowSetting(this._controller));
+        this.showSetting.addListener(this._onShowSettingChanged.bind(this));
+
+        this._controller.init();
+    }
+
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
     }
 
     /**
@@ -193,39 +214,53 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         return this._navMap;
     }
 
-    init(root) {
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDInsetMapShowSetting} showSetting
+     * @type {WT_G3x5_PFDInsetMapShowSetting}
+     */
+    get showSetting() {
+        return this._showSetting;
+    }
+
+    _defineChildren(root) {
+        this._mapContainer = this.gps.getChildById("InnerMap");
+        this._mapContainer.style.display = "none";
+    }
+
+    _initNavMap(root) {
         this._navMap.init(root.querySelector(`.insetMap`));
-        this.mapContainer = this.gps.getChildById("InnerMap");
+    }
+
+    init(root) {
+        this._defineChildren(root);
+        this._initNavMap(root);
+        this._setEnabled(this.showSetting.getValue());
+        this._isInit = true;
+    }
+
+    _onShowSettingChanged(setting, newValue, oldValue) {
+        if (this._isInit) {
+            this._setEnabled(newValue);
+        }
+    }
+
+    _setEnabled(value) {
+        if (value === this._isEnabled) {
+            return;
+        }
+
+        this._mapContainer.style.display = value ? "block" : "none";
+        this._isEnabled = value;
     }
 
     onUpdate(deltaTime) {
-        if (this.enabled) {
+        if (this._isEnabled) {
             this._navMap.update();
-        }
-
-        if (this.gps.isInReversionaryMode() != this.gpsWasInReversionaryMode) {
-            this.gpsWasInReversionaryMode = this.gps.isInReversionaryMode();
-            this.gps.requestCall(() => {
-                this.mapContainer.style.display = "Block";
-                if (this.instrument)
-                    this.instrument.resize();
-            });
         }
     }
 
     onEvent(event) {
-        if (event == "SoftKeys_InsetOn") {
-            this.enabled = true;
-            this.mapContainer.style.display = "Block";
-        }
-        if (event == "SoftKeys_InsetOff") {
-            this.mapContainer.style.display = "None";
-            this.enabled = false;
-        }
-    }
-
-    isEnabled() {
-        return this.enabled;
     }
 }
 AS3000_PFD_InnerMap.LAYER_OPTIONS = {
@@ -333,8 +368,8 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         //this.attitude.svg.setAttribute("background", "false");
 
         this.rootMenu.elements = [
-            new AS3000_PFD_SoftKeyElement("Map Range-", this.changeMapRange.bind(this, -1), null, null, this.getInsetMapSoftkeyState.bind(this)),
-            new AS3000_PFD_SoftKeyElement("Map Range+", this.changeMapRange.bind(this, 1), null, null, this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("Map Range-", this.changeMapRange.bind(this, -1), null, null, this._getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("Map Range+", this.changeMapRange.bind(this, 1), null, null, this._getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("PFD Map Settings", this.switchToMenu.bind(this, this.pfdMapMenu)),
             new AS3000_PFD_SoftKeyElement("Traffic Inset", null, this.constElement.bind(this, false)),
             new AS3000_PFD_SoftKeyElement("PFD Settings", this.switchToMenu.bind(this, this.pfdMenu)),
@@ -362,21 +397,21 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         ];
         this.pfdMapMenu.elements = [
             new AS3000_PFD_SoftKeyElement("Map Layout", this.switchToMenu.bind(this, this.pfdMapLayoutMenu)),
-            new AS3000_PFD_SoftKeyElement("Detail", this.toggleDCLTR.bind(this), null, this.getDCLTRValue.bind(this), this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("Detail", this.toggleDCLTR.bind(this), null, this.getDCLTRValue.bind(this), this._getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Weather Legend"),
             new AS3000_PFD_SoftKeyElement("Traffic"),
             new AS3000_PFD_SoftKeyElement("Storm-scope"),
-            new AS3000_PFD_SoftKeyElement("Terrain", this.toggleTerrain.bind(this), null, this.getTerrainValue.bind(this), this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("Terrain", this.toggleTerrain.bind(this), null, this.getTerrainValue.bind(this), this._getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement("Data Link Settings"),
-            new AS3000_PFD_SoftKeyElement("WX&nbsp;Overlay", this.toggleWX.bind(this), null, this.getWXOverlayValue.bind(this), this.getInsetMapSoftkeyState.bind(this)),
+            new AS3000_PFD_SoftKeyElement("WX&nbsp;Overlay", this.toggleWX.bind(this), null, this.getWXOverlayValue.bind(this), this._getInsetMapSoftkeyState.bind(this)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement("METAR"),
             new AS3000_PFD_SoftKeyElement("Back", this.switchToMenu.bind(this, this.rootMenu)),
             new AS3000_PFD_SoftKeyElement("")
         ];
         this.pfdMapLayoutMenu.elements = [
-            new AS3000_PFD_SoftKeyElement("Map Off", this.deactivateInsetMap.bind(this), this.insetMapCompare.bind(this, false)),
-            new AS3000_PFD_SoftKeyElement("Inset Map", this.activateInsetMap.bind(this), this.insetMapCompare.bind(this, true)),
+            new AS3000_PFD_SoftKeyElement("Map Off", this._deactivateInsetMap.bind(this), this._insetMapCompare.bind(this, false)),
+            new AS3000_PFD_SoftKeyElement("Inset Map", this._activateInsetMap.bind(this), this._insetMapCompare.bind(this, true)),
             new AS3000_PFD_SoftKeyElement("HSI Map", null, this.constElement.bind(this, false)),
             new AS3000_PFD_SoftKeyElement(""),
             new AS3000_PFD_SoftKeyElement("Inset Traffic"),
@@ -466,8 +501,8 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     // PFD inset map softkeys should be greyed out if the map is not shown.
-    getInsetMapSoftkeyState() {
-        if (this.innerMap.isEnabled()) {
+    _getInsetMapSoftkeyState() {
+        if (this.innerMap.showSetting.getValue()) {
             return "None";
         } else {
             return "Greyed";
@@ -480,16 +515,16 @@ class AS3000_PFD_MainPage extends NavSystemPage {
         this.innerMap.navMap.rangeSetting.setValue(newIndex);
     }
 
-    activateInsetMap() {
-        this.gps.computeEvent("SoftKeys_InsetOn");
+    _activateInsetMap() {
+        this.innerMap.showSetting.setValue(true);
     }
 
-    deactivateInsetMap() {
-        this.gps.computeEvent("SoftKeys_InsetOff");
+    _deactivateInsetMap() {
+        this.innerMap.showSetting.setValue(false);
     }
 
-    insetMapCompare(_comparison) {
-        return this.innerMap.isEnabled() == _comparison;
+    _insetMapCompare(value) {
+        return this.innerMap.showSetting.getValue() === value;
     }
 
     toggleDCLTR() {

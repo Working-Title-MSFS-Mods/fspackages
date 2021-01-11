@@ -437,7 +437,8 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsetti
         --pfdsettings-row-right-width: 70%;
     }
 
-as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mapsettings {
+as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-pfdmapsettings,
+as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapsettings {
     width: 100%;
     height: 100%;
     font-size: 2.5vh;
@@ -448,7 +449,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mapsetti
     as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .leftButton {
         left: 2%;
         width: 96%;
-        height: 10vh;
+        height: 11vh;
         margin: 0.5vh 0;
     }
     as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-button-mapdetail.leftButton {

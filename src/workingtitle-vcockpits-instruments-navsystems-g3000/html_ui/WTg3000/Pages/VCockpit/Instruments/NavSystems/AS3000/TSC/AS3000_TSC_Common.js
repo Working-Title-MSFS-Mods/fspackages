@@ -179,12 +179,12 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
                 new NavSystemPage("Timers", "Timers", this.timer),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
-                new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCMapSettings("PFD", "PFD Home", "PFD", false)),
+                this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
                 new NavSystemPage("PFD Settings", "PFDSettings", new WT_G3000_TSCPFDSettings("PFD", "PFD Home", "PFD")),
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
-                this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", true)),
+                this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD")),
                 this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
@@ -410,6 +410,10 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _handleZoomEventPFD(event) {
+        if (!this._pfdMapSettings.element.insetMapShowSetting.getValue()) {
+            return;
+        }
+
         switch (event) {
             case "BottomKnob_Small_INC":
                 this._changePFDMapRange(1);
@@ -621,7 +625,7 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
     }
     onEnter() {
         this.gps.setTopKnobText("");
-        this.gps.setBottomKnobText("-Range+ Push: Pan");
+        this.gps.setBottomKnobText("-Range+");
     }
     onUpdate(_deltaTime) {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
