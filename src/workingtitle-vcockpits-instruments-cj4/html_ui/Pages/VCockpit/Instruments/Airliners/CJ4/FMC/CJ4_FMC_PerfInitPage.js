@@ -18,7 +18,7 @@ class CJ4_FMC_PerfInitPage {
             ["        --- KT[s-text white]"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.onLeftInput[1] = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.onLeftInput[2] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
@@ -60,9 +60,10 @@ class CJ4_FMC_PerfInitPage {
         const grossWeightText = gwtValueUnit.Value.toFixed(0) + " " + gwtValueUnit.Unit + "[s-text]";
         const bowText = fmc.zFWActive == 1 ? " -----": " " + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText + "[s-text]";
         const paxText = fmc.zFWActive == 1 ? "--/--" : fmc.paxNumber + paxLabel;
-        const transitionFL = 180;
-        const cruiseAltText = crzAltCell == "□□□□□" ? "□□□□□" : crzAltCell < transitionFL ? crzAltCell * 100 : "FL" + crzAltCell;
-
+        const transitionFL = WTDataStore.get("CJ4_arrivalTransitionFl", 180);
+        const transitionAlt = WTDataStore.get("CJ4_departureTransitionAlt", 18000);
+        const cruiseAltText = crzAltCell == "□□□□□" ? "□□□□□" : crzAltCell <= transitionFL && transitionAlt >= crzAltCell ? crzAltCell * 100 : "FL" + crzAltCell;
+        
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],

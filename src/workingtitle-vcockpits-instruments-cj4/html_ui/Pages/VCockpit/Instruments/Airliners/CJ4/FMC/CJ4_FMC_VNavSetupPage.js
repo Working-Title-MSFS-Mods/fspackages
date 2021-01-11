@@ -1,12 +1,15 @@
 class CJ4_FMC_VNavSetupPage {
     static ShowPage1(fmc) { //VNAV SETUP Page 1
         fmc.clearDisplay();
+
+        let departureTransitionAlt = WTDataStore.get('CJ4_departureTransitionAlt', 18000);
+
         fmc._templateRenderer.setTemplateRaw([
             [" ACT VNAV CLIMB[blue]", "1/3[blue]"],
             [" TGT SPEED[blue]", "TRANS ALT [blue]"],
-            ["240/.64", "18000"],
+            ["240/.64", departureTransitionAlt.toString()], 
             [" SPD/ALT LIMIT[blue]"],
-            ["250/10000"],
+            ["250/10000"],    
             [""],
             ["---/-----"],
             [""],
@@ -19,6 +22,20 @@ class CJ4_FMC_VNavSetupPage {
         fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage2(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
+
+        fmc.onRightInput[0] = () => {
+            let value = parseInt(fmc.inOut);
+            if (value >= 0 && value <= 45000) {
+                departureTransitionAlt = value;
+                WTDataStore.set('CJ4_departureTransitionAlt', departureTransitionAlt);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //VNAV SETUP Page 2
