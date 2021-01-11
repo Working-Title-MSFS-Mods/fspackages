@@ -348,6 +348,9 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
 
         this._needRedrawArc = true;
         this._needRedrawBearings = true;
+        this._needRestyleBearingLabels = true;
+        this._needRedrawForwardTick = true;
+        this._needReclipTicks = true;
         this._needRepositionLabel = true;
     }
 
@@ -521,7 +524,6 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             }
 
             this._bearingLabelLayer.buffer.context.font = `${this.bearingLabelFontSize * state.dpiScale}px ${this.bearingLabelFont}`;
-            this._bearingLabelLayer.buffer.context.fontSize = this.bearingLabelFontSize;
             this._bearingLabelLayer.buffer.context.fillStyle = this.bearingLabelFontColor;
 
             this._needRestyleBearingLabels = false;
@@ -768,7 +770,7 @@ WT_MapViewRangeCompassArcLayer.OPTIONS_DEF = {
     bearingLabelStart: {default: 0, auto: false, observed: true},
     bearingLabelInterval: {default: 30, auto: false, observed: true},
     bearingLabelOffset: {default: 1, auto: true, observed: true},
-    bearingLabelFont: {default: "Roboto", auto: true, observed: true},
+    bearingLabelFont: {default: "Roboto-Mono", auto: true, observed: true},
     bearingLabelFontColor: {default: "#ffffff", auto: true, observed: true},
     bearingLabelFontSize: {default: 20, auto: true, observed: true},
     bearingLabelFontOutlineWidth: {default: 6, auto: true, observed: true},
