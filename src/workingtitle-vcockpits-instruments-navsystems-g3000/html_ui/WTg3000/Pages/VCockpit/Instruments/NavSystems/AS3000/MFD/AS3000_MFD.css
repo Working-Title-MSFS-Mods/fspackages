@@ -22,6 +22,12 @@
     display: none; }
 
 @font-face {
+    font-family: "Roboto-Mono";
+    src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
     font-family: "Roboto-Regular";
     src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular.ttf") format("truetype");
     font-weight: normal;
@@ -42,7 +48,7 @@ as3000-mfd-element {
   width: 100%;
   height: 100%;
   background-color: black;
-  font-family: "Roboto";
+  font-family: "Roboto-Mono";
   overflow: hidden; }
   as3000-mfd-element #Console {
     position: absolute;
