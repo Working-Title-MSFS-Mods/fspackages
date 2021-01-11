@@ -2604,8 +2604,8 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         }
     }
     setSoftkeysNames() {
-        this.gps.setTopKnobText("COM" + this.selectedCom + " Freq Push: 1-2 Hold: Swap");
-        this.gps.setBottomKnobText("Pilot COM" + this.selectedCom + " Volume Push: Squelch");
+        this.gps.setTopKnobText("COM" + this.selectedCom + " Freq<br>Push: 1-2 Hold: Swap");
+        this.gps.setBottomKnobText("Pilot COM" + this.selectedCom + " Volume<br>Push: Squelch");
     }
 }
 class AS3000_TSC_Transponder extends NavSystemTouch_Transponder {
@@ -2699,10 +2699,10 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
         this.window = root;
         this.pilotBody = this.gps.getChildById("AudioRadioPilotBody");
         this.lines = [];
-        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Nav1"), "NAV1 Freq Hold: Swap", "Pilot NAV1 Volume Push: ID", this.nav1EventCallback.bind(this)));
-        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Nav2"), "NAV2 Freq Hold: Swap", "Pilot NAV2 Volume Push: ID", this.nav2EventCallback.bind(this)));
-        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Com1"), "COM1 Freq Push: 1-2 Hold: Swap", "Pilot COM1 Volume Push: Squelch", this.com1EventCallback.bind(this)));
-        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Com2"), "COM2 Freq Push: 1-2 Hold: Swap", "Pilot COM2 Volume Push: Squelch", this.com2EventCallback.bind(this)));
+        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Nav1"), "NAV1 Freq<br>Hold: Swap", "Pilot NAV1 Volume<br>Push: ID", this.nav1EventCallback.bind(this)));
+        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Nav2"), "NAV2 Freq<br>Hold: Swap", "Pilot NAV2 Volume<br>Push: ID", this.nav2EventCallback.bind(this)));
+        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Com1"), "COM1 Freq<br>Push: 1-2 Hold: Swap", "Pilot COM1 Volume<br>Push: Squelch", this.com1EventCallback.bind(this)));
+        this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Com2"), "COM2 Freq<br>Push: 1-2 Hold: Swap", "Pilot COM2 Volume<br>Push: Squelch", this.com2EventCallback.bind(this)));
         this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Speaker"), "", "Pilot Speaker Volume", this.speakerEventCallback.bind(this)));
         this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Recorder"), "", "Pilot Recorder Volume", this.recorderEventCallback.bind(this)));
         this.lines.push(new AS3000_TSC_AudioRadios_Line(this.gps.getChildById("Marker"), "", "Pilot Marker Volume", this.markerEventCallback.bind(this)));
