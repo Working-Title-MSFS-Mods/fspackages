@@ -86,16 +86,10 @@ class WT_BaseVnav {
         this._verticalFlightPlanVersion = undefined;
 
         /**
-         * The waypoint index for the next constraint.
-         * @type {number}
+         * The next constraint.
+         * @type {object}
          */
-        this._activeConstraintIndex = undefined;
-
-        /**
-         * The next constraint altitude in feet.
-         * @type {number}
-         */
-        this._activeConstraintAltitude = undefined;
+        this._activeConstraint = { };
 
         /**
          * The furthest distance away to show a constraint on the PFD.
@@ -240,6 +234,7 @@ class WT_BaseVnav {
             vwp.upperConstraintAltitude = constraints.upperConstraint;
             vwp.lowerConstraintAltitude = constraints.lowerConstraint;
             vwp.isAtConstraint = constraints.isAtConstraint;
+            vwp.hasConstraint = constraints.hasConstraint;
             if (firstApproachWaypointIndex !== undefined && i >= firstApproachWaypointIndex && vwp.lowerConstraintAltitude > 0) {
                 vwp.upperConstraintAltitude = constraints.lowerConstraint;
                 vwp.isAtConstraint = true;
@@ -371,39 +366,46 @@ class WT_BaseVnav {
         const constraints = {
             upperConstraint: Infinity,
             lowerConstraint: 0,
-            isAtConstraint: false
+            isAtConstraint: false,
+            hasConstraint: false
         }
         switch(waypoint.legAltitudeDescription) {
             case 1:
                 constraints.upperConstraint = Math.floor(waypoint.legAltitude1);
                 constraints.lowerConstraint = Math.floor(waypoint.legAltitude1);
                 constraints.isAtConstraint = true;
+                constraints.hasConstraint = true;
                 break;
             case 2:
                 constraints.lowerConstraint = Math.floor(waypoint.legAltitude1);
+                constraints.hasConstraint = true;
                 break;
             case 3:
                 constraints.upperConstraint = Math.floor(waypoint.legAltitude1);
+                constraints.hasConstraint = true;
                 break;
             case 4:
                 constraints.lowerConstraint = Math.floor(waypoint.legAltitude2);
                 constraints.upperConstraint = Math.floor(waypoint.legAltitude1);
+                constraints.hasConstraint = true;
                 break;
         }
         return constraints;
     }
 
     /**
-    * Set the constraint altitude.
+    * Get the next constraint.
     */
-    getConstraintAltitude() {
-        //SET CURRENT CONSTRAINT ALTITUDE SIMVAR -- This only needs to run when active waypoint changes
+    getConstraint() {
         let constraint = undefined;
+        let index = undefined;
+        let isClimb = false;
         if (this._verticalFlightPlan[this._activeWaypointIndex].isClimb) {
+            isClimb = true;
             for (let i = this._activeWaypointIndex; i < this._firstPossibleDescentIndex - 1; i++) {
                 if (this._verticalFlightPlan[i].upperConstraintAltitude) {
                     constraint = this._verticalFlightPlan[i].upperConstraintAltitude;
-                    this._activeConstraintIndex = i;
+                    index = i;
                     break;
                 }
             }
@@ -411,12 +413,17 @@ class WT_BaseVnav {
             for (let i = this._activeWaypointIndex; i < this._verticalFlightPlan.length; i++) {
                 if (this._verticalFlightPlan[i].lowerConstraintAltitude) {
                     constraint = this._verticalFlightPlan[i].lowerConstraintAltitude;
-                    this._activeConstraintIndex = i;
+                    index = i;
                     break;
                 }
             }
         }
-        return Math.floor(constraint);
+        const constraintObject = {
+            index: index,
+            altitude: Math.floor(constraint),
+            isClimb: isClimb
+        }
+        return constraintObject;
     }
 
     setConstraint(constraint = 0) {
@@ -439,22 +446,29 @@ class WT_BaseVnav {
     }
 
     manageConstraints() {
-        if (this.flightplan.activeWaypointIndex > this._activeConstraintIndex) {
-            this._activeConstraintAltitude = this.getConstraintAltitude();
+        if (this._activeConstraint == { } || this._activeConstraint.index === undefined) {
+            this._activeConstraint = this.getConstraint();
         }
 
-        if (this._activeConstraintIndex >= this.flightplan.activeWaypointIndex) {
-            if (this._activeConstraintAltitude != parseInt(this.constraintValue) && !waypoints[this._activeConstraintIndex].isRunway) {
+        if (this._activeConstraint.index === undefined) {
+            this.setConstraint();
+            return;
+        } else if (this.flightplan.activeWaypointIndex > this._activeConstraint.index) {
+            this._activeConstraint = this.getConstraint();
+        }
+
+        if (this._activeConstraint.index >= this.flightplan.activeWaypointIndex) {
+            if (this._activeConstraint.altitude != parseInt(this.constraintValue) && !waypoints[this._activeConstraintIndex].isRunway) {
                 if (waypoints[this._activeConstraintIndex].cumulativeDistanceInFP - this._currentDistanceInFP < this._distanceToShowConstraint) {
-                    this.setConstraint(this._activeConstraintAltitude);
+                    this.setConstraint(this._activeConstraint.altitude);
                 } else {
                     this.setConstraint();
                 }
             }
-            else if (waypoints[this._activeConstraintIndex].isRunway && waypoints[this._activeConstraintIndex].ident != this.constraintValue) {
-                if (waypoints[this._activeConstraintIndex].isRunway && this._activeConstraintIndex > 1
-                    && waypoints[this._activeConstraintIndex].cumulativeDistanceInFP - this._currentDistanceInFP < this._distanceToShowConstraint) {
-                    this.setConstraint(waypoints[this._activeConstraintIndex].ident);
+            else if (waypoints[this._activeConstraint.index].isRunway && waypoints[this._activeConstraint.index].ident != this.constraintValue) {
+                if (waypoints[this._activeConstraint.index].isRunway && this._activeConstraint.index > 1
+                    && waypoints[this._activeConstraint.index].cumulativeDistanceInFP - this._currentDistanceInFP < this._distanceToShowConstraint) {
+                    this.setConstraint(waypoints[this._activeConstraint.index].ident);
                 } else {
                     this.setConstraint();
                 }
@@ -671,6 +685,12 @@ class VerticalWaypoint {
        * @type {boolean}
        */
       this.isAtConstraint = false;
+
+      /**
+       * Whether this waypoint has a constraint.
+       * @type {boolean}
+       */
+      this.hasConstraint = false;
 
       /**
        * Which vertical path segment is this waypoint part of.
