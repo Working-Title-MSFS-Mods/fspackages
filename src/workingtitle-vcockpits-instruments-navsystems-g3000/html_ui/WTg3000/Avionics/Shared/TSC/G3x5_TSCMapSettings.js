@@ -1,27 +1,151 @@
 class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
-    constructor(
-        homePageGroup, homePageName, instrumentID,
-        orientationButtonName,
-        syncButtonName,
-        detailButtonName,
-        useWindData
-    ) {
+    constructor(homePageGroup, homePageName, instrumentID, useWindData) {
         super(homePageGroup, homePageName);
+
         this._instrumentID = instrumentID;
 
         this._allControllerIDs = ["PFD", "MFD-LEFT", "MFD-RIGHT"];
 
-        this.orientationButtonName = orientationButtonName;
-        this.syncButtonName = syncButtonName;
-        this.detailButtonName = detailButtonName;
+        this._useWindData = useWindData;
+    }
 
-        this.tabbedContentContainer = new WT_TSCTabbedContent(this);
-        this.tabs = [
-            this._sensorTab = new WT_G3x5_TSCMapSettingsTab(this, "MapSensorTab"),
-            this._aviationTab = new WT_G3x5_TSCMapSettingsTab(this, "MapAviationTab"),
-            this._landTab = new WT_G3x5_TSCMapSettingsTab(this, "MapLandTab"),
-            this._otherTab = new WT_G3x5_TSCMapSettingsTab(this, "MapOtherTab")
-        ];
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_TSCMapSettingsHTMLElement} htmlElement
+     * @type {WT_G3x5_TSCMapSettingsHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    /**
+     * @readonly
+     * @property {String[]} allControllerIDs
+     * @type {String[]}
+     */
+    get allControllerIDs() {
+        return this._allControllerIDs;
+    }
+
+    /**
+     * @readonly
+     * @property {Boolean} useWindData
+     * @type {Boolean}
+     */
+    get useWindData() {
+        return this._useWindData;
+    }
+
+    getControllerID() {
+        return this.instrumentID;
+    }
+
+    _initHTMLElement() {
+        this._htmlElement = new WT_G3x5_TSCMapSettingsHTMLElement();
+        this._htmlElement.setParentPage(this);
+    }
+
+    init(root) {
+        this._initHTMLElement();
+        root.appendChild(this.htmlElement);
+    }
+
+    onUpdate(deltaTime) {
+        this.htmlElement.update();
+    }
+}
+
+class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
+    getControllerID() {
+        return `${this.instrumentID}-${this.gps.getSelectedMFDPane()}`;
+    }
+}
+
+class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(WT_G3x5_TSCMapSettingsHTMLElement.TEMPLATE.content.cloneNode(true));
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_TSCMapSettings} settingsPage
+     * @type {WT_G3x5_TSCMapSettings}
+     */
+    get parentPage() {
+        return this._parentPage;
+    }
+
+    setParentPage(page) {
+        this._parentPage = page;
+    }
+
+    _createWindowContext(titleText, values, callback, key) {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(values);
+        return {
+            title: titleText,
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: callback,
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.parentPage.getControllerID.bind(this.parentPage), key),
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName
+        };
+    }
+
+    _initOrientationButton() {
+        this._orientationWindowContext = this._createWindowContext("Map Orientation", WT_G3x5_TSCMapSettingsHTMLElement.ORIENTATION_TEXTS, this._onOrientationSelected.bind(this), WT_G3x5_NavMap.ORIENTATION_KEY);
+
+        this._orientationButton = new WT_TSCValueButton();
+        this._orientationButton.classList.add(WT_G3x5_TSCMapSettingsHTMLElement.LEFT_BUTTON_CLASS);
+        this._orientationButton.labelText = "Orientation";
+        this._orientationButton.addButtonListener(this._onOrientationButtonPressed.bind(this));
+
+        this._orientationButton.slot = "left";
+        this.appendChild(this._orientationButton);
+    }
+
+    _initSyncButton() {
+        this._syncWindowContext = this._createWindowContext("Map Sync", WT_G3x5_TSCMapSettingsHTMLElement.SYNC_TEXTS, this._onSyncSelected.bind(this), WT_MapController.SYNC_MODE_KEY);
+
+        this._syncButton = new WT_TSCValueButton();
+        this._syncButton.classList.add(WT_G3x5_TSCMapSettingsHTMLElement.LEFT_BUTTON_CLASS);
+        this._syncButton.labelText = "Map Sync";
+        this._syncButton.addButtonListener(this._onSyncButtonPressed.bind(this));
+
+        this._syncButton.slot = "left";
+        this.appendChild(this._syncButton);
+    }
+
+    _initDetailButton() {
+        this._detailButton = new WT_G3x5_TSCMapDetailButton();
+        this._detailButton.classList.add(WT_G3x5_TSCMapSettingsHTMLElement.LEFT_BUTTON_CLASS);
+        this._detailButton.labelText = "Map Detail";
+        this._detailButton.addButtonListener(this._onDetailButtonPressed.bind(this));
+
+        this._detailButton.slot = "left";
+        this.appendChild(this._detailButton);
+    }
+
+    _initTabs() {
+        this._sensorTab = new WT_G3x5_TSCMapSettingsTab("Sensor", this.parentPage);
+        this._insetTab = new WT_G3x5_TSCMapSettingsTab("Inset Window", this.parentPage);
+        this._aviationTab = new WT_G3x5_TSCMapSettingsTab("Aviation", this.parentPage);
+        this._landTab = new WT_G3x5_TSCMapSettingsTab("Land", this.parentPage);
+        this._otherTab = new WT_G3x5_TSCMapSettingsTab("Other", this.parentPage);
 
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3x5_NavMap.NEXRAD_SHOW_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
@@ -73,193 +197,243 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
 
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
-        if (useWindData) {
+        if (this.parentPage.useWindData) {
             this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
         }
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsFuelRingTabRow("Fuel Rng (Rsv)", WT_MapFuelRingSettingGroup.SHOW_KEY, WT_MapFuelRingSettingGroup.RESERVE_KEY));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Range to<br>Altitude", WT_MapAltitudeInterceptSetting.SHOW_KEY_DEFAULT));
 
-        this._updateCallbacks = [];
+        this._tabbedContent.addTab(this._sensorTab);
+        this._tabbedContent.addTab(this._insetTab, WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
+        this._tabbedContent.addTab(this._aviationTab);
+        this._tabbedContent.addTab(this._landTab);
+        this._tabbedContent.addTab(this._otherTab);
+
+        this._tabbedContent.setActiveTabIndex(0);
     }
 
-    /**
-     * @readonly
-     * @property {String} instrumentID
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
+    _initTabbedContent() {
+        this._tabbedContent = new WT_G3x5_TSCTabbedView();
+        this._initTabs();
+
+        this._tabbedContent.slot = "right";
+        this.appendChild(this._tabbedContent);
     }
 
-    getControllerID() {
-        return this.instrumentID;
+    connectedCallback() {
+        this._initOrientationButton();
+        this._initSyncButton();
+        this._initDetailButton();
+        this._initTabbedContent();
     }
 
-    init(root) {
-        this.initOrientationSetting();
-        this.initSyncSetting();
-        this.initDetailSetting();
-        this.initTabs(root);
+    _onOrientationButtonPressed() {
+        this.parentPage.instrument.selectionListWindow1.element.setContext(this._orientationWindowContext);
+        this.parentPage.instrument.switchToPopUpPage(this.parentPage.instrument.selectionListWindow1);
     }
 
-    _createWindowContext(titleText, values, callback, key) {
-        let elementHandler = new WT_TSCStandardSelectionElementHandler(values);
-        return {
-            title: titleText,
-            subclass: "standardDynamicSelectionListWindow",
-            closeOnSelect: true,
-            callback: callback,
-            elementConstructor: elementHandler,
-            elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.getControllerID.bind(this), key),
-            homePageGroup: this.homePageGroup,
-            homePageName: this.homePageName
-        };
+    _onSyncButtonPressed() {
+        this.parentPage.instrument.selectionListWindow1.element.setContext(this._syncWindowContext);
+        this.parentPage.instrument.switchToPopUpPage(this.parentPage.instrument.selectionListWindow1);
     }
 
-    initOrientationSetting() {
-        this._orientationWindowContext = this._createWindowContext("Map Orientation", WT_G3x5_TSCMapSettings.ORIENTATION_TEXTS, this.setOrientation.bind(this), WT_G3x5_NavMap.ORIENTATION_KEY);
-        this._orientationButton = this.gps.getChildById(this.orientationButtonName);
-        if (this._orientationButton) {
-            this.orientationButtonValue = this._orientationButton.getElementsByClassName("lowerValue")[0];
-            this.gps.makeButton(this._orientationButton, this.openOrientationSelection.bind(this));
-            this._updateCallbacks.push(this.updateOrientationValue.bind(this));
-        }
+    _onDetailButtonPressed() {
+        this.parentPage.instrument.mapDetailSelect.element.setContext(this.parentPage.getControllerID(), this.parentPage.homePageGroup, this.parentPage.homePageName);
+        this.parentPage.instrument.switchToPopUpPage(this.parentPage.instrument.mapDetailSelect);
     }
 
-    initSyncSetting() {
-        this._syncWindowContext = this._createWindowContext("Map Sync", WT_G3x5_TSCMapSettings.SYNC_TEXTS, this.setSync.bind(this), WT_MapController.SYNC_MODE_KEY);
-        this._syncButton = this.gps.getChildById(this.syncButtonName);
-        if (this._syncButton) {
-            this.syncButtonValue = this._syncButton.getElementsByClassName("lowerValue")[0];
-            this.gps.makeButton(this._syncButton, this.openSyncSelection.bind(this));
-            this._updateCallbacks.push(this.updateSyncValue.bind(this));
-        }
+    _onOrientationSelected(value) {
+        WT_MapController.setSettingValue(this.parentPage.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY, value, true);
+        this._updateOrientationButton();
     }
 
-    initDetailSetting() {
-        this.detailButton = this.gps.getChildById(this.detailButtonName);
-        if (this.detailButton) {
-            this.detailButtonImages = this.detailButton.getElementsByClassName("img");
-            this.gps.makeButton(this.detailButton, this.openDetailSelection.bind(this));
-            this._updateCallbacks.push(this.updateDetailValue.bind(this));
-        }
-    }
-
-    initTabs(_root) {
-        this.tabbedContentContainer.init(_root.getElementsByClassName("MapSettingsRight")[0]);
-        for (let tab of this.tabs) {
-            tab.init(_root.getElementsByClassName(tab.elementName)[0]);
-            this._updateCallbacks.push(tab.update.bind(tab));
-        }
-    }
-
-    onUpdate(_deltaTime) {
-        for (let callback of this._updateCallbacks) {
-            callback();
-        }
-    }
-
-    onEvent(_event) {
-    }
-
-    // update helpers
-
-    updateOrientationValue() {
-        let currentOrientation = WT_MapController.getSettingValue(this.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY);
-        let newValue = "";
-        switch (currentOrientation) {
-            case WT_G3x5_NavMap.Orientation.HDG:
-                newValue = "Heading Up";
-                break;
-            case WT_G3x5_NavMap.Orientation.TRK:
-                newValue = "Track Up";
-                break;
-            case WT_G3x5_NavMap.Orientation.NORTH:
-                newValue = "North Up";
-                break;
-        }
-        Avionics.Utils.diffAndSet(this.orientationButtonValue, newValue);
-    }
-
-    updateSyncValue() {
-        let currentSync = WT_MapController.getSyncMode(this.getControllerID());
-        let newValue = "";
-        switch (currentSync) {
-            case WT_MapController.SyncMode.OFF:
-                newValue = "Off";
-                break;
-            case WT_MapController.SyncMode.ALL:
-                newValue = "All";
-                break;
-        }
-        Avionics.Utils.diffAndSet(this.syncButtonValue, newValue);
-    }
-
-    updateDetailValue() {
-        let currentDetail = WT_MapController.getSettingValue(this.getControllerID(), WT_MapDCLTRSetting.KEY_DEFAULT);
-        for (let i = 0; i < this.detailButtonImages.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.detailButtonImages[i], "state", (currentDetail == i) ? "Active" : "Inactive");
-        }
-    }
-
-    // button click callbacks
-
-    openOrientationSelection() {
-        this.gps.selectionListWindow1.element.setContext(this._orientationWindowContext);
-        this.gps.switchToPopUpPage(this.gps.selectionListWindow1);
-    }
-
-    openSyncSelection() {
-        this.gps.selectionListWindow1.element.setContext(this._syncWindowContext);
-        this.gps.switchToPopUpPage(this.gps.selectionListWindow1);
-    }
-
-    openDetailSelection() {
-        this.gps.mapDetailSelect.element.setContext(this.getControllerID(), this.homePageGroup, this.homePageName);
-        this.gps.switchToPopUpPage(this.gps.mapDetailSelect);
-    }
-
-    // setter helpers
-
-    setOrientation(value) {
-        WT_MapController.setSettingValue(this.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY, value, true);
-        this.updateOrientationValue();
-    }
-
-    setSync(mode) {
-        let oldMode = WT_MapController.getSyncMode(this.getControllerID());
-        if (mode !== oldMode) {
-            switch (mode) {
+    _onSyncSelected(value) {
+        let oldValue = WT_MapController.getSyncMode(this.parentPage.getControllerID());
+        if (value !== oldValue) {
+            switch (value) {
                 case WT_MapController.SyncMode.ALL:
-                    for (let id of this._allControllerIDs) {
-                        WT_MapController.setSyncMode(id, mode, this.getControllerID());
+                    for (let id of this.parentPage.allControllerIDs) {
+                        WT_MapController.setSyncMode(id, value, this.parentPage.getControllerID());
                     }
                     break;
                 case WT_MapController.SyncMode.OFF:
-                    for (let id of this._allControllerIDs) {
-                        WT_MapController.setSyncMode(id, mode, this.getControllerID());
+                    for (let id of this.parentPage.allControllerIDs) {
+                        WT_MapController.setSyncMode(id, value, this.parentPage.getControllerID());
                     }
                     break;
             }
         }
+        this._updateSyncButton();
+    }
+
+    _updateOrientationButton() {
+        let value = WT_MapController.getSettingValue(this.parentPage.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY, 0);
+        this._orientationButton.valueText = WT_G3x5_TSCMapSettingsHTMLElement.ORIENTATION_TEXTS[value];
+    }
+
+    _updateSyncButton() {
+        let value = WT_MapController.getSyncMode(this.parentPage.getControllerID());
+        this._syncButton.valueText = WT_G3x5_TSCMapSettingsHTMLElement.SYNC_TEXTS[value];
+    }
+
+    _updateDetailButton() {
+        let value = WT_MapController.getSettingValue(this.parentPage.getControllerID(), WT_MapDCLTRSetting.KEY_DEFAULT);
+        this._detailButton.setValue(value);
+    }
+
+    _updateTabbedContent() {
+        this._tabbedContent.getActiveTab().update();
+    }
+
+    update() {
+        this._updateOrientationButton();
+        this._updateSyncButton();
+        this._updateDetailButton();
+        this._updateTabbedContent();
     }
 }
-WT_G3x5_TSCMapSettings.ORIENTATION_TEXTS = [
+WT_G3x5_TSCMapSettingsHTMLElement.ORIENTATION_TEXTS = [
     "Heading Up",
     "Track Up",
     "North Up"
 ];
-WT_G3x5_TSCMapSettings.SYNC_TEXTS = [
+WT_G3x5_TSCMapSettingsHTMLElement.SYNC_TEXTS = [
     "Off",
     "All"
 ];
+WT_G3x5_TSCMapSettingsHTMLElement.LEFT_BUTTON_CLASS = "leftButton";
+WT_G3x5_TSCMapSettingsHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCMapSettingsHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
 
-class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
-    getControllerID() {
-        return `${this.instrumentID}-${this.gps.getSelectedMFDPane()}`;
+        #wrapper {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: var(--mapsettings-left-width, 1fr) var(--mapsettings-right-width, 3fr);
+            grid-gap: 0 var(--mapsettings-left-right-gap, 3vh);
+        }
+            slot {
+                display: block;
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+            #left {
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: flex-start;
+                align-items: center;
+            }
+    </style>
+    <div id="wrapper">
+        <slot name="left" id="left"></slot>
+        <slot name="right" id="right"></slot>
+    </div>
+`;
+
+customElements.define("tsc-mapsettings", WT_G3x5_TSCMapSettingsHTMLElement);
+
+class WT_G3x5_TSCMapDetailButton extends WT_TSCLabeledButton {
+    constructor() {
+        super();
+
+        this._value = 0;
+        this._lastVisible = null;
+    }
+
+    _initLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                width: 100%;
+                top: 5%;
+                height: 30%;
+            }
+        `;
+    }
+
+    _initImageStyle() {
+        return `
+            img {
+                position: absolute;
+                left: 25%;
+                max-height: 60%;
+                width: 50%;
+                bottom: 5%;
+            }
+        `;
+    }
+
+    _createStyle() {
+        let style = super._createStyle();
+        let imageStyle = this._initImageStyle();
+
+        return `
+            ${style}
+            ${imageStyle}
+        `;
+    }
+
+    _initImages() {
+        this._images = [];
+        for (let i = 0; i < WT_G3x5_TSCMapDetailButton.IMAGE_SOURCES.length; i++) {
+            let img = document.createElement("img");
+            img.style.display = "none";
+            img.src = WT_G3x5_TSCMapDetailButton.IMAGE_SOURCES[i];
+            this._wrapper.appendChild(img);
+            this._images.push(img);
+        }
+    }
+
+    _appendChildren() {
+        super._appendChildren();
+
+        this._initImages();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._updateImages();
+    }
+
+    _updateImages() {
+        if (this._lastVisible) {
+            this._lastVisible.style.display = "none";
+        }
+
+        let image = this._images[this._value];
+
+        if (image) {
+            image.style.display = "block";
+            this._lastVisible = image;
+        } else {
+            this._lastVisible = null;
+        }
+    }
+
+    setValue(value) {
+        if (value === this._value) {
+            return;
+        }
+
+        this._value = value;
+        this._updateImages();
     }
 }
+WT_G3x5_TSCMapDetailButton.IMAGE_SOURCES = [
+    "/WTg3000/SDK/Assets/Images/TSC/ICON_MAPDETAIL_SMALL_4.png",
+    "/WTg3000/SDK/Assets/Images/TSC/ICON_MAPDETAIL_SMALL_3.png",
+    "/WTg3000/SDK/Assets/Images/TSC/ICON_MAPDETAIL_SMALL_2.png",
+    "/WTg3000/SDK/Assets/Images/TSC/ICON_MAPDETAIL_SMALL_1.png"
+];
+
+customElements.define("tsc-button-mapdetail", WT_G3x5_TSCMapDetailButton);
 
 class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
     init(root) {
@@ -328,66 +502,18 @@ class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
     }
 }
 
-class WT_G3x5_TSCMapSettingsTabElement extends HTMLElement {
-    constructor() {
-        super();
+class WT_G3x5_TSCMapSettingsTab extends WT_G3x5_TSCTabContent {
+    constructor(title, settingsPage) {
+        super(title);
 
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3x5_TSCMapSettingsTabElement.TEMPLATE.content.cloneNode(true));
-    }
-}
-WT_G3x5_TSCMapSettingsTabElement.TEMPLATE = document.createElement("template");
-WT_G3x5_TSCMapSettingsTabElement.TEMPLATE.innerHTML = `
-    <style>
-        :host {
-            display: block;
-        }
-
-        #wrapper  {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-            overflow-y: scroll;
-        }
-            #wrapper::-webkit-scrollbar {
-                width: 1vw;
-            }
-            #wrapper::-webkit-scrollbar-track {
-                background: none;
-            }
-            #wrapper::-webkit-scrollbar-thumb {
-                background: white;
-            }
-    </style>
-    <div id="wrapper">
-        <slot name="rows"></slot>
-    </div>
-`;
-
-customElements.define("tsc-mapsettings-tab", WT_G3x5_TSCMapSettingsTabElement);
-
-class WT_G3x5_TSCMapSettingsTab {
-    constructor(settingsPage, elementName) {
         this._settingsPage = settingsPage;
-        this._elementName = elementName;
 
-        this._htmlElement = new WT_G3x5_TSCMapSettingsTabElement();
+        this._htmlElement = new WT_TSCScrollList();
 
         /**
          * @type {WT_G3x5_TSCMapSettingsTabRow[]}
          */
         this._rows = [];
-        this._isInitialized = false;
-    }
-
-    /**
-     * @readonly
-     * @property {String} elementName
-     * @type {String}
-     */
-    get elementName() {
-        return this._elementName;
     }
 
     /**
@@ -414,16 +540,8 @@ class WT_G3x5_TSCMapSettingsTab {
      */
     _initRow(row) {
         this.htmlElement.appendChild(row.htmlElement);
-        row.htmlElement.setAttribute("slot", "rows");
+        row.htmlElement.slot = "content";
         row.onAttached(this._createContext());
-    }
-
-    init(htmlElement) {
-        this._htmlElement = htmlElement;
-        for (let row of this._rows) {
-            this._initRow(row);
-        }
-        this._isInitialized = true;
     }
 
     /**
@@ -432,9 +550,7 @@ class WT_G3x5_TSCMapSettingsTab {
      */
     attachRow(row) {
         this._rows.push(row);
-        if (this._isInitialized) {
-            this._initRow(row);
-        }
+        this._initRow(row);
     }
 
     update() {

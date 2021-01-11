@@ -317,44 +317,9 @@
       transform: translateY(-50%);
       width: 100%; }
 
-.MapSettings .MapSettingsLeft {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: space-between;
-  align-items: center; }
-    .MapSettings .MapSettingsLeft .MapDetailButton .img {
-      position: absolute;
-      left: 25%;
-      width: 50%;
-      bottom: 5%; }
-    .MapSettings .MapSettingsLeft .MapDetailButton .img[state=Inactive] {
-      visibility: hidden; }
-
-    .MapSettings .MapSettingsRight {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: flex-end;
-      align-items: flex-start; }
-      .MapSettings .MapSettingsRight .tabSelect {
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: flex-start;
-        height: 100%; }
-        .MapSettings .MapSettingsRight .tabContentContainer .tabContent {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          overflow-x: hidden;
-          overflow-y: scroll; }
-          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar {
-            width: 1vw; }
-          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-track {
-            background: none; }
-          .MapSettings .MapSettingsRight .tabContentContainer .tabContent::-webkit-scrollbar-thumb {
-            background: white; }
-
 tsc-mapsettings-tabrow {
     display: block;
+    width: 100%;
 }
 tsc-mapsettings-tabrow > * {
     margin: 0.25vh;
