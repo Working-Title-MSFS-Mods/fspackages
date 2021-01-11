@@ -304,17 +304,30 @@ class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
 customElements.define("tsc-button-statusbar", WT_TSCStatusBarButton);
 
 class WT_TSCValueButton extends WT_TSCLabeledButton {
-    constructor() {
-        super();
+    _initLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                width: 100%;
+                top: 5%;
+                height: 40%;
+            }
+        `;
+    }
 
-        this._style.appendChild(document.createTextNode(`
+    _initValueBoxStyle() {
+        return `
             #valuebox {
                 position: absolute;
                 width: 100%;
                 top: 55%;
-                bottom: 0%;
+                height: 40%;
             }
+        `;
+    }
 
+    _initValueStyle() {
+        return `
             #value {
                 position: absolute;
                 width: 100%;
@@ -323,8 +336,22 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
                 color: var(--value-color, #67e8ef);
                 font-size: var(--value-font-size, 1em);
             }
-        `));
+        `;
+    }
 
+    _createStyle() {
+        let style = super._createStyle();
+        let valueBoxStyle = this._initValueBoxStyle();
+        let valueStyle = this._initValueStyle();
+
+        return `
+            ${style}
+            ${valueBoxStyle}
+            ${valueStyle}
+        `;
+    }
+
+    _appendValue() {
         this._valueBox = document.createElement("div");
         this._valueBox.id = "valuebox";
         this._value = document.createElement("div");
@@ -334,15 +361,10 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
         this._wrapper.appendChild(this._valueBox);
     }
 
-    _initLabelBoxStyle() {
-        return `
-            #labelbox {
-                position: absolute;
-                width: 100%;
-                top: 0%;
-                bottom: 60%;
-            }
-        `;
+    _appendChildren() {
+        super._appendChildren();
+
+        this._appendValue();
     }
 
     static get observedAttributes() {
