@@ -52,7 +52,11 @@ class WT_FlightPlanManager {
 
     async syncActiveFromGame() {
         await this._interface.syncFromGame(this._active, this._directTo);
-        this._activeLegCached = await this._interface.getActiveLeg(this._active);
+        if (!this.directTo.isActive()) {
+            this._activeLegCached = await this._interface.getActiveLeg(this._active);
+        } else {
+            this._activeLegCached = null;
+        }
     }
 
     /**

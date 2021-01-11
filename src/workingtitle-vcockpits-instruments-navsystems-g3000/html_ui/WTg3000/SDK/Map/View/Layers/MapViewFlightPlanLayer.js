@@ -31,7 +31,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewFlightPlanLayer.OPTIONS_DEF);
 
-        this._tempOptions = {icon: {}, label: {}};
+        this._lastActiveWaypoint = null;
 
         this._lastFPMUpdateTime = 0;
     }
@@ -350,21 +350,30 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateActiveLeg(state) {
-        let oldLeg = this._fpRenderer.activeLeg();
-        let newLeg = this._fpm.getActiveLeg(true);
-        this._fpRenderer.setActiveLeg(newLeg);
-        if (oldLeg) {
-            this._waypointRenderer.deregister(oldLeg.fix, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
+        let currentActiveLeg = this._fpm.getActiveLeg(true);
+        this._fpRenderer.setActiveLeg(currentActiveLeg);
+        let currentActiveWaypoint = currentActiveLeg ? currentActiveLeg.fix : (this._drctRenderer.destinationRendered());
+
+        if ((this._lastActiveWaypoint === null && currentActiveWaypoint === null) || (this._lastActiveWaypoint && this._lastActiveWaypoint.equals(currentActiveWaypoint))) {
+            return;
         }
-        if (newLeg && newLeg.fix.icao) {
-            this._registerWaypoint(newLeg.fix, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
+
+        if (this._lastActiveWaypoint) {
+            this._waypointRenderer.deregister(this._lastActiveWaypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
         }
+        if (currentActiveWaypoint && currentActiveWaypoint.icao) {
+            this._registerWaypoint(currentActiveWaypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
+        }
+        this._lastActiveWaypoint = currentActiveWaypoint;
     }
 
     _clearRenderedWaypoints() {
         for (let waypoint of this._fpRenderer.waypointsRendered()) {
             this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
         }
+        this._waypointRenderer.deregister(this._drctRenderer.originRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
+        this._waypointRenderer.deregister(this._drctRenderer.destinationRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
+        this._lastActiveWaypoint = null;
     }
 
     _registerRenderedWaypoints() {
