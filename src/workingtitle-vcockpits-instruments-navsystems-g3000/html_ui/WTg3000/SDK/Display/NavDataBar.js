@@ -1,8 +1,6 @@
 /**
- * This class implements the Navigational data bar (also referred to as navigation status bar) found on Garmin units.
- * It has support for an arbitrary number of data bar fields; outside code or subclasses define the exact number
- * by setting the length of the .dataFields array. Data fields are set using data store. Static methods are
- * provided to facilitate an interface between data store, WT_NavDataBar, and controllers.
+ * This class implements the Navigation data bar (also referred to as navigation status bar) found on Garmin units.
+ * It has support for an arbitrary number of data bar fields.
  */
 class WT_NavDataBar {
     /**
@@ -18,110 +16,63 @@ class WT_NavDataBar {
     }
 
     _initInfos() {
-        let bearingOpts = {
-            precision: 1,
-            unitSpaceBefore: false
-        };
-        let bearingFormatter = new WT_NumberFormatter(bearingOpts);
-
-        let distanceOpts = {
-            precision: 0.1,
-            maxDigits: 3,
-            unitSpaceBefore: false,
-            unitCaps: true
-        }
-        let distanceFormatter = new WT_NumberFormatter(distanceOpts);
-
-        let volumeOpts = {
-            precision: 0.1,
-            maxDigits: 3,
-            unitSpaceBefore: false,
-            unitCaps: true
-        }
-        let volumeFormatter = new WT_NumberFormatter(volumeOpts);
-
-        let speedOpts = {
-            precision: 1,
-            unitSpaceBefore: false,
-            unitCaps: true
-        }
-        let speedFormatter = new WT_NumberFormatter(speedOpts);
-
-        let timeOpts = {
-            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
-            delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
-        }
-        let timeFormatter = new WT_TimeFormatter(timeOpts);
-
-        let utcOpts = {
-            timeFormat: WT_TimeFormatter.Format.HH_MM
-        }
-        let utcFormatter = new WT_TimeFormatter(utcOpts);
-
         let flightPlanManager = this._fpm;
         let airplaneModel = WT_PlayerAirplane.INSTANCE;
 
         this._infos = {
-            BRG: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.BRG, new WT_NumberUnit(0, WT_Unit.DEGREE), "PLANE HEADING DEGREES MAGNETIC", "degree", bearingFormatter),
-            DIS: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.DIS, new WT_NumberUnit(0, WT_Unit.NMILE), "GPS WP DISTANCE", "nautical miles", distanceFormatter),
-            DTG: new WT_NavDataInfo(WT_NavDataBar.INFO_DESCRIPTION.DTG, new WT_NumberUnit(0, WT_Unit.NMILE), {
-                    temp: new WT_NumberUnit(0, WT_Unit.NMILE),
-                    getCurrentValue: function() {
-                        return flightPlanManager.distanceToDestination(true, this.temp).number;
+            BRG: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.BRG, WT_Unit.DEGREE, "PLANE HEADING DEGREES MAGNETIC", "degree"),
+            DIS: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.DIS, WT_Unit.NMILE, "GPS WP DISTANCE", "nautical miles"),
+            DTG: new WT_NavDataInfoCustomNumber(WT_NavDataBar.INFO_DESCRIPTION.DTG, WT_Unit.NMILE, {
+                updateValue(value) {
+                    return flightPlanManager.distanceToDestination(true, value);
+                }
+            }),
+            DTK: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.DTK, WT_Unit.DEGREE, "GPS WP DESIRED TRACK", "degree"),
+            END: new WT_NavDataInfoCustomNumber(WT_NavDataBar.INFO_DESCRIPTION.END, WT_Unit.HOUR, {
+                tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
+                tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
+                updateValue(value) {
+                    let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
+                    let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
+                    if (fuelFlow.number == 0) {
+                        value.set(0);
+                    } else {
+                        value.set(fuelRemaining.number / fuelFlow.number);
                     }
-                }, distanceFormatter),
-
-            DTK: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.DTK, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP DESIRED TRACK", "degree", bearingFormatter),
-            END: new WT_NavDataInfo(WT_NavDataBar.INFO_DESCRIPTION.END, new WT_NumberUnit(0, WT_Unit.HOUR), {
-                    tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
-                    tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
-                    getCurrentValue: function() {
-                        let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
-                        let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
-                        if (fuelFlow.number == 0) {
-                            return 0;
-                        } else {
-                            return fuelRemaining.number / fuelFlow.number;
-                        }
-                    }
-                }, timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
-
-            ENR: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.ENR, new WT_NumberUnit(0, WT_Unit.SECOND),"GPS ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
-            ETA: new WT_NavDataInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION.ETA, new WT_NumberUnit(0, WT_Unit.SECOND), {
-                    getCurrentValue: function() {
-                        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-                        let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
-                        return (currentTime + ete) % (24 * 3600);
-                    }
-                }, utcFormatter),
-
-            ETE: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.ETE, new WT_NumberUnit(0, WT_Unit.SECOND), "GPS WP ETE", "seconds", timeFormatter, {showDefault: number => number == 0 ? "__:__" : null}),
-            FOB: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.FOB, new WT_NumberUnit(0, WT_Unit.GALLON), "FUEL TOTAL QUANTITY", "gallons", volumeFormatter),
-            FOD: new WT_NavDataInfo(WT_NavDataBar.INFO_DESCRIPTION.FOD, new WT_NumberUnit(0, WT_Unit.GALLON), {
-                    tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
-                    tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
-                    getCurrentValue: function() {
-                        let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
-                        let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
-                        let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
-
-                        return fuelRemaining.number - enr * fuelFlow.number;
-                    }
-                }, volumeFormatter),
-
-            GS: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.GS, new WT_NumberUnit(0, WT_Unit.KNOT), "GPS GROUND SPEED", "knots", speedFormatter),
-            LDG: new WT_NavDataInfoUTCTime(WT_NavDataBar.INFO_DESCRIPTION.LDG, new WT_NumberUnit(0, WT_Unit.SECOND), {
-                    getCurrentValue: function() {
-                        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
-                        let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
-                        return (currentTime + enr) % (24 * 3600);
-                    }
-                }, utcFormatter),
-
-            TAS: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TAS, new WT_NumberUnit(0, WT_Unit.KNOT), "AIRSPEED TRUE", "knots", speedFormatter),
-            TKE: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TKE, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS WP TRACK ANGLE ERROR", "degree", bearingFormatter),
-            TRK: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.TRK, new WT_NumberUnit(0, WT_Unit.DEGREE), "GPS GROUND MAGNETIC TRACK", "degree", bearingFormatter),
-            XTK: new WT_NavDataInfoSimVar(WT_NavDataBar.INFO_DESCRIPTION.XTK, new WT_NumberUnit(0, WT_Unit.METER), "GPS WP CROSS TRK", "meters", distanceFormatter),
+                }
+            }),
+            ENR: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.ENR, WT_Unit.SECOND,"GPS ETE", "seconds"),
+            ETA: new WT_NavDataInfoCustomNumber(WT_NavDataBar.INFO_DESCRIPTION.ETA, WT_Unit.SECOND, {
+                updateValue(value) {
+                    let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+                    let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
+                    value.set((currentTime + ete) % (24 * 3600));
+                }
+            }),
+            ETE: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.ETE, WT_Unit.SECOND, "GPS WP ETE", "seconds"),
+            FOB: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.FOB, WT_Unit.GALLON, "FUEL TOTAL QUANTITY", "gallons"),
+            FOD: new WT_NavDataInfoCustomNumber(WT_NavDataBar.INFO_DESCRIPTION.FOD, WT_Unit.GALLON, {
+                tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
+                tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
+                updateValue(value) {
+                    let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
+                    let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
+                    let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
+                    value.set(fuelRemaining.number - enr * fuelFlow.number);
+                }
+            }),
+            GS: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.GS, WT_Unit.KNOT, "GPS GROUND SPEED", "knots"),
+            LDG: new WT_NavDataInfoCustomNumber(WT_NavDataBar.INFO_DESCRIPTION.LDG, WT_Unit.SECOND, {
+                updateValue(value) {
+                    let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+                    let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
+                    value.set((currentTime + enr) % (24 * 3600));
+                }
+            }),
+            TAS: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.TAS, WT_Unit.KNOT, "AIRSPEED TRUE", "knots"),
+            TKE: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.TKE, WT_Unit.DEGREE, "GPS WP TRACK ANGLE ERROR", "degree"),
+            TRK: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.TRK, WT_Unit.DEGREE, "GPS GROUND MAGNETIC TRACK", "degree"),
+            XTK: new WT_NavDataInfoSimVarNumber(WT_NavDataBar.INFO_DESCRIPTION.XTK, WT_Unit.METER, "GPS WP CROSS TRK", "meters")
         };
     }
 
@@ -205,30 +156,15 @@ WT_NavDataBar.INFO_DESCRIPTION = {
 };
 
 /**
- * This class represents a type of nav info that can be assigned to a data field on the navigational data bar.
- * Each nav info has a description consisting of a short name and long name, a WT_NumberUnit value, a
- * WT_NumberFormatter to control the display of the value, default text to display in case an appropriate value
- * cannot be found, and optionally a list of units (WT_Unit) to choose from when displaying the value.
- * @property {String} shortName - the short name of this nav info.
- * @property {String} longName - the long name of this nav info.
- * @property {Object} valueGetter - the object that gets the current value of this nav info.
+ * A type of nav data info that can be assigned to a data field on the navigational data bar.
  */
 class WT_NavDataInfo {
     /**
-     * @param {Object} description - a description object containing the short name and long name of the nav info in the .shortName and .longName properties, respectively.
-     * @param {WT_NumberUnit} value - the starting value of the nav info. This will also indirectly determine the reference unit used by the nav info.
-     * @param {Object} valueGetter - an object that gets the current value of the nav info by implementing the .getCurrentValue() method.
-     * @param {WT_NumberFormatter} numberFormatter - a formatting definition to use when displaying the nav info's value.
-     * @param {Object} [defaultChecker] - an object that determines when to display default text by implementing the .showDefault(number) method, where number is the value of the nav info.
-     *                         .showDefault(number) should return the default text to display when appropriate and either null, undefined, or the empty string otherwise.
+     * @param {Object} description - a description object containing the short name and long name of the new nav data info.
      */
-    constructor(description, value, valueGetter, numberFormatter, defaultChecker = {showDefault: number => null}) {
+    constructor(description) {
         this._shortName = description.shortName;
         this._longName = description.longName;
-        this._value = value;
-        this._numberFormatter = numberFormatter;
-        this._valueGetter = valueGetter;
-        this._defaultChecker = defaultChecker;
     }
 
     /**
@@ -259,59 +195,73 @@ class WT_NavDataInfo {
     }
 
     /**
-     * Gets the number part of the formatted display text of this nav info's value.
-     * @returns {string} a formatted text representation of this nav info's current value.
+     * Gets this nav data info's current value.
+     * @returns {*} this nav data info's current value.
      */
-    getDisplayNumber() {
-        this._value.set(this._valueGetter.getCurrentValue());
-        let displayText;
-        let defaultText = this._defaultChecker.showDefault(this._value.number);
-        if (defaultText) {
-            displayText = defaultText;
-        } else {
-            displayText = this._numberFormatter.getFormattedNumber(this._value);
-        }
-        return displayText;
-    }
-
-    /**
-     * Gets the unit part of the formatted display text of this nav info's value.
-     * @returns {string} a formatted text representation of this nav info's current display unit.
-     */
-    getDisplayUnit() {
-        return this._numberFormatter.getFormattedUnit(this._value);
+    getValue() {
+        return null;
     }
 }
 
 /**
- * A convenience class for implementing a nav info type whose current value is determined by a SimVar.
- * @property {string} simVarName - the key of the SimVar used to get this nav info's value.
- * @property {string} simVarUnit - the unit of the SimVar used to get this nav info's value.
+ * A nav data info type whose value is a WT_NumberUnit object.
  */
-class WT_NavDataInfoSimVar extends WT_NavDataInfo {
+class WT_NavDataInfoNumber extends WT_NavDataInfo {
     /**
-     * @param {object} description - a description object containing the short name and long name of the nav info in the .shortName and .longName properties, respectively.
-     * @param {WT_NumberUnit} value - the starting value of the nav info. This will also indirectly determine the reference unit used by the nav info.
-     * @param {string} simVarName - the key to use when retrieving the SimVar value.
-     * @param {string} simVarUnit - the unit to use when retrieving the SimVar value.
-     * @param {WT_NumberFormatter} numberFormatter - a formatting definition to use when displaying the nav info's value.
-     * @param {string} defaultText - the text to display when
-     * @param defaultChecker - an object that determines when to display the default text by implementing the .showDefault(number) method, where number is the value of the nav info.
-     *                         .showDefault(number) should return the default text to display when appropriate and either null, undefined, or the empty string otherwise.
+     * @param {Object} description - a description object containing the short name and long name of the new nav data info.
+     * @param {WT_Unit} unit - the unit of the new nav data info's number value.
      */
-    constructor(description, value, simVarName, simVarUnit, numberFormatter, defaultChecker) {
-        super(description, value, {getCurrentValue:()=>SimVar.GetSimVarValue(this._simVarName, this._simVarUnit)}, numberFormatter, defaultChecker);
+    constructor(description, unit) {
+        super(description);
+
+        this._value = new WT_NumberUnit(0, unit);
+    }
+
+    _updateValue() {
+    }
+
+    /**
+     * Gets this nav data info's current value.
+     * @returns {WT_NumberUnitReadOnly} this nav data info's current value.
+     */
+    getValue() {
+        this._updateValue();
+        return this._value.readonly();
+    }
+}
+
+class WT_NavDataInfoCustomNumber extends WT_NavDataInfoNumber {
+    /**
+     * @param {Object} description - a description object containing the short name and long name of the new nav data info.
+     * @param {WT_Unit} unit - the unit of the new nav data info's number value.
+     * @param {{updateValue(value:WT_NumberUnit)}} valueUpdater - an object that is used to update the numeric value of the new nav data info.
+     */
+    constructor(description, unit, valueUpdater) {
+        super(description, unit);
+
+        this._valueUpdater = valueUpdater;
+    }
+
+    _updateValue() {
+        this._valueUpdater.updateValue(this._value);
+    }
+}
+
+/**
+ * A nav data info type with a value of type WT_NumberUnit that updates its value using SimVars.
+ */
+class WT_NavDataInfoSimVarNumber extends WT_NavDataInfoCustomNumber {
+    /**
+     * @param {Object} description - a description object containing the short name and long name of the new nav data info.
+     * @param {WT_Unit} unit - the unit of the new nav data info's number value.
+     * @param {String} simVarName - the key to use when retrieving the SimVar value.
+     * @param {String} simVarUnit - the unit to use when retrieving the SimVar value.
+     */
+    constructor(description, unit, simVarName, simVarUnit) {
+        super(description, unit, {updateValue: value => value.set(SimVar.GetSimVarValue(simVarName, simVarUnit))});
+
         this._simVarName = simVarName;
         this._simVarUnit = simVarUnit;
-    }
-}
-
-/**
- * A convenience class for implementing a nav info type whose value is a UTC time.
- */
-class WT_NavDataInfoUTCTime extends WT_NavDataInfo {
-    getDisplayUnit() {
-        return "UTC";
     }
 }
 
@@ -342,11 +292,73 @@ class WT_NavDataBarView extends HTMLElement {
         return this._model;
     }
 
+    _initFormatters() {
+        let bearingOpts = {
+            precision: 1,
+            unitSpaceBefore: false
+        };
+        let bearingFormatter = new WT_NumberFormatter(bearingOpts);
+
+        let distanceOpts = {
+            precision: 0.1,
+            maxDigits: 3,
+            unitSpaceBefore: false,
+            unitCaps: true
+        }
+        let distanceFormatter = new WT_NumberFormatter(distanceOpts);
+
+        let volumeOpts = {
+            precision: 0.1,
+            maxDigits: 3,
+            unitSpaceBefore: false,
+            unitCaps: true
+        }
+        let volumeFormatter = new WT_NumberFormatter(volumeOpts);
+
+        let speedOpts = {
+            precision: 1,
+            unitSpaceBefore: false,
+            unitCaps: true
+        }
+        let speedFormatter = new WT_NumberFormatter(speedOpts);
+
+        let timeOpts = {
+            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
+            delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
+        }
+        let timeFormatter = new WT_TimeFormatter(timeOpts);
+
+        let utcOpts = {
+            timeFormat: WT_TimeFormatter.Format.HH_MM
+        }
+        let utcFormatter = new WT_TimeFormatter(utcOpts);
+
+        this._formatters = {
+            BRG: new WT_NavDataFieldViewDegreeFormatter(bearingFormatter),
+            DIS: new WT_NavDataFieldViewNumberFormatter(distanceFormatter),
+            DTG: new WT_NavDataFieldViewNumberFormatter(distanceFormatter),
+            DTK: new WT_NavDataFieldViewDegreeFormatter(bearingFormatter),
+            END: new WT_NavDataFieldViewTimeFormatter(timeFormatter, "__:__"),
+            ENR: new WT_NavDataFieldViewTimeFormatter(timeFormatter, "__:__"),
+            ETA: new WT_NavDataFieldViewUTCFormatter(utcFormatter),
+            ETE: new WT_NavDataFieldViewTimeFormatter(timeFormatter, "__:__"),
+            FOB: new WT_NavDataFieldViewNumberFormatter(volumeFormatter),
+            FOD: new WT_NavDataFieldViewNumberFormatter(volumeFormatter),
+            GS: new WT_NavDataFieldViewNumberFormatter(speedFormatter),
+            LDG: new WT_NavDataFieldViewUTCFormatter(utcFormatter),
+            TAS: new WT_NavDataFieldViewNumberFormatter(speedFormatter),
+            TKE: new WT_NavDataFieldViewDegreeFormatter(bearingFormatter),
+            TRK: new WT_NavDataFieldViewDegreeFormatter(bearingFormatter),
+            XTK: new WT_NavDataFieldViewNumberFormatter(distanceFormatter),
+        };
+    }
+
     _defineChildren() {
         this._fields = this.shadowRoot.querySelector(`#fields`);
     }
 
     connectedCallback() {
+        this._initFormatters();
         this._defineChildren();
         this._updateModel();
         this._isInit = true;
@@ -382,7 +394,8 @@ class WT_NavDataBarView extends HTMLElement {
 
     update() {
         for (let i = 0; i < this._fieldViews.length; i++) {
-            this._fieldViews[i].update(this.model.getDataFieldInfo(i));
+            let navDataInfo = this.model.getDataFieldInfo(i);
+            this._fieldViews[i].update(navDataInfo, this._formatters[navDataInfo.shortName]);
         }
     }
 }
@@ -409,6 +422,101 @@ WT_NavDataBarView.TEMPLATE.innerHTML = `
 
 customElements.define("navdatabar-view", WT_NavDataBarView);
 
+class WT_NavDataFieldViewFormatter {
+    /**
+     * Gets the display HTML string of a nav data info's current value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} the HTML string of the nav data info's current value.
+     */
+    getDisplayHTML(navDataInfo) {
+        return "";
+    }
+}
+
+class WT_NavDataFieldViewNumberFormatter extends WT_NavDataFieldViewFormatter {
+    constructor(formatter) {
+        super();
+
+        this._formatter = formatter;
+    }
+
+    /**
+     * Gets the number part of the formatted display text of a nav data info's value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} a formatted text representation of a nav data info's current value.
+     */
+    _getDisplayNumber(navDataInfo) {
+        return this._formatter.getFormattedNumber(navDataInfo.getValue());
+    }
+
+    /**
+     * Gets the unit part of the formatted display text of a nav data info's value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} a formatted text representation of a nav data info's current display unit.
+     */
+    _getDisplayUnit(navDataInfo) {
+        return this._formatter.getFormattedUnit(navDataInfo.getValue());
+    }
+
+    /**
+     * Gets the display HTML string of a nav data info's current value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} the HTML string of the nav data info's current value.
+     */
+    getDisplayHTML(navDataInfo) {
+        return `<span>${this._getDisplayNumber(navDataInfo)}</span><span class="${WT_NavDataFieldView.UNIT_CLASS}">${this._getDisplayUnit(navDataInfo)}</span>`;
+    }
+}
+
+class WT_NavDataFieldViewDegreeFormatter extends WT_NavDataFieldViewNumberFormatter {
+    /**
+     * Gets the display HTML string of a nav data info's current value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} the HTML string of the nav data info's current value.
+     */
+    getDisplayHTML(navDataInfo) {
+        return `${this._getDisplayNumber(navDataInfo)}${this._getDisplayUnit(navDataInfo)}`;
+    }
+}
+
+class WT_NavDataFieldViewTimeFormatter extends WT_NavDataFieldViewNumberFormatter {
+    constructor(formatter, defaultText) {
+        super(formatter);
+
+        this._defaultText = defaultText;
+    }
+
+    /**
+     * Gets the number part of the formatted display text of a nav data info's value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} a formatted text representation of a nav data info's current value.
+     */
+    _getDisplayNumber(navDataInfo) {
+        let value = navDataInfo.getValue();
+        return value.number === 0 ? this._defaultText : this._formatter.getFormattedNumber(value);
+    }
+
+    /**
+     * Gets the unit part of the formatted display text of a nav data info's value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} a formatted text representation of a nav data info's current display unit.
+     */
+    _getDisplayUnit(navDataInfo) {
+        return "";
+    }
+}
+
+class WT_NavDataFieldViewUTCFormatter extends WT_NavDataFieldViewNumberFormatter {
+    /**
+     * Gets the unit part of the formatted display text of a nav data info's value.
+     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @returns {String} a formatted text representation of a nav data info's current display unit.
+     */
+    _getDisplayUnit(navDataInfo) {
+        return "UTC";
+    }
+}
+
 class WT_NavDataFieldViewRecycler extends WT_HTMLElementRecycler {
     _createElement() {
         let element = new WT_NavDataFieldView();
@@ -429,8 +537,7 @@ class WT_NavDataFieldView extends HTMLElement {
 
     _defineChildren() {
         this._title = this.shadowRoot.querySelector(`#title`);
-        this._number = this.shadowRoot.querySelector(`#number`);
-        this._unit = this.shadowRoot.querySelector(`#unit`);
+        this._value = this.shadowRoot.querySelector(`#value`);
     }
 
     connectedCallback() {
@@ -440,28 +547,28 @@ class WT_NavDataFieldView extends HTMLElement {
 
     _clear() {
         this._title.innerHTML = "";
-        this._number.innerHTML = "";
-        this._unit.innerHTML = "";
+        this._value.innerHTML = "";
     }
 
     /**
      *
      * @param {WT_NavDataInfo} navDataInfo
+     * @param {WT_NavDataFieldViewFormatter} formatter
      */
-    update(navDataInfo) {
+    update(navDataInfo, formatter) {
         if (!this._isInit) {
             return;
         }
 
         if (navDataInfo) {
             this._title.innerHTML = navDataInfo.shortName;
-            this._number.innerHTML = navDataInfo.getDisplayNumber();
-            this._unit.innerHTML = navDataInfo.getDisplayUnit();
+            this._value.innerHTML = formatter.getDisplayHTML(navDataInfo);
         } else {
             this._clear();
         }
     }
 }
+WT_NavDataFieldView.UNIT_CLASS = "unit";
 WT_NavDataFieldView.TEMPLATE = document.createElement("template");
 WT_NavDataFieldView.TEMPLATE.innerHTML = `
     <style>
@@ -488,14 +595,13 @@ WT_NavDataFieldView.TEMPLATE.innerHTML = `
             #value {
                 color: var(--navdatafield-value-color, #d12bc7);
             }
-                #unit {
+                .${WT_NavDataFieldView.UNIT_CLASS} {
                     font-size: var(--navdatafield-unit-font-size, 0.75em);
                 }
     </style>
     <div id="wrapper">
         <div id="title"></div>
         <div id="value">
-            <span id="number"></span><span id="unit"></span>
         </div>
     </div>
 `;
