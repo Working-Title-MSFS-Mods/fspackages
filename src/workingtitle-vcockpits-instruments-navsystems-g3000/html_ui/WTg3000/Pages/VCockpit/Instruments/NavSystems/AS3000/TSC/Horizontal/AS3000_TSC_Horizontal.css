@@ -284,7 +284,8 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings tsc-pfdset
         --pfdsettings-row-right-width: 60%;
     }
 
-as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-mapsettings {
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-pfdmapsettings,
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapsettings {
     width: 100%;
     height: 100%;
     font-size: 4vh;
@@ -1169,6 +1170,7 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys {
         }
         as3000-tsc-horizontal-element #Electricity #SoftKeys .softkeyContainer .softkey {
             position: absolute;
+            width: 100%;
             top: 50%;
             transform: translateY(-50%);
             color: black;
