@@ -207,6 +207,10 @@ class WT_MapViewWaypointCanvasRenderer {
      * @returns {Boolean} whether the waypoint is registered with this renderer.
      */
     isRegistered(waypoint, context) {
+        if (!waypoint) {
+            return false;
+        }
+
         let entry = this._registered.get(waypoint.uniqueID);
         if (!entry) {
             return false;
@@ -226,7 +230,7 @@ class WT_MapViewWaypointCanvasRenderer {
      * @param {Number} context - the context(s) under which the waypoint should be registered.
      */
     register(waypoint, context) {
-        if (context === 0) {
+        if (!waypoint || context === 0) {
             return;
         }
 
@@ -258,6 +262,10 @@ class WT_MapViewWaypointCanvasRenderer {
      * @param {Number} context - the context(s) from which the waypoint should be deregistered.
      */
     deregister(waypoint, context) {
+        if (!waypoint) {
+            return;
+        }
+
         let entry = this._registered.get(waypoint.uniqueID);
         if (!entry) {
             return;
