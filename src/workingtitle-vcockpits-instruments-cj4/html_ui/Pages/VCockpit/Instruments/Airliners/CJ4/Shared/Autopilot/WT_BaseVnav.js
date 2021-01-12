@@ -150,6 +150,14 @@ class WT_BaseVnav {
         return SimVar.GetSimVarValue("PLANE ALTITUDE", "Feet");
     }
 
+    get vnavState() {
+        return this._vnavState;
+    }
+
+    set vnavState(value) {
+        this._vnavState = value;
+    }
+
 
 
     /**
@@ -185,12 +193,10 @@ class WT_BaseVnav {
                 switch(this._vnavState) {
                     case VnavState.NONE:
                     case VnavState.PATH:
-                        this.setVnavState(this.buildVerticalFlightPlan());
+                        this.vnavState = this.buildVerticalFlightPlan();
                         break;
                     case VnavState.DIRECT:
-                        const directWaypoint = this.allWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident) });
-                        const directWaypointIndex = this.allWaypoints.indexOf(directWaypoint);
-                        this.activateVerticalDirectTo(directWaypointIndex, this._verticalDirectWaypoint.waypointFPTA);
+                        this.reactivateVerticalDirect();
                 }
                 if (this._fpm.isLoadedApproach()) {
                     this._approachGlidePath = this.buildGlidepath();
@@ -211,15 +217,37 @@ class WT_BaseVnav {
         return undefined;
     }
 
-    setVnavState(state = VnavState.NONE) {
-        this._vnavState = state;
-    }
-
-    activateVerticalDirectTo(targetIndex, altitude) {
+    activateVerticalDirect(targetIndex, altitude) {
+        for (let i = this.flightplan.activeWaypointIndex; i < targetIndex; i++) {
+            this.allWaypoints[i].legAltitudeDescription = 0;
+        }
         const distanceToTarget = this.allWaypoints[targetIndex].cumulativeDistanceInFP - this._currentDistanceInFP;
         const descentRequired = this.indicatedAltitude - altitude;
         const fpa = AutopilotMath.calculateFPA(descentRequired, distanceToTarget);
-        setVnavState(buildVerticalFlightPlan(true, targetIndex, altitude, fpa));
+        this.vnavState = this.buildVerticalFlightPlan(true, targetIndex, altitude, fpa);
+    }
+
+    reactivateVerticalDirect() {
+        const directWaypoint = this.allWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident) });
+        if (directWaypoint) {
+            const directWaypointIndex = this.allWaypoints.indexOf(directWaypoint);
+            let constraintAddedBeforeDirectWaypoint = false;
+            for (let i = this.flightplan.activeWaypointIndex; i < directWaypointIndex; i++) {
+                if (this.allWaypoints[i].legAltitudeDescription > 0) {
+                    constraintAddedBeforeDirectWaypoint = true;
+                    break;
+                }
+            }
+            if (constraintAddedBeforeDirectWaypoint) {
+                this._verticalDirectWaypoint = undefined;
+                this.vnavState = this.buildVerticalFlightPlan();
+            } else {
+                this.activateVerticalDirect(directWaypointIndex, this._verticalDirectWaypoint.waypointFPTA);
+            }
+        } else {
+            this._verticalDirectWaypoint = undefined;
+            this.vnavState = this.buildVerticalFlightPlan();
+        }
     }
 
     cancelVerticalDirectTo() {
@@ -263,6 +291,7 @@ class WT_BaseVnav {
                     case vDirectTargetIndex:
                         vwp.upperConstraintAltitude = vDirectAltitude;
                         vwp.lowerConstraintAltitude = vDirectAltitude;
+                        vwp.waypointFPTA = vDirectAltitude;
                         vwp.isAtConstraint = true;
                         this._verticalDirectWaypoint = vwp;
                         break;
@@ -279,28 +308,21 @@ class WT_BaseVnav {
         this._verticalFlightPlanSegments = [];
         let segment = 0;
         let nextSegmentEndIndex = undefined;
+        let verticalDirectSegmentCreated = false;
         for (let j = waypointCount - 1; j > lastClimbIndex; j--) { //Build Path Segments
             console.log("j: " + j + " ident: " + this._verticalFlightPlan[j].ident + " segment: " + this._verticalFlightPlan[j].segment + " FPTA: " + this._verticalFlightPlan[j].waypointFPTA);
-            if (this._verticalFlightPlanSegments[segment - 1] && j >= this._verticalFlightPlanSegments[segment - 1].startIndex) {
+            if (verticalDirectSegmentCreated || (this._verticalFlightPlanSegments[segment - 1] && j >= this._verticalFlightPlanSegments[segment - 1].startIndex)) {
                 console.log("skipping j: " + j);
             }
-            // if (verticalDirect && j === vDirectTargetIndex) {
-            //     console.log("building segment DIRECT: " + segment);
-            //     this._verticalFlightPlan[j].waypointFPTA = this._verticalFlightPlan[j].lowerConstraintAltitude;
-            //     this._verticalFlightPlanSegments.push(this.buildVerticalSegment(segment, j, vDirectFpa));
-            //     //j = 1 + this._verticalFlightPlanSegments[segment].segmentStartIndex;
-            //     segment++;
-            // }
-            // else if (segment === 0 && this._verticalFlightPlan[j].isAtConstraint && this._verticalFlightPlan[j].segment === undefined) { //Segments ex
-            //     console.log("building segment === 0: " + segment);
-            //     this._verticalFlightPlan[j].waypointFPTA = this._verticalFlightPlan[j].lowerConstraintAltitude;
-            //     this._verticalFlightPlanSegments.push(this.buildVerticalSegment(segment, j));
-            //     //j = 1 + this._verticalFlightPlanSegments[segment].segmentStartIndex;;
-            //     segment++;
-            // }
+            else if (verticalDirect && j === vDirectTargetIndex) {
+                console.log("building segment DIRECT: " + segment);
+                this._verticalFlightPlan[j].waypointFPTA = this._verticalFlightPlan[j].lowerConstraintAltitude;
+                this._verticalFlightPlanSegments.push(this.buildVerticalSegment(segment, j, vDirectFpa));
+                segment = segment + 1;
+                verticalDirectSegmentCreated = true;
+            }
             else if (!this._verticalFlightPlan[j].segment && this._verticalFlightPlan[j].waypointFPTA) {
                 this._verticalFlightPlanSegments.push(this.buildVerticalSegment(segment, j));
-                //j = 1 + this._verticalFlightPlanSegments[segment].segmentStartIndex;
                 segment = segment + 1;
             }
         }
