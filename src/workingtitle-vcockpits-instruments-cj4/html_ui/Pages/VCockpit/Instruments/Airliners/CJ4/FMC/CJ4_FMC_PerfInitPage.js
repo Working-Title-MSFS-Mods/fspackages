@@ -80,6 +80,7 @@ class CJ4_FMC_PerfInitPage {
         ]);
         fmc.onRightInput[0] = () => {
             let value = fmc.inOut;
+            value = value.replace(/^F(\d{1,3})/, "FL$1")
             if (fmc.setCruiseFlightLevelAndTemperature(value)) {
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
