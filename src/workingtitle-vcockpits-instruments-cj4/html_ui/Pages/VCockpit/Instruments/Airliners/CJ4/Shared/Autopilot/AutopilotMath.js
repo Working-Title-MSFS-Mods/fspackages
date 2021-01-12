@@ -185,7 +185,7 @@ class AutopilotMath {
    * @returns {number} The FPA in degrees.
    */
   static calculateFPA(verticalDistance, lateralDistance) {
-    return (180 / Math.PI) * (Math.atan(verticalDistance / (lateralDistance * 6076.12)));
+    return (180 / Math.PI) * (Math.atan(Math.abs(verticalDistance) / (lateralDistance * 6076.12)));
   }
 
   /**
