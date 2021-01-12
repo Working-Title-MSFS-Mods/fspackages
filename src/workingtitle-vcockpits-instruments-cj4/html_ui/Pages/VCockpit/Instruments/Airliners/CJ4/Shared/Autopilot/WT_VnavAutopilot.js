@@ -51,6 +51,12 @@ class WT_VerticalAutopilot {
         */
         this._targetAltitude = undefined;
 
+        /**
+        * The index of the waypoint we are continuing a descent through.
+        * @type {number}
+        */
+        this._continuousIndex = undefined;
+
     }
 
     get vnavState() {
@@ -74,11 +80,11 @@ class WT_VerticalAutopilot {
     }
 
     get altSet1() {
-        return this._navModeSelector.altSet1;
+        return this._navModeSelector.selectedAlt1;
     }
 
     get altSet2() {
-        return this._navModeSelector.altSet2;
+        return this._navModeSelector.selectedAlt2;
     }
 
     set altSet2(value) {
@@ -188,6 +194,10 @@ class WT_VerticalAutopilot {
         return this._navModeSelector.vPathState;
     }
 
+    set modeSelectorPathStatus(value) {
+        this._navModeSelector.vPathState = value;
+    }
+
     get modeSelectorGlidepathStatus() {
         return this._navModeSelector.glidepathState;
     }
@@ -223,8 +233,8 @@ class WT_VerticalAutopilot {
                 break;
             case VnavPathStatus.PATH_EXISTS:
                 if (this.canPathArm()) {
+                    console.log("path arm");
                     this._vnavPathStatus = VnavPathStatus.PATH_ARMED;
-                    this.fmaVerticalArmedState = VerticalNavModeState.PATH;
                 } else {this.checkPreselector;}
                 break;
             case VnavPathStatus.PATH_ARMED:
@@ -232,7 +242,9 @@ class WT_VerticalAutopilot {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     break;
                 }
+                this.setFmaVerticalArmedState();
                 if (this.canPathActivate()) {
+                    console.log("path activate");
                     this._vnavPathStatus = VnavPathStatus.PATH_ACTIVE;
                     this.fmaVerticalActiveState = VerticalNavModeState.PATH;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
@@ -246,7 +258,8 @@ class WT_VerticalAutopilot {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     break;
                 }
-                this.followPath()
+                this.followPath();
+                this.setFmaVerticalArmedState();
                 break;
         }
 
@@ -298,6 +311,19 @@ class WT_VerticalAutopilot {
         this.monitorValues();
     }
 
+    setFmaVerticalArmedState() {
+        if (this._vnavPathStatus === VnavPathStatus.PATH_ARMED) {
+            this.fmaVerticalArmedState = VerticalNavModeState.PATH;
+        }
+        if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
+            if (Math.floor(this.altSet1) >= this.targetAltitude) {
+                this.fmaVerticalArmedState = VerticalNavModeState.ALTS;
+            } else {
+                this.fmaVerticalArmedState = VerticalNavModeState.ALTV;
+            }
+        }
+    }
+
     updateNavModeSelector() {
         if (this.modeSelectorPathStatus !== this._vnavPathStatus) {
             switch(this._vnavPathStatus) {
@@ -335,21 +361,28 @@ class WT_VerticalAutopilot {
     }
 
     canPathArm() {
+        
         switch(this.isVNAVOn) {
             case false:
                 break;
             case true:
+                // console.log("path arm - vnav on");
                 const distance = this._vnav.getDistanceToTarget();
                 const altitudeDifference = this.indicatedAltitude - this._vnav.getTargetAltitude();
                 const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
                 const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
-                if (this.path.deviation <= 1000 && altitudeDifference > 100
-                    && this.verticalSpeed > reqVs && this.altSet1 < this.indicatedAltitude + 100) {
+                // console.log ("dist " + distance + " dev: " + altitudeDifference + " fpa: " + requiredFpa + " reqvs: " + reqVs);
+                // console.log("this.path.deviation: " + this.path.deviation + " altset1: " + this.altSet1);
+                if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
+                    && this.verticalSpeed > reqVs && this.altSet1 < this.indicatedAltitude - 100) {
+                    console.log("normal path arming");
                     return true;
-                } else if (this.path.deviation > 1000 && this.altSet1 < this.indicatedAltitude + 100) {
+                } else if (this.path.deviation > 1000 && this.altSet1 < this.indicatedAltitude - 100) {
                     if (this.verticalSpeed < reqVs) {
+                        console.log("above path arming");
                         return true;
                     } else {
+                        console.log("no path");
                         this.fmaVerticalArmedState = VerticalNavModeState.NOPATH;
                     }
                 }
@@ -358,6 +391,7 @@ class WT_VerticalAutopilot {
     }
 
     canPathActivate() {
+        console.log("can path activate running");
         if (this.path.deviation < 1000 && this.path.deviation > -300) {
             return true;
         }
@@ -379,6 +413,9 @@ class WT_VerticalAutopilot {
     checkVnavState() {
         switch(this.vnavState) {
             case this._vnavState:
+                if (this._vnavState === VnavState.PATH && this._vnavPathStatus === VnavPathStatus.NONE) {
+                    this._vnavPathStatus = VnavPathStatus.PATH_EXISTS;
+                }
                 break;
             case VnavState.PATH:
             case VnavState.DIRECT:
@@ -395,7 +432,7 @@ class WT_VerticalAutopilot {
     }
 
     checkGlidepathStatus() {
-        const gp = this.glidepath != undefined && this.glidepath > 0;
+        const gp = this.glidepath && this.glidepath.fpa !== undefined && this.glidepath.fpa > 0;
         switch(this._glidepathStatus) {
             case GlidepathStatus.NONE:
                 if (gp) {
@@ -418,7 +455,6 @@ class WT_VerticalAutopilot {
             case PathInterceptStatus.INTERCEPTING:
                 this.setManagedAltitude();
             case PathInterceptStatus.INTERCEPTED:
-            case PathInterceptStatus.CONTINUOUS:
                 if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
                     if (this.altSlot !== AltitudeSlot.MANAGED) {
                         this.altSlot = AltitudeSlot.MANAGED;
@@ -427,14 +463,24 @@ class WT_VerticalAutopilot {
                     if (this.altSlot !== AltitudeSlot.SELECTED) {
                         this.altSlot = AltitudeSlot.SELECTED;
                     }
-                    if (this.currentSegment.distanceToNextTod < 1) {
+                    if (this.currentSegment.distanceToNextTod < 1 && this._pathInterceptStatus === PathInterceptStatus.INTERCEPTED) {
                         this._pathInterceptStatus = PathInterceptStatus.CONTINUOUS;
+                        this._continuousIndex = this._vnav.flightplan.activeWaypointIndex;
                     }
                     else if (this.indicatedAltitude < this.targetAltitude + 500) {
                         this.altSet2 = this.targetAltitude;
                         this.altSlot = AltitudeSlot.MANAGED;
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
                     } 
+                }
+                break;
+            case PathInterceptStatus.CONTINUOUS:
+                if (this._continuousIndex != this._vnav.flightplan.activeWaypointIndex) {
+                    this._pathInterceptStatus = PathInterceptStatus.NONE;
+                    this._continuousIndex = undefined;
+                }
+                if (this.altSlot !== AltitudeSlot.SELECTED) {
+                    this.altSlot = AltitudeSlot.SELECTED;
                 }
                 break;
             case PathInterceptStatus.LEVELING:
@@ -452,6 +498,7 @@ class WT_VerticalAutopilot {
     }
 
     interceptPath(fpa) {
+        console.log("interceptPath - status: " + this._pathInterceptStatus);
         switch(this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
                 const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
@@ -465,7 +512,11 @@ class WT_VerticalAutopilot {
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
                 this.vsSlot2Value = this.verticalSpeed;
                 this.vsSlot = 2;
-                this.updateNavModeSelector();
+                this.modeSelectorPathStatus = VnavPathStatus.PATH_ACTIVE;
+                this.altSlot = AltitudeSlot.SELECTED;
+                this._navModeSelector.queueEvent(NavModeEvent.PATH_ACTIVE);
+                console.log("switched to PATH");
+                //this.updateNavModeSelector();
                 break;
             case PathInterceptStatus.INTERCEPTING:
                 let now = performance.now();
@@ -492,9 +543,11 @@ class WT_VerticalAutopilot {
     followPath() {
         switch(this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
+                console.log("starting intercept");
                 this.targetAltitude = this.path.fpta;
                 this.manageAltitude();
             case PathInterceptStatus.INTERCEPTING:
+                console.log("sending fpa for intercept " + this.path.fpa);
                 this.interceptPath(this.path.fpa);
                 break;
             case PathInterceptStatus.INTERCEPTED:
@@ -527,6 +580,7 @@ class WT_VerticalAutopilot {
         const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
         const maxVerticalSpeed = -1 * AutopilotMath.calculateVerticaSpeed(6, this.groundSpeed);
         const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
+        this.setDonut(desiredVerticalSpeed);
         
         if (deviation > 10) {
             const correction = Math.min(Math.max((2.1 * deviation), 100), maxCorrection);
