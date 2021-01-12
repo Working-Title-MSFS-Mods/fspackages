@@ -95,12 +95,12 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.VNAV_PRESSED}`]: this.handleVNAVPressed.bind(this),
       [`${NavModeEvent.ALT_LOCK_CHANGED}`]: this.handleAltLockChanged.bind(this),
       [`${NavModeEvent.ALT_CAPTURED}`]: this.handleAltCaptured.bind(this),
-      [`${NavModeEvent.PATH_NONE}`]: this.handleVPathChanged(NavModeEvent.PATH_NONE).bind(this),
-      [`${NavModeEvent.PATH_ARM}`]: this.handleVPathChanged(NavModeEvent.PATH_ARM).bind(this),
-      [`${NavModeEvent.PATH_ACTIVE}`]: this.handleVPathChanged(NavModeEvent.PATH_ACTIVE).bind(this),
-      [`${NavModeEvent.GP_NONE}`]: this.handleGlidepathChanged(NavModeEvent.GP_NONE).bind(this),
-      [`${NavModeEvent.GP_ARM}`]: this.handleGlidepathChanged(NavModeEvent.GP_ARM).bind(this),
-      [`${NavModeEvent.GP_ACTIVE}`]: this.handleGlidepathChanged(NavModeEvent.GP_ACTIVE).bind(this),
+      // [`${NavModeEvent.PATH_NONE}`]: this.handleVPathChanged(NavModeEvent.PATH_NONE).bind(this),
+      // [`${NavModeEvent.PATH_ARM}`]: this.handleVPathChanged(NavModeEvent.PATH_ARM).bind(this),
+      [`${NavModeEvent.PATH_ACTIVE}`]: this.handleVPathChanged.bind(this),
+      // [`${NavModeEvent.GP_NONE}`]: this.handleGlidepathChanged(NavModeEvent.GP_NONE).bind(this),
+      // [`${NavModeEvent.GP_ARM}`]: this.handleGlidepathChanged(NavModeEvent.GP_ARM).bind(this),
+      // [`${NavModeEvent.GP_ACTIVE}`]: this.handleGlidepathChanged(NavModeEvent.GP_ACTIVE).bind(this),
       [`${NavModeEvent.ALT_SLOT_CHANGED}`]: this.handleAltSlotChanged.bind(this),
       [`${NavModeEvent.SELECTED_ALT1_CHANGED}`]: this.handleAlt1Changed.bind(this),
       [`${NavModeEvent.SELECTED_ALT2_CHANGED}`]: this.handleAlt2Changed.bind(this),
@@ -210,7 +210,8 @@ class CJ4NavModeSelector {
       verticalArmed2: this.currentVerticalArmedStates[1]
     };
 
-    WTDataStore.set('CJ4_fmaValues', JSON.stringify(fmaValues));
+    //WTDataStore.set('CJ4_fmaValues', JSON.stringify(fmaValues));
+    localStorage.setItem("CJ4_fmaValues", JSON.stringify(fmaValues));
   }
 
   /**
@@ -450,13 +451,13 @@ class CJ4NavModeSelector {
 
     //Prevent sim from changing to alt slot 1 automatically if we're trying to drive via
     //VNAV and PATH
-    if (this.currentAltSlotIndex === 1 && this.vPathState === VnavPathStatus.PATH_ACTIVE && (this.isVNAVOn === true || this.currentVerticalActiveState === VerticalNavModeState.GP)) {
-      console.log("alt slot changed to 2 for path");
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-      this.currentAltSlotIndex = 2;
-    }
+    // if (this.currentAltSlotIndex === 1 && this.vPathState === VnavPathStatus.PATH_ACTIVE && (this.isVNAVOn === true || this.currentVerticalActiveState === VerticalNavModeState.GP)) {
+    //   console.log("alt slot changed to 2 for path");
+    //   SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+    //   this.currentAltSlotIndex = 2;
+    // }
 
-    this.setProperVerticalArmedStates();
+    // this.setProperVerticalArmedStates();
   }
 
   /**
@@ -559,46 +560,46 @@ class CJ4NavModeSelector {
     this.currentVerticalArmedStates = [];
 
     if (state === undefined) {
+      const selectVerticalArmedModeBySlot = () => {
 
+        if (this.currentAltSlotIndex == 1) {
+          this.pushVerticalArmedMode(VerticalNavModeState.ALTS);
+        }
+        else if (this.currentAltSlotIndex == 2) {
+          if (Math.round(this.selectedAlt1) === Math.round(this.selectedAlt2)) {
+            this.pushVerticalArmedMode(VerticalNavModeState.ALTS);
+          }
+          else {
+            this.pushVerticalArmedMode(VerticalNavModeState.ALTV);
+          }
+        }
+      };
+  
+      if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
+        if (!this.isAltitudeLocked) {
+          //if (this.vPathState === VnavPathStatus.PATH_ACTIVE || (this.currentVerticalActiveState === VerticalNavModeState.FLC || this.currentVerticalActiveState === VerticalNavModeState.VS)) {
+          if (this.isVNAVOn && this.vPathState !== VnavPathStatus.PATH_ACTIVE) {
+            selectVerticalArmedModeBySlot();
+          }
+        }
+    
+        if (this.vPathState === VnavPathStatus.PATH_ARMED) {
+          this.pushVerticalArmedMode(VerticalNavModeState.PATH);
+        }
+        else if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
+          this.pushVerticalArmedMode(VerticalNavModeState.NOPATH);
+        }
+      }
+      
+      if (this.currentLateralActiveState === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.RNAV
+        && this.glidepathState === GlidepathStatus.GP_ARMED) {
+        this.currentVerticalArmedStates = [VerticalNavModeState.GP];
+      }
+  
     } else {
       this.pushVerticalArmedMode(state);
     }
 
-    const selectVerticalArmedModeBySlot = () => {
-
-      if (this.currentAltSlotIndex == 1) {
-        this.pushVerticalArmedMode(VerticalNavModeState.ALTS);
-      }
-      else if (this.currentAltSlotIndex == 2) {
-        if (Math.round(this.selectedAlt1) === Math.round(this.selectedAlt2)) {
-          this.pushVerticalArmedMode(VerticalNavModeState.ALTS);
-        }
-        else {
-          this.pushVerticalArmedMode(VerticalNavModeState.ALTV);
-        }
-      }
-    };
-
-    if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
-      if (!this.isAltitudeLocked) {
-        //if (this.vPathState === VnavPathStatus.PATH_ACTIVE || (this.currentVerticalActiveState === VerticalNavModeState.FLC || this.currentVerticalActiveState === VerticalNavModeState.VS)) {
-        if (this.isVNAVOn && this.vPathState !== VnavPathStatus.PATH_ACTIVE) {
-          selectVerticalArmedModeBySlot();
-        }
-      }
-  
-      if (this.vPathState === VnavPathStatus.PATH_ARMED) {
-        this.pushVerticalArmedMode(VerticalNavModeState.PATH);
-      }
-      else if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
-        this.pushVerticalArmedMode(VerticalNavModeState.NOPATH);
-      }
-    }
-    
-    if (this.currentLateralActiveState === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.RNAV
-      && this.glidepathState === GlidepathStatus.GP_ARMED) {
-      this.currentVerticalArmedStates = [VerticalNavModeState.GP];
-    }
   }
 
   /**
@@ -979,42 +980,42 @@ class CJ4NavModeSelector {
   /**
    * Handles when the VPath state changes.
    */
-  handleVPathChanged(change) {
+  handleVPathChanged() {
     
-    switch(change) {
-      case NavModeEvent.PATH_NONE:
-        this.vPathState = VnavPathStatus.NONE;
-        break;
-      case NavModeEvent.PATH_ARM:
-        this.vPathState = VnavPathStatus.PATH_ARMED;
-        break;
-      case NavModeEvent.PATH_ACTIVE:
-        this.vPathState = VnavPathStatus.PATH_ACTIVE;
-        break;
+    // switch(change) {
+    //   case NavModeEvent.PATH_NONE:
+    //     this.vPathState = VnavPathStatus.NONE;
+    //     break;
+    //   case NavModeEvent.PATH_ARM:
+    //     this.vPathState = VnavPathStatus.PATH_ARMED;
+    //     break;
+    //   case NavModeEvent.PATH_ACTIVE:
+    //     this.vPathState = VnavPathStatus.PATH_ACTIVE;
+    //     break;
 
-    }
+    // }
 
     switch(this.vPathState) {
       case VnavPathStatus.NONE:
-        if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
-          SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-        }
-        if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-        }
-        if (!this.isVNAVOn && this.currentVerticalActiveState != VerticalNavModeState.ALT && this.currentVerticalActiveState != VerticalNavModeState.ALTC) {
-          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-        }
-        this.setProperVerticalArmedStates();
+        // if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") == 2) {
+        //   SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+        // }
+        // if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
+        //   SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+        // }
+        // if (!this.isVNAVOn && this.currentVerticalActiveState != VerticalNavModeState.ALT && this.currentVerticalActiveState != VerticalNavModeState.ALTC) {
+        //   SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        // }
+        // this.setProperVerticalArmedStates();
         break;
       case VnavPathStatus.PATH_ARMED:
-        this.setProperVerticalArmedStates(VerticalNavModeState.PATH);
+        // this.setProperVerticalArmedStates(VerticalNavModeState.PATH);
         break;
       case VnavPathStatus.PATH_ACTIVE:
         if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
           SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
         }
-        this.setProperVerticalArmedStates();
+        // this.setProperVerticalArmedStates();
         break;
     }
   }
