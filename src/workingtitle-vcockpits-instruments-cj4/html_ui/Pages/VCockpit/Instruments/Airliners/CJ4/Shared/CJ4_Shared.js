@@ -2671,14 +2671,14 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         let activeWaypointETAValue = "--:--";
                         if (groundSpeed >= 50 && activeWaypointDistance > 0) {
-                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(destinationDistance, groundSpeed))) % 86400);
+                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(activeWaypointDistance, groundSpeed))) % 86400);
                             const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                             activeWaypointETAValue = time;
                         }
 
                         let nextWaypointETAValue = "--:--";
                         if (groundSpeed >= 50 && nextWaypointDistance > 0) {
-                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(destinationDistance, groundSpeed))) % 86400);
+                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(nextWaypointDistance, groundSpeed))) % 86400);
                             const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                             nextWaypointETAValue = time;
                         }
