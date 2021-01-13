@@ -1,12 +1,19 @@
 class CJ4_FMC_VNavSetupPage {
     static ShowPage1(fmc) { //VNAV SETUP Page 1
         fmc.clearDisplay();
+
+        let vnavClimbIas = WTDataStore.get('CJ4_vnavClimbIas', 240);
+        let vnavClimbMach = WTDataStore.get('CJ4_vnavClimbMach', 0.64);
+        let departureSpeedLimit = WTDataStore.get('CJ4_departureSpeedLimit', 250);
+        let departureSpeedLimitAltitude = WTDataStore.get('CJ4_departureSpeedLimitAltitude', 10000);
+        let departureTransitionAlt = WTDataStore.get('CJ4_departureTransitionAlt', 18000);
+
         fmc._templateRenderer.setTemplateRaw([
             [" ACT VNAV CLIMB[blue]", "1/3[blue]"],
             [" TGT SPEED[blue]", "TRANS ALT [blue]"],
-            ["240/.64", "18000"],
+            [vnavClimbMach + "/" + vnavClimbIas, "" + departureTransitionAlt],
             [" SPD/ALT LIMIT[blue]"],
-            ["250/10000"],
+            [departureSpeedLimit + "/" + departureSpeedLimitAltitude],
             [""],
             ["---/-----"],
             [""],
@@ -16,6 +23,58 @@ class CJ4_FMC_VNavSetupPage {
             ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
+
+        fmc.onLeftInput[0] = () => {
+            let value = fmc.inOut.split("/");
+            value[0] = parseFloat(value[0]).toPrecision(2);
+            value[1] = parseInt(value[1]);
+            if (value.length == 2 && value[0] >= 0.4 && value[0] <= 0.77 && value[1] >= 110 && value[1] <= 305) {
+                vnavClimbMach = value[0];
+                vnavClimbIas = value[1];
+                WTDataStore.set('CJ4_vnavClimbMach', vnavClimbMach);
+                WTDataStore.set('CJ4_vnavClimbIas', vnavClimbIas);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut.split("/");
+            value[0] = parseInt(value[0]);
+            value[1] = parseInt(value[1]);
+            if (value.length == 2 && value[0] > 0 && value[0] <= 305 && value[1] >= 0 && value[1] <= 45000) {
+                departureSpeedLimit = value[0];
+                departureSpeedLimitAltitude = value[1];
+                WTDataStore.set('CJ4_departureSpeedLimit', departureSpeedLimit);
+                WTDataStore.set('CJ4_departureSpeedLimitAltitude', departureSpeedLimitAltitude);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
+        fmc.onRightInput[0] = () => {
+            let value = parseInt(fmc.inOut);
+            if (value >= 0 && value <= 450) {
+                departureTransitionAlt = value * 100;
+                WTDataStore.set('CJ4_departureTransitionAlt', departureTransitionAlt);
+            }
+            else if (value > 450 && value <= 45000) {
+                departureTransitionAlt = value;
+                WTDataStore.set('CJ4_departureTransitionAlt', departureTransitionAlt);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
         fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage2(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
@@ -38,6 +97,7 @@ class CJ4_FMC_VNavSetupPage {
             ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
+        
         fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
