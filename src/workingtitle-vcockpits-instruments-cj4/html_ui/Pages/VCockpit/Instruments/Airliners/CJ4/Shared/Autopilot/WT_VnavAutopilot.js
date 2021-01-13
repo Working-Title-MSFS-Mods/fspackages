@@ -202,6 +202,10 @@ class WT_VerticalAutopilot {
         return this._navModeSelector.glidepathState;
     }
 
+    set modeSelectorGlidepathStatus(value) {
+        this._navModeSelector.glidepathState = value;
+    }
+
     set fmaVerticalArmedState(value) {
         this._navModeSelector.setProperVerticalArmedStates(value);
     }
@@ -512,11 +516,18 @@ class WT_VerticalAutopilot {
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
                 this.vsSlot2Value = this.verticalSpeed;
                 this.vsSlot = 2;
-                this.modeSelectorPathStatus = VnavPathStatus.PATH_ACTIVE;
-                this.altSlot = AltitudeSlot.SELECTED;
-                this._navModeSelector.queueEvent(NavModeEvent.PATH_ACTIVE);
-                console.log("switched to PATH");
-                //this.updateNavModeSelector();
+                if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
+                    this.modeSelectorPathStatus = VnavPathStatus.PATH_ACTIVE;
+                    this.altSlot = AltitudeSlot.SELECTED;
+                    this._navModeSelector.queueEvent(NavModeEvent.PATH_ACTIVE);
+                    console.log("switched to PATH");
+                }
+                else if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
+                    this.modeSelectorGlidepathStatus = GlidepathStatus.GP_ACTIVE;
+                    this.altSlot = AltitudeSlot.MANAGED;
+                    this._navModeSelector.queueEvent(NavModeEvent.GP_ACTIVE);
+                    console.log("switched to GP");
+                }
                 break;
             case PathInterceptStatus.INTERCEPTING:
                 let now = performance.now();
