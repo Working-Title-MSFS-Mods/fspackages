@@ -329,8 +329,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._waypointsRendered.add(leg.fix);
         }
 
-        if (!previousEndpoint ||
-            (!projectionRenderer.isInViewBounds(leg.endpoint, bounds, 0.05) && !projectionRenderer.isInViewBounds(previousEndpoint, bounds, 0.05))) {
+        if (!previousEndpoint) {
             return;
         }
 

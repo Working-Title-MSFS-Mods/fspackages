@@ -92,9 +92,6 @@ class WT_MapViewDirectToCanvasRenderer {
         if (projectionRenderer.isInViewBounds(destination.location, bounds, 0.05)) {
             this._destinationRendered = destination;
         }
-        if (!this._originRendered && !this._destinationRendered) {
-            return;
-        }
 
         let geoJSON = {
             type: "LineString",
