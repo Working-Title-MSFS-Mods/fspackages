@@ -64,6 +64,9 @@ class CJ4NavModeSelector {
     /** The vnav managed altitude target. */
     this.managedAltitudeTarget = undefined;
 
+    /** The current AP target altitude type. */
+    this.currentAltitudeTracking = AltitudeState.SELECTED;
+
     /**
      * The queue of state change events to process.
      * @type {string[]}
@@ -520,50 +523,40 @@ class CJ4NavModeSelector {
    * Sets the proper armed vertical states.
    */
   setProperVerticalArmedStates(state = undefined) {
-
     this.currentVerticalArmedStates = [];
 
-    if (state === undefined) {
-      const selectVerticalArmedModeBySlot = () => {
-
-        if (this.currentAltSlotIndex == 1) {
-          this.pushVerticalArmedMode(VerticalNavModeState.ALTS);
-        }
-        else if (this.currentAltSlotIndex == 2) {
-          if (Math.round(this.selectedAlt1) === Math.round(this.selectedAlt2)) {
-            this.pushVerticalArmedMode(VerticalNavModeState.ALTS);
+    if (!this.altLocked && (this.currentVerticalActiveState === VerticalNavModeState.VS
+      || this.currentVerticalActiveState === VerticalNavModeState.FLC)) {
+        if (!this.isVNAVOn) {
+          if ((Simplane.getVerticalSpeed() > 0 && this.selectedAlt1 > Simplane.getAltitude())
+            || (Simplane.getVerticalSpeed() < 0 && this.selectedAlt1 < Simplane.getAltitude())) {
+            this.currentVerticalArmedStates.push(VerticalNavModeState.ALTS);
           }
-          else {
-            this.pushVerticalArmedMode(VerticalNavModeState.ALTV);
-          }
-        }
-      };
-  
-      if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
-        if (!this.isAltitudeLocked) {
-          //if (this.vPathState === VnavPathStatus.PATH_ACTIVE || (this.currentVerticalActiveState === VerticalNavModeState.FLC || this.currentVerticalActiveState === VerticalNavModeState.VS)) {
-          if (this.isVNAVOn && this.vPathState !== VnavPathStatus.PATH_ACTIVE) {
-            selectVerticalArmedModeBySlot();
+        } else {
+          switch(this.currentAltitudeTracking) {
+            case AltitudeState.SELECTED:
+              if ((Simplane.getVerticalSpeed() > 0 && this.selectedAlt1 > Simplane.getAltitude())
+                || (Simplane.getVerticalSpeed() < 0 && this.selectedAlt1 < Simplane.getAltitude())) {
+                this.currentVerticalArmedStates.push(VerticalNavModeState.ALTS);
+              }
+              break;
+            case AltitudeState.MANAGED:
+              this.currentVerticalArmedStates.push(VerticalNavModeState.ALTV);
+              break;
           }
         }
-    
-        if (this.vPathState === VnavPathStatus.PATH_ARMED) {
-          this.pushVerticalArmedMode(VerticalNavModeState.PATH);
-        }
-        else if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
-          this.pushVerticalArmedMode(VerticalNavModeState.NOPATH);
-        }
-      }
-      
-      if (this.currentLateralActiveState === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.RNAV
-        && this.glidepathState === GlidepathStatus.GP_ARMED) {
-        this.currentVerticalArmedStates = [VerticalNavModeState.GP];
-      }
-  
-    } else {
-      this.pushVerticalArmedMode(state);
     }
 
+    if (state !== undefined) {
+      this.currentVerticalArmedStates.push(state);
+    }
+    else if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+      if (this.glidepathState === GlidepathStatus.GP_ARMED) {
+        this.currentVerticalArmedStates.push(VerticalNavModeState.GP);
+      } else if (this.glidepathState === GlidepathStatus.GS_ARMED) {
+        this.currentVerticalArmedStates.push(VerticalNavModeState.GS);
+      }
+    }
   }
 
   /**
@@ -1032,9 +1025,11 @@ VerticalNavModeState.VS = 'VS';
 VerticalNavModeState.GS = 'GS';
 VerticalNavModeState.GP = 'GP';
 VerticalNavModeState.ALT = 'ALT';
-VerticalNavModeState.ALTC = 'ALTC';
+VerticalNavModeState.ALTCAP = 'ALT CAP';
 VerticalNavModeState.ALTS = 'ALTS';
+VerticalNavModeState.ALTSCAP = 'ALTS CAP';
 VerticalNavModeState.ALTV = 'ALTV';
+VerticalNavModeState.ALTVCAP = 'ALTV CAP';
 VerticalNavModeState.PATH = 'PATH';
 VerticalNavModeState.NOPATH = 'NOPATH';
 VerticalNavModeState.TO = 'TO';
@@ -1075,14 +1070,17 @@ NavModeEvent.GP_NONE = 'gp_none';
 NavModeEvent.GP_ARM = 'gp_arm';
 NavModeEvent.GP_ACTIVE = 'gp_active';
 
-
-
-
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';
 WT_ApproachType.ILS = 'ils';
 WT_ApproachType.RNAV = 'rnav';
 WT_ApproachType.VISUAL = 'visual';
+
+class AltitudeState { }
+AltitudeState.SELECTED = 'SELECTED';
+AltitudeState.MANAGED = 'MANAGED';
+AltitudeState.PRESSURE = 'PRESSURE';
+AltitudeState.NONE = 'NONE';
 
 class ValueStateTracker {
   constructor(valueGetter, handler) {
