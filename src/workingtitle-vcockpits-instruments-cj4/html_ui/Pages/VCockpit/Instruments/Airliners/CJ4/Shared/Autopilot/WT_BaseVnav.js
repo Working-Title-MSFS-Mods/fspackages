@@ -217,14 +217,17 @@ class WT_BaseVnav {
         return undefined;
     }
 
-    activateVerticalDirect(targetIndex, altitude) {
+    activateVerticalDirect(targetIndex, altitude, callback = EmptyCallback.Void) {
         for (let i = this.flightplan.activeWaypointIndex; i < targetIndex; i++) {
             this.allWaypoints[i].legAltitudeDescription = 0;
         }
+        this.allWaypoints[targetIndex].legAltitudeDescription = 1;
+        this.allWaypoints[targetIndex].legAltitude1 = altitude;
         const distanceToTarget = this.allWaypoints[targetIndex].cumulativeDistanceInFP - this._currentDistanceInFP;
-        const descentRequired = this.indicatedAltitude - altitude;
+        const descentRequired = 250 + this.indicatedAltitude - altitude;
         const fpa = AutopilotMath.calculateFPA(descentRequired, distanceToTarget);
         this.vnavState = this.buildVerticalFlightPlan(true, targetIndex, altitude, fpa);
+        callback();
     }
 
     reactivateVerticalDirect() {
@@ -232,6 +235,9 @@ class WT_BaseVnav {
         if (directWaypoint) {
             const directWaypointIndex = this.allWaypoints.indexOf(directWaypoint);
             let constraintAddedBeforeDirectWaypoint = false;
+            if (this.allWaypoints[directWaypointIndex].legAltitudeDescription <= 0) {
+                constraintAddedBeforeDirectWaypoint = true;
+            }
             for (let i = this.flightplan.activeWaypointIndex; i < directWaypointIndex; i++) {
                 if (this.allWaypoints[i].legAltitudeDescription > 0) {
                     constraintAddedBeforeDirectWaypoint = true;
@@ -259,6 +265,7 @@ class WT_BaseVnav {
         this._verticalFlightPlanVersion = this._fpm.CurrentFlightPlanVersion;
         this._verticalFlightPlan = [];
         this._atConstraints = [];
+        this._activeConstraint = { };
         const waypointCount = this.allWaypoints.length;
         let lastClimbIndex = 0;
         let firstApproachWaypointIndex = this.getFirstApproachWaypointIndex();
