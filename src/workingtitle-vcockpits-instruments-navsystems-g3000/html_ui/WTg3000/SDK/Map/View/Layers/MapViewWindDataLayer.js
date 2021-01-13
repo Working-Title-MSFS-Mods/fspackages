@@ -60,7 +60,7 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
                         #arrow {
                             fill: var(--arrow-color, white);
                         }
-                    #windSpeed {
+                    #windspeed {
                         margin: 0 0.25vh;
                     }
                         .windUnit {
@@ -78,7 +78,7 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
                 <svg xmlns="${Avionics.SVG.NS}" id="arrowbox" viewBox="0 0 50 50">
                     <path id="arrow" d="M25 2.5 L10.75 20 L19.75 20 L19.75 47.5 L30.25 47.5 L30.25 20 L39.25 20 Z"></path>
                 </svg>
-                <div id="windSpeed"></div>
+                <div id="windspeed"></div>
             </div>
             <div id="nodata">NO WIND DATA</div>
         `;
@@ -110,20 +110,20 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
         this._data = this.shadowRoot.querySelector(`#data`);
         this._arrowbox = this.shadowRoot.querySelector(`#arrowbox`);
         this._arrow = this.shadowRoot.querySelector(`#arrow`);
-        this._windSpeedText = this.shadowRoot.querySelector(`#windSpeed`);
+        this._windSpeedText = this.shadowRoot.querySelector(`#windspeed`);
         this._noData = this.shadowRoot.querySelector(`#nodata`);
     }
 
     _showArrow(value) {
-        if (value != this._isArrowVisible) {
+        if (value !== this._isArrowVisible) {
             this._arrow.style.display = value ? "inherit" : "none";
             this._isArrowVisible = value;
         }
     }
 
     _setNoData(value) {
-        if (value != this._isNoData) {
-            this._data.style.display = value ? "none" : "block";
+        if (value !== this._isNoData) {
+            this._data.style.display = value ? "none" : "grid";
             this._noData.style.display = value ? "block" : "none";
             this._isNoData = value;
         }
