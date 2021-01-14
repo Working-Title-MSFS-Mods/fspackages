@@ -349,6 +349,7 @@ class WT_VerticalAutopilot {
     }
 
     updateNavModeSelector(status = false) {
+        console.log("running updateNavModeSelector");
 
         switch(status) {
             case VnavPathStatus.PATH_ACTIVE:
@@ -621,19 +622,24 @@ class WT_VerticalAutopilot {
                 if (this.targetAltitude < this.altSet1) {
                     this.setManagedAltitude(this.targetAltitude);
                     this.currentAltitudeTracking = AltitudeState.MANAGED;
+                    console.log("vnav setConstraint setting MANAGED");
                     this._constraintStatus = ConstraintStatus.OBSERVING_CLIMB;
                     this._activeConstraintIndex = this.constraint.index;
+                    this._navModeSelector.setProperVerticalArmedStates();
                     return AltitudeSlot.MANAGED;
                 }
             } else {
                 if (this.targetAltitude > this.altSet1) {
                     this.setManagedAltitude(this.targetAltitude);
                     this.currentAltitudeTracking = AltitudeState.MANAGED;
+                    console.log("vnav setConstraint setting SELECTED");
                     this._constraintStatus = ConstraintStatus.OBSERVING_DESCENT;
                     this._activeConstraintIndex = this.constraint.index;
+                    this._navModeSelector.setProperVerticalArmedStates();
                     return AltitudeSlot.MANAGED;
                 }
             }
+            
         }
 
         const resumeClimb = () => {
@@ -641,9 +647,11 @@ class WT_VerticalAutopilot {
                 let speed = WTDataStore.get('CJ4_vnavClimbIas', 240);
                 this._navModeSelector.engageFlightLevelChange(speed);
                 this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.FLC;
+                this.currentAltitudeTracking = AltitudeState.SELECTED;
+                console.log("vnav resumeClimb setting SELECTED");
                 this._navModeSelector.setProperVerticalArmedStates(true);
                 this._navModeSelector.setProperVerticalArmedStates();
-                this.currentAltitudeTracking = AltitudeState.SELECTED;
+                
             }
             return AltitudeSlot.SELECTED;
         }
@@ -660,14 +668,22 @@ class WT_VerticalAutopilot {
                     newAltSlot = resumeClimb();
                 } else if (this.targetAltitude >= this.altSet1) {
                     newAltSlot = AltitudeSlot.SELECTED;
-                    this.currentAltitudeTracking = AltitudeState.SELECTED;
+                    if (this.currentAltitudeTracking !== AltitudeState.SELECTED) {
+                        this.currentAltitudeTracking = AltitudeState.SELECTED;
+                        console.log("vnav ConstraintStatus.OBSERVING_CLIMB setting SELECTED");
+                        this._navModeSelector.setProperVerticalArmedStates();
+                    }
                 } else if (this.targetAltitude < this.altSet1) {
                     newAltSlot = AltitudeSlot.MANAGED;
-                    this.currentAltitudeTracking = AltitudeState.MANAGED;
+                    if (this.currentAltitudeTracking !== AltitudeState.MANAGED) {
+                        this.currentAltitudeTracking = AltitudeState.MANAGED;
+                        console.log("vnav ConstraintStatus.OBSERVING_CLIMB setting MANAGED");
+                        this._navModeSelector.setProperVerticalArmedStates();
+                    }
                 }
-                if (this.VerticalNavModeState === VerticalNavModeState.ALTV && this.targetAltitude < this.altSet1) {
+                if (this._navModeSelector.currentVerticalActiveState === VerticalNavModeState.ALTV && this.targetAltitude < this.altSet1) {
                     this._navModeSelector.setProperVerticalArmedStates(true);
-                    this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.FLC, 0);
+                    this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.FLC, 1);
                     this.setDonut(0);
                 } else {
                     this.setDonut(0, true);
@@ -679,9 +695,13 @@ class WT_VerticalAutopilot {
                 } else if (this.targetAltitude <= this.altSet1) {
                     newAltSlot = AltitudeSlot.SELECTED;
                     this.currentAltitudeTracking = AltitudeState.SELECTED;
+                    console.log("vnav ConstraintStatus.OBSERVING_DESCENT setting SELECTED");
+
                 } else if (this.targetAltitude > this.altSet1) {
                     newAltSlot = AltitudeSlot.MANAGED;
                     this.currentAltitudeTracking = AltitudeState.MANAGED;
+                    console.log("vnav ConstraintStatus.OBSERVING_DESCENT setting MANAGED");
+
                 }
                 if (this.VerticalNavModeState === VerticalNavModeState.ALTV || this.VerticalNavModeState === VerticalNavModeState.ALTS) {
                     this.setDonut(0);

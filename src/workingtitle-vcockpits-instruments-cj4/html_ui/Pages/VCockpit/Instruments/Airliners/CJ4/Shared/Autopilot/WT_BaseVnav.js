@@ -73,13 +73,7 @@ class WT_BaseVnav {
          */
         this._pathExists = false;
 
-        /**
-         * The flight plan version from which the vertical flight plan built.
-         * @type {number}
-         */
-        this._verticalFlightPlanVersion = undefined;
-
-        /**
+         /**
          * The next constraint.
          * @type {object}
          */
@@ -108,6 +102,12 @@ class WT_BaseVnav {
          * @type {Array}
          */
         this._atConstraints = [];
+
+        /**
+         * The checksum to compare against the flight plan.
+         * @type {number}
+         */
+        this._fpChecksum = -1;
     }
 
     /**
@@ -189,7 +189,7 @@ class WT_BaseVnav {
             this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
             this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
 
-            if (this._verticalFlightPlanVersion != this._fpm.CurrentFlightPlanVersion) {
+            if (this._fpChecksum !== this.flightplan.checksum) {
                 this._activeConstraint = { };
                 this._atConstraints = [];
                 switch(this._vnavState) {
@@ -204,6 +204,8 @@ class WT_BaseVnav {
                     this._approachGlidePath = this.buildGlidepath();
 
                 } else {this._approachGlidePath = undefined;}
+
+                this._fpChecksum = this.flightplan.checksum;
             }
 
             this.manageConstraints();
@@ -264,7 +266,6 @@ class WT_BaseVnav {
     }
 
     buildVerticalFlightPlan(verticalDirect = false, vDirectTargetIndex, vDirectAltitude, vDirectFpa) {
-        this._verticalFlightPlanVersion = this._fpm.CurrentFlightPlanVersion;
         this._verticalFlightPlan = [];
         this._atConstraints = [];
         this._activeConstraint = { };
