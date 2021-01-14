@@ -94,7 +94,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", "REL [blue]"],
-            [this._freqMap.adf1.toFixed(0) + "[green]", "TCAS>[disabled]"],
+            [this._freqMap.adf1.toFixed(1) + "[green]", "TCAS>[disabled]"],
         ]);
     }
 
