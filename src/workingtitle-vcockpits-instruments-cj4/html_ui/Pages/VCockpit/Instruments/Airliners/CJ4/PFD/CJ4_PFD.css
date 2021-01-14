@@ -991,7 +991,11 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #VSpeeds text {
-    font-size: 22px;
+    font-size: 31px;
+}
+
+#VSpeeds text.subscript-vspeed {
+    font-size: 23px;
 }
 
 #Airspeed #CursorGroup text {
