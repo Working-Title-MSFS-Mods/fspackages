@@ -61,7 +61,7 @@ class HoldsDirector {
 
       const trackToHold = new LatLon(prevFixCoords.lat, prevFixCoords.long).finalBearingTo(new LatLon(fixCoords.lat, fixCoords.long));
 
-      if (this.state === HoldsDirectorState.NONE) {
+      if (this.state === HoldsDirectorState.NONE || this.state === HoldsDirectorState.EXITED) {
         switch (holdDetails.entryType) {
           case HoldEntry.Direct:
             this.state = HoldsDirectorState.ENTRY_DIRECT_INBOUND;
@@ -461,6 +461,25 @@ class HoldsDirector {
   }
 
   /**
+   * Checks whether the holds director is ready to accept a new hold fix
+   * or is curently entering the fix at the provided waypoint index.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if active, false otherwise. 
+   */
+  isReadyOrEntering(index) {
+    return this.state === HoldsDirectorState.NONE
+    || this.state === HoldsDirectorState.EXITED
+    || (
+      this.holdWaypointIndex === index
+        && (
+          this.state === HoldsDirectorState.ENTRY_TEARDROP_INBOUND
+          || this.state === HoldsDirectorState.ENTRY_PARALLEL_INBOUND
+          || this.state === HoldsDirectorState.ENTRY_DIRECT_INBOUND
+        )
+    );
+  }
+
+  /**
    * Whether or not the current waypoint index is in active hold.
    * @param {number} index The waypoint index to check against.
    * @returns {boolean} True if active, false otherwise.
@@ -516,30 +535,34 @@ class HoldsDirector {
    * Calculates the hold legs from the provided hold course and airspeed.
    * @param {LatLongAlt} holdFixCoords The coordinates of the hold fix.
    * @param {HoldDetails} holdDetails The details of the hold.
-   * @param {AircraftState} planeState The true course that the hold will be flown with.
    * @returns {LatLongAlt[]} The four hold corner positions calculated, clockwise starting with the hold fix coordinates, plus 2
    * parallel leg fixes.
    */
   static calculateHoldFixes(holdFixCoords, holdDetails) {
+    let holdCourse = holdDetails.holdCourse;
+    if (!holdDetails.isHoldCourseTrue) {
+        const magVar = GeoMath.getMagvar(holdFixCoords.lat, holdFixCoords.long);
+        holdCourse = GeoMath.removeMagvar(holdCourse, magVar);
+    }
 
-    const windComponents = AutopilotMath.windComponents(holdDetails.holdCourse, holdDetails.windDirection, holdDetails.windSpeed);
+    const windComponents = AutopilotMath.windComponents(holdCourse, holdDetails.windDirection, holdDetails.windSpeed);
     const turnRadius = AutopilotMath.turnRadius(holdDetails.speed + Math.abs(windComponents.crosswind), 25);
 
     const turnDirection = holdDetails.turnDirection === HoldTurnDirection.Right ? 1 : -1;
 
-    const outboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 90)), turnRadius * 2, 
-      holdFixCoords.lat, holdFixCoords.long);
-    
-    const outboundEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance,
-      outboundStart.lat, outboundStart.long);
-    
-    const inboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance,
+    const outboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 90)), turnRadius * 2,
       holdFixCoords.lat, holdFixCoords.long);
 
-    const parallelStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * -90)), 1, 
+    const outboundEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 180)), holdDetails.legDistance,
+      outboundStart.lat, outboundStart.long);
+
+    const inboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 180)), holdDetails.legDistance,
       holdFixCoords.lat, holdFixCoords.long);
-    
-    const parallelEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance, 
+
+    const parallelStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * -90)), 1,
+      holdFixCoords.lat, holdFixCoords.long);
+
+    const parallelEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 180)), holdDetails.legDistance,
       parallelStart.lat, parallelStart.long);
 
     return [holdFixCoords, outboundStart, outboundEnd, inboundStart, parallelStart, parallelEnd];

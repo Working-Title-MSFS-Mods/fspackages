@@ -156,6 +156,16 @@ class CJ4_FMC_DirectToPage {
                         CJ4_FMC_DirectToPage.ShowPage1(fmc, w);
                     }
                 });
+            } else if (onDirect) {
+                const wpt = fmc.flightPlanManager.getDirectToTarget();
+                const index = fmc.flightPlanManager.getAllWaypoints().indexOf(wpt);
+                fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                    fmc.flightPlanManager.activateDirectToByIndex(index, () => {
+                        fmc.activateRoute(true, () => {
+                            fmc.onLegs();
+                        });
+                    });
+                });
             } else if (directWaypoint) {
                 const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
                 fmc.ensureCurrentFlightPlanIsTemporary(() => {

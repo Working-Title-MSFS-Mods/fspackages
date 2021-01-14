@@ -101,7 +101,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
-            RegisterViewListener("JS_LISTENER_ATC");
+            // RegisterViewListener("JS_LISTENER_ATC");
 
             // RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
             // this.addEventListener("FlightStart", async function () {
@@ -159,6 +159,7 @@ class CJ4_FMC extends FMCMainDisplay {
                         this.copyAirwaySelections();
                         this._isRouteActivated = false;
                         this._activatingDirectToExisting = false;
+                        this._activatingDirectTo = false;
                         this.fpHasChanged = false;
                         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                         if (this.refreshPageCallback) {

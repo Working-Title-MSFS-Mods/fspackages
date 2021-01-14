@@ -106,7 +106,9 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <NoEntryPoint>true</NoEntryPoint>
     </Link>
-    <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetPath)" "$(SolutionDir)..\workingtitle-aircraft-cj4\SimObjects\Airplanes\Asobo_CJ4\panel"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FdGauge.cpp" />

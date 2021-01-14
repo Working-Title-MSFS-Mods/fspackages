@@ -163,7 +163,10 @@
 				<UPDATE_CODE>
 				(A:COM VOLUME:1, Number) (&gt;K:COM1_RECEIVE_SELECT)
 				(A:COM VOLUME:2, Number) (&gt;K:COM2_RECEIVE_SELECT)
-				(A:COM RECEIVE:1, Number) (A:COM RECEIVE:2, Number) ==  (&gt;K:COM_RECEIVE_ALL_SET)
+				(A:COM RECEIVE:1, Number) (A:COM RECEIVE:2, Number) == s0
+				l0 (A:COM RECEIVE ALL:0, Number) != if{
+					l0 (&gt;K:COM_RECEIVE_ALL_SET)
+				}
 				</UPDATE_CODE>
 			</UseTemplate>
 		</Component>

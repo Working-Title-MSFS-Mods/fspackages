@@ -12,6 +12,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.stripOffsetX = 0;
         this.speedMarkers = new Array();
         this.speedMarkersWidth = 50;
+        this.lineLength = 15;
         this.speedMarkersHeight = 50;
         this.graduationScrollPosX = 0;
         this.graduationScrollPosY = 0;
@@ -94,8 +95,6 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.vRSpeed = null;
         this.v2Speed = null;
         this.vXSpeed = null;
-        this.vRefSpeed = null;
-        this.vAppSpeed = null;
         this.graduationVLine = null;
         this.stripBorderSize = 0;
         this.stripOffsetX = 0;
@@ -358,12 +357,14 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             var speedMarkersPosY = 0;
             this.speedMarkersWidth = width;
             this.speedMarkersHeight = 70;
-            this.createSpeedMarker("V1", speedMarkersPosX, speedMarkersPosY, this.updateMarkerV1, 0.8, 0.9, "cyan", false);
-            this.createSpeedMarker("VR", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVR, 0.8, 0.9, "cyan", false);
-            this.createSpeedMarker("V2", speedMarkersPosX, speedMarkersPosY, this.updateMarkerV2, 0.8, 0.9, "cyan", false);
-            this.createSpeedMarker("VRF", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVRef, 0.8, 0.9, "cyan", false);
-            this.createSpeedMarker("VT", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVX, 0.8, 0.9, "cyan", false);
-            this.createSpeedMarker("VAP", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVApp, 0.8, 0.9, "cyan", false);
+            this.createSpeedMarker("1", speedMarkersPosX, speedMarkersPosY, this.updateMarkerV1, 0.8, 1.2, "cyan", false, [], 16, 0);
+            this.createSpeedMarker("R", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVR, 0.8, 1.2, "cyan", false, [], 22, 10);
+            this.createSpeedMarker("2", speedMarkersPosX, speedMarkersPosY, this.updateMarkerV2, 0.8, 1.2, "cyan", false, [], 35, 20);
+            this.createSpeedMarker("RF", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVRef, 0.8, 1.2, "cyan", false, [], 15, 0);
+            this.createSpeedMarker("T", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVX, 0.8, 1.2, "cyan", false, [], 45, 30);
+            this.createSpeedMarker("AP", speedMarkersPosX, speedMarkersPosY, this.updateMarkerVApp, 0.8, 1.2, "cyan", false, [], 15, 0);
+            this.createSpeedMarker("F15", speedMarkersPosX, speedMarkersPosY, this.updateMarkerFlaps15Marker, 0.8, 1.2, "white", false, [], 10, -4);
+            this.createSpeedMarker("F35", speedMarkersPosX, speedMarkersPosY, this.updateMarkerFlaps35Marker, 0.8, 1.2, "white", false, [], 10, -4);
             this.centerSVG.appendChild(this.stripsSVG);
             this.centerSVG.appendChild(this.speedMarkerSVG);
             this.centerSVG.appendChild(this.targetSpeedPointerSVG);
@@ -374,94 +375,149 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.vSpeedSVG = document.createElementNS(Avionics.SVG.NS, "g");
         this.vSpeedSVG.setAttribute("id", "VSpeeds");
         {
-            let speedX = posX - 62;
+            let speedX = posX - 45;
             let speedY = posY + height - 18;
-            let title = document.createElementNS(Avionics.SVG.NS, "text");
-            title.textContent = "V1";
-            title.setAttribute("x", speedX.toString());
-            title.setAttribute("y", speedY.toString());
-            title.setAttribute("fill", "white");
-            title.setAttribute("font-size", (this.fontSize * 0.8).toString());
-            title.setAttribute("font-family", "Roboto-Bold");
-            title.setAttribute("text-anchor", "start");
-            title.setAttribute("alignment-baseline", "central");
-            this.vSpeedSVG.appendChild(title);
+            this.titleV1V = document.createElementNS(Avionics.SVG.NS, "text");
+            this.titleV1V.textContent = "V";
+            this.titleV1V.setAttribute("x", speedX.toString());
+            this.titleV1V.setAttribute("y", speedY.toString());
+            this.titleV1V.setAttribute("fill", "white");
+            this.titleV1V.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.titleV1V.setAttribute("font-family", "Roboto-Bold");
+            this.titleV1V.setAttribute("text-anchor", "start");
+            this.titleV1V.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.titleV1V);
+
+            this.title1 = document.createElementNS(Avionics.SVG.NS, "text");
+            this.title1.textContent = "1";
+            this.title1.setAttribute("x", (speedX + 19).toString());
+            this.title1.setAttribute("y", (speedY + 1).toString());
+            this.title1.setAttribute("fill", "white");
+            this.title1.setAttribute("font-size", (this.fontSize * 0.5).toString());
+            this.title1.setAttribute("font-family", "Roboto-Bold");
+            this.title1.setAttribute("text-anchor", "start");
+            this.title1.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.title1);
+            this.title1.setAttribute("class", "subscript-vspeed");
+
             this.v1Speed = document.createElementNS(Avionics.SVG.NS, "text");
-            this.v1Speed.setAttribute("x", (speedX + 40).toString());
+            this.v1Speed.setAttribute("x", (speedX + 85).toString());
             this.v1Speed.setAttribute("y", speedY.toString());
-            this.v1Speed.setAttribute("fill", "cyan");
+            this.v1Speed.setAttribute("fill", "white");
             this.v1Speed.setAttribute("font-size", (this.fontSize * 0.8).toString());
             this.v1Speed.setAttribute("font-family", "Roboto-Bold");
-            this.v1Speed.setAttribute("text-anchor", "start");
+            this.v1Speed.setAttribute("text-anchor", "end");
             this.v1Speed.setAttribute("alignment-baseline", "central");
             this.vSpeedSVG.appendChild(this.v1Speed);
-            speedY -= 25;
-            title = document.createElementNS(Avionics.SVG.NS, "text");
-            title.textContent = "VR";
-            title.setAttribute("x", speedX.toString());
-            title.setAttribute("y", speedY.toString());
-            title.setAttribute("fill", "white");
-            title.setAttribute("font-size", (this.fontSize * 0.8).toString());
-            title.setAttribute("font-family", "Roboto-Bold");
-            title.setAttribute("text-anchor", "start");
-            title.setAttribute("alignment-baseline", "central");
-            this.vSpeedSVG.appendChild(title);
+            speedY -= 40;
+
+            this.titleVRV = document.createElementNS(Avionics.SVG.NS, "text");
+            this.titleVRV.textContent = "V";
+            this.titleVRV.setAttribute("x", speedX.toString());
+            this.titleVRV.setAttribute("y", speedY.toString());
+            this.titleVRV.setAttribute("fill", "white");
+            this.titleVRV.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.titleVRV.setAttribute("font-family", "Roboto-Bold");
+            this.titleVRV.setAttribute("text-anchor", "start");
+            this.titleVRV.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.titleVRV);
+
+            this.titleR = document.createElementNS(Avionics.SVG.NS, "text");
+            this.titleR.textContent = "R";
+            this.titleR.setAttribute("x", (speedX + 19).toString());
+            this.titleR.setAttribute("y", (speedY + 1).toString());
+            this.titleR.setAttribute("fill", "white");
+            this.titleR.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.titleR.setAttribute("font-family", "Roboto-Bold");
+            this.titleR.setAttribute("text-anchor", "start");
+            this.titleR.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.titleR);
+            this.titleR.setAttribute("class", "subscript-vspeed");
+
             this.vRSpeed = document.createElementNS(Avionics.SVG.NS, "text");
-            this.vRSpeed.setAttribute("x", (speedX + 40).toString());
+            this.vRSpeed.setAttribute("x", (speedX + 85).toString());
             this.vRSpeed.setAttribute("y", speedY.toString());
             this.vRSpeed.setAttribute("fill", "cyan");
             this.vRSpeed.setAttribute("font-size", (this.fontSize * 0.8).toString());
             this.vRSpeed.setAttribute("font-family", "Roboto-Bold");
-            this.vRSpeed.setAttribute("text-anchor", "start");
+            this.vRSpeed.setAttribute("text-anchor", "end");
             this.vRSpeed.setAttribute("alignment-baseline", "central");
             this.vSpeedSVG.appendChild(this.vRSpeed);
-            speedY -= 25;
-            title = document.createElementNS(Avionics.SVG.NS, "text");
-            title.textContent = "V2";
-            title.setAttribute("x", speedX.toString());
-            title.setAttribute("y", speedY.toString());
-            title.setAttribute("fill", "white");
-            title.setAttribute("font-size", (this.fontSize * 0.8).toString());
-            title.setAttribute("font-family", "Roboto-Bold");
-            title.setAttribute("text-anchor", "start");
-            title.setAttribute("alignment-baseline", "central");
-            this.vSpeedSVG.appendChild(title);
+            speedY -= 40;
+
+            this.titleV2V = document.createElementNS(Avionics.SVG.NS, "text");
+            this.titleV2V.textContent = "V";
+            this.titleV2V.setAttribute("x", speedX.toString());
+            this.titleV2V.setAttribute("y", speedY.toString());
+            this.titleV2V.setAttribute("fill", "white");
+            this.titleV2V.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.titleV2V.setAttribute("font-family", "Roboto-Bold");
+            this.titleV2V.setAttribute("text-anchor", "start");
+            this.titleV2V.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.titleV2V);
+
+            this.title2 = document.createElementNS(Avionics.SVG.NS, "text");
+            this.title2.textContent = "2";
+            this.title2.setAttribute("x", (speedX + 19).toString());
+            this.title2.setAttribute("y", (speedY + 2).toString());
+            this.title2.setAttribute("fill", "white");
+            this.title2.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.title2.setAttribute("font-family", "Roboto-Bold");
+            this.title2.setAttribute("text-anchor", "start");
+            this.title2.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.title2);
+            this.title2.setAttribute("class", "subscript-vspeed");
+
             this.v2Speed = document.createElementNS(Avionics.SVG.NS, "text");
-            this.v2Speed.setAttribute("x", (speedX + 40).toString());
+            this.v2Speed.setAttribute("x", (speedX + 85).toString());
             this.v2Speed.setAttribute("y", speedY.toString());
             this.v2Speed.setAttribute("fill", "cyan");
             this.v2Speed.setAttribute("font-size", (this.fontSize * 0.8).toString());
             this.v2Speed.setAttribute("font-family", "Roboto-Bold");
-            this.v2Speed.setAttribute("text-anchor", "start");
+            this.v2Speed.setAttribute("text-anchor", "end");
             this.v2Speed.setAttribute("alignment-baseline", "central");
             this.vSpeedSVG.appendChild(this.v2Speed);
-            speedY -= 25;
-            title = document.createElementNS(Avionics.SVG.NS, "text");
-            title.textContent = "VT";
-            title.setAttribute("x", speedX.toString());
-            title.setAttribute("y", speedY.toString());
-            title.setAttribute("fill", "white");
-            title.setAttribute("font-size", (this.fontSize * 0.8).toString());
-            title.setAttribute("font-family", "Roboto-Bold");
-            title.setAttribute("text-anchor", "start");
-            title.setAttribute("alignment-baseline", "central");
-            this.vSpeedSVG.appendChild(title);
+            speedY -= 40;
+
+            this.titleVTV = document.createElementNS(Avionics.SVG.NS, "text");
+            this.titleVTV.textContent = "V";
+            this.titleVTV.setAttribute("x", speedX.toString());
+            this.titleVTV.setAttribute("y", speedY.toString());
+            this.titleVTV.setAttribute("fill", "white");
+            this.titleVTV.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.titleVTV.setAttribute("font-family", "Roboto-Bold");
+            this.titleVTV.setAttribute("text-anchor", "start");
+            this.titleVTV.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.titleVTV);
+
+            this.titleT = document.createElementNS(Avionics.SVG.NS, "text");
+            this.titleT.textContent = "T";
+            this.titleT.setAttribute("x", (speedX + 19).toString());
+            this.titleT.setAttribute("y", (speedY + 1).toString());
+            this.titleT.setAttribute("fill", "white");
+            this.titleT.setAttribute("font-size", (this.fontSize * 1.5).toString());
+            this.titleT.setAttribute("font-family", "Roboto-Bold");
+            this.titleT.setAttribute("text-anchor", "start");
+            this.titleT.setAttribute("alignment-baseline", "central");
+            this.vSpeedSVG.appendChild(this.titleT);
+            this.titleT.setAttribute("class", "subscript-vspeed");
+
             this.vXSpeed = document.createElementNS(Avionics.SVG.NS, "text");
-            this.vXSpeed.setAttribute("x", (speedX + 40).toString());
+            this.vXSpeed.setAttribute("x", (speedX + 85).toString());
             this.vXSpeed.setAttribute("y", speedY.toString());
             this.vXSpeed.setAttribute("fill", "cyan");
             this.vXSpeed.setAttribute("font-size", (this.fontSize * 0.8).toString());
             this.vXSpeed.setAttribute("font-family", "Roboto-Bold");
-            this.vXSpeed.setAttribute("text-anchor", "start");
+            this.vXSpeed.setAttribute("text-anchor", "end");
             this.vXSpeed.setAttribute("alignment-baseline", "central");
             this.vSpeedSVG.appendChild(this.vXSpeed);
-            speedY -= 25;
+            /* speedY -= 25;
             title = document.createElementNS(Avionics.SVG.NS, "text");
             title.textContent = "VRF";
             title.setAttribute("x", speedX.toString());
             title.setAttribute("y", speedY.toString());
             title.setAttribute("fill", "white");
-            title.setAttribute("font-size", (this.fontSize * 0.8).toString());
+            title.setAttribute("font-size", (this.fontSize * 1.5).toString());
             title.setAttribute("font-family", "Roboto-Bold");
             title.setAttribute("text-anchor", "start");
             title.setAttribute("alignment-baseline", "central");
@@ -481,7 +537,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             title.setAttribute("x", speedX.toString());
             title.setAttribute("y", speedY.toString());
             title.setAttribute("fill", "white");
-            title.setAttribute("font-size", (this.fontSize * 0.8).toString());
+            title.setAttribute("font-size", (this.fontSize * 1.5).toString());
             title.setAttribute("font-family", "Roboto-Bold");
             title.setAttribute("text-anchor", "start");
             title.setAttribute("alignment-baseline", "central");
@@ -494,7 +550,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.vAppSpeed.setAttribute("font-family", "Roboto-Bold");
             this.vAppSpeed.setAttribute("text-anchor", "start");
             this.vAppSpeed.setAttribute("alignment-baseline", "central");
-            this.vSpeedSVG.appendChild(this.vAppSpeed);
+            this.vSpeedSVG.appendChild(this.vAppSpeed); */
         }
         this.rootGroup.appendChild(this.vSpeedSVG);
 
@@ -1646,9 +1702,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             var speedMarkersPosY = 0;
             this.speedMarkersWidth = width;
             this.speedMarkersHeight = 50;
-            this.createSpeedMarker("1", speedMarkersPosX, speedMarkersPosY, this.updateMarkerV1, 1.0, 1.0, "cyan");
-            this.createSpeedMarker("F", speedMarkersPosX, speedMarkersPosY, this.updateMarkerF);
-            this.createSpeedMarker("S", speedMarkersPosX, speedMarkersPosY, this.updateMarkerS);
+            this.createSpeedMarker("1", speedMarkersPosX, speedMarkersPosY, this.updateMarkerV1, 1.0, 1.0, "cyan", false, [], 16, 0);
+            this.createSpeedMarker("F", speedMarkersPosX, speedMarkersPosY, this.updateMarkerF, 1.0, 1.0, "cyan", false, [], 16, 0);
+            this.createSpeedMarker("S", speedMarkersPosX, speedMarkersPosY, this.updateMarkerS, 1.0, 1.0, "cyan", false, [], 16, 0);
             this.centerSVG.appendChild(this.stripsSVG);
             this.centerSVG.appendChild(this.cursorSVG);
             this.centerSVG.appendChild(this.speedTrendArrowSVG);
@@ -1684,7 +1740,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         this.rootSVG.appendChild(this.rootGroup);
         this.appendChild(this.rootSVG);
     }
-    createSpeedMarker(_text, _x, _y, _handler, _scale = 1.0, _textScale = 1.4, _color = "green", _bg = false, _params = []) {
+    createSpeedMarker(_text, _x, _y, _handler, _scale = 1.0, _textScale = 1.4, _color = "green", _bg = false, _params = [], lineLength, textOffset) {
         let svg = document.createElementNS(Avionics.SVG.NS, "svg");
         svg.setAttribute("id", _text + "_Marker");
         svg.setAttribute("x", _x.toString());
@@ -1696,10 +1752,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         let line = document.createElementNS(Avionics.SVG.NS, "line");
         line.setAttribute("x1", "0");
         line.setAttribute("y1", (offsetY + this.speedMarkersHeight * 0.5).toString());
-        line.setAttribute("x2", "15");
+        line.setAttribute("x2", lineLength.toString());
         line.setAttribute("y2", (offsetY + this.speedMarkersHeight * 0.5).toString());
         line.setAttribute("stroke", _color);
-        line.setAttribute("stroke-width", "6");
+        line.setAttribute("stroke-width", "2");
         svg.appendChild(line);
         if (_bg) {
             let textBG = document.createElementNS(Avionics.SVG.NS, "rect");
@@ -1712,7 +1768,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         }
         let text = document.createElementNS(Avionics.SVG.NS, "text");
         text.textContent = _text;
-        text.setAttribute("x", "17");
+        text.setAttribute("x", (17 + textOffset).toString());
         text.setAttribute("y", (offsetY + this.speedMarkersHeight * 0.5).toString());
         text.setAttribute("fill", _color);
         text.setAttribute("font-size", (this.fontSize * _textScale).toString());
@@ -1752,7 +1808,19 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(crossSpeed, cruiseMach);
         let nextFlapSpeed = Simplane.getNextFlapsExtendSpeed(this.aircraft) * crossSpeedFactor;
-        let maxSpeed = Simplane.getMaxSpeed(this.aircraft) * crossSpeedFactor;
+
+        const alt = Simplane.getAltitude();
+        let maxSpeed = 260;
+        if (alt >= 8000 && alt <= 27884) {
+            maxSpeed = 305;
+        }
+        else if (alt > 27884) {
+            const ambientPressure = SimVar.GetSimVarValue('AMBIENT PRESSURE', 'inHG');
+            const machScalar2 = Math.pow(0.77, 2);
+            const machScalar4 = Math.pow(0.77, 4);
+            maxSpeed = Math.sqrt(ambientPressure / 29.92) * Math.sqrt(1 + machScalar2 / 4 + machScalar4 / 40) * 0.77 * 661.5;
+        }
+
         let greenDot = Simplane.getGreenDotSpeed() * crossSpeedFactor;
         let lowestSelectableSpeed = Simplane.getLowestSelectableSpeed();
         let stallProtectionMin = Simplane.getStallProtectionMinSpeed();
@@ -1812,10 +1880,10 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         }
     }
     updateSpeedOverride(_dTime) {
-        if (Math.abs(this._maxSpeed - this._lastMaxSpeedOverride) >= 5) {
+        if (Math.abs(this._maxSpeed - this._lastMaxSpeedOverride) >= 0) {
             this._lastMaxSpeedOverrideTime += _dTime / 1000;
             if (this._lastMaxSpeedOverrideTime > 5) {
-                SimVar.SetGameVarValue("AIRCRAFT_MAXSPEED_OVERRIDE", "knots", this._maxSpeed);
+                SimVar.SetGameVarValue("AIRCRAFT_MAXSPEED_OVERRIDE", "knots", this._maxSpeed - 3);
                 this._lastMaxSpeedOverride = this._maxSpeed;
                 this._lastMaxSpeedOverrideTime = 0;
             }
@@ -1831,44 +1899,46 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 this.v1Speed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool")) {
                     this.v1Speed.setAttribute("fill", "magenta");
+                    this.titleV1V.setAttribute("fill", "magenta");
+                    this.title1.setAttribute("fill", "magenta");
                 }
                 else {
                     this.v1Speed.setAttribute("fill", "cyan");
+                    this.titleV1V.setAttribute("fill", "cyan");
+                    this.title1.setAttribute("fill", "cyan");
                 }
                 this.vRSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool")) {
                     this.vRSpeed.setAttribute("fill", "magenta");
+                    this.titleVRV.setAttribute("fill", "magenta");
+                    this.titleR.setAttribute("fill", "magenta");
                 }
                 else {
                     this.vRSpeed.setAttribute("fill", "cyan");
+                    this.titleVRV.setAttribute("fill", "cyan");
+                    this.titleR.setAttribute("fill", "cyan");
                 }
                 this.v2Speed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool")) {
                     this.v2Speed.setAttribute("fill", "magenta");
+                    this.titleV2V.setAttribute("fill", "magenta");
+                    this.title2.setAttribute("fill", "magenta");
                 }
                 else {
                     this.v2Speed.setAttribute("fill", "cyan");
+                    this.titleV2V.setAttribute("fill", "cyan");
+                    this.title2.setAttribute("fill", "cyan");
                 }
                 this.vXSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots").toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool")) {
                     this.vXSpeed.setAttribute("fill", "magenta");
+                    this.titleVTV.setAttribute("fill", "magenta");
+                    this.titleT.setAttribute("fill", "magenta");
                 }
                 else {
                     this.vXSpeed.setAttribute("fill", "cyan");
-                }
-                this.vRefSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots").toFixed(0);
-                if (SimVar.GetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool")) {
-                    this.vRefSpeed.setAttribute("fill", "magenta");
-                }
-                else {
-                    this.vRefSpeed.setAttribute("fill", "cyan");
-                }
-                this.vAppSpeed.textContent = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots").toFixed(0);
-                if (SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool")) {
-                    this.vAppSpeed.setAttribute("fill", "magenta");
-                }
-                else {
-                    this.vAppSpeed.setAttribute("fill", "cyan");
+                    this.titleVTV.setAttribute("fill", "cyan");
+                    this.titleT.setAttribute("fill", "cyan");
                 }
             }
             else {
@@ -1899,11 +1969,13 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         frameIASAcceleration = Math.min(frameIASAcceleration, 10);
         frameIASAcceleration = Math.max(frameIASAcceleration, -10);
         if (isFinite(frameIASAcceleration)) {
-            this._computedIASAcceleration *= 0.998;
-            this._computedIASAcceleration += frameIASAcceleration * 0.002;
+            this._computedIASAcceleration += (frameIASAcceleration - this._computedIASAcceleration) / (50 / ((newIASTime.t - this._lastIASTime.t) / .016));
+            console.log("Accel " + this._computedIASAcceleration);
+            //this._computedIASAcceleration *= 0.998;
+            //this._computedIASAcceleration += frameIASAcceleration * 0.002;
         }
         this._lastIASTime = newIASTime;
-        let accel = this._computedIASAcceleration * 10;
+        let accel = this._computedIASAcceleration * 6;
         return accel;
     }
     getAutopilotMode() {
@@ -2098,10 +2170,11 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             }
         }
         if (hideArrow) {
-            this.speedTrendArrowSVG.setAttribute("visibility", "hidden");
+            this.speedTrendArrowSVGShape.setAttribute("visibility", "hidden");
         }
         else {
-            this.speedTrendArrowSVG.setAttribute("visibility", "visible");
+            this.speedTrendArrowSVGShape.setAttribute("visibility", "visible");
+            
         }
     }
     updateTargetSpeeds(currentAirspeed) {
@@ -2537,6 +2610,18 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             _marker.textSVG.setAttribute("fill", "cyan");
             _marker.lineSVG.style.stroke = "cyan";
         }
+    }
+    updateMarkerFlaps15Marker(_marker, currentAirspeed) {
+        _marker.engaged = true;
+        var posY = this.valueToSvg(currentAirspeed, 200);
+        _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+        _marker.svg.setAttribute("visibility", "visible");
+    }
+    updateMarkerFlaps35Marker(_marker, currentAirspeed) {
+        _marker.engaged = true;
+        var posY = this.valueToSvg(currentAirspeed, 160);
+        _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+        _marker.svg.setAttribute("visibility", "visible");
     }
     updateMarkerFlap(_marker, currentAirspeed) {
         let hideMarker = true;

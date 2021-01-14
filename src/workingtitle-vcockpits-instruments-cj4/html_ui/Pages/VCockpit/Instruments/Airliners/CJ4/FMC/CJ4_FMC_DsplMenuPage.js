@@ -29,6 +29,7 @@ class CJ4_FMC_DsplMenuPage {
         let intersectionsActive = fmc._templateRenderer.renderSwitch(["INTERS"], (this.hasSymbol(CJ4_MapSymbol.INTERSECTS) - 1));
         let airportsActive = fmc._templateRenderer.renderSwitch(["APTS"], (this.hasSymbol(CJ4_MapSymbol.AIRPORTS) - 1));
         let altitudeActive = fmc._templateRenderer.renderSwitch(["ALTITUDE"], (this.hasSymbol(CJ4_MapSymbol.CONSTRAINTS) - 1));
+        let termWptsActive = fmc._templateRenderer.renderSwitch(["TERM WPTS"], (this.hasSymbol(CJ4_MapSymbol.TERMWPTS) - 1));
 
         fmc.onLeftInput[2] = () => {
             this.toggleSymbol(CJ4_MapSymbol.NAVAIDS).then(() => {
@@ -38,6 +39,12 @@ class CJ4_FMC_DsplMenuPage {
 
         fmc.onLeftInput[3] = () => {
             this.toggleSymbol(CJ4_MapSymbol.INTERSECTS).then(() => {
+                CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
+            });
+        };
+
+        fmc.onLeftInput[4] = () => {
+            this.toggleSymbol(CJ4_MapSymbol.TERMWPTS).then(() => {
                 CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
             });
         };
@@ -62,11 +69,11 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["HI NAVAIDS[s-text disabled]", "SPEED[s-text disabled]"],
             [""],
-            [loNavaidsActive, altitudeActive + "[disabled]"],
+            [loNavaidsActive, altitudeActive + "[disabled s-text]"],
             [""],
             [intersectionsActive, airportsActive],
             [""],
-            ["TERM WPTS[s-text disabled]", "MISS APPR[s-text disabled]"],
+            [termWptsActive, "MISS APPR[s-text disabled]"],
             ["WINDOW[blue s-text]", "SIDE[blue]"],
             ["OFF/[s-text]ON[green]/VNAV[s-text]", "L[green]/[white]R[s-text]>"]
         ]);
@@ -126,6 +133,7 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
     CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
     CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
+    CJ4_MapSymbol[CJ4_MapSymbol["TERMWPTS"] = 8] = "TERMWPTS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
 
 //# sourceMappingURL=CJ4_FMC_FMCCommPage.js.map
