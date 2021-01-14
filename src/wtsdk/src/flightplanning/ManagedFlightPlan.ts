@@ -83,11 +83,13 @@ export class ManagedFlightPlan {
     return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0);
   }
 
-  public get checksum():number {
+  public get checksum(): number {
     let checksum = 0;
     const waypoints = this.waypoints;
-    for( let i = 0; i < waypoints.length; i++)
-        checksum += waypoints[i].infos.coordinates.lat;
+    for (let i = 0; i < waypoints.length; i++) {
+      checksum += waypoints[i].infos.coordinates.lat;
+      checksum += waypoints[i].legAltitude1 + waypoints[i].legAltitude2 + waypoints[i].legAltitudeDescription + waypoints[i].speedConstraint;
+    }
     return checksum;
   }
 
@@ -787,10 +789,10 @@ export class ManagedFlightPlan {
 
     if (segment !== FlightPlanSegment.Empty) {
       const finalIndex = segment.offset + segment.waypoints.length;
-      if(startIndex < finalIndex){
+      if (startIndex < finalIndex) {
         for (var i = startIndex; i < finalIndex; i++) {
           this.removeWaypoint(startIndex);
-        } 
+        }
       }
     }
 
