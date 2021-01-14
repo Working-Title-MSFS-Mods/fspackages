@@ -184,10 +184,10 @@ class WT_BaseLnav {
                     SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
                     this._isWaypointAlerting = false;
                     this._waypointSequenced = true;
-    
+
                     this._isTurnCompleting = false;
                     this._executeInhibited = false;
-    
+
                     this._nextTurnHeading = this._setHeading;
                     this.execute();
                     this._isTurnCompleting = true;
@@ -255,10 +255,16 @@ class WT_BaseLnav {
             }
 
             //DISCONTINUITIES
-            if (this._activeWaypoint.endsInDiscontinuity && this._activeWaypointDist < 0.25) {
-                this._setHeading = this._dtk;
-                this.executeDiscontinuity();
-                return;
+            if (this._activeWaypoint.endsInDiscontinuity) {
+                let alertDisco = this._activeWaypointDist < (this._groundSpeed / 3600) * 120;
+                SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", alertDisco ? 1 : 0);
+                if (this._activeWaypointDist < 0.25) {
+                    this._setHeading = this._dtk;
+                    this.executeDiscontinuity();
+                    return;
+                }
+            } else {
+                SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 0);
             }
 
             //NEAR WAYPOINT TRACKING
@@ -279,16 +285,16 @@ class WT_BaseLnav {
      * Execute.
      */
     execute() {
-        if(!this._executeInhibited) {
+        if (!this._executeInhibited) {
             if (!this._isTurnCompleting) {
                 //ADD WIND CORRECTION
                 const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
                 const windCorrection = this.calculateWindCorrection(this._setHeading, airspeedTrue);
                 this._setHeading = this.normalizeCourse(this._setHeading - windCorrection);
-    
+
                 //ADD MAGVAR
                 this._setHeading = this.normalizeCourse(GeoMath.correctMagvar(this._setHeading, SimVar.GetSimVarValue("MAGVAR", "degrees")));
-    
+
                 //SET HEADING
                 SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", this._setHeading);
                 Coherent.call("HEADING_BUG_SET", 2, this._setHeading);
@@ -296,13 +302,13 @@ class WT_BaseLnav {
             else {
                 const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
                 const angleDiffToTarget = Avionics.Utils.angleDiff(planeHeading, this._nextTurnHeading);
-    
+
                 const turnDirection = Math.sign(angleDiffToTarget);
                 const targetHeading = this.normalizeCourse(planeHeading + (turnDirection * 90));
                 SimVar.SetSimVarValue("L:WT_TEMP_SETHEADING", "number", targetHeading);
                 Coherent.call("HEADING_BUG_SET", 2, targetHeading);
             }
-        }  
+        }
     }
 
     /**
@@ -322,7 +328,6 @@ class WT_BaseLnav {
             SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", this._setHeading);
             SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", 0);
 
-            SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 1);
             this._onDiscontinuity = true;
         }
     }

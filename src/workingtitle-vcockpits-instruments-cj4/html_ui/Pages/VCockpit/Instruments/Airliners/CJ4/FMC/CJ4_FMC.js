@@ -1,5 +1,3 @@
-const { CJ4_FMC_MessageController } = require("../../../../../../../../wtsdk/src/cj4/CJ4_FMC_MessageController");
-
 class CJ4_FMC extends FMCMainDisplay {
     constructor() {
         super(...arguments);
@@ -65,6 +63,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._altAlertPreselect = 0;
         SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
         this._nearest = undefined;
+        /** @type {CJ4_FMC_MessageController} */
         this._msgController = new CJ4_FMC_MessageController(this);
     }
     get templateID() { return "CJ4_FMC"; }
@@ -311,7 +310,6 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
             }
             let apNavIndex = 1;
-            let gpsDriven = true;
             let apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
             if (apprHold) {
                 if (this.canSwitchToNav()) {
@@ -328,11 +326,6 @@ class CJ4_FMC extends FMCMainDisplay {
                     }
                     if (navid > 0) {
                         apNavIndex = navid;
-                        let hasFlightplan = Simplane.getAutopilotGPSActive();
-                        let apprCaptured = Simplane.getAutoPilotAPPRCaptured();
-                        if (apprCaptured || !hasFlightplan) {
-                            gpsDriven = false;
-                        }
                     }
                 }
             }
@@ -344,6 +337,12 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     setMsg(value = "") {
+        if (value === "") {
+            this._msgController.update();
+            if (this._msgController.hasMsg()) {
+                value = this._msgController.getMsg();
+            }
+        }
         this._msg = value;
         this._templateRenderer.setMsg(value);
     }
@@ -353,7 +352,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this._templateRenderer.clearDisplay.apply(this);
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
-
         this.unregisterPeriodicPageRefresh();
     }
 
@@ -567,9 +565,9 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
-   /**
-   * Method to maintain a nearest airport list - this method is called in the update loop and calls the CJ4_FMC_Nearest class.
-   */
+    /**
+    * Method to maintain a nearest airport list - this method is called in the update loop and calls the CJ4_FMC_Nearest class.
+    */
     updateNearestAirports(dt) {
         if (this._nearest === undefined) {
             this._nearest = new CJ4_FMC_Nearest(this);
@@ -589,7 +587,7 @@ class CJ4_FMC extends FMCMainDisplay {
             this._nearest.getRunways();
             this._nearest._ranGetRunways = true;
         }
-        
+
     }
 
     driveFlightDirector(deltaAngle, bank = 0) {
@@ -868,7 +866,7 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     updateMsgs() {
-        if (this._frameUpdates % 100 == 0) {
+        if (this._frameUpdates % 60 == 0) {
             this._msgController.update();
             this.setMsg(this._msgController.getMsg());
         }

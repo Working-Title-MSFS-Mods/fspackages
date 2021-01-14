@@ -1,4 +1,4 @@
-import { Simplane } from "MSFS";
+import { Simplane, SimVar } from "MSFS";
 import { CJ4_FMC } from "WorkingTitle";
 import { MessageDefinition, MessageLevel } from "../messages/MessageDefinition";
 import { CJ4_Message } from "./CJ4_Message";
@@ -15,8 +15,11 @@ export class CJ4_FMC_MessageController {
     this._messageDefs.set(1, new MessageDefinition(1, MessageLevel.Yellow, "INITIALIZE POSITION", () => {
       return this._fmc.lastPos === "";
     }));
-    this._messageDefs.set(1, new MessageDefinition(1, MessageLevel.White, "NO FLIGHT PLAN", () => {
+    this._messageDefs.set(2, new MessageDefinition(2, MessageLevel.White, "NO FLIGHT PLAN", () => {
       return Simplane.getNextWaypointName() === "";
+    }));
+    this._messageDefs.set(3, new MessageDefinition(3, MessageLevel.Yellow, "FPLN DISCONTINUITY", () => {
+      return SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 1;
     }));
   }
 
