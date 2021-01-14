@@ -20,6 +20,7 @@ declare module "MSFS" {
     legAltitudeDescription: number;
     legAltitude1: number;
     legAltitude2: number;
+    speedConstraint: number;
     additionalData: { [key: string]: any }
     _svgElements: any;
   }
