@@ -615,7 +615,15 @@ class CJ4NavModeSelector {
           armState1 = state;
           break
       }
-    } 
+    }
+
+    if (armState0 !== undefined) {
+      this.currentVerticalArmedStates.push(armState0);
+    }
+    if (armState1 !== undefined) {
+      this.currentVerticalArmedStates.push(armState1);
+    }
+
   }
 
   /**
