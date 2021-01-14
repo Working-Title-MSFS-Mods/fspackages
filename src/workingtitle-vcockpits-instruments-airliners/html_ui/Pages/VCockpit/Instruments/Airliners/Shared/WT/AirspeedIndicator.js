@@ -2107,7 +2107,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
 
                 var graduationVLineY1 = 0;                
                 if(typeof graduationMinValuePosY != "undefined"){
-                    graduationVLineY1 = graduationMinValuePosY;
+                    graduationVLineY1 = graduationMinValuePosY + 1;
                 }else{
                     graduationVLineY1 = (startY + offsetY).toString();
                 }
