@@ -1970,7 +1970,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         frameIASAcceleration = Math.max(frameIASAcceleration, -10);
         if (isFinite(frameIASAcceleration)) {
             this._computedIASAcceleration += (frameIASAcceleration - this._computedIASAcceleration) / (50 / ((newIASTime.t - this._lastIASTime.t) / .016));
-            console.log("Accel " + this._computedIASAcceleration);
+            // console.log("Accel " + this._computedIASAcceleration);
             //this._computedIASAcceleration *= 0.998;
             //this._computedIASAcceleration += frameIASAcceleration * 0.002;
         }
@@ -2072,6 +2072,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     this.graduations[i].SVGLine.setAttribute("visibility", "visible");
                     this.graduations[i].SVGLine.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                     if (this.graduations[i].SVGText1) {
+                        if(currentVal == this.graduationMinValue){
+                            var graduationMinValuePosY = posY;
+                        }
                         if (this.aircraft == Aircraft.CJ4) {
                             if ((currentVal % 4) == 0)
                                 this.graduations[i].SVGText1.textContent = currentVal.toString();
@@ -2101,7 +2104,14 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             if (this.graduationVLine) {
                 var factor = 10 / this.graduationScroller.increment;
                 var offsetY = (Math.min((startVal - this.graduationMinValue), 0) / 10) * this.graduationSpacing * (this.nbSecondaryGraduations) * factor;
-                this.graduationVLine.setAttribute("y1", (startY + offsetY - 109).toString());
+
+                var graduationVLineY1 = 0;                
+                if(typeof graduationMinValuePosY != "undefined"){
+                    graduationVLineY1 = graduationMinValuePosY;
+                }else{
+                    graduationVLineY1 = (startY + offsetY).toString();
+                }
+                this.graduationVLine.setAttribute("y1", graduationVLineY1);
                 this.graduationVLine.setAttribute("y2", Math.floor(currentY + offsetY).toString());
             }
         }
