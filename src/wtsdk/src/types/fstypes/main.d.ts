@@ -1,6 +1,7 @@
 /// <reference path='./FSTypes.d.ts' />
 
 declare module "WorkingTitle" {
+  import { FMCMainDisplay } from "MSFS"
   export class WTDataStore {
     /**
      * Retrieves a key from the datastore, possibly returning the default value

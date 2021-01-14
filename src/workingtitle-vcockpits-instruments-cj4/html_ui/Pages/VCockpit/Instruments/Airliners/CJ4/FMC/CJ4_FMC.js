@@ -1,3 +1,5 @@
+const { CJ4_FMC_MessageController } = require("../../../../../../../../wtsdk/src/cj4/CJ4_FMC_MessageController");
+
 class CJ4_FMC extends FMCMainDisplay {
     constructor() {
         super(...arguments);
@@ -63,6 +65,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._altAlertPreselect = 0;
         SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
         this._nearest = undefined;
+        this._msgController = new CJ4_FMC_MessageController(this);
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -218,6 +221,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.updateCabinLights();
         this.updatePersistentHeading();
         this.updateAlerters(dt);
+        this.updateMsgs();
         this._frameUpdates++;
         if (this._frameUpdates > 64000) this._frameUpdates = 0;
     }
@@ -860,6 +864,13 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
                 }
                 break;
+        }
+    }
+
+    updateMsgs() {
+        if (this._frameUpdates % 100 == 0) {
+            this._msgController.update();
+            this.setMsg(this._msgController.getMsg());
         }
     }
 }

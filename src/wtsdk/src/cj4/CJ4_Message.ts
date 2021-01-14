@@ -2,42 +2,47 @@ import { MessageDefinition, MessageLevel } from "../messages/MessageDefinition";
 
 export class CJ4_Message {
   private _instanceId: string = Math.random().toString(36).substr(2, 9);;
-  private _isArchived: boolean = false;
+  private _isSeen: boolean = false;
   private _timestamp: number = new Date().valueOf();
 
   /** Gets the id of this message instance */
-  get instanceId(): string {
+  public get instanceId(): string {
     return this._instanceId;
   }
 
   /** Indicates if the message is archived */
-  get isArchived(): boolean {
-    return this._isArchived;
+  public get isSeen(): boolean {
+    return this._isSeen;
   }
 
   /** Gets the unix timestamp for when the message was created */
-  get timestamp(): number {
+  public get timestamp(): number {
     return this._timestamp;
   }
 
   /** Gets the ID of the message definition */
-  get msgDefId(): number {
-    return this.msg.ID;
+  public get msgDefId(): number {
+    return this._msg.ID;
   }
 
   /** Gets the {@link MessageLevel} of severity of the message */
-  get level(): MessageLevel {
-    return this.msg.Level;
+  public get level(): MessageLevel {
+    return this._msg.Level;
   }
 
-  get content(): string {
-    return this.msg.Content;
+  public get content(): string {
+    return this._msg.Content;
   }
 
-  constructor(private msg: MessageDefinition) { }
+  constructor(private _msg: MessageDefinition) { }
 
-  public archive() {
-    this._isArchived = true;
+  public setSeen() {
+    this._isSeen = true;
+  }
+
+  /** Calls the message updatehandler and returns a boolean indicating if the condition still exists */
+  public update() :boolean {
+    return this._msg.updateHandler();
   }
 
 }

@@ -140,6 +140,7 @@ declare module "MSFS" {
   export class Simplane {
     static getHeadingMagnetic(): number;
     static getGroundSpeed(): number;
+    static getNextWaypointName(): string;
   }
 
   export class EmptyCallback {
@@ -152,4 +153,8 @@ declare module "MSFS" {
   }
 
   export function RegisterViewListener(handler: string): void
+
+  export class FMCMainDisplay {
+    lastPos: string;
+  }
 }
