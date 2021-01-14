@@ -520,6 +520,11 @@ class CJ4NavModeSelector {
         SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
         Coherent.call("HEADING_BUG_SET", 1, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
         this.currentLateralActiveState = LateralNavModeState.GA;
+
+        const activeWaypoint = this.flightPlanManager.getActiveWaypoint();
+        if (activeWaypoint && activeWaypoint.isRunway) {
+          this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
+        }
       }
       
     } else {

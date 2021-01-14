@@ -124,6 +124,7 @@ declare module "MSFS" {
     distance: number;
     rho: number;
     theta: number;
+    turnDirection: number;
   }
 
   export class LatLongAlt {
