@@ -829,8 +829,8 @@ class CJ4_APDisplay extends NavSystemElement {
                 const lateralMode = parsedFmaValues.lateralMode;
                 const lateralArmed = parsedFmaValues.lateralArmed;
                 const verticalMode = parsedFmaValues.verticalMode;
-                const verticalArmed1 = parsedFmaValues.verticalArmed1;
-                const verticalArmed2 = parsedFmaValues.verticalArmed2;
+                const verticalArmed1 = parsedFmaValues.verticalArmed1 ? parsedFmaValues.verticalArmed1 : "";
+                const verticalArmed2 = parsedFmaValues.verticalArmed2 ? parsedFmaValues.verticalArmed2 : "";
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
@@ -855,7 +855,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 
-                const verticalArmed = verticalArmed2 ? verticalArmed2 : verticalArmed1 ? verticalArmed1 : "";
+                const verticalArmed = verticalArmed1 + " " + verticalArmed2;
                 Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed);
                 //Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed1 ? verticalArmed1 : "");
 
