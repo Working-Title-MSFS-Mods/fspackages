@@ -646,11 +646,15 @@ class WT_BaseVnav {
         else if (this.flightplan.activeWaypointIndex >= this._firstPossibleDescentIndex) {
             altitude = this.indicatedAltitude;
             const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-            fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
-            fpa = this._verticalFlightPlanSegments[currentSegment].fpa;
-            const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
-            todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
-            todExists = true;
+            if (currentSegment) {
+                fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
+                fpa = this._verticalFlightPlanSegments[currentSegment].fpa;
+                const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
+                todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
+                todExists = true;
+            } else {
+                todExists = false;
+            }
         }
         if (todExists) {
             this.setTodWaypoint(true, todDistanceInFP)
