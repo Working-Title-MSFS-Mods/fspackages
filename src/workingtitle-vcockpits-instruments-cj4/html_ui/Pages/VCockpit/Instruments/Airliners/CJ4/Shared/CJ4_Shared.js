@@ -2624,19 +2624,18 @@ class CJ4_SystemFMS extends NavSystemElement {
                         // Set ETE
                         let activeWaypointETEValue = "-:--";
                         if (groundSpeed >= 50 && activeWaypointDistance > 0) {
-                            activeWaypointETEValue = new Date(this.calcETEseconds(activeWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                            activeWaypointETEValue = new Date(this.calcETEseconds(activeWaypointDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
                         }
 
                         let nextWaypointETEValue = "-:--";
                         if (groundSpeed >= 50 && nextWaypointDistance > 0) {
-                            nextWaypointETEValue = new Date(this.calcETEseconds(nextWaypointDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                            nextWaypointETEValue = new Date(this.calcETEseconds(nextWaypointDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
                         }
 
                         let destinationWaypointETEValue = "-:--";
                         if (groundSpeed >= 50 && destinationDistance > 0) {
-                            destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(11, 5);
+                            destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
                         }
-
 
                         this._activeWaypointContainer
                             .querySelector(".cj4x-navigation-data-waypoint-ete")
@@ -2672,21 +2671,21 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                         let activeWaypointETAValue = "--:--";
                         if (groundSpeed >= 50 && activeWaypointDistance > 0) {
-                            const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(activeWaypointDistance, groundSpeed));
+                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(activeWaypointDistance, groundSpeed))) % 86400);
                             const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                             activeWaypointETAValue = time;
                         }
 
                         let nextWaypointETAValue = "--:--";
                         if (groundSpeed >= 50 && nextWaypointDistance > 0) {
-                            const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(nextWaypointDistance, groundSpeed));
+                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(nextWaypointDistance, groundSpeed))) % 86400);
                             const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                             nextWaypointETAValue = time;
                         }
 
                         let destinationWaypointETAValue = "--:--";
                         if (groundSpeed >= 50 && destinationDistance > 0) {
-                            const seconds = Number.parseInt(UTCTime) + (this.calcETEseconds(destinationDistance, groundSpeed));
+                            const seconds = ((Number.parseInt(UTCTime) + (this.calcETEseconds(destinationDistance, groundSpeed))) % 86400);
                             const time = Utils.SecondsToDisplayTime(seconds, true, false, false);
                             destinationWaypointETAValue = time;
                         }
@@ -2887,6 +2886,7 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
     CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
     CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
+    CJ4_MapSymbol[CJ4_MapSymbol["TERMWPTS"] = 8] = "TERMWPTS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
 class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -3066,6 +3066,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showNDBs = (this.symbols & (1 << CJ4_MapSymbol.NDBS)) ? true : false;
         this.map.instrument.showAirports = (this.symbols & (1 << CJ4_MapSymbol.AIRPORTS)) ? true : false;
         this.map.instrument.showIntersections = (this.symbols & (1 << CJ4_MapSymbol.INTERSECTS)) ? true : false;
+        this.map.instrument.showTermWpts = (this.symbols & (1 << CJ4_MapSymbol.TERMWPTS)) ? true : false;
     }
     getAdaptiveRanges() {
         let ranges = Array.from(this.zoomRanges);

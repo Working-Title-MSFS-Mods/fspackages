@@ -61,7 +61,7 @@ class HoldsDirector {
 
       const trackToHold = new LatLon(prevFixCoords.lat, prevFixCoords.long).finalBearingTo(new LatLon(fixCoords.lat, fixCoords.long));
 
-      if (this.state === HoldsDirectorState.NONE) {
+      if (this.state === HoldsDirectorState.NONE || this.state === HoldsDirectorState.EXITED) {
         switch (holdDetails.entryType) {
           case HoldEntry.Direct:
             this.state = HoldsDirectorState.ENTRY_DIRECT_INBOUND;
@@ -122,7 +122,7 @@ class HoldsDirector {
       this.currentFlightPlanVersion = flightPlanVersion;
     }
 
-    const planeState = this.getAircraftState();
+    const planeState = LNavDirector.getAircraftState();
     switch (this.state) {
       case HoldsDirectorState.ENTRY_DIRECT_INBOUND:
         this.handleDirectEntry(planeState);
@@ -152,26 +152,7 @@ class HoldsDirector {
     SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", distanceRemaining);
   }
 
-  /**
-   * Gets the current state of the aircraft.
-   */
-  getAircraftState() {
-    const state = new AircraftState();
-    state.position = new LatLongAlt(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-    state.magVar = SimVar.GetSimVarValue("MAGVAR", "degrees");
-
-    state.groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-    state.trueAirspeed = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-
-    state.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
-    state.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
-
-    state.trueHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
-    state.magneticHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
-    state.trueTrack = SimVar.GetSimVarValue('GPS GROUND TRUE TRACK', 'Radians') * Avionics.Utils.RAD2DEG;
-
-    return state;
-  }
+  
 
   /**
    * Handles the direct entry state.
@@ -461,6 +442,25 @@ class HoldsDirector {
   }
 
   /**
+   * Checks whether the holds director is ready to accept a new hold fix
+   * or is curently entering the fix at the provided waypoint index.
+   * @param {number} index The waypoint index to check against.
+   * @returns {boolean} True if active, false otherwise. 
+   */
+  isReadyOrEntering(index) {
+    return this.state === HoldsDirectorState.NONE
+    || this.state === HoldsDirectorState.EXITED
+    || (
+      this.holdWaypointIndex === index
+        && (
+          this.state === HoldsDirectorState.ENTRY_TEARDROP_INBOUND
+          || this.state === HoldsDirectorState.ENTRY_PARALLEL_INBOUND
+          || this.state === HoldsDirectorState.ENTRY_DIRECT_INBOUND
+        )
+    );
+  }
+
+  /**
    * Whether or not the current waypoint index is in active hold.
    * @param {number} index The waypoint index to check against.
    * @returns {boolean} True if active, false otherwise.
@@ -516,30 +516,34 @@ class HoldsDirector {
    * Calculates the hold legs from the provided hold course and airspeed.
    * @param {LatLongAlt} holdFixCoords The coordinates of the hold fix.
    * @param {HoldDetails} holdDetails The details of the hold.
-   * @param {AircraftState} planeState The true course that the hold will be flown with.
    * @returns {LatLongAlt[]} The four hold corner positions calculated, clockwise starting with the hold fix coordinates, plus 2
    * parallel leg fixes.
    */
   static calculateHoldFixes(holdFixCoords, holdDetails) {
+    let holdCourse = holdDetails.holdCourse;
+    if (!holdDetails.isHoldCourseTrue) {
+        const magVar = GeoMath.getMagvar(holdFixCoords.lat, holdFixCoords.long);
+        holdCourse = GeoMath.removeMagvar(holdCourse, magVar);
+    }
 
-    const windComponents = AutopilotMath.windComponents(holdDetails.holdCourse, holdDetails.windDirection, holdDetails.windSpeed);
+    const windComponents = AutopilotMath.windComponents(holdCourse, holdDetails.windDirection, holdDetails.windSpeed);
     const turnRadius = AutopilotMath.turnRadius(holdDetails.speed + Math.abs(windComponents.crosswind), 25);
 
     const turnDirection = holdDetails.turnDirection === HoldTurnDirection.Right ? 1 : -1;
 
-    const outboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 90)), turnRadius * 2, 
-      holdFixCoords.lat, holdFixCoords.long);
-    
-    const outboundEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance,
-      outboundStart.lat, outboundStart.long);
-    
-    const inboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance,
+    const outboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 90)), turnRadius * 2,
       holdFixCoords.lat, holdFixCoords.long);
 
-    const parallelStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * -90)), 1, 
+    const outboundEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 180)), holdDetails.legDistance,
+      outboundStart.lat, outboundStart.long);
+
+    const inboundStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 180)), holdDetails.legDistance,
       holdFixCoords.lat, holdFixCoords.long);
-    
-    const parallelEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdDetails.holdCourse + (turnDirection * 180)), holdDetails.legDistance, 
+
+    const parallelStart = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * -90)), 1,
+      holdFixCoords.lat, holdFixCoords.long);
+
+    const parallelEnd = Avionics.Utils.bearingDistanceToCoordinates(AutopilotMath.normalizeHeading(holdCourse + (turnDirection * 180)), holdDetails.legDistance,
       parallelStart.lat, parallelStart.long);
 
     return [holdFixCoords, outboundStart, outboundEnd, inboundStart, parallelStart, parallelEnd];
@@ -577,64 +581,3 @@ HoldsDirectorState.TURNING_INBOUND = 'TURNING_INBOUND';
 HoldsDirectorState.INBOUND = 'INBOUND';
 HoldsDirectorState.EXITING = 'EXITING';
 HoldsDirectorState.EXITED = 'EXITED';
-
-/**
- * The current state of the aircraft for LNAV.
- */
-class AircraftState {
-  constructor() {
-    /** 
-     * The true airspeed of the plane. 
-     * @type {number}
-     */
-    this.trueAirspeed = undefined;
-
-    /**
-     * The ground speed of the plane.
-     * @type {number}
-     */
-    this.groundSpeed = undefined;
-
-    /**
-     * The current plane location magvar.
-     * @type {number}
-     */
-    this.magVar = undefined;
-
-    /**
-     * The current plane position.
-     * @type {LatLon}
-     */
-    this.position = undefined;
-
-    /**
-     * The wind speed.
-     * @type {number}
-     */
-    this.windSpeed = undefined;
-
-    /**
-     * The wind direction.
-     * @type {number}
-     */
-    this.windDirection = undefined;
-
-    /**
-     * The current heading in degrees true of the plane.
-     * @type {number}
-     */
-    this.trueHeading = undefined;
-
-    /**
-     * The current heading in degrees magnetic of the plane.
-     * @type {number}
-     */
-    this.magneticHeading = undefined;
-
-    /**
-     * The current track in degrees true of the plane.
-     * @type {number}
-     */
-    this.trueTrack = undefined;
-  }
-}

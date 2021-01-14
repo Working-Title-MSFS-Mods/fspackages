@@ -65,10 +65,10 @@ class CJ4_FMC_LegsPage {
         let offset = Math.floor((this._currentPage - 1) * 5);
         let allWaypoints = this._fmc.flightPlanManager.getAllWaypoints();
         this._wayPointsToRender = this.buildLegs(allWaypoints, this._activeWptIndex);
-        let flightplanFPA = WTDataStore.get('CJ4_vpa', 3);
+        //let flightplanFPA = WTDataStore.get('CJ4_vpa', 3);
         let runwayIndex = undefined;
-        let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
-        const inhibitSequence = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number") == 1;
+        //let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
+        const inhibitSequence = this._fmc._lnav.sequencingMode === FlightPlanSequencing.INHIBIT;
         const inhibitText = inhibitSequence ? "AUTO[s-text white]" + "/[white]" + "INHIBIT[green]" : "AUTO[green]" + "/[white]" + "INHIBIT[s-text white]";
 
         //FIND RUNWAY INDEX
@@ -80,23 +80,7 @@ class CJ4_FMC_LegsPage {
         for (let i = 0; i < 5; i++) {
 
             let waypoint = this._wayPointsToRender[i + offset];
-            //GET FPA
-            let segment = undefined;
-            if (waypoint && waypoint.fix && (waypoint.fix.icao != "$EMPTY" || waypoint.fix.icao != "$DISCO")) {
-                segment = this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoint.fix);
-            }
-            let waypointFPA = 0;
-            if (segment && (segment.type == SegmentType.Arrival || segment.type == SegmentType.Approach) && waypoint.fix.legAltitudeDescription > 0) {
-                waypointFPA = flightplanFPA;
-            }
-            if (runwayIndex) {
-                if (i + offset == runwayIndex) {
-                    waypointFPA = gpAngle > 0 ? gpAngle : flightplanFPA;
-                }
-                if ((i + offset == runwayIndex - 1 || i + offset == runwayIndex - 2) && waypoint.fix.legAltitudeDescription == 0) {
-                    waypointFPA = gpAngle > 0 ? gpAngle : flightplanFPA;
-                }
-            }
+            
             //EXISTING ->
             if (waypoint && waypoint.fix && waypoint.fix.icao === "$EMPTY") {
                 this._rows[2 * i + 1] = ["-----"];
@@ -114,9 +98,19 @@ class CJ4_FMC_LegsPage {
                     distance = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.fix.infos.coordinates, waypoint.fix.infos.coordinates);
                 }
 
+                //GET FPA
+                const verticalWaypoint = this._fmc._vnav._verticalFlightPlan[waypoint.index];
+                const waypointFPA = verticalWaypoint? this._fmc._vnav._verticalFlightPlan[waypoint.index].waypointFPA : undefined;
+                let fpaText = "  ";
+                if (waypointFPA) {
+                    fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
+                }
+                else if (waypoint.isMissedApproachStart) {
+                    fpaText = ' MISSED APPR[white]';
+                }
+
                 // format distance
                 distance = (distance < 100) ? distance.toFixed(1) : distance.toFixed(0);
-                const fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
 
                 if (isFromWpt) {
                     if (this._fmc.flightPlanManager.getIsDirectTo()) {
@@ -134,7 +128,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i] = [" THEN[magenta]"];
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -[magenta]"];
                     }
-                    else if (waypoint.fix.isHold) {
+                    else if (waypoint.fix.hasHold) {
                         this._rows[2 * i] = [" HOLD AT[magenta]"];
                         this._rows[2 * i + 1] = [`${waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"}[magenta]`];
                     }
@@ -148,7 +142,7 @@ class CJ4_FMC_LegsPage {
                         this._rows[2 * i] = [" THEN"];
                         this._rows[2 * i + 1] = ["□□□□□ - DISCONTINUITY -"];
                     }
-                    else if (waypoint.fix.isHold) {
+                    else if (waypoint.fix.hasHold) {
                         this._rows[2 * i] = [" HOLD AT"];
                         this._rows[2 * i + 1] = [waypoint.fix.ident != "" ? waypoint.fix.ident : "USR"];
                     }
@@ -207,25 +201,28 @@ class CJ4_FMC_LegsPage {
             holdExited = holdsDirector.isHoldExited(holdIndex);
         }
 
-
+        let previousSegment = undefined;
 
         for (var i = Math.max(0, activeWaypointIndex - 1); i < waypoints.length; i++) {
 
-            if (waypoints[i].isRunway && this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoints[i]).type == SegmentType.Approach) {
+            const destination = this._fmc.flightPlanManager.getDestination();
+            const currentSegment = this._fmc.flightPlanManager.getSegmentFromWaypoint(waypoints[i]).type;
+
+            if (waypoints[i].isRunway && currentSegment === SegmentType.Approach) {
                 runwayExists = true;
                 runwayIndex = i;
             }
-            if (runwayExists && i == runwayIndex + 1) {
+            if (runwayExists && waypoints[i] === destination) {
                 //console.log("skipping destination waypoint");
             } else {
-                displayWaypoints.push({ index: i, fix: waypoints[i] });
-                if (waypoints[i].hasHold && !(i === activeWaypointIndex - 1 && holdExited)) {
-                    displayWaypoints.push({index: i, fix: {ident: waypoints[i].ident, infos: waypoints[i].infos, isHold: true}});
-                }
+                const isFirstMissedApproachLeg = currentSegment === SegmentType.Missed && previousSegment === SegmentType.Approach;
+                displayWaypoints.push({ index: i, fix: waypoints[i], isMissedApproachStart: isFirstMissedApproachLeg });
 
                 if (waypoints[i].endsInDiscontinuity) {
                     displayWaypoints.push({ index: i, fix: { icao: "$DISCO", isRemovable: waypoints[i].isVectors !== true } });
                 }
+
+                previousSegment = currentSegment;
             }
         }
 
@@ -537,9 +534,15 @@ class CJ4_FMC_LegsPage {
         };
         if (this._currentPage == 1) {
             this._fmc.onRightInput[0] = () => {
-                let currentInhibit = SimVar.GetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number");
-                let setInhibit = currentInhibit == 1 ? 0 : 1;
-                SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", setInhibit).then(() => { this.resetAfterOp(); });
+                let currentInhibit = this._fmc._lnav.sequencingMode === FlightPlanSequencing.INHIBIT;
+                if (currentInhibit) {
+                    this._fmc._lnav.setAutoSequencing();
+                }
+                else {
+                    this._fmc._lnav.setInhibitSequencing();
+                }
+                
+                this.resetAfterOp();
             };
         }
 
@@ -650,7 +653,7 @@ class CJ4_FMC_LegsPage {
     }
 
     async parseWaypointInput(value, referenceIndex) {
-        let fullLatLong = /([NS])([0-8][0-9])([0-5][0-9](?:\.\d{1,2})?)([EW])((?:[0][0-9][0-9])|(?:[1][0-7][0-9]))([0-5][0-9](?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
+        let fullLatLong = /([NS])([0-8][0-9])((?:[0-5][0-9])?(?:\.\d{1,2})?)([EW])((?:[0][0-9][0-9])|(?:[1][0-7][0-9]))((?:[0-5][0-9])?(?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
         let shorhandLatLongEnd = /([0-8][0-9])([0-9][0-9]|[1][0-8][0-9])([NSEW])/;
         let shorthandLatLongMid = /([0-8][0-9])([NSEW])([1][0-8][0-9]|[0-9][0-9])/;
         let placeBearingDistance = /(\w{3,5})([0-3][0-9][0-9])\/(\d{1,3}(?:\.\d{1})?)(?:\/(\w{0,5}))?/;

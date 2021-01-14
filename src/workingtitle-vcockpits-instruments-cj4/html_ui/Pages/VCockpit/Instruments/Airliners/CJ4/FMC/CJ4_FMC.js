@@ -55,7 +55,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
-        this._currentAP = undefined;
+        this._currentVerticalAutopilot = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
@@ -103,7 +103,7 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
-            RegisterViewListener("JS_LISTENER_ATC");
+            // RegisterViewListener("JS_LISTENER_ATC");
 
             // RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
             // this.addEventListener("FlightStart", async function () {
@@ -161,6 +161,7 @@ class CJ4_FMC extends FMCMainDisplay {
                         this.copyAirwaySelections();
                         this._isRouteActivated = false;
                         this._activatingDirectToExisting = false;
+                        this._activatingDirectTo = false;
                         this.fpHasChanged = false;
                         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                         if (this.refreshPageCallback) {
@@ -457,7 +458,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {
-                this._vnav = new WT_BaseVnav(this.flightPlanManager, this._navModeSelector);
+                this._vnav = new WT_BaseVnav(this.flightPlanManager, this);
                 this._vnav.activate();
             }
             else {
@@ -466,8 +467,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
-                this._lnav = new WT_BaseLnav(this.flightPlanManager, this._navModeSelector);
-                this._lnav.activate();
+                this._lnav = new LNavDirector(this.flightPlanManager);
             }
             else {
                 this._lnav.update();
@@ -476,31 +476,14 @@ class CJ4_FMC extends FMCMainDisplay {
             this._navModeSelector.generateInputDataEvents();
             this._navModeSelector.processEvents();
 
-            if (this._navModeSelector.isVNAVOn === true) {
-                // vnav turned on
 
-                //ACTIVATE VNAV MODE
-                if (this._currentAP === undefined) {
-                    this._currentAP = new WT_VnavAutopilot(this._vnav, this._navModeSelector);
-                    this._currentAP.activate();
-                }
-                //UPDATE VNAV MODE
-                else {
-                    this._currentAP.update();
-                }
+            //RUN VERTICAL AP ALWAYS
+            if (this._currentVerticalAutopilot === undefined) {
+                this._currentVerticalAutopilot = new WT_VerticalAutopilot(this._vnav, this._navModeSelector);
+                this._currentVerticalAutopilot.activate();
             }
             else {
-                if (this._currentAP) {
-                    // vnav turned off, destroy it
-                    this._currentAP.deactivate();
-                    this._currentAP = undefined;
-                }
-            }
-
-            //SET FMC ALERT FOR TOD
-            if (SimVar.GetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool") == 1) {
-                this.showErrorMessage("CHECK PRESELECTOR");
-                SimVar.SetSimVarValue("L:WT_VNAV_TOD_FMC_ALERT", "bool", 0);
+                this._currentVerticalAutopilot.update();
             }
 
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
