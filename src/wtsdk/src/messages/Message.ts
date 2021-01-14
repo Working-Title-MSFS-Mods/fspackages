@@ -1,6 +1,6 @@
-import { MessageDefinition, MessageLevel } from "../messages/MessageDefinition";
+import { MessageDefinition, MessageLevel } from "./MessageDefinition";
 
-export class CJ4_Message {
+export class Message {
   private _instanceId: string = Math.random().toString(36).substr(2, 9);;
   private _isSeen: boolean = false;
   private _timestamp: number = new Date().valueOf();
