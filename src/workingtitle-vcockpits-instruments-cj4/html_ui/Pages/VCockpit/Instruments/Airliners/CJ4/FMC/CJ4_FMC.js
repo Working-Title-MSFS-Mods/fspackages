@@ -465,8 +465,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
-                this._lnav = new WT_BaseLnav(this.flightPlanManager, this._navModeSelector);
-                this._lnav.activate();
+                this._lnav = new LNavDirector(this.flightPlanManager);
             }
             else {
                 this._lnav.update();

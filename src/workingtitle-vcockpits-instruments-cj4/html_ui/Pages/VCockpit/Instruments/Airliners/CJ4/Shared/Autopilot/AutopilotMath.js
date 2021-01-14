@@ -217,4 +217,17 @@ class AutopilotMath {
   static calculateVerticaSpeed(fpa, groundspeed) {
     return -101.2686667 * groundspeed * Math.tan(fpa * (Math.PI / 180));
   }
+
+  /**
+   * Calculates whether or not the aircraft is abeam the provided leg end.
+   * @param {number} dtk The desired track along the leg.
+   * @param {LatLongAlt} planePosition The current position of the aircraft. 
+   * @param {LatLongAlt} fixCoords The coordinates of the leg end fix.
+   */
+  static isAbeam(dtk, planePosition, fixCoords) {
+    const planeToFixTrack = Avionics.Utils.computeGreatCircleHeading(planePosition, fixCoords);
+    const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
+
+    return trackDiff > 90.5;
+  }
 }
