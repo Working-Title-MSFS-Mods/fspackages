@@ -119,6 +119,10 @@ class WT_VerticalAutopilot {
         return this._navModeSelector.currentLateralActiveState;
     }
 
+    set verticalMode(value) {
+        this._navModeSelector.currentVerticalActiveState = value;
+    }
+
     get isVNAVOn() {
         return this._navModeSelector.isVNAVOn;
     }
@@ -218,14 +222,6 @@ class WT_VerticalAutopilot {
         this._navModeSelector.glidepathState = value;
     }
 
-    set fmaVerticalArmedState(value) {
-        this._navModeSelector.setProperVerticalArmedStates(value);
-    }
-
-    set fmaVerticalActiveState(value) {
-        this._navModeSelector.setProperVerticalArmedStates(value);
-    }
-
     get approachMode() {
         return this._navModeSelector.approachMode;
     }
@@ -236,6 +232,10 @@ class WT_VerticalAutopilot {
 
     set currentAltitudeTracking(value) {
         this._navModeSelector.currentAltitudeTracking = value;
+    }
+
+    get firstPossibleDescentIndex() {
+        return this._vnav._firstPossibleDescentIndex;
     }
 
     /**
@@ -337,13 +337,13 @@ class WT_VerticalAutopilot {
 
     setFmaVerticalArmedState() {
         if (this._vnavPathStatus === VnavPathStatus.PATH_ARMED) {
-            this.fmaVerticalArmedState = VerticalNavModeState.PATH;
+            this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.PATH, 1)
         }
         if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
             if (Math.floor(this.altSet1) >= this.targetAltitude) {
-                this.fmaVerticalArmedState = VerticalNavModeState.ALTS;
+                this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.ALTS, 0)
             } else {
-                this.fmaVerticalArmedState = VerticalNavModeState.ALTV;
+                this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.ALTV, 0)
             }
         }
     }
@@ -376,21 +376,23 @@ class WT_VerticalAutopilot {
             case false:
                 break;
             case true:
-                const distance = this._vnav.getDistanceToTarget();
-                const altitudeDifference = this.indicatedAltitude - this._vnav.getTargetAltitude();
-                const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
-                const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
-                if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
-                    && this.verticalSpeed > reqVs && this.altSet1 < this.indicatedAltitude - 100) {
-                    console.log("normal path arming");
-                    return true;
-                } else if (this.path.deviation > 1000 && this.altSet1 < this.indicatedAltitude - 100) {
-                    if (this.verticalSpeed < reqVs) {
-                        console.log("above path arming");
+                if (this.firstPossibleDescentIndex && this._vnav.flightplan.activeWaypointIndex >= this.firstPossibleDescentIndex) {
+                    const distance = this._vnav.getDistanceToTarget();
+                    const altitudeDifference = this.indicatedAltitude - this._vnav.getTargetAltitude();
+                    const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
+                    const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
+                    if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
+                        && this.verticalSpeed > reqVs && this.altSet1 < this.indicatedAltitude - 100) {
+                        console.log("normal path arming");
                         return true;
-                    } else {
-                        console.log("no path");
-                        this.fmaVerticalArmedState = VerticalNavModeState.NOPATH;
+                    } else if (this.path.deviation > 1000 && this.altSet1 < this.indicatedAltitude - 100) {
+                        if (this.verticalSpeed < reqVs) {
+                            console.log("above path arming");
+                            return true;
+                        } else {
+                            console.log("no path");
+                            this.fmaVerticalArmedState = VerticalNavModeState.NOPATH;
+                        }
                     }
                 }
         }
@@ -639,6 +641,8 @@ class WT_VerticalAutopilot {
                 let speed = WTDataStore.get('CJ4_vnavClimbIas', 240);
                 this._navModeSelector.engageFlightLevelChange(speed);
                 this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.FLC;
+                this._navModeSelector.setProperVerticalArmedStates(true);
+                this._navModeSelector.setProperVerticalArmedStates();
                 this.currentAltitudeTracking = AltitudeState.SELECTED;
             }
             return AltitudeSlot.SELECTED;
@@ -662,7 +666,8 @@ class WT_VerticalAutopilot {
                     this.currentAltitudeTracking = AltitudeState.MANAGED;
                 }
                 if (this.VerticalNavModeState === VerticalNavModeState.ALTV && this.targetAltitude < this.altSet1) {
-                    this.fmaVerticalArmedState = VerticalNavModeState.FLC;
+                    this._navModeSelector.setProperVerticalArmedStates(true);
+                    this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.FLC, 0);
                     this.setDonut(0);
                 } else {
                     this.setDonut(0, true);
@@ -723,10 +728,11 @@ class WT_VerticalAutopilot {
         if (calculate) {
             if (this.constraint.index !== undefined) {
                 const index = this.constraint.index;
-                const lDistance = this._vnav.waypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
+                const lDistance = this._vnav.allWaypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
                 const vDistance = this.indicatedAltitude - this.targetAltitude;
                 const fpa = AutopilotMath.calculateFPA(vDistance, lDistance);
-                this.donut = Math.round(AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed));
+                const donut = Math.round(AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed));
+                this.donut = vDistance < 0 ? -1 * donut : donut;
             } else {
                 this.donut = 0;
             }

@@ -190,6 +190,8 @@ class WT_BaseVnav {
             this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
 
             if (this._verticalFlightPlanVersion != this._fpm.CurrentFlightPlanVersion) {
+                this._activeConstraint = { };
+                this._atConstraints = [];
                 switch(this._vnavState) {
                     case VnavState.NONE:
                     case VnavState.PATH:
@@ -495,7 +497,7 @@ class WT_BaseVnav {
         if (this._verticalFlightPlan.length > 0 && this._verticalFlightPlan[this.flightplan.activeWaypointIndex].isClimb) {
             isClimb = true;
             for (let i = this.flightplan.activeWaypointIndex; i < this._firstPossibleDescentIndex - 1; i++) {
-                if (this._verticalFlightPlan[i].upperConstraintAltitude) {
+                if (this._verticalFlightPlan[i].upperConstraintAltitude && this._verticalFlightPlan[i].upperConstraintAltitude < Infinity) {
                     constraint = this._verticalFlightPlan[i].upperConstraintAltitude;
                     index = i;
                     break;
@@ -503,7 +505,7 @@ class WT_BaseVnav {
             }
         } else if (this._verticalFlightPlan.length > 0) {
             for (let i = this.flightplan.activeWaypointIndex; i < this._verticalFlightPlan.length; i++) {
-                if (this._verticalFlightPlan[i].lowerConstraintAltitude) {
+                if (this._verticalFlightPlan[i].lowerConstraintAltitude && this._verticalFlightPlan[i].lowerConstraintAltitude > 0) {
                     constraint = this._verticalFlightPlan[i].lowerConstraintAltitude;
                     index = i;
                     break;
