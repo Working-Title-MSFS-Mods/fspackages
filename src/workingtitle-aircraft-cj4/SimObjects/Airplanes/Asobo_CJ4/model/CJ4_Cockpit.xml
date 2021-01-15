@@ -516,7 +516,7 @@
 				<INTERACTION>Push</INTERACTION>
 				<ONLY_SEQ1>True</ONLY_SEQ1>
 				<SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
-				<SYNC_WITH_WINDSHIELD_STATE>True</SYNC_WITH_WINDSHIELD_STATE>
+				<SYNC_WITH_WINDSHIELD_STATE>False</SYNC_WITH_WINDSHIELD_STATE>
 			</DefaultTemplateParameters>
 			<UseTemplate Name="ASOBO_DEICE_Switch_Pitot_Template">
 				<NUM_PITOTS>2</NUM_PITOTS>
@@ -534,6 +534,12 @@
 			<UseTemplate Name="ASOBO_DEICE_Switch_Airframe_Template">
 				<ID>2</ID>
 				<PART_ID>DEICE_PUSH_AIRFRAME_1</PART_ID>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Update">
+				<UPDATE_ONCE>True</UPDATE_ONCE>
+				<UPDATE_CODE>
+        			1 (&gt;K:WINDSHIELD_DEICE_SET)
+				</UPDATE_CODE>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Wing_Template">
 			</UseTemplate>
