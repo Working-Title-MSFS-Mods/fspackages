@@ -1604,6 +1604,18 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.root.setAttribute("width", "100%");
         this.root.setAttribute("height", "100%");
         this.root.setAttribute("viewBox", "0 0 1000 1000");
+
+        let ClipDefs = document.createElementNS(Avionics.SVG.NS, "defs");
+
+        let rangeClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
+        rangeClip.setAttribute("id", "rangeClip");
+        let rangeClipShape = document.createElementNS(Avionics.SVG.NS, "path");
+        rangeClipShape.setAttribute("d", "M 155 400 H 255 V 345 H 155 V 50 H 900 V 900 H 155 z");
+        rangeClip.appendChild(rangeClipShape);
+        ClipDefs.appendChild(rangeClip);
+
+        this.root.appendChild(ClipDefs);
+
         this.appendChild(this.root);
         {
             let circleRadius = 333;
@@ -1617,11 +1629,19 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 outerCircle.setAttribute("fill", "none");
                 outerCircle.setAttribute("stroke", "#cccac8");
                 outerCircle.setAttribute("stroke-width", "4");
+                outerCircle.setAttribute("clip-path", "url(#rangeClip)");
                 circleGroup.appendChild(outerCircle);
+
                 let vec = new Vec2(1, 0.45);
                 vec.SetNorm(circleRadius * 0.87);
                 this.addMapRange(circleGroup, 490 - vec.x, 500 - vec.y, "white", "38", false, 1.0, false);
+
             }
+
+            circleGroup.getElementsByTagName("text")[0].setAttribute("x", 195);
+            circleGroup.getElementsByTagName("text")[0].setAttribute("y", 380);
+            circleGroup.getElementsByTagName("text")[0].setAttribute("font-size", 40);
+            circleGroup.getElementsByTagName("text")[0].setAttribute("text-anchor", "middle");
 
             {
                 let northLbl = document.createElementNS(Avionics.SVG.NS, "text");
