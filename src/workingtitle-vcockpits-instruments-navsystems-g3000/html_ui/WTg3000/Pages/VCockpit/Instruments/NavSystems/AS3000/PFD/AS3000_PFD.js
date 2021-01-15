@@ -181,7 +181,7 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         this._instrumentID = instrumentID;
         this._isEnabled = false;
 
-        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), AS3000_PFD_InnerMap.LAYER_OPTIONS);
 
         this._initController();
 
