@@ -20,6 +20,9 @@
         "semi": [2, "always"]
     },
     "globals": {
+        "LNavDirector": "writable",
+        "WT_VerticalAutopilot": "writable",
+        "CJ4_FMC_MessageController": "writable",
         "CJ4_FMC_Nearest": "writable",
         "LateralNavModeState": "writable",
         "EBingReference": "writable",
