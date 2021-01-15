@@ -421,15 +421,14 @@ class CJ4NavModeSelector {
       if (!this.isVNAVOn) {
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-  
         if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {    
           this.engagePitch();
           this.currentVerticalActiveState = VerticalNavModeState.PTCH;
         }
+        this.currentAltitudeTracking = AltitudeState.SELECTED;
       }
     }
     this.setProperVerticalArmedStates();
-
   }
 
   /**

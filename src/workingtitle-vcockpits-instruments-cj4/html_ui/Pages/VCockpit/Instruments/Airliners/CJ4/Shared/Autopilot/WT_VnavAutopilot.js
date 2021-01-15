@@ -311,8 +311,15 @@ class WT_VerticalAutopilot {
             case false:
                 if (this.altSlot === AltitudeSlot.MANAGED) {
                     this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
+                    this._navModeSelector.setProperVerticalArmedStates();
                 }
-                this.setDonut(0);
+                if (this.currentAltitudeTracking === AltitudeState.MANAGED) {
+                    this.currentAltitudeTracking = AltitudeState.SELECTED;
+                    this._navModeSelector.setProperVerticalArmedStates();
+                }
+                if (this.donut != 0) {
+                    this.setDonut(0);
+                }
                 break;
             case true:
                 if (this._vnavPathStatus !== VnavPathStatus.PATH_ACTIVE) {
@@ -730,12 +737,36 @@ class WT_VerticalAutopilot {
             case ConstraintStatus.PASSED:
                 this.setDonut(0);
                 this._activeConstraintIndex = undefined;
+                if (this.constraint.index !== undefined && this.constraint.index >= this._vnav.flightplan.activeWaypointIndex) {
+                    if (this.constraint.isClimb) {
+                        this._constraintStatus = ConstraintStatus.OBSERVING_CLIMB;
+                        this.setConstraintAltitude(true);
+                        break;
+                    }
+                    this._constraintStatus = ConstraintStatus.NONE;
+                    break;
+                } else {
+                    this.currentAltitudeTracking = AltitudeState.SELECTED;
+                    this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
+                    if (this.selectedAltitude > this.indicatedAltitude + 100) {
+                        this.setConstraintAltitude(true, true);
+                    }
+                }
                 this._constraintStatus = ConstraintStatus.NONE;
+                this._navModeSelector.setProperVerticalArmedStates();
                 break;
         }
     }
 
-    setConstraintAltitude(resumeClimb = false) {
+    setConstraintAltitude(resumeClimb = false, unrestricted = false) {
+        if (resumeClimb && unrestricted) {
+            this.targetAltitude = undefined;
+            this._navModeSelector.setProperVerticalArmedStates(true);
+            this._navModeSelector.engageFlightLevelChange(WTDataStore.get('CJ4_vnavClimbIas', 240));
+            this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.FLC;
+            this._navModeSelector.setProperVerticalArmedStates;
+            return;
+        }
         this.targetAltitude = this.constraint.altitude;
         this._activeConstraintIndex = this.constraint.index;
 
@@ -749,7 +780,8 @@ class WT_VerticalAutopilot {
                 }
             this._navModeSelector.engageFlightLevelChange(WTDataStore.get('CJ4_vnavClimbIas', 240));
             this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.FLC;
-        } else {
+        } 
+        else {
             if (this.constraint.isClimb) {
                 this._constraintStatus = ConstraintStatus.OBSERVING_CLIMB;
                 this.setManagedAltitude(50000);
