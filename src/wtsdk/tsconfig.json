@@ -13,7 +13,7 @@
         "esModuleInterop": true,
         "outDir": "./.tmp",
         "sourceMap": false,
-        "skipLibCheck": true,
+        "skipLibCheck": false,
 
     },
     "include": [

@@ -1,4 +1,3 @@
-import { SimVar } from "MSFS";
 import { Message } from "./Message";
 import { MessageDefinition, MessageLevel } from "./MessageDefinition";
 
@@ -17,13 +16,17 @@ export abstract class MessageController<I, T extends Message> {
 
   /** Returns a boolean indicating if there is a message */
   public hasMsg(): boolean {
-    return this._messages.size > 0;
+    const hasMsg = this._messages.size > 0
+    if (!hasMsg) {
+      this._currentMsg = undefined;
+    }
+    
+    return hasMsg;
   }
 
   /** Gets the string content of the first message */
   public getMsg(): string {
     if (!this.hasMsg()) {
-      this._currentMsg = undefined;
       return "";
     }
 
@@ -31,11 +34,15 @@ export abstract class MessageController<I, T extends Message> {
     return this._currentMsg.content + "[" + (this._currentMsg.level == MessageLevel.Yellow ? "yellow" : "white") + "]";
   }
 
+  createMsg(def:MessageDefinition) {
+    return new this._nm(def);
+  }
+
   /** Checks the message conditions and updates the list of messages */
   public update() {
     this._messageDefs.forEach((v) => {
       if (this._messages.has(v.ID) == false && v.updateHandler() === true) {
-        this._messages.set(v.ID, new this._nm(v));
+        this._messages.set(v.ID, this.createMsg(v));
       }
     });
 
@@ -44,7 +51,6 @@ export abstract class MessageController<I, T extends Message> {
         this._messages.delete(k);
       }
     });
-
     // TODO: sort messages by level, timestamp
   }
 }

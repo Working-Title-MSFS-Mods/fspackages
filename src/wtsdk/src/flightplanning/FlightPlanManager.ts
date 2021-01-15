@@ -1,10 +1,10 @@
 import { BaseInstrument, SimVar, EmptyCallback, LatLongAlt, Avionics, AirportInfo, WayPoint, OneWayRunway, Simplane, Coherent } from 'MSFS';
-import { ManagedFlightPlan } from '../wtsdk';
 import { FlightPlanSegment } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { LZUTF8, WTDataStore } from 'WorkingTitle'
 import * as _LZUTF8 from '../utils/LzUtf8'
 import { HoldDetails } from './HoldDetails';
+import { ManagedFlightPlan } from './ManagedFlightPlan';
 
 /**
  * A system for managing flight plan data used by various instruments.

@@ -16,7 +16,7 @@ export class CJ4_FMC_NavigationService {
     if (this._currentPage.hasRefresh()) {
       this.registerRefresh();
     }
-  } 
+  }
 
   private registerRefresh() {
     // register refresh and bind to update which will only render on changes

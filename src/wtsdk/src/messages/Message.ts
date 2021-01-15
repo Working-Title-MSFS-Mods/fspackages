@@ -1,7 +1,7 @@
 import { MessageDefinition, MessageLevel } from "./MessageDefinition";
 
 export class Message {
-  private _instanceId: string = Math.random().toString(36).substr(2, 9);;
+  private _instanceId: string = Math.random().toString(36).substr(2, 9);
   private _isSeen: boolean = false;
   private _timestamp: number = new Date().valueOf();
 
@@ -41,7 +41,7 @@ export class Message {
   }
 
   /** Calls the message updatehandler and returns a boolean indicating if the condition still exists */
-  public update() :boolean {
+  public update(): boolean {
     return this._msg.updateHandler();
   }
 

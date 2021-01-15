@@ -21,7 +21,7 @@ declare module "WorkingTitle" {
 
   export class CJ4_FMC extends FMCMainDisplay {
     clearDisplay(): void;
-    registerPeriodicPageRefresh(action: function, interval: number, runImmediately: boolean): void;
+    registerPeriodicPageRefresh(action: () => boolean, interval: number, runImmediately: boolean): void;
     unregisterPeriodicPageRefresh(): void;
   }
 

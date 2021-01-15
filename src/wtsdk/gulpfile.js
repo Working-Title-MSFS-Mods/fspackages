@@ -13,7 +13,7 @@ function stripImportsExports() {
       }
 
       const contents = file.contents.toString().split(/\n/);
-      file.contents = Buffer.from(contents.slice(0, -2).join('\n'), 'utf-8');
+      file.contents = Buffer.from(contents.slice(0, -1).join('\n'), 'utf-8');
 
       this.push(file);
       return cb();

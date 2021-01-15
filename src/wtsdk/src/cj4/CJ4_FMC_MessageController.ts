@@ -1,10 +1,13 @@
-import { Simplane, SimVar } from "MSFS";
-import { CJ4_FMC } from "WorkingTitle";
 import { MessageController } from "../messages/MessageController";
 import { MessageDefinition, MessageLevel } from "../messages/MessageDefinition";
 import { Message } from "../messages/Message";
-
+import { Simplane, SimVar } from "MSFS";
+import { CJ4_FMC } from "WorkingTitle";
 export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Message> {
+
+  constructor(protected _instrument: CJ4_FMC) {
+    super(_instrument, Message);
+  }
 
   protected init() {
     this._messageDefs.set(1, new MessageDefinition(1, MessageLevel.Yellow, "INITIALIZE POSITION", () => {
@@ -23,8 +26,9 @@ export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Messag
     if (!this.hasMsg()) {
       SimVar.SetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number", -1);
     } else {
-      SimVar.SetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number", this._currentMsg.level);
+      if (this._currentMsg) {
+        SimVar.SetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number", this._currentMsg.level);
+      }
     }
   }
-
 }

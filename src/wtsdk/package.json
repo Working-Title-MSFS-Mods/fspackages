@@ -4,7 +4,7 @@
   "description": "Working Title SDK",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && webpack && gulp develop",
+    "build": "tsc -b && webpack && gulp develop",
     "clean": "gulp clean"
   },
   "author": "Working Title",

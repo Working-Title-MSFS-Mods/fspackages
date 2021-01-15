@@ -1,4 +1,6 @@
 declare module "MSFS" {
+  import { HoldDetails } from "flightplanning/HoldDetails"
+
   export class WayPoint {
     constructor(_baseInstrument: BaseInstrument);
     icao: string;
@@ -49,7 +51,6 @@ declare module "MSFS" {
     instrument: BaseInstrument;
     magneticVariation?: number;
     _svgElements: any;
-    routes: any[];
     UpdateInfos(_CallBack?, loadFacilitiesTransitively?);
     CopyBaseInfosFrom(_WP: WayPoint);
   }
