@@ -47,7 +47,7 @@ class LNavDirector {
       const previousWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex - 1);
       const activeWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex);
         
-      if (!this.delegateToHoldsDirector(activeWaypoint, previousWaypoint) && activeWaypoint) {
+      if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint) {
         switch (this.state) {
           case LNavState.TRACKING:
             this.handleTracking(activeWaypoint, previousWaypoint);
@@ -139,7 +139,7 @@ class LNavDirector {
    */
   alertIfClose(planeState, distanceToActive, sequenceDistance = 0) {
     const fiveSecondDistance = (planeState.groundSpeed / 3600) * 5;
-    if (distanceToActive < sequenceDistance + fiveSecondDistance && this.state !== LNavState.IN_DISCONTINUITY) {
+    if (distanceToActive < sequenceDistance + fiveSecondDistance && this.state !== LNavState.IN_DISCONTINUITY && this.sequencingMode !== FlightPlanSequencing.INHIBIT) {
       SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 1);
     }
     else {
@@ -150,20 +150,16 @@ class LNavDirector {
   /**
    * Delegates navigation to the holds director, if necessary.
    * @param {WayPoint} activeWaypoint 
-   * @param {WayPoint} previousWaypoint 
    * @returns True if the holds director is now active, false otherwise.
    */
-  delegateToHoldsDirector(activeWaypoint, previousWaypoint) {
-    if (activeWaypoint && activeWaypoint.hasHold && this.holdsDirector.isReadyOrEntering(this.activeFlightPlan.activeWaypointIndex)) {
+  delegateToHoldsDirector(activeWaypoint) {
+    if (activeWaypoint && activeWaypoint.hasHold && !this.holdsDirector.isHoldExited(this.activeFlightPlan.activeWaypointIndex - 1)) {
       this.holdsDirector.update(this.activeFlightPlan.activeWaypointIndex);
 
-      return this.holdsDirector.state !== HoldsDirectorState.NONE && this._holdsDirector.state !== HoldsDirectorState.EXITED;
+      return this.holdsDirector.state !== HoldsDirectorState.NONE && this.holdsDirector.state !== HoldsDirectorState.EXITED;
     }
-    else if (previousWaypoint && previousWaypoint.hasHold && !this.holdsDirector.isHoldExited(this.activeFlightPlan.activeWaypointIndex - 1)) {
-        this.holdsDirector.update(this.activeFlightPlan.activeWaypointIndex - 1);
 
-        return this.holdsDirector.state !== HoldsDirectorState.NONE && this._holdsDirector.state !== HoldsDirectorState.EXITED;
-    }
+    return false;
   }
 
   /**
@@ -213,7 +209,9 @@ class LNavDirector {
    * @param {WayPoint} currentWaypoint The current active waypoint.
    */
   sequenceToNextWaypoint(planeState, currentWaypoint) {
-    if (this.sequencingMode !== FlightPlanSequencing.INHIBIT && planeState.groundSpeed > 25) {     
+    if (this.sequencingMode !== FlightPlanSequencing.INHIBIT && planeState.groundSpeed > 25) {
+      const nextWaypoint = this.fpm.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
+
       if (currentWaypoint && currentWaypoint.endsInDiscontinuity) {
         this.state = LNavState.IN_DISCONTINUITY;
         SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 1);
@@ -221,9 +219,11 @@ class LNavDirector {
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
         LNavDirector.setCourse(SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG, planeState);
       }
-      else if (currentWaypoint && currentWaypoint.isRunway) {
+      else if (nextWaypoint && nextWaypoint.isRunway) {
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
-        LNavDirector.setCourse(SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG, planeState);
+        
+        this.state = LNavState.TURN_COMPLETING;
+        this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1);
       }
       else {
         this.state = LNavState.TURN_COMPLETING;

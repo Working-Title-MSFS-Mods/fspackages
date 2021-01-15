@@ -52,7 +52,7 @@ class HoldsDirector {
    */
   initializeHold(holdWaypointIndex) {
     const holdWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex);
-    const prevWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex - 1);
+    const prevWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex - 2);
 
     if (holdWaypoint && prevWaypoint) {
       const holdDetails = holdWaypoint.holdDetails;
@@ -151,8 +151,6 @@ class HoldsDirector {
     const distanceRemaining = this.calculateDistanceRemaining(planeState);
     SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", distanceRemaining);
   }
-
-  
 
   /**
    * Handles the direct entry state.
