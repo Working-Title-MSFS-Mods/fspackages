@@ -361,6 +361,7 @@ class CJ4NavModeSelector {
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", vsslot);
     Coherent.call("AP_VS_VAR_SET_ENGLISH", vsslot, vs);
+    this.checkCorrectAltSlot();
     if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1) {
       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
@@ -378,6 +379,7 @@ class CJ4NavModeSelector {
         SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_ON", "Number", 0);
       }
     }
+    this.checkCorrectAltSlot();
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
     
@@ -391,6 +393,7 @@ class CJ4NavModeSelector {
   engageFlightLevelChange(speed = undefined) {
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 1);
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
+    this.checkCorrectAltSlot();
     if (!SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean")) {
       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
@@ -470,6 +473,12 @@ class CJ4NavModeSelector {
   handleAlt2Changed() {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
     //this.setProperVerticalArmedStates();
+  }
+
+  checkCorrectAltSlot() {
+    if (!this.isVNAVOn) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
   }
 
   /**

@@ -563,7 +563,7 @@ class WT_BaseVnav {
             else if (this.allWaypoints[this._activeConstraint.index].isRunway && this.allWaypoints[this._activeConstraint.index].ident != this.constraintValue) {
                 if (this.allWaypoints[this._activeConstraint.index].isRunway && this._activeConstraint.index > 1
                     && this.allWaypoints[this._activeConstraint.index].cumulativeDistanceInFP - this._currentDistanceInFP < this._distanceToShowConstraint) {
-                    this.setConstraint(this.allWaypoints[this._activeConstraint.index].ident);
+                    this.setConstraint("RWY");
                 } else {
                     this.setConstraint();
                 }
