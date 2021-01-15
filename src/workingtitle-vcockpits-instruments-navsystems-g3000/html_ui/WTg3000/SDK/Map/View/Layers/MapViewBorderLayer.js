@@ -3,13 +3,18 @@
  */
 class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     /**
+     * @param {WT_MapViewBorderData} borderData - the object from which to retrieve border data.
+     * @param {WT_NumberUnit[]} lodResolutionThresholds - the map view window resolution thresholds to use when selecting a border LOD
+     *                                                    level.
      * @param {WT_MapViewTextLabelManager} labelManager - the label manager to use for labels.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(labelManager, className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
+    constructor(borderData, lodResolutionThresholds, labelManager, className = WT_MapViewBorderLayer.CLASS_DEFAULT, configName = WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
+        this._borderData = borderData;
+        this._lodResolutionThresholds = lodResolutionThresholds;
         this._labelManager = labelManager;
 
         this._borderLayer = new WT_MapViewPersistentCanvas(WT_MapViewBorderLayer.OVERDRAW_FACTOR);
@@ -28,8 +33,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._labelCache = new WT_MapViewBorderLabelCache();
         this._labelsToShow = new Set();
 
-        this._loadBorderJSON(WT_MapViewBorderLayer.DATA_FILE_PATH);
-
         this._optsManager = new WT_OptionsManager(this, WT_MapViewBorderLayer.OPTIONS_DEF);
 
         this._isReady = false;
@@ -38,82 +41,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._redrawTimer = 0;
 
         this._lastTime = 0;
-    }
-
-    /**
-     * @readonly
-     * @property {Boolean} isReady - whether this layer has finished loading data and is ready to render.
-     * @type {Boolean}
-     */
-    get isReady() {
-        return this._isReady;
-    }
-
-    _loadBorderJSON(path) {
-        let request = new XMLHttpRequest();
-        request.overrideMimeType("application/json");
-
-        request.addEventListener("load",
-            (function() {
-                this._loadData(request.responseText);
-            }).bind(this)
-        );
-        request.open("GET", path);
-        request.send();
-    }
-
-    _filterScaleRank(threshold, feature) {
-        return feature.properties.scalerank <= threshold;
-    }
-
-    _createFeatureInfo(feature) {
-        let bounds = d3.geoBounds(feature);
-        // avoid +90 or -90 latitude
-        bounds[0][1] = Math.min(89.9, Math.max(-89.9, bounds[0][1]));
-        bounds[1][1] = Math.min(89.9, Math.max(-89.9, bounds[1][1]));
-
-        return {
-            feature: feature,
-            geoBounds: bounds,
-            geoCentroid: d3.geoCentroid(feature),
-            geoArea: d3.geoArea(feature)
-        };
-    }
-
-    _processFeaturesObject(topology, object, array, simplifyThreshold, scaleRankThreshold) {
-        array.push(...topojson.feature(topojson.simplify(topology, simplifyThreshold), object).features.filter(
-            this._filterScaleRank.bind(this, scaleRankThreshold)
-        ).map(
-            this._createFeatureInfo.bind(this)
-        ));
-    }
-
-    _processBorders(topology) {
-        this._admin0Borders = [];
-        this._admin1Borders = [];
-        for (let i = 0; i < WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS.length; i++) {
-            this._admin0Borders.push([]);
-            this._admin1Borders.push([]);
-            this._processFeaturesObject(topology, topology.objects.admin0Boundaries, this._admin0Borders[i], WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS[i], 2);
-            this._processFeaturesObject(topology, topology.objects.admin0MapUnitBoundaries, this._admin0Borders[i], WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS[i], Infinity);
-            this._processFeaturesObject(topology, topology.objects.admin1Boundaries, this._admin1Borders[i], WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS[i], 2);
-        }
-    }
-
-    _processPolygons(topology) {
-        this._admin0Polygons = [];
-        this._processFeaturesObject(topology, topology.objects.admin0Polygons, this._admin0Polygons, Number.MIN_VALUE, Infinity);
-
-        this._admin1Polygons = [];
-        this._processFeaturesObject(topology, topology.objects.admin1Polygons, this._admin1Polygons, Number.MIN_VALUE, 2);
-    }
-
-    _loadData(data) {
-        let topology = JSON.parse(data);
-        let presimplified = topojson.presimplify(topology, topojson.sphericalTriangleArea);
-        this._processBorders(presimplified);
-        this._processPolygons(presimplified);
-        this._isReady = true;
     }
 
     /**
@@ -156,18 +83,18 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      * @returns {Number} an LOD level.
      */
     _selectLOD(viewResolution) {
-        for (let i = WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS.length - 1; i >= 0; i--) {
-            if (viewResolution.compare(WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS[i]) >= 0) {
+        for (let i = this._lodResolutionThresholds.length - 1; i >= 0; i--) {
+            if (viewResolution.compare(this._lodResolutionThresholds[i]) >= 0) {
                 return i;
             }
         }
         return 0;
     }
 
-    _enqueueFeaturesToDraw(state, features, lod) {
+    _enqueueFeaturesToDraw(state, features) {
         let clipExtent = this._borderLayer.buffer.projectionRenderer.viewClipExtent;
         let temp = [[0, 0], [0, 0]];
-        for (let feature of features[lod].filter(this._cullFeatureByBounds.bind(this, this._borderLayer.buffer.projectionRenderer, clipExtent, temp))) {
+        for (let feature of features.filter(this._cullFeatureByBounds.bind(this, this._borderLayer.buffer.projectionRenderer, clipExtent, temp))) {
             this._borderLayer.buffer.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext);
         }
     }
@@ -180,20 +107,29 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         current();
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {Boolean} showStateBorders
+     */
     _startDrawBorders(state, showStateBorders) {
         this._borderLayer.resetBuffer(state);
 
         let lod = this._selectLOD(state.projection.viewResolution);
         this._renderQueue.clear();
-        this._enqueueFeaturesToDraw(state, this._admin0Borders, lod);
+        this._enqueueFeaturesToDraw(state, this._borderData.getBorders(WT_MapViewBorderData.AdminLevel.ADMIN_0, lod));
         if (showStateBorders) {
-            this._enqueueFeaturesToDraw(state, this._admin1Borders, lod);
+            this._enqueueFeaturesToDraw(state, this._borderData.getBorders(WT_MapViewBorderData.AdminLevel.ADMIN_1, lod));
         }
 
         this._borderLayer.buffer.context.beginPath();
         this._renderQueue.start(this._renderer, state);
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
     _continueDrawBorders(state) {
         this._renderQueue.resume(state);
     }
@@ -204,6 +140,10 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._borderLayer.buffer.context.stroke();
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
     _drawBordersToDisplay(state) {
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
@@ -212,12 +152,20 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this._borderLayer.redrawDisplay(state);
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
     _updateDrawBorders(state) {
         if (this._drawUnfinishedBorders) {
             this._drawBordersToDisplay(state);
         }
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
     _finishDrawBorders(state) {
         this._drawBordersToDisplay(state);
         this._updateLabels(state);
@@ -279,9 +227,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     _updateLabels(state) {
         let tempArrays = [[0, 0], [0, 0]];
         let tempVector = new WT_GVector2(0, 0);
-        let toShow = this._admin0Polygons.filter(this._cullLabelsToShow.bind(this, state, tempArrays, tempVector));
+        let toShow = this._borderData.getPolygons(WT_MapViewBorderData.AdminLevel.ADMIN_0).filter(this._cullLabelsToShow.bind(this, state, tempArrays, tempVector));
         if (this._shouldShowStateBorders(state)) {
-            toShow = toShow.concat(this._admin1Polygons.filter(this._cullLabelsToShow.bind(this, state, tempArrays, tempVector)));
+            toShow = toShow.concat(this._borderData.getPolygons(WT_MapViewBorderData.AdminLevel.ADMIN_1).filter(this._cullLabelsToShow.bind(this, state, tempArrays, tempVector)));
         }
         this._updateLabelsToShow(toShow.map(featureInfo => this._labelCache.getLabel(featureInfo, this.countryLabelPriority, this.stateLabelPriority)));
     }
@@ -340,7 +288,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (!this.isReady) {
+        if (!this._borderData.isReady()) {
             return;
         }
 
@@ -351,21 +299,6 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
 WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT = "border";
-WT_MapViewBorderLayer.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/borders.json";
-WT_MapViewBorderLayer.LOD_SIMPLIFY_THRESHOLDS = [
-    Number.MIN_VALUE,
-    0.00000003,
-    0.0000003,
-    0.000003,
-    0.00003
-];
-WT_MapViewBorderLayer.LOD_RESOLUTION_THRESHOLDS = [
-    WT_Unit.NMILE.createNumber(0),
-    WT_Unit.NMILE.createNumber(0.06),
-    WT_Unit.NMILE.createNumber(0.3),
-    WT_Unit.NMILE.createNumber(0.9),
-    WT_Unit.NMILE.createNumber(3)
-];
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
 WT_MapViewBorderLayer.REDRAW_DELAY = 500; // ms
 WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 2; // ms

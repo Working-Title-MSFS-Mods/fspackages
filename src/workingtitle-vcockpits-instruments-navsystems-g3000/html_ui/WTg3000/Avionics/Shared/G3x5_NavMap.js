@@ -1,5 +1,5 @@
 class WT_G3x5_NavMap {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, borderData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._layerOptions = layerOptions;
@@ -7,6 +7,7 @@ class WT_G3x5_NavMap {
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
         this._citySearcher = citySearcher;
+        this._borderData = borderData;
     }
 
     /**
@@ -106,7 +107,7 @@ class WT_G3x5_NavMap {
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
-        this.view.addLayer(new WT_MapViewBorderLayer(labelManager));
+        this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
@@ -241,6 +242,13 @@ WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT = {
     rangeDisplay: false,
     windData: true
 };
+WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS = [
+    WT_Unit.NMILE.createNumber(0),
+    WT_Unit.NMILE.createNumber(0.06),
+    WT_Unit.NMILE.createNumber(0.3),
+    WT_Unit.NMILE.createNumber(0.9),
+    WT_Unit.NMILE.createNumber(3)
+];
 
 WT_G3x5_NavMap.MAP_RANGE_LEVELS =
     [250, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
