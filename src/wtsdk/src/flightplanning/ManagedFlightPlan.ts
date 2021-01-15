@@ -718,10 +718,17 @@ export class ManagedFlightPlan {
       //If we're in the missed approach segment, shift everything backwards to
       //load a second approach.
       if (missedSegment.waypoints.length > 0) {
-        this.removeSegment(SegmentType.Approach);
+        this.removeSegment(SegmentType.Approach)
         segment = this.addSegment(SegmentType.Approach);
 
-        this.addWaypoint(missedSegment.waypoints[0], segment.offset, SegmentType.Approach);
+        const fromIndex = missedStartIndex - missedSegment.offset - 2;
+        const toIndex = missedStartIndex - missedSegment.offset - 1;
+
+        segment.waypoints.push(missedSegment.waypoints[fromIndex]);
+        segment.waypoints.push(missedSegment.waypoints[toIndex]);
+
+        this.reflowSegments();
+        this.reflowDistances();
         startIndex = segment.offset + 1;
 
         this.activeWaypointIndex = startIndex;
