@@ -177,4 +177,57 @@ class AutopilotMath {
 
     return {headwind, crosswind};
   }
+
+  /**
+   * Gets the FPA for a given vertical and lateral distance.
+   * @param {number} verticalDistance The vertical distance in feet. 
+   * @param {number} lateralDistance The lateral distance in NM.
+   * @returns {number} The FPA in degrees.
+   */
+  static calculateFPA(verticalDistance, lateralDistance) {
+    return (180 / Math.PI) * (Math.atan(Math.abs(verticalDistance) / (lateralDistance * 6076.12)));
+  }
+
+  /**
+   * Gets the FPTA DELTA for a given FPA and lateral distance.
+   * @param {number} fpa The FPA in degrees.
+   * @param {number} lateralDistance The lateral distance in NM.
+   * @returns {number} The delta altitude in feet.
+   */
+  static calculateFPTA(fpa, lateralDistance) {
+    return (Math.tan(fpa * (Math.PI / 180)) * lateralDistance * 6076.12);
+  }
+
+  /**
+   * Gets the DESCENT DISTANCE for a given FPA and vertical distance.
+   * @param {number} fpa The FPA in degrees 
+   * @param {number} verticalDistance The vertical distance in feet.
+   * @returns {number} The lateral distance in NM to descend the specified vertical distance at the specified FPA.
+   */
+  static calculateDescentDistance(fpa, verticalDistance) {
+    return ((verticalDistance) / (Math.tan(fpa * (Math.PI / 180)))) / 6076.12;
+  }
+
+  /**
+   * Gets the DESCENT RATE for a given FPA and groundspeed.
+   * @param {number} fpa The FPA in degrees 
+   * @param {number} groundspeed The current groundspeed.
+   * @returns {number} The rate of descent required to descend at the specified FPA in ft/minute.
+   */
+  static calculateVerticaSpeed(fpa, groundspeed) {
+    return -101.2686667 * groundspeed * Math.tan(fpa * (Math.PI / 180));
+  }
+
+  /**
+   * Calculates whether or not the aircraft is abeam the provided leg end.
+   * @param {number} dtk The desired track along the leg.
+   * @param {LatLongAlt} planePosition The current position of the aircraft. 
+   * @param {LatLongAlt} fixCoords The coordinates of the leg end fix.
+   */
+  static isAbeam(dtk, planePosition, fixCoords) {
+    const planeToFixTrack = Avionics.Utils.computeGreatCircleHeading(planePosition, fixCoords);
+    const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
+
+    return trackDiff > 90.5;
+  }
 }

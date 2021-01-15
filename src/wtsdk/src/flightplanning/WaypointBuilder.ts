@@ -32,16 +32,16 @@ export class WaypointBuilder {
    * Builds a WayPoint from a refrence waypoint.
    * @param ident The ident of the waypoint to be created.
    * @param placeCoordinates The coordinates of the reference waypoint. 
-   * @param bearing The bearing from the reference waypoint.
+   * @param bearing The magnetic bearing from the reference waypoint.
    * @param distance The distance from the reference waypoint.
    * @param instrument The base instrument instance.
    * @returns The built waypoint.
    */
   public static fromPlaceBearingDistance(ident: string, placeCoordinates: LatLongAlt, bearing: number, distance: number, instrument: BaseInstrument): WayPoint {
-    let magneticBearing = bearing + GeoMath.getMagvar(placeCoordinates.lat, placeCoordinates.long);
-    magneticBearing = magneticBearing < 0 ? 360 + magneticBearing : magneticBearing;
+    let trueBearing = bearing - GeoMath.removeMagvar(placeCoordinates.lat, placeCoordinates.long);
+    trueBearing = trueBearing < 0 ? 360 + trueBearing : trueBearing > 360 ? trueBearing - 360 : trueBearing;
 
-    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(magneticBearing, distance, placeCoordinates.lat, placeCoordinates.long);
+    const coordinates = Avionics.Utils.bearingDistanceToCoordinates(trueBearing, distance, placeCoordinates.lat, placeCoordinates.long);
   
     return WaypointBuilder.fromCoordinates(ident, coordinates, instrument);
   }
