@@ -353,14 +353,14 @@ class CJ4NavModeSelector {
 
   /**
    * Engage VS to Slot.
-   * @param {number} slot is the slot to engage VS with.
+   * @param {number} vsslot is the slot to engage VS with.
    * @param {number} vs is the starting VS value to set.
    */
-  engageVerticalSpeed(slot = 1, vs = Simplane.getVerticalSpeed()) {
+  engageVerticalSpeed(vsslot = 1, vs = Simplane.getVerticalSpeed()) {
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
-    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", slot);
-    Coherent.call("AP_VS_VAR_SET_ENGLISH", slot, vs);
+    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", vsslot);
+    Coherent.call("AP_VS_VAR_SET_ENGLISH", vsslot, vs);
     if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1) {
       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
@@ -456,6 +456,7 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.ALTV:
       case VerticalNavModeState.ALTS:
       case VerticalNavModeState.ALT:
+        console.log("setting slot 3 in handleAlt1Changed");
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
         break;
     }
@@ -1082,8 +1083,9 @@ class CJ4NavModeSelector {
 
   /**
    * Handles when vnav autopilot requests alt slot 1 in the sim autopilot.
+   * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
-  handleVnavRequestSlot1() {
+  handleVnavRequestSlot1(force = false) {
 
     switch(this.currentVerticalActiveState) {
       case VerticalNavModeState.ALTCAP:
@@ -1099,12 +1101,16 @@ class CJ4NavModeSelector {
         this.vnavRequestedSlot = 1;
         break;
     }
+    if (force) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    }
   }
 
   /**
    * Handles when vnav autopilot requests alt slot 2 in the sim autopilot.
+   * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
-  handleVnavRequestSlot2() {
+  handleVnavRequestSlot2(force = false) {
 
     switch(this.currentVerticalActiveState) {
       case VerticalNavModeState.ALTCAP:
@@ -1120,7 +1126,9 @@ class CJ4NavModeSelector {
         this.vnavRequestedSlot = 2;
         break;
     }
-
+    if (force) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+    }
   }
 
   /**

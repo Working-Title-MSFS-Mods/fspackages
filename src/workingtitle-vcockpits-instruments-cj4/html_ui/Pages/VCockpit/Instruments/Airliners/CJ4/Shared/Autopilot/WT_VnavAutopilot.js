@@ -612,20 +612,33 @@ class WT_VerticalAutopilot {
      * Shared method to set Alt Slot and Alt Slot values for slots 1 (selected) and 2 (managed).
      * @param {AltitudeSlot} activeSlot is requested active slot.
      * @param {number} managedAltitude is the altitude, if any, requested for slot 2.
+     * @param {boolean} forceSlot is to force the slot set in navModeSelector
      */
-    setAltitudeAndSlot(activeSlot = AltitudeSlot.SELECTED, managedAltitude = false) {
+    setAltitudeAndSlot(activeSlot = AltitudeSlot.SELECTED, managedAltitude = false, forceSlot = false) {
 
         if (managedAltitude) {
             this.setManagedAltitude(managedAltitude);
         }
 
+        console.log("this.altSlot: " + this.altSlot);
+        console.log("activeSlot: " + activeSlot);
+
+
+
         if (this.altSlot !== activeSlot) {
             switch(activeSlot) {
                 case AltitudeSlot.SELECTED:
                     this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_1);
+                    if (forceSlot) {
+                        console.log("forcing alt slot 1");
+                        this._navModeSelector.handleVnavRequestSlot1(true);
+                    }
                     break;
                 case AltitudeSlot.MANAGED:
                     this._navModeSelector.queueEvent(NavModeEvent.VNAV_REQUEST_SLOT_2);
+                    if (forceSlot) {
+                        this._navModeSelector.handleVnavRequestSlot2(true);
+                    }
                     break;
                 case AltitudeSlot.LOCK:
                     this._navModeSelector.handleVnavRequestSlot3();
@@ -747,7 +760,9 @@ class WT_VerticalAutopilot {
                     break;
                 } else {
                     this.currentAltitudeTracking = AltitudeState.SELECTED;
-                    this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
+                    console.log("forcing alt slot 2 from: " + this.altSlot);
+                    this.setAltitudeAndSlot(AltitudeSlot.SELECTED, 50000, true);
+                    console.log("alt slot after setting: " + this.altSlot);
                     if (this.selectedAltitude > this.indicatedAltitude + 100) {
                         this.setConstraintAltitude(true, true);
                     }
@@ -758,12 +773,18 @@ class WT_VerticalAutopilot {
         }
     }
 
+    /**
+     * Shared method to set and fly between altitude constraints.
+     * @param {boolean} resumeClimb is a flag to resume a climb after a constraint.
+     * @param {number} unrestricted is a flag to when there is no next constraint to resume climb to the selected altitude.
+     */
     setConstraintAltitude(resumeClimb = false, unrestricted = false) {
         if (resumeClimb && unrestricted) {
             this.targetAltitude = undefined;
+            this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.FLC;
             this._navModeSelector.setProperVerticalArmedStates(true);
             this._navModeSelector.engageFlightLevelChange(WTDataStore.get('CJ4_vnavClimbIas', 240));
-            this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.FLC;
+            this.setAltitudeAndSlot(AltitudeSlot.SELECTED, 0, true);
             this._navModeSelector.setProperVerticalArmedStates;
             return;
         }
