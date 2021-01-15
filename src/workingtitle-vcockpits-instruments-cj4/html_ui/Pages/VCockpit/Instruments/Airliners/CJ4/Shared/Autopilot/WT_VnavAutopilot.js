@@ -248,7 +248,9 @@ class WT_VerticalAutopilot {
                 if (this.canPathArm()) {
                     console.log("path arm");
                     this._vnavPathStatus = VnavPathStatus.PATH_ARMED;
-                } else {this.checkPreselector;}
+                } else {
+                    this.checkPreselector;
+                }
                 break;
             case VnavPathStatus.PATH_ARMED:
                 if (!this.isVNAVOn) {
@@ -309,6 +311,9 @@ class WT_VerticalAutopilot {
 
         switch(this.isVNAVOn) {
             case false:
+                if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
+                    break;
+                }
                 if (this.altSlot === AltitudeSlot.MANAGED) {
                     this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
                     this._navModeSelector.setProperVerticalArmedStates();
@@ -332,14 +337,36 @@ class WT_VerticalAutopilot {
     }
 
     setFmaVerticalArmedState() {
-        if (this._vnavPathStatus === VnavPathStatus.PATH_ARMED) {
-            this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.PATH, 1)
+        if (this._vnavPathStatus === VnavPathStatus.PATH_ARMED && this._navModeSelector.currentArmedVnavState !== VerticalNavModeState.PATH) {
+            this._navModeSelector.currentArmedVnavState = VerticalNavModeState.PATH;
+        } else if (this._glidepathStatus === GlidepathStatus.GP_ARMED && this._navModeSelector.currentArmedVnavState !== VerticalNavModeState.GP) {
+            this._navModeSelector.currentArmedVnavState = VerticalNavModeState.GP;
         }
         if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
+            if (this._navModeSelector.currentArmedVnavState === VerticalNavModeState.PATH) {
+                this._navModeSelector.currentArmedVnavState = VerticalNavModeState.NONE;
+            }
             if (Math.floor(this.selectedAltitude) >= this.targetAltitude) {
-                this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.ALTS, 0)
+                if (this._navModeSelector.currentArmedAltitudeState !== VerticalNavModeState.ALTS) {
+                    this._navModeSelector.currentArmedAltitudeState = VerticalNavModeState.ALTS;
+                }
             } else {
-                this._navModeSelector.setProperVerticalArmedStates(false, VerticalNavModeState.ALTV, 0)
+                if (this._navModeSelector.currentArmedAltitudeState !== VerticalNavModeState.ALTV) {
+                    this._navModeSelector.currentArmedAltitudeState = VerticalNavModeState.ALTV;
+                }
+            }
+            if (this._navModeSelector.currentVerticalActiveState !== VerticalNavModeState.PATH) {
+                this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.PATH;
+            }
+        } else if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
+            if (this._navModeSelector.currentArmedVnavState === VerticalNavModeState.GP) {
+                this._navModeSelector.currentArmedVnavState = VerticalNavModeState.NONE;
+            }
+            if (this._navModeSelector.currentVerticalActiveState !== VerticalNavModeState.GP) {
+                this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.GP;
+            }
+            if (this._navModeSelector.currentArmedAltitudeState !== VerticalNavModeState.NONE) {
+                this._navModeSelector.currentArmedAltitudeState = VerticalNavModeState.NONE;
             }
         }
     }
@@ -463,7 +490,7 @@ class WT_VerticalAutopilot {
             case PathInterceptStatus.INTERCEPTED:
                 if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
                     if (this.altSlot !== AltitudeSlot.MANAGED) {
-                        this.setAltitudeAndSlot(AltitudeSlot.MANAGED);
+                        this.setAltitudeAndSlot(AltitudeSlot.MANAGED, -1000, true);
                     }
                 } else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
                     if (this.altSlot !== AltitudeSlot.SELECTED) {
