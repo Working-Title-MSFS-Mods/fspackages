@@ -45,7 +45,7 @@ class CJ4_FMC_DirectToPage {
                 if (waypointsCell[i]) {
                     const position = new LatLongAlt(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
                     const trueHeading = Avionics.Utils.computeGreatCircleHeading(position, waypoint.infos.coordinates);
-                    waypointsBearing[i] = fmc._lnav.normalizeCourse(GeoMath.correctMagvar(trueHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"))).toFixed(0) + "°[s-text blue]";
+                    waypointsBearing[i] = AutopilotMath.normalizeHeading(GeoMath.correctMagvar(trueHeading, SimVar.GetSimVarValue("MAGVAR", "degrees"))).toFixed(0) + "°[s-text blue]";
                     let inputLine = i - ((page - 1) * 4) + 1;
 
                     //vertical direct
@@ -228,7 +228,7 @@ class CJ4_FMC_DirectToPage {
                     ident: fpOrigin.ident,
                     icao: fpOrigin.icao,
                     distance: Avionics.Utils.computeGreatCircleDistance(position, fpOrigin.infos.coordinates),
-                    bearing: fmc._lnav.normalizeCourse(GeoMath.correctMagvar(Avionics.Utils.computeGreatCircleHeading(position, fpOrigin.infos.coordinates), SimVar.GetSimVarValue("MAGVAR", "degrees"))),
+                    bearing: AutopilotMath.normalizeHeading(GeoMath.correctMagvar(Avionics.Utils.computeGreatCircleHeading(position, fpOrigin.infos.coordinates), SimVar.GetSimVarValue("MAGVAR", "degrees"))),
                     latitude: 0,
                     longitude: 0,
                     longestRunway: airportsSorted.find(a => {return a.ident == "origin"}).longestRunway,
@@ -245,7 +245,7 @@ class CJ4_FMC_DirectToPage {
                     ident: fpDest.ident,
                     icao: fpDest.icao,
                     distance: Avionics.Utils.computeGreatCircleDistance(position, fpDest.infos.coordinates),
-                    bearing: fmc._lnav.normalizeCourse(GeoMath.correctMagvar(Avionics.Utils.computeGreatCircleHeading(position, fpDest.infos.coordinates), SimVar.GetSimVarValue("MAGVAR", "degrees"))),
+                    bearing: AutopilotMath.normalizeHeading(GeoMath.correctMagvar(Avionics.Utils.computeGreatCircleHeading(position, fpDest.infos.coordinates), SimVar.GetSimVarValue("MAGVAR", "degrees"))),
                     latitude: 0,
                     longitude: 0,
                     longestRunway: airportsSorted.find(a => {return a.ident == "destination"}).longestRunway,
