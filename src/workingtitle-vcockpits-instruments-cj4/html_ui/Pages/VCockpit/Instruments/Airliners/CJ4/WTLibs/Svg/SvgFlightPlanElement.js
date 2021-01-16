@@ -47,12 +47,27 @@ class SvgFlightPlanElement extends SvgMapElement {
 
             const fplnCount = (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) ? 2 : 1;
             for (let index = 0; index < fplnCount; index++) {
-                const waypoints = fpm.getAllWaypoints(index);
-                const activeWaypointIndex = fpm.getActiveWaypointIndex();
+                const plan = fpm.getFlightPlan(index);
+                const waypoints = plan.waypoints;
+
+                const activeWaypointIndex = plan.activeWaypointIndex;
+                const missedSegment = plan.getSegment(SegmentType.Missed);
 
                 if (waypoints.length > 1) {
-                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), index, map, 'magenta', false, true);
-                    this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), index, map, 'white', (index !== 0), false);
+
+                    const inMissedApproach = activeWaypointIndex >= missedSegment.offset;
+                    const mainPathEnd = inMissedApproach ? waypoints.length - 1 : missedSegment.offset;
+
+                    //Active leg
+                    this.buildPathFromWaypoints(waypoints, activeWaypointIndex - 1, activeWaypointIndex + 1, map, 'magenta', false);
+
+                    //Missed approach preview
+                    if (!inMissedApproach) {
+                        this.buildPathFromWaypoints(waypoints, missedSegment.offset - 1, waypoints.length - 1, map, 'cyan', (index !== 0));
+                    }  
+
+                    //Remainder of plan
+                    this.buildPathFromWaypoints(waypoints, activeWaypointIndex, mainPathEnd, map, 'white', (index !== 0));
                 }
             }
         }
@@ -64,7 +79,7 @@ class SvgFlightPlanElement extends SvgMapElement {
      * @param {MapInstrument} map The map instrument to convert coordinates with.
      * @returns {string} A path string.
      */
-    buildPathFromWaypoints(waypoints, planIndex, map, style = 'white', isDashed = false, isActiveLeg = false) {
+    buildPathFromWaypoints(waypoints, startIndex, endIndex, map, style = 'white', isDashed = false) {
         const context = this._flightPathCanvas.getContext('2d');
         context.beginPath();
 
@@ -75,36 +90,13 @@ class SvgFlightPlanElement extends SvgMapElement {
         } else {
             context.setLineDash([]);
         }
-
-        const plan = this.source.getFlightPlan(planIndex);
-
-        const missedSegment = plan.getSegment(SegmentType.Missed);
-        const approachSegment = plan.getSegment(SegmentType.Approach);
-
-        const activeIndex = plan.activeWaypointIndex;
-        const drawDestination = approachSegment.waypoints.length === 0;
-        const drawMissedSegment = missedSegment.waypoints.length > 0 && activeIndex >= missedSegment.offset;
-
-        let waypointsToDraw = waypoints.length - (missedSegment.waypoints.length + 1);
-        if (!isActiveLeg) {
-            if (drawMissedSegment) {
-                waypointsToDraw += missedSegment.waypoints.length;
-            }
-    
-            if (drawDestination) {
-                waypointsToDraw++;
-            }
-        }
-        else {
-            waypointsToDraw = waypoints.length;
-        }
     
         let prevWaypoint;
-        for (let i = 0; i < waypointsToDraw; i++) {
+        for (let i = startIndex; i < endIndex; i++) {
             const waypoint = waypoints[i];
             const pos = map.coordinatesToXY(waypoint.infos.coordinates);
 
-            if (i === 0 || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
+            if (i === startIndex || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
                 context.moveTo(pos.x, pos.y);
             }
             else {
@@ -131,7 +123,7 @@ class SvgFlightPlanElement extends SvgMapElement {
             prevWaypoint = waypoint;
         }
 
-        for (let i = isActiveLeg ? 0 : 1; i < waypointsToDraw; i++) {
+        for (let i = startIndex + 1; i < endIndex; i++) {
             const waypoint = waypoints[i];
             if (waypoint.hasHold) {
 
