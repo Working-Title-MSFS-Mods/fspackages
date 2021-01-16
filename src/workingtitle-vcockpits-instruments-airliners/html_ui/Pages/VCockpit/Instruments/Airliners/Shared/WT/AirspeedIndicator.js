@@ -1970,9 +1970,6 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         frameIASAcceleration = Math.max(frameIASAcceleration, -10);
         if (isFinite(frameIASAcceleration)) {
             this._computedIASAcceleration += (frameIASAcceleration - this._computedIASAcceleration) / (50 / ((newIASTime.t - this._lastIASTime.t) / .016));
-            console.log("Accel " + this._computedIASAcceleration);
-            //this._computedIASAcceleration *= 0.998;
-            //this._computedIASAcceleration += frameIASAcceleration * 0.002;
         }
         this._lastIASTime = newIASTime;
         let accel = this._computedIASAcceleration * 6;

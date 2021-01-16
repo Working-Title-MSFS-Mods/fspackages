@@ -465,7 +465,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
-                this._lnav = new LNavDirector(this.flightPlanManager);
+                this._lnav = new LNavDirector(this.flightPlanManager, this._navModeSelector);
             }
             else {
                 this._lnav.update();
@@ -489,7 +489,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
             //TAKEOFF MODE HEADING SET (constant update to current heading when on takeoff roll)
             if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO && Simplane.getIsGrounded()) {
-                Coherent.call("HEADING_BUG_SET", 1, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
+                Coherent.call("HEADING_BUG_SET", 2, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
             }
 
             //WT MANUAL BANK FD
