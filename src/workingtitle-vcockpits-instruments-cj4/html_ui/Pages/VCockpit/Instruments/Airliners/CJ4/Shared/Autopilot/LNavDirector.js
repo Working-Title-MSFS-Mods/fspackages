@@ -51,7 +51,7 @@ class LNavDirector {
       const previousWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex - 1);
       const activeWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex);
         
-      if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint) {
+      if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint && previousWaypoint) {
         const planeState = LNavDirector.getAircraftState();
 
         const navSensitivity = this.getNavSensitivity(planeState.position);
