@@ -207,8 +207,27 @@ class CJ4NavModeSelector {
       this._handlers[event]();
     }
 
+    let lateralMode = this.currentLateralActiveState;
+
+    if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+      switch(this.approachMode) {
+        case WT_ApproachType.RNAV:
+        case WT_ApproachType.VISUAL:
+        case WT_ApproachType.NONE:
+          lateralMode = "APPR FMS1";
+          break;
+        case WT_ApproachType.ILS:
+          if (this.lNavModeState === LNavModeState.NAV1) {
+            lateralMode = "APPR LOC1";
+          } else if (this.lNavModeState === LNavModeState.NAV2) {
+            lateralMode = "APPR LOC2";
+          }
+          break;
+      }
+    }
+
     const fmaValues = {
-      lateralMode: this.currentLateralActiveState,
+      lateralMode: lateralMode,
       lateralArmed: "",
       verticalMode: `${this.isVNAVOn ? "V" : ""}${this.currentVerticalActiveState}`,
       verticalArmed1: this.currentArmedAltitudeState !== VerticalNavModeState.NONE ? this.currentArmedAltitudeState : "",
@@ -502,12 +521,22 @@ class CJ4NavModeSelector {
       console.log("altLockValue " + altLockValue);
       console.log("this.selectedAlt1 " + Math.floor(this.selectedAlt1));
       console.log("this.selectedAlt2 " + Math.floor(this.selectedAlt2));
+      console.log("this.currentAltitudeTracking " + this.currentAltitudeTracking);
+      console.log("this.managedAltitudeTarget " + this.managedAltitudeTarget);
       if (altLockValue == Math.floor(this.selectedAlt1) && this.currentVerticalActiveState !== VerticalNavModeState.ALTS) {
         this.currentVerticalActiveState = VerticalNavModeState.ALTS;
-      } else if ((altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)
-      || this.currentAltitudeTracking === AltitudeState.MANAGED) && this.currentVerticalActiveState !== VerticalNavModeState.ALTS) {
+      }
+      else if ((altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)) 
+        && this.currentVerticalActiveState !== VerticalNavModeState.ALTV) {
+        console.log("altLockValue == Math.floor(this.selectedAlt2) " + altLockValue == Math.floor(this.selectedAlt2));
+        console.log("altLockValue == Math.floor(this.managedAltitudeTarget) " + altLockValue == Math.floor(this.managedAltitudeTarget));
+        console.log("this.currentAltitudeTracking === AltitudeState.MANAGED) " + this.currentAltitudeTracking === AltitudeState.MANAGED);
+
+
+        console.log("checkCorrectAltMode setting ALTV");
         this.currentVerticalActiveState = VerticalNavModeState.ALTV;
-      } else {
+      }
+      else {
         this.currentVerticalActiveState = VerticalNavModeState.ALT;
       }
     }
