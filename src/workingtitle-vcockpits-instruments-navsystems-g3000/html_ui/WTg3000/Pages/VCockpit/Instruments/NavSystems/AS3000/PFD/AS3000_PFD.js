@@ -75,6 +75,10 @@ class AS3000_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this.warnings));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
         this.maxUpdateBudget = 12;
+
+        Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+        });
     }
 
     disconnectedCallback() {
@@ -765,6 +769,19 @@ class AS3000_PFD_Compass extends PFD_Compass {
     }
 }
 class AS3000_PFD_BottomInfos extends NavSystemElement {
+    constructor() {
+        super();
+
+        this._initTimer();
+    }
+
+    _initTimer() {
+        this._timer = new WT_Timer("Generic");
+        this._timer.clear();
+
+        this._timerFormatter = new WT_TimeFormatter({round: 0});
+    }
+
     init(root) {
         this.tas = this.gps.getChildById("TAS_Value");
         this.oat = this.gps.getChildById("OAT_Value");
@@ -773,18 +790,27 @@ class AS3000_PFD_BottomInfos extends NavSystemElement {
         this.timer = this.gps.getChildById("TMR_Value");
         this.utcTime = this.gps.getChildById("UTC_Value");
     }
+
     onEnter() {
     }
-    onUpdate(_deltaTime) {
+
+    _updateTimer() {
+        this._timer.update();
+        Avionics.Utils.diffAndSet(this.timer, this._timerFormatter.getFormattedString(this._timer.value));
+    }
+
+    onUpdate(deltaTime) {
         Avionics.Utils.diffAndSet(this.tas, fastToFixed(Simplane.getTrueSpeed(), 0) + "KT");
         Avionics.Utils.diffAndSet(this.oat, fastToFixed(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"), 0) + "°C");
         Avionics.Utils.diffAndSet(this.gs, fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0) + "KT");
         Avionics.Utils.diffAndSet(this.isa, fastToFixed(SimVar.GetSimVarValue("STANDARD ATM TEMPERATURE", "celsius"), 0) + "°C");
         Avionics.Utils.diffAndSet(this.utcTime, Utils.SecondsToDisplayTime(SimVar.GetGlobalVarValue("ZULU TIME", "seconds"), true, true, false));
-        Avionics.Utils.diffAndSet(this.timer, Utils.SecondsToDisplayTime(SimVar.GetSimVarValue("L:AS3000_" + this.gps.urlConfig.index + "_Timer_Value", "number") / 1000, true, true, false));
+        this._updateTimer();
     }
+
     onExit() {
     }
+
     onEvent(_event) {
     }
 }
