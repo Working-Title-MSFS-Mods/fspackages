@@ -562,7 +562,7 @@ class WT_FlightPlan {
             await this._buildLegsFromProcedure(transition.legs, legs);
         }
         await this._buildLegsFromProcedure(approach.finalLegs, legs);
-        legs.push(new WT_FlightPlanWaypointFixLeg(new WT_CustomWaypoint(runway.designation, runway.start))); // runway fix
+        legs.push(new WT_FlightPlanWaypointFixLeg(new WT_RunwayWaypoint(runway))); // runway fix
         let eventData = {types: 0};
         this._changeApproach(new WT_FlightPlanApproach(approach, transitionIndex, legs), eventData);
         if (this.hasArrival()) {
