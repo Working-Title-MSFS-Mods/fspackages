@@ -19,8 +19,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         this._topLeft = new WT_GVector2(0, 0);
         this._margin = 0;
 
-        this._clipExtent = [[0, 0], [0, 0]];
-        this._translate = [0, 0];
+        this._viewClipExtent = [new WT_GVector2(0, 0), new WT_GVector2(0, 0)];
+        this._translate = new WT_GVector2(0, 0);
 
         this._tempVector = new WT_GVector2(0, 0);
     }
@@ -50,8 +50,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         let left = -(width - this._nominalWidth) / 2;
         this.display.canvas.style.left = `${left}px`;
         this._topLeft.set(left, this._topLeft.y);
-        this._clipExtent[1][0] = width;
-        this._translate[0] = width / 2;
+        this._viewClipExtent[1].set(width, this.height);
+        this._translate.set(width / 2, this._translate.y);
         this._updateProjectionRenderers();
     }
 
@@ -68,8 +68,8 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         let top = -(height - this._nominalHeight) / 2;
         this.display.canvas.style.top = `${top}px`;
         this._topLeft.set(this._topLeft.x, top);
-        this._clipExtent[1][1] = height;
-        this._translate[1] = height / 2;
+        this._viewClipExtent[1].set(this.width, height);
+        this._translate.set(this._translate.x, height / 2);
         this._updateProjectionRenderers();
     }
 
@@ -116,11 +116,11 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
 
     _updateProjectionRenderers() {
         if (this.display.projectionRenderer) {
-            this.display.projectionRenderer.projection.clipExtent(this._clipExtent);
-            this.buffer.projectionRenderer.projection.clipExtent(this._clipExtent);
+            this.display.projectionRenderer.viewClipExtent = this._viewClipExtent;
+            this.buffer.projectionRenderer.viewClipExtent = this._viewClipExtent;
 
-            this.display.projectionRenderer.projection.translate(this._translate);
-            this.buffer.projectionRenderer.projection.translate(this._translate);
+            this.display.projectionRenderer.translate = this._translate;
+            this.buffer.projectionRenderer.translate = this._translate;
         }
     }
 
@@ -164,9 +164,9 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         this.display.reference.scale = this.buffer.reference.scale;
         this.display.reference.rotation = this.buffer.reference.rotation;
 
-        this.display.projectionRenderer.projection.center(this.buffer.projectionRenderer.projection.center());
-        this.display.projectionRenderer.projection.scale(this.buffer.projectionRenderer.projection.scale());
-        this.display.projectionRenderer.projection.angle(this.buffer.projectionRenderer.projection.angle());
+        this.display.projectionRenderer.center = this.buffer.projectionRenderer.center;
+        this.display.projectionRenderer.scale = this.buffer.projectionRenderer.scale;
+        this.display.projectionRenderer.rotation = this.buffer.projectionRenderer.rotation;
     }
 
     _updateReference(state, reference) {
@@ -199,6 +199,10 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         state.projection.syncRenderer(this.buffer.projectionRenderer);
     }
 
+    /**
+     * @param {WT_MapViewState} state
+     * @param {Boolean} [fromBuffer]
+     */
     redrawDisplay(state, fromBuffer = true) {
         this.display._isInvalid = false;
         this.display.clear();
@@ -208,7 +212,6 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         } else {
             this._updateReference(state, this.display.reference);
             state.projection.syncRenderer(this.display.projectionRenderer);
-
         }
         this._updateTransform(state, this.display.reference, this.display.transform);
         this._transformDisplay();
