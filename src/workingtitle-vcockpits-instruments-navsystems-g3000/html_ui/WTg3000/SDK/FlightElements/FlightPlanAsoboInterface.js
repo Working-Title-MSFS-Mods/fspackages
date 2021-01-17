@@ -196,6 +196,7 @@ class WT_FlightPlanAsoboInterface {
             } else {
                 return null;
             }
+            index--;
         } else {
             legs = flightPlan.legs();
         }
