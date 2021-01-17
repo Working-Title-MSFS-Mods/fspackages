@@ -202,6 +202,15 @@ class WT_MapViewINTImageIcon extends WT_MapViewWaypointImageIcon {
 }
 
 /**
+ * A map icon for a runway waypoint.
+ */
+class WT_MapViewRunwayWaypointImageIcon extends WT_MapViewWaypointImageIcon {
+    get imageFileName() {
+        return "ICON_MAP_INTERSECTION.svg";
+    }
+}
+
+/**
  * A factory for waypoint icons.
  * @abstract
  */
@@ -254,7 +263,7 @@ class WT_MapViewWaypointImageIconFactory extends WT_MapViewWaypointIconFactory {
      * @returns {WT_MapViewWaypointImageIcon} a waypoint icon.
      */
     getIcon(waypoint, priority) {
-        if (waypoint.icao) {
+        if (waypoint instanceof WT_ICAOWaypoint) {
             switch (waypoint.type) {
                 case WT_ICAOWaypoint.Type.AIRPORT:
                     return new WT_MapViewAirportImageIcon(waypoint, priority, this.imageDirectory);
@@ -265,6 +274,9 @@ class WT_MapViewWaypointImageIconFactory extends WT_MapViewWaypointIconFactory {
                 case WT_ICAOWaypoint.Type.INT:
                     return new WT_MapViewINTImageIcon(waypoint, priority, this.imageDirectory);
             }
+        }
+        if (waypoint instanceof WT_RunwayWaypoint) {
+            return new WT_MapViewRunwayWaypointImageIcon(waypoint, priority, this.imageDirectory);
         }
     }
 }
