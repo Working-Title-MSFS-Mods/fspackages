@@ -1,4 +1,3 @@
-import { WayPoint } from "MSFS";
 import { FlightPlanSegment } from "../wtsdk";
 
 /**

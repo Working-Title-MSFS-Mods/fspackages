@@ -3,7 +3,6 @@ import { LegsProcedure } from './LegsProcedure';
 import { RawDataMapper } from './RawDataMapper';
 import { ProcedureDetails } from './ProcedureDetails';
 import { DirectTo } from './DirectTo';
-import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar, OneWayRunway } from 'MSFS';
 import { GeoMath } from './GeoMath';
 
 /**

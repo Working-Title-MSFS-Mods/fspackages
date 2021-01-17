@@ -2,21 +2,25 @@
     "compilerOptions": {
         "target": "ES2017",
         "typeRoots": [
-            "./types"
+            "./src/types"
         ],
         "lib": [
             "es2017",
             "dom"
         ],
         "allowJs": true,
-        "isolatedModules": true,
-        "esModuleInterop": true,
-        "outDir": "./.tmp",
+        //"isolatedModules": true,
+        // "esModuleInterop": true,
+        // "outDir": "./.tmp",
         "sourceMap": false,
-        "skipLibCheck": false,
+        // "skipLibCheck": false,
+        "noEmit": true
 
     },
+    "filesGlob": [
+        "./src/types/**/*.d.ts"
+    ],
     "include": [
-        "src"
+        "./src"
     ]
 }

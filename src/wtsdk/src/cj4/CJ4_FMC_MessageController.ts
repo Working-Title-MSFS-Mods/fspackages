@@ -1,8 +1,7 @@
 import { MessageController } from "../messages/MessageController";
 import { MessageDefinition, MessageLevel } from "../messages/MessageDefinition";
 import { Message } from "../messages/Message";
-import { Simplane, SimVar } from "MSFS";
-import { CJ4_FMC } from "WorkingTitle";
+
 export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Message> {
 
   constructor(protected _instrument: CJ4_FMC) {

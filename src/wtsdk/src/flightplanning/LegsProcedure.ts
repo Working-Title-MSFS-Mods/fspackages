@@ -1,4 +1,3 @@
-import { WayPoint, ProcedureLeg, BaseInstrument, LatLongAlt, IntersectionInfo, Avionics } from 'MSFS';
 import { FixNamingScheme } from './FixNamingScheme';
 import { GeoMath } from './GeoMath';
 import { HoldDetails, HoldTurnDirection } from './HoldDetails';

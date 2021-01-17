@@ -1,5 +1,3 @@
-import { Coherent, RegisterViewListener } from "MSFS"
-import { WTDataStore } from "WorkingTitle";
 import { FlightPlanManager } from "./FlightPlanManager";
 
 /** A class for syncing a flight plan with the game */

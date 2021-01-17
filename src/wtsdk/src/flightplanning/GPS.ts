@@ -1,5 +1,3 @@
-import { LatLongAlt, SimVar } from 'MSFS';
-
 /**
  * Methods for interacting with the FS9GPS subsystem.
  */
