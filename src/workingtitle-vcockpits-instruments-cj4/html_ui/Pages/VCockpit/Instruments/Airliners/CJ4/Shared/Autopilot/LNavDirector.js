@@ -182,10 +182,10 @@ class LNavDirector {
    * @param {number} turnAngle The next turn angle, in degrees.
    */
   getAnticipationDistance(planeState, turnAngle) {
-    const turnRadius = AutopilotMath.turnRadius(planeState.groundSpeed, this.options.maxBankAngle);
+    const turnRadius = AutopilotMath.turnRadius(planeState.trueAirspeed, this.options.maxBankAngle);
 
     const bankDiff = (Math.sign(turnAngle) * this.options.maxBankAngle) - planeState.bankAngle;
-    const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * (planeState.groundSpeed / 3600);
+    const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * (planeState.trueAirspeed / 3600);
 
     const turnAnticipationAngle = Math.min(this.options.maxTurnAnticipationAngle, Math.abs(turnAngle)) * Avionics.Utils.DEG2RAD;
     return Math.min((turnRadius * Math.abs(Math.tan(turnAnticipationAngle)) / 2) + enterBankDistance, this.options.maxTurnAnticipationDistance(planeState));
