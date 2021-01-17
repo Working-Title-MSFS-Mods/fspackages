@@ -432,6 +432,36 @@ class WT_ProcedureLegList {
     }
 }
 
+class WT_InitialFix extends WT_ProcedureLeg {
+    constructor(procedure, data) {
+        super(procedure, WT_ProcedureLeg.Type.INITIAL_FIX, data);
+    }
+
+    _initFromData(data) {
+        super._initFromData(data);
+
+        this._fixICAO = data.fixIcao;
+    }
+
+    /**
+     * @readonly
+     * @property {String} fixICAO - the ICAO string of the terminal waypoint fix for this leg.
+     * @type {String}
+     */
+    get fixICAO() {
+        return this._fixICAO;
+    }
+
+    /**
+     * Generates a (terminal) waypoint fix for this leg.
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     */
+    async waypointFix(icaoWaypointFactory) {
+        return icaoWaypointFactory.getWaypoint(this.fixICAO);
+    }
+}
+
 class WT_ProcedureLegCourse extends WT_ProcedureLeg {
     _initFromData(data) {
         super._initFromData(data);
@@ -453,6 +483,10 @@ class WT_ProcedureLegCourse extends WT_ProcedureLeg {
  * A procedure leg consisting of flying a direct course to a pre-defined waypoint fix.
  */
 class WT_FlyToFix extends WT_ProcedureLegCourse {
+    constructor(procedure, data) {
+        super(procedure, WT_ProcedureLeg.Type.FIX, data);
+    }
+
     _initFromData(data) {
         super._initFromData(data);
 
@@ -820,12 +854,12 @@ class ProcedureLegFactory {
      */
     static createFromData(procedure, data) {
         switch (data.type) {
-            case 7:
             case 15:
+                return new WT_InitialFix(procedure, data);
+            case 7:
             case 17:
             case 18:
-                let type = data.type === 15 ? WT_ProcedureLeg.Type.INITIAL_FIX : WT_ProcedureLeg.Type.FIX;
-                return new WT_FlyToFix(procedure, type, data);
+                return new WT_FlyToFix(procedure, data);
             case 3:
                 return new WT_FlyHeadingUntilDistanceFromReference(procedure, data);
             case 4:

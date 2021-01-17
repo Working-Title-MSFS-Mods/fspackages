@@ -381,15 +381,15 @@ class WT_FlightPlan {
      * @param {WT_FlightPlanProcedureLeg[]} legs
      */
     async _buildLegsFromProcedure(procedureLegs, legs) {
-        let previous = legs.length > 0 ? legs[legs.length - 1].fix : undefined;
         for (let i = 0; i < procedureLegs.count(); i++) {
-            let current = procedureLegs.getByIndex(i);
-            let next = procedureLegs.getByIndex(i + 1);
+            let previous = legs[legs.length - 1];
+            let previousFix = previous ? previous.fix : undefined;
+            let currentProcLeg = procedureLegs.getByIndex(i);
+            let nextProcLeg = procedureLegs.getByIndex(i + 1);
             try {
-                let fix = await current.waypointFix(this._icaoWaypointFactory, previous, next);
-                if (fix) {
-                    legs.push(new WT_FlightPlanProcedureLeg(current, fix));
-                    previous = fix;
+                let fix = await currentProcLeg.waypointFix(this._icaoWaypointFactory, previousFix, nextProcLeg);
+                if (fix && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && fix.equals(previousFix))) {
+                    legs.push(new WT_FlightPlanProcedureLeg(currentProcLeg, fix));
                 }
             } catch (e) {}
         }
