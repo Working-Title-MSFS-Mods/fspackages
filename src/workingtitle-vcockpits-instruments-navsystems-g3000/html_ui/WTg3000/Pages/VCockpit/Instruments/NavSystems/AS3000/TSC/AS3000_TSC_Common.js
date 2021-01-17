@@ -48,7 +48,7 @@ class AS3000_TSC_NavButton {
 class AS3000_TSC extends NavSystemTouch {
     constructor() {
         super();
-        this.timer = new AS3000_TSC_Timers();
+
         this.speedBugs = this.createSpeedBugsPage();
         this.pfdPrefix = "AS3000_PFD_1";
         this._isChangingPages = false;
@@ -177,7 +177,7 @@ class AS3000_TSC extends NavSystemTouch {
             new NavSystemPageGroup("PFD", this, [
                 new NavSystemPage("PFD Home", "PFDHome", new AS3000_TSC_PFDHome()),
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
-                new NavSystemPage("Timers", "Timers", this.timer),
+                new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD Home", "PFD", "Generic")),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
                 this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
                 new NavSystemPage("PFD Settings", "PFDSettings", new WT_G3000_TSCPFDSettings("PFD", "PFD Home", "PFD")),
@@ -331,8 +331,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.icaoWaypointFactory.update();
 
         this._updatePageTitle();
-        SimVar.SetSimVarValue("L:AS3000_" + this.urlConfig.index + "_Timer_Value", "number", this.timer.getCurrentDisplay());
-
         this._updateSoftkeyLabels();
         this._updateMFDPaneSelectDisplay();
     }
@@ -3437,112 +3435,6 @@ class AS3000_TSC_DuplicateWaypointSelection extends NavSystemTouch_DuplicateWayp
     onButtonClick(_index) {
         super.onButtonClick(_index);
         this.gps.goBack();
-    }
-}
-class AS3000_TSC_Timers extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.isCountingDown = false;
-        this.isCounting = false;
-        this.baseTime = 0;
-        this.beginTime = 0;
-        this.initialValue = 0;
-    }
-    init(root) {
-        this.UpButton = this.gps.getChildById("TMR_UpButton");
-        this.DownButton = this.gps.getChildById("TMR_DownButton");
-        this.ResetButton = this.gps.getChildById("TMR_ResetButton");
-        this.StopButton = this.gps.getChildById("TMR_StopButton");
-        this.StopButtonTitle = this.StopButton.getElementsByClassName("upperTitle")[0];
-        this.Timer = this.gps.getChildById("TMR_Timer");
-        this.gps.makeButton(this.UpButton, this.setCountingDown.bind(this, false));
-        this.gps.makeButton(this.DownButton, this.setCountingDown.bind(this, true));
-        this.gps.makeButton(this.StopButton, this.switchCounting.bind(this));
-        this.gps.makeButton(this.ResetButton, this.reinitialize.bind(this));
-        this.gps.makeButton(this.Timer, this.openKeyboard.bind(this));
-    }
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onUpdate(_deltaTime) {
-        if (this.isCountingDown) {
-            Avionics.Utils.diffAndSetAttribute(this.UpButton, "state", "");
-            Avionics.Utils.diffAndSetAttribute(this.DownButton, "state", "Active");
-        }
-        else {
-            Avionics.Utils.diffAndSetAttribute(this.DownButton, "state", "");
-            Avionics.Utils.diffAndSetAttribute(this.UpButton, "state", "Active");
-        }
-        Avionics.Utils.diffAndSet(this.StopButtonTitle, this.isCounting ? "Stop" : "Start");
-        Avionics.Utils.diffAndSet(this.Timer, this.formatTimeFromMS(this.getCurrentDisplay()));
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-    onEvent(_event) {
-    }
-    setCountingDown(_state) {
-        let currTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds") * 1000;
-        if (this.isCounting) {
-            this.baseTime = this.isCountingDown ? this.baseTime + this.beginTime - currTime : this.baseTime - this.beginTime + currTime;
-            this.beginTime = currTime;
-        }
-        this.isCountingDown = _state;
-    }
-    switchCounting() {
-        let currTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds") * 1000;
-        this.isCounting = !this.isCounting;
-        if (this.isCounting) {
-            this.beginTime = currTime;
-        }
-        else {
-            this.baseTime = this.isCountingDown ? this.baseTime + this.beginTime - currTime : this.baseTime - this.beginTime + currTime;
-        }
-    }
-    formatTimeFromMS(_time) {
-        let seconds = fastToFixed(Math.floor(_time / 1000) % 60, 0);
-        let minutes = fastToFixed(Math.floor(_time / 60000) % 60, 0);
-        let hours = fastToFixed(Math.floor(_time / 3600000) % 24, 0);
-        return "00".slice(0, 2 - hours.length) + hours + ":" + "00".slice(0, 2 - minutes.length) + minutes + ":" + "00".slice(0, 2 - seconds.length) + seconds;
-    }
-    reinitialize() {
-        if (this.isCounting) {
-            this.switchCounting();
-        }
-        this.baseTime = (this.isCountingDown ? this.initialValue : 0);
-    }
-    openKeyboard() {
-        this.gps.timeKeyboard.getElementOfType(AS3000_TSC_TimeKeyboard).setContext(this.endKeyboardCallback.bind(this), this.getCurrentDisplay(), "PFD", "PFD Home");
-        this.gps.switchToPopUpPage(this.gps.timeKeyboard);
-    }
-    endKeyboardCallback(_value) {
-        let currTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds") * 1000;
-        this.baseTime = _value;
-        this.beginTime = currTime;
-        this.initialValue = _value;
-    }
-    getCurrentDisplay() {
-        let currTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds") * 1000;
-        if (this.isCountingDown && this.isCounting && this.baseTime + this.beginTime - currTime <= 0) {
-            this.setCountingDown(false);
-            this.baseTime = 0;
-            this.beginTime = currTime;
-        }
-        if (!this.isCountingDown && this.isCounting && this.baseTime - this.beginTime + currTime >= 86400000) {
-            this.baseTime = 0;
-            this.beginTime = currTime;
-        }
-        return this.isCounting ? this.isCountingDown ? this.baseTime + this.beginTime - currTime : this.baseTime - this.beginTime + currTime : this.baseTime;
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.back();
-        return true;
     }
 }
 class AS3000_TSC_Minimums extends NavSystemElement {

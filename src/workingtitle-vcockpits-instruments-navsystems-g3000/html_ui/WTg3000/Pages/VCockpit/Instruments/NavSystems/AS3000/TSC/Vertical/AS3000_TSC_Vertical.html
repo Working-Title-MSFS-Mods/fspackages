@@ -253,30 +253,6 @@
                     </div>
                 </div>
                 <div class="tscPage" id="Timers">
-                    <div class="gradientButton" id="TimerZone">
-                        <div class="sectionTitle">Time</div>
-                        <div id="TMR_Timer">00:00:00</div>
-                    </div>
-
-                    <div class="backgroundBox" id="CountSelection">
-                        <div class="sectionTitle">Count</div>
-                        <div class="gradientButton statusToggleButton" state="Active" id="TMR_UpButton">
-                            <div class="mainText">Up</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="TMR_DownButton">
-                            <div class="mainText">Down</div>
-                            <div class="statusBar"></div>
-                        </div>
-                    </div>
-
-                    <div class="gradientButton" id="TMR_ResetButton">
-                        <div class="mainText">Reset</div>
-                    </div>
-
-                    <div class="gradientButton" id="TMR_StopButton">
-                        <div class="mainText">Start</div>
-                    </div>
                 </div>
                 <div class="tscPage" id="Minimums">
                     <div class="gradientButton valueButton" id="min_typeButton">
@@ -1993,6 +1969,7 @@
 
 <script type="text/html" import-script="/WTg3000/SDK/Geo/GeoPoint.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Utils/Timer.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/PlayerAirplane.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/Frequency.js"></script>
@@ -2053,9 +2030,13 @@
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_NavMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDNavDataBar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCGradientDiv.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCTabbedView.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPopUpElement.js"></script>
@@ -2063,6 +2044,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCLoadFrequency.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCWaypointOptions.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTimer.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCPFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapPointerControl.js"></script>
