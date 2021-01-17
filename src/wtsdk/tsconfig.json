@@ -4,14 +4,7 @@
         "typeRoots": [
             "./src/types"
         ],
-        "lib": [
-            "es2017",
-            "dom"
-        ],
         "allowJs": true,
-        //"isolatedModules": true,
-        // "esModuleInterop": true,
-        // "outDir": "./.tmp",
         "sourceMap": false,
         // "skipLibCheck": false,
         "noEmit": true
