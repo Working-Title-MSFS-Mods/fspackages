@@ -635,6 +635,66 @@ WT_Runway.Surface = {
 };
 
 /**
+ * A waypoint centered on a runway.
+ */
+class WT_RunwayWaypoint extends WT_Waypoint {
+    /**
+     * @param {WT_Runway} runway - the runway associated with the new waypoint.
+     */
+    constructor(runway) {
+        super();
+
+        this._runway = runway;
+        this._ident = `RW${this.runway.number.toString().padStart(2, "0")}${this.runway.suffix}`;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_Runway} runway - the runway associated with this waypoint.
+     * @type {WT_Runway}
+     */
+    get runway() {
+        return this._runway;
+    }
+
+    /**
+     * @readonly
+     * @property {String} uniqueID - a unique identifier for this waypoint.
+     * @type {String}
+     */
+    get uniqueID() {
+        return `${this.runway.airport.uniqueID}-${this.ident}`;
+    }
+
+    /**
+     * @readonly
+     * @property {String} ident - the ident string for this waypoint.
+     * @type {String}
+     */
+    get ident() {
+        return this._ident;
+    }
+
+    /**
+     * @readonly
+     * @property {String} name - the name of this waypoint.
+     * @type {String}
+     */
+    get name() {
+        return `Runway ${this.runway.designation}`;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
+     * @type {WT_GeoPoint}
+     */
+    get location() {
+        return this.runway.location;
+    }
+}
+
+/**
  * A list of procedures.
  * @template T
  */
