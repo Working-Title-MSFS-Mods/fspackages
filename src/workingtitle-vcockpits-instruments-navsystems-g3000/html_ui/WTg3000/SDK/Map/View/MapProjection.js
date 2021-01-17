@@ -271,7 +271,12 @@ class WT_MapProjection {
             ratio = currentRange.ratio(this.range);
         }
         let center = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(currentCenterXY, this._tempArray2));
-        this._d3Projection.center(center);
+        this._tempArray1[0] = 0;
+        this._tempArray1[1] = center[1];
+        this._d3Projection.center(this._tempArray1);
+        this._tempArray1[0] = -center[0];
+        this._tempArray1[1] = 0;
+        this._d3Projection.rotate(this._tempArray1);
         WT_MapProjection.latLongProjectionToGame(center, this._center);
     }
 
@@ -528,9 +533,9 @@ class WT_MapProjection {
      * @param {WT_MapProjectionRenderer} renderer - the renderer to sync.
      */
     syncRenderer(renderer) {
-        renderer.projection.center(this._d3Projection.center());
-        renderer.projection.scale(this._d3Projection.scale());
-        renderer.projection.angle(this._d3Projection.angle());
+        renderer.center = this.center;
+        renderer.scale = this.scale;
+        renderer.rotation = this.rotation;
     }
 
     /**
@@ -913,30 +918,31 @@ class WT_MapProjectionRenderer {
         this._d3Projection = projection;
         this._d3Path = d3.geoPath().projection(projection);
 
+        this._center = new WT_GeoPoint(0, 0);
+        this._translate = new WT_GVector2(0, 0);
+
         this._tempVector = new WT_GVector2(0, 0);
         this._tempArray1 = [0, 0];
         this._tempArray2 = [0, 0];
+        this._tempBounds = [[0, 0], [0, 0]];
     }
 
     /**
-     * @readonly
-     * @property {d3.projection} projection - the d3.geo projection function used by this renderer.
-     * @type {d3.projection}
-     */
-    get projection() {
-        return this._d3Projection;
-    }
-
-    /**
-     * @property {LatLong} center - the center of the projection used by this renderer.
-     * @type {LatLong}
+     * @property {WT_GeoPoint} center - the center of the projection used by this renderer.
+     * @type {WT_GeoPoint}
      */
     get center() {
-        return WT_MapProjection.latLongProjectionToGame(this.projection.center());
+        return this._center.readonly();
     }
 
     set center(center) {
-        this.projection.center(WT_MapProjection.latLongGameToProjection(center));
+        this._tempArray1[0] = 0;
+        this._tempArray1[1] = center.lat;
+        this._d3Projection.center(this._tempArray1);
+        this._tempArray1[0] = -center.long;
+        this._tempArray1[1] = 0;
+        this._d3Projection.rotate(this._tempArray1);
+        this._center.set(center);
     }
 
     /**
@@ -945,11 +951,12 @@ class WT_MapProjectionRenderer {
      * @type {WT_GVector2}
      */
     get translate() {
-        return WT_MapProjection.xyProjectionToView(this.projection.translate());
+        return this._translate.readonly();
     }
 
     set translate(vector) {
-        this.projection.translate(WT_MapProjection.xyViewToProjection(vector, this._tempArray1));
+        this._d3Projection.translate(WT_MapProjection.xyViewToProjection(vector, this._tempArray1));
+        this._translate.set(vector);
     }
 
     /**
@@ -959,11 +966,11 @@ class WT_MapProjectionRenderer {
      * @type {Number}
      */
     get scale() {
-        return this.projection.scale();
+        return this._d3Projection.scale();
     }
 
     set scale(factor) {
-        this.projection.scale(factor);
+        this._d3Projection.scale(factor);
     }
 
     /**
@@ -972,11 +979,11 @@ class WT_MapProjectionRenderer {
      * @type {Number}
      */
     get rotation() {
-        return -this.projection.angle();
+        return -this._d3Projection.angle();
     }
 
     set rotation(angle) {
-        this.projection.angle(-angle);
+        this._d3Projection.angle(-angle);
     }
 
     /**
@@ -984,11 +991,11 @@ class WT_MapProjectionRenderer {
      * @type {Number}
      */
     get precision() {
-        return this.projection.precision();
+        return this._d3Projection.precision();
     }
 
     set precision(value) {
-        this.projection.precision(value);
+        this._d3Projection.precision(value);
     }
 
     /**
@@ -997,7 +1004,7 @@ class WT_MapProjectionRenderer {
      * @type {WT_GVector2[]}
      */
     get viewClipExtent() {
-        let value = this.projection.clipExtent();
+        let value = this._d3Projection.clipExtent();
         if (value !== null) {
             value = [
                 WT_MapProjection.xyProjectionToView(value[0]),
@@ -1009,12 +1016,12 @@ class WT_MapProjectionRenderer {
 
     set viewClipExtent(bounds) {
         if (bounds !== null) {
-            bounds = [
-                WT_MapProjection.xyProjectionToView(bounds[0]),
-                WT_MapProjection.xyProjectionToView(bounds[1])
-            ];
+            WT_MapProjection.xyViewToProjection(bounds[0], this._tempBounds[0]);
+            WT_MapProjection.xyViewToProjection(bounds[1], this._tempBounds[1]);
+            this._d3Projection.clipExtent(this._tempBounds);
+        } else {
+            this._d3Projection.clipExtent(null);
         }
-        this.projection.clipExtent(bounds);
     }
 
     /**
@@ -1029,9 +1036,9 @@ class WT_MapProjectionRenderer {
      */
     project(point, reference) {
         if (Array.isArray(point) && point.length >= 2) {
-            return this.projection(point, reference);
+            return this._d3Projection(point, reference);
         } else if (typeof point.lat === "number" && typeof point.long === "number") {
-            let projected = this.projection(WT_MapProjection.latLongGameToProjection(point, this._tempArray1), this._tempArray2);
+            let projected = this._d3Projection(WT_MapProjection.latLongGameToProjection(point, this._tempArray1), this._tempArray2);
             return WT_MapProjection.xyProjectionToView(projected, reference);
         } else {
             return undefined;
@@ -1049,9 +1056,9 @@ class WT_MapProjectionRenderer {
      */
     invert(point, reference) {
         if (Array.isArray(point) && point.length >= 2) {
-            return this.projection.invert(point, reference);
+            return this._d3Projection.invert(point, reference);
         } else if (typeof point.x === "number" && typeof point.y === "number") {
-            let inverse = this.projection.invert(WT_MapProjection.xyViewToProjection(point, this._tempArray1), this._tempArray2);
+            let inverse = this._d3Projection.invert(WT_MapProjection.xyViewToProjection(point, this._tempArray1), this._tempArray2);
             return WT_MapProjection.latLongProjectionToGame(inverse);
         } else {
             return undefined;
@@ -1177,16 +1184,6 @@ class WT_MapProjectionSyncedRenderer extends WT_MapProjectionRenderer {
      */
     get mapProjection() {
         return this._mapProjection;
-    }
-
-    /**
-     * @readonly
-     * @property {undefined} projection - this property is undefined for synced renderers to prevent access to and manipulation of
-     *                                    the owning map projection's underlying projection function.
-     * @type {undefined}
-     */
-    get projection() {
-        return undefined;
     }
 
     /**
