@@ -6,24 +6,29 @@
     "outlineWidth": "4"
   },
 
-  "waypointLabelFontSize": 16,
-  "waypointLabelFontFamily": "Consolas",
+  "waypointLabelFontSize": 24,
+  "waypointLabelFontFamily": "Collins ProLine",
   "waypointLabelColor": "white",
-  "waypointLabelStrokeColor": "white",
+  "waypointLabelStrokeColor": "#3f3f3f",
   "waypointLabelStrokeWidth": 0,
   "waypointLabelUseBackground": false,
-  "waypointLabelBackgroundColor": "#ffffff",
+  "waypointLabelBackgroundColor": "#3f4851",
   "waypointLabelBackgroundStrokeColor": "black",
   "waypointLabelBackgroundStrokeWidth": 0,
-  "waypointLabelBackgroundPadding": "5 5 5 5",
-  "waypointLabelDistanceX": 35,
-  "waypointLabelDistance": 5,
-  "waypointIconSize": 22,
+  "waypointLabelBackgroundPadding": "2 2 2 2",
+  "waypointLabelDistanceX": 43,
+  "waypointLabelDistance": 0,
+  "waypointIconSize": 28,
+
+  "vorLabelColor": "cyan",
+  "ndbLabelColor": "cyan",
+  "airportLabelColor": "cyan",
+  "intersectionLabelColor": "cyan",
 
   "preventLabelOverlap": false,
 
   "cityLabelFontSize": 24,
-  "cityLabelFontFamily": "Consolas",
+  "cityLabelFontFamily": "Collins ProLine",
   "cityLabelColor": "#black",
   "cityLabelStrokeColor": "#3f3f3f",
   "cityLabelStrokeWidth": 0,
@@ -39,7 +44,7 @@
   "airplaneIcon1": "ICON_MAP_PLANE",
   "airplaneIcon2": "ICON_MAP_PLANE",
 
-  "imagesDir": "/Pages/VCockpit/Instruments/Airliners/Shared/MFD/Images/",
+  "imagesDir": "/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/",
 
   "runwayFillColor": "white",
   "runwayStrokeColor": "gray",
@@ -49,7 +54,7 @@
 
   "latLonStrokeColor": "gray",
   "latLonStrokeWidth": 1,
-  "latLonLabelFontFamily": "Consolas",
+  "latLonLabelFontFamily": "Collins ProLine",
   "latLonLabelFontSize": 14,
   "latLonLabelColor": "white",
   "latLonLabelStrokeColor": "none",

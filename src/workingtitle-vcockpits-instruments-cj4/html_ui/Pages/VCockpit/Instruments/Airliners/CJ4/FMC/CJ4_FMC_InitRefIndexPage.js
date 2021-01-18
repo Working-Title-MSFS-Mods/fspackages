@@ -10,7 +10,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
-            ["<POS INIT", "HOLD>[disabled]"], //N/A ---- 12
+            ["<POS INIT", "HOLD>"], //N/A ---- 12
             [" FMS1[s-text]"],
             ["<VORDME CTL[disabled]", "PROG>"], //Page 6 ---- 13, 14
             [" FMS1[s-text]"],
@@ -25,7 +25,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onRightInput[0] = () => { CJ4_FMC_InitRefIndexPage.ShowPage9(fmc); };
         fmc.onRightInput[1] = () => { CJ4_FMC_FrequencyPage.ShowMainPage(fmc); };
         fmc.onRightInput[2] = () => { CJ4_FMC_InitRefIndexPage.ShowPage11(fmc); };
-        fmc.onRightInput[3] = () => { CJ4_FMC_InitRefIndexPage.ShowPage12(fmc); };
+        fmc.onRightInput[3] = () => { CJ4_FMC_HoldsPage.handleHoldPressed(fmc); };
         fmc.onRightInput[4] = () => { CJ4_FMC_InitRefIndexPage.ShowPage13(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.onPrevPage = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(fmc); };
@@ -205,7 +205,7 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage32(fmc) { //IDENT
         fmc.clearDisplay();
         const mtow = WT_ConvertUnit.getWeight(1, "17110 LB", "7761 KG").Unit;
-        
+
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue]", "IDENT[blue]"],
             [" MODEL[blue]", "VARIANT [blue]"],
@@ -364,25 +364,7 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage12(fmc) { //HOLD
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT LEGS[blue]", "1/1[blue] "],
-            ["FIX   ENTRY[blue]", "HOLD SPD[blue]"],
-            ["fix" + "   DIRECT", "FAA/ICAO"],
-            ["QUAD/RADIAL[blue]", "MAX KIAS[blue]"],
-            ["NW/290\xB0", "265"],
-            ["INBD CRS/DIR[blue]", "FIX ETA[blue]"],
-            ["110\xB0 / R TURN", "time"],
-            ["LEG TIME[blue]", "EFC TIME[blue]"],
-            ["2.2 MIN", "18:35"],
-            ["LEG DIST[blue]"],
-            ["15.0 NM", "NEW HOLD>"],
-            ["-------- HOLD AT -------[blue]"],
-            ["□□□□□", "LEG WIND>"]
-        ]);
-        fmc.updateSideButtonActiveStatus();
-    }
+
     //method to calculate ETE
     static calcETEseconds(distance, currGS) {
         return (distance / currGS) * 3600;
@@ -416,7 +398,7 @@ class CJ4_FMC_InitRefIndexPage {
                 let fuelQuantityRight = Math.trunc(6.7 * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
                 let fuelQuantityTotal = fuelQuantityRight + fuelQuantityLeft;
                 let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
-                + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
+                    + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
                 //default values
                 let prevWaypointIdent = "-----";
@@ -546,16 +528,16 @@ class CJ4_FMC_InitRefIndexPage {
             let currCrosswind = Math.trunc(currWindSpeed * (Math.sin((track * Math.PI / 180) - (currWindDirection * Math.PI / 180))));
 
             let headwindDirection = currHeadwind > 0 ? "HEADWIND"
-            : currHeadwind < 0 ? "TAILWIND"
-                : "TAILWIND";
+                : currHeadwind < 0 ? "TAILWIND"
+                    : "TAILWIND";
 
             let crosswinddirection = currCrosswind > 0 ? "L"
                 : currCrosswind < 0 ? "R"
-                : "";
+                    : "";
 
             let xtkDirection = xtk > 0 ? "L"
                 : xtk < 0 ? "R"
-                : "";
+                    : "";
 
             fmc._templateRenderer.setTemplateRaw([
                 [" PROGRESS[blue]", "2/2 [blue]"],
@@ -602,8 +584,8 @@ class CJ4_FMC_InitRefIndexPage {
     static ShowPage17(fmc) { //ROUTE MENU
         fmc.clearDisplay();
         let pilotId = WTDataStore.get('simbriefPilotId', '');
-        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL[disabled]" : "<FPLN RECALL[d-text]";
-        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]"
+        let fplnRecallDisplay = pilotId == "" ? "<FPLN RECALL (SB)[disabled]" : "<FPLN RECALL (SB)[d-text]";
+        let pilotIdDisplay = pilotId == "" ? "" : "PILOT ID: " + pilotId + "[s-text green]";
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "ROUTE MENU[blue]"],
             [""],
@@ -613,7 +595,7 @@ class CJ4_FMC_InitRefIndexPage {
             [""],
             [fplnRecallDisplay],
             [pilotIdDisplay],
-            ["<FPLN WIND[disabled]"],
+            ["<FPLN RECALL (GAME)"],
             [""],
             [""],
             ["-----------------------[blue]"],
@@ -627,7 +609,18 @@ class CJ4_FMC_InitRefIndexPage {
                 fmc.showErrorMessage("NO PILOT ID[red]");
                 CJ4_FMC_ModSettingsPage.ShowPage1(fmc);
             }
-            };
+        };
+        fmc.onLeftInput[3] = async () => {
+            fmc.setMsg("LOAD FPLN...[yellow]");
+            fmc.flightPlanManager.pauseSync();
+            await FlightPlanAsoboSync.LoadFromGame(fmc.flightPlanManager);
+            fmc.flightPlanManager.resumeSync();
+            fmc.flightPlanManager.setActiveWaypointIndex(1);
+            fmc.setMsg("FPLN LOADED[green]");
+            SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+            CJ4_FMC_RoutePage.ShowPage1(fmc);
+        };
+
         // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -1110,7 +1103,7 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage25ErrorMsg(fmc, msg, rskText) {
-         fmc._templateRenderer.setTemplateRaw([
+        fmc._templateRenderer.setTemplateRaw([
             [" ACT[blue]", "ARRIVAL DATA  [blue]"],
             [" " + msg],
             [""],
@@ -1128,14 +1121,14 @@ class CJ4_FMC_InitRefIndexPage {
     }
     static ShowPage25(fmc) { //ARR DATA
         fmc.clearDisplay();
-        
+
         let arrAirportText = "";
         let approachText = "";
         let rwyThresholdAltText = "";
         let freqText = "---.--";
         let gsAngleText = "-.--°";
         let locTrueBrgText = "---T";
-        
+
         let rightSelectionKeyProc = undefined;
 
         let destination = fmc.flightPlanManager.getDestination();
@@ -1144,14 +1137,11 @@ class CJ4_FMC_InitRefIndexPage {
             rightSelectionKeyProc = CJ4_FMC_RoutePage.ShowPage1;
         } else {
             let approach = fmc.flightPlanManager.getApproach();
-            if (!approach.name && !fmc.vfrLandingRunway) {
+            if (approach === undefined || (!approach.name && !fmc.vfrLandingRunway)) {
                 CJ4_FMC_InitRefIndexPage.ShowPage25ErrorMsg(fmc, "NO APPROACH SELECTED", "ARRIVAL");
                 rightSelectionKeyProc = CJ4_FMC_DepArrPage.ShowArrivalPage;
             } else {
                 arrAirportText = destination.ident;
-                if (destination.infos) {
-                    arrAirportText = arrAirportText + "/" + destination.infos.name;
-                }
 
                 approachText = approach.name || "RW" + Avionics.Utils.formatRunway(fmc.vfrLandingRunway.designation);
                 let approachRunway = fmc.flightPlanManager.getApproachRunway() || fmc.vfrLandingRunway;
@@ -1161,7 +1151,7 @@ class CJ4_FMC_InitRefIndexPage {
                     locTrueBrgText = Math.trunc(approachRunway.direction).toString().padStart(3, "0") + "T";
                     gsAngleText = "3.00°";
                 }
-                
+
                 fmc._templateRenderer.setTemplateRaw([
                     [" ACT[blue]", "ARRIVAL DATA  [blue]"],
                     [" ARR AIRPORT[blue]"],
@@ -1245,7 +1235,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.7.3[s-text white]"],
+            ["0.9.1[s-text white]"],
             [""],
             [""],
             [""],

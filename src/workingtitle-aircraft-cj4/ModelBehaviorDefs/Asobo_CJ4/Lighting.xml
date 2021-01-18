@@ -1,14 +1,100 @@
 <ModelBehaviors>
-	<!-- Lights ################################################################ -->
+    <!-- AOA -->
+    <Template Name="ASOBO_INSTRUMENT_Indicator_AOA_Template">
+        <DefaultTemplateParameters>
+            <NODE_ID>AOA_Indicator</NODE_ID>
+            <PART_ID>INSTRUMENT_Indicator_AOA</PART_ID>
+            <Condition Valid="NO_NORM_WARN_INDICATOR">
+                <False>
+                    <NORMAL_WARN_THRESHOLD_RANGE>173 180</NORMAL_WARN_THRESHOLD_RANGE>
+                    <NORMAL_WARN_NODE_ID>AOA_Indicator_BOTTOM</NORMAL_WARN_NODE_ID>
+                </False>
+            </Condition>
+            <Condition Valid="NO_LOW_WARN_INDICATOR">
+                <False>
+                    <LOW_WARN_THRESHOLD_RANGE>160 173</LOW_WARN_THRESHOLD_RANGE>
+                    <LOW_WARN_NODE_ID>AOA_Indicator_DOWN</LOW_WARN_NODE_ID>
+                </False>
+            </Condition>
+            <Condition Valid="NO_MIDDLE_WARN_INDICATOR">
+                <False>
+                    <MIDDLE_WARN_THRESHOLD_RANGE>150 165</MIDDLE_WARN_THRESHOLD_RANGE>
+                    <MIDDLE_WARN_NODE_ID>AOA_Indicator_MIDDLE</MIDDLE_WARN_NODE_ID>
+                </False>
+            </Condition>
+            <Condition Valid="NO_TOP_WARN_INDICATOR">
+                <False>
+                    <TOP_WARN_THRESHOLD_RANGE>0 155</TOP_WARN_THRESHOLD_RANGE>
+                    <TOP_WARN_NODE_ID>AOA_Indicator_UP</TOP_WARN_NODE_ID>
+                </False>
+            </Condition>
+            <GET_AOA>(A:ANGLE OF ATTACK INDICATOR, degree)</GET_AOA>
+        </DefaultTemplateParameters>
+        <Condition NotEmpty="NORMAL_WARN_THRESHOLD_RANGE">
+            <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                <EMISSIVE_CODE>
+                    #NORMAL_WARN_THRESHOLD_RANGE# #GET_AOA# rng
+                </EMISSIVE_CODE>
+                <NODE_ID>#NORMAL_WARN_NODE_ID#</NODE_ID>
+            </UseTemplate>
+        </Condition>
+        <Condition NotEmpty="LOW_WARN_THRESHOLD_RANGE">
+            <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                <EMISSIVE_CODE>
+                    (A:GEAR TOTAL PCT EXTENDED, Percent) 0 &gt; 
+                    (A:FLAPS HANDLE INDEX, Number) 1 &gt; or
+                    if{ #LOW_WARN_THRESHOLD_RANGE# #GET_AOA# rng } els{ 0 }
+                </EMISSIVE_CODE>
+                <NODE_ID>#LOW_WARN_NODE_ID#</NODE_ID>
+            </UseTemplate>
+        </Condition>
+        <Condition NotEmpty="MIDDLE_WARN_THRESHOLD_RANGE">
+            <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                <EMISSIVE_CODE>
+                    (A:GEAR TOTAL PCT EXTENDED, Percent) 0 &gt; 
+                    (A:FLAPS HANDLE INDEX, Number) 1 &gt; or
+                    if{ #MIDDLE_WARN_THRESHOLD_RANGE# #GET_AOA# rng } els{ 0 }
+                </EMISSIVE_CODE>
+                <NODE_ID>#MIDDLE_WARN_NODE_ID#</NODE_ID>
+            </UseTemplate>
+        </Condition>
+        <Condition NotEmpty="TOP_WARN_THRESHOLD_RANGE">
+            <UseTemplate Name="ASOBO_GT_Component_Emissive_Gauge">
+                <EMISSIVE_CODE>
+                    (A:GEAR TOTAL PCT EXTENDED, Percent) 0 &gt; 
+                    (A:FLAPS HANDLE INDEX, Number) 1 &gt; or
+                    if{ #TOP_WARN_THRESHOLD_RANGE# #GET_AOA# rng } els{ 0 }
+                </EMISSIVE_CODE>
+                <NODE_ID>#TOP_WARN_NODE_ID#</NODE_ID>
+            </UseTemplate>
+        </Condition>
+    </Template>
 
-	<!-- Alot of tears were shed constructing this template :)-->
+    <!-- Lights ################################################################ -->
+
+    <Template Name="ASOBO_LIGHTING_Switch_Light_Template">
+        <DefaultTemplateParameters>
+            <ID>1</ID>
+            <SIMVAR_INDEX>0</SIMVAR_INDEX>
+            <INTERACTION>Switch</INTERACTION>
+        </DefaultTemplateParameters>
+        <OverrideTemplateParameters>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
+        </OverrideTemplateParameters>
+        <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SubTemplate">
+        </UseTemplate>
+    </Template>
+
+
+    <!-- Alot of tears were shed constructing this template :)-->
     <Template Name="ASOBO_LIGHTING_Switch_Light_Safety_Template">
         <DefaultTemplateParameters>
             <ANIM_NAME>LIGHTING_Push_Light_Safety</ANIM_NAME>
             <NODE_ID>LIGHTING_Push_Light_Safety</NODE_ID>
             <TOOLTIPID>%((L:SAFETY_LIGHT_ON, Bool))%{if}Turn OFF Safety Light%{else}Turn ON Safety Light</TOOLTIPID>
-            <WWISE_EVENT_1>logo_light_switch_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
             <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
             <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
         </DefaultTemplateParameters>
@@ -19,13 +105,13 @@
         </UseTemplate>
     </Template>
 
-	<Template Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
+    <Template Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
         <DefaultTemplateParameters>
             <ANIM_NAME>LIGHTING_Push_Light_SeatBelt</ANIM_NAME>
             <NODE_ID>LIGHTING_Push_Light_SeatBelt</NODE_ID>
             <TOOLTIPID>%((L:SEATBELT_LIGHT_ON, Bool))%{if}Turn OFF Seatbelt Light%{else}Turn ON Seatbelt Light</TOOLTIPID>
-            <WWISE_EVENT_1>logo_light_switch_on</WWISE_EVENT_1>
-            <WWISE_EVENT_2>logo_light_switch_off</WWISE_EVENT_2>
+            <WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
             <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
             <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
         </DefaultTemplateParameters>

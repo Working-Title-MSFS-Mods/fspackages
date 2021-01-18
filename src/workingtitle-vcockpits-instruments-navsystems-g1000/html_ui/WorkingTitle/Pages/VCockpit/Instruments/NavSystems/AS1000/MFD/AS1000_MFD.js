@@ -111,7 +111,11 @@ class AS1000_MFD extends BaseAS1000 {
         super.onUpdate(_deltaTime);
         SimVar.SetSimVarValue("L:Glasscockpit_MFD_Started", "number", this.isStarted ? 1 : 0);
     }
-
+    reboot() {
+        super.reboot();
+        if (this.engineDisplay)
+            this.engineDisplay.reset();
+    }
     loadSavedMapOrientation() {
         let state = WTDataStore.get("MFD.TrackUp", false);
         this.setMapOrientation(state);

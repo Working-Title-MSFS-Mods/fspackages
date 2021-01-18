@@ -275,17 +275,17 @@
                         <div id="Rat">
                             <div>RAT</div>
                             <div class="Modifiable" id="Rat_Value">15</div>
-                            <div>°C</div>
+                            <div id="Rat_Unit">°C</div>
                         </div>
                         <div id="Sat">
                             <div>SAT</div>
                             <div class="Modifiable" id="Sat_Value">15</div>
-                            <div>°C</div>
+                            <div id="Sat_Unit">°C</div>
                         </div>
-                        <div id="Utc">
+                        <div id="Isa">
                             <div>ISA</div>
                             <div class="Modifiable" id="Isa_Value">00</div>
-                            <div>°C</div>
+                            <div id="Isa_Unit">°C</div>
                         </div>
                     </div>
 
@@ -332,12 +332,16 @@
 <link rel="stylesheet" href="CJ4_MFD.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_SimPlaneMod.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_ConvertUnit.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_GCMath.js"></script>
 
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Utils/RadioNav.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Autopilot/AutopilotMath.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Autopilot/HoldsDirector.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/MapInstrument.html"></script>
 
@@ -358,3 +362,6 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CJ4_Shared.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/MFD/CJ4_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/MFD/CJ4_MFD_Storage.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js"></script>

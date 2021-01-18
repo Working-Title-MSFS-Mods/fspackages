@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" SchemaVersion="97" RootDocumentID="{727C0BB7-5FD8-4BE5-9331-0CA9BB1C06DD}">
+	<AudioObjects>
+		<WorkUnit Name="Climate_Control" ID="{C7BFFC0D-76E9-4171-A179-64C005CBED68}" OwnerID="{0977AE6C-8431-4438-889A-58DBE54DB723}" PersistMode="Nested">
+			<ChildrenList>
+				<RandomSequenceContainer Name="CJ4_Climate_Control_Knob" ID="{B85C7554-DF10-4DCC-A29D-EB4736C89139}" ShortID="539993619">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+						<Property Name="CenterPercentage" Type="int32">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+						<Property Name="GameAuxSendVolume" Type="Real64">
+							<ValueList>
+								<Value>-4</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Priority" Type="int16">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="2"/>
+						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="instruments_inside" ID="{4D67557A-CB3C-4574-8DBC-4643E77C31BD}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Sound Name="CJ4_Climate_Control_Knob1" ID="{9FF51D94-7B00-4C9C-B5E1-574C107A9F9B}" ShortID="1061035528">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Climate_Control_Knob3" ID="{5F7B6078-9F66-4ABF-BD39-F0C4A254FF27}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="1.74882474727838"/>
+										<Property Name="TrimEnd" Type="Real64" Value="1.90535535737429"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Instruments and Switches\Climate_Control_Knob3.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Climate_Control_Knob3" ID="{5F7B6078-9F66-4ABF-BD39-F0C4A254FF27}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="CJ4_Climate_Control_Knob2" ID="{02E41BBA-704B-4B27-B116-ADE7AEBC16EE}" ShortID="1042595436">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+								<Property Name="GameAuxSendVolume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Priority" Type="int16">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="instruments_inside" ID="{4D67557A-CB3C-4574-8DBC-4643E77C31BD}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Climate_Control_Knob3" ID="{EE516B05-F7AF-4615-8A96-0BEF2793133B}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="0.576238603562681"/>
+										<Property Name="TrimEnd" Type="Real64" Value="0.700971656041052"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Instruments and Switches\Climate_Control_Knob3.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Climate_Control_Knob3" ID="{EE516B05-F7AF-4615-8A96-0BEF2793133B}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="CJ4_Climate_Control_Knob3" ID="{8D027D5A-40CB-4F48-8F49-E1C26519F832}" ShortID="11564695">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+								<Property Name="GameAuxSendVolume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Priority" Type="int16">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="instruments_inside" ID="{4D67557A-CB3C-4574-8DBC-4643E77C31BD}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Climate_Control_Knob3" ID="{7FA9D2DC-1C13-4315-A411-33BD44ECFA52}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="3.92945807413168"/>
+										<Property Name="TrimEnd" Type="Real64" Value="4.1561575784085"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Instruments and Switches\Climate_Control_Knob3.wav</AudioFile>
+								</AudioFileSource>
+								<AudioFileSource Name="Climate_Control_Knob3_01" ID="{765A78DB-B48B-4299-8B12-3D4A297D3462}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Instruments\Climate_Control_Knob3.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Climate_Control_Knob3" ID="{7FA9D2DC-1C13-4315-A411-33BD44ECFA52}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="CJ4_Climate_Control_Knob4" ID="{9965071C-59A8-48E6-9F7E-18CF5C05B09A}" ShortID="862847945">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="2"/>
+								<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+								<Property Name="CenterPercentage" Type="int32">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+								<Property Name="GameAuxSendVolume" Type="Real64">
+									<ValueList>
+										<Value>-4</Value>
+									</ValueList>
+								</Property>
+								<Property Name="Priority" Type="int16">
+									<ValueList>
+										<Value>100</Value>
+									</ValueList>
+								</Property>
+								<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="aircraft_player_inside_3m_spread15" ID="{F5FBB6BB-1F86-4FA7-99C5-7D1DAE906FF9}" WorkUnitID="{60292DF5-73DF-4CD4-B755-61C8D02B90BD}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="instruments_inside" ID="{4D67557A-CB3C-4574-8DBC-4643E77C31BD}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="Climate_Control_Knob3" ID="{FCA3BDA1-558F-4454-A999-1D870CF9DDA5}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+										<Property Name="TrimBegin" Type="Real64" Value="6.40156219219803"/>
+										<Property Name="TrimEnd" Type="Real64" Value="6.62286408923017"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Instruments and Switches\Climate_Control_Knob3.wav</AudioFile>
+								</AudioFileSource>
+								<AudioFileSource Name="Climate_Control_Knob3_01" ID="{EF43D8A8-1FB5-4DD1-9A10-BE3091A7DA13}">
+									<PropertyList>
+										<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+										<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+									</PropertyList>
+									<Language>SFX</Language>
+									<AudioFile>Instruments\Climate_Control_Knob3.wav</AudioFile>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="Climate_Control_Knob3" ID="{FCA3BDA1-558F-4454-A999-1D870CF9DDA5}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+					</ChildrenList>
+				</RandomSequenceContainer>
+				<Sound Name="CJ4_Air_Vent" ID="{923DCC0B-8E17-45D1-B7FA-E9CEF50248D1}" ShortID="425942845">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+						<Property Name="BelowThresholdBehavior" Type="int16" Value="2"/>
+						<Property Name="EnableLoudnessNormalization" Type="bool" Value="True"/>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+						<Property Name="Priority" Type="int16">
+							<ValueList>
+								<Value>100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<RTPCList>
+								<RTPC Name="" ID="{7D4ED3B8-BBAB-466E-86FF-1BC8107B8D38}" ShortID="353182921">
+									<ReferenceList>
+										<Reference Name="ControlInput">
+											<ObjectRef Name="SIMVAR_AC" ID="{1AA79A50-3201-4F5F-8D74-1B3682D07603}" WorkUnitID="{049DCAE9-E15A-4526-93F4-2DE9423D4A4D}"/>
+										</Reference>
+									</ReferenceList>
+									<Curve Name="" ID="{18112706-8B8D-4CCF-83F9-EEEE23AB63CA}">
+										<PropertyList>
+											<Property Name="Flags" Type="int32" Value="3"/>
+										</PropertyList>
+										<PointList>
+											<Point>
+												<XPos>0</XPos>
+												<YPos>-200</YPos>
+												<Flags>5</Flags>
+											</Point>
+											<Point>
+												<XPos>100</XPos>
+												<YPos>-10.80244</YPos>
+												<Flags>37</Flags>
+											</Point>
+										</PointList>
+									</Curve>
+								</RTPC>
+							</RTPCList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{72C899CE-308C-4CA7-87C0-8E1504B1D757}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="miscellaneous_inside_generic" ID="{893FB4F8-B5B7-4DD2-9589-F17E7FFDF1A0}" WorkUnitID="{D8341C40-AF31-4D5B-9D65-E60D709F4609}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="CJ4_Air_Vent" ID="{7C6ED982-48EE-4BF1-A335-259CB381722D}">
+							<PropertyList>
+								<Property Name="LoopBegin" Type="Real64" Value="-0.001"/>
+								<Property Name="LoopEnd" Type="Real64" Value="-0.001"/>
+								<Property Name="TrimBegin" Type="Real64" Value="-0.001"/>
+								<Property Name="TrimEnd" Type="Real64" Value="-0.001"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>Ambience\CJ4_Air_Vent.wav</AudioFile>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="CJ4_Air_Vent" ID="{7C6ED982-48EE-4BF1-A335-259CB381722D}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>

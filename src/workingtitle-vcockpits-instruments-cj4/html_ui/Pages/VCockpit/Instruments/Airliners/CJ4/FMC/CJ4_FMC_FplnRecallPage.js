@@ -2,7 +2,14 @@ class CJ4_FMC_FplnRecallPage {
     static async GetFplnFromSimBrief(pilotId, fmc) {
         let url = "https://www.simbrief.com/api/xml.fetcher.php?userid=" + pilotId + "&json=1";
         let json = "";
-        let called = 0;
+
+        let parseAirport = (icao) => {
+            if ((/K.*\d.*/.test(icao))) {
+                icao = icao.substring(1).padEnd(4, " ");
+            }
+
+            return icao;
+        };
 
         // HINT: defining these methods here in the order they will be called by the callbacks
         let updateFrom = () => {
@@ -15,7 +22,7 @@ class CJ4_FMC_FplnRecallPage {
                     fmc.flightPlanManager.clearFlightPlan(() => {
                         fmc.setMsg("LOAD FPLN...ORIG [yellow]" + from);
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                            fmc.updateRouteOrigin(from, updateRunways);
+                            fmc.updateRouteOrigin(parseAirport(from), updateRunways);
                         });
                     });
                 });
@@ -23,8 +30,6 @@ class CJ4_FMC_FplnRecallPage {
         };
 
         let updateRunways = () => {
-            called++;
-            if (called < 2) return;
             console.log("UPDATE RUNWAY");
             let rwy = json.origin.plan_rwy;
             fmc.setMsg("LOAD FPLN...RWY [yellow]" + rwy);
@@ -35,7 +40,7 @@ class CJ4_FMC_FplnRecallPage {
             console.log("UPDATE DESTINATION");
             let dest = json.destination.icao_code;
             fmc.setMsg("LOAD FPLN...DST [yellow]" + dest);
-            fmc.updateRouteDestination(dest, updateRoute);
+            fmc.updateRouteDestination(parseAirport(dest), updateRoute);
         };
 
         let updateRoute = () => {
@@ -47,7 +52,11 @@ class CJ4_FMC_FplnRecallPage {
                 if (idx >= routeArr.length - 1) {
                     // DONE
                     fmc.setMsg("FPLN LOADED[green]");
-                    fmc.flightPlanManager.setActiveWaypointIndex(0);
+                    fmc.flightPlanManager.resumeSync();
+                    fmc.flightPlanManager.setActiveWaypointIndex(1);
+                    SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+                    fmc.resetVspeeds();
+                    fmc.resetFuelUsed();
                     CJ4_FMC_RoutePage.ShowPage1(fmc);
                     return;
                 }
@@ -76,6 +85,7 @@ class CJ4_FMC_FplnRecallPage {
                             addWaypoint();
                         }
                         else {
+                            fmc.flightPlanManager.resumeSync();
                             fmc.setMsg("ERROR WPT " + icao + "[red]");
                         }
 
@@ -99,6 +109,7 @@ class CJ4_FMC_FplnRecallPage {
                                     if (res) {
                                         addWaypoint();
                                     } else {
+                                        fmc.flightPlanManager.resumeSync();
                                         fmc.setMsg("ERROR AIRWAY " + icao + "[red]");
                                     }
                                 });
@@ -134,6 +145,7 @@ class CJ4_FMC_FplnRecallPage {
             let crz = json.general.initial_altitude;
             fmc.setMsg("LOAD FPLN...CRZ[green]" + crz);
             fmc.setCruiseFlightLevelAndTemperature(crz);
+            fmc.flightPlanManager.pauseSync();
             updateFrom();
         }, () => {
             // wrong pilot id is the most obvious error here, so lets show that

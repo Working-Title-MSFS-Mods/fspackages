@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Soft Buttons" ID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" OwnerID="{8BD56E05-FC92-4457-AC56-FD5FDEB696ED}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_WT_soft_button_on" ID="{01A494FF-F01F-4BA1-825E-5AA08018C41C}">
+					<ChildrenList>
+						<Action Name="" ID="{E34B5611-23AD-4D9C-996D-65863436C184}" ShortID="74406910">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Soft Buttons" ID="{880A887B-7CDD-4A38-A419-EEAD5F2FA3B0}" WorkUnitID="{61570D92-0B2E-462C-A21C-8982523DE3E1}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

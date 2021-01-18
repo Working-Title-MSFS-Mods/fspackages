@@ -556,6 +556,7 @@ class MapInstrument extends ISvgMapRootElement {
                     });
                 }
             }
+
             if (!this.showConstraints && this.constraints && this.constraints.length > 0) {
                 this.constraints = [];
             }
@@ -800,7 +801,7 @@ class MapInstrument extends ISvgMapRootElement {
                                     if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
                                         if (waypoint.getSvgElement(this.navMap.index)) {
                                             if (!this.navMap.mapElements.find(w => {
-                                                return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                                return (w instanceof SvgWaypointElement) && w.source.icao === waypoint.icao;
                                             })) {
                                                 this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                             }
@@ -812,10 +813,10 @@ class MapInstrument extends ISvgMapRootElement {
                         this.navMap.mapElements.push(this.flightPlanElement);
                         for (let i = 0; i < l; i++) {
                             let waypoint = this.flightPlanManager.getWaypoint(i);
-                            if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER") {
+                            if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI") {
                                 if (waypoint.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
-                                        return (w instanceof SvgWaypointElement) && w.source.ident === waypoint.ident;
+                                        return (w instanceof SvgWaypointElement) && w.source.icao === waypoint.icao;
                                     })) {
                                         this.navMap.mapElements.push(waypoint.getSvgElement(this.navMap.index));
                                     }
@@ -830,7 +831,7 @@ class MapInstrument extends ISvgMapRootElement {
                         if (apprWaypoint && apprWaypoint.ident !== "" && apprWaypoint.ident !== "USER") {
                             if (apprWaypoint.getSvgElement(this.navMap.index)) {
                                 if (!this.navMap.mapElements.find(w => {
-                                    return (w instanceof SvgWaypointElement) && w.source.ident === apprWaypoint.ident;
+                                    return (w instanceof SvgWaypointElement) && w.source.icao === apprWaypoint.icao;
                                 })) {
                                     this.navMap.mapElements.push(apprWaypoint.getSvgElement(this.navMap.index));
                                 }

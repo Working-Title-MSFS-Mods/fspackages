@@ -197,6 +197,10 @@ class WT_FMC_Renderer {
     }
 
     renderMsgLineRaw(row) {
+        if(row === undefined){
+            return;
+        }
+
         // clear everything (TODO: could be better)
         row.childNodes.forEach(n => {
             n.childNodes[0].textContent = "";

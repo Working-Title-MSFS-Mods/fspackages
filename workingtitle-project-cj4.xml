@@ -5,7 +5,6 @@
 		<Package>PackageDefinitions\workingtitle-core-library.xml</Package>
 		<Package>PackageDefinitions\workingtitle-vcockpits-instruments-cj4.xml</Package>
 		<Package>PackageDefinitions\workingtitle-vcockpits-instruments-airliners.xml</Package>
-		<Package>PackageDefinitions\working-title-vcockpits-instruments.xml</Package>
 		<Package>PackageDefinitions\workingtitle-aircraft-cj4.xml</Package>
 	</Packages>
 </Project>

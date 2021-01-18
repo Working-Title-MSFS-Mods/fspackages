@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{FFC8FAD6-3743-4A52-9514-56AC5ED75ADE}" SchemaVersion="97">
 	<Events>
-		<WorkUnit Name="Default Work Unit" ID="{FFC8FAD6-3743-4A52-9514-56AC5ED75ADE}" PersistMode="Standalone"/>
+		<WorkUnit Name="Default Work Unit" ID="{FFC8FAD6-3743-4A52-9514-56AC5ED75ADE}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_combustion_outside" ID="{20EC6BC8-4246-477F-A14D-2F4E999D84D5}">
+					<ChildrenList>
+						<Action Name="" ID="{D66C1FE0-5781-4DBF-8B4D-6FBEA864F30D}" ShortID="416456589">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="combustion_outside" ID="{AA8FBF52-4643-4CB3-9C8A-4FA98CD07D8F}" WorkUnitID="{BF901AB3-4AAC-4FFE-9BF2-103B5076AF72}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
 	</Events>
 </WwiseDocument>

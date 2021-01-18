@@ -102,4 +102,3 @@ class SvgMapElement {
     }
 }
 SvgMapElement.probes = new Map();
-//# sourceMappingURL=SvgMapElement.js.map

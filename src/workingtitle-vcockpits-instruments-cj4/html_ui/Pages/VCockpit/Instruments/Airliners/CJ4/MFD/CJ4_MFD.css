@@ -404,7 +404,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
               font-size: 26px;
               fill: green; }
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TopBox text.Wind {
-              font-size: 18px;
+              font-size: 20px;
               fill: magenta;
               text-anchor: end; }
           cj4-mfd-element #Mainframe #MapOverlay #NDInfo #VORDMENavaids svg {
@@ -478,6 +478,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
           bottom: 0%; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms {
             display: flex;
+            align-items: baseline;
             justify-content: space-around;
             width: 100%;
             height: 100%; }
@@ -485,10 +486,20 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #TAS,
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat,
             cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat,
-            cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Utc {
+            cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa {
               display: flex;
+              align-items: baseline;
               justify-content: center;
               font-size: calc( 1.95 * 1vh * var(--bodyHeightScale)); }
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Gs_Value,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Tas_Value,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Value,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Value,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Value,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Unit,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Unit,
+              cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Unit {
+                font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));}
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs {
             display: none;
             justify-content: space-around;
@@ -511,7 +522,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
               justify-content: space-around; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar .Modifiable {
             color: green;
-            margin-left: 8px; }
+            margin-left: 8px;
+            margin-right: 4px; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar .Borders {
             border: 2px solid white; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar .SubValue {

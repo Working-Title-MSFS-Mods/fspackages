@@ -1,59 +1,59 @@
 <ModelBehaviors>
-	<!-- CCP ############################################## -->
-	<Template Name="WT_Detached_Control_Panel_Template">
-		<DefaultTemplateParameters>
-			<AS3000>AS3000</AS3000>
-			<DISPLAY>MFD</DISPLAY>
-			<TYPE></TYPE>
-			<ID>1</ID>
-			<ANIM_NEVER_FAILS/>
-		</DefaultTemplateParameters>
+    <!-- CCP ############################################## -->
+    <Template Name="WT_Detached_Control_Panel_Template">
+        <DefaultTemplateParameters>
+            <AS3000>AS3000</AS3000>
+            <DISPLAY>MFD</DISPLAY>
+            <TYPE></TYPE>
+            <ID>1</ID>
+            <ANIM_NEVER_FAILS/>
+        </DefaultTemplateParameters>
 
-		<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
-			<TEMPLATE_TO_CALL>WT_Detached_Control_Panel_SubTemplate</TEMPLATE_TO_CALL>
-		</UseTemplate>
-	</Template>
+        <UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
+            <TEMPLATE_TO_CALL>WT_Detached_Control_Panel_SubTemplate</TEMPLATE_TO_CALL>
+        </UseTemplate>
+    </Template>
 
-	<Template Name="WT_Detached_Control_Panel_SubTemplate">
-		<DefaultTemplateParameters>
-			<KEY_PREFIX>#AS3000#_#DISPLAY#</KEY_PREFIX>
-		</DefaultTemplateParameters>
-		<!-- LOWER PANEL -->
-		<Condition Valid="NODE_ID_CKLST">
-			<Component ID="#NODE_ID_CKLST#" Node="#NODE_ID_CKLST#">
-				<UseTemplate Name="ASOBO_GT_Push_Button">
-					<ANIM_NAME>#NODE_ID_CKLST#</ANIM_NAME>
-					<LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_CKLST_1)</LEFT_SINGLE_CODE>
-					<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-					<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-					<WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-					<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-					<TOOLTIPID>Checklist</TOOLTIPID>
-				</UseTemplate>
-			</Component>
-		</Condition>
-		<Condition Valid="NODE_ID_PASSBRIEF">
-			<Component ID="#NODE_ID_PASSBRIEF#" Node="#NODE_ID_PASSBRIEF#">
-				<UseTemplate Name="ASOBO_GT_Push_Button">
-					<ANIM_NAME>#NODE_ID_PASSBRIEF#</ANIM_NAME>
-					<LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_PASSBRIEF_1)</LEFT_SINGLE_CODE>
-					<WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
-					<NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-					<WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
-					<NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
-					<TOOLTIPID>Passenger Brief</TOOLTIPID>
-				</UseTemplate>
-			</Component>
-		</Condition>
+    <Template Name="WT_Detached_Control_Panel_SubTemplate">
+        <DefaultTemplateParameters>
+            <KEY_PREFIX>#AS3000#_#DISPLAY#</KEY_PREFIX>
+        </DefaultTemplateParameters>
+        <!-- LOWER PANEL -->
+        <Condition Valid="NODE_ID_CKLST">
+            <Component ID="#NODE_ID_CKLST#" Node="#NODE_ID_CKLST#">
+                <UseTemplate Name="ASOBO_GT_Push_Button">
+                    <ANIM_NAME>#NODE_ID_CKLST#</ANIM_NAME>
+                    <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_CKLST_1)</LEFT_SINGLE_CODE>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+                    <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+                    <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+                    <TOOLTIPID>Checklist</TOOLTIPID>
+                </UseTemplate>
+            </Component>
+        </Condition>
+        <Condition Valid="NODE_ID_PASSBRIEF">
+            <Component ID="#NODE_ID_PASSBRIEF#" Node="#NODE_ID_PASSBRIEF#">
+                <UseTemplate Name="ASOBO_GT_Push_Button">
+                    <ANIM_NAME>#NODE_ID_PASSBRIEF#</ANIM_NAME>
+                    <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_PASSBRIEF_1)</LEFT_SINGLE_CODE>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+                    <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+                    <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+                    <TOOLTIPID>Passenger Brief</TOOLTIPID>
+                </UseTemplate>
+            </Component>
+        </Condition>
         <Condition Valid="NODE_ID_MEM1">
             <Component ID="#NODE_ID_MEM1#" Node="#NODE_ID_MEM1#">
                 <UseTemplate Name = "ASOBO_GT_Push_Button_Timed">
                     <ANIM_NAME>#NODE_ID_MEM1#</ANIM_NAME>
                     <SHORT_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Push_MEM1_1)</SHORT_CLICK_CODE>
                     <LONG_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Hold_MEM1_1)</LONG_CLICK_CODE>
-                    <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
                     <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                    <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
                     <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
                     <TOOLTIPID>Memory 1</TOOLTIPID>
                 </UseTemplate>
@@ -65,9 +65,9 @@
                     <ANIM_NAME>#NODE_ID_MEM2#</ANIM_NAME>
                     <SHORT_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Push_MEM2_1)</SHORT_CLICK_CODE>
                     <LONG_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Hold_MEM2_1)</LONG_CLICK_CODE>
-                    <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
                     <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                    <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
                     <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
                     <TOOLTIPID>Memory 2</TOOLTIPID>
                 </UseTemplate>
@@ -79,13 +79,122 @@
                     <ANIM_NAME>#NODE_ID_MEM3#</ANIM_NAME>
                     <SHORT_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Push_MEM3_1)</SHORT_CLICK_CODE>
                     <LONG_CLICK_CODE>(&gt;H:#KEY_PREFIX#_Hold_MEM3_1)</LONG_CLICK_CODE>
-                    <WWISE_EVENT_1>as3000_push_button_on</WWISE_EVENT_1>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
                     <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
-                    <WWISE_EVENT_2>as3000_push_button_off</WWISE_EVENT_2>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
                     <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
                     <TOOLTIPID>Memory 3</TOOLTIPID>
                 </UseTemplate>
             </Component>
         </Condition>
-	</Template>
+        <!-- added TOGA -->
+        <Condition Valid="NODE_ID_TOGA">
+            <Component ID="#NODE_ID_TOGA#" Node="#NODE_ID_TOGA#">
+                <UseTemplate Name="ASOBO_GT_Push_Button">
+                    <ANIM_NAME>#NODE_ID_TOGA#</ANIM_NAME>
+                    <LEFT_SINGLE_CODE>(&gt;K:AUTO_THROTTLE_TO_GA)</LEFT_SINGLE_CODE>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+                    <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+                    <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+                    <TOOLTIPID>Toggle Takeoff/Go-Around Mode</TOOLTIPID>
+                </UseTemplate>
+            </Component>
+        </Condition>
+    </Template>
+
+    <!-- FMS ########################################### -->
+    <Template Name="ASOBO_FMC_Common_Params_Template">
+        <DefaultTemplateParameters>
+            <DONT_OVERRIDE_BASE_EMISSIVE>True</DONT_OVERRIDE_BASE_EMISSIVE>
+            <SEQ1_EMISSIVE_DRIVES_VISIBILITY>False</SEQ1_EMISSIVE_DRIVES_VISIBILITY>
+            <WWISE_EVENT_1>WT_fmc_push_button_on</WWISE_EVENT_1>
+            <NORMALIZED_TIME_1>0.05</NORMALIZED_TIME_1>
+            <NO_SEQ2/>
+        </DefaultTemplateParameters>
+
+        <UseTemplate Name="#TEMPLATE_TO_CALL#">
+        </UseTemplate>
+    </Template>
+
+    <Template Name="ASOBO_FMC_Push_CLR_Template">
+        <DefaultTemplateParameters>
+            <NODE_ID_CLR>#FMC_NAME#_Push_CLR#SUFFIX_ID#</NODE_ID_CLR>
+            <ANIM_NAME_CLR>#FMC_NAME#_Push_CLR#SUFFIX_ID#</ANIM_NAME_CLR>
+        </DefaultTemplateParameters>
+        <EditableTemplateParameters>
+            <AddParams>
+                <NODE_ID_CLR></NODE_ID_CLR>
+                <ANIM_NAME_CLR></ANIM_NAME_CLR>
+            </AddParams>
+        </EditableTemplateParameters>
+
+        <UseTemplate Name="ASOBO_FMC_PushButton">
+            <HTML_EVENT_ID>CLR</HTML_EVENT_ID>
+		    <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>
+            <HAS_LONG_PRESS>True</HAS_LONG_PRESS>
+            <NODE_ID>#NODE_ID_CLR#</NODE_ID>
+            <ANIM_NAME>#ANIM_NAME_CLR#</ANIM_NAME>
+        </UseTemplate>
+    </Template>
+
+    <!-- AP SUB ########################################### -->
+    <Template Name="ASOBO_AUTOPILOT_Push_SubTemplate">
+        <DefaultTemplateParameters>
+            <Condition Check="NODE_ID">
+                <True>
+                    <BASE_NODE_ID>#NODE_ID#</BASE_NODE_ID>
+                </True>
+            </Condition>
+            <NODE_ID>AUTOPILOT_Push_#DEFAULT_NAME##SUFFIX_ID#</NODE_ID>
+            <ANIM_NAME>AUTOPILOT_Push_#DEFAULT_NAME##SUFFIX_ID#</ANIM_NAME>
+            <PART_ID>AUTOPILOT_Push_#DEFAULT_NAME#</PART_ID>
+            <WWISE_EVENT_AUTOPILOT_SWITCH_ON>autopilot_switch_on</WWISE_EVENT_AUTOPILOT_SWITCH_ON>
+            <WWISE_EVENT_AUTOPILOT_SWITCH_OFF>autopilot_switch_off</WWISE_EVENT_AUTOPILOT_SWITCH_OFF>
+            <WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>WT_hard_button_on</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON>
+            <WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>WT_hard_button_off</WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF>
+        </DefaultTemplateParameters>
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <Condition Check="ANIM_CODE">
+                <True>
+                    <UseTemplate Name="ASOBO_GT_Switch_Code">
+                        <WWISE_EVENT_1>#WWISE_EVENT_AUTOPILOT_SWITCH_ON#</WWISE_EVENT_1>
+                        <WWISE_EVENT_2>#WWISE_EVENT_AUTOPILOT_SWITCH_OFF#</WWISE_EVENT_2>
+                    </UseTemplate>
+                </True>
+                <False>
+                    <UseTemplate Name="ASOBO_GT_Push_Button">
+                        <WWISE_EVENT_1>#WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_ON#</WWISE_EVENT_1>
+                        <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+                        <WWISE_EVENT_2>#WWISE_EVENT_AUTOPILOT_PUSH_BUTTON_OFF#</WWISE_EVENT_2>
+                        <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+                    </UseTemplate>
+                </False>
+            </Condition>
+        </Component>
+        <Condition Valid="NO_INDICATOR">
+            <False>
+                <UseTemplate Name="ASOBO_AUTOPILOT_Push_Active_Template">
+                </UseTemplate>
+            </False>
+        </Condition>
+        <Condition Valid="NO_TEXT_EMISSIVE">
+            <False>
+                <UseTemplate Name="ASOBO_AUTOPILOT_Push_Emissive_Template">
+                </UseTemplate>
+            </False>
+        </Condition>
+        <Condition Valid="BUTTON_EMISSIVE">
+            <True>
+                <UseTemplate Name="ASOBO_LIGHTING_Cabin_Emissive_Template">
+                </UseTemplate>
+            </True>
+        </Condition>
+
+        <Condition Check="INIT">
+            <Update Once="True">
+				#INIT#
+            </Update>
+        </Condition>
+    </Template>
 </ModelBehaviors>

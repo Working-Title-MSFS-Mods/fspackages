@@ -1,482 +1,426 @@
+// prototype singleton, this needs to be different ofc
+let RoutePageInstance = undefined;
+
 class CJ4_FMC_RoutePage {
-    static ShowPage1(fmc, pendingAirway) {
-        fmc.clearDisplay();
 
-        //temporary to check flight plan index
+    constructor(fmc) {
+        this._fmc = fmc;
+        this._isDirty = true;
 
-        // fmc.onLeftInput[1] = () => {
-        //     let value = "";
-        //     Coherent.call("GET_CURRENT_FLIGHTPLAN_INDEX").then((value) => {
-        //         console.log("GET_CURRENT_FLIGHTPLAN_INDEX_COHERENT: " + value);
-        //         console.log("fmc.flightPlanManager._currentFlightPlanIndex: " + fmc.flightPlanManager._currentFlightPlanIndex);
-        //         console.log("fmc.fpHasChanged: " + fmc.fpHasChanged);
-        //         console.log("this._activatingDirectTo: " + fmc._activatingDirectTo)
-        //     });
-        // };
+        this._currentPage = 0;
+        this._pageCount = 2;
+        this._offset = 0;
+        this._fplnVersion = -1;
+        this._activeWptIndex = -1;
 
-        //end temp
-        let lsk6Field = "<SEC FPLN";
+        this._lsk6Field = "";
+        this._activateCell = "";
+        this._modStr;
+        this._originCell;
+        this._destinationCell;
+        this._distanceCell;
+        this._flightNoCell;
+        this._airwayInput = "";
+        this._airwayIndex = "";
 
-        let setDestinationFunc = (icao) => {
-            fmc.updateRouteDestination(icao, (result) => {
-                if (result) {
-                    fmc.flightPlanManager.setApproachTransitionIndex(-1, () => {
-                        fmc.flightPlanManager.setArrivalProcIndex(-1, () => {
-                            fmc.flightPlanManager.setApproachIndex(-1, () => {
-                                fmc.setMsg();
-                                fmc.fpHasChanged = true;
-                                CJ4_FMC_RoutePage.ShowPage1(fmc);
-                            });
-                        });
-                    });
+        this._rows = [];
+    }
+
+    set currentPage(value) {
+        this._currentPage = value;
+        if (this._currentPage > (this._pageCount - 1)) {
+            this._currentPage = 0;
+        } else if (this._currentPage < 0) {
+            this._currentPage = (this._pageCount - 1);
+        }
+
+        if (this._currentPage == 0) {
+            this._offset = 0;
+        } else {
+            this._offset = ((this._currentPage - 1) * 5) + 1;
+        }
+    }
+
+    gotoNextPage() {
+        this.currentPage = this._currentPage + 1;
+        this.update(true);
+    }
+
+    gotoPrevPage() {
+        this.currentPage = this._currentPage - 1;
+        this.update(true);
+    }
+
+    update(forceUpdate = false) {
+        // check if active wpt changed
+        const actWptIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
+        if (this._activeWptIndex != actWptIndex) {
+            this._activeWptIndex = actWptIndex;
+            this._isDirty = true;
+            // console.log("active wpt changed");
+        }
+
+        if (this._isDirty || forceUpdate) {
+            this.invalidate();
+        }
+
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            this.update();
+            return true;
+        }, 1000, false);
+    }
+
+    invalidate() {
+        this._isDirty = true;
+        this._fmc.clearDisplay();
+        this.prerender();
+        this.render();
+        this.bindEvents();
+        this._isDirty = false;
+    }
+
+    prerender() {
+        const currentFp = this._fmc.flightPlanManager.getCurrentFlightPlan();
+
+        if (this._currentPage == 0) {
+            this._originCell = "□□□□";
+            if (currentFp.hasOrigin) {
+                this._originCell = this._fmc.flightPlanManager.getOrigin().ident;
+            }
+
+            this._destinationCell = "□□□□";
+            if (currentFp.hasDestination) {
+                this._destinationCell = this._fmc.flightPlanManager.getDestination().ident;
+            }
+
+            this._distanceCell = "----";
+            if (currentFp.hasDestination && currentFp.hasOrigin) {
+                this._distanceCell = Avionics.Utils.computeGreatCircleDistance(this._fmc.flightPlanManager.getOrigin().infos.coordinates, this._fmc.flightPlanManager.getDestination().infos.coordinates).toFixed(0);
+            }
+
+            this._flightNoCell = "--------";
+            let flightNoValue = SimVar.GetSimVarValue("ATC FLIGHT NUMBER", "string");
+            if (flightNoValue) {
+                this._flightNoCell = flightNoValue;
+            }
+        }
+
+        if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+            this._fmc.fpHasChanged = true;
+            this._lsk6Field = "<CANCEL MOD";
+            this._activateCell = "";
+        }
+        else if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
+            this._fmc.fpHasChanged = false;
+            this._activateCell = "PERF INIT>";
+            this._lsk6Field = "<SEC FPLN[disabled]";
+        }
+
+        const currFplnVer = SimVar.GetSimVarValue(FlightPlanManager.FlightPlanVersionKey, 'number');
+        if (this._fmc.fpHasChanged === true || this._fplnVersion < currFplnVer) {
+            this._rows = CJ4_FMC_RoutePage._GetAllRows(this._fmc);
+            this._fplnVersion = currFplnVer;
+
+            // fill in empty row
+            let emptyRow = new FpRow();
+            const prevRow = this._rows[this._rows.length - 1];
+            if (prevRow !== undefined) {
+                if (this._airwayInput !== "") {
+                    emptyRow.airwayIn = this._airwayInput;
+                    emptyRow.fpIdx = this._airwayIndex;
+                    let idx = this._rows.findIndex(x => x.fpIdx === this._airwayIndex)+1;
+                    this._rows.splice(idx,0,emptyRow);
+                } else {
+                    emptyRow.fpIdx = (prevRow.fpIdx + 2);
+                    this._rows.push(emptyRow);
                 }
-            });
-        };
-
-        let setOriginFunc = (icao) => {
-            if(!SimVar.GetSimVarValue("SIM ON GROUND", "boolean"))
-            {
-                fmc.showErrorMessage("NOT ON GROUND");
-                return;
-            }
-
-            fmc.tmpDestination = undefined;
-            fmc.flightPlanManager.createNewFlightPlan(() => {
-                fmc.updateRouteOrigin(icao, (result) => {
-                    if (result) {
-                        fmc.setMsg();
-                        fmc.fpHasChanged = true;
-                        CJ4_FMC_RoutePage.ShowPage1(fmc);
-                    }
-                });
-            });
-        };
-
-        let originCell = "□□□□";
-        if (fmc && fmc.flightPlanManager) {
-            let origin = fmc.flightPlanManager.getOrigin();
-            if (origin) {
-                originCell = origin.ident;
-            }
-            else if (fmc.tmpOrigin) {
-                originCell = fmc.tmpOrigin;
-            }
-        }
-        fmc.onLeftInput[0] = () => {
-            fmc.setMsg("Working...");
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            setOriginFunc(value);
-        };
-
-        let destinationCell = "□□□□";
-        if (fmc && fmc.flightPlanManager) {
-            let destination = fmc.flightPlanManager.getDestination();
-            if (destination) {
-                destinationCell = destination.ident;
-            }
-            else if (fmc.tmpDestination) {
-                destinationCell = fmc.tmpDestination;
-            }
-        }
-        fmc.onRightInput[0] = () => {
-            fmc.setMsg("Working...");
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            setDestinationFunc(value);
-        };
-        let distanceCell = "----";
-        if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getOrigin()) {
-            distanceCell = Avionics.Utils.computeGreatCircleDistance(fmc.flightPlanManager.getOrigin().infos.coordinates, fmc.flightPlanManager.getDestination().infos.coordinates).toFixed(0);
-        }
-        let flightNoCell = "--------";
-        let flightNoValue = SimVar.GetSimVarValue("ATC FLIGHT NUMBER", "string");
-        if (flightNoValue) {
-            flightNoCell = flightNoValue;
-        }
-        fmc.onRightInput[4] = () => {
-            let value = fmc.inOut;
-            fmc.clearUserInput();
-            fmc.updateFlightNo(value, (result) => {
-                if (result) {
-                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                }
-            });
-        };
-        // let coRouteCell = "--------";
-        // if (fmc.coRoute) {
-        //     coRouteCell = fmc.coRoute;
-        // }
-        // fmc.onRightInput[2] = () => {
-        //     let value = fmc.inOut;
-        //     fmc.clearUserInput();
-        //     fmc.updateCoRoute(value, (result) => {
-        //         if (result) {
-        //             CJ4_FMC_RoutePage.ShowPage1(fmc);
-        //         }
-        //     });
-        // };
-        let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
-        let pageCount = (Math.floor(allRows.rows.length / 4) + 2);
-        let activateCell = "";
-
-        //start of CWB add first waypoint/leg to page1
-
-        let rows = [["----"], [""], [""], [""], [""]];
-        //let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
-        let showInput = false;
-        for (let i = 0; i < rows.length; i++) {
-            if (allRows.rows[i]) {
-                rows[i] = allRows.rows[i];
-                fmc.onRightInput[3] = () => {
-                    let value = fmc.inOut;
-                    if (value === FMCMainDisplay.clrValue) {
-                        fmc.clearUserInput();
-                        fmc.removeWaypoint(1, () => {
-                            CJ4_FMC_RoutePage.ShowPage1(fmc);
-                        });
-                    }
-                };
-            }
-            else if (!showInput) {
-                showInput = true;
-                if (!pendingAirway) {
-                    rows[i] = ["-----", "-----"];
-                    fmc.onRightInput[3] = () => {
-                        fmc.setMsg("Working...");
-                        let value = fmc.inOut;
-                        if (value === FMCMainDisplay.clrValue) {
-                            fmc.clearUserInput();
-                            fmc.removeWaypoint(1, () => {
-                                fmc.setMsg();
-                                CJ4_FMC_RoutePage.ShowPage1(fmc);
-                            });
-                        } else if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.insertWaypoint(value, 1, (isSuccess) => {
-                                if (isSuccess) {
-                                    fmc.setMsg();
-                                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                                } else {
-                                    fmc.fpHasChanged = false;
-                                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage1(fmc); });
-                                }
-                            });
-                        } else {
-                            fmc.setMsg();
-                        }
-                    };
-                    fmc.onLeftInput[3] = () => {
-                        let value = fmc.inOut;
-                        if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
-                                if (lastWaypoint.infos instanceof WayPointInfo) {
-                                    lastWaypoint.infos.UpdateAirway(value).then(() => {
-                                        let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
-                                        if (airway) {
-                                            lastWaypoint.infos.airwayOut = airway.name;
-                                            CJ4_FMC_RoutePage.ShowPage1(fmc, airway);
-                                        }
-                                        else {
-                                            fmc.showErrorMessage("NOT IN DATABASE");
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    };
-                }
-                else {
-                    rows[i] = [pendingAirway.name, "-----"];
-                    fmc.onRightInput[3] = () => {
-                        let value = fmc.inOut;
-                        if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.insertWaypointsAlongAirway(value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, pendingAirway.name, (result) => {
-                                if (result) {
-                                    CJ4_FMC_RoutePage.ShowPage1(fmc);
-                                }
-                            });
-                        }
-                    };
-                    if (rows[i + 1]) {
-                        rows[i + 1] = ["-----"];
-                    }
-                }
-            }
-        }
-
-
-        //end of CWB adding first waypoint leg to page 1
-
-        //start of CWB edited activation and exec handling
-        if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-            fmc.fpHasChanged = true;
-            lsk6Field = "<CANCEL MOD";
-        }
-        else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
-            activateCell = "PERF INIT>";
-            fmc.fpHasChanged = false;
-            lsk6Field = "<SEC FPLN";
-        }
-
-        fmc.onExecPage = () => {
-            if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-                if (!fmc.getIsRouteActivated()) {
-                    fmc.activateRoute();
-                    activateCell = "";
-                }
-                fmc.onExecDefault();
-                fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage1(fmc);
             } else {
-                console.log("onExec Else");
-                fmc._isRouteActivated = false;
-                console.log("onExec else this._isRouteActivated = false");
-                fmc.fpHasChanged = false;
-                console.log("onExec else this.fpHasChanged = false");
-                fmc.setMsg();
-                console.log("onExec else fmc.setMsg");
-                fmc._activatingDirectTo = false;
-                console.log("onExec else this._activatingDirectTo = false");
-            }
-        };
-
-        fmc.onRightInput[5] = () => {
-            if (activateCell == "PERF INIT>") {
-                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
-            }
-        };
-        fmc.onLeftInput[5] = () => {
-            if (lsk6Field == "<CANCEL MOD") {
-                if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-                    fmc.fpHasChanged = false;
-                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage1(fmc); });
+                let emptyFixIndex = 1;
+                const firstFix = this._fmc.flightPlanManager.getWaypoint(emptyFixIndex);
+                if (firstFix && firstFix.isRunway) {
+                    emptyFixIndex++;
                 }
+
+                emptyRow.fpIdx = emptyFixIndex;
+                this._rows.push(emptyRow);
             }
-        };
+        }
 
-        //end of CWB edited activation and exec handling
+        this._pageCount = Math.max(2, (Math.ceil((this._rows.length - 1) / 5) + 1));
 
-        let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
+        this._modStr = this._fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
+    }
 
-        fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " FPLN[blue]", "1/" + pageCount + " [blue]"],
+    render() {
+        // console.log("render");
+        if (this._currentPage == 0) {
+            this.renderMainPage();
+        } else {
+            this.renderRoutePage();
+        }
+    }
+
+    renderMainPage() {
+        this._fmc._templateRenderer.setTemplateRaw([
+            [" " + this._modStr + " FPLN[blue]", "1/" + this._pageCount + " [blue]"],
             [" ORIGIN[blue]", "DEST[blue] ", "DIST[blue]"],
-            [originCell, destinationCell, distanceCell],
+            [this._originCell, this._destinationCell, this._distanceCell],
             [" ROUTE[blue]", "ALTN[blue] "],
             ["----------", "----"],
             ["", "ORIG RWY[blue] "],
             [""],
             [" VIA[blue]", "TO[blue] "],
-            rows[0],
+            this._rows[0].getTemplate()[0],
             ["----------------[blue]", "FLT NO[blue] "],
-            ["", flightNoCell],
+            ["", this._flightNoCell],
             [""],
-            [lsk6Field, activateCell]
+            [this._lsk6Field, this._activateCell]
         ]);
+    }
 
-        fmc.onNextPage = () => {
-            CJ4_FMC_RoutePage.ShowPage2(fmc);
+    renderRoutePage() {
+        let idx = this._offset;
+
+        this._fmc._templateRenderer.setTemplateRaw([
+            [" " + this._modStr + " FPLN[blue]", (this._currentPage + 1) + "/" + this._pageCount + " [blue]"],
+            ["VIA[s-text blue]", "TO[s-text blue]"],
+            this._rows[idx] ? this._rows[idx].getTemplate()[0] : [""],
+            this._rows[idx] ? this._rows[idx].getTemplate()[1] : [""],
+            this._rows[idx + 1] ? this._rows[idx + 1].getTemplate()[0] : [""],
+            this._rows[idx + 1] ? this._rows[idx + 1].getTemplate()[1] : [""],
+            this._rows[idx + 2] ? this._rows[idx + 2].getTemplate()[0] : [""],
+            this._rows[idx + 2] ? this._rows[idx + 2].getTemplate()[1] : [""],
+            this._rows[idx + 3] ? this._rows[idx + 3].getTemplate()[0] : [""],
+            this._rows[idx + 3] ? this._rows[idx + 3].getTemplate()[1] : [""],
+            this._rows[idx + 4] ? this._rows[idx + 4].getTemplate()[0] : [""],
+            ["-----------------------[blue]"],
+            [this._lsk6Field, this._activateCell]
+        ]);
+    }
+
+    bindEvents() {
+        if (this._currentPage == 0) {
+            // main page
+            this._fmc.onLeftInput[0] = () => {
+                this._fmc.setMsg("Working...");
+                let value = this._fmc.inOut;
+                if (value == "") {
+                    this._fmc.setMsg();
+                    if (this._fmc.flightPlanManager.getOrigin()) {
+                        this._fmc.inOut = this._fmc.flightPlanManager.getOrigin().ident;
+                    }
+                } else {
+                    this._fmc.clearUserInput();
+                    this.setOrigin(value.padEnd(4));
+                }
+            };
+
+            this._fmc.onRightInput[0] = () => {
+                this._fmc.setMsg("Working...");
+                let value = this._fmc.inOut;
+                if (value == "") {
+                    this._fmc.setMsg();
+                    if (this._fmc.flightPlanManager.getDestination()) {
+                        this._fmc.inOut = this._fmc.flightPlanManager.getDestination().ident;
+                    }
+                } else {
+                    this._fmc.clearUserInput();
+                    this.setDestination(value.padEnd(4));
+                }
+            };
+
+            this._fmc.onRightInput[4] = () => {
+                let value = this._fmc.inOut;
+                this._fmc.clearUserInput();
+                this._fmc.updateFlightNo(value, (result) => {
+                    if (result) {
+                        this.update(true);
+                    }
+                });
+            };
+
+            if (this._fmc.flightPlanManager.getCurrentFlightPlan().findSegmentByWaypointIndex(this._rows[0].fpIdx) !== SegmentType.Departure) {
+                this.bindRowEvents(3);
+            }
+
+        } else {
+            // other pages
+            for (let i = 0; i < 5; i++) {
+                if (this._rows[i + this._offset]) {
+                    this.bindRowEvents(i);
+                }
+            }
+        }
+
+        // paging
+        this._fmc.onPrevPage = () => {
+            this.gotoPrevPage();
+        };
+        this._fmc.onNextPage = () => {
+            this.gotoNextPage();
+        };
+
+        // exec stuff
+        this._fmc.onLeftInput[5] = () => {
+            if (this._lsk6Field === "<CANCEL MOD") {
+                if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                    this._airwayInput = "";
+                    this._airwayIndex = -1;
+                    this._fmc.fpHasChanged = false;
+                    this._fmc.eraseTemporaryFlightPlan(() => { this.update(true); });
+                }
+            }
+        };
+
+        this._fmc.onRightInput[5] = () => {
+            if (this._activateCell == "PERF INIT>") {
+                CJ4_FMC_PerfInitPage.ShowPage2(this._fmc);
+            }
+        };
+
+        this._fmc.onExecPage = () => {
+            if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
+                this._airwayInput = "";
+                this._airwayIndex = -1;
+                if (!this._fmc.getIsRouteActivated()) {
+                    this._fmc.activateRoute();
+                }
+                this._fmc.refreshPageCallback = () => this.update(true); // TODO see why this would be needed
+                this._fmc.onExecDefault();
+            } else {
+                this._fmc._isRouteActivated = false;
+                this._fmc.fpHasChanged = false;
+                this._fmc.setMsg();
+                this._fmc._activatingDirectTo = false;
+            }
         };
     }
-    static ShowPage2(fmc, offset = 0, pendingAirway) {
 
-        fmc.clearDisplay();
-        let rows = [["-----"], [""], [""], [""], [""]];
-        let allRows = CJ4_FMC_RoutePage._GetAllRows(fmc);
+    /**
+     * Bind the LSK events to a plan row.
+     * @param {Number} lskIdx 
+     */
+    bindRowEvents(lskIdx) {
+        if (this._currentPage > 0) {
+            this._fmc.onLeftInput[lskIdx] = () => {
+                //this._fmc.setMsg("Working...");
+                const value = this._fmc.inOut;
+                this._fmc.clearUserInput();
+                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                    const idx = lskIdx;
+                    const lastWpIdx = this._rows[idx + this._offset - 1].fpIdx;
 
-        allRows.rows.shift();
-        allRows.waypoints.shift();
-
-        // TODO: this should fix missing indexes for when departure is loaded, not the nicest solution though
-        let departure = fmc.flightPlanManager.getDeparture();
-        if (!departure) {
-            allRows.fpIndexes.shift();
-        }
-
-        let page = (2 + (Math.floor(offset / 4)));
-        let pageCount = (Math.floor(allRows.rows.length / 4) + 2);
-        let showInput = false;
-        for (let i = 0; i < rows.length; i++) {
-            if (allRows.rows[i + offset]) {
-                rows[i] = allRows.rows[i + offset];
-                let fpIndex = allRows.fpIndexes[i + offset];
-
-                // DELETE WAYPOINT
-                fmc.onRightInput[i] = () => {
-                    fmc.setMsg("Working...");
-                    let value = fmc.inOut;
-                    if (value === FMCMainDisplay.clrValue) {
-                        fmc.clearUserInput();
-                        fmc.removeWaypoint(fpIndex, () => {
-                            fmc.setMsg();
-                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                        });
-                    } else if (value.length > 0) {
-                        fmc.clearUserInput();
-                        fmc.insertWaypoint(value, fpIndex, (isSuccess) => {
-                            if (isSuccess) {
-                                fmc.setMsg();
-                                CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                            } else {
-                                fmc.fpHasChanged = false;
-                                fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset); });
+                    let lastWaypoint = this._fmc.flightPlanManager.getWaypoints()[lastWpIdx];
+                    if (lastWaypoint.infos instanceof WayPointInfo) {
+                        lastWaypoint.infos.UpdateAirway(value).then(() => {
+                            let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
+                            this._fmc.setMsg();
+                            if (airway) {
+                                this._airwayInput = airway.name;
+                                this._airwayIndex = lastWpIdx;
+                                this.update(true);
+                            }
+                            else {
+                                this._fmc.showErrorMessage("NO AIRWAY MATCH");
                             }
                         });
-                    } else {
-                        fmc.setMsg();
                     }
-                };
-            }
-            else if (!showInput) {
-                showInput = true;
-                if (!pendingAirway) {
-                    rows[i] = ["-----", "-----"];
-                    fmc.onRightInput[i] = () => {
-                        fmc.setMsg("Working...");
-                        let value = fmc.inOut;
-                        if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.insertWaypoint(value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex() + 1, (isSuccess) => {
-                                if (isSuccess) {
-                                    fmc.setMsg();
-                                    CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                                }
-                            });
-                        } else
-                            fmc.setMsg();
-                    };
-                    fmc.onLeftInput[i] = () => {
-                        fmc.setMsg("Working...");
-                        let value = fmc.inOut;
-                        if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
-                                if (lastWaypoint.infos instanceof WayPointInfo) {
-                                    // Load the fixes of the selected airway and their infos.airways
-                                    lastWaypoint.infos.UpdateAirway(value).then(() => {
-                                        let airway = lastWaypoint.infos.airways.find(a => { return a.name === value; });
-                                        if (airway) {
-                                            // set the outgoing airway of the last enroute or departure waypoint of the flightplan
-                                            lastWaypoint.infos.airwayOut = airway.name;
-                                            fmc.setMsg();
-                                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset, airway);
-                                        }
-                                        else {
-                                            fmc.showErrorMessage("NO INTERSECTION");
-                                        }
-                                    });
-                                }
-                            });
-                        } else
-                            fmc.setMsg();
-                    };
-                }
-                else {
-                    rows[i] = [pendingAirway.name, "-----"];
-                    fmc.onRightInput[i] = () => {
-                        fmc.setMsg("Working...");
-                        let value = fmc.inOut;
-                        if (value.length > 0) {
-                            fmc.clearUserInput();
-                            fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                fmc.getOrSelectWaypointByIdent(value, (waypoint) => {
-                                    if (!waypoint) {
-                                        fmc.showErrorMessage("NOT IN DATABASE");
-                                    }
-                                    CJ4_FMC_RoutePage.insertWaypointsAlongAirway(fmc, value, fmc.flightPlanManager.getEnRouteWaypointsLastIndex(), pendingAirway.name, (result) => {
-                                        if (result) {
-                                            fmc.setMsg();
-                                            CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-                                        } else
-                                            fmc.showErrorMessage("NOT ON AIRWAY");
-                                    });
-                                });
-                            });
-                        } else
-                            fmc.setMsg();
-                    };
-                    if (rows[i + 1]) {
-                        rows[i + 1] = ["-----"];
-                    }
-                }
-            }
+                });
+            };
         }
 
-        //start of CWB edited activation and exec handling
-        let activateCell = "";
-        let lsk6Field = "";
-        if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-            fmc.fpHasChanged = true;
-            lsk6Field = "<CANCEL MOD";
-        }
-        else if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 0) {
-            activateCell = "PERF INIT>";
-            fmc.fpHasChanged = false;
-            lsk6Field = " ";
-        }
+        this._fmc.onRightInput[lskIdx] = () => {
+            this._fmc.setMsg("Working...");
+            const value = this._fmc.inOut;
+            const idx = (this._currentPage > 0) ? lskIdx : 0;
+            const row = this._rows[idx + this._offset];
+            const wpIdx = row.fpIdx;
 
-        fmc.onExecPage = () => {
-            if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-                if (!fmc.getIsRouteActivated()) {
-                    fmc.activateRoute();
-                    activateCell = "";
+            if (value === FMCMainDisplay.clrValue) {
+                this._fmc.clearUserInput();
+                this._fmc.removeWaypoint(wpIdx, () => {
+                    this._fmc.setMsg();
+                    this.update(true);
+                });
+            } else if (value.length > 0) {
+                this._fmc.clearUserInput();
+                if (this._airwayInput !== "") {
+                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                        this._fmc.getOrSelectWaypointByIdent(value, (wpt) => {
+                            if (!wpt) {
+                                this._fmc.showErrorMessage("NOT IN DATABASE");
+                            }
+                            const lastWpIdx = this._rows[idx + this._offset - 1].fpIdx;
+                            let lastWaypoint = this._fmc.flightPlanManager.getWaypoints()[lastWpIdx];
+                            lastWaypoint.infos.airwayOut = this._airwayInput;
+                            CJ4_FMC_RoutePage.insertWaypointsAlongAirway(this._fmc, wpt.ident, lastWpIdx, this._airwayInput, (result) => {
+                                if (result) {
+                                    this._airwayInput = "";
+                                    this._airwayIndex = -1;
+                                    this._fmc.setMsg();
+                                    // console.log("added " + wpt.ident);
+                                    this.update(true);
+                                } else
+                                    this._fmc.showErrorMessage("NOT ON AIRWAY");
+                            });
+                        });
+                    });
+                } else {
+                    this._fmc.insertWaypoint(value, wpIdx, (isSuccess) => {
+                        if (isSuccess) {
+                            this._fmc.setMsg();
+                            this.update(true);
+                        }
+                    });
                 }
-                fmc.onExecDefault();
-            }
-            fmc.refreshPageCallback = () => CJ4_FMC_RoutePage.ShowPage2(fmc, offset);
-        };
-
-        fmc.onRightInput[5] = () => {
-            if (activateCell == "PERF INIT>") {
-                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            } else {
+                this._fmc.setMsg();
             }
         };
+    }
 
-        fmc.onLeftInput[5] = () => {
-            if (lsk6Field == "<CANCEL MOD") {
-                if (fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
-                    fmc.fpHasChanged = false;
-                    fmc.eraseTemporaryFlightPlan(() => { CJ4_FMC_RoutePage.ShowPage2(fmc, offset); });
+    setDestination(icao) {
+        this._fmc.updateRouteDestination(icao, (result) => {
+            if (result) {
+                this._fmc.flightPlanManager.setApproachTransitionIndex(-1, () => {
+                    this._fmc.flightPlanManager.setArrivalProcIndex(-1, () => {
+                        this._fmc.flightPlanManager.setApproachIndex(-1, () => {
+                            this._fmc.setMsg();
+                            this._fmc.fpHasChanged = true;
+                            this.update(true);
+                        });
+                    });
+                });
+            }
+        });
+    }
+
+    setOrigin(icao) {
+        if (!SimVar.GetSimVarValue("SIM ON GROUND", "boolean")) {
+            this._fmc.showErrorMessage("NOT ON GROUND");
+            return;
+        }
+
+        this._fmc.tmpDestination = undefined;
+        this._fmc.flightPlanManager.createNewFlightPlan(() => {
+            this._fmc.updateRouteOrigin(icao, (result) => {
+                if (result) {
+                    this._fmc.setMsg();
+                    this._fmc.fpHasChanged = true;
+                    SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+                    this._fmc.resetVspeeds();
+                    this._fmc.resetFuelUsed();
+                    this.update(true);
                 }
-            }
-        };
+            });
+        });
+    }
 
-        //end of CWB edited activation and exec handling
-
-        let modStr = fmc.fpHasChanged ? "MOD[white]" : "ACT[blue]";
-
-        fmc._templateRenderer.setTemplateRaw([
-            [" " + modStr + " FPLN[blue]", page + "/" + pageCount + " [blue]"],
-            ["VIA[s-text blue]", "TO[s-text blue]"],
-            rows[0],
-            [""],
-            rows[1],
-            [""],
-            rows[2],
-            [""],
-            rows[3],
-            [""],
-            rows[4],
-            ["-----------------------[blue]"],
-            [lsk6Field, activateCell]
-        ]);
-        fmc.onPrevPage = () => {
-            if (offset <= 0) {
-                CJ4_FMC_RoutePage.ShowPage1(fmc);
-            }
-            else {
-                CJ4_FMC_RoutePage.ShowPage2(fmc, offset - 5);
-            }
-        };
-        fmc.onNextPage = () => {
-            if (offset + 4 < allRows.rows.length) {
-                CJ4_FMC_RoutePage.ShowPage2(fmc, offset + 5);
-            }
-        };
+    static ShowPage1(fmc) {
+        fmc.clearDisplay();
+        RoutePageInstance = new CJ4_FMC_RoutePage(fmc);
+        RoutePageInstance.update();
     }
 
     static async insertWaypointsAlongAirway(fmc, lastWaypointIdent, index, airwayName, callback = EmptyCallback.Boolean) {
@@ -538,50 +482,144 @@ class CJ4_FMC_RoutePage {
 
     static _GetAllRows(fmc) {
         let allRows = [];
-        let allWaypoints = [];
-        let allFPIndexes = [];
-        let flightPlan = fmc.flightPlanManager;
+        let flightPlanManager = fmc.flightPlanManager;
         let lastDepartureWaypoint = undefined;
-        if (flightPlan) {
-            let departure = flightPlan.getDeparture();
+        let foundActive = false; // haaaaackyyy
+        if (flightPlanManager) {
+            const departure = flightPlanManager.getDeparture();
             if (departure) {
-                let departureWaypoints = flightPlan.getDepartureWaypointsMap();
-                lastDepartureWaypoint = departureWaypoints[departureWaypoints.length - 1];
+                const departureWaypoints = flightPlanManager.getDepartureWaypointsMap();
+                const lastDepartureIdx = departureWaypoints.length - 1;
+                lastDepartureWaypoint = departureWaypoints[lastDepartureIdx];
                 if (lastDepartureWaypoint) {
-                    allRows.push([departure.name, lastDepartureWaypoint.ident]);
+                    foundActive = flightPlanManager.getActiveWaypointIndex() <= lastDepartureIdx;
+                    allRows.push(new FpRow(lastDepartureWaypoint.ident, lastDepartureIdx + 1, departure.name, undefined, foundActive));
                 }
             }
             let fpIndexes = [];
-            let routeWaypoints = flightPlan.getEnRouteWaypoints(fpIndexes);
+            const routeWaypoints = flightPlanManager.getEnRouteWaypoints(fpIndexes);
+            let tmpFoundActive = false;
             for (let i = 0; i < routeWaypoints.length; i++) {
-                let prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
-                let wp = routeWaypoints[i];
+                const prev = (i == 0) ? lastDepartureWaypoint : routeWaypoints[i - 1]; // check with dep on first waypoint
+                const wp = routeWaypoints[i];
                 if (wp) {
+
+                    tmpFoundActive = tmpFoundActive || (!foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIndexes[i]);
+                    if (tmpFoundActive) {
+                        foundActive = true;
+                    }
+
                     if (wp.infos.airwayIn !== undefined && prev && prev.infos.airwayOut === wp.infos.airwayIn) {
                         // is there a next waypoint?
-                        let nextWp = routeWaypoints[i + 1];
+                        const nextWp = routeWaypoints[i + 1];
                         if (nextWp) {
-                            let airwayContinues = (wp.infos.airwayIn === wp.infos.airwayOut && nextWp.infos.airwayIn === wp.infos.airwayOut);
+                            const airwayContinues = (wp.infos.airwayIn === wp.infos.airwayOut && nextWp.infos.airwayIn === wp.infos.airwayOut);
                             if (airwayContinues)
                                 continue;
                         }
-                        allRows.push([wp.infos.airwayIn, wp.ident]);
-                        allWaypoints.push(wp);
-                        allFPIndexes.push(fpIndexes[i]);
+                        allRows.push(new FpRow(wp.ident, fpIndexes[i], wp.infos.airwayIn, wp.infos.airwayOut, tmpFoundActive));
+                        tmpFoundActive = false;
                     }
                     else {
-                        allRows.push(["DIRECT", wp.ident]);
-                        allWaypoints.push(wp);
-                        allFPIndexes.push(fpIndexes[i]);
+                        allRows.push(new FpRow(wp.ident, fpIndexes[i], undefined, wp.infos.airwayOut, tmpFoundActive));
+                        tmpFoundActive = false;
                     }
                 }
             }
+
+            /** @type {ManagedFlightPlan} */
+            const fpln = flightPlanManager.getCurrentFlightPlan();
+
+            const arrivalSeg = fpln.getSegment(SegmentType.Arrival);
+            if (arrivalSeg !== FlightPlanSegment.Empty) {
+                const arrival = flightPlanManager.getArrival();
+                const currentWaypointIndex = fpln.activeWaypointIndex;
+
+                if (arrival) {
+                    const transitionIndex = fpln.procedureDetails.arrivalTransitionIndex;
+                    const arrivalName = transitionIndex !== -1
+                        ? `${arrival.enRouteTransitions[transitionIndex].name}.${arrival.name}`
+                        : `${arrival.name}`;
+
+                    const finalFix = arrivalSeg.waypoints[arrivalSeg.waypoints.length - 1];
+                    const isSegmentActive = currentWaypointIndex >= arrivalSeg.offset && currentWaypointIndex < arrivalSeg.offset + arrivalSeg.waypoints.length;
+
+                    allRows.push(new FpRow(finalFix.ident, arrivalSeg.offset, arrivalName, undefined, isSegmentActive));
+                }
+            }
+
+            /** @type {FlightPlanSegment} */
+            const approachSeg = fpln.getSegment(SegmentType.Approach);
+            if (approachSeg !== FlightPlanSegment.Empty) {
+                // first app fix
+                const fWp = approachSeg.waypoints[0];
+                const fFpIdx = approachSeg.offset;
+                let tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fFpIdx;
+                if (tmpFoundActive) {
+                    foundActive = true;
+                }
+                allRows.push(new FpRow(fWp.ident, fFpIdx, undefined, undefined, tmpFoundActive));
+
+                // last app fix
+                let appName = (flightPlanManager.getAirportApproach() !== undefined) ? flightPlanManager.getAirportApproach().name : "APP";
+                appName = `${allRows[allRows.length - 1].ident}.${appName}`;
+                const wp = approachSeg.waypoints[approachSeg.waypoints.length - 1];
+                const fpIdx = approachSeg.offset + (approachSeg.waypoints.length - 1);
+                tmpFoundActive = !foundActive && flightPlanManager.getActiveWaypointIndex() <= fpIdx;
+                if (tmpFoundActive) {
+                    foundActive = true;
+                }
+                allRows.push(new FpRow(wp.ident, fpIdx, appName, undefined, tmpFoundActive));
+            }
+
         }
-        return {
-            rows: allRows,
-            waypoints: allWaypoints,
-            fpIndexes: allFPIndexes
-        };
+        return allRows;
     }
 }
+
+class FpRow {
+    constructor(ident = "-----", fpIdx = Infinity, airwayIn = undefined, airwayOut = undefined, isActive = false) {
+        this._ident = ident;
+        this._fpIdx = fpIdx;
+        this._airwayIn = airwayIn;
+        this._airwayOut = airwayOut;
+        this._isActive = isActive;
+    }
+
+    get ident() { return this._ident; }
+    set ident(val) { this._ident = val; }
+    get fpIdx() { return this._fpIdx; }
+    set fpIdx(val) { this._fpIdx = val; }
+    get airwayOut() { return this._airwayOut; }
+    set airwayOut(val) { this._airwayOut = val; }
+    get airwayIn() { return this._airwayIn; }
+    set airwayIn(val) { this._airwayIn = val; }
+
+    getTemplate() {
+        let row1tmpl, row2tmpl = ["", ""];
+        if (this._airwayIn === undefined) {
+            if (this._ident !== "-----") {
+                row1tmpl = ["DIRECT", this._ident];
+            }
+            else {
+                row1tmpl = ["-----", this._ident];
+
+            }
+        } else {
+            row1tmpl = [this._airwayIn, this._ident];
+            if (this._ident === "-----") {
+                row1tmpl[1] = "□□□□□[s-text]";
+                row2tmpl = ["----[s-text]", "----[s-text]", "DISCONTINUITY[s-text]"];
+            }
+        }
+
+        if (this._isActive) {
+            row1tmpl[0] += "[magenta]";
+            row1tmpl[1] += "[magenta]";
+        }
+
+        return [row1tmpl, row2tmpl];
+    }
+}
+
 //# sourceMappingURL=CJ4_FMC_RoutePage.js.map
