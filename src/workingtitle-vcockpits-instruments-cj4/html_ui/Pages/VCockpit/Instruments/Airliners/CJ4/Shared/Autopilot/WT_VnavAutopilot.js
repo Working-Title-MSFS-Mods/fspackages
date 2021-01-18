@@ -344,7 +344,7 @@ class WT_VerticalAutopilot {
                 if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.ILS) {
                     this._glideslopeStatus = GlideslopeStatus.GS_ARMED;
                     console.log("GS Armed");
-                    this.fmaVerticalArmedState = VerticalNavModeState.GS;
+                    this._navModeSelector.currentArmedVnavState = VerticalNavModeState.GS;
                 }
                 break;
             case GlideslopeStatus.GS_ARMED:
@@ -572,6 +572,7 @@ class WT_VerticalAutopilot {
         const signal = (this.navMode == 1 || this.navMode == 2) ? SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool") : false;
         const isIls = signal ? SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool") : false;
         const gs = isIls ? SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool") : false; 
+        console.log("GS EXISTS? " + gs);
         switch(this._glideslopeStatus) {
             case GlideslopeStatus.NONE:
                 if (gs) {
@@ -589,10 +590,8 @@ class WT_VerticalAutopilot {
     }
 
     trackGlideslope() {
-        const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool");
-        const isIls = signal ? SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool") : false;
-        const gs = isIls ? SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool") : false;
-        const gsi = SimVar.GetSimVarValue("NAV GSI:" + nav, "number");
+        const gsi = SimVar.GetSimVarValue("NAV GSI:" + this.navMode, "number");
+        console.log("gs deviation: " + gsi);
         return gsi * 100;
     }
 
@@ -781,10 +780,12 @@ class WT_VerticalAutopilot {
                 this.targetAltitude = undefined;
                 this.manageAltitude();
             case PathInterceptStatus.INTERCEPTING:
+                console.log("this.glideslopeFpa "+ this.glideslopeFpa);
                 this.interceptPath(this.glideslopeFpa);
                 break;
             case PathInterceptStatus.INTERCEPTED:
                 this.manageAltitude();
+                console.log("this.glideslopeFpa "+ this.glideslopeFpa);
                 this.commandVerticalSpeed(this.glideslopeFpa, this.trackGlideslope());
         }
     }
