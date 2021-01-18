@@ -207,8 +207,27 @@ class CJ4NavModeSelector {
       this._handlers[event]();
     }
 
+    let lateralMode = this.currentLateralActiveState;
+
+    if (this.currentLateralActiveState === LateralNavModeState.APPR) {
+      switch(this.approachMode) {
+        case WT_ApproachType.RNAV:
+        case WT_ApproachType.VISUAL:
+        case WT_ApproachType.NONE:
+          lateralMode = "APPR FMS1";
+          break;
+        case WT_ApproachType.ILS:
+          if (this.lNavModeState === LNavModeState.NAV1) {
+            lateralMode = "APPR LOC1";
+          } else if (this.lNavModeState === LNavModeState.NAV2) {
+            lateralMode = "APPR LOC2";
+          }
+          break;
+      }
+    }
+
     const fmaValues = {
-      lateralMode: this.currentLateralActiveState,
+      lateralMode: lateralMode,
       lateralArmed: "",
       verticalMode: `${this.isVNAVOn ? "V" : ""}${this.currentVerticalActiveState}`,
       verticalArmed1: this.currentArmedAltitudeState !== VerticalNavModeState.NONE ? this.currentArmedAltitudeState : "",
@@ -467,12 +486,13 @@ class CJ4NavModeSelector {
     }
 
     switch(this.currentVerticalActiveState) {
-      case VerticalNavModeState.ALTCAP:
-      case VerticalNavModeState.ALTVCAP:
-      case VerticalNavModeState.ALTSCAP:
       case VerticalNavModeState.ALTV:
       case VerticalNavModeState.ALTS:
       case VerticalNavModeState.ALT:
+        this.checkCorrectAltMode();
+      case VerticalNavModeState.ALTCAP:
+      case VerticalNavModeState.ALTVCAP:
+      case VerticalNavModeState.ALTSCAP:
         console.log("setting slot 3 in handleAlt1Changed");
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
         break;
@@ -486,7 +506,40 @@ class CJ4NavModeSelector {
    */
   handleAlt2Changed() {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
+    this.checkCorrectAltMode();
     //this.setProperVerticalArmedStates();
+  }
+
+  /**
+   * Checks the altitude configuration to set the correct altitude hold type
+   * between ALTV (MANAGED), ALTS (SELECTED) and ALT (PRESSURE).
+   */
+  checkCorrectAltMode() {
+    if (this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV
+      || this.currentVerticalActiveState === VerticalNavModeState.ALT) {
+      const altLockValue = Math.floor(Simplane.getAutoPilotDisplayedAltitudeLockValue());
+      console.log("altLockValue " + altLockValue);
+      console.log("this.selectedAlt1 " + Math.floor(this.selectedAlt1));
+      console.log("this.selectedAlt2 " + Math.floor(this.selectedAlt2));
+      console.log("this.currentAltitudeTracking " + this.currentAltitudeTracking);
+      console.log("this.managedAltitudeTarget " + this.managedAltitudeTarget);
+      if (altLockValue == Math.floor(this.selectedAlt1) && this.currentVerticalActiveState !== VerticalNavModeState.ALTS) {
+        this.currentVerticalActiveState = VerticalNavModeState.ALTS;
+      }
+      else if ((altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)) 
+        && this.currentVerticalActiveState !== VerticalNavModeState.ALTV) {
+        console.log("altLockValue == Math.floor(this.selectedAlt2) " + altLockValue == Math.floor(this.selectedAlt2));
+        console.log("altLockValue == Math.floor(this.managedAltitudeTarget) " + altLockValue == Math.floor(this.managedAltitudeTarget));
+        console.log("this.currentAltitudeTracking === AltitudeState.MANAGED) " + this.currentAltitudeTracking === AltitudeState.MANAGED);
+
+
+        console.log("checkCorrectAltMode setting ALTV");
+        this.currentVerticalActiveState = VerticalNavModeState.ALTV;
+      }
+      else {
+        this.currentVerticalActiveState = VerticalNavModeState.ALT;
+      }
+    }
   }
 
   checkCorrectAltSlot() {
@@ -596,7 +649,7 @@ class CJ4NavModeSelector {
       this.currentArmedVnavState = VerticalNavModeState.NONE;
       this.currentArmedAltitudeState = VerticalNavModeState.NONE;
     } else {
-      console.log("setting ALTS/ALTV");
+      console.log("setting ARMED ALTS/ALTV");
       if (slot !== 1 && !this.isAltitudeLocked && (this.currentVerticalActiveState === VerticalNavModeState.VS
         || this.currentVerticalActiveState === VerticalNavModeState.FLC)) {
           if (!this.isVNAVOn) {
@@ -969,6 +1022,8 @@ class CJ4NavModeSelector {
           this.currentVerticalActiveState = VerticalNavModeState.ALT;
           break;
       }
+
+      this.checkCorrectAltMode();
 
       if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 1) {
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);

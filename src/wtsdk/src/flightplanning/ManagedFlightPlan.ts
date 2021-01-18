@@ -784,7 +784,7 @@ export class ManagedFlightPlan {
         if (approachIndex === -1 && destinationRunwayIndex !== -1 && destinationRunwayExtension !== -1) {
           const runwayExtensionWaypoint = procedure.buildWaypoint(`RX${selectedRunwayOutput}`,
             Avionics.Utils.bearingDistanceToCoordinates(runway.direction + 180, destinationRunwayExtension, runway.beginningCoordinates.lat, runway.beginningCoordinates.long));
-          this.addWaypoint(runwayExtensionWaypoint);
+          this.addWaypoint(runwayExtensionWaypoint, undefined, SegmentType.Approach);
         }
 
         const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.beginningCoordinates);

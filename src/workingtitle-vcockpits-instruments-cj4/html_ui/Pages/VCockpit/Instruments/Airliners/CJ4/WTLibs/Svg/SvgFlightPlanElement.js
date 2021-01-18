@@ -59,7 +59,9 @@ class SvgFlightPlanElement extends SvgMapElement {
                     const mainPathEnd = inMissedApproach ? waypoints.length - 1 : missedSegment.offset;
 
                     //Active leg
-                    this.buildPathFromWaypoints(waypoints, activeWaypointIndex - 1, activeWaypointIndex + 1, map, 'magenta', false);
+                    if (waypoints[activeWaypointIndex] && waypoints[activeWaypointIndex - 1]) {
+                        this.buildPathFromWaypoints(waypoints, activeWaypointIndex - 1, activeWaypointIndex + 1, map, 'magenta', false);
+                    }
 
                     //Missed approach preview
                     if (!inMissedApproach) {

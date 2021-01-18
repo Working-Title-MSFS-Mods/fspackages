@@ -763,7 +763,7 @@ class CJ4_FMC_LegsPage {
                 const bearing = parseInt(matchPlaceBearingDistance[2]);
                 const distance = parseFloat(matchPlaceBearingDistance[3]);
                 const ident = procMatch(matchPlaceBearingDistance[4], getIndexedName(referenceWaypoint.ident));
-    
+   
                 newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);
             }
         }

@@ -160,8 +160,6 @@ class HoldsDirector {
     const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
 
     if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
-      this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-
       this.recalculateHold(planeState);
       this.cancelAlert();
 
@@ -183,8 +181,6 @@ class HoldsDirector {
       const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
 
       if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
-        this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-  
         this.recalculateHold(planeState);
         this.cancelAlert();
   
@@ -208,8 +204,6 @@ class HoldsDirector {
       const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
 
       if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
-        this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-  
         this.recalculateHold(planeState);
         this.cancelAlert();
   

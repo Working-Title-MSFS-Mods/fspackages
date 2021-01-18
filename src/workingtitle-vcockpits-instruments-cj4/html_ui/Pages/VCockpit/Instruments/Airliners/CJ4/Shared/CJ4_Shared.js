@@ -2597,11 +2597,18 @@ class CJ4_SystemFMS extends NavSystemElement {
                             let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(aircraftPosition, destination.infos.coordinates).toFixed(1));
                             let destinationDistanceFlightplan = 0;
                             destinationDistanceNumber = new Number(destinationDistanceDirect);
+                            let destinationCumulativeDistanceInFP = destination.cumulativeDistanceInFP;
+                            if (flightPlanManager.getApproach() && flightPlanManager.getApproach().length > 0) {
+                                const approach = flightPlanManager.getApproachWaypoints();
+                                const lastApproachIndex = flightPlanManager.getAllWaypoints().indexOf(approach[approach.length - 1]);
+                                const allWaypoints = flightPlanManager.getAllWaypoints();
+                                destinationCumulativeDistanceInFP = allWaypoints[lastApproachIndex].cumulativeDistanceInFP;
+                            }
                             if (activeWaypoint) {
-                                destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - activeWaypoint.cumulativeDistanceInFP + new Number(activeWaypointDistance));
+                                destinationDistanceFlightplan = new Number(destinationCumulativeDistanceInFP - activeWaypoint.cumulativeDistanceInFP + new Number(activeWaypointDistance));
                             }
                             else {
-                                destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP);
+                                destinationDistanceFlightplan = new Number(destinationCumulativeDistanceInFP);
                             }
                             destinationDistanceNumber = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect.toFixed(1)
                                 : destinationDistanceFlightplan.toFixed(1);
