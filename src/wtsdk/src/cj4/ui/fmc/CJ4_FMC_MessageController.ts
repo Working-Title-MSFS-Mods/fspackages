@@ -1,6 +1,6 @@
-import { MessageController } from "../messages/MessageController";
-import { MessageDefinition, MessageLevel } from "../messages/MessageDefinition";
-import { Message } from "../messages/Message";
+import { MessageController } from "../../../messages/MessageController";
+import { MessageDefinition, MessageLevel } from "../../../messages/MessageDefinition";
+import { Message } from "../../../messages/Message";
 
 export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Message> {
 

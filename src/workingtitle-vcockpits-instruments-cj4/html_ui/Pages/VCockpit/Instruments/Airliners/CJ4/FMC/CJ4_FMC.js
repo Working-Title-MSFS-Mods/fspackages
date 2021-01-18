@@ -849,7 +849,7 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     updateMsgs() {
-        if (this._frameUpdates % 60 == 0) {
+        if (this._frameUpdates % 30 == 0) {
             this._msgController.update();
             this.setMsg(this._msgController.getMsg());
         }

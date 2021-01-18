@@ -1,5 +1,3 @@
-import { CJ4_FMC } from "WorkingTitle";
-
 export abstract class CJ4_FMC_Page {
   private static _instance: CJ4_FMC_Page;
   private _isDirty: boolean = true;

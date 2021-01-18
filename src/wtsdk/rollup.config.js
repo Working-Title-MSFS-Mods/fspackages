@@ -36,7 +36,7 @@ module.exports = {
     ],
     external: ['MSFS', 'WorkingTitle'],
     output: {
-        // sourcemap: 'inline',
+        //sourcemap: 'inline',
         file: `${__dirname}\\${outDir}\\wtsdk.js`,
         extend: true,
         format: 'umd',
