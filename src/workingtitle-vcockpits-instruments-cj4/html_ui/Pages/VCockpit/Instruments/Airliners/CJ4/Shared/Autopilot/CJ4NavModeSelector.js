@@ -115,7 +115,8 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.HDG_LOCK_CHANGED}`]: this.handleHeadingLockChanged.bind(this),
       [`${NavModeEvent.TOGA_CHANGED}`]: this.handleTogaChanged.bind(this),
       [`${NavModeEvent.GROUNDED}`]: this.handleGrounded.bind(this),
-      [`${NavModeEvent.AP_CHANGED}`]: this.handleAPChanged.bind(this)
+      [`${NavModeEvent.AP_CHANGED}`]: this.handleAPChanged.bind(this),
+      [`${NavModeEvent.LOC_ACTIVE}`]: this.handleLocActive.bind(this)
     };
 
     this.initialize();
@@ -207,28 +208,30 @@ class CJ4NavModeSelector {
       this._handlers[event]();
     }
 
-    let lateralMode = this.currentLateralActiveState;
-
-    if (this.currentLateralActiveState === LateralNavModeState.APPR) {
-      switch(this.approachMode) {
-        case WT_ApproachType.RNAV:
-        case WT_ApproachType.VISUAL:
-        case WT_ApproachType.NONE:
-          lateralMode = "APPR FMS1";
-          break;
-        case WT_ApproachType.ILS:
-          if (this.lNavModeState === LNavModeState.NAV1) {
-            lateralMode = "APPR LOC1";
-          } else if (this.lNavModeState === LNavModeState.NAV2) {
-            lateralMode = "APPR LOC2";
-          }
-          break;
+    const getLateralAnnunciation = (mode) => {
+      if (mode === LateralNavModeState.APPR) {
+        switch(this.approachMode) {
+          case WT_ApproachType.RNAV:
+          case WT_ApproachType.VISUAL:
+          case WT_ApproachType.NONE:
+            lateralMode = "APPR FMS1";
+            break;
+          case WT_ApproachType.ILS:
+            if (this.lNavModeState === LNavModeState.NAV1) {
+              lateralMode = "APPR LOC1";
+            } else if (this.lNavModeState === LNavModeState.NAV2) {
+              lateralMode = "APPR LOC2";
+            }
+            break;
+        }
       }
-    }
+
+      return mode;
+    };
 
     const fmaValues = {
-      lateralMode: lateralMode,
-      lateralArmed: "",
+      lateralMode: getLateralAnnunciation(this.currentLateralActiveState),
+      lateralArmed: getLateralAnnunciation(this.currentLateralArmedState),
       verticalMode: `${this.isVNAVOn ? "V" : ""}${this.currentVerticalActiveState}`,
       verticalArmed1: this.currentArmedAltitudeState !== VerticalNavModeState.NONE ? this.currentArmedAltitudeState : "",
       verticalArmed2: this.currentArmedVnavState !== VerticalNavModeState.NONE ? this.currentArmedVnavState : ""
@@ -255,6 +258,16 @@ class CJ4NavModeSelector {
         || this.currentVerticalActiveState === VerticalNavModeState.TO || this.currentVerticalActiveState === VerticalNavModeState.GA) {
           SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
       }
+    }
+  }
+
+  /**
+   * Handles when APPR LOC mode goes active.
+   */
+  handleLocActive() {
+    if (this.currentLateralArmedState === LateralNavModeState.APPR) {
+      this.currentLateralArmedState = LateralNavModeState.NONE;
+      this.currentLateralActiveState = LateralNavModeState.APPR;
     }
   }
 
@@ -839,22 +852,25 @@ class CJ4NavModeSelector {
 
     //TODO: add SimVar.SetSimVarValue("H:Upr_Push_NAV", "number", 1) to change NAV modes
     
-    const setProperVNAVState = () => {
+    const setProperApprState = () => {
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
       this.isVNAVOn = false;
 
       switch(this.approachMode) {
+        case WT_ApproachType.ILS:
+          this.currentLateralArmedState = LateralNavModeState.APPR;
+          break;
         case WT_ApproachType.RNAV:
-          
           SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
 
           if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 0) {
             SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
           }
+
+          this.currentLateralActiveState = LateralNavModeState.APPR;
           break;
         case WT_ApproachType.NONE:
-        case WT_ApproachType.VISUAL:
-        case WT_ApproachType.ILS: {
+        case WT_ApproachType.VISUAL: {
           SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
           SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
           SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
@@ -886,6 +902,7 @@ class CJ4NavModeSelector {
             }        
           }, 1000);
 
+          this.currentLateralActiveState = LateralNavModeState.APPR;
           break;
         }
       }
@@ -893,33 +910,25 @@ class CJ4NavModeSelector {
 
     switch (this.currentLateralActiveState) {
       case LateralNavModeState.ROLL:
-        setProperVNAVState();
-
-        this.currentLateralActiveState = LateralNavModeState.APPR;
+        setProperApprState();
         break;
       case LateralNavModeState.HDG:
       case LateralNavModeState.TO:
       case LateralNavModeState.GA:
         SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-        setProperVNAVState();
-
-        this.currentLateralActiveState = LateralNavModeState.APPR;
+        setProperApprState();
         break;
       case LateralNavModeState.NAV:
         SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-        setProperVNAVState();
-
-        this.currentLateralActiveState = LateralNavModeState.APPR;
+        setProperApprState();
         break;
       case LateralNavModeState.LNAV:
         SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-        setProperVNAVState();
-
-        this.currentLateralActiveState = LateralNavModeState.APPR;
+        setProperApprState();
         break;
       case LateralNavModeState.APPR:
         this.cancelApproachMode(true);
-        this.currentLateralActiveState = LateralNavModeState.ROLL;
+        this.currentLateralArmedState = LateralNavModeState.ROLL;
         break;
     }
   }
@@ -1270,6 +1279,7 @@ NavModeEvent.GS_NONE = 'gs_none';
 NavModeEvent.GS_ARM = 'gs_arm';
 NavModeEvent.GS_ACTIVE = 'gs_active';
 NavModeEvent.AP_CHANGED = 'ap_changed';
+NavModeEvent.LOC_ACTIVE = 'loc_active';
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';

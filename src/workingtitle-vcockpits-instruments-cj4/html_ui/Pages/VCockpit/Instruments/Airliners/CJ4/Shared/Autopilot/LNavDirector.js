@@ -36,6 +36,9 @@ class LNavDirector {
 
     /** An instance of the LNAV holds director. */
     this.holdsDirector = new HoldsDirector(fpm);
+
+    /** An instance of the localizer director. */
+    this.locDirector = new LocDirector(navModeSelector);
   }
 
   /**
@@ -51,7 +54,7 @@ class LNavDirector {
       const previousWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex - 1);
       const activeWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex);
         
-      if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint && previousWaypoint) {
+      if (!this.delegateToHoldsDirector(activeWaypoint) && !this.delegateToLocDirector() && activeWaypoint && previousWaypoint) {
         const planeState = LNavDirector.getAircraftState();
 
         const navSensitivity = this.getNavSensitivity(planeState.position);
@@ -174,6 +177,22 @@ class LNavDirector {
       this.holdsDirector.update(this.activeFlightPlan.activeWaypointIndex);
 
       return this.holdsDirector.state !== HoldsDirectorState.NONE && this.holdsDirector.state !== HoldsDirectorState.EXITED;
+    }
+
+    return false;
+  }
+
+  /**
+   * Delegates navigation to the localizer director, if necessary.
+   * @returns True if the localizer director is now active, false otherwise.
+   */
+  delegateToLocDirector() {
+    const armedState = this.navModeSelector.currentLateralArmedState;
+    const activeState = this.navModeSelector.currentLateralActiveState;
+
+    if ((armedState === LateralNavModeState.APPR || activeState === LateralNavModeState.APPR) && this.navModeSelector.approachMode === WT_ApproachType.ILS) {
+      this.locDirector.update();
+      return this.locDirector.state === LocDirectorState.ACTIVE;
     }
 
     return false;

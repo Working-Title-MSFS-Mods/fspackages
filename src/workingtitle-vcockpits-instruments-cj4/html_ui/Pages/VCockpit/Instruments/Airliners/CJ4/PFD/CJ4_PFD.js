@@ -96,6 +96,14 @@ class CJ4_PFD extends BaseAirliners {
                 }
             }
 
+            const navTransferring = SimVar.GetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number');
+            if (navTransferring) {
+                if (this.mapNavigationMode === Jet_NDCompass_Navigation.NAV) {
+                    this.onEvent('Upr_Push_NAV');
+                }
+                    
+                SimVar.SetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number', 0);
+            }
 
             // TODO: refactor VNAV alt to SVG          
 
