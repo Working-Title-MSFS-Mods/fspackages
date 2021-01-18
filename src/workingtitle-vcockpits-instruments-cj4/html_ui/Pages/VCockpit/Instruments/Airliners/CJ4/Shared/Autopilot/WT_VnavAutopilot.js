@@ -363,7 +363,7 @@ class WT_VerticalAutopilot {
                 }
                 break;
             case GlideslopeStatus.GS_ACTIVE:
-                if (this.lateralMode !== LateralNavModeState.APPR || this.approachMode !== WT_ApproachType.RNAV) {
+                if (this.lateralMode !== LateralNavModeState.APPR || this.approachMode !== WT_ApproachType.ILS) {
                     this.cancelGlideslope();
                     break;
                 }
