@@ -96,15 +96,31 @@ class CJ4_PFD extends BaseAirliners {
                 }
             }
 
+            const navTransferring = SimVar.GetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number');
+            if (navTransferring) {
+                if (this.mapNavigationMode === Jet_NDCompass_Navigation.NAV) {
+                    this.onEvent('Upr_Push_NAV');
+                }
+                    
+                SimVar.SetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number', 0);
+            }
 
             // TODO: refactor VNAV alt to SVG          
 
-            let isAltConstraint = (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0);
+            // let isAltConstraint = (SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number") > 0);
+            // let vnavAltEl = document.getElementById("VnavAlt");
+            // vnavAltEl.style.display = isAltConstraint ? "" : "none";
+            // if (isAltConstraint) {
+            //     vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number").toFixed(0);
+            // }
+
+            let isAltConstraint = localStorage.getItem("WT_CJ4_CONSTRAINT");
             let vnavAltEl = document.getElementById("VnavAlt");
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
-                vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number").toFixed(0);
+                vnavAltEl.textContent = localStorage.getItem("WT_CJ4_CONSTRAINT");
             }
+            
 
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
@@ -634,7 +650,8 @@ class CJ4_VSpeed extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
 
-        const fmaValues = JSON.parse(WTDataStore.get('CJ4_fmaValues', '{ }'));
+        //const fmaValues = JSON.parse(WTDataStore.get('CJ4_fmaValues', '{ }'));
+        const fmaValues = JSON.parse(localStorage.getItem("CJ4_fmaValues"));
 
         var vSpeed = Math.round(Simplane.getVerticalSpeed());
         this.vsi.setAttribute("vspeed", vSpeed.toString());
@@ -813,14 +830,15 @@ class CJ4_APDisplay extends NavSystemElement {
         //SET OTHER VALUES OR BLANK IF AP/FD INACTIVE
         if (flightDirector || apMasterActive) {
             //GET DATA FROM DATASTORE SET BY AP UPDATE METHOD
-            const fmaValues = WTDataStore.get('CJ4_fmaValues', 'none');
-            if (fmaValues != "none") {
+            //const fmaValues = WTDataStore.get('CJ4_fmaValues', 'none');
+            const fmaValues = localStorage.getItem("CJ4_fmaValues");
+            if (fmaValues) {
                 const parsedFmaValues = JSON.parse(fmaValues);
                 const lateralMode = parsedFmaValues.lateralMode;
                 const lateralArmed = parsedFmaValues.lateralArmed;
                 const verticalMode = parsedFmaValues.verticalMode;
-                const verticalArmed1 = parsedFmaValues.verticalArmed1;
-                const verticalArmed2 = parsedFmaValues.verticalArmed2;
+                const verticalArmed1 = parsedFmaValues.verticalArmed1 ? parsedFmaValues.verticalArmed1 : "";
+                const verticalArmed2 = parsedFmaValues.verticalArmed2 ? parsedFmaValues.verticalArmed2 : "";
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
@@ -845,7 +863,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 
-                const verticalArmed = verticalArmed2 ? verticalArmed2 : verticalArmed1 ? verticalArmed1 : "";
+                const verticalArmed = verticalArmed1 + " " + verticalArmed2;
                 Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed);
                 //Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed1 ? verticalArmed1 : "");
 
@@ -895,7 +913,7 @@ class CJ4_ILS extends NavSystemElement {
                 showGs = isGs ? 1 : 0;
             }
             else if (this.gps.mapNavigationSource === 0) {
-                const isVnav = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") > 0;
+                const isVnav = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') === 1;
                 const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
                 const isPpos = this.gps.mapDisplayMode === 4;
                 showLoc = isRnav || isPpos ? 2 : 0;

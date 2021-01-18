@@ -1323,15 +1323,16 @@ export class FlightPlanManager {
     const waypoint = currentFlightPlan.getWaypoint(waypointIndex)
 
     if (waypointIndex !== -1) {
+      this.pauseSync();
       while (currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR") > -1) {
         currentFlightPlan.removeWaypoint(currentFlightPlan.waypoints.findIndex(w => w.ident === "$DIR"));
       }
 
       const newWaypointIndex = currentFlightPlan.waypoints.findIndex(x => x === waypoint);
       currentFlightPlan.addDirectTo(newWaypointIndex);
+      this.resumeSync();
     }
 
-    this._updateFlightPlanVersion();
     callback();
   }
 
