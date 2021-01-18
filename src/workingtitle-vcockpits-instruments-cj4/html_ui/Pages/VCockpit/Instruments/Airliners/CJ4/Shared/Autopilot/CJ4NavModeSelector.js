@@ -850,8 +850,7 @@ class CJ4NavModeSelector {
    */
   handleAPPRPressed() {
 
-    //TODO: add SimVar.SetSimVarValue("H:Upr_Push_NAV", "number", 1) to change NAV modes
-    
+   
     const setProperApprState = () => {
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
       this.isVNAVOn = false;
@@ -869,42 +868,6 @@ class CJ4NavModeSelector {
 
           this.currentLateralActiveState = LateralNavModeState.APPR;
           break;
-        case WT_ApproachType.NONE:
-        case WT_ApproachType.VISUAL: {
-          SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
-          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-          SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-
-          if (this.lNavModeState === LNavModeState.NAV2) {
-            SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 2);
-          }
-          else {
-            SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 1);
-          }
-
-          const apOnGPS = SimVar.GetSimVarValue('GPS DRIVES NAV1', 'Bool');
-          if (apOnGPS) {
-            SimVar.SetSimVarValue('K:TOGGLE_GPS_DRIVES_NAV1', 'number', 0);
-          }
-
-          const headingLockActive = SimVar.GetSimVarValue('AUTOPILOT HEADING LOCK', 'number') === 1;
-          if (headingLockActive) {
-            SimVar.SetSimVarValue('K:AP_PANEL_HEADING_HOLD', 'number', 0);
-          }
-
-          if (this.currentLateralActiveState !== LateralNavModeState.NAV) {
-            SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 1);
-          }
-
-          setTimeout(() => {
-            if (this.currentLateralActiveState === LateralNavModeState.APPR) {
-              SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 1);
-            }        
-          }, 1000);
-
-          this.currentLateralActiveState = LateralNavModeState.APPR;
-          break;
-        }
       }
     };
 
