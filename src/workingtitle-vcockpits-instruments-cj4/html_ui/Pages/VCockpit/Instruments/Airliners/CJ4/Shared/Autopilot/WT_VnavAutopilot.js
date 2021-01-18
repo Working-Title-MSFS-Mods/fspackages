@@ -404,6 +404,7 @@ class WT_VerticalAutopilot {
         } else if (this._glidepathStatus === GlidepathStatus.GP_ARMED && this._navModeSelector.currentArmedVnavState !== VerticalNavModeState.GP) {
             this._navModeSelector.currentArmedVnavState = VerticalNavModeState.GP;
         } else if (this._glideslopeStatus === GlideslopeStatus.GS_ARMED && this._navModeSelector.currentArmedVnavState !== VerticalNavModeState.GS) {
+            console.log("this._glideslopeStatus " + this._glideslopeStatus);
             this._navModeSelector.currentArmedVnavState = VerticalNavModeState.GS;
         }
         if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
@@ -430,7 +431,8 @@ class WT_VerticalAutopilot {
             if (this._navModeSelector.currentArmedAltitudeState !== VerticalNavModeState.NONE) {
                 this._navModeSelector.currentArmedAltitudeState = VerticalNavModeState.NONE;
             }
-        } else if (this._glideslopeStatus === GlidepathStatus.GS_ACTIVE) {
+        } else if (this._glideslopeStatus === GlideslopeStatus.GS_ACTIVE) {
+            console.log("this._glideslopeStatus " + this._glideslopeStatus);
             if (this._navModeSelector.currentArmedVnavState !== VerticalNavModeState.NONE) {
                 this._navModeSelector.currentArmedVnavState = VerticalNavModeState.NONE;
             }
