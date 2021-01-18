@@ -268,6 +268,12 @@ class CJ4NavModeSelector {
     if (this.currentLateralArmedState === LateralNavModeState.APPR) {
       this.currentLateralArmedState = LateralNavModeState.NONE;
       this.currentLateralActiveState = LateralNavModeState.APPR;
+
+      if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") != 1) {
+        SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+      }
+      
+      SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 2);
     }
   }
 
