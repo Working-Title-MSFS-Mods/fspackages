@@ -37,9 +37,10 @@ export class WaypointBuilder {
    * @returns The built waypoint.
    */
   public static fromPlaceBearingDistance(ident: string, placeCoordinates: LatLongAlt, bearing: number, distance: number, instrument: BaseInstrument): WayPoint {
-    let trueBearing = bearing - GeoMath.removeMagvar(placeCoordinates.lat, placeCoordinates.long);
+    
+    const magvar = GeoMath.getMagvar(placeCoordinates.lat, placeCoordinates.long);
+    let trueBearing = GeoMath.removeMagvar(bearing, magvar);
     trueBearing = trueBearing < 0 ? 360 + trueBearing : trueBearing > 360 ? trueBearing - 360 : trueBearing;
-
     const coordinates = Avionics.Utils.bearingDistanceToCoordinates(trueBearing, distance, placeCoordinates.lat, placeCoordinates.long);
   
     return WaypointBuilder.fromCoordinates(ident, coordinates, instrument);

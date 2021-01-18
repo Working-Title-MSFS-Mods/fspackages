@@ -65,9 +65,7 @@ class CJ4_FMC_LegsPage {
         let offset = Math.floor((this._currentPage - 1) * 5);
         let allWaypoints = this._fmc.flightPlanManager.getAllWaypoints();
         this._wayPointsToRender = this.buildLegs(allWaypoints, this._activeWptIndex);
-        //let flightplanFPA = WTDataStore.get('CJ4_vpa', 3);
         let runwayIndex = undefined;
-        //let gpAngle = SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") > 0 ? SimVar.GetSimVarValue("L:WT_CJ4_GP_ANGLE", "number") : 0;
         const inhibitSequence = this._fmc._lnav.sequencingMode === FlightPlanSequencing.INHIBIT;
         const inhibitText = inhibitSequence ? "AUTO[s-text white]" + "/[white]" + "INHIBIT[green]" : "AUTO[green]" + "/[white]" + "INHIBIT[s-text white]";
 
@@ -102,11 +100,12 @@ class CJ4_FMC_LegsPage {
                 const verticalWaypoint = this._fmc._vnav._verticalFlightPlan[waypoint.index];
                 const waypointFPA = verticalWaypoint? this._fmc._vnav._verticalFlightPlan[waypoint.index].waypointFPA : undefined;
                 let fpaText = "  ";
-                if (waypointFPA) {
-                    fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
-                }
-                else if (waypoint.isMissedApproachStart) {
+
+                if (waypoint.isMissedApproachStart) {
                     fpaText = ' MISSED APPR[white]';
+                }
+                else if (waypointFPA) {
+                    fpaText = waypointFPA > 0 ? "  " + waypointFPA.toFixed(1) + "°[green]" : "";
                 }
 
                 // format distance
@@ -764,7 +763,7 @@ class CJ4_FMC_LegsPage {
                 const bearing = parseInt(matchPlaceBearingDistance[2]);
                 const distance = parseFloat(matchPlaceBearingDistance[3]);
                 const ident = procMatch(matchPlaceBearingDistance[4], getIndexedName(referenceWaypoint.ident));
-    
+   
                 newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);
             }
         }

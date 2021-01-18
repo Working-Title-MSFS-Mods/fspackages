@@ -221,6 +221,14 @@ class WT_BaseVnav {
         return undefined;
     }
 
+    getLastApproachWaypointIndex() {
+        const approach = this._fpm.getApproachWaypoints();
+        if (approach && approach.length > 0) {
+            return this.allWaypoints.indexOf(approach[approach.length - 1]);
+        }
+        return undefined;
+    }
+
     activateVerticalDirect(targetIndex, altitude, callback = EmptyCallback.Void) {
         for (let i = this.flightplan.activeWaypointIndex; i < targetIndex; i++) {
             this.allWaypoints[i].legAltitudeDescription = 0;
@@ -272,12 +280,15 @@ class WT_BaseVnav {
         const waypointCount = this.allWaypoints.length;
         let lastClimbIndex = 0;
         let firstApproachWaypointIndex = this.getFirstApproachWaypointIndex();
+        let lastApproachWaypointIndex = this.getLastApproachWaypointIndex();
        
         for (let i = 0; i < waypointCount; i++) { //Assemble this._verticalFlightPlan
-            const isClimb = this._fpm.getSegmentFromWaypoint(this.allWaypoints[i]).type === SegmentType.Departure ? true : false;
+            const segmentType = this._fpm.getSegmentFromWaypoint(this.allWaypoints[i]).type;
+            const isClimb = (segmentType === SegmentType.Departure || segmentType === SegmentType.Missed) ? true : false;
+            const isLastApproachWaypoint = i == lastApproachWaypointIndex ? true : false;
             const constraints = this.parseConstraints(this.allWaypoints[i]);
             const vwp = new VerticalWaypoint(i, this.allWaypoints[i].ident, isClimb);
-            console.log("creating vertical waypoint " + i + " " + vwp.ident);
+            console.log("creating vertical waypoint " + i + " " + vwp.ident + " is climb? " + isClimb);
             vwp.legDistanceTo = i > 0 ? this.allWaypoints[i].cumulativeDistanceInFP - this.allWaypoints[i - 1].cumulativeDistanceInFP : 0;
             vwp.upperConstraintAltitude = constraints.upperConstraint;
             vwp.lowerConstraintAltitude = constraints.lowerConstraint;
@@ -312,14 +323,14 @@ class WT_BaseVnav {
                 }
             }
             this._verticalFlightPlan.push(vwp);
-            lastClimbIndex = isClimb ? i : lastClimbIndex;
+            lastClimbIndex = (isClimb && i < lastApproachWaypointIndex) ? i : lastClimbIndex;
         }
         console.log("lastClimbIndex " + lastClimbIndex);
         this._verticalFlightPlanSegments = [];
         let segment = 0;
         let nextSegmentEndIndex = undefined;
         let verticalDirectSegmentCreated = false;
-        for (let j = waypointCount - 1; j > lastClimbIndex; j--) { //Build Path Segments
+        for (let j = lastApproachWaypointIndex; j > lastClimbIndex; j--) { //Build Path Segments
             console.log("j: " + j + " ident: " + this._verticalFlightPlan[j].ident + " segment: " + this._verticalFlightPlan[j].segment + " FPTA: " + this._verticalFlightPlan[j].waypointFPTA);
             if (verticalDirectSegmentCreated || (this._verticalFlightPlanSegments[segment - 1] && j >= this._verticalFlightPlanSegments[segment - 1].startIndex)) {
                 console.log("skipping j: " + j);
@@ -563,7 +574,7 @@ class WT_BaseVnav {
             else if (this.allWaypoints[this._activeConstraint.index].isRunway && this.allWaypoints[this._activeConstraint.index].ident != this.constraintValue) {
                 if (this.allWaypoints[this._activeConstraint.index].isRunway && this._activeConstraint.index > 1
                     && this.allWaypoints[this._activeConstraint.index].cumulativeDistanceInFP - this._currentDistanceInFP < this._distanceToShowConstraint) {
-                    this.setConstraint(this.allWaypoints[this._activeConstraint.index].ident);
+                    this.setConstraint("RWY");
                 } else {
                     this.setConstraint();
                 }
@@ -646,11 +657,15 @@ class WT_BaseVnav {
         else if (this.flightplan.activeWaypointIndex >= this._firstPossibleDescentIndex) {
             altitude = this.indicatedAltitude;
             const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-            fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
-            fpa = this._verticalFlightPlanSegments[currentSegment].fpa;
-            const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
-            todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
-            todExists = true;
+            if (currentSegment) {
+                fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
+                fpa = this._verticalFlightPlanSegments[currentSegment].fpa;
+                const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
+                todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
+                todExists = true;
+            } else {
+                todExists = false;
+            }
         }
         if (todExists) {
             this.setTodWaypoint(true, todDistanceInFP)

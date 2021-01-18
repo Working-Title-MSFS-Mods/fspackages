@@ -136,7 +136,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             this.machPrefixSVG.textContent = "M.";
             this.machPrefixSVG.setAttribute("x", (posX - 15).toString());
             this.machPrefixSVG.setAttribute("y", (posY + 32).toString());
-            this.machPrefixSVG.setAttribute("fill", "#11d011");
+            this.machPrefixSVG.setAttribute("fill", "#cccac8");
             this.machPrefixSVG.setAttribute("font-size", (this.fontSize * 1.1).toString());
             this.machPrefixSVG.setAttribute("font-family", "Roboto-Light");
             this.machPrefixSVG.setAttribute("text-anchor", "end");
@@ -1970,9 +1970,6 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         frameIASAcceleration = Math.max(frameIASAcceleration, -10);
         if (isFinite(frameIASAcceleration)) {
             this._computedIASAcceleration += (frameIASAcceleration - this._computedIASAcceleration) / (50 / ((newIASTime.t - this._lastIASTime.t) / .016));
-            console.log("Accel " + this._computedIASAcceleration);
-            //this._computedIASAcceleration *= 0.998;
-            //this._computedIASAcceleration += frameIASAcceleration * 0.002;
         }
         this._lastIASTime = newIASTime;
         let accel = this._computedIASAcceleration * 6;

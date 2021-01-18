@@ -452,11 +452,18 @@ class CJ4_FMC_InitRefIndexPage {
                     let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
                     let destinationDistanceFlightplan = 0;
                     destinationDistance = destinationDistanceDirect;
+                    let destinationCumulativeDistanceInFP = destination.cumulativeDistanceInFP;
+                    if (fmc.flightPlanManager.getApproach() && fmc.flightPlanManager.getApproach().length > 0) {
+                        const approach = fmc.flightPlanManager.getApproachWaypoints();
+                        const lastApproachIndex = fmc.flightPlanManager.getAllWaypoints().indexOf(approach[approach.length - 1]);
+                        const allWaypoints = fmc.flightPlanManager.getAllWaypoints();
+                        destinationCumulativeDistanceInFP = allWaypoints[lastApproachIndex].cumulativeDistanceInFP;
+                    }
                     if (fmc.flightPlanManager.getActiveWaypoint()) {
-                        destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                        destinationDistanceFlightplan = new Number(destinationCumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
                     }
                     else {
-                        destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                        destinationDistanceFlightplan = destinationCumulativeDistanceInFP;
                     }
                     destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                         : destinationDistanceFlightplan;
