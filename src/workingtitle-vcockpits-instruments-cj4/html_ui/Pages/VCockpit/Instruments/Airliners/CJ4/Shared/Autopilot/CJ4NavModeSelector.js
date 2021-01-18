@@ -214,13 +214,13 @@ class CJ4NavModeSelector {
           case WT_ApproachType.RNAV:
           case WT_ApproachType.VISUAL:
           case WT_ApproachType.NONE:
-            lateralMode = "APPR FMS1";
+            mode = "APPR FMS1";
             break;
           case WT_ApproachType.ILS:
             if (this.lNavModeState === LNavModeState.NAV1) {
-              lateralMode = "APPR LOC1";
+              mode = "APPR LOC1";
             } else if (this.lNavModeState === LNavModeState.NAV2) {
-              lateralMode = "APPR LOC2";
+              mode = "APPR LOC2";
             }
             break;
         }
@@ -871,6 +871,10 @@ class CJ4NavModeSelector {
       }
     };
 
+    if (this.currentLateralArmedState === LateralNavModeState.APPR) {
+      this.currentLateralArmedState = LateralNavModeState.NONE;
+    }
+
     switch (this.currentLateralActiveState) {
       case LateralNavModeState.ROLL:
         setProperApprState();
@@ -891,7 +895,7 @@ class CJ4NavModeSelector {
         break;
       case LateralNavModeState.APPR:
         this.cancelApproachMode(true);
-        this.currentLateralArmedState = LateralNavModeState.ROLL;
+        this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
     }
   }
@@ -903,11 +907,11 @@ class CJ4NavModeSelector {
   cancelApproachMode(cancelHeadingHold) {
     SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
 
-    if (this.approachMode === WT_ApproachType.RNAV) {
+    if (this.approachMode === WT_ApproachType.RNAV && this.approachMode === WT_ApproachType.ILS) {
       this.isVNAVOn = false;
       this.currentVerticalActiveState = VerticalNavModeState.PTCH;
 
-      if (this.glidepathState === GlidepathStatus.GP_ACTIVE) {
+      if (this.glidepathState === GlidepathStatus.GP_ACTIVE || this.glideslopeState === GlideslopeStatus.GS_ACTIVE) {
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
       }
@@ -915,10 +919,6 @@ class CJ4NavModeSelector {
       if (cancelHeadingHold) {
         SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
       }
-    }
-
-    if (this.approachMode === WT_ApproachType.ILS) {
-      SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
     }
   }
 
