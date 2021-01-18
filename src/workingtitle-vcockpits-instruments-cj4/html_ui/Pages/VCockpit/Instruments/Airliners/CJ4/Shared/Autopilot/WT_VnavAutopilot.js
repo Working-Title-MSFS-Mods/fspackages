@@ -230,7 +230,7 @@ class WT_VerticalAutopilot {
     }
 
     get glideslopeFpa() {
-        return SimVar.GetSimVarValue("NAV GLIDE SLOPE", "number");
+        return SimVar.GetSimVarValue("NAV RAW GLIDE SLOPE:" + this.navMode, "Degree");
     }
 
     get approachMode() {
@@ -571,9 +571,16 @@ class WT_VerticalAutopilot {
     }
 
     checkGlideslopeStatus() {
-        const signal = (this.navMode == 1 || this.navMode == 2) ? SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool") : false;
-        const isIls = signal ? SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool") : false;
-        const gs = isIls ? SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool") : false; 
+        const signal = (this.navMode == 1 || this.navMode == 2) ? SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool") !== 0 : false;
+        console.log("this.navMode " + this.navMode);
+        console.log("NAV HAS NAV: " + SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool"));
+        const isIls = signal ? SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool") !== 0 : false;
+        console.log("NAV HAS LOCALIZER: " + SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool"));
+
+        const gs = isIls ? SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool") !== 0 : false;
+        console.log("NAV HAS GLIDE SLOPE: " + SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool"));
+        console.log("Glideslope angle: " + this.glideslopeFpa);
+
         console.log("GS EXISTS? " + gs);
         switch(this._glideslopeStatus) {
             case GlideslopeStatus.NONE:
