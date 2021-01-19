@@ -593,7 +593,7 @@ class WT_VerticalAutopilot {
 
     trackGlideslope() {
         const gsi = SimVar.GetSimVarValue("NAV GSI:" + this.navMode, "number");
-        return gsi * 10;
+        return gsi * 5;
     }
 
     setVerticalNavModeState(state) {
@@ -796,7 +796,9 @@ class WT_VerticalAutopilot {
         const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
         const maxVerticalSpeed = -1 * AutopilotMath.calculateVerticaSpeed(6, this.groundSpeed);
         const maxCorrection = maxVerticalSpeed + desiredVerticalSpeed;
-        this.setDonut(desiredVerticalSpeed);
+        if (this._glideslopeStatus !== GlideslopeStatus.GS_ACTIVE) {
+            this.setDonut(desiredVerticalSpeed);
+        }
         
         if (deviation > 10) {
             const correction = Math.min(Math.max((2.1 * deviation), 100), maxCorrection);
@@ -1057,7 +1059,7 @@ class WT_VerticalAutopilot {
 
     setDonut(donutValue = 0, calculate = false) {
         if (calculate) {
-            if (this.constraint.index !== undefined && this.glideslopeState !== GlideslopeStatus.GS_ACTIVE) {
+            if (this.constraint.index !== undefined && this._glideslopeStatus !== GlideslopeStatus.GS_ACTIVE) {
                 const index = this.constraint.index;
                 const lDistance = this._vnav.allWaypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
                 const vDistance = this.indicatedAltitude - this.targetAltitude;
