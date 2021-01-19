@@ -572,7 +572,7 @@ class WT_VerticalAutopilot {
     }
 
     checkGlideslopeStatus() {
-        const navIndex = (this.navMode == 1 || this.navMode == 2) ? this.navMode : 1;
+        const navIndex = this.navMode == 0 ? 1 : this.navMode;
         const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + navIndex, "bool") !== 0 ? true : false;
         const isIls = signal ? SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + navIndex, "bool") !== 0 : false;
         const gs = isIls ? SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + navIndex, "bool") !== 0 : false;
