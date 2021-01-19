@@ -252,7 +252,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._initOptionsButton();
         this._initTabs();
         this._isInit = true;
-        this._setAirportFromICAO(this.parent.icaoSetting.getValue());
+        this.setAirportICAO(this.parent.icaoSetting.getValue());
     }
 
     connectedCallback() {
@@ -281,22 +281,11 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
     }
 
     _onICAOSettingChanged(setting, newValue, oldValue) {
-        this._setAirportFromICAO(newValue);
-    }
-
-    async _setAirportFromICAO(icao) {
-        if (icao) {
-            try {
-                let airport = await this.parent.icaoWaypointFactory.getAirport(icao);
-                this.setAirport(airport);
-                return;
-            } catch (e) {}
-        }
-        this.setAirport(null);
+        this.setAirportICAO(newValue);
     }
 
     _onKeyboardClosed(icao) {
-        this._setAirportFromICAO(icao);
+        this.setAirportICAO(icao);
     }
 
     _openKeyboard() {
@@ -379,6 +368,17 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         if (this._isInit) {
             this._updateAirport();
         }
+    }
+
+    async setAirportICAO(icao) {
+        if (icao) {
+            try {
+                let airport = await this.parent.icaoWaypointFactory.getAirport(icao);
+                this.setAirport(airport);
+                return;
+            } catch (e) {}
+        }
+        this.setAirport(null);
     }
 
     _updateParentTitle() {

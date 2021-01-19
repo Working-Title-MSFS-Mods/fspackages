@@ -2065,7 +2065,9 @@ class AS3000_TSC_NRST_Airport extends NavSystemElement {
         });
     }
     airportInfo() {
-        this.gps.SwitchToPageName("MFD", "Airport Info");
+        let page = this.gps.getSelectedMFDPanePages().airportInfo;
+        page.element.icaoSetting.setValue(this.nearestAirports.airports[this.selectedElement].icao);
+        this.gps.SwitchToPageName("MFD", page.name);
     }
     showOnMapToggle() {
         this.showOnMap = !this.showOnMap;
