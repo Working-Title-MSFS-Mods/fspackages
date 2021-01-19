@@ -170,8 +170,8 @@ export class LegsProcedure {
 
         if (mappedLeg !== undefined) {
           mappedLeg.legAltitudeDescription = currentLeg.altDesc;
-          mappedLeg.legAltitude1 = currentLeg.altitude1 * 3.28084;
-          mappedLeg.legAltitude2 = currentLeg.altitude2 * 3.28084;
+          mappedLeg.legAltitude1 = 100 * Math.round((currentLeg.altitude1 * 3.28084) / 100);
+          mappedLeg.legAltitude2 = 100 * Math.round((currentLeg.altitude2 * 3.28084) / 100);
         }
 
         this._currentIndex++;
