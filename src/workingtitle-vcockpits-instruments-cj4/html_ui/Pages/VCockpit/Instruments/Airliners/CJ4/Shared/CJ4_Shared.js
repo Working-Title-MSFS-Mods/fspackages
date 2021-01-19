@@ -2598,10 +2598,10 @@ class CJ4_SystemFMS extends NavSystemElement {
                             let destinationDistanceFlightplan = 0;
                             destinationDistanceNumber = new Number(destinationDistanceDirect);
                             let destinationCumulativeDistanceInFP = destination.cumulativeDistanceInFP;
-                            if (flightPlanManager.getApproach() && flightPlanManager.getApproach().length > 0) {
-                                const approach = flightPlanManager.getApproachWaypoints();
-                                const lastApproachIndex = flightPlanManager.getAllWaypoints().indexOf(approach[approach.length - 1]);
+                            const approach = flightPlanManager.getApproachWaypoints();
+                            if (approach && approach.length > 0) {
                                 const allWaypoints = flightPlanManager.getAllWaypoints();
+                                const lastApproachIndex = allWaypoints.indexOf(approach[approach.length - 1]);
                                 destinationCumulativeDistanceInFP = allWaypoints[lastApproachIndex].cumulativeDistanceInFP;
                             }
                             if (activeWaypoint) {
