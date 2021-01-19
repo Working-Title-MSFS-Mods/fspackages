@@ -367,6 +367,7 @@ class WT_VerticalAutopilot {
                     this.cancelGlideslope();
                     break;
                 }
+                this.setDonut(0);
                 this.followGlideslope()
                 break;
         }
