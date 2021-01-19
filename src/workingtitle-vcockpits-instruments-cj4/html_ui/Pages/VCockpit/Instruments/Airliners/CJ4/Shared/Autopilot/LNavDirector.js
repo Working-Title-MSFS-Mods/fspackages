@@ -84,7 +84,7 @@ class LNavDirector {
     const activeLatLon = new LatLon(activeWaypoint.infos.coordinates.lat, activeWaypoint.infos.coordinates.long);
     
     const nextWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
-    const nextLatLon = new LatLon(nextWaypoint.infos.coordinates.lat, nextWaypoint.infos.coordinates.long);
+    const nextLatLon = nextWaypoint ? new LatLon(nextWaypoint.infos.coordinates.lat, nextWaypoint.infos.coordinates.long) : undefined;
 
     const planeLatLon = new LatLon(planeState.position.lat, planeState.position.long);
 
@@ -97,11 +97,11 @@ class LNavDirector {
       this.sequenceToNextWaypoint(planeState, activeWaypoint);
     }
     else {
-      const nextStartTrack = activeLatLon.initialBearingTo(nextLatLon);
       const planeToActiveBearing = planeLatLon.initialBearingTo(activeLatLon);
-
+      const nextStartTrack = nextWaypoint ? activeLatLon.initialBearingTo(nextLatLon) : planeToActiveBearing;
+      
       const anticipationDistance = this.getAnticipationDistance(planeState, Avionics.Utils.angleDiff(planeToActiveBearing, nextStartTrack));
-      if (!nextWaypoint.isFlyover) {
+      if (!nextWaypoint || !nextWaypoint.isFlyover) {
         this.alertIfClose(planeState, distanceToActive, anticipationDistance);
 
         if (distanceToActive < anticipationDistance && !nextWaypoint.isFlyover) {
