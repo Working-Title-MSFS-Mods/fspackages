@@ -2034,6 +2034,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     this.machValueSVG.textContent = fixedMach.slice(radixPos + 1);
                     this.machVisible = true;
                 }
+                else {
+                    this.machVisible = false;
+                }
             }
             else {
                 var fixedMach = this.machSpeed.toFixed(3);
