@@ -3373,8 +3373,12 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root = _root.querySelector("#NDInfo");
         this.root.aircraft = Aircraft.CJ4;
         this.root.gps = this.gps;
-        this.allSymbols.push(this.root.querySelector("#TERR"));
-        this.allSymbols.push(this.root.querySelector("#WX"));
+
+        this.terrIndicator = this.root.querySelector('#Symbols .overlay-terr');
+        this.wxIndicator = this.root.querySelector('#Symbols .overlay-wx');
+
+        this.wxLine1 = this.root.querySelector('#Symbols .overlay-wx-line1');
+        this.wxLine2 = this.root.querySelector('#Symbols .overlay-wx-line2');
     }
     onEnter() {
     }
@@ -3390,8 +3394,29 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.setMode(_navigation, _navigationSource);
     }
     showSymbol(_symbol, _show) {
-        if (this.allSymbols[_symbol])
-            this.allSymbols[_symbol].setAttribute("visibility", (_show) ? "visible" : "hidden");
+        if (_symbol === CJ4_MapOverlaySymbol.TERR) {
+            if (_show) {
+                this.terrIndicator.classList.add('active');
+            }
+            else {
+                this.terrIndicator.classList.remove('active');
+            }
+        }
+
+        if (_symbol === CJ4_MapOverlaySymbol.WX) {
+            if (_show) {
+                this.wxIndicator.classList.add('active');
+
+                this.wxLine1.style.display = 'block';
+                this.wxLine2.style.display = 'block';
+            }
+            else {
+                this.wxIndicator.classList.remove('active');
+
+                this.wxLine1.style.display = 'none';
+                this.wxLine2.style.display = 'none';
+            }
+        }
     }
 }
 class CJ4_NavBarContainer extends NavSystemElementContainer {
