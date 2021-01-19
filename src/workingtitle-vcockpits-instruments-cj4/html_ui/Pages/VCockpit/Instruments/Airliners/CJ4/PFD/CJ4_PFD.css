@@ -1028,13 +1028,33 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 #PFDMessage1{
     top: 1%;
-    left: 2%;
+    left: 8px;
     position: absolute;
     font-size: 22px;
 }
+
 #PFDMessage2{
     top: 5%;
     left: 9%;
     position: absolute;
     font-size: 22px;
+}
+
+#NavPreset {
+    position: relative;
+    font-size: 20px;
+    top: 220px;
+    left: 8px;
+    width: 60px;
+}
+
+.preset-name {
+    color: cyan;
+    padding: 4px 0 0 4px;
+    border: 1px solid cyan;
+}
+
+.preset-tuning {
+    color: cyan;
+    margin-bottom: 60px;
 }

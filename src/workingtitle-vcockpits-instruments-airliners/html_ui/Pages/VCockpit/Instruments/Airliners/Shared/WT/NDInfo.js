@@ -42,6 +42,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.minimums = this.querySelector("#MinimumsValue");
         this.pfdMessage1 = this.querySelector('#PFDMessage1');
         this.pfdMessage2 = this.querySelector('#PFDMessage2');
+
+        this.navTransferTuning = new NavTransferTuningElement(this.querySelector('#NavPreset .preset-tuning'));
+        this.navPreset = new NavPresetElement(this.querySelector('#NavPreset .preset-info'));
+
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
