@@ -2612,13 +2612,21 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         _marker.engaged = true;
         var posY = this.valueToSvg(currentAirspeed, 200);
         _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-        _marker.svg.setAttribute("visibility", "visible");
+        if (Simplane.getAltitude() < 18000) {
+            _marker.svg.setAttribute("visibility", "visible");
+        } else {
+            _marker.svg.setAttribute("visibility", "hidden");
+        }
     }
     updateMarkerFlaps35Marker(_marker, currentAirspeed) {
         _marker.engaged = true;
         var posY = this.valueToSvg(currentAirspeed, 160);
         _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-        _marker.svg.setAttribute("visibility", "visible");
+        if (Simplane.getAltitude() < 18000) {
+            _marker.svg.setAttribute("visibility", "visible");
+        } else {
+            _marker.svg.setAttribute("visibility", "hidden");
+        }
     }
     updateMarkerFlap(_marker, currentAirspeed) {
         let hideMarker = true;
