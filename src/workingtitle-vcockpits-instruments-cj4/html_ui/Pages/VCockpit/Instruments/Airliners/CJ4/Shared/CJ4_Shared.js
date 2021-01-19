@@ -2584,15 +2584,6 @@ class CJ4_SystemFMS extends NavSystemElement {
                         const activeWaypointDistance = activeWaypointDistanceNumber >= 100 ? activeWaypointDistanceNumber.toFixed(0) : activeWaypointDistanceNumber.toFixed(1);
                         const nextWaypointDistance = nextWaypointDistanceNumber >= 100 ? nextWaypointDistanceNumber.toFixed(0) : nextWaypointDistanceNumber.toFixed(1);
                         let destinationDistanceNumber = 0;
-                        //if (destination && activeWaypoint) {
-                        //    destinationDistance += new Number(Avionics.Utils.computeDistance(aircraftPosition, activeWaypoint.infos.coordinates));
-                        //    for (let w = activeIndex; w < FPWaypoints.length - 1; w++) {
-                        //        destinationDistance += new Number(Avionics.Utils.computeDistance(FPWaypoints[w].infos.coordinates, FPWaypoints[w + 1].infos.coordinates));
-                        //    }
-                        //    destinationDistance = destinationDistance.toFixed(1);
-                        //}
-
-                        // Revised distance to destination to use same code as PROG page (original code left commented for easy revert if needed)
                         if (destination) {
                             let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(aircraftPosition, destination.infos.coordinates).toFixed(1));
                             let destinationDistanceFlightplan = 0;
