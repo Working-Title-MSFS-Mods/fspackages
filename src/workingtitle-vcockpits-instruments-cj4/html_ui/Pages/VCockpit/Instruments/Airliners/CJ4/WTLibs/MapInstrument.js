@@ -925,9 +925,27 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateFplnWaypoints(fplnIdx = 0) {
-        let l = this.flightPlanManager.getWaypointsCount(fplnIdx);
+        const plan = this.flightPlanManager.getFlightPlan(fplnIdx);
+
+        const missedSegment = plan.getSegment(SegmentType.Missed);
+        const approachSegment = plan.getSegment(SegmentType.Approach);
+
+        const activeIndex = plan.activeWaypointIndex;
+        const drawDestination = approachSegment.waypoints.length === 0;
+        const drawMissedSegment = missedSegment.waypoints.length > 0 && activeIndex >= missedSegment.offset;
+
+        let l = plan.waypoints.length;
+        let waypointsToDraw = l - (missedSegment.waypoints.length + 1);
+        if (drawMissedSegment) {
+            waypointsToDraw += missedSegment.waypoints.length;
+        }
+
+        if (drawDestination) {
+            waypointsToDraw++;
+        }
+
         if (l > 1) {
-            for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
+            for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < waypointsToDraw; i++) {
                 let waypoint = this.flightPlanManager.getWaypoint(i, fplnIdx);
                 if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI" && this.navMap.isLatLongInFrame(waypoint.infos.coordinates, 0.1)) {
                     if (waypoint.getSvgElement(this.navMap.index)) {

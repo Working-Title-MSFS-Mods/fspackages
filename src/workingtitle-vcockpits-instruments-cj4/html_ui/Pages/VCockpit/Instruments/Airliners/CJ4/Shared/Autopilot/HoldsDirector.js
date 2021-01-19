@@ -52,7 +52,7 @@ class HoldsDirector {
    */
   initializeHold(holdWaypointIndex) {
     const holdWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex);
-    const prevWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex - 1);
+    const prevWaypoint = this.fpm.getFlightPlan(0).getWaypoint(holdWaypointIndex - 2);
 
     if (holdWaypoint && prevWaypoint) {
       const holdDetails = holdWaypoint.holdDetails;
@@ -122,7 +122,7 @@ class HoldsDirector {
       this.currentFlightPlanVersion = flightPlanVersion;
     }
 
-    const planeState = this.getAircraftState();
+    const planeState = LNavDirector.getAircraftState();
     switch (this.state) {
       case HoldsDirectorState.ENTRY_DIRECT_INBOUND:
         this.handleDirectEntry(planeState);
@@ -153,27 +153,6 @@ class HoldsDirector {
   }
 
   /**
-   * Gets the current state of the aircraft.
-   */
-  getAircraftState() {
-    const state = new AircraftState();
-    state.position = new LatLongAlt(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-    state.magVar = SimVar.GetSimVarValue("MAGVAR", "degrees");
-
-    state.groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-    state.trueAirspeed = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-
-    state.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
-    state.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
-
-    state.trueHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
-    state.magneticHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
-    state.trueTrack = SimVar.GetSimVarValue('GPS GROUND TRUE TRACK', 'Radians') * Avionics.Utils.RAD2DEG;
-
-    return state;
-  }
-
-  /**
    * Handles the direct entry state.
    * @param {AircraftState} planeState The current aircraft state.
    */
@@ -181,8 +160,6 @@ class HoldsDirector {
     const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
 
     if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
-      this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-
       this.recalculateHold(planeState);
       this.cancelAlert();
 
@@ -204,8 +181,6 @@ class HoldsDirector {
       const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
 
       if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
-        this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-  
         this.recalculateHold(planeState);
         this.cancelAlert();
   
@@ -229,8 +204,6 @@ class HoldsDirector {
       const dtk = AutopilotMath.desiredTrack(this.prevFixCoords, this.fixCoords, planeState.position);
 
       if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
-        this.fpm.setActiveWaypointIndex(this.holdWaypointIndex + 1);
-  
         this.recalculateHold(planeState);
         this.cancelAlert();
   
@@ -600,64 +573,3 @@ HoldsDirectorState.TURNING_INBOUND = 'TURNING_INBOUND';
 HoldsDirectorState.INBOUND = 'INBOUND';
 HoldsDirectorState.EXITING = 'EXITING';
 HoldsDirectorState.EXITED = 'EXITED';
-
-/**
- * The current state of the aircraft for LNAV.
- */
-class AircraftState {
-  constructor() {
-    /** 
-     * The true airspeed of the plane. 
-     * @type {number}
-     */
-    this.trueAirspeed = undefined;
-
-    /**
-     * The ground speed of the plane.
-     * @type {number}
-     */
-    this.groundSpeed = undefined;
-
-    /**
-     * The current plane location magvar.
-     * @type {number}
-     */
-    this.magVar = undefined;
-
-    /**
-     * The current plane position.
-     * @type {LatLon}
-     */
-    this.position = undefined;
-
-    /**
-     * The wind speed.
-     * @type {number}
-     */
-    this.windSpeed = undefined;
-
-    /**
-     * The wind direction.
-     * @type {number}
-     */
-    this.windDirection = undefined;
-
-    /**
-     * The current heading in degrees true of the plane.
-     * @type {number}
-     */
-    this.trueHeading = undefined;
-
-    /**
-     * The current heading in degrees magnetic of the plane.
-     * @type {number}
-     */
-    this.magneticHeading = undefined;
-
-    /**
-     * The current track in degrees true of the plane.
-     * @type {number}
-     */
-    this.trueTrack = undefined;
-  }
-}
