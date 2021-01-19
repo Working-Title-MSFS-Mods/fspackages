@@ -593,7 +593,13 @@ class WT_VerticalAutopilot {
 
     trackGlideslope() {
         const gsi = SimVar.GetSimVarValue("NAV GSI:" + this.navMode, "number");
-        return gsi * 5;
+        const gslla = SimVar.GetSimVarValue("NAV GS LATLONALT:" + this.navMode, "latlonalt");
+        const distance = Avionics.Utils.computeDistance(this._vnav._currPos, gslla);
+        let correctedgsi = gsi;
+        if (distance) {
+            correctedgsi = gsi * Math.max(Math.min(distance, 10), 1);
+        }
+        return correctedgsi;
     }
 
     setVerticalNavModeState(state) {
