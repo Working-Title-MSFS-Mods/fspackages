@@ -373,7 +373,7 @@ class WT_VerticalAutopilot {
 
         switch(this.isVNAVOn) {
             case false:
-                if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
+                if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE || this._glideslopeStatus === GlideslopeStatus.GS_ACTIVE) {
                     break;
                 }
                 if (this.altSlot === AltitudeSlot.MANAGED) {
@@ -572,16 +572,8 @@ class WT_VerticalAutopilot {
 
     checkGlideslopeStatus() {
         const signal = (this.navMode == 1 || this.navMode == 2) ? SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool") !== 0 : false;
-        console.log("this.navMode " + this.navMode);
-        console.log("NAV HAS NAV: " + SimVar.GetSimVarValue("NAV HAS NAV:" + this.navMode, "bool"));
         const isIls = signal ? SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool") !== 0 : false;
-        console.log("NAV HAS LOCALIZER: " + SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.navMode, "bool"));
-
         const gs = isIls ? SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool") !== 0 : false;
-        console.log("NAV HAS GLIDE SLOPE: " + SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.navMode, "bool"));
-        console.log("Glideslope angle: " + this.glideslopeFpa);
-
-        console.log("GS EXISTS? " + gs);
         switch(this._glideslopeStatus) {
             case GlideslopeStatus.NONE:
                 if (gs) {
@@ -600,8 +592,7 @@ class WT_VerticalAutopilot {
 
     trackGlideslope() {
         const gsi = SimVar.GetSimVarValue("NAV GSI:" + this.navMode, "number");
-        console.log("gs deviation: " + gsi);
-        return gsi * 100;
+        return gsi * 10;
     }
 
     setVerticalNavModeState(state) {
@@ -1065,7 +1056,7 @@ class WT_VerticalAutopilot {
 
     setDonut(donutValue = 0, calculate = false) {
         if (calculate) {
-            if (this.constraint.index !== undefined) {
+            if (this.constraint.index !== undefined && this.glideslopeState !== GlideslopeStatus.GS_ACTIVE) {
                 const index = this.constraint.index;
                 const lDistance = this._vnav.allWaypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
                 const vDistance = this.indicatedAltitude - this.targetAltitude;

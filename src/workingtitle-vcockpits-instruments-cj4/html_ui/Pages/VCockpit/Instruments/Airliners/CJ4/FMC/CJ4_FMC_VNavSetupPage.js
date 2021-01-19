@@ -281,7 +281,9 @@ class CJ4_FMC_VNavSetupPage {
         if (fmc._vnav) {
             fmc.registerPeriodicPageRefresh(() => {
                 const vnavActive = fmc._navModeSelector.isVNAVOn ? " ACTIVE[green]" : " INACTIVE[white]";
-                const altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
+                const gsDeviation = SimVar.GetSimVarValue("NAV GSI:1", "Number");
+                console.log("NAV GLIDE SLOPE ERROR " + gsDeviation);
+                const altDeviation = fmc._navModeSelector.isVNAVOn ? SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet") : gsDeviation;
                 //const setVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
 
                 //let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
@@ -306,6 +308,7 @@ class CJ4_FMC_VNavSetupPage {
                 const pathStatus = fmc._currentVerticalAutopilot._vnavPathStatus;
                 const segment = fmc._currentVerticalAutopilot.currentSegment;
                 const interceptStatus = fmc._currentVerticalAutopilot._pathInterceptStatus;
+                
 
                 if (segment) {
                     desiredFPA = fmc._currentVerticalAutopilot.currentSegment.fpa;
