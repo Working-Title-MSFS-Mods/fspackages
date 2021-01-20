@@ -2952,8 +2952,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
 
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
             curve.add(0, '#000000');
-            curve.add(altitude + 250, '#000000');
-            curve.add(altitude + 2000, '#ff9900');
+            curve.add(altitude, '#000000');
+            curve.add(altitude + 1000, '#ff9900');
             curve.add(altitude + 3000, '#cc0000');
 
             const altitudeColors = [SvgMapConfig.hexaToRGB('#0000ff')];
@@ -2963,9 +2963,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 altitudeColors[j + 1] = SvgMapConfig.hexaToRGB(color);
             }
 
-            if (this.map && this.map.instrument && this.map.instrument.bingMap && this.map.instrument.bingMap.m_configs && this.map.instrument.bingMap.m_configs[0]) {
-                this.map.instrument.bingMap.m_configs[0].heightColors = altitudeColors;
-                this.map.instrument.bingMap.setConfig(0);
+            if (this.map && this.map.instrument && this.map.instrument.bingMap && this.map.instrument.bingMap.m_configs && this.map.instrument.bingMap.m_configs[1]) {
+                this.map.instrument.bingMap.m_configs[1].heightColors = altitudeColors;
                 this.map.instrument.bingMap.updateConfig();
             }
 
