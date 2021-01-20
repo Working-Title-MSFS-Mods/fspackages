@@ -23,12 +23,11 @@ export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Messag
     });
 
     // ADD FAKES FOR TESTING
-    for (let i = 0; i < 10; i++) {
-      this.addDefinition("Test this " + i, MessageLevel.White, () => {
-        return (Date.now()/1000) % (Math.random()*10) > 2;
-      });   
-    }
-  
+    // for (let i = 0; i < 10; i++) {
+    //   this.addDefinition("Test this " + i, MessageLevel.White, () => {
+    //     return (Date.now()/1000) % (Math.random()*10) > 2;
+    //   });   
+    // }  
   }
 
   public update() {
