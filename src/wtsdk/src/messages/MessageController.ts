@@ -49,9 +49,10 @@ export abstract class MessageController<I, T extends Message> {
    * @param content The text content of the message
    * @param level The message level
    * @param checkHandler The update check handler that will return true when the message is to be displayed
+   * @param blinkCheckHandler The check handler that will return true when the message should blink (only to be used in PFD)
    */
-  public addDefinition(content: string, level: MessageLevel, checkHandler: () => boolean = () => false) {
-    const newDef = new MessageDefinition(content, level, checkHandler);
+  public addDefinition(content: string, level: MessageLevel, checkHandler: () => boolean = () => false, blinkCheckHandler: () => boolean = () => false) {
+    const newDef = new MessageDefinition(content, level, checkHandler, blinkCheckHandler);
     this._messageDefs.set(newDef.ID, newDef);
   }
 

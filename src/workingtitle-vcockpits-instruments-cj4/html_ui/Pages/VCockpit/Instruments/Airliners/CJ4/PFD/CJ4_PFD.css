@@ -19,14 +19,15 @@
 }
 
 @keyframes blink {
-  50% {
-    opacity: 0.0;
-  }
+    50% {
+        opacity: 0.0;
+    }
 }
+
 @-webkit-keyframes blink {
-  50% {
-    opacity: 0.0;
-  }
+    50% {
+        opacity: 0.0;
+    }
 }
 
 html {
@@ -91,8 +92,8 @@ html body {
 }
 
 .blinking {
-  animation: blink 0.5s step-start 0s infinite;
-  -webkit-animation: blink 0.5s step-start 0s infinite;
+    animation: blink 0.8s step-start 0s infinite;
+    -webkit-animation: blink 0.8s step-start 0s infinite;
 }
 
 svg text {
@@ -304,11 +305,13 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #A
     display: none;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow polygon{
-  fill: white; }
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow polygon {
+    fill: white;
+}
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Engaged] polygon{
-  fill: #11d011; }
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Engaged] polygon {
+    fill: #11d011;
+}
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
     width: 52%;
@@ -761,10 +764,10 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Com2,
 cj4-pfd-element #Mainframe #NavBar #Coms #Atc1,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    font-size: calc(1.95 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Coms #Com1_Value,
@@ -773,7 +776,7 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Atc1_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Unit {
-    font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+    font-size: calc(2.5 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Cabs {
@@ -1032,7 +1035,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     letter-spacing: 0px;
 }
 
-#PFDMessageTop{
+#PFDMessageTop {
     top: 3%;
     left: 1.2%;
     width: 12%;
@@ -1042,12 +1045,34 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     font-size: 21px;
 }
 
-#PFDMessageBottom{
-    top: 9%;
+#PFDMessageBottom {
+    top: 8%;
     left: 1.2%;
+    min-width: 12%;
     width: 12%;
     position: absolute;
     font-size: 21px;
+}
+
+/* clear the floats for the two columns */
+#PFDMessageBottom:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#PFDMessageBotLeft {
+    float: left;
+    min-width: 50%;
+    width: 50%;
+    text-align: left;
+}
+
+#PFDMessageBotRight {
+    float: left;
+    min-width: 50%;
+    width: 50%;
+    text-align: right;
 }
 
 .yellow {

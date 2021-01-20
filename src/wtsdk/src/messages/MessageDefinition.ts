@@ -31,13 +31,20 @@ export class MessageDefinition {
   public updateHandler: () => boolean = () => false;
 
   /**
+   * The blinkHandler runs on every update of the message controller and should return true if the message should blink (only to be used in PFD)
+   */
+  public blinkHandler: () => boolean = () => false;
+
+  /**
    * Creates a new message definition
    * @param _content The text content of the message
    * @param _level The message level
    * @param checkHandler The update check handler that will return true when the message is to be displayed
+   * @param blinkCheckHandler The check handler that will return true when the message should blink (only to be used in PFD)
    */
-  constructor(private _content: string, private _level: MessageLevel, checkHandler: () => boolean = () => false) {
+  constructor(private _content: string, private _level: MessageLevel, checkHandler: () => boolean = () => false, blinkCheckHandler: () => boolean = () => false) {
     this.updateHandler = checkHandler;
+    this.blinkHandler = blinkCheckHandler;
     this._id = Math.floor(Math.random()*10000);
   }
 }

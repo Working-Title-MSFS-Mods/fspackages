@@ -30,4 +30,9 @@ export class Message {
     return this._msg.updateHandler();
   }
 
+  /** Calls the message blinkhandler and returns a boolean indicating if the msg should blink */
+  public updateBlink(): boolean {
+    return this._msg.blinkHandler();
+  }
+
 }
