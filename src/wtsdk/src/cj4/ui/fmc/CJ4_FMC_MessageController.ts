@@ -22,7 +22,7 @@ export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Messag
       return SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 1;
     });
 
-    this.addDefinition("CHECK ALT SEL", MessageLevel.Yellow, () => {
+    this.addDefinition("CHECK ALT SEL", MessageLevel.White, () => {
       const approachingTodDistance = 0.0125 * Math.round(Simplane.getGroundSpeed());
       const distanceToTod = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
       return (distanceToTod < approachingTodDistance && distanceToTod > 0);

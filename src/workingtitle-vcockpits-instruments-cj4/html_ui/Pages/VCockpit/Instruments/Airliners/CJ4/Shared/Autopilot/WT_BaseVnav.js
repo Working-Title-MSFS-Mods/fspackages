@@ -767,11 +767,6 @@ class WT_BaseVnav {
         } 
         return undefined;
     }
-
-    setCheckPreselector() {
-        this._fmc.showErrorMessage("CHECK PRESELECTOR");
-    }
-
 }
 
 
