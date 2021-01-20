@@ -2936,6 +2936,41 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         if (zoom >= 0) {
             this.map.instrument.setZoom(zoom);
         }
+
+        this.updateTerrainColors(_deltaTime);
+    }
+    updateTerrainColors(_deltaTime) {
+        if (!this.lastTerrainUpdate) {
+            this.lastTerrainUpdate = 0;
+        }
+        
+        this.lastTerrainUpdate += _deltaTime;
+
+        if (this.lastTerrainUpdate > 1000) {
+            const curve = new Avionics.Curve();
+            const altitude = Math.min(Simplane.getAltitude(), 15000);
+
+            curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
+            curve.add(0, '#000000');
+            curve.add(altitude + 250, '#000000');
+            curve.add(altitude + 2000, '#ff9900');
+            curve.add(altitude + 3000, '#cc0000');
+
+            const altitudeColors = [SvgMapConfig.hexaToRGB('#0000ff')];
+
+            for (let j = 0; j < 60; j++) {
+                let color = curve.evaluate(j * 30000 / 60);
+                altitudeColors[j + 1] = SvgMapConfig.hexaToRGB(color);
+            }
+
+            if (this.map && this.map.instrument && this.map.instrument.bingMap && this.map.instrument.bingMap.m_configs && this.map.instrument.bingMap.m_configs[0]) {
+                this.map.instrument.bingMap.m_configs[0].heightColors = altitudeColors;
+                this.map.instrument.bingMap.setConfig(0);
+                this.map.instrument.bingMap.updateConfig();
+            }
+
+            this.lastTerrainUpdate = 0;
+        }
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -3373,8 +3408,12 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root = _root.querySelector("#NDInfo");
         this.root.aircraft = Aircraft.CJ4;
         this.root.gps = this.gps;
-        this.allSymbols.push(this.root.querySelector("#TERR"));
-        this.allSymbols.push(this.root.querySelector("#WX"));
+
+        this.terrIndicator = this.root.querySelector('#Symbols .overlay-terr');
+        this.wxIndicator = this.root.querySelector('#Symbols .overlay-wx');
+
+        this.wxLine1 = this.root.querySelector('#Symbols .overlay-wx-line1');
+        this.wxLine2 = this.root.querySelector('#Symbols .overlay-wx-line2');
     }
     onEnter() {
     }
@@ -3390,8 +3429,29 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.setMode(_navigation, _navigationSource);
     }
     showSymbol(_symbol, _show) {
-        if (this.allSymbols[_symbol])
-            this.allSymbols[_symbol].setAttribute("visibility", (_show) ? "visible" : "hidden");
+        if (_symbol === CJ4_MapOverlaySymbol.TERR) {
+            if (_show) {
+                this.terrIndicator.classList.add('active');
+            }
+            else {
+                this.terrIndicator.classList.remove('active');
+            }
+        }
+
+        if (_symbol === CJ4_MapOverlaySymbol.WX) {
+            if (_show) {
+                this.wxIndicator.classList.add('active');
+
+                this.wxLine1.style.display = 'block';
+                this.wxLine2.style.display = 'block';
+            }
+            else {
+                this.wxIndicator.classList.remove('active');
+
+                this.wxLine1.style.display = 'none';
+                this.wxLine2.style.display = 'none';
+            }
+        }
     }
 }
 class CJ4_NavBarContainer extends NavSystemElementContainer {
