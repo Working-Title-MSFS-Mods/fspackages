@@ -396,6 +396,8 @@ class WT_BaseVnav {
                 if (wptToEvaluate.isClimb) {
                     segmentIsFirst = true;
                     segmentBreakIndex = k;
+                    bestFPA = Math.max(Math.min(segmentMaxFPA, bestFPA), segmentMinFPA);
+                    console.log(wptToEvaluate.ident + " breaks path isClimb ");
                     break;
                 }
                 else if (wptToEvaluate.isAtConstraint) {

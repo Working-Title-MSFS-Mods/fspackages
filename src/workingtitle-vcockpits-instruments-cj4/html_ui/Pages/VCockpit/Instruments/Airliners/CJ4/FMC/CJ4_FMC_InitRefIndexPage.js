@@ -453,10 +453,10 @@ class CJ4_FMC_InitRefIndexPage {
                     let destinationDistanceFlightplan = 0;
                     destinationDistance = destinationDistanceDirect;
                     let destinationCumulativeDistanceInFP = destination.cumulativeDistanceInFP;
-                    if (fmc.flightPlanManager.getApproach() && fmc.flightPlanManager.getApproach().length > 0) {
-                        const approach = fmc.flightPlanManager.getApproachWaypoints();
-                        const lastApproachIndex = fmc.flightPlanManager.getAllWaypoints().indexOf(approach[approach.length - 1]);
+                    const approach = fmc.flightPlanManager.getApproachWaypoints();
+                    if (approach && approach.length > 0) {
                         const allWaypoints = fmc.flightPlanManager.getAllWaypoints();
+                        const lastApproachIndex = allWaypoints.indexOf(approach[approach.length - 1]);
                         destinationCumulativeDistanceInFP = allWaypoints[lastApproachIndex].cumulativeDistanceInFP;
                     }
                     if (fmc.flightPlanManager.getActiveWaypoint()) {

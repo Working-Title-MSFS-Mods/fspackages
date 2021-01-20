@@ -419,11 +419,11 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
             color: white;
             stroke: white; }
           #VORDMENavaids {
-            font-size: 28px;
+            font-size: 22px;
             position: absolute;
             top: 400px;
             top: 320px;
-            height: 200px;
+            height: 210px;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -432,7 +432,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
             fill: none;
             stroke-width: 1px; }
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #Symbols {
-            top: 85%;
+            top: 60%;
             left: 87%;
             width: 11%;
             height: 5%;
@@ -665,13 +665,19 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay[visible=fals
   display: none; }
 
 .bearing-block-arrow {
-  width: 25px;
+  width: 18px;
   padding-top: 8px;
+  padding-left: 4px;
   float: left;
+  position: relative;
+  top: -10px;
 }
 
 .bearing-block-dist {
+  width: 45px;
   float: left;
+  margin-left: 6px;
+  line-height: 22px;
 }
 
 .bearing-pointer.arc {
@@ -704,3 +710,23 @@ div#VORDMENavaid_Right {
   text-align: left;
 }
 
+#Symbols ul {
+  font-size: 20px;
+  list-style: none;
+  padding: 0;
+  text-align: right;
+}
+
+#Symbols li {
+  padding: 0;
+}
+
+#Symbols .active {
+  font-size: 22px;
+  color: cyan;
+}
+
+#Symbols .overlay-wx-line1,
+#Symbols .overlay-wx-line2 {
+  color: cyan;
+}
