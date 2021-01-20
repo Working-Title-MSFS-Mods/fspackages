@@ -26,7 +26,7 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
   private _botRightText: string;
   private set botRightText(v: string) {
     if (v !== this._botRightText) {
-      this._botRightElement.innerHTML = "&nbsp;" + v;
+      this._botRightElement.innerHTML = v;
       this._botRightText = v;
     }
   }

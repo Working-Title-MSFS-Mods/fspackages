@@ -23,6 +23,7 @@ export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Messag
     });
 
     this.addDefinition("CHECK ALT SEL", MessageLevel.White, () => {
+      // TODO this is missing some conditions, talk to chris
       const approachingTodDistance = 0.0125 * Math.round(Simplane.getGroundSpeed());
       const distanceToTod = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
       return (distanceToTod < approachingTodDistance && distanceToTod > 0);

@@ -13,12 +13,13 @@ export class CJ4_PFD_BotRightMessageController extends MessageController<CJ4_FMC
 
   protected init() {
     this.addDefinition("TOD", MessageLevel.White, () => {
+      const altDev = Math.abs(SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet"));
       const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
       const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-      return (!pathActive && todDistanceRemaining > 0.1)
+      return (!pathActive && todDistanceRemaining > 0.1 && (altDev > 300 && altDev <= 1000))
     }, () => {
       const altDev = Math.abs(SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet"));
-      return (altDev < 400);
+      return (altDev < 500);
     });
     this.addDefinition("HOLD", MessageLevel.White, () => {
       return SimVar.GetSimVarValue("L:WT_NAV_HOLD_INDEX", "number") > -1;
