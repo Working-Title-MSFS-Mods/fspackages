@@ -8,7 +8,7 @@ export abstract class CJ4_FMC_Page {
     this._isDirty = v;
   }
 
-  constructor(private _fmc: CJ4_FMC) { }
+  constructor(protected _fmc: CJ4_FMC) { }
 
   /** Returns a boolean indicating if the page should run a timer to call update() */
   abstract hasRefresh(): boolean;
@@ -18,7 +18,17 @@ export abstract class CJ4_FMC_Page {
   */
   abstract update(): void;
 
-  //** Renders the page */
+  /**
+   * Runs the update() method of the page implementation and calls invalidate() when needed
+   */
+  public updateCheck(): void {
+    this.update();
+    if (this._isDirty === true) {
+      this.invalidate();
+    }
+  }
+
+  /** Renders the page */
   abstract render(): void;
 
   invalidate(): void {

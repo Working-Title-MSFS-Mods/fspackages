@@ -10,7 +10,7 @@ export class CJ4_FMC_NavigationService {
   public showPage<T extends CJ4_FMC_Page>(page: new (fmc: CJ4_FMC) => T) {
     this._fmc.clearDisplay();
     this._currentPage = new page(this._fmc);
-    this._currentPage.update();
+    this._currentPage.updateCheck();
 
     if (this._currentPage.hasRefresh()) {
       this.registerRefresh();
@@ -20,7 +20,7 @@ export class CJ4_FMC_NavigationService {
   private registerRefresh() {
     // register refresh and bind to update which will only render on changes
     this._fmc.registerPeriodicPageRefresh(() => {
-      this._currentPage.update();
+      this._currentPage.updateCheck();
       this.registerRefresh();
       return true;
     }, this._currentPage.refreshInterval, false);

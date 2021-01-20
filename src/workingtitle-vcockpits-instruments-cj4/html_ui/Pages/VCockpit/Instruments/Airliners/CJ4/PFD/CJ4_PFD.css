@@ -1027,16 +1027,20 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #PFDMessageTop{
-    top: 1%;
-    left: 1%;
+    top: 3%;
+    left: 1.2%;
+    width: 12%;
     position: absolute;
-    font-size: 20px;
+    /* border:solid 1px red; */
+    text-align: right;
+    font-size: 21px;
 }
 #PFDMessageBottom{
-    top: 7%;
-    left: 1%;
+    top: 9%;
+    left: 1.2%;
+    width: 12%;
     position: absolute;
-    font-size: 20px;
+    font-size: 21px;
 }
 
 .yellow {

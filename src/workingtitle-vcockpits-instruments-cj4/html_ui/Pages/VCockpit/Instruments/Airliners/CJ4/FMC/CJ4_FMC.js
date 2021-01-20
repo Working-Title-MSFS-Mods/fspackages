@@ -65,6 +65,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this._nearest = undefined;
         /** @type {CJ4_FMC_MessageController} */
         this._msgController = new CJ4_FMC_MessageController(this);
+        /** @type {CJ4_FMC_NavigationService} */
+        this._navigationService = new CJ4_FMC_NavigationService(this);
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -180,8 +182,9 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
-            this.onMsg = () => { CJ4_FMC_VNavSetupPage.ShowPage6(this); };
         };
+
+        this.onMsg = () => { this._navigationService.showPage(CJ4_FMC_MsgPage) };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 

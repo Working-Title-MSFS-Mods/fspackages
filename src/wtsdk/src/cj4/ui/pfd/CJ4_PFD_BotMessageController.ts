@@ -1,7 +1,10 @@
 import { MessageController } from "../../../messages/MessageController";
-import { MessageDefinition, MessageLevel } from "../../../messages/MessageDefinition";
+import { MessageLevel } from "../../../messages/MessageDefinition";
 import { CJ4_PFD_Message } from "./CJ4_PFD_Message";
 
+/**
+ * The message controller for the PFD bottom line
+ */
 export class CJ4_PFD_BotMessageController extends MessageController<CJ4_FMC, CJ4_PFD_Message> {
 
   constructor() {
@@ -9,12 +12,12 @@ export class CJ4_PFD_BotMessageController extends MessageController<CJ4_FMC, CJ4
   }
 
   protected init() {
-    this._messageDefs.set(1, new MessageDefinition(1, MessageLevel.White, "MSG", () => {
+    this.addDefinition("MSG", MessageLevel.White, () => {
       return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 0;
-    }));
-    this._messageDefs.set(2, new MessageDefinition(2, MessageLevel.Yellow, "MSG", () => {
+    });
+    this.addDefinition("MSG", MessageLevel.Yellow, () => {
       return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 1;
-    }));
+    });
   }
 
   /** Gets the string content of the first message */

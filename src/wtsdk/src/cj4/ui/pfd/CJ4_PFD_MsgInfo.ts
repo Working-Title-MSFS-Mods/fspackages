@@ -25,7 +25,6 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
     }
   }
   
-
   constructor() {
     super();
     this._topMsgController = new CJ4_PFD_TopMessageController();
@@ -43,10 +42,6 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
 
     this.topText = this._topMsgController.getMsg();
     this.botText = this._botMsgController.getMsg();
-  }
-
-  setBottomText() {
-
   }
 }
 

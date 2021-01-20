@@ -1,7 +1,10 @@
 import { MessageController } from "../../../messages/MessageController";
-import { MessageDefinition, MessageLevel } from "../../../messages/MessageDefinition";
+import { MessageLevel } from "../../../messages/MessageDefinition";
 import { Message } from "../../../messages/Message";
 
+/**
+ * The message controller for the FMC
+ */
 export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Message> {
 
   constructor(protected _instrument: CJ4_FMC) {
@@ -9,15 +12,23 @@ export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Messag
   }
 
   protected init() {
-    this._messageDefs.set(1, new MessageDefinition(1, MessageLevel.Yellow, "INITIALIZE POSITION", () => {
+    this.addDefinition("INITIALIZE POSITION", MessageLevel.Yellow, () => {
       return this._instrument.lastPos === "";
-    }));
-    this._messageDefs.set(2, new MessageDefinition(2, MessageLevel.White, "NO FLIGHT PLAN", () => {
+    });
+    this.addDefinition("NO FLIGHT PLAN", MessageLevel.White, () => {
       return Simplane.getNextWaypointName() === "";
-    }));
-    this._messageDefs.set(3, new MessageDefinition(3, MessageLevel.Yellow, "FPLN DISCONTINUITY", () => {
+    });
+    this.addDefinition("FPLN DISCONTINUITY", MessageLevel.Yellow, () => {
       return SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 1;
-    }));
+    });
+
+    // ADD FAKES FOR TESTING
+    for (let i = 0; i < 10; i++) {
+      this.addDefinition("Test this " + i, MessageLevel.White, () => {
+        return (Date.now()/1000) % (Math.random()*10) > 2;
+      });   
+    }
+  
   }
 
   public update() {

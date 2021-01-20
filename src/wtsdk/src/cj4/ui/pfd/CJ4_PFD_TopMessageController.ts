@@ -1,7 +1,10 @@
 import { MessageController } from "../../../messages/MessageController";
-import { MessageDefinition, MessageLevel } from "../../../messages/MessageDefinition";
+import { MessageLevel } from "../../../messages/MessageDefinition";
 import { CJ4_PFD_Message } from "./CJ4_PFD_Message";
 
+/**
+ * The message controller for the PFD top message
+ */
 export class CJ4_PFD_TopMessageController extends MessageController<CJ4_FMC, CJ4_PFD_Message> {
 
   constructor() {
@@ -9,18 +12,18 @@ export class CJ4_PFD_TopMessageController extends MessageController<CJ4_FMC, CJ4
   }
 
   protected init() {
-    this._messageDefs.set(1, new MessageDefinition(1, MessageLevel.White, "TERM", () => {
+    this.addDefinition("TERM", MessageLevel.White, () => {
       return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 1;
-    }));
-    this._messageDefs.set(2, new MessageDefinition(2, MessageLevel.White, "LPV TERM", () => {
+    });
+    this.addDefinition("LPV TERM", MessageLevel.White, () => {
       return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 2;
-    }));
-    this._messageDefs.set(3, new MessageDefinition(3, MessageLevel.White, "APPR", () => {
+    });
+    this.addDefinition("APPR", MessageLevel.White, () => {
       return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 3;
-    }));
-    this._messageDefs.set(4, new MessageDefinition(4, MessageLevel.White, "LPV APPR", () => {
+    });
+    this.addDefinition("LPV APPR", MessageLevel.White, () => {
       return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 4;
-    }));
+    });
   }
 
   /** Gets the string content of the first message */

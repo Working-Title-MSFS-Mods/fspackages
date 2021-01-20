@@ -8,5 +8,5 @@ export class CJ4_PFD_Message extends Message {
   }
   public set isBlinking(v : boolean) {
     this._isBlinking = v;
-  }  
+  }
 }
