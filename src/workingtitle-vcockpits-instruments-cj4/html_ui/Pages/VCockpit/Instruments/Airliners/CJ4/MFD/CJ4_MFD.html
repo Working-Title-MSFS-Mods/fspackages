@@ -179,11 +179,6 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <div class='bearing-block-arrow'>
-                                        <svg viewBox='-6 0 12 20'>
-                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
-                                        </svg>
-                                    </div>
                                     <div class='bearing-block-dist'>
                                         <div>
                                             <span id='State'>FMS</span>1
@@ -192,9 +187,14 @@
                                             <span id='Distance'>-.-</span><span id='Unit'> NM</span>
                                         </div>
                                     </div>
+                                    <div class='bearing-block-arrow'>
+                                        <svg viewBox='-6 0 12 20'>
+                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
+                                        </svg>
+                                    </div>
                                     <div style='clear: both;'></div>
                                 </div>
-                                <div id='ID'>---</div>
+                                <div id='ID' style='display: none'>---</div>
                             </div>
 
                             <div id="VORDMENavaid_Right" style="display:none">
@@ -217,11 +217,6 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <div class='bearing-block-arrow'>
-                                        <svg viewBox='-6 0 12 20'>
-                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
-                                        </svg>
-                                    </div>
                                     <div class='bearing-block-dist'>
                                         <div>
                                             <span id='State'>FMS</span>2
@@ -230,17 +225,24 @@
                                             <span id='Distance'>-.-</span><span id='Unit'> NM</span>
                                         </div>
                                     </div>
+                                    <div class='bearing-block-arrow'>
+                                        <svg viewBox='-6 0 12 20'>
+                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
+                                        </svg>
+                                    </div>
                                     <div style='clear: both;'></div>
                                 </div>
-                                <div id='ID'>---</div>
+                                <div id='ID' style='display: none'>---</div>
                             </div>
                         </div>
 
                         <div id="Symbols">
-                            <svg>
-                                <text id="WX" x="100%" y="50%" alignment-baseline="baseline">WX</text>
-                                <text id="TERR" x="100%" y="50%" alignment-baseline="baseline">TERR</text>
-                            </svg>
+                            <ul>
+                                <li class='overlay-terr'>TERR</li>
+                                <li><span class='overlay-wx'>WX</span>/LX</li>
+                                <li class='overlay-wx-line1'>WX</li>
+                                <li class='overlay-wx-line2'>T-1.5A</li>
+                            </ul>
                         </div>
 
                         <div id="ElapsedTime">

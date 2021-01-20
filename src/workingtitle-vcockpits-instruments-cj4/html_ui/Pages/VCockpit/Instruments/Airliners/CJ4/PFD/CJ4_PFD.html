@@ -87,6 +87,17 @@
                         </div>
                     </div>
 
+                    <div id="NavPreset">
+                        <div class='preset-tuning'>
+                            <div>LOC1</div>
+                            <div class='preset-tuning-frequency'>111.30</div>
+                        </div>
+                        <div class='preset-info'>
+                            <div>PRESET</div>
+                            <div class='preset-name'>VOR1</div>
+                        </div>
+                    </div>
+
                     <div id="VORDMENavaids">
                         <div id="VORDMENavaid_Left" style="display:none">
                             <div class='bearing-pointer'>
@@ -108,11 +119,6 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class='bearing-block-arrow'>
-                                    <svg viewBox='-6 0 12 20'>
-                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
-                                    </svg>
-                                </div>
                                 <div class='bearing-block-dist'>
                                     <div>
                                         <span id='State'>FMS</span>1
@@ -121,9 +127,14 @@
                                         <span id='Distance'>-.-</span><span id='Unit'> NM</span>
                                     </div>
                                 </div>
+                                <div class='bearing-block-arrow'>
+                                    <svg viewBox='-6 0 12 20'>
+                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
+                                    </svg>
+                                </div>
                                 <div style='clear: both;'></div>
                             </div>
-                            <div id='ID'>---</div>
+                            <div id='ID' style='display: none'>---</div>
                         </div>
 
                         <div id="VORDMENavaid_Right" style="display:none">
@@ -146,11 +157,6 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class='bearing-block-arrow'>
-                                    <svg viewBox='-6 0 12 20'>
-                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
-                                    </svg>
-                                </div>
                                 <div class='bearing-block-dist'>
                                     <div>
                                         <span id='State'>FMS</span>2
@@ -159,17 +165,24 @@
                                         <span id='Distance'>-.-</span><span id='Unit'> NM</span>
                                     </div>
                                 </div>
+                                <div class='bearing-block-arrow'>
+                                    <svg viewBox='-6 0 12 20'>
+                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
+                                    </svg>
+                                </div>
                                 <div style='clear: both;'></div>
                             </div>
-                            <div id='ID'>---</div>
+                            <div id='ID' style='display: none'>---</div>
                         </div>
                     </div>
 
                     <div id="Symbols">
-                        <svg>
-                            <text id="WX" x="100%" y="50%" alignment-baseline="baseline">WX</text>
-                            <text id="TERR" x="100%" y="50%" alignment-baseline="baseline">TERR</text>
-                        </svg>
+                        <ul>
+                            <li class='overlay-terr'>TERR</li>
+                            <li><span class='overlay-wx'>WX</span>/LX</li>
+                            <li class='overlay-wx-line1'>WX</li>
+                            <li class='overlay-wx-line2'>T-1.5A</li>
+                        </ul>
                     </div>
 
                     <div id="ElapsedTime">
@@ -284,6 +297,8 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseAirliners.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/MFD_WTMenu.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/PFD/NavPresetElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/PFD/NavTransferTuningElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/BaseNDCompass.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDCompass.js"></script>

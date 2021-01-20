@@ -171,6 +171,12 @@ class Jet_NDCompass extends HTMLElement {
                     break;
                 }
         }
+
+        try {
+            this.navPreset = new NavPresetElement(document.querySelector('#NavPreset .preset-info'));
+            this.navTransferTuning = new NavTransferTuningElement(document.querySelector('#NavPreset .preset-tuning'));
+        }
+        catch (err) { }
     }
     constructArc() {
     }
@@ -423,6 +429,10 @@ class Jet_NDCompass extends HTMLElement {
         }
     }
     updateNavigationInfo() {
+        if (this.navPreset) {
+            this.navPreset.update();
+        }
+        
         if (this.courseGroup && this.displayMode !== Jet_NDCompass_Display.PLAN) {
             if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 const waypointName = Simplane.getNextWaypointName();
@@ -489,6 +499,12 @@ class Jet_NDCompass extends HTMLElement {
                 if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode === Jet_NDCompass_Navigation.VOR) {
                     let beacon;
                     this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                    if (this.navTransferTuning && this.navPreset) {
+                        this.navTransferTuning.setDisplayed(false);
+                        this.navPreset.setDisplayed(true);
+                    }
+
                     if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                         beacon = this.gps.radioNav.getBestILSBeacon();
                     }
@@ -550,6 +566,11 @@ class Jet_NDCompass extends HTMLElement {
 
                         let course = SimVar.GetSimVarValue("NAV LOCALIZER:1", "degree");
 
+                        let frequency = SimVar.GetSimVarValue('NAV ACTIVE FREQUENCY:1', 'MHz');
+                        if (this.navTransferTuning) {
+                            this.navTransferTuning.setFrequency(frequency);
+                        }
+
                         let deviation = (SimVar.GetSimVarValue("NAV CDI:1", "number") / 127);
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
@@ -560,14 +581,29 @@ class Jet_NDCompass extends HTMLElement {
                         const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
                         if (navSensitivity == 1) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
+
+                            if (this.navTransferTuning && this.navPreset) {
+                                this.navTransferTuning.setDisplayed(true);
+                                this.navPreset.setDisplayed(false);
+                            }     
                         } else {
                             this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                            if (this.navTransferTuning && this.navPreset) {
+                                this.navTransferTuning.setDisplayed(false);
+                                this.navPreset.setDisplayed(true);
+                            }  
                         }
                     }
                     else {
                         this.setAttribute("ghost_needle_course", compass.toString());
                         this.setAttribute("ghost_needle_deviation", "0");
                         this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                        if (this.navTransferTuning && this.navPreset) {
+                            this.navTransferTuning.setDisplayed(false);
+                            this.navPreset.setDisplayed(true);
+                        }
                     }
                 } 
                 this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");

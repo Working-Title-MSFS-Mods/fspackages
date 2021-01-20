@@ -36,6 +36,9 @@ class LNavDirector {
 
     /** An instance of the LNAV holds director. */
     this.holdsDirector = new HoldsDirector(fpm);
+
+    /** An instance of the localizer director. */
+    this.locDirector = new LocDirector(navModeSelector);
   }
 
   /**
@@ -51,7 +54,7 @@ class LNavDirector {
       const previousWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex - 1);
       const activeWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex);
         
-      if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint && previousWaypoint) {
+      if (!this.delegateToHoldsDirector(activeWaypoint) && !this.delegateToLocDirector() && activeWaypoint && previousWaypoint) {
         const planeState = LNavDirector.getAircraftState();
 
         const navSensitivity = this.getNavSensitivity(planeState.position);
@@ -62,10 +65,8 @@ class LNavDirector {
 
         switch (this.state) {
           case LNavState.TRACKING:
-            this.handleTracking(planeState, navSensitivity, activeWaypoint, previousWaypoint);
-            break;
           case LNavState.TURN_COMPLETING:
-            this.handleTurnCompleting(planeState, activeWaypoint, previousWaypoint);
+            this.generateGuidance(planeState, navSensitivity, activeWaypoint, previousWaypoint);
             break;
         }
       }
@@ -79,11 +80,11 @@ class LNavDirector {
    * @param {WayPoint} activeWaypoint The current active waypoint.
    * @param {WayPoint} previousWaypoint The current previous waypoint.
    */
-  handleTracking(planeState, navSensitivity, activeWaypoint, previousWaypoint) {
+  generateGuidance(planeState, navSensitivity, activeWaypoint, previousWaypoint) {
     const activeLatLon = new LatLon(activeWaypoint.infos.coordinates.lat, activeWaypoint.infos.coordinates.long);
     
     const nextWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
-    const nextLatLon = new LatLon(nextWaypoint.infos.coordinates.lat, nextWaypoint.infos.coordinates.long);
+    const nextLatLon = nextWaypoint ? new LatLon(nextWaypoint.infos.coordinates.lat, nextWaypoint.infos.coordinates.long) : undefined;
 
     const planeLatLon = new LatLon(planeState.position.lat, planeState.position.long);
 
@@ -96,31 +97,37 @@ class LNavDirector {
       this.sequenceToNextWaypoint(planeState, activeWaypoint);
     }
     else {
-      const nextStartTrack = activeLatLon.initialBearingTo(nextLatLon);
       const planeToActiveBearing = planeLatLon.initialBearingTo(activeLatLon);
-
+      const nextStartTrack = nextWaypoint ? activeLatLon.initialBearingTo(nextLatLon) : planeToActiveBearing;
+      
       const anticipationDistance = this.getAnticipationDistance(planeState, Avionics.Utils.angleDiff(planeToActiveBearing, nextStartTrack));
-      if (!nextWaypoint.isFlyover) {
+      if (!nextWaypoint || !nextWaypoint.isFlyover) {
         this.alertIfClose(planeState, distanceToActive, anticipationDistance);
 
         if (distanceToActive < anticipationDistance && !nextWaypoint.isFlyover) {
           this.sequenceToNextWaypoint(planeState, activeWaypoint);
         }
+        else {
+          if (this.state === LNavState.TRACKING) {
+            LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, distanceToActive > this.options.minimumTrackingDistance);
+          }
+          
+          if (this.state === LNavState.TURN_COMPLETING) {
+            this.handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint);
+          }
+        }
       }
-      
-      LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, distanceToActive > this.options.minimumTrackingDistance);
     }
   }
 
   /**
-   * Handles completing a turn to the next fix.
-   * @param {AircraftState} planeState The current aircraft state.
-   * @param {WayPoint} activeWaypoint The current active waypoint.
-   * @param {WayPoint} previousWaypoint The current previous waypoint.
+   * Handles the turn completion phase of lateral guidance.
+   * @param {AircraftState} planeState The current aircraft state. 
+   * @param {number} dtk The current desired track.
+   * @param {WayPoint} previousWaypoint The previous (from) waypoint.
+   * @param {WayPoint} activeWaypoint The active (to) waypoint.
    */
-  handleTurnCompleting(planeState, activeWaypoint, previousWaypoint) {
-    const dtk = AutopilotMath.desiredTrack(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState.position);
-
+  handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint) {
     const angleDiffToTarget = Avionics.Utils.angleDiff(planeState.trueHeading, dtk);
     if (angleDiffToTarget < this.options.degreesRollout) {
       this.state = LNavState.TRACKING;
@@ -128,7 +135,7 @@ class LNavDirector {
     else {
       const turnDirection = Math.sign(angleDiffToTarget);
       const targetHeading = AutopilotMath.normalizeHeading(planeState.trueHeading + (turnDirection * 90));
-    
+
       LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, false);
       LNavDirector.setCourse(targetHeading, planeState);
     }
@@ -176,6 +183,22 @@ class LNavDirector {
   }
 
   /**
+   * Delegates navigation to the localizer director, if necessary.
+   * @returns True if the localizer director is now active, false otherwise.
+   */
+  delegateToLocDirector() {
+    const armedState = this.navModeSelector.currentLateralArmedState;
+    const activeState = this.navModeSelector.currentLateralActiveState;
+
+    if ((armedState === LateralNavModeState.APPR || activeState === LateralNavModeState.APPR) && this.navModeSelector.approachMode === WT_ApproachType.ILS) {
+      this.locDirector.update();
+      return this.locDirector.state === LocDirectorState.ACTIVE;
+    }
+
+    return false;
+  }
+
+  /**
    * Gets the current turn anticipation distance based on the plane state
    * and next turn angle.
    * @param {AircraftState} planeState The current aircraft state. 
@@ -188,7 +211,7 @@ class LNavDirector {
     const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * (planeState.trueAirspeed / 3600);
 
     const turnAnticipationAngle = Math.min(this.options.maxTurnAnticipationAngle, Math.abs(turnAngle)) * Avionics.Utils.DEG2RAD;
-    return Math.min((turnRadius * Math.abs(Math.tan(turnAnticipationAngle)) / 2) + enterBankDistance, this.options.maxTurnAnticipationDistance(planeState));
+    return Math.min((turnRadius * Math.abs(Math.tan(turnAnticipationAngle / 2))) + enterBankDistance, this.options.maxTurnAnticipationDistance(planeState));
   }
 
   /**
@@ -231,6 +254,7 @@ class LNavDirector {
 
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
         LNavDirector.setCourse(SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG, planeState);
+        SimVar.SetSimVarValue('L:WT_CJ4_WPT_ALERT', 'number', 0);
       }
       else if (nextWaypoint && nextWaypoint.isRunway) {
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
