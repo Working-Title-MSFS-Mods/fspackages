@@ -20,6 +20,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
 
     sleep() {
         this._bingMap.setConfig(0);
+        this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.showWeather(EWeatherRadar.OFF, 0);
     }
 
@@ -52,10 +53,10 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
      */
     onAttached(state) {
         this.onProjectionViewChanged(state);
+        this._bingMap.setBingId(this._bingMapID);
         this._bingMap.setMode(EBingMode.PLANE);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.setVisible(true);
-        this._bingMap.setBingId(this._bingMapID);
     }
 
     /**
