@@ -274,7 +274,7 @@ class WT_VerticalAutopilot {
                     console.log("path arm");
                     this._vnavPathStatus = VnavPathStatus.PATH_ARMED;
                 } else {
-                    this.checkPreselector;
+                    // noop: check preselect
                 }
                 break;
             case VnavPathStatus.PATH_ARMED:
@@ -1080,14 +1080,6 @@ class WT_VerticalAutopilot {
             this.donut = donutValue;
         }
     }
-
-    checkPreselector() {
-        const approachingTodDistance = 0.0125 * this.groundSpeed;
-        if (this.distanceToTod < approachingTodDistance && this.distanceToTod > 0) {
-            this._vnav.setCheckPreselector();
-        }
-    }
-
     
 /////////////////////////////////////////////////////
 
