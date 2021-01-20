@@ -74,7 +74,6 @@ class WT_VerticalAutopilot {
         * @type {number}
         */
         this._activeConstraintIndex = undefined;
-
     }
 
     get vnavState() {
@@ -86,7 +85,7 @@ class WT_VerticalAutopilot {
     }
 
     get distanceToTod() {
-        return SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number")
+        return SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
     }
 
     get groundSpeed() {
@@ -178,7 +177,7 @@ class WT_VerticalAutopilot {
 
     get snowflake() {
         let snowflake = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1;
-        return snowflake
+        return snowflake;
     }
 
     set snowflake(value) {
