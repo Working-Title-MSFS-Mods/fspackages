@@ -1,14 +1,6 @@
 # Changelog
 
-### v0.4.0-beta2
-**Fixes**
-- \[MFD\] Selecting the DTG field for the nav data bar no longer causes the MFD to freeze.
-- \[Weather Radar\] Turning NEXRAD on for the navigation map in the right MFD pane no longer interferes with the weather radar display in the left MFD pane when the right pane is not visible. (The interference still persists if both panes are visible).
-- \[GTC\] The lower knob (G3000) or right knob (G5000) now controls PFD inset map range when the touchscreen controller has the PFD home page or any of its subpages open.
-- \[GTC\] For the G5000, turning the right knob no longer changes map or weather radar range when a frequency select or audio/radio page is open.
-- \[Misc\] Negative numbers are now displayed correctly without an extra minus sign.
-
-### v0.4.0-beta1
+### v0.4.0
 **New Features**
 - \[MFD\] Added MFD "HALF" mode, which splits the MFD into left and right panes.
   - To toggle between FULL and HALF modes, navigate to MFD Home using the touchscreen controllers and press the "FULL" or "HALF" button in the navigation bar.
@@ -37,8 +29,16 @@
 
 **Fixes**
 - \[PFD\] The inset map no longer bleeds through its borders.
+- \[PFD\] The timer display is now functional.
+- \[Flight Plan\] Fixed a bug where the navigation map and the GTC active flight plan page would display the active leg as being one leg ahead of the true active leg.
 - \[NavMap\] Map symbols (cities, waypoints, etc) are now better aligned with the terrain texture at high latitudes and when zoomed out.
+- \[NavMap\] Flight plan paths that cross the antimeridian (180° E/W) are now drawn correctly.
+- \[NavMap\] Waypoint labels no longer sometimes blink or flash on/off rapidly.
 - \[Weather Radar\] In Vertical Scan mode, the vertical scale is now correctly labeled.
+- \[GTC\] The PFD inset map can now be toggled on/off within the PFD Map Settings page.
+- \[GTC\] The lower knob (G3000) or right knob (G5000) now controls PFD inset map range when the touchscreen controller has the PFD home page or any of its subpages open.
+- \[GTC\] For the G5000, turning the right knob no longer changes map or weather radar range when a frequency select or audio/radio page is open.
+- \[GTC\] In the Timers page, the "Start" button now correctly changes to a "Stop" button when the timer is active.
 
 ### v0.3.4
 **Fixes**
