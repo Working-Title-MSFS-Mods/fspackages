@@ -274,7 +274,7 @@ class WT_VerticalAutopilot {
                     console.log("path arm");
                     this._vnavPathStatus = VnavPathStatus.PATH_ARMED;
                 } else {
-                    this.checkPreselector;
+                    this.checkPreselector();
                 }
                 break;
             case VnavPathStatus.PATH_ARMED:
