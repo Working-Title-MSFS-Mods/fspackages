@@ -298,7 +298,6 @@ class WT_VerticalAutopilot {
                 if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.RNAV) {
                     this._glidepathStatus = GlidepathStatus.GP_ARMED;
                     console.log("GP Armed");
-                    this._navModeSelector.currentArmedVnavState = VerticalNavModeState.GP;
                 }
                 break;
             case GlidepathStatus.GP_ARMED:
@@ -331,7 +330,6 @@ class WT_VerticalAutopilot {
                 if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.ILS) {
                     this._glideslopeStatus = GlideslopeStatus.GS_ARMED;
                     console.log("GS Armed");
-                    this._navModeSelector.currentArmedVnavState = VerticalNavModeState.GS;
                 }
                 break;
             case GlideslopeStatus.GS_ARMED:
@@ -565,18 +563,21 @@ class WT_VerticalAutopilot {
             case PathInterceptStatus.INTERCEPTED:
                 if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
                     this.setVerticalNavModeState(VerticalNavModeState.GP);
+                    this._navModeSelector.setProperAltitudeArmedState();
                     if (this.altSlot !== AltitudeSlot.MANAGED) {
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, -1000, true);
                     }
                 }
                 else if (this._glideslopeStatus === GlideslopeStatus.GS_ACTIVE) {
                     this.setVerticalNavModeState(VerticalNavModeState.GS);
+                    this._navModeSelector.setProperAltitudeArmedState();
                     if (this.altSlot !== AltitudeSlot.MANAGED) {
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, -1000, true);
                     }
                 }
                 else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
                     this.setVerticalNavModeState(VerticalNavModeState.PATH);
+                    this._navModeSelector.setProperAltitudeArmedState();
                     if (this.altSlot !== AltitudeSlot.SELECTED) {
                         this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
                     }
@@ -1018,7 +1019,7 @@ class WT_VerticalAutopilot {
 
     checkPreselector() {
         const approachingTodDistance = 0.0125 * this.groundSpeed;
-        if (this.distanceToTod < approachingTodDistance && this.distanceToTod > 0) {
+        if (this.distanceToTod < approachingTodDistance && this.distanceToTod > 0 && this.selectedAltitude >= this._vnav.indicatedAltitude - 50) {
             this._vnav.setCheckPreselector();
         }
     }
