@@ -67,10 +67,14 @@ class CJ4_FMC extends FMCMainDisplay {
         /** @type {CJ4_FMC_NavigationService} */
         this._navigationService = new CJ4_FMC_NavigationService(this);
     }
-    get templateID() { return "CJ4_FMC"; }
+    get templateID() {
+        return "CJ4_FMC";
+    }
 
     // Property for EXEC handling
-    get fpHasChanged() { return this._fpHasChanged; }
+    get fpHasChanged() {
+        return this._fpHasChanged;
+    }
     set fpHasChanged(value) {
         this._fpHasChanged = value;
         if (this._fpHasChanged) {
@@ -128,20 +132,35 @@ class CJ4_FMC extends FMCMainDisplay {
         }
 
         this.maxCruiseFL = 450;
-        this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
-        this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
-        this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
-        this.onDepArr = () => { CJ4_FMC_DepArrPage.ShowPage1(this); };
-        this.onDsplMenu = () => { CJ4_FMC_DsplMenuPage.ShowPage1(this); };
-        this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
-        this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
-        this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
+        this.onFplan = () => {
+            CJ4_FMC_RoutePage.ShowPage1(this);
+        };
+        this.onLegs = () => {
+            CJ4_FMC_LegsPage.ShowPage1(this);
+        };
+        this.onIdx = () => {
+            CJ4_FMC_InitRefIndexPage.ShowPage1(this);
+        };
+        this.onDepArr = () => {
+            CJ4_FMC_DepArrPage.ShowPage1(this);
+        };
+        this.onDsplMenu = () => {
+            CJ4_FMC_DsplMenuPage.ShowPage1(this);
+        };
+        this.onPerf = () => {
+            CJ4_FMC_PerfInitPage.ShowPage1(this);
+        };
+        this.onMfdAdv = () => {
+            CJ4_FMC_MfdAdvPage.ShowPage1(this);
+        };
+        this.onTun = () => {
+            CJ4_FMC_NavRadioPage.ShowPage1(this);
+        };
         this.onExec = () => {
             if (this.onExecPage) {
                 console.log("if this.onExecPage");
                 this.onExecPage();
-            }
-            else {
+            } else {
                 this._isRouteActivated = false;
                 this.fpHasChanged = false;
                 this._activatingDirectTo = false;
@@ -160,8 +179,7 @@ class CJ4_FMC extends FMCMainDisplay {
                         this.refreshPageCallback();
                     }
                 });
-            }
-            else if (this.getIsRouteActivated() && this._activatingDirectTo) {
+            } else if (this.getIsRouteActivated() && this._activatingDirectTo) {
                 const activeIndex = this.flightPlanManager.getActiveWaypointIndex();
                 this.insertTemporaryFlightPlan(() => {
                     this.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
@@ -176,8 +194,7 @@ class CJ4_FMC extends FMCMainDisplay {
                         }
                     });
                 });
-            }
-            else {
+            } else {
                 this.fpHasChanged = false;
                 this._isRouteActivated = false;
                 SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
@@ -189,7 +206,9 @@ class CJ4_FMC extends FMCMainDisplay {
             }
         };
 
-        this.onMsg = () => { this._navigationService.showPage(CJ4_FMC_MsgPage) };
+        this.onMsg = () => {
+            this._navigationService.showPage(CJ4_FMC_MsgPage);
+        };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 
@@ -197,14 +216,14 @@ class CJ4_FMC extends FMCMainDisplay {
         this._pageRefreshTimer = null;
 
         //Hijaack and amend the standard FMC logic to work with the PL21 TUNE page
-        let initRadioNav = super.initRadioNav.bind(this);
+        const initRadioNav = super.initRadioNav.bind(this);
         this.initRadioNav = (_boot) => {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
         };
 
-        // get HideYoke        
-        let yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
+        // get HideYoke
+        const yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden1", "number", yokeHide);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden2", "number", yokeHide);
 
@@ -218,8 +237,8 @@ class CJ4_FMC extends FMCMainDisplay {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
 
-        let now = performance.now();
-        let dt = now - this._lastUpdateTime;
+        const now = performance.now();
+        const dt = now - this._lastUpdateTime;
         this._lastUpdateTime = now;
 
         this.updateAutopilot(dt);
@@ -231,7 +250,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this.updateAlerters(dt);
         this.updateMsgs(_deltaTime);
         this._frameUpdates++;
-        if (this._frameUpdates > 64000) this._frameUpdates = 0;
+        if (this._frameUpdates > 64000) {
+            this._frameUpdates = 0;
+        }
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -310,25 +331,26 @@ class CJ4_FMC extends FMCMainDisplay {
     //Overwrite of FMCMainDisplay to disable always settings nav hold to GPS mode
     updateRadioNavState() {
         if (this.isPrimary) {
-            let radioNavOn = this.isRadioNavActive();
+            const radioNavOn = this.isRadioNavActive();
             if (radioNavOn != this._radioNavOn) {
                 this._radioNavOn = radioNavOn;
-                if (!radioNavOn)
+                if (!radioNavOn) {
                     this.initRadioNav(false);
-                if (this.refreshPageCallback)
+                }
+                if (this.refreshPageCallback) {
                     this.refreshPageCallback();
+                }
             }
             let apNavIndex = 1;
-            let apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
+            const apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
             if (apprHold) {
                 if (this.canSwitchToNav()) {
                     let navid = 0;
-                    let ils = this.radioNav.getBestILSBeacon();
+                    const ils = this.radioNav.getBestILSBeacon();
                     if (ils.id > 0) {
                         navid = ils.id;
-                    }
-                    else {
-                        let vor = this.radioNav.getBestVORBeacon();
+                    } else {
+                        const vor = this.radioNav.getBestVORBeacon();
                         if (vor.id > 0) {
                             navid = vor.id;
                         }
@@ -362,6 +384,15 @@ class CJ4_FMC extends FMCMainDisplay {
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
         this.unregisterPeriodicPageRefresh();
+
+        for (let k = 0; k < 6; k++) {
+            this.onLeftInput[k] = () => {
+                this.showErrorMessage('KEY NOT ACTIVE');
+            };
+            this.onRightInput[k] = () => {
+                this.showErrorMessage('KEY NOT ACTIVE');
+            };
+        }
     }
 
     getOrSelectWaypointByIdent(ident, callback) {
@@ -391,6 +422,7 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     updateSideButtonActiveStatus() {
     }
+
     getIsRouteActivated() {
         return this._isRouteActivated;
     }
@@ -424,12 +456,12 @@ class CJ4_FMC extends FMCMainDisplay {
     //function added to set arrival and runway transition
     setArrivalAndRunwayIndex(arrivalIndex, enrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
-            let landingRunway = this.flightPlanManager.getApproachRunway();
+            const landingRunway = this.flightPlanManager.getApproachRunway();
             this.flightPlanManager.setArrivalProcIndex(arrivalIndex, () => {
                 this.flightPlanManager.setArrivalEnRouteTransitionIndex(enrouteTransitionIndex, () => {
                     if (landingRunway) {
-                        let arrival = this.flightPlanManager.getArrival();
-                        let arrivalRunwayIndex = arrival.runwayTransitions.findIndex(t => {
+                        const arrival = this.flightPlanManager.getArrival();
+                        const arrivalRunwayIndex = arrival.runwayTransitions.findIndex(t => {
                             return t.name.indexOf(landingRunway.designation) != -1;
                         });
                         if (arrivalRunwayIndex >= -1) {
@@ -453,7 +485,7 @@ class CJ4_FMC extends FMCMainDisplay {
             this.updateAutopilotCooldown = -1;
         }
         if (this.updateAutopilotCooldown < 0) {
-            let currentApMasterStatus = SimVar.GetSimVarValue("AUTOPILOT MASTER", "boolean");
+            const currentApMasterStatus = SimVar.GetSimVarValue("AUTOPILOT MASTER", "boolean");
             if (currentApMasterStatus != this._apMasterStatus) {
                 this._apMasterStatus = currentApMasterStatus;
             }
@@ -468,29 +500,25 @@ class CJ4_FMC extends FMCMainDisplay {
             if (this._vnav === undefined) {
                 this._vnav = new WT_BaseVnav(this.flightPlanManager, this);
                 this._vnav.activate();
-            }
-            else {
+            } else {
                 this._vnav.update();
             }
 
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
                 this._lnav = new LNavDirector(this.flightPlanManager, this._navModeSelector);
-            }
-            else {
+            } else {
                 this._lnav.update();
             }
 
             this._navModeSelector.generateInputDataEvents();
             this._navModeSelector.processEvents();
 
-
             //RUN VERTICAL AP ALWAYS
             if (this._currentVerticalAutopilot === undefined) {
                 this._currentVerticalAutopilot = new WT_VerticalAutopilot(this._vnav, this._navModeSelector);
                 this._currentVerticalAutopilot.activate();
-            }
-            else {
+            } else {
                 this._currentVerticalAutopilot.update();
             }
 
@@ -505,24 +533,22 @@ class CJ4_FMC extends FMCMainDisplay {
             //WT MANUAL BANK FD
             const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
             if (fdOn && !this._apMasterStatus) {
-                let bank = 0;
+                const bank = 0;
                 const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees');
                 const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
                 if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV
                     || this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO || this._navModeSelector.currentLateralActiveState === LateralNavModeState.GA)) {
-                    let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
+                    const deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
                     this.driveFlightDirector(deltaAngle, bank);
-                }
-                else if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
+                } else if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
                     const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
                     const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + nav, "bool");
                     const isIls = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + nav, "bool");
                     const isLnav = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
                     if (isLnav) {
-                        let deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
+                        const deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
                         this.driveFlightDirector(deltaAngle, bank);
-                    }
-                    else if (signal && isIls) {
+                    } else if (signal && isIls) {
                         const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
                         const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
                         const correctionAngle = 0.23 * cdi;
@@ -545,8 +571,7 @@ class CJ4_FMC extends FMCMainDisplay {
                             this.driveFlightDirector(0, 0);
                         }
                     }
-                }
-                else {
+                } else {
                     if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
                         this.driveFlightDirector(0, 0);
                     }
@@ -573,8 +598,7 @@ class CJ4_FMC extends FMCMainDisplay {
             this._nearest.update();
             this._nearest.nearestCooldown = this._nearest._nearestCooldownTimer;
             this._nearest._ranGetRunways = false;
-        }
-        else if (this._nearest.nearestCooldown < 24500 && !this._nearest._ranGetRunways) {
+        } else if (this._nearest.nearestCooldown < 24500 && !this._nearest._ranGetRunways) {
             this._nearest.getRunways();
             this._nearest._ranGetRunways = true;
         }
@@ -587,12 +611,11 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number", bank);
     }
 
-
     //add new method to find correct runway designation (with leading 0)
     getRunwayDesignation(selectedRunway) {
         if (selectedRunway) {
-            let selectedRunwayDesignation = new String(selectedRunway.designation);
-            let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
+            const selectedRunwayDesignation = new String(selectedRunway.designation);
+            const selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
             if (selectedRunwayMod == "L" || selectedRunwayMod == "C" || selectedRunwayMod == "R") {
                 if (selectedRunwayDesignation.length == 2) {
                     this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
@@ -621,16 +644,17 @@ class CJ4_FMC extends FMCMainDisplay {
     registerPeriodicPageRefresh(action, interval, runImmediately) {
         this.unregisterPeriodicPageRefresh();
 
-        let refreshHandler = () => {
-            let isBreak = action();
-            if (isBreak) return;
+        const refreshHandler = () => {
+            const isBreak = action();
+            if (isBreak) {
+                return;
+            }
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
         };
 
         if (runImmediately) {
             refreshHandler();
-        }
-        else {
+        } else {
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
         }
     }
@@ -646,15 +670,14 @@ class CJ4_FMC extends FMCMainDisplay {
 
     /**
      * Initializes the standby radios in the FMC.
-     * @param {Boolean} isFirstBoot 
+     * @param {Boolean} isFirstBoot
      */
     initializeStandbyRadios(isFirstBoot) {
         if (this.isPrimary) {
             if (isFirstBoot) {
                 this.rcl1Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1);
                 this.pre2Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2);
-            }
-            else {
+            } else {
                 if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1) - this.rcl1Frequency) > 0.005) {
                     this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 1, this.rcl1Frequency);
                 }
@@ -676,8 +699,7 @@ class CJ4_FMC extends FMCMainDisplay {
         if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;
-        }
-        else {
+        } else {
             const thrustLeft = SimVar.GetSimVarValue("TURB ENG JET THRUST:1", "pounds");
             const thrustRight = SimVar.GetSimVarValue("TURB ENG JET THRUST:2", "pounds");
 
@@ -717,8 +739,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
                 this.previousLeftFuelQty = newLeftFuelQty;
                 this.previousRightFuelQty = newRightFuelQty;
-            }
-            else {
+            } else {
                 this.previousLeftFuelQty = leftFuelQty;
                 this.previousRightFuelQty = rightFuelQty;
             }
@@ -727,8 +748,8 @@ class CJ4_FMC extends FMCMainDisplay {
 
     // Copy airway selections from temporary to active flightplan
     copyAirwaySelections() {
-        let temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
-        let activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
+        const temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
+        const activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
         for (let i = 0; i < activeFPWaypoints.length; i++) {
             if (activeFPWaypoints[i].infos && temporaryFPWaypoints[i] && activeFPWaypoints[i].icao === temporaryFPWaypoints[i].icao && temporaryFPWaypoints[i].infos) {
                 activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
@@ -746,7 +767,7 @@ class CJ4_FMC extends FMCMainDisplay {
     updateCabinLights() {
         if (this._frameUpdates % 100 == 0) {
             // TODO should go somewhere else later
-            let batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
+            const batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
             if (!batteryOn) {
                 CJ4_FMC_ModSettingsPage.setPassCabinLights(CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF);
             } else {
@@ -789,8 +810,7 @@ class CJ4_FMC extends FMCMainDisplay {
                         SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
                     }
                 }
-            }
-            else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
+            } else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
                 if (!onGround && altitude > 15) {
                     if (zuluTime) {
                         SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
@@ -799,7 +819,6 @@ class CJ4_FMC extends FMCMainDisplay {
                     SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
                 }
             }
-
 
             if (takeOffTime && takeOffTime > 0) {
                 // Update landing time
