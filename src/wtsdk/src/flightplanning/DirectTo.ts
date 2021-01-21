@@ -6,10 +6,10 @@ import { FlightPlanSegment } from "./FlightPlanSegment";
 export class DirectTo {
 
   /** Whether or not the current direct-to is in the flight plan. */
-  public waypointIsInFlightPlan: boolean = false;
+  public waypointIsInFlightPlan = false;
 
   /** Whether or not direct-to is active. */
-  public isActive: boolean = false;
+  public isActive = false;
 
   /** The current direct-to waypoint, if not part of the flight plan. */
   public waypoint?: WayPoint;

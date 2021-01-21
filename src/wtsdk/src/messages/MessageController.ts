@@ -38,7 +38,7 @@ export abstract class MessageController<T extends Message> {
   }
 
   /** Checks the message conditions and updates the list of messages */
-  public update() {
+  public update() : void {
     this._messages.forEach((v, k) => {
       if (v.update() === true) {
         this._messages.delete(k);
