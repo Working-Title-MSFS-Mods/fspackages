@@ -261,7 +261,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 }
 
                 //ILS GLIDESLOPE
-                if (this.gsVisible == 1 && this.tunedNav > 0) {
+                if (this.gsVisible == 1 || this.gsVisible == 3 && this.tunedNav > 0) {
                     let gsi = -SimVar.GetSimVarValue("NAV GSI:" + this.tunedNav, "number") / 127.0;
                     let delta = (gsi + 1.0) * 0.5;
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
@@ -315,7 +315,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 }
 
                 //LOC
-                if (this.locVisible == 1) {
+                if (this.locVisible == 1 || this.locVisible == 3) {
                     cdi = SimVar.GetSimVarValue("NAV CDI:" + this.tunedNav, "number") / 127.0;
 
                     let delta = (cdi + 1.0) * 0.5;
@@ -373,6 +373,13 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.loc_cursorShapeRight.removeAttribute("visibility");
             this.lateral_snowFlake.removeAttribute("visibility");
         }
+        if (this.locVisible == 3) {
+            this.loc_cursorShapeLeft.setAttribute("fill", "cyan");
+            this.loc_cursorShapeRight.setAttribute("fill", "cyan");
+        } else if (this.locVisible == 1) {
+            this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
+            this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+        }
     }
     showGlideslope(_val) {
         this.gsVisible = _val;
@@ -384,6 +391,16 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             this.gs_cursorShapeUp.removeAttribute("visibility");
             this.gs_cursorShapeDown.removeAttribute("visibility");
             this.vertical_snowFlake.removeAttribute("visibility");
+        }
+        if (this.gsVisible == 3) {
+            this.gs_mainGroup.setAttribute("visibility", "visible");
+            this.vertical_snowFlake.setAttribute("visibility", "hidden");
+            this.lateral_snowFlake.setAttribute("visibility", "hidden");
+            this.gs_cursorShapeDown.setAttribute("fill", "cyan");
+            this.gs_cursorShapeUp.setAttribute("fill", "cyan");
+        } else if (this.gsVisible == 1) {
+            this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
+            this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
         }
     }
     showNavInfo(_val) {

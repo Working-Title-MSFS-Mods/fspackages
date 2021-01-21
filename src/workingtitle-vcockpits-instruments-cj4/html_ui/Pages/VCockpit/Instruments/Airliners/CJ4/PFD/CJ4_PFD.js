@@ -919,6 +919,8 @@ class CJ4_ILS extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
+
+
         if (this.ils) {
             this.altWentAbove500 = true;
             let showLoc = 0;
@@ -942,6 +944,16 @@ class CJ4_ILS extends NavSystemElement {
             this.ils.showGlideslope(showGs);
             this.ils.update(_deltaTime);
         }
+
+        let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool");
+        let hasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "Bool");
+        let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+
+        if (hasNav && hasLoc && !onGround && this.gps.mapNavigationSource === 0) { //Turns on the ghost glideslope and lateral pointers.  Sending a 3 so ilsindicator.js knows to change the color to cyan
+            this.ils.showLocalizer(3);
+            this.ils.showGlideslope(3);
+        }
+
     }
     onExit() {
     }
