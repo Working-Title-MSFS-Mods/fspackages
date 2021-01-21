@@ -52,7 +52,7 @@ class CJ4_FMC_DirectToPage {
                     waypointsAltCell[i] = "-----";
                     waypointsFpaCell[i] = "";
                     const constraints = fmc._vnav.parseConstraints(waypoint);
-                    const waypointIndex = fmc.flightPlanManager.getWaypoints().indexOf(waypoint);
+                    const waypointIndex = fmc.flightPlanManager.getAllWaypoints().indexOf(waypoint);
                     if (constraints && constraints.hasConstraint && fmc._vnav._verticalFlightPlan[waypointIndex] && !fmc._vnav._verticalFlightPlan[waypointIndex].isClimb) {
                         const formatConstraints = (value) => {
                             if (value >= 18000) {
