@@ -1385,9 +1385,15 @@ export class FlightPlanManager {
     const waypoint = currentFlightPlan.getWaypoint(index);
 
     if (waypoint) {
-      waypoint.hasHold = true;
-      waypoint.holdDetails = details;
+      const newHoldWaypoint = Object.assign(new WayPoint(this._parentInstrument), waypoint);
+      newHoldWaypoint.infos = Object.assign(new WayPointInfo(this._parentInstrument), waypoint.infos);
 
+      const segment = currentFlightPlan.findSegmentByWaypointIndex(index);
+
+      newHoldWaypoint.hasHold = true;
+      newHoldWaypoint.holdDetails = details;
+
+      currentFlightPlan.addWaypoint(newHoldWaypoint, index + 1, segment.type);
       await this._updateFlightPlanVersion();
     }
   }
@@ -1400,10 +1406,8 @@ export class FlightPlanManager {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     const waypoint = currentFlightPlan.getWaypoint(index);
 
-    if (waypoint) {
-      waypoint.hasHold = false;
-      waypoint.holdDetails = undefined;
-
+    if (waypoint && waypoint.hasHold) {
+      currentFlightPlan.removeWaypoint(index);
       await this._updateFlightPlanVersion();
     }
   }
