@@ -47,13 +47,13 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
     this._botRightMsgController = new CJ4_PFD_BotRightMessageController();
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this._topElement = this.querySelector('#PFDMessageTop');
     this._botLeftElement = this.querySelector('#PFDMessageBotLeft');
     this._botRightElement = this.querySelector('#PFDMessageBotRight');
   }
 
-  update(_dTime) {
+  update(_dTime: number): void {
     this._elapsedTime += _dTime;
     if (this._elapsedTime >= this.UPDATE_RATE) {
       this.execMessageChecks();
@@ -68,7 +68,7 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
       this._elapsedTime = 0;
     }
   }
-  execMessageChecks() {
+  execMessageChecks(): void {
     // TODO will do these here for now as i see no proper location in pfd
     // TOP
     if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 1) {

@@ -80,6 +80,7 @@ export class FlightPlanAsoboSync {
   }
 
   public static async SaveToGame(fpln: FlightPlanManager): Promise<void> {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       FlightPlanAsoboSync.init();
       const plan = fpln.getCurrentFlightPlan();

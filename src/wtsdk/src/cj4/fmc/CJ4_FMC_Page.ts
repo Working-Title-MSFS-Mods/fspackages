@@ -4,7 +4,7 @@ export abstract class CJ4_FMC_Page {
 
   public refreshInterval: number = 1000;
 
-  set isDirty(v) {
+  set isDirty(v: boolean) {
     this._isDirty = v;
   }
 
