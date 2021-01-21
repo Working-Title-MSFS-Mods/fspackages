@@ -33,12 +33,14 @@ export abstract class MessageController<T extends Message> {
    */
   public post(content: string, level: MessageLevel, checkHandler: () => boolean = () => false): T {
     const newMsg = new this._nm(content, level, checkHandler);
-    this._messages.set(content, newMsg)
+    if (!this._messages.has(content)) {
+      this._messages.set(content, newMsg)
+    }
     return newMsg;
   }
 
   /** Checks the message conditions and updates the list of messages */
-  public update() : void {
+  public update(): void {
     this._messages.forEach((v, k) => {
       if (v.update() === true) {
         this._messages.delete(k);
