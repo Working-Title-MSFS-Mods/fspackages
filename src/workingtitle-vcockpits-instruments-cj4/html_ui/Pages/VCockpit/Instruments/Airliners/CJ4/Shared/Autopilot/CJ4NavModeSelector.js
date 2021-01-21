@@ -214,7 +214,7 @@ class CJ4NavModeSelector {
     const getLateralAnnunciation = (mode, armed = false) => {
       if (mode === LateralNavModeState.APPR) {
         if (this.approachMode === WT_ApproachType.RNAV && this.lNavModeState === LNavModeState.FMS) {
-          mode = "FMS1";
+          mode = "LNV1";
         }
         else if (this.approachMode === WT_ApproachType.ILS || this.lNavModeState === LNavModeState.NAV1) {
           mode = "LOC1";
@@ -1048,16 +1048,16 @@ class CJ4NavModeSelector {
     if (this.currentApproachName.startsWith('RN')) {
       this.approachMode = WT_ApproachType.RNAV;
       if (this.currentLateralActiveState === LateralNavModeState.APPR) {
-        this.isVNAVOn = true;
+        this.isVNAVOn = false;
       }
       
       if (this.currentVerticalActiveState === VerticalNavModeState.GS) {
         this.currentVerticalActiveState = VerticalNavModeState.GP;
       }
       
-      if (this.currentArmedVnavState === VerticalNavModeState.GS) {
-        this.currentArmedVnavState = VerticalNavModeState.GP;
-      }
+      // if (this.currentArmedVnavState === VerticalNavModeState.GS) {
+      //   this.currentArmedVnavState = VerticalNavModeState.GP;
+      // }
     }
 
     if (this.currentApproachName.startsWith('ILS') || this.currentApproachName.startsWith('LDA')) {
@@ -1069,37 +1069,7 @@ class CJ4NavModeSelector {
       if (this.currentVerticalActiveState === VerticalNavModeState.GP) {
         this.currentVerticalActiveState = VerticalNavModeState.GS;
       }
-
-      if (this.currentArmedVnavState = VerticalNavModeState.GP) {
-        this.currentArmedVnavState = VerticalNavModeState.GS;
-      }
-    }
-  }
-
-  /**
-   * Handles when glideslope arm changes in the sim autopilot.
-   */
-  handleGSArmChanged() {
-    const isArmed = this._inputDataStates.gs_arm.state;
-    if (isArmed) {
-      this.currentArmedVnavState = VerticalNavModeState.GS;
-    }
-    else if (this.currentArmedVnavState === VerticalNavModeState.GS) {
-      this.currentArmedVnavState = VerticalNavModeState.NONE;
-    }
-  }
-
-  /**
-   * Handles when glideslope active changes in the sim autopilot.
-   */
-  handleGSActiveChanged() {
-    const isActive = this._inputDataStates.gs_active.state;
-    if (isActive) {
-      this.currentVerticalActiveState = VerticalNavModeState.GS;
-      this.isVNAVOn = false;
-    }
-    else if (this.currentVerticalActiveState === VerticalNavModeState.GS) {
-      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+      
     }
   }
 
