@@ -188,7 +188,11 @@ class WT_VerticalAutopilot {
     get currentSegment() {
         const currentIndex = this._vnav.flightplan.activeWaypointIndex;
         const currentSegmentIndex = this._vnav._verticalFlightPlan[currentIndex].segment;
-        return this._vnav._verticalFlightPlanSegments[currentSegmentIndex];
+        let segment = this._vnav._verticalFlightPlanSegments.length - 1;
+        if (currentSegmentIndex) {
+            segment = currentSegmentIndex;
+        }
+        return this._vnav._verticalFlightPlanSegments[segment];
     }
 
     get navMode() {
