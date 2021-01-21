@@ -306,7 +306,7 @@ class LNavDirector {
     const dtk = AutopilotMath.desiredTrack(legStart, legEnd, planeState.position);
     const xtk = AutopilotMath.crossTrack(legStart, legEnd, planeState.position);
 
-    const correctedDtk = GeoMath.correctMagvar(dtk, SimVar.GetSimVarValue("MAGVAR", "degrees"));
+    const correctedDtk = AutopilotMath.normalizeHeading(GeoMath.correctMagvar(dtk, SimVar.GetSimVarValue("MAGVAR", "degrees")));
 
     SimVar.SetSimVarValue("L:WT_CJ4_XTK", "number", xtk);
     SimVar.SetSimVarValue("L:WT_CJ4_DTK", "number", correctedDtk);
