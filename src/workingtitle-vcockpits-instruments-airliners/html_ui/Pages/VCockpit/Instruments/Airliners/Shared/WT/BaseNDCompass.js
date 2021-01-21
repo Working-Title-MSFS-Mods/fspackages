@@ -580,20 +580,20 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
                         const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-                        if (navSensitivity == 1) {
+                        if (navSensitivity >= 1) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
 
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(true);
                                 this.navPreset.setDisplayed(false);
-                            }     
+                            }
                         } else {
                             this.ghostNeedleGroup.setAttribute("visibility", "hidden");
 
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(false);
                                 this.navPreset.setDisplayed(true);
-                            }  
+                            }
                         }
                     }
                     else {

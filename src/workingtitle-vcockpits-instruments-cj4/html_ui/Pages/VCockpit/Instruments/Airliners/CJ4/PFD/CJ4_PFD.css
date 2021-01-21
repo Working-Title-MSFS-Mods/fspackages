@@ -1060,7 +1060,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     width: 12%;
     position: absolute;
     /* border:solid 1px red; */
-    text-align: right;
+    text-align: left;
     font-size: 21px;
 }
 
