@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build:cj4": "(cd src/wtsdk && npm install);"
+  }
+}
