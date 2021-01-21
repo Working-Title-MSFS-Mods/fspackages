@@ -61,10 +61,9 @@ class CJ4_FMC extends FMCMainDisplay {
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
         this._altAlertCd = 500;
         this._altAlertPreselect = 0;
+        this._msgUpdateCd = 500;
         SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
         this._nearest = undefined;
-        /** @type {CJ4_FMC_MessageController} */
-        this._msgController = new CJ4_FMC_MessageController(this);
         /** @type {CJ4_FMC_NavigationService} */
         this._navigationService = new CJ4_FMC_NavigationService(this);
     }
@@ -121,6 +120,12 @@ class CJ4_FMC extends FMCMainDisplay {
 
         // init WT_FMC_Renderer.js
         this._templateRenderer = new WT_FMC_Renderer(this);
+
+        if (this.lastPos === "") {
+            CJ4_FMC_MessageController.getInstance().post("INITIALIZE POSITION", MessageLevel.Yellow, () => {
+                return this.lastPos !== "";
+            });
+        }
 
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
@@ -224,7 +229,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.updateCabinLights();
         this.updatePersistentHeading();
         this.updateAlerters(dt);
-        this.updateMsgs();
+        this.updateMsgs(_deltaTime);
         this._frameUpdates++;
         if (this._frameUpdates > 64000) this._frameUpdates = 0;
     }
@@ -342,9 +347,9 @@ class CJ4_FMC extends FMCMainDisplay {
 
     setMsg(value = "") {
         if (value === "") {
-            this._msgController.update();
-            if (this._msgController.hasMsg()) {
-                value = this._msgController.getMsg();
+            CJ4_FMC_MessageController.getInstance().update();
+            if (CJ4_FMC_MessageController.getInstance().hasMsg()) {
+                value = CJ4_FMC_MessageController.getInstance().getMsg();
             }
         }
         this._msg = value;
@@ -851,10 +856,18 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
-    updateMsgs() {
-        if (this._frameUpdates % 30 == 0) {
-            this._msgController.update();
-            this.setMsg(this._msgController.getMsg());
+    updateMsgs(dt) {
+        this._msgUpdateCd -= dt;
+        if (this._msgUpdateCd < 0) {
+            if (this.flightPlanManager.getActiveWaypointIdent() === "") {
+                CJ4_FMC_MessageController.getInstance().post("NO FLIGHT PLAN", MessageLevel.White, () => {
+                    return this.flightPlanManager.getActiveWaypointIdent() !== "";
+                });
+            }
+
+            CJ4_FMC_MessageController.getInstance().update();
+            this.setMsg(CJ4_FMC_MessageController.getInstance().getMsg());
+            this._msgUpdateCd = 500;
         }
     }
 }

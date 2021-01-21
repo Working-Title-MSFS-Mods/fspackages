@@ -1,5 +1,5 @@
-import { Message } from "../../../../messages/Message";
-import { MessageLevel } from "../../../../messages/MessageDefinition";
+import { Message, MessageLevel } from "../../../../messages/Message";
+import { CJ4_FMC_MessageController } from "../CJ4_FMC_MessageController";
 import { CJ4_FMC_Page } from "../CJ4_FMC_Page";
 
 export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
@@ -40,7 +40,7 @@ export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
   }
 
   public update(force: boolean = false): void {
-    this._msgs = Array.from(this._fmc._msgController.getAllMsgs().values()) as Message[];
+    this._msgs = Array.from(CJ4_FMC_MessageController.getInstance().getAllMsgs().values()) as Message[];
     const chksum = this.getMsgsChecksum();
     if (force === true || chksum !== this._msgsChecksum) {
       this._msgsChecksum = chksum;
@@ -76,7 +76,7 @@ export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
     let checksum = 0;
     for (let i = this._offset; i < this._msgs.length; i++) {
       const msg = this._msgs[i];
-      checksum += msg.msgDefId;
+      checksum += msg.Id;
     }
     return checksum;
   }

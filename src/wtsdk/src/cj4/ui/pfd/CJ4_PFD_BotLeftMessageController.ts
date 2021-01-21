@@ -1,27 +1,14 @@
+import { MessageLevel } from "../../../messages/Message";
 import { MessageController } from "../../../messages/MessageController";
-import { MessageLevel } from "../../../messages/MessageDefinition";
 import { CJ4_PFD_Message } from "./CJ4_PFD_Message";
 
 /**
  * The message controller for the left PFD bottom line
  */
-export class CJ4_PFD_BotLeftMessageController extends MessageController<CJ4_FMC, CJ4_PFD_Message> {
+export class CJ4_PFD_BotLeftMessageController extends MessageController<CJ4_PFD_Message> {
 
   constructor() {
-    super(null, CJ4_PFD_Message);
-  }
-
-  protected init() {
-    this.addDefinition("MSG", MessageLevel.White, () => {
-      return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 0;
-    });
-    this.addDefinition("MSG", MessageLevel.Yellow, () => {
-      return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 1;
-    }, () => {
-      // this could be nicer by dropping the msg into the callback i guess
-      const msg = this._messages.values().next().value as CJ4_PFD_Message;
-      return (Date.now() - msg.timestamp < 5000);
-    });
+    super(CJ4_PFD_Message);
   }
 
   /** Gets the string content of the first message */
@@ -33,5 +20,18 @@ export class CJ4_PFD_BotLeftMessageController extends MessageController<CJ4_FMC,
     // get first message
     this._currentMsg = this._messages.values().next().value;
     return `<span class="${(this._currentMsg.level === MessageLevel.Yellow ? "yellow" : "white")} ${(this._currentMsg.shouldBlink() === true) ? "blinking" : ""}">${this._currentMsg.content}</span>`;
+  }
+
+  public getMsgObj(): CJ4_PFD_Message {
+    if (!this.hasMsg()) {
+      return undefined;
+    }
+    return this._messages.values().next().value;
+  }
+
+  public post(content: string, level: MessageLevel, checkHandler: () => boolean = () => false, blinkCheckHandler: () => boolean = () => false): CJ4_PFD_Message {
+    const newMsg = super.post(content, level, checkHandler);
+    newMsg.blinkCheckHandler = blinkCheckHandler;
+    return newMsg;
   }
 }

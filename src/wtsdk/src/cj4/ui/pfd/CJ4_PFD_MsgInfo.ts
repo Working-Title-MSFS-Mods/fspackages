@@ -1,3 +1,4 @@
+import { MessageLevel } from "../../../messages/Message";
 import { CJ4_PFD_BotLeftMessageController } from "./CJ4_PFD_BotLeftMessageController";
 import { CJ4_PFD_BotRightMessageController } from "./CJ4_PFD_BotRightMessageController";
 import { CJ4_PFD_TopMessageController } from "./CJ4_PFD_TopMessageController";
@@ -55,6 +56,7 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
   update(_dTime) {
     this._elapsedTime += _dTime;
     if (this._elapsedTime >= this.UPDATE_RATE) {
+      this.execMessageChecks();
       this._topMsgController.update();
       this._botLeftMsgController.update();
       this._botRightMsgController.update();
@@ -64,6 +66,64 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
       this.botRightText = this._botRightMsgController.getMsg();
 
       this._elapsedTime = 0;
+    }
+  }
+  execMessageChecks() {
+    // TODO will do these here for now as i see no proper location in pfd
+    // TOP
+    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 1) {
+      this._topMsgController.post("TERM", MessageLevel.White, () => {
+        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 1;
+      });
+    }
+    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 2) {
+      this._topMsgController.post("LPV TERM", MessageLevel.White, () => {
+        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 2;
+      });
+    }
+    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 3) {
+      this._topMsgController.post("APPR", MessageLevel.White, () => {
+        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 3;
+      });
+    }
+    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 4) {
+      this._topMsgController.post("LPV APPR", MessageLevel.White, () => {
+        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 4;
+      });
+    }
+
+    // BOTTOM LEFT
+    if (SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 0) {
+      this._botLeftMsgController.post("MSG", MessageLevel.White, () => {
+        return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") !== 0
+      });
+    }
+
+    if (SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 1) {
+      this._botLeftMsgController.post("MSG", MessageLevel.Yellow, () => {
+        return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") !== 1
+      }, () => {
+        const msg = this._botLeftMsgController.getMsgObj();
+        return (Date.now() - msg.timestamp < 5000);
+      });
+    }
+
+    // BOTTOM RIGHT
+    const altDev = Math.abs(SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet"));
+    const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
+    const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
+    if (!pathActive && todDistanceRemaining > 0.1 && (altDev > 300 && altDev <= 1000)) {
+      this._botRightMsgController.post("TOD", MessageLevel.White, () => {
+        return !(!pathActive && todDistanceRemaining > 0.1 && (altDev > 300 && altDev <= 1000));
+      }, () => {
+        return (altDev < 500);
+      });
+    }
+
+    if (SimVar.GetSimVarValue("L:WT_NAV_HOLD_INDEX", "number") > -1) {
+      this._botRightMsgController.post("HOLD", MessageLevel.White, () => {
+        return SimVar.GetSimVarValue("L:WT_NAV_HOLD_INDEX", "number") === -1;
+      });
     }
   }
 }

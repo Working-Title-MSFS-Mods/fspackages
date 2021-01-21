@@ -1,7 +1,6 @@
-import { MessageDefinition, MessageLevel } from "./MessageDefinition";
-
 export class Message {
   private _timestamp: number = new Date().valueOf();
+  private _id: number = Math.floor(Math.random() * 10000);
 
   /** Gets the unix timestamp for when the message was created */
   public get timestamp(): number {
@@ -9,30 +8,38 @@ export class Message {
   }
 
   /** Gets the ID of the message definition */
-  public get msgDefId(): number {
-    return this._msg.ID;
+  public get Id(): number {
+    return this._id;
   }
 
   /** Gets the {@link MessageLevel} of severity of the message */
   public get level(): MessageLevel {
-    return this._msg.Level;
+    return this._level;
   }
 
   /** Gets the text content of this message */
   public get content(): string {
-    return this._msg.Content;
+    return this._content;
   }
 
-  constructor(private _msg: MessageDefinition) { }
+  /**
+   * Constructs a new instance of Message
+   * @param _content The message text
+   * @param _level The {@link MessageLevel} of this message
+   * @param _exitConditionHandler The condition that should return true if the message should vanish
+   */
+  constructor(private _content: string, private _level: MessageLevel, private _exitConditionHandler: () => boolean = () => false) { }
 
   /** Calls the message updatehandler and returns a boolean indicating if the condition still exists */
   public update(): boolean {
-    return this._msg.updateHandler();
+    return this._exitConditionHandler();
   }
+}
 
-  /** Calls the message blinkhandler and returns a boolean indicating if the msg should blink */
-  public updateBlink(): boolean {
-    return this._msg.blinkHandler();
-  }
-
+/**
+ * Enumeration of message levels
+ */
+export enum MessageLevel {
+  White = 0, // white
+  Yellow = 1 // yellow
 }

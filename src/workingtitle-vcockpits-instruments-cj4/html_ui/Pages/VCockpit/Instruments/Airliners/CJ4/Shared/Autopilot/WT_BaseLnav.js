@@ -126,7 +126,7 @@ class WT_BaseLnav {
             }
         }
 
-        
+
 
         this._planePos = new LatLon(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
         const planePosLatLong = new LatLong(this._planePos.lat, this._planePos.lon);
@@ -268,6 +268,11 @@ class WT_BaseLnav {
             if (this._activeWaypoint.endsInDiscontinuity) {
                 let alertDisco = this._activeWaypointDist < (this._groundSpeed / 3600) * 120;
                 SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", alertDisco ? 1 : 0);
+                if (alertDisco === 1) {
+                    CJ4_FMC_MessageController.getInstance().post("FPLN DISCONTINUITY", MessageLevel.Yellow, () => {
+                        return SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 0;
+                    });
+                }
                 if (this._activeWaypointDist < 0.25) {
                     this._setHeading = this._dtk;
                     this.executeDiscontinuity();

@@ -1,40 +1,33 @@
 import { MessageController } from "../../../messages/MessageController";
-import { MessageLevel } from "../../../messages/MessageDefinition";
-import { Message } from "../../../messages/Message";
+import { Message, MessageLevel } from "../../../messages/Message";
 
 /**
  * The message controller for the FMC
  */
-export class CJ4_FMC_MessageController extends MessageController<CJ4_FMC, Message> {
+export class CJ4_FMC_MessageController extends MessageController<Message> {
 
-  constructor(protected _instrument: CJ4_FMC) {
-    super(_instrument, Message);
+  private static _instance: CJ4_FMC_MessageController;
+
+  private constructor() {
+    super(Message);
   }
 
-  protected init() {
-    this.addDefinition("INITIALIZE POSITION", MessageLevel.Yellow, () => {
-      return this._instrument.lastPos === "";
-    });
-    this.addDefinition("NO FLIGHT PLAN", MessageLevel.White, () => {
-      return Simplane.getNextWaypointName() === "";
-    });
-    this.addDefinition("FPLN DISCONTINUITY", MessageLevel.Yellow, () => {
-      return SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 1;
-    });
+  public static getInstance(): CJ4_FMC_MessageController {
+    if (CJ4_FMC_MessageController._instance === undefined) {
+      CJ4_FMC_MessageController._instance = new CJ4_FMC_MessageController()
+    }
 
-    this.addDefinition("CHECK ALT SEL", MessageLevel.White, () => {
-      // TODO this is missing some conditions, talk to chris
-      const approachingTodDistance = 0.0125 * Math.round(Simplane.getGroundSpeed());
-      const distanceToTod = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-      return (distanceToTod < approachingTodDistance && distanceToTod > 0);
-    });
+    return CJ4_FMC_MessageController._instance;
+  }
 
-    // ADD FAKES FOR TESTING
-    // for (let i = 0; i < 10; i++) {
-    //   this.addDefinition("Test this " + i, MessageLevel.White, () => {
-    //     return (Date.now()/1000) % (Math.random()*10) > 2;
-    //   });   
-    // }  
+  /** Gets the string content of the first message */
+  public getMsg(): string {
+    if (!this.hasMsg()) {
+      return "";
+    }
+
+    this._currentMsg = this._messages.values().next().value;
+    return this._currentMsg.content + "[" + (this._currentMsg.level == MessageLevel.Yellow ? "yellow" : "white") + "]";
   }
 
   public update() {

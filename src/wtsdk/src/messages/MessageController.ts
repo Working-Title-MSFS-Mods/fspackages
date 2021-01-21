@@ -1,20 +1,12 @@
-import { Message } from "./Message";
-import { MessageDefinition, MessageLevel } from "./MessageDefinition";
+import { Message, MessageLevel } from "./Message";
 
-export abstract class MessageController<I, T extends Message> {
+export abstract class MessageController<T extends Message> {
   /** Holds the active messages for this controller instance */
-  protected _messages: Map<number, T> = new Map<number, T>();
-  /** Holds the message definitions for this controller instance */
-  protected _messageDefs: Map<number, MessageDefinition> = new Map<number, MessageDefinition>();
+  protected _messages: Map<string, T> = new Map<string, T>();
 
   protected _currentMsg: T;
 
-  constructor(protected _instrument: I, private _nm: new (nmd: MessageDefinition) => T) {
-    this.init();
-  }
-
-  /** Initializes the controller and message definitions */
-  protected abstract init(): void;
+  constructor(private _nm: new (content: string, level: MessageLevel, checkHandler: () => boolean) => T) { }
 
   /** Returns a boolean indicating if there is a message */
   public hasMsg(): boolean {
@@ -27,21 +19,10 @@ export abstract class MessageController<I, T extends Message> {
   }
 
   /** Gets the string content of the first message */
-  public getMsg(): string {
-    if (!this.hasMsg()) {
-      return "";
-    }
+  public abstract getMsg(): string;
 
-    this._currentMsg = this._messages.values().next().value;
-    return this._currentMsg.content + "[" + (this._currentMsg.level == MessageLevel.Yellow ? "yellow" : "white") + "]";
-  }
-
-  public getAllMsgs() : Map<number, T>{
+  public getAllMsgs(): Map<string, T> {
     return this._messages;
-  }
-
-  private createMsg(def: MessageDefinition) {
-    return new this._nm(def);
   }
 
   /**
@@ -49,23 +30,17 @@ export abstract class MessageController<I, T extends Message> {
    * @param content The text content of the message
    * @param level The message level
    * @param checkHandler The update check handler that will return true when the message is to be displayed
-   * @param blinkCheckHandler The check handler that will return true when the message should blink (only to be used in PFD)
    */
-  public addDefinition(content: string, level: MessageLevel, checkHandler: () => boolean = () => false, blinkCheckHandler: () => boolean = () => false) {
-    const newDef = new MessageDefinition(content, level, checkHandler, blinkCheckHandler);
-    this._messageDefs.set(newDef.ID, newDef);
+  public post(content: string, level: MessageLevel, checkHandler: () => boolean = () => false): T {
+    const newMsg = new this._nm(content, level, checkHandler);
+    this._messages.set(content, newMsg)
+    return newMsg;
   }
 
   /** Checks the message conditions and updates the list of messages */
   public update() {
-    this._messageDefs.forEach((v) => {
-      if (this._messages.has(v.ID) == false && v.updateHandler() === true) {
-        this._messages.set(v.ID, this.createMsg(v));
-      }
-    });
-
     this._messages.forEach((v, k) => {
-      if (v.update() === false) {
+      if (v.update() === true) {
         this._messages.delete(k);
       }
     });
