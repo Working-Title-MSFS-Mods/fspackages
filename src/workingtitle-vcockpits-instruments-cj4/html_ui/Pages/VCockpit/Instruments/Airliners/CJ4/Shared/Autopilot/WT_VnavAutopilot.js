@@ -432,7 +432,7 @@ class WT_VerticalAutopilot {
                             return true;
                         } else {
                             console.log("no path");
-                            this.setArmedVnavVerticalState = VerticalNavModeState.NOPATH;
+                            this.setArmedVnavVerticalState(VerticalNavModeState.NOPATH);
                         }
                     }
                 }
