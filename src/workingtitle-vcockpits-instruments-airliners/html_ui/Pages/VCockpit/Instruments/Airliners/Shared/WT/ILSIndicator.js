@@ -262,7 +262,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
                 //ILS GLIDESLOPE
                 if (this.vDevState === VDevState.ILS || this.vDevState === VDevState.GHOST_ONLY || this.vDevState === VDevState.GHOST_AND_VNAV) {
-                    const navSource = this.vDevState === VDevState.ILS ? this.tunedNav : 1
+                    const navSource = this.vDevState === VDevState.ILS ? this.tunedNav : 1;
                     let gsi = -SimVar.GetSimVarValue("NAV GSI:" + navSource, "number") / 127.0;
                     let delta = (gsi + 1.0) * 0.5;
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
@@ -295,7 +295,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
             //LOC/RNAV/LNAV INDICATOR
             if (this.loc_cursorGroup && this.lDevState !== LDevState.NONE) {
-                const navSource = this.lDevState === LDevState.ILS ? this.tunedNav : 1
+                const navSource = this.lDevState === LDevState.ILS ? this.tunedNav : 1;
+                let cdi = 0;
                 //LDEV SNOWFLAKE
                 if (this.lDevState === LDevState.LNAV || this.lDevState === LDevState.GHOST_AND_LNAV) {
                     
