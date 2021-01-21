@@ -2749,4 +2749,4 @@ class AirspeedMarker {
             this.offscreenSVG.setAttribute("visibility", "hidden");
         }
     }
-
+}
