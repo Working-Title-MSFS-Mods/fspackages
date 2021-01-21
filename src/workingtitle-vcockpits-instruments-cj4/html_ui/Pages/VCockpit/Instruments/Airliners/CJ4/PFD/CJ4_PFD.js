@@ -300,6 +300,11 @@ class CJ4_PFD extends BaseAirliners {
                     this.radioNav.setRADIONAVSource(NavSource.VOR1);
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 1;
+
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
+                        this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+                    }
+
                     this.onModeChanged();
                 }
                 else if ((this.mapNavigationMode == Jet_NDCompass_Navigation.VOR || this.mapNavigationMode == Jet_NDCompass_Navigation.ILS) && this.mapNavigationSource == 1) {
@@ -307,6 +312,11 @@ class CJ4_PFD extends BaseAirliners {
                     this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
                     this.mapNavigationSource = 2;
                     SimVar.SetSimVarValue('K:AP_NAV_SELECT_SET', 'number', 2);
+
+                    if (this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
+                        this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+                    }
+                    
                     this.onModeChanged();
                 }
                 else if ((this.mapNavigationMode == Jet_NDCompass_Navigation.VOR || this.mapNavigationMode == Jet_NDCompass_Navigation.ILS) && this.mapNavigationSource == 2) {

@@ -436,7 +436,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         if (ils.id > 0) {
                             freq = ils.freq.toFixed(2);
                             course = Utils.leadingZeros(Math.round(ils.course), 3);
-                            ident = ils.name;
+                            ident = ils.ident;
 
                             if (ils.distance) {
                                 if (ils.distance < 100)
