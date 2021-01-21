@@ -1100,7 +1100,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 #NavPreset {
     position: relative;
-    font-size: 20px;
+    font-size: 22px;
     top: 220px;
     left: 8px;
     width: 58px;
@@ -1108,7 +1108,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 .preset-name {
     color: cyan;
-    padding: 4px 0 0 7px;
+    padding: 4px 0 0 4px;
     border: 2px solid cyan;
 }
 
@@ -1118,7 +1118,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #Symbols ul {
-    font-size: 20px;
+    font-size: 22px;
     list-style: none;
     padding: 0;
     text-align: right;
@@ -1129,7 +1129,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #Symbols .active {
-    font-size: 22px;
+    font-size: 24px;
     color: cyan;
 }
 
