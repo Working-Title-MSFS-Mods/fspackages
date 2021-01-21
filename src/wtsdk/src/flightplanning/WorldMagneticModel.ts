@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 export function WorldMagneticModel() {
   
     this.coff = [

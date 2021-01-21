@@ -67,7 +67,7 @@ export class RawDataMapper {
 
     waypoint.infos.coordinates = new LatLongAlt(facility.lat, facility.lon);
     return waypoint;
-  };
+  }
 
   /**
    * A comparer for sorting runways by number, and then by L, C, and R.
@@ -100,7 +100,7 @@ export class RawDataMapper {
       return v1 - v2;
     }
     return parseInt(r1.designation) - parseInt(r2.designation);
-  };
+  }
 
   /**
    * Generates a runway transition name from the designated runway in the transition data.
@@ -123,7 +123,7 @@ export class RawDataMapper {
     }
 
     return name;
-  };
+  }
 
   /**
    * Generates an arrival transition name from a provided arrival enroute transition.

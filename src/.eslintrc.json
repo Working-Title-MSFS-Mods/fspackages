@@ -52,6 +52,7 @@
           "maxBOF": 0,
           "maxEOF": 0
         }
-      ]
+      ],
+      "@typescript-eslint/no-inferrable-types" : "off"
     }
   }

@@ -30,7 +30,7 @@ export class CJ4_FMC_MessageController extends MessageController<Message> {
     return this._currentMsg.content + "[" + (this._currentMsg.level == MessageLevel.Yellow ? "yellow" : "white") + "]";
   }
 
-  public update() {
+  public update(): void {
     super.update();
     if (!this.hasMsg()) {
       SimVar.SetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number", -1);

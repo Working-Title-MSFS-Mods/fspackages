@@ -12,7 +12,6 @@
         "url": ""
     },
     "scripts": {
-        "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts'",
         "build": "tsc --module commonjs && rollup -c rollup.config.ts"
     },
     "author": "Working Title",
