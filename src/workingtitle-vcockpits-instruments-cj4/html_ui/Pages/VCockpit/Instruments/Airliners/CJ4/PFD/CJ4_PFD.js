@@ -920,44 +920,77 @@ class CJ4_ILS extends NavSystemElement {
     }
     onUpdate(_deltaTime) {
 
-
         if (this.ils) {
             this.altWentAbove500 = true;
-            let showLoc = 0;
-            let showGs = 0;
+            let lDevState = LDevState.NONE;
+            let vDevState = VDevState.NONE;
             
             if (this.gps.mapNavigationSource === 1 || this.gps.mapNavigationSource === 2) {
                 const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.gps.mapNavigationSource, "bool");
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.gps.mapNavigationSource, "bool");
-                showLoc = isLoc ? 1 : 0;
-                showGs = isGs ? 1 : 0;
+                lDevState = isLoc ? LDevState.ILS : LDevState.NONE;
+                vDevState = isGs ? VDevState.ILS : VDevState.NONE;
             }
             else if (this.gps.mapNavigationSource === 0) {
+                const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "bool");
+                const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:1", "bool");
+                const isGhostLoc = isLoc && !Simplane.getIsGrounded();
+                const isGhostGs = isGs && !Simplane.getIsGrounded();
                 const isVnav = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') === 1;
                 const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
                 const isPpos = this.gps.mapDisplayMode === 4;
-                showLoc = isRnav || isPpos ? 2 : 0;
-                showGs = isVnav ? 2 : 0;
-            }
 
-            this.ils.showLocalizer(showLoc, this.gps.mapNavigationSource);
-            this.ils.showGlideslope(showGs);
+                lDevState = isRnav || isPpos ? LDevState.LNAV : LDevState.NONE;
+                vDevState = isVnav ? VDevState.VNAV : VDevState.NONE;
+
+                switch(lDevState) {
+                    case LDevState.NONE:
+                        if (isGhostLoc) {
+                            lDevState = LDevState.GHOST_ONLY;
+                        }
+                        break;
+                    case LDevState.LNAV:
+                        if (isGhostLoc) {
+                            lDevState = LDevState.GHOST_AND_LNAV;
+                        }
+                        break;
+                }
+                switch(vDevState) {
+                    case VDevState.NONE:
+                        if (isGhostGs) {
+                            vDevState = VDevState.GHOST_ONLY;
+                        }
+                        break;
+                    case VDevState.VNAV:
+                        if (isGhostGs) {
+                            vDevState = VDevState.GHOST_AND_VNAV;
+                        }
+                        break;
+                }
+            }
+            this.ils.showLocalizer(lDevState, this.gps.mapNavigationSource);
+            this.ils.showGlideslope(vDevState);
             this.ils.update(_deltaTime);
         }
-
-        let hasNav = SimVar.GetSimVarValue("NAV HAS NAV:1", "Bool");
-        let hasLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "Bool");
-        let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
-
-        if (hasNav && hasLoc && !onGround && this.gps.mapNavigationSource === 0) { //Turns on the ghost glideslope and lateral pointers.  Sending a 3 so ilsindicator.js knows to change the color to cyan
-            this.ils.showLocalizer(3);
-            this.ils.showGlideslope(3);
-        }
-
     }
     onExit() {
     }
     onEvent(_event) {
     }
 }
+class LDevState { }
+LDevState.ILS = 'ILS';
+LDevState.LNAV = 'LNAV';
+LDevState.GHOST_ONLY = 'GHOST_ONLY';
+LDevState.GHOST_AND_LNAV = 'GHOST_AND_LNAV';
+LDevState.NONE = 'NONE';
+
+class VDevState { }
+VDevState.ILS = 'ILS';
+VDevState.VNAV = 'VNAV';
+VDevState.GHOST_ONLY = 'GHOST_ONLY';
+VDevState.GHOST_AND_VNAV = 'GHOST_AND_VNAV';
+VDevState.NONE = 'NONE';
+
+
 registerInstrument("cj4-pfd-element", CJ4_PFD);
