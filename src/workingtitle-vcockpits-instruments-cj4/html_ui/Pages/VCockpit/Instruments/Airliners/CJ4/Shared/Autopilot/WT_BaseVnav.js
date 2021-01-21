@@ -164,7 +164,9 @@ class WT_BaseVnav {
         this._vnavState = value;
     }
 
-
+    get currentVnavPathStatus() {
+        this._fmc._currentVerticalAutopilot._vnavPathStatus;
+    }
 
     /**
      * Run on first activation.
@@ -693,7 +695,15 @@ class WT_BaseVnav {
         let fpa = undefined;
         let todDistanceInFP = undefined;
         const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-        if (this._firstPathSegment >= 0 && this.flightplan.activeWaypointIndex <= this._lastClimbIndex) {
+        if (this.currentVnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
+            if (currentSegment && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
+                todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[currentSegment].targetIndex].cumulativeDistanceInFP + this._verticalFlightPlanSegments[currentSegment].distanceToNextTod;
+                todExists = true;
+            } else {
+                todExists = false;
+            }
+        }
+        else if (this._firstPathSegment >= 0 && this.flightplan.activeWaypointIndex <= this._lastClimbIndex) {
             altitude = this._fmc.cruiseFlightLevel * 100;
             fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].waypointFPTA;
             fpa = this._verticalFlightPlanSegments[this._firstPathSegment].fpa;
@@ -706,10 +716,6 @@ class WT_BaseVnav {
         }
         else if (this._firstPathSegment < 0 || !this._verticalFlightPlan[this.flightplan.activeWaypointIndex]) {
             todExists = false;
-        }
-        else if (currentSegment && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
-            todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[currentSegment].targetIndex].cumulativeDistanceInFP + this._verticalFlightPlanSegments[currentSegment].distanceToNextTod;
-            todExists = true;
         }
         else if (this.flightplan.activeWaypointIndex > this._lastClimbIndex) {
             altitude = this.indicatedAltitude;
