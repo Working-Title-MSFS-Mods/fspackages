@@ -19,9 +19,9 @@
             "./src/types"
         ],
     },
-    // "filesGlob": [
-    //     "./src/types/fstypes/**/*.d.ts"
-    // ],
+    "filesGlob": [
+        "./src/types/*.d.ts"
+    ],
     "include": [
         "./src"
     ]
