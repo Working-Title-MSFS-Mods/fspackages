@@ -956,4 +956,3 @@ var Jet_PFD_FlightDirector;
     Jet_PFD_FlightDirector.AS01B_Handler = AS01B_Handler;
 })(Jet_PFD_FlightDirector || (Jet_PFD_FlightDirector = {}));
 customElements.define("jet-pfd-attitude-indicator", Jet_PFD_AttitudeIndicator);
-//# sourceMappingURL=AttitudeIndicator.js.map

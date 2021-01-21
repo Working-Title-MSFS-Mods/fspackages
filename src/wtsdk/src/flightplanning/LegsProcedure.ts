@@ -1,9 +1,6 @@
-import { WayPoint, ProcedureLeg, BaseInstrument, LatLongAlt, IntersectionInfo, Avionics } from 'MSFS';
-import { GPS, HoldDetails } from '../wtsdk';
 import { FixNamingScheme } from './FixNamingScheme';
 import { GeoMath } from './GeoMath';
-import { HoldTurnDirection } from './HoldDetails';
-import { LegType } from './LegType';
+import { HoldDetails, HoldTurnDirection } from './HoldDetails';
 import { RawDataMapper } from './RawDataMapper';
 
 /**

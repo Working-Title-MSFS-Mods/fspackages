@@ -1,8 +1,3 @@
-import {
-  WayPoint, BaseInstrument, AirportInfo, OneWayRunway, RunwayTransition,
-  EnrouteTransition, LatLongAlt, WayPointInfo, IntersectionInfo, NDBInfo, VORInfo, Runway
-} from 'MSFS';
-
 /** 
  * A class for mapping raw facility data to WayPoints. 
  */

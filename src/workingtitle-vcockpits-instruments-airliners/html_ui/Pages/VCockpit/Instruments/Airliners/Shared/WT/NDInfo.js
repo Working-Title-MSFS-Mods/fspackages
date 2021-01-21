@@ -40,8 +40,6 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
         this.minimums = this.querySelector("#MinimumsValue");
-        this.pfdMessage1 = this.querySelector('#PFDMessage1');
-        this.pfdMessage2 = this.querySelector('#PFDMessage2');
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -60,8 +58,6 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.updateElapsedTime();
         this.updateMinimums();
         this.updateWaypointAlert(_dTime);
-        this.updatePFDMessage1();
-        this.updatePFDMessage2();
     }
     onEvent(_event) {
         if (_event == "Push_ET") {
@@ -106,65 +102,6 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
             this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
-        }
-    }
-
-    /**
-     * Updates the PFD message line as necessary.
-     */
-    updatePFDMessage1() {
-        if (this.pfdMessage1) {
-            const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-            if (navSensitivity !== this._currentNavSensitivity) {
-                this._currentNavSensitivity = navSensitivity;
-
-                switch (navSensitivity) {
-                    case 0:
-                        this.pfdMessage1.textContent = '';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 1:
-                        this.pfdMessage1.textContent = 'TERM';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 2:
-                        this.pfdMessage1.textContent = 'LPV TERM';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 3:
-                        this.pfdMessage1.textContent = 'APPR';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 4:
-                        this.pfdMessage1.textContent = 'LPV APPR';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                }
-            }
-        }
-    }
-
-    updatePFDMessage2() {
-        if (this.pfdMessage2) {
-            const altDev = Math.abs(SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet"));
-            const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
-            const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-
-            if (!pathActive && todDistanceRemaining > 0.1) {
-                if (altDev > 300 && altDev <= 1000) {
-                    this.pfdMessage2.textContent = 'TOD';
-                    this.pfdMessage2.style.color = 'white';
-                }
-
-                if (altDev < 400) {
-                    this.pfdMessage2.classList.add('blinking');
-                }
-            }
-            else {
-                this.pfdMessage2.textContent = '';
-                this.pfdMessage2.style.color = 'white';
-                this.pfdMessage2.classList.remove('blinking');
-            }
         }
     }
 

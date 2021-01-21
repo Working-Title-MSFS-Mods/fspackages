@@ -1020,11 +1020,13 @@ class WT_VerticalAutopilot {
     checkPreselector() {
         const approachingTodDistance = 0.0125 * this.groundSpeed;
         if (this.distanceToTod < approachingTodDistance && this.distanceToTod > 0 && this.selectedAltitude >= this._vnav.indicatedAltitude - 50) {
+            CJ4_FMC_MessageController.getInstance().post("CHECK ALT SEL", MessageLevel.White, () => {
+                return (this.selectedAltitude + 100) < this._vnav.indicatedAltitude || !this.isVNAVOn;
+            });
             this._vnav.setCheckPreselector();
         }
     }
 
-    
 /////////////////////////////////////////////////////
 
     cancelConstraint() {

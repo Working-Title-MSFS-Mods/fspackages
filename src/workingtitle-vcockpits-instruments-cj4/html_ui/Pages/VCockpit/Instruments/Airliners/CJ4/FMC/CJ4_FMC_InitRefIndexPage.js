@@ -1283,4 +1283,3 @@ class CJ4_FMC_InitRefIndexPage {
         }, 1000, true);
     }
 }
-//# sourceMappingURL=CJ4_FMC_InitRefIndexPage.js.map

@@ -61,8 +61,11 @@ class CJ4_FMC extends FMCMainDisplay {
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
         this._altAlertCd = 500;
         this._altAlertPreselect = 0;
+        this._msgUpdateCd = 500;
         SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
         this._nearest = undefined;
+        /** @type {CJ4_FMC_NavigationService} */
+        this._navigationService = new CJ4_FMC_NavigationService(this);
     }
     get templateID() { return "CJ4_FMC"; }
 
@@ -117,6 +120,12 @@ class CJ4_FMC extends FMCMainDisplay {
 
         // init WT_FMC_Renderer.js
         this._templateRenderer = new WT_FMC_Renderer(this);
+
+        if (this.lastPos === "") {
+            CJ4_FMC_MessageController.getInstance().post("INITIALIZE POSITION", MessageLevel.Yellow, () => {
+                return this.lastPos !== "";
+            });
+        }
 
         this.maxCruiseFL = 450;
         this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
@@ -178,8 +187,9 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
                 }
             }
-            this.onMsg = () => { CJ4_FMC_VNavSetupPage.ShowPage6(this); };
         };
+
+        this.onMsg = () => { this._navigationService.showPage(CJ4_FMC_MsgPage) };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 
@@ -219,6 +229,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.updateCabinLights();
         this.updatePersistentHeading();
         this.updateAlerters(dt);
+        this.updateMsgs(_deltaTime);
         this._frameUpdates++;
         if (this._frameUpdates > 64000) this._frameUpdates = 0;
     }
@@ -308,7 +319,6 @@ class CJ4_FMC extends FMCMainDisplay {
                     this.refreshPageCallback();
             }
             let apNavIndex = 1;
-            let gpsDriven = true;
             let apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
             if (apprHold) {
                 if (this.canSwitchToNav()) {
@@ -325,11 +335,6 @@ class CJ4_FMC extends FMCMainDisplay {
                     }
                     if (navid > 0) {
                         apNavIndex = navid;
-                        let hasFlightplan = Simplane.getAutopilotGPSActive();
-                        let apprCaptured = Simplane.getAutoPilotAPPRCaptured();
-                        if (apprCaptured || !hasFlightplan) {
-                            gpsDriven = false;
-                        }
                     }
                 }
             }
@@ -341,6 +346,12 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     setMsg(value = "") {
+        if (value === "") {
+            CJ4_FMC_MessageController.getInstance().update();
+            if (CJ4_FMC_MessageController.getInstance().hasMsg()) {
+                value = CJ4_FMC_MessageController.getInstance().getMsg();
+            }
+        }
         this._msg = value;
         this._templateRenderer.setMsg(value);
     }
@@ -350,7 +361,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this._templateRenderer.clearDisplay.apply(this);
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
-
         this.unregisterPeriodicPageRefresh();
     }
 
@@ -546,9 +556,9 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
-   /**
-   * Method to maintain a nearest airport list - this method is called in the update loop and calls the CJ4_FMC_Nearest class.
-   */
+    /**
+    * Method to maintain a nearest airport list - this method is called in the update loop and calls the CJ4_FMC_Nearest class.
+    */
     updateNearestAirports(dt) {
         if (this._nearest === undefined) {
             this._nearest = new CJ4_FMC_Nearest(this);
@@ -568,7 +578,7 @@ class CJ4_FMC extends FMCMainDisplay {
             this._nearest.getRunways();
             this._nearest._ranGetRunways = true;
         }
-        
+
     }
 
     driveFlightDirector(deltaAngle, bank = 0) {
@@ -843,6 +853,21 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
                 }
                 break;
+        }
+    }
+
+    updateMsgs(dt) {
+        this._msgUpdateCd -= dt;
+        if (this._msgUpdateCd < 0) {
+            if (this.flightPlanManager.getActiveWaypointIdent() === "") {
+                CJ4_FMC_MessageController.getInstance().post("NO FLIGHT PLAN", MessageLevel.White, () => {
+                    return this.flightPlanManager.getActiveWaypointIdent() !== "";
+                });
+            }
+
+            CJ4_FMC_MessageController.getInstance().update();
+            this.setMsg(CJ4_FMC_MessageController.getInstance().getMsg());
+            this._msgUpdateCd = 500;
         }
     }
 }

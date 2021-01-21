@@ -2749,5 +2749,4 @@ class AirspeedMarker {
             this.offscreenSVG.setAttribute("visibility", "hidden");
         }
     }
-}
-//# sourceMappingURL=AirspeedIndicator.js.map
+

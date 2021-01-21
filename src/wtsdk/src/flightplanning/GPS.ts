@@ -1,6 +1,3 @@
-import { LatLongAlt, SimVar } from 'MSFS';
-import { GeoMath } from './GeoMath';
-
 /**
  * Methods for interacting with the FS9GPS subsystem.
  */

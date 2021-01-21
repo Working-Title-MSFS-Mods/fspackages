@@ -33,4 +33,3 @@ class SvgNearestIntersectionElement extends SvgWaypointElement {
         return 30;
     }
 }
-//# sourceMappingURL=SvgNearestIntersectionElement.js.map

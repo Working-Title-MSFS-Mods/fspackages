@@ -19,6 +19,7 @@ class CJ4_PFD extends BaseAirliners {
         this.MACH_SYNC_TIME = 1000;
         this._machSyncTimer = this.MACH_SYNC_TIME;
         this.fdMode = WTDataStore.get("CJ4_FD_MODE", 0);
+        this._msgInfo = undefined;
     }
     get templateID() { return "CJ4_PFD"; }
     get IsGlassCockpit() { return true; }
@@ -34,6 +35,8 @@ class CJ4_PFD extends BaseAirliners {
         this.mapOverlay = new CJ4_MapOverlayContainer("Map", "NDMapOverlay");
         this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
+        this._msgInfo = document.querySelector("#MsgInfo");
+        this._msgInfo.connectedCallback();
         this.addIndependentElementContainer(this.horizon);
         this.addIndependentElementContainer(this.systems);
         this.addIndependentElementContainer(this.map);
@@ -68,6 +71,7 @@ class CJ4_PFD extends BaseAirliners {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        this._msgInfo.update(_deltaTime);
         this.reversionaryMode = false;
         if (document.body.hasAttribute("reversionary")) {
             var attr = document.body.getAttribute("reversionary");
