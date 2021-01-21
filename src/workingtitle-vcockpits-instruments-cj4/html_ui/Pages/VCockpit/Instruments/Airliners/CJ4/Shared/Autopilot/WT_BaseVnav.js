@@ -568,7 +568,7 @@ class WT_BaseVnav {
         }
         const constraintObject = {
             index: index,
-            altitude: Math.floor(constraint),
+            altitude: Math.round(constraint),
             isClimb: isClimb
         }
         return constraintObject;
