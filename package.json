@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "build:cj4": "(cd src/wtsdk && npm install);"
+    "install:cj4": "(cd src/wtsdk && npm install);"
   }
 }
