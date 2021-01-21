@@ -7,4 +7,7 @@ export * from "./cj4/fmc/pages/CJ4_FMC_MsgPage";
 export * from "./cj4/fmc/CJ4_FMC_NavigationService";
 export * from "./cj4/fmc/CJ4_FMC_MessageController";
 export * from "./flightplanning/HoldDetails";
-export * from "./cj4/pfd/CJ4_PFD_MsgInfo"
+export * from "./cj4/pfd/CJ4_PFD_MsgInfo";
+export * from "./flightplanning/GeoMath";
+export * from "./flightplanning/GPS";
+export * from "./flightplanning/WorldMagneticModel";
