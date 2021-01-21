@@ -1077,7 +1077,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 .preset-name {
     color: cyan;
-    padding: 4px 0 0 4px;
+    padding: 4px 0 0 6px;
     border: 2px solid cyan;
 }
 
