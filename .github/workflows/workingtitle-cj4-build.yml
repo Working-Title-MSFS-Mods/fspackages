@@ -11,6 +11,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+          with:
+            node-version: '14'
+      - run: npm install --prefix /src/wtsdk
       - name: Build Package
         run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml
       # - name: Upload Package
