@@ -785,60 +785,64 @@ class CJ4_APDisplay extends NavSystemElement {
         this.altimeterIndex = 0;
     }
     init(root) {
-        this.AP_LateralActive = this.gps.getChildById("AP_LateralActive");
-        this.AP_LateralArmed = this.gps.getChildById("AP_LateralArmed");
-        this.AP_Status = this.gps.getChildById("AP_Status");
-        this.AP_FDIndicatorArrow = this.gps.getChildById("AP_FDIndicatorArrow");
-        this.AP_VerticalActive = this.gps.getChildById("AP_VerticalActive");
-        this.AP_ModeReference_Icon = this.gps.getChildById("AP_ModeReference_Icon");
-        this.AP_ModeReference_Value = this.gps.getChildById("AP_ModeReference_Value");
-        this.AP_Armed = this.gps.getChildById("AP_Armed");
-        this.AP_YDStatus = this.gps.getChildById("AP_YDStatus");
+        this.apprActiveField = this.gps.getChildById("apprActiveField");
+        // this.fdSyncField = this.gps.getChildById("fdSyncField");
+        this.AP_LateralActive = this.gps.getChildById("lateralActiveField");
+        this.AP_LateralArmed = this.gps.getChildById("lateralArmField");
+        this.AP_Status = this.gps.getChildById("ap_ydEngageField");
+        this.AP_FDIndicatorArrow = this.gps.getChildById("fdIndicatorArrow");
+        this.AP_VerticalActive = this.gps.getChildById("verticalActiveField");
+        this.AP_ModeReference_Icon = this.gps.getChildById("verticalCaptureDataField_Icon");
+        this.AP_ModeReference_Value = this.gps.getChildById("verticalCaptureDataField_Value");
+        this.AP_Armed = this.gps.getChildById("verticalArmField");
+        this.vnavArmField = this.gps.getChildById("vnavArmField");
+        this.approachVerticalArmField = this.gps.getChildById("approachVerticalArmField");
+
         if (this.gps.instrumentXmlConfig) {
             let altimeterIndexElems = this.gps.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
             if (altimeterIndexElems.length > 0) {
                 this.altimeterIndex = parseInt(altimeterIndexElems[0].textContent) + 1;
             }
         }
-        SimVar.SetSimVarValue("K:AP_ALT_VAR_SET_ENGLISH", "feet", 10000);
+        SimVar.SetSimVarValue("K:AP_ALT_VAR_SET_ENGLISH:1", "feet", 10000);
     }
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        //NEW SIMPLIFIED CODE FOR SETTING FMA MODES
 
-        //SET AP & YD VALUES
         const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
         const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
         const flightDirector = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") == 1;
+        
+        if (apMasterActive) {
+            Avionics.Utils.diffAndSet(this.AP_Status, "AP");
+            this.AP_FDIndicatorArrow.setAttribute("state", "Engaged");
+        } else if(!apMasterActive && ydActive) {
+            Avionics.Utils.diffAndSet(this.AP_Status, "YD");
+            this.AP_FDIndicatorArrow.removeAttribute("state");
+        }else{
+            Avionics.Utils.diffAndSet(this.AP_Status, "");
+            this.AP_FDIndicatorArrow.removeAttribute("state");
+        }
 
-        Avionics.Utils.diffAndSet(this.AP_Status, apMasterActive ? "AP" : "");
         if (apMasterActive && !ydActive) {
             SimVar.SetSimVarValue("K:YAW_DAMPER_TOGGLE", "number", 1);
         }
         if (apMasterActive && !flightDirector) {
             SimVar.SetSimVarValue("K:TOGGLE_FLIGHT_DIRECTOR", "number", 1);
         }
-        if (apMasterActive) {
-            Avionics.Utils.diffAndSet(this.AP_YDStatus, "");
-            this.AP_FDIndicatorArrow.setAttribute("state", "Engaged");
-        } else {
-            Avionics.Utils.diffAndSet(this.AP_YDStatus, ydActive ? "YD" : "");
-            this.AP_FDIndicatorArrow.removeAttribute("state");
-        }
 
-        //SET OTHER VALUES OR BLANK IF AP/FD INACTIVE
         if (flightDirector || apMasterActive) {
-            //GET DATA FROM DATASTORE SET BY AP UPDATE METHOD
-            //const fmaValues = WTDataStore.get('CJ4_fmaValues', 'none');
             const fmaValues = localStorage.getItem("CJ4_fmaValues");
             if (fmaValues) {
                 const parsedFmaValues = JSON.parse(fmaValues);
+                const approachActive = parsedFmaValues.approachActive;
                 const lateralMode = parsedFmaValues.lateralMode;
                 const lateralArmed = parsedFmaValues.lateralArmed;
                 const verticalMode = parsedFmaValues.verticalMode;
-                const verticalArmed1 = parsedFmaValues.verticalArmed1 ? parsedFmaValues.verticalArmed1 : "";
-                const verticalArmed2 = parsedFmaValues.verticalArmed2 ? parsedFmaValues.verticalArmed2 : "";
+                const altitudeArmed = parsedFmaValues.altitudeArmed;
+                const vnavArmed = parsedFmaValues.vnavArmed;
+                const approachVerticalArmed = parsedFmaValues.approachVerticalArmed;
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
@@ -863,24 +867,34 @@ class CJ4_APDisplay extends NavSystemElement {
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 
-                const verticalArmed = verticalArmed1 + " " + verticalArmed2;
-                Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed);
-                //Avionics.Utils.diffAndSet(this.AP_Armed, verticalArmed1 ? verticalArmed1 : "");
+                //VERTICAL ALTITUDE ARMED
+                Avionics.Utils.diffAndSet(this.AP_Armed, altitudeArmed);
 
+                //VERTICAL VNAV ARMED
+                Avionics.Utils.diffAndSet(this.vnavArmField, vnavArmed);
+
+                //VERTICAL APPR VERTICAL (GS/GP) ARMED
+                Avionics.Utils.diffAndSet(this.approachVerticalArmField, approachVerticalArmed);
 
                 //LATERAL ACTIVE
                 Avionics.Utils.diffAndSet(this.AP_LateralActive, lateralMode);
 
                 //LATERAL ARMED
-                Avionics.Utils.diffAndSet(this.AP_LateralArmed, lateralArmed); //LATERAL ARMED
+                Avionics.Utils.diffAndSet(this.AP_LateralArmed, lateralArmed); 
+
+                //APPR ACTIVE
+                Avionics.Utils.diffAndSet(this.apprActiveField, approachActive);
             }
         }
         else {
-            Avionics.Utils.diffAndSet(this.AP_VerticalActive, ""); //VETICAL MODE
+            Avionics.Utils.diffAndSet(this.AP_VerticalActive, ""); //VERTICAL MODE
             Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
-            Avionics.Utils.diffAndSet(this.AP_Armed, ""); //VERTICAL ARMED
+            Avionics.Utils.diffAndSet(this.AP_Armed, ""); //VERTICAL ALTITUDE ARMED
+            Avionics.Utils.diffAndSet(this.vnavArmField, ""); //VERTICAL VNAV ARMED
+            Avionics.Utils.diffAndSet(this.approachVerticalArmField, ""); //VERTICAL APPR VERTICAL (GS/GP) ARMED
             Avionics.Utils.diffAndSet(this.AP_LateralActive, ""); //LATERAL ACTIVE
             Avionics.Utils.diffAndSet(this.AP_LateralArmed, ""); //LATERAL ARMED
+            Avionics.Utils.diffAndSet(this.apprActiveField, ""); //APPR ACTIVE
         }
     }
     onExit() {

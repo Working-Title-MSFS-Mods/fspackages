@@ -15,6 +15,12 @@ class LocDirector {
 
     /** The current nav mode selector. */
     this.navModeSelector = navModeSelector;
+
+    /** The previous lateral deviation. */
+    this.previousDeviation = 0;
+
+    /** The previous captured time. */
+    this.previousTime = Date.now();
   }
 
   /**
@@ -70,12 +76,27 @@ class LocDirector {
    * @param {LocRadioState} radioState The current localizer radio state.
    */
   handleActive(radioState) {
-    if (radioState.hasLocSignal && radioState.hasGlideslopeSignal) {
-      const interceptAngle = AutopilotMath.interceptAngle((-1 * radioState.lateralDevation) / 127, NavSensitivity.APPROACH, 45);
+    if (radioState.hasLocSignal && radioState.hasGlideslopeSignal && this.navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+      const interceptAngle = AutopilotMath.interceptAngle((-1 * radioState.lateralDevation) / 127, NavSensitivity.NORMAL, 12.5);
+
+      const now = Date.now();
+      const elapsedTime = (now - this.previousTime) / 1000;
+      const interceptRate = Math.sign(this.previousDeviation) === 1
+        ? Math.max(this.previousDeviation - radioState.lateralDevation, 0)
+        : -1 * Math.min(this.previousDeviation - radioState.lateralDevation, 0);
+
+      const interceptRateScalar = radioState.lateralDevation < 40
+        ? 1 - Math.min(interceptRate / 5, 1.15)
+        : 1;
+
       const magVar = SimVar.GetSimVarValue('MAGVAR', 'Degrees');
 
       const trueCourse = GeoMath.removeMagvar(radioState.course, magVar);
-      const setCorse = AutopilotMath.normalizeHeading(trueCourse + interceptAngle);
+      const setCorse = AutopilotMath.normalizeHeading(trueCourse + (interceptAngle * interceptRateScalar));
+
+      this.previousDeviation = radioState.lateralDevation;
+      this.previousTime = now;
+
       LNavDirector.setCourse(setCorse, LNavDirector.getAircraftState());
     }
     else {
@@ -91,9 +112,9 @@ class LocDirector {
     const radioState = new LocRadioState();
 
     radioState.frequency = SimVar.GetSimVarValue(`NAV ACTIVE FREQUENCY:${this.radioIndex}`, 'MHz');
-    radioState.hasNavSignal = SimVar.GetSimVarValue(`NAV HAS NAV:${this.radioIndex}`, 'Bool');
-    radioState.hasLocSignal = SimVar.GetSimVarValue(`NAV HAS LOCALIZER:${this.radioIndex}`, 'Bool');
-    radioState.hasGlideslopeSignal = SimVar.GetSimVarValue(`NAV HAS GLIDE SLOPE:${this.radioIndex}`, 'Bool');
+    radioState.hasNavSignal = SimVar.GetSimVarValue(`NAV HAS NAV:${this.radioIndex}`, 'Bool') !== 0;
+    radioState.hasLocSignal = SimVar.GetSimVarValue(`NAV HAS LOCALIZER:${this.radioIndex}`, 'Bool') !== 0;
+    radioState.hasGlideslopeSignal = SimVar.GetSimVarValue(`NAV HAS GLIDE SLOPE:${this.radioIndex}`, 'Bool') !== 0;
     radioState.course = SimVar.GetSimVarValue(`NAV LOCALIZER:${this.radioIndex}`, 'Degrees');
     radioState.lateralDevation = SimVar.GetSimVarValue(`NAV CDI:${this.radioIndex}`, 'Number');
 

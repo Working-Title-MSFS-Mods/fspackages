@@ -11,30 +11,32 @@
                     <div id="AutopilotInfos">
                         <div id="AutopilotBg"></div>
                         <div class="Left">
-                            <div id="AP_LateralActive">ROL</div>
-                            <div id="AP_LateralArmed">FMS</div>
+                            <div id="apprActiveField"></div>
+                            <div id="fdSyncField"></div>
+                            <div id="lateralActiveField"></div>
+                            <div id="lateralArmField"></div>
                         </div>
                         <div class="Center">
-                            <div id="AP_Status">AP</div>
-                            <div id="AP_YDStatus">YD</div>
-                            <div id="AP_FDIndicatorArrow">
+                            <div id="ap_ydEngageField"></div>
+                            <div id="fdIndicatorArrow">
                                 <svg id="arrow" width="100%" viewBox="0 0 50 20">
                                     <polygon points="0,10 20,0 20,11 50,11 50,9 20,9 20,20"></polygon>
                                 </svg>
                             </div>
                         </div>
                         <div class="Right">
-                            <div id="AP_VerticalActive">V VS</div>
-                            <div id="AP_ModeReference">
-                                <span id="AP_ModeReference_Icon">
+                            <div id="verticalActiveField"></div>
+                            <div id="verticalCaptureDataField">
+                                <span id="verticalCaptureDataField_Icon">
                                     <svg id="Speedbug" viewBox="0 0 31 18">
                                         <path d="M 1 9 l 18 -8 l 11 0 l 0 16 l -11 0 l -18 -8"/>
                                     </svg>
                                 </span>
-                                <span id="AP_ModeReference_Value">-200</span>
+                                <span id="verticalCaptureDataField_Value"></span>
                             </div>
-                            <div id="AP_Armed">ALTS</div>
-                            <div id="AP_ArmedReference"></div>
+                            <div id="verticalArmField"></div>
+                            <div id="vnavArmField"></div>
+                            <div id="approachVerticalArmField"></div>
                         </div>
                     </div>
                     <div id="VnavAlt"></div>
@@ -68,8 +70,8 @@
                     <div id="TopBox">
                         <div id="Speed">
                             <svg>
-                                <text id="Wind_Strength" class="Wind" x="140px" y="-40px" alignment-baseline="baseline">--</text>
-                                <path id="Wind_Arrow" d="M 1 60 L -1 60 L 0 -40 L 15 -10 L 0 -40 L -15 -10 L 0 -40 Z" transform="translate(125 -3) scale(0.40) rotate(0)" stroke="magenta"
+                                <text id="Wind_Strength" class="Wind" x="151px" y="-43px" alignment-baseline="baseline">--</text>
+                                <path id="Wind_Arrow" d="M 1 60 L -1 60 L 0 -40 L 15 -10 L 0 -40 L -15 -10 L 0 -40 Z" transform="translate(140 -2) scale(0.45) rotate(0)" stroke="magenta"
                                 stroke-width="3" fill="none" display="none" />
                             </svg>
                         </div>
@@ -86,6 +88,17 @@
                             <div id="WP_Track" class="Small">DTK <span id="WP_Track_Value" class="Large">---</span></div>
                             <div id="WP_Name" class="Small">&nbsp</div>
                             <div><span id="WP_Distance_Value" class="Large">----</span> <span id="WP_Distance_Units" class="Small">NM</span></div>
+                        </div>
+                    </div>
+
+                    <div id="NavPreset">
+                        <div class='preset-tuning'>
+                            <div>LOC1</div>
+                            <div class='preset-tuning-frequency'>111.30</div>
+                        </div>
+                        <div class='preset-info'>
+                            <div>PRESET</div>
+                            <div class='preset-name'>VOR1</div>
                         </div>
                     </div>
 
@@ -110,11 +123,6 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class='bearing-block-arrow'>
-                                    <svg viewBox='-6 0 12 20'>
-                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
-                                    </svg>
-                                </div>
                                 <div class='bearing-block-dist'>
                                     <div>
                                         <span id='State'>FMS</span>1
@@ -123,9 +131,14 @@
                                         <span id='Distance'>-.-</span><span id='Unit'> NM</span>
                                     </div>
                                 </div>
+                                <div class='bearing-block-arrow'>
+                                    <svg viewBox='-6 0 12 20'>
+                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
+                                    </svg>
+                                </div>
                                 <div style='clear: both;'></div>
                             </div>
-                            <div id='ID'>---</div>
+                            <div id='ID' style='display: none'>---</div>
                         </div>
 
                         <div id="VORDMENavaid_Right" style="display:none">
@@ -148,11 +161,6 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class='bearing-block-arrow'>
-                                    <svg viewBox='-6 0 12 20'>
-                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
-                                    </svg>
-                                </div>
                                 <div class='bearing-block-dist'>
                                     <div>
                                         <span id='State'>FMS</span>2
@@ -161,17 +169,24 @@
                                         <span id='Distance'>-.-</span><span id='Unit'> NM</span>
                                     </div>
                                 </div>
+                                <div class='bearing-block-arrow'>
+                                    <svg viewBox='-6 0 12 20'>
+                                        <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
+                                    </svg>
+                                </div>
                                 <div style='clear: both;'></div>
                             </div>
-                            <div id='ID'>---</div>
+                            <div id='ID' style='display: none'>---</div>
                         </div>
                     </div>
 
                     <div id="Symbols">
-                        <svg>
-                            <text id="WX" x="100%" y="50%" alignment-baseline="baseline">WX</text>
-                            <text id="TERR" x="100%" y="50%" alignment-baseline="baseline">TERR</text>
-                        </svg>
+                        <ul>
+                            <li class='overlay-terr'>TERR</li>
+                            <li><span class='overlay-wx'>WX</li>
+                            <li class='overlay-wx-line1'>WX</li>
+                            <li class='overlay-wx-line2'>T-1.5A</li>
+                        </ul>
                     </div>
 
                     <div id="ElapsedTime">
@@ -197,7 +212,7 @@
                         <div>ATC1</div>
                         <div class="Modifiable" id="Atc1_Value">1200</div>
                     </div>
-                    <div id="Rat">
+                    <div id="Rat" style="min-width: 112px">
                         <div>RAT</div>
                         <div class="Modifiable" id="Rat_Value">19</div>
                         <div id="Rat_Unit">°C</div>
@@ -247,7 +262,7 @@
     </div>
 </script>
 
-<link rel="stylesheet" href="CJ4_PFD.css?cachebust=13" />
+<link rel="stylesheet" href="CJ4_PFD.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_SimPlaneMod.js"></script>
@@ -282,6 +297,8 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseAirliners.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/MFD_WTMenu.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/PFD/NavPresetElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/PFD/NavTransferTuningElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/BaseNDCompass.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/NDCompass.js"></script>

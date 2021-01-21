@@ -170,8 +170,8 @@ export class LegsProcedure {
 
         if (mappedLeg !== undefined) {
           mappedLeg.legAltitudeDescription = currentLeg.altDesc;
-          mappedLeg.legAltitude1 = currentLeg.altitude1 * 3.28084;
-          mappedLeg.legAltitude2 = currentLeg.altitude2 * 3.28084;
+          mappedLeg.legAltitude1 = 100 * Math.round((currentLeg.altitude1 * 3.28084) / 100);
+          mappedLeg.legAltitude2 = 100 * Math.round((currentLeg.altitude2 * 3.28084) / 100);
         }
 
         this._currentIndex++;
@@ -179,8 +179,8 @@ export class LegsProcedure {
     }
 
     if (mappedLeg !== undefined) {
-      this._previousFix = mappedLeg;
       this._fixMinusTwo = this._previousFix;
+      this._previousFix = mappedLeg;
       return mappedLeg;
     }
     else {
@@ -398,9 +398,9 @@ export class LegsProcedure {
     const waypoint = RawDataMapper.toWaypoint(facility, this._instrument);
 
     waypoint.hasHold = true;
-    const course = Avionics.Utils.computeGreatCircleHeading(waypoint.infos.coordinates, fixMinusTwo.infos.coordinates);
+    const course = Avionics.Utils.computeGreatCircleHeading(fixMinusTwo.infos.coordinates, waypoint.infos.coordinates);
 
-    const holdDetails = HoldDetails.createDefault(course, leg.course);
+    const holdDetails = HoldDetails.createDefault(leg.course, course);
     holdDetails.turnDirection = leg.turnDirection === 1 ? HoldTurnDirection.Left : HoldTurnDirection.Right;
     holdDetails.entryType = HoldDetails.calculateEntryType(leg.course, course, holdDetails.turnDirection);
 
