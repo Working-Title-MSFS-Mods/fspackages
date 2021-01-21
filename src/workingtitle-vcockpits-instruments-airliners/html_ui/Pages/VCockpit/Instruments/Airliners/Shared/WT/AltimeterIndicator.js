@@ -1703,4 +1703,3 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     }
 }
 customElements.define("jet-pfd-altimeter-indicator", Jet_PFD_AltimeterIndicator);
-//# sourceMappingURL=AltimeterIndicator.js.map

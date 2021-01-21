@@ -135,5 +135,3 @@ var CJ4_MapSymbol;
     CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
     CJ4_MapSymbol[CJ4_MapSymbol["TERMWPTS"] = 8] = "TERMWPTS";
 })(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
-
-//# sourceMappingURL=CJ4_FMC_FMCCommPage.js.map

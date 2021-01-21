@@ -876,4 +876,3 @@ CJ4_FMC_LegsPage.SELECT_MODE = {
     DELETE: "DELETE"
 };
 CJ4_FMC_LegsPage.DEBUG_SHOW_WAYPOINT_PHASE = false;
-//# sourceMappingURL=CJ4_FMC_LegsPage.js.map
