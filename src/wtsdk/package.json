@@ -23,6 +23,7 @@
         "eslint": "^7.18.0",
         "rollup": "^2.37.1",
         "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-copy": "^3.3.0",
         "rollup-plugin-json": "^4.0.0",
         "rollup-plugin-node-resolve": "^5.2.0",
         "rollup-plugin-sourcemaps": "^0.6.3",

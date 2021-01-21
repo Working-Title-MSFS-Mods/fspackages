@@ -60,3 +60,4 @@ dist
 .tmp
 src/workingtitle-vcockpits-instruments-cj4/html_ui/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js
 src/workingtitle-vcockpits-instruments-cj4/html_ui/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js.map
+src/workingtitle-vcockpits-instruments-cj4/html_ui/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/LzUtf8.js

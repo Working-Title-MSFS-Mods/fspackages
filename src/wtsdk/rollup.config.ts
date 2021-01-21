@@ -5,6 +5,7 @@ import commonjs from 'rollup-plugin-commonjs'
 import sourceMaps from 'rollup-plugin-sourcemaps'
 import typescript from 'rollup-plugin-typescript2'
 import json from 'rollup-plugin-json'
+import copy from 'rollup-plugin-copy'
 
 const pkg = require('./package.json')
 
@@ -34,5 +35,10 @@ export default {
 
         // Resolve source maps to the original source
         sourceMaps(),
+        copy({
+            targets: [
+                { src: 'src/utils/LzUtf8.js', dest: '..\\workingtitle-vcockpits-instruments-cj4\\html_ui\\Pages\\VCockpit\\Instruments\\Airliners\\CJ4\\WTLibs' }
+            ]
+        })
     ],
 }

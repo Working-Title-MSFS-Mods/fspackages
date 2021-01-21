@@ -1,6 +1,5 @@
 import { FlightPlanSegment } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
-import * as _LZUTF8 from '../utils/LzUtf8'
 import { HoldDetails } from './HoldDetails';
 import { ManagedFlightPlan } from './ManagedFlightPlan';
 
