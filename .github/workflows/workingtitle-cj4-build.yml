@@ -14,9 +14,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm run build:cj4
+      - run: npm run install:cj4
       - name: Build Package
-        run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-cj4.xml
+        run: powershell.exe -noexit .\build.ps1 -OutputPath '.\build' -Project 'workingtitle-project-cj4meta.xml' -CleanBuild 
       # - name: Upload Package
       #   uses: actions/upload-artifact@v2.1.4
       #   with:
