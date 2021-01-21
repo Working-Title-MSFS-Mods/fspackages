@@ -47,7 +47,7 @@ class NavPresetElement {
     }
 
     if (navSource === 2) {
-      preset = 'FMS';
+      preset = 'FMS1';
     }
 
     if (preset !== this.preset) {

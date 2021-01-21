@@ -34,6 +34,9 @@ class CJ4NavModeSelector {
     /** The current armed vnav mode. */
     this.currentArmedVnavState = VerticalNavModeState.NONE;
 
+    /** The current armed approach mode. */
+    this.currentArmedApproachVerticalState = VerticalNavModeState.NONE;
+    
     /** Whether or not VNAV is on. */
     this.isVNAVOn = false;
 
@@ -208,33 +211,32 @@ class CJ4NavModeSelector {
       this._handlers[event]();
     }
 
-    const getLateralAnnunciation = (mode) => {
+    const getLateralAnnunciation = (mode, armed = false) => {
       if (mode === LateralNavModeState.APPR) {
-        switch(this.approachMode) {
-          case WT_ApproachType.RNAV:
-          case WT_ApproachType.VISUAL:
-          case WT_ApproachType.NONE:
-            mode = "APPR FMS1";
-            break;
-          case WT_ApproachType.ILS:
-            if (this.lNavModeState === LNavModeState.NAV1) {
-              mode = "APPR LOC1";
-            } else if (this.lNavModeState === LNavModeState.NAV2) {
-              mode = "APPR LOC2";
-            }
-            break;
+        if (this.approachMode === WT_ApproachType.RNAV && this.lNavModeState === LNavModeState.FMS) {
+          mode = "LNV1";
+        }
+        else if (this.approachMode === WT_ApproachType.ILS || this.lNavModeState === LNavModeState.NAV1) {
+          mode = "LOC1";
+        }
+        else if (this.lNavModeState === LNavModeState.NAV2) {
+          mode = "LOC2";
         }
       }
-
+      if (armed) {
+        mode = "APPR " + mode;
+      }
       return mode;
     };
 
     const fmaValues = {
+      approachActive: this.currentLateralActiveState === LateralNavModeState.APPR ? "APPR" : "",
       lateralMode: getLateralAnnunciation(this.currentLateralActiveState),
-      lateralArmed: getLateralAnnunciation(this.currentLateralArmedState),
+      lateralArmed: this.currentLateralArmedState !== LateralNavModeState.NONE ? getLateralAnnunciation(this.currentLateralArmedState, true) : "",
       verticalMode: `${this.isVNAVOn ? "V" : ""}${this.currentVerticalActiveState}`,
-      verticalArmed1: this.currentArmedAltitudeState !== VerticalNavModeState.NONE ? this.currentArmedAltitudeState : "",
-      verticalArmed2: this.currentArmedVnavState !== VerticalNavModeState.NONE ? this.currentArmedVnavState : ""
+      altitudeArmed: this.currentArmedAltitudeState !== VerticalNavModeState.NONE ? this.currentArmedAltitudeState : "",
+      vnavArmed: this.currentArmedVnavState !== VerticalNavModeState.NONE ? this.currentArmedVnavState : "",
+      approachVerticalArmed: this.currentArmedApproachVerticalState !== VerticalNavModeState.NONE ? this.currentArmedApproachVerticalState : ""
     };
 
     //WTDataStore.set('CJ4_fmaValues', JSON.stringify(fmaValues));
@@ -369,7 +371,7 @@ class CJ4NavModeSelector {
         break;
     }
 
-    this.setProperVerticalArmedStates();
+    this.setProperAltitudeArmedState();
   }
 
     /**
@@ -400,7 +402,7 @@ class CJ4NavModeSelector {
         break;
     }
 
-    this.setProperVerticalArmedStates();
+    this.setProperAltitudeArmedState();
   }
 
   /**
@@ -483,7 +485,7 @@ class CJ4NavModeSelector {
         this.currentAltitudeTracking = AltitudeState.SELECTED;
       }
     }
-    this.setProperVerticalArmedStates();
+    this.setProperAltitudeArmedState();
   }
 
   /**
@@ -517,7 +519,7 @@ class CJ4NavModeSelector {
         break;
     }
 
-    this.setProperVerticalArmedStates();
+    this.setProperAltitudeArmedState();
   }
 
   /**
@@ -526,7 +528,6 @@ class CJ4NavModeSelector {
   handleAlt2Changed() {
     this.selectedAlt2 = this._inputDataStates.selectedAlt2.state;
     this.checkCorrectAltMode();
-    //this.setProperVerticalArmedStates();
   }
 
   /**
@@ -620,18 +621,7 @@ class CJ4NavModeSelector {
         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
       }
     }
-    this.setProperVerticalArmedStates();
-  }
-
-  /**
-   * Sets the armed altitude state.
-   */
-  setArmedAltitudeState(state = false) {
-    if (state) {
-      this.currentArmedAltitudeState = state;
-    } else {
-      this.currentArmedAltitudeState = VerticalNavModeState.NONE;
-    }
+    this.setProperAltitudeArmedState();
   }
 
   /**
@@ -639,83 +629,71 @@ class CJ4NavModeSelector {
    */
   setArmedVnavState(state = false) {
     if (state) {
-      this.currentArmedVnavState = state;
+      if (this.currentArmedVnavState !== state) {
+        this.currentArmedVnavState = state;
+      }
     } else {
       this.currentArmedVnavState = VerticalNavModeState.NONE;
+    }
+  }
+
+  /**
+   * Sets the armed approach vertical state.
+   */
+  setArmedApproachVerticalState(state = false) {
+    if (state) {
+      if (this.currentArmedApproachVerticalState !== state) {
+        this.currentArmedApproachVerticalState = state;
+      }
+    } else {
+      this.currentArmedApproachVerticalState = VerticalNavModeState.NONE;
     }
   }
   
   /**
-   * Sets the proper armed vertical states.
+   * Sets the armed altitude state.
    */
-  setProperVerticalArmedStates(clear = false, state = undefined, slot = 0) {
-
-    let currentArmedAltitudeState = VerticalNavModeState.NONE;
-    let currentArmedVnavState = VerticalNavModeState.NONE;
-
-    if (clear) {
-      this.currentArmedVnavState = VerticalNavModeState.NONE;
-      this.currentArmedAltitudeState = VerticalNavModeState.NONE;
+  setArmedAltitudeState(state = false) {
+    if (state) {
+      if (this.currentArmedAltitudeState !== state) {
+        this.currentArmedAltitudeState = state;
+      }
     } else {
-      console.log("setting ARMED ALTS/ALTV");
-      if (slot !== 1 && !this.isAltitudeLocked && (this.currentVerticalActiveState === VerticalNavModeState.VS
-        || this.currentVerticalActiveState === VerticalNavModeState.FLC)) {
-          if (!this.isVNAVOn) {
-            console.log("vnav off");
-  
-            if ((Simplane.getVerticalSpeed() > 0 && this.selectedAlt1 > Simplane.getAltitude())
-              || (Simplane.getVerticalSpeed() < 0 && this.selectedAlt1 < Simplane.getAltitude())) {
-                console.log("setting alts");
-                currentArmedAltitudeState = VerticalNavModeState.ALTS;
-            }
-          } else {
-            console.log("vnav on: " + this.currentAltitudeTracking);
-  
-            switch(this.currentAltitudeTracking) {
-              case AltitudeState.SELECTED:
-                console.log("setting ALTS");
-                currentArmedAltitudeState = VerticalNavModeState.ALTS; 
-                // if ((Simplane.getVerticalSpeed() > 0 && this.selectedAlt1 > Simplane.getAltitude())
-                //   || (Simplane.getVerticalSpeed() < 0 && this.selectedAlt1 < Simplane.getAltitude())) {
-                //     armState0 = VerticalNavModeState.ALTS;
-                // }
-                break;
-              case AltitudeState.MANAGED:
-                console.log("setting ALTV"); 
-                currentArmedAltitudeState = VerticalNavModeState.ALTV;
-                break;
-            }
-          }
-      }
-      if (slot !== 2 && this.currentLateralActiveState === LateralNavModeState.APPR) {
-        if (this.glidepathState === GlidepathStatus.GP_ARMED) {
-          currentArmedVnavState = VerticalNavModeState.GP;
-        } else if (this.glidepathState === GlidepathStatus.GS_ARMED) {
-          currentArmedVnavState = VerticalNavModeState.GS;
-        }
-      }
+      this.currentArmedAltitudeState = VerticalNavModeState.NONE;
     }
-
-    if (state !== undefined) {
-      switch(slot) {
-        case 1:
-          currentArmedAltitudeState = state;
-          break
-        case 2:
-          currentArmedVnavState = state;
-          break
-      }
-    }
-
-    if (currentArmedAltitudeState !== this.currentArmedAltitudeState) {
-      this.currentArmedAltitudeState = currentArmedAltitudeState;
-    }
-    if (currentArmedVnavState !== this.currentArmedVnavState) {
-      this.currentArmedVnavState = currentArmedVnavState;
-    }
-
   }
 
+  /**
+   * Sets the proper armed altitude state.
+   */
+  setProperAltitudeArmedState() {
+    if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {
+      switch(this.currentAltitudeTracking) {
+        case AltitudeState.MANAGED:
+          this.setArmedAltitudeState(VerticalNavModeState.ALTV);
+          break;
+        default:
+          this.setArmedAltitudeState(VerticalNavModeState.ALTS);
+      }
+    }
+    else if (this.isVNAVOn && (this.currentVerticalActiveState === VerticalNavModeState.VS 
+        || this.currentVerticalActiveState === VerticalNavModeState.FLC)) {
+      switch(this.currentAltitudeTracking) {
+        case AltitudeState.MANAGED:
+          this.setArmedAltitudeState(VerticalNavModeState.ALTV);
+          break;
+        default:
+          this.setArmedAltitudeState(VerticalNavModeState.ALTS);
+      }
+    }
+    else if (this.currentVerticalActiveState === VerticalNavModeState.VS || this.currentVerticalActiveState === VerticalNavModeState.FLC) {
+      this.setArmedAltitudeState(VerticalNavModeState.ALTS);
+    }
+    else {
+      this.setArmedAltitudeState();
+    }
+  }
+  
   /**
    * Handles when the HDG button is pressed.
    */
@@ -971,7 +949,7 @@ class CJ4NavModeSelector {
           break;
       }
     }
-    this.setProperVerticalArmedStates();
+    this.setProperAltitudeArmedState();
   }
 
   /**
@@ -1070,16 +1048,16 @@ class CJ4NavModeSelector {
     if (this.currentApproachName.startsWith('RN')) {
       this.approachMode = WT_ApproachType.RNAV;
       if (this.currentLateralActiveState === LateralNavModeState.APPR) {
-        this.isVNAVOn = true;
+        this.isVNAVOn = false;
       }
       
       if (this.currentVerticalActiveState === VerticalNavModeState.GS) {
         this.currentVerticalActiveState = VerticalNavModeState.GP;
       }
       
-      if (this.currentArmedVnavState === VerticalNavModeState.GS) {
-        this.currentArmedVnavState = VerticalNavModeState.GP;
-      }
+      // if (this.currentArmedVnavState === VerticalNavModeState.GS) {
+      //   this.currentArmedVnavState = VerticalNavModeState.GP;
+      // }
     }
 
     if (this.currentApproachName.startsWith('ILS') || this.currentApproachName.startsWith('LDA')) {
@@ -1091,37 +1069,7 @@ class CJ4NavModeSelector {
       if (this.currentVerticalActiveState === VerticalNavModeState.GP) {
         this.currentVerticalActiveState = VerticalNavModeState.GS;
       }
-
-      if (this.currentArmedVnavState = VerticalNavModeState.GP) {
-        this.currentArmedVnavState = VerticalNavModeState.GS;
-      }
-    }
-  }
-
-  /**
-   * Handles when glideslope arm changes in the sim autopilot.
-   */
-  handleGSArmChanged() {
-    const isArmed = this._inputDataStates.gs_arm.state;
-    if (isArmed) {
-      this.currentArmedVnavState = VerticalNavModeState.GS;
-    }
-    else if (this.currentArmedVnavState === VerticalNavModeState.GS) {
-      this.currentArmedVnavState = VerticalNavModeState.NONE;
-    }
-  }
-
-  /**
-   * Handles when glideslope active changes in the sim autopilot.
-   */
-  handleGSActiveChanged() {
-    const isActive = this._inputDataStates.gs_active.state;
-    if (isActive) {
-      this.currentVerticalActiveState = VerticalNavModeState.GS;
-      this.isVNAVOn = false;
-    }
-    else if (this.currentVerticalActiveState === VerticalNavModeState.GS) {
-      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+      
     }
   }
 

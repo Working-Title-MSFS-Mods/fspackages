@@ -68,8 +68,8 @@
                     <div id="TopBox">
                         <div id="Speed">
                             <svg>
-                                <text id="Wind_Strength" class="Wind" x="140px" y="-40px" alignment-baseline="baseline">--</text>
-                                <path id="Wind_Arrow" d="M 1 60 L -1 60 L 0 -40 L 15 -10 L 0 -40 L -15 -10 L 0 -40 Z" transform="translate(125 -3) scale(0.40) rotate(0)" stroke="magenta"
+                                <text id="Wind_Strength" class="Wind" x="151px" y="-43px" alignment-baseline="baseline">--</text>
+                                <path id="Wind_Arrow" d="M 1 60 L -1 60 L 0 -40 L 15 -10 L 0 -40 L -15 -10 L 0 -40 Z" transform="translate(140 -2) scale(0.45) rotate(0)" stroke="magenta"
                                 stroke-width="3" fill="none" display="none" />
                             </svg>
                         </div>
@@ -181,7 +181,7 @@
                     <div id="Symbols">
                         <ul>
                             <li class='overlay-terr'>TERR</li>
-                            <li><span class='overlay-wx'>WX</span>/LX</li>
+                            <li><span class='overlay-wx'>WX</li>
                             <li class='overlay-wx-line1'>WX</li>
                             <li class='overlay-wx-line2'>T-1.5A</li>
                         </ul>
@@ -216,7 +216,7 @@
                         <div>ATC1</div>
                         <div class="Modifiable" id="Atc1_Value">1200</div>
                     </div>
-                    <div id="Rat">
+                    <div id="Rat" style="min-width: 112px">
                         <div>RAT</div>
                         <div class="Modifiable" id="Rat_Value">19</div>
                         <div id="Rat_Unit">°C</div>
@@ -290,6 +290,9 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/LzUtf8.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/AirspeedIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/AltimeterIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/HSIndicator.js"></script>
@@ -312,5 +315,4 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/PFD/CJ4_PFD.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/LzUtf8.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js"></script>
+

@@ -62,6 +62,7 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     construct() {
         Utils.RemoveAllChildren(this);
         this.machPrefixSVG = null;
+        this.machPrefixdecimalSVG = null;
         this.machValueSVG = null;
         this.cursorIntegrals = null;
         this.cursorDecimals = null;
@@ -133,25 +134,37 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         }
         {
             this.machPrefixSVG = document.createElementNS(Avionics.SVG.NS, "text");
-            this.machPrefixSVG.textContent = "M.";
-            this.machPrefixSVG.setAttribute("x", (posX - 15).toString());
-            this.machPrefixSVG.setAttribute("y", (posY + 32).toString());
-            this.machPrefixSVG.setAttribute("fill", "#cccac8");
-            this.machPrefixSVG.setAttribute("font-size", (this.fontSize * 1.1).toString());
+            this.machPrefixSVG.textContent = "M";
+            this.machPrefixSVG.setAttribute("x", (posX - 24).toString());
+            this.machPrefixSVG.setAttribute("y", (posY + 30).toString());
+            this.machPrefixSVG.setAttribute("fill", "#9c9c9c");
+            this.machPrefixSVG.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.machPrefixSVG.setAttribute("font-family", "Roboto-Light");
             this.machPrefixSVG.setAttribute("text-anchor", "end");
             this.machPrefixSVG.setAttribute("stroke", "black");
             this.machPrefixSVG.setAttribute("stroke-width", "7px");
             this.machPrefixSVG.setAttribute("alignment-baseline", "top");
             this.rootGroup.appendChild(this.machPrefixSVG);
+            this.machPrefixdecimalSVG = document.createElementNS(Avionics.SVG.NS, "text");
+            this.machPrefixdecimalSVG.textContent = ".";
+            this.machPrefixdecimalSVG.setAttribute("x", (posX - 4).toString());
+            this.machPrefixdecimalSVG.setAttribute("y", (posY + 30).toString());
+            this.machPrefixdecimalSVG.setAttribute("fill", "#11d011");
+            this.machPrefixdecimalSVG.setAttribute("font-size", (this.fontSize * 2.5).toString());
+            this.machPrefixdecimalSVG.setAttribute("font-family", "Roboto-Light");
+            this.machPrefixdecimalSVG.setAttribute("text-anchor", "end");
+			this.machPrefixdecimalSVG.setAttribute("stroke", "black");
+			this.machPrefixdecimalSVG.setAttribute("stroke-width", "7px");
+            this.machPrefixdecimalSVG.setAttribute("alignment-baseline", "top");
+            this.rootGroup.appendChild(this.machPrefixdecimalSVG);
             this.machValueSVG = document.createElementNS(Avionics.SVG.NS, "text");
             this.machValueSVG.textContent = "422";
-            this.machValueSVG.setAttribute("x", (posX - 18).toString());
-            this.machValueSVG.setAttribute("y", (posY + 32).toString());
+            this.machValueSVG.setAttribute("x", (posX - 16).toString());
+            this.machValueSVG.setAttribute("y", (posY + 30).toString());
             this.machValueSVG.setAttribute("fill", "#11d011");
-            this.machValueSVG.setAttribute("stroke", "black");
-            this.machValueSVG.setAttribute("stroke-width", "7px");
-            this.machValueSVG.setAttribute("font-size", (this.fontSize * 1.2).toString());
+			      this.machValueSVG.setAttribute("stroke", "black");
+			      this.machValueSVG.setAttribute("stroke-width", "7px");
+            this.machValueSVG.setAttribute("font-size", (this.fontSize * 1.3).toString());
             this.machValueSVG.setAttribute("font-family", "Roboto-Light");
             this.machValueSVG.setAttribute("text-anchor", "start");
             //this.machPrefixSVG.setAttribute("alignment-baseline", "top");
@@ -2043,9 +2056,12 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                 if ((!this.machVisible && this.machSpeed >= 0.4) || (this.machVisible && this.machSpeed >= 0.35)) {
                     var fixedMach = this.machSpeed.toFixed(3);
                     var radixPos = fixedMach.indexOf('.');
-                    this.machPrefixSVG.textContent = "M.";
+                    this.machPrefixSVG.textContent = "M";
                     this.machValueSVG.textContent = fixedMach.slice(radixPos + 1);
                     this.machVisible = true;
+                }
+                else {
+                    this.machVisible = false;
                 }
             }
             else {
@@ -2063,10 +2079,12 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
         if (this.machVisible) {
             this.machPrefixSVG.setAttribute("visibility", "visible");
             this.machValueSVG.setAttribute("visibility", "visible");
+            this.machPrefixdecimalSVG.setAttribute("visibility", "visible");
         }
         else {
             this.machPrefixSVG.setAttribute("visibility", "hidden");
             this.machValueSVG.setAttribute("visibility", "hidden");
+            this.machPrefixdecimalSVG.setAttribute("visibility", "hidden");
         }
     }
     arcToSVG(_value) {
@@ -2095,6 +2113,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     this.graduations[i].SVGLine.setAttribute("visibility", "visible");
                     this.graduations[i].SVGLine.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                     if (this.graduations[i].SVGText1) {
+                        if(currentVal == this.graduationMinValue){
+                            var graduationMinValuePosY = posY;
+                        }
                         if (this.aircraft == Aircraft.CJ4) {
                             if ((currentVal % 4) == 0)
                                 this.graduations[i].SVGText1.textContent = currentVal.toString();
@@ -2124,7 +2145,14 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             if (this.graduationVLine) {
                 var factor = 10 / this.graduationScroller.increment;
                 var offsetY = (Math.min((startVal - this.graduationMinValue), 0) / 10) * this.graduationSpacing * (this.nbSecondaryGraduations) * factor;
-                this.graduationVLine.setAttribute("y1", (startY + offsetY - 109).toString());
+
+                var graduationVLineY1 = 0;                
+                if(typeof graduationMinValuePosY != "undefined"){
+                    graduationVLineY1 = graduationMinValuePosY + 1;
+                }else{
+                    graduationVLineY1 = (startY + offsetY).toString();
+                }
+                this.graduationVLine.setAttribute("y1", graduationVLineY1);
                 this.graduationVLine.setAttribute("y2", Math.floor(currentY + offsetY).toString());
             }
         }
@@ -2721,4 +2749,4 @@ class AirspeedMarker {
             this.offscreenSVG.setAttribute("visibility", "hidden");
         }
     }
-}
+

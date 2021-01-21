@@ -1239,6 +1239,14 @@ class CJ4_SystemEngines extends NavSystemElement {
             line.setAttribute("stroke", "#52504d");
             line.setAttribute("stroke-width", "2");
             oilGroup.appendChild(line);
+            var line = document.createElementNS(Avionics.SVG.NS, "line");
+            line.setAttribute("x1", "630");
+            line.setAttribute("y1", "85");
+            line.setAttribute("x2", "630");
+            line.setAttribute("y2", "185");
+            line.setAttribute("stroke", "#52504d");
+            line.setAttribute("stroke-width", "2");
+            oilGroup.appendChild(line);
             var gaugeWidth = 8;
             var gaugeHeight = fullHeight * 0.55;
             var titleTextLeft = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1314,7 +1322,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilPSI2Cursor = document.createElementNS(Avionics.SVG.NS, "path");
                 this.OilPSI2Cursor.setAttribute("transform", "translate (" + this.OilPSI2CursorX + " " + this.OilPSI2CursorY1 + ")");
                 this.OilPSI2Cursor.setAttribute("fill", "#11d011");
-                this.OilPSI2Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
+                this.OilPSI2Cursor.setAttribute("d", "M 0 0 l 15 5 l 0 -10 l -15 5 Z");
                 oilGroup.appendChild(this.OilPSI2Cursor);
             }
             var titleTextRight = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1390,7 +1398,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 this.OilTemp2Cursor = document.createElementNS(Avionics.SVG.NS, "path");
                 this.OilTemp2Cursor.setAttribute("transform", "translate (" + this.OilTemp2CursorX + " " + this.OilTemp2CursorY1 + ")");
                 this.OilTemp2Cursor.setAttribute("fill", "#11d011");
-                this.OilTemp2Cursor.setAttribute("d", "M0 0 l-15 5 l0 -10 l15 5 Z");
+                this.OilTemp2Cursor.setAttribute("d", "M 0 0 l 15 5 l 0 -10 l -15 5 Z");
                 oilGroup.appendChild(this.OilTemp2Cursor);
             }
         }
@@ -1925,12 +1933,12 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.OilPSI2Value.textContent = Math.round(PSIEng2).toString();
             let PSIPct2 = (PSIEng2 / this.OilPSIMax);
             let psi_y = this.OilPSI2CursorY1 + (this.OilPSI2CursorY2 - this.OilPSI2CursorY1) * PSIPct2;
-            this.OilPSI2Cursor.setAttribute("transform", "translate (" + this.OilPSI2CursorX + " " + psi_y + ")");
+            this.OilPSI2Cursor.setAttribute("transform", "translate (" + (this.OilPSI2CursorX + 7) + " " + psi_y + ")");
             let TempEng2 = SimVar.GetSimVarValue("ENG OIL TEMPERATURE:2", "celsius");
             this.OilTemp2Value.textContent = Math.round(TempEng2).toString();
             let TempPct2 = (TempEng2 / this.OilTempMax);
             let temp_y = this.OilTemp2CursorY1 + (this.OilTemp2CursorY2 - this.OilTemp2CursorY1) * TempPct2;
-            this.OilTemp2Cursor.setAttribute("transform", "translate (" + this.OilTemp2CursorX + " " + temp_y + ")");
+            this.OilTemp2Cursor.setAttribute("transform", "translate (" + (this.OilTemp2CursorX + 7) + " " + temp_y + ")");
         }
     }
     updateFuel() {
@@ -2952,8 +2960,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
 
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
             curve.add(0, '#000000');
-            curve.add(altitude + 250, '#000000');
-            curve.add(altitude + 2000, '#ff9900');
+            curve.add(altitude, '#000000');
+            curve.add(altitude + 1000, '#ff9900');
             curve.add(altitude + 3000, '#cc0000');
 
             const altitudeColors = [SvgMapConfig.hexaToRGB('#0000ff')];
@@ -2963,9 +2971,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 altitudeColors[j + 1] = SvgMapConfig.hexaToRGB(color);
             }
 
-            if (this.map && this.map.instrument && this.map.instrument.bingMap && this.map.instrument.bingMap.m_configs && this.map.instrument.bingMap.m_configs[0]) {
-                this.map.instrument.bingMap.m_configs[0].heightColors = altitudeColors;
-                this.map.instrument.bingMap.setConfig(0);
+            if (this.map && this.map.instrument && this.map.instrument.bingMap && this.map.instrument.bingMap.m_configs && this.map.instrument.bingMap.m_configs[1]) {
+                this.map.instrument.bingMap.m_configs[1].heightColors = altitudeColors;
                 this.map.instrument.bingMap.updateConfig();
             }
 
