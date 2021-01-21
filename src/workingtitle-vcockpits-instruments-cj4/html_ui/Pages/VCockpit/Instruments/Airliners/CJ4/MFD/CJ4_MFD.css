@@ -490,7 +490,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
               display: flex;
               align-items: baseline;
               justify-content: center;
-              font-size: calc( 1.95 * 1vh * var(--bodyHeightScale)); }
+              font-size: calc( 2.1 * 1vh * var(--bodyHeightScale)); }
               cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Gs_Value,
               cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Tas_Value,
               cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Value,
@@ -499,7 +499,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
               cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Unit,
               cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Unit,
               cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Unit {
-                font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));}
+                font-size: calc( 2.1 * 1vh * var(--bodyHeightScale));}
           cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs {
             display: none;
             justify-content: space-around;
