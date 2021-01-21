@@ -1,16 +1,16 @@
-import { Message, MessageLevel } from "../../../../messages/Message";
+import { Message, MessageLevel } from "../../../messages/Message";
 import { CJ4_FMC_MessageController } from "../CJ4_FMC_MessageController";
 import { CJ4_FMC_Page } from "../CJ4_FMC_Page";
 
 export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
-  private _msgsChecksum: number = -1;
+  private _msgsChecksum = -1;
   private _msgs: Message[];
 
-  private _currentPage: number = 0;
-  private _pageCount: number = 1;
-  private _offset: number = 0;
+  private _currentPage = 0;
+  private _pageCount = 1;
+  private _offset = 0;
 
-  set currentPage(value) {
+  set currentPage(value: number) {
     this._currentPage = value;
     if (this._currentPage > (this._pageCount - 1)) {
       this._currentPage = 0;

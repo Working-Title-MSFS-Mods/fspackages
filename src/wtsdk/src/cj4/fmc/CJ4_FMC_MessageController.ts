@@ -1,5 +1,5 @@
-import { MessageController } from "../../../messages/MessageController";
-import { Message, MessageLevel } from "../../../messages/Message";
+import { MessageController } from "../../messages/MessageController";
+import { Message, MessageLevel } from "../../messages/Message";
 
 /**
  * The message controller for the FMC

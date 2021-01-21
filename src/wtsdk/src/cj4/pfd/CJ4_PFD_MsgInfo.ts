@@ -1,4 +1,4 @@
-import { MessageLevel } from "../../../messages/Message";
+import { MessageLevel } from "../../messages/Message";
 import { CJ4_PFD_BotLeftMessageController } from "./CJ4_PFD_BotLeftMessageController";
 import { CJ4_PFD_BotRightMessageController } from "./CJ4_PFD_BotRightMessageController";
 import { CJ4_PFD_TopMessageController } from "./CJ4_PFD_TopMessageController";

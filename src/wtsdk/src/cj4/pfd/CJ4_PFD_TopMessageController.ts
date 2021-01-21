@@ -1,4 +1,4 @@
-import { MessageController } from "../../../messages/MessageController";
+import { MessageController } from "../../messages/MessageController";
 import { CJ4_PFD_Message } from "./CJ4_PFD_Message";
 
 /**
