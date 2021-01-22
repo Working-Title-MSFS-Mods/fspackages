@@ -66,7 +66,16 @@ class CJ4_FMC extends FMCMainDisplay {
         this._nearest = undefined;
         /** @type {CJ4_FMC_NavigationService} */
         this._navigationService = new CJ4_FMC_NavigationService(this);
+        /** @type {CJ4_FMC_MessageReceiver} */
+        this._fmcMsgReceiver = new CJ4_FMC_MessageReceiver();
+        MessageService.getInstance().registerReceiver(MESSAGE_TARGET.FMC, this._fmcMsgReceiver);
+        /** @type {CJ4_PFD_MessageReceiver} */
+        this._pfdMsgReceiver = new CJ4_PFD_MessageReceiver();
+        MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_TOP, this._pfdMsgReceiver);
+        MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_BOT, this._pfdMsgReceiver);
+
     }
+
     get templateID() {
         return "CJ4_FMC";
     }
@@ -125,8 +134,9 @@ class CJ4_FMC extends FMCMainDisplay {
         // init WT_FMC_Renderer.js
         this._templateRenderer = new WT_FMC_Renderer(this);
 
+        // check for pos init message
         if (this.lastPos === "") {
-            CJ4_FMC_MessageController.getInstance().post("INITIALIZE POSITION", MessageLevel.Yellow, () => {
+            MessageService.getInstance().post(FMS_MESSAGE_ID.INIT_POS, () => {
                 return this.lastPos !== "";
             });
         }
@@ -369,9 +379,8 @@ class CJ4_FMC extends FMCMainDisplay {
 
     setMsg(value = "") {
         if (value === "") {
-            CJ4_FMC_MessageController.getInstance().update();
-            if (CJ4_FMC_MessageController.getInstance().hasMsg()) {
-                value = CJ4_FMC_MessageController.getInstance().getMsg();
+            if (this._fmcMsgReceiver.hasMsg()) {
+                value = this._fmcMsgReceiver.getMsgText();
             }
         }
         this._msg = value;
@@ -878,14 +887,16 @@ class CJ4_FMC extends FMCMainDisplay {
     updateMsgs(dt) {
         this._msgUpdateCd -= dt;
         if (this._msgUpdateCd < 0) {
+            // TODO where to put this message
             if (this.flightPlanManager.getActiveWaypointIdent() === "") {
-                CJ4_FMC_MessageController.getInstance().post("NO FLIGHT PLAN", MessageLevel.White, () => {
+                MessageService.getInstance().post(FMS_MESSAGE_ID.NO_FPLN, () => {
                     return this.flightPlanManager.getActiveWaypointIdent() !== "";
                 });
             }
 
-            CJ4_FMC_MessageController.getInstance().update();
-            this.setMsg(CJ4_FMC_MessageController.getInstance().getMsg());
+            MessageService.getInstance().update();
+            this.setMsg(this._fmcMsgReceiver.getMsgText());
+            this._pfdMsgReceiver.update();
             this._msgUpdateCd = 500;
         }
     }

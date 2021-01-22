@@ -21,7 +21,7 @@ declare class CJ4_FMC extends FMCMainDisplay {
   clearDisplay(): void;
   registerPeriodicPageRefresh(action: () => boolean, interval: number, runImmediately: boolean): void;
   unregisterPeriodicPageRefresh(): void;
-  _msgController: any;
+  _fmcMsgReceiver: any;
   _templateRenderer: WT_FMC_Renderer;
 }
 

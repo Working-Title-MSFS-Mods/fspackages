@@ -17,6 +17,7 @@ export class CJ4_FMC_NavigationService {
     }
   }
 
+  /** Registers the refresh loop  */
   private registerRefresh() {
     // register refresh and bind to update which will only render on changes
     this._fmc.registerPeriodicPageRefresh(() => {

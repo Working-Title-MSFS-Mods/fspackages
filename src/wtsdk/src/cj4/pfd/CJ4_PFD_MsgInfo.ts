@@ -1,20 +1,18 @@
-import { MessageLevel } from "../../messages/Message";
-import { CJ4_PFD_BotLeftMessageController } from "./CJ4_PFD_BotLeftMessageController";
-import { CJ4_PFD_BotRightMessageController } from "./CJ4_PFD_BotRightMessageController";
-import { CJ4_PFD_TopMessageController } from "./CJ4_PFD_TopMessageController";
+import { MESSAGE_LEVEL } from "../../messages/MessageDefinition";
+import { CJ4_PFD_MessagePacket } from "./CJ4_PFD_MessagePacket";
+import { CJ4_PFD_MessageReceiver } from "./CJ4_PFD_MessageReceiver";
 
 export class CJ4_PFD_MsgInfo extends HTMLElement {
   private _botLeftElement: Element;
   private _botRightElement: Element;
   private _topElement: Element;
 
-  private readonly _topMsgController: CJ4_PFD_TopMessageController;
-  private readonly _botLeftMsgController: CJ4_PFD_BotLeftMessageController;
-  private readonly _botRightMsgController: CJ4_PFD_BotRightMessageController;
-
   // update rate control
   private readonly UPDATE_RATE: number = 500;
   private _elapsedTime: number = 0;
+
+  private _fmcMsgTimestamp: number = -1;
+  private _lastFmcMsgLevel: number = -1;
 
   private _botLeftText: string;
   private set botLeftText(v: string) {
@@ -42,9 +40,6 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
 
   constructor() {
     super();
-    this._topMsgController = new CJ4_PFD_TopMessageController();
-    this._botLeftMsgController = new CJ4_PFD_BotLeftMessageController();
-    this._botRightMsgController = new CJ4_PFD_BotRightMessageController();
   }
 
   connectedCallback(): void {
@@ -53,78 +48,63 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
     this._botRightElement = this.querySelector('#PFDMessageBotRight');
   }
 
+  /** Update function called by the display */
   update(_dTime: number): void {
     this._elapsedTime += _dTime;
     if (this._elapsedTime >= this.UPDATE_RATE) {
-      this.execMessageChecks();
-      this._topMsgController.update();
-      this._botLeftMsgController.update();
-      this._botRightMsgController.update();
+      const msgsJson = window.localStorage.getItem(CJ4_PFD_MessageReceiver.PFD_MSGS_KEY);
+      if (msgsJson !== "") {
+        // read msg packet
+        const msgs: CJ4_PFD_MessagePacket = JSON.parse(msgsJson);
 
-      this.topText = this._topMsgController.getMsg();
-      this.botLeftText = this._botLeftMsgController.getMsg();
-      this.botRightText = this._botRightMsgController.getMsg();
+        // get bottom msg
+        if (msgs.bot) {
+          const msg: any = JSON.parse(msgs.bot); // For some reason can't access properties when parsing back to CJ4_PFD_Message :(
+          this.botRightText = this.getMsgString(msg);
+        } else if (this._botRightText !== "") {
+          this.botRightText = "";
+        }
+
+        // get top msg
+        if (msgs.top) {
+          const msg: any = JSON.parse(msgs.top);
+          this.topText = this.getMsgString(msg);
+        } else if (this._topText !== "") {
+          this.topText = "";
+        }
+      } else {
+        this.topText = "";
+        this.botRightText = "";
+      }
+
+      // Doing the MSG manually here as it is pretty "static"
+      const fmcMsgLevel = SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number");
+      if(fmcMsgLevel !== this._lastFmcMsgLevel){
+        this._fmcMsgTimestamp = Date.now();
+        this._lastFmcMsgLevel = fmcMsgLevel
+      }
+
+      if (fmcMsgLevel > -1) {
+        const fakeMsg = {
+          _level: fmcMsgLevel,
+          _content: "MSG",
+          _isBlinking: (fmcMsgLevel == MESSAGE_LEVEL.Yellow && Date.now() - this._fmcMsgTimestamp < 5000)
+        }
+        this.botLeftText = this.getMsgString(fakeMsg);
+      } else if (fmcMsgLevel === -1) {
+        this.botLeftText = "";
+      }
 
       this._elapsedTime = 0;
     }
   }
-  execMessageChecks(): void {
-    // TODO will do these here for now as i see no proper location in pfd
-    // TOP
-    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 1) {
-      this._topMsgController.post("TERM", MessageLevel.White, () => {
-        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 1;
-      });
-    }
-    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 2) {
-      this._topMsgController.post("LPV TERM", MessageLevel.White, () => {
-        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 2;
-      });
-    }
-    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 3) {
-      this._topMsgController.post("APPR", MessageLevel.White, () => {
-        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 3;
-      });
-    }
-    if (SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') === 4) {
-      this._topMsgController.post("LPV APPR", MessageLevel.White, () => {
-        return SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') !== 4;
-      });
-    }
 
-    // BOTTOM LEFT
-    if (SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 0) {
-      this._botLeftMsgController.post("MSG", MessageLevel.White, () => {
-        return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") !== 0
-      });
-    }
-
-    if (SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") === 1) {
-      this._botLeftMsgController.post("MSG", MessageLevel.Yellow, () => {
-        return SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number") !== 1
-      }, () => {
-        const msg = this._botLeftMsgController.getMsgObj();
-        return (Date.now() - msg.timestamp < 5000);
-      });
-    }
-
-    // BOTTOM RIGHT
-    const altDev = Math.abs(SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet"));
-    const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
-    const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-    if (!pathActive && todDistanceRemaining > 0.1 && (altDev > 300 && altDev <= 1000)) {
-      this._botRightMsgController.post("TOD", MessageLevel.White, () => {
-        return !(!pathActive && todDistanceRemaining > 0.1 && (altDev > 300 && altDev <= 1000));
-      }, () => {
-        return (altDev < 500);
-      });
-    }
-
-    if (SimVar.GetSimVarValue("L:WT_NAV_HOLD_INDEX", "number") > -1) {
-      this._botRightMsgController.post("HOLD", MessageLevel.White, () => {
-        return SimVar.GetSimVarValue("L:WT_NAV_HOLD_INDEX", "number") === -1;
-      });
-    }
+  /**
+   * Returns a formatted string for message display
+   * @param msg The message object
+   */
+  getMsgString(msg: any): string {
+    return `<span class="${(msg._level === MESSAGE_LEVEL.Yellow ? "yellow" : "white")} ${(msg._isBlinking) ? "blinking" : ""}">${msg._content}</span>`;
   }
 }
 

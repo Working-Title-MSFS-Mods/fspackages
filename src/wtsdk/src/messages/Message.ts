@@ -1,6 +1,9 @@
+import { FMS_MESSAGE_ID } from "../cj4/CJ4_MessageDefinitions";
+import { MESSAGE_LEVEL, MESSAGE_TARGET } from "./MessageDefinition";
+
 export class Message {
   private _timestamp: number = new Date().valueOf();
-  private _id: number = Math.floor(Math.random() * 10000);
+  private _id: FMS_MESSAGE_ID;
 
   /** Gets the unix timestamp for when the message was created */
   public get timestamp(): number {
@@ -8,14 +11,25 @@ export class Message {
   }
 
   /** Gets the ID of the message definition */
-  public get Id(): number {
+  public get Id(): FMS_MESSAGE_ID {
     return this._id;
   }
 
   /** Gets the {@link MessageLevel} of severity of the message */
-  public get level(): MessageLevel {
+  public get level(): MESSAGE_LEVEL {
     return this._level;
   }
+
+  /** Gets the message weight (priority) */
+  public get weight():number {
+    return this._weight;
+  }
+
+  /** Gets the message target display */
+  public get target() : MESSAGE_TARGET {
+    return this._target;
+  }
+  
 
   /** Gets the text content of this message */
   public get content(): string {
@@ -26,20 +40,8 @@ export class Message {
    * Constructs a new instance of Message
    * @param _content The message text
    * @param _level The {@link MessageLevel} of this message
-   * @param _exitConditionHandler The condition that should return true if the message should vanish
+   * @param _weight The message weight (priority)
+   * @param _target The message target display
    */
-  constructor(private _content: string, private _level: MessageLevel, private _exitConditionHandler: () => boolean = () => false) { }
-
-  /** Calls the message updatehandler and returns a boolean indicating if the condition still exists */
-  public update(): boolean {
-    return this._exitConditionHandler();
-  }
-}
-
-/**
- * Enumeration of message levels
- */
-export enum MessageLevel {
-  White = 0, // white
-  Yellow = 1 // yellow
+  constructor(private _content: string, private _level: MESSAGE_LEVEL, private _weight: number, private _target: MESSAGE_TARGET) { }
 }
