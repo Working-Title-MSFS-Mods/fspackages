@@ -291,6 +291,10 @@ class WT_VerticalAutopilot {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     break;
                 }
+                if (this.verticalMode !== VerticalNavModeState.PATH) {
+                    this._vnavPathStatus = VnavPathStatus.NONE
+                    break;
+                }
                 this.followPath();
                 break;
         }
@@ -791,9 +795,9 @@ class WT_VerticalAutopilot {
         }
         setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
         this.vsSlot2Value = setVerticalSpeed;
-        if (this.vsSlot !== 2) {
-            this.vsSlot = 2;
-        }
+        // if (this.vsSlot !== 2) {
+        //     this.vsSlot = 2;
+        // }
     }
 
     /**
