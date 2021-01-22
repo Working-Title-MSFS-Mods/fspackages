@@ -243,8 +243,6 @@ class WT_VerticalAutopilot {
         return this._vnav._firstPossibleDescentIndex;
     }
 
-
-
     /**
      * Run on first activation.
      */
@@ -323,7 +321,7 @@ class WT_VerticalAutopilot {
                     this.cancelGlidepath();
                     break;
                 }
-                this.followGlidepath()
+                this.followGlidepath();
                 break;
         }
 
@@ -356,7 +354,7 @@ class WT_VerticalAutopilot {
                     break;
                 }
                 this.setDonut(0);
-                this.followGlideslope()
+                this.followGlideslope();
                 break;
         }
 
@@ -386,6 +384,19 @@ class WT_VerticalAutopilot {
         this.setArmedVnavVerticalState();
         this.setSnowflake();
         this.monitorValues();
+
+        // TODO: intercept is too random, need to find better conditions @chris
+        if (this._vnavPathStatus !== VnavPathStatus.PATH_ACTIVE && this.distanceToTod > 0.1) {
+            const timeToTod = this.distanceToTod / this.groundSpeed * 3600 + 20; // offsetting by 20 because intercept starts 20 secs before tod
+            console.log(timeToTod);
+            if (timeToTod <= 60) {
+                MessageService.getInstance().post(FMS_MESSAGE_ID.TOD, () => {
+                    return this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE || timeToTod >= 65 || this.distanceToTod < 0.1;
+                }, () => {
+                    return timeToTod <= 6;
+                });
+            }
+        }
     }
 
     setArmedApproachVerticalState() {
@@ -619,18 +630,18 @@ class WT_VerticalAutopilot {
                 } else if (this.path.fpta && this.targetAltitude !== this.path.fpta) {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.PATH;
-                    this._vnavPathStatus = VnavPathStatus.NONE
+                    this._vnavPathStatus = VnavPathStatus.NONE;
                 }
                 break;
             case PathInterceptStatus.LEVELED:
                 if (this.path.fpta && this.targetAltitude !== this.path.fpta) {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.PATH;
-                    this._vnavPathStatus = VnavPathStatus.NONE
+                    this._vnavPathStatus = VnavPathStatus.NONE;
                 } else if (!this.path.fpta || this.vnavState === VnavState.NONE) {
                     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.NONE;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
-                    this._vnavPathStatus = VnavPathStatus.NONE
+                    this._vnavPathStatus = VnavPathStatus.NONE;
                     this.setAltitudeAndSlot(AltitudeSlot.SELECTED, -1000, true);
                     this.vsSlot = 1;
                     this.vsSlot2Value = 0;
@@ -653,7 +664,7 @@ class WT_VerticalAutopilot {
                 const intercept = {
                     verticalSpeed: 100 * Math.floor(this.verticalSpeed / 100),
                     increments: Math.floor(deltaVS / 100)
-                }
+                };
                 this._pathInterceptValues = intercept;
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
                 this.vsSlot2Value = this.verticalSpeed;
@@ -848,7 +859,7 @@ class WT_VerticalAutopilot {
                 }
                 break;
             default:
-                this.currentAltitudeTracking = AltitudeState.NONE
+                this.currentAltitudeTracking = AltitudeState.NONE;
         }
     }
 
