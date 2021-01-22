@@ -237,8 +237,16 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden1", "number", yokeHide);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden2", "number", yokeHide);
 
+        // load persisted heading
         const hdg = WTDataStore.get("AP_HEADING", 0);
         Coherent.call("HEADING_BUG_SET", 1, hdg);
+
+        // set pos if battery already on
+        const batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
+        if (batteryOn) {
+            const fmsPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
+            this.tryUpdateIrsCoordinatesDisplay(fmsPos);
+        }
 
         // set constraint altitude to 0 on flight start/FMC reboot
         SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
