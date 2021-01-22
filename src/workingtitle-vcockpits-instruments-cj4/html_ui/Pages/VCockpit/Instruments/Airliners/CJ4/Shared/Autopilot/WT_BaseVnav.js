@@ -164,10 +164,6 @@ class WT_BaseVnav {
         this._vnavState = value;
     }
 
-    get currentVnavPathStatus() {
-        this._fmc._currentVerticalAutopilot._vnavPathStatus;
-    }
-
     /**
      * Run on first activation.
      */
@@ -695,7 +691,7 @@ class WT_BaseVnav {
         let fpa = undefined;
         let todDistanceInFP = undefined;
         const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-        if (this.currentVnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
+        if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE) {
             if (currentSegment && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
                 todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[currentSegment].targetIndex].cumulativeDistanceInFP + this._verticalFlightPlanSegments[currentSegment].distanceToNextTod;
                 todExists = true;

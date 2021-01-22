@@ -391,11 +391,21 @@ class CJ4_FMC_LegsPage {
                             const scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : undefined;
                             const userWaypoint = await this.parseWaypointInput(value, scratchPadWaypointIndex);
                             if (userWaypoint) {
+                                let insertIndex = selectedWpIndex;
+                                if (userWaypoint.offset !== false) {
+                                    if (scratchPadWaypointIndex !== selectedWpIndex || (i == 1 && this._currentPage == 1 && userWaypoint.offset <= 0)) {
+                                        this._fmc.showErrorMessage("INVALID INSERT");
+                                        this._fmc.setMsg();
+                                        return;
+                                    } else {
+                                        insertIndex = userWaypoint.offset >= 0 ? selectedWpIndex + 1 : selectedWpIndex;
+                                    }
+                                }
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint, selectedWpIndex, () => {
+                                    this._fmc.flightPlanManager.addUserWaypoint(userWaypoint.wpt, insertIndex, () => {
                                         const isDirectTo = (i == 1 && this._currentPage == 1);
                                         if (isDirectTo) {
-                                            this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
+                                            this._fmc.flightPlanManager.activateDirectToByIndex(insertIndex, () => {
                                                 this._fmc.activateRoute(true, () => {
                                                     this.resetAfterOp();
                                                 });
@@ -686,7 +696,10 @@ class CJ4_FMC_LegsPage {
             const coordinates = new LatLongAlt(latitude, longitude, 0);
             const ident = procMatch(matchFullLatLong[7], matchFullLatLong[1] + matchFullLatLong[2].slice(0, 2) + matchFullLatLong[4] + matchFullLatLong[5] + matchFullLatLong[6].slice(0, 2));
 
-            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+            newWaypoint = {
+                wpt: WaypointBuilder.fromCoordinates(ident, coordinates),
+                offset: false
+            }
 
         } else if (matchShorhandLatLongEnd) {
             // 1 = LAT DEG
@@ -701,7 +714,10 @@ class CJ4_FMC_LegsPage {
             const coordinates = new LatLongAlt(latitude, longitude, 0);
             const ident = matchShorhandLatLongEnd[1] + matchShorhandLatLongEnd[2] + direction;
 
-            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+            newWaypoint = {
+                wpt: WaypointBuilder.fromCoordinates(ident, coordinates),
+                offset: false
+            }
 
         } else if (matchShorthandLatLongMid) {
             // 1 = LAT DEG
@@ -716,7 +732,11 @@ class CJ4_FMC_LegsPage {
             const coordinates = new LatLongAlt(latitude, longitude, 0);
             const ident = matchShorthandLatLongMid[1] + direction + matchShorthandLatLongMid[3];
 
-            newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates);
+            newWaypoint = {
+                wpt: WaypointBuilder.fromCoordinates(ident, coordinates),
+                offset: false
+            }
+
         } else if (matchPlaceBearingDistance) {
             // 1 = Reference Ident
             // 2 = Bearing from Reference
@@ -740,7 +760,10 @@ class CJ4_FMC_LegsPage {
                 const distance = parseFloat(matchPlaceBearingDistance[3]);
                 const ident = procMatch(matchPlaceBearingDistance[4], getIndexedName(referenceWaypoint.ident));
 
-                newWaypoint = WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc);
+                newWaypoint = {
+                    wpt: WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc),
+                    offset: false
+                }
             }
         } else if (matchAlongTrackOffset) {
             // 1 = Reference Ident
@@ -753,7 +776,10 @@ class CJ4_FMC_LegsPage {
                 const ident = procMatch(matchAlongTrackOffset[3], getIndexedName(this._fmc.flightPlanManager.getWaypoint(referenceIndex).ident));
                 const distance = parseFloat(matchAlongTrackOffset[2]);
 
-                newWaypoint = WaypointBuilder.fromPlaceAlongFlightPlan(ident, referenceIndex, distance, this._fmc, this._fmc.flightPlanManager);
+                newWaypoint = {
+                    wpt: WaypointBuilder.fromPlaceAlongFlightPlan(ident, referenceIndex, distance, this._fmc, this._fmc.flightPlanManager),
+                    offset: distance
+                }
             }
         }
 
