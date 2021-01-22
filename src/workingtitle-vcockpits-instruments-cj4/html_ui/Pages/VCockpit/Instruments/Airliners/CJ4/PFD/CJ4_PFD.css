@@ -92,8 +92,8 @@ html body {
 }
 
 .blinking {
-    animation: blink 0.8s step-start 0s infinite;
-    -webkit-animation: blink 0.8s step-start 0s infinite;
+    animation: blink 0.9s step-start 0s infinite;
+    -webkit-animation: blink 0.9s step-start 0s infinite;
 }
 
 svg text {
@@ -1057,18 +1057,18 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 #PFDMessageTop {
     top: 3%;
     left: 1.2%;
-    width: 12%;
+    width: 11.5%;
     position: absolute;
     /* border:solid 1px red; */
-    text-align: left;
+    text-align: right;
     font-size: 21px;
 }
 
 #PFDMessageBottom {
     top: 8%;
     left: 1.2%;
-    min-width: 12%;
-    width: 12%;
+    min-width: 11.5%;
+    width: 11.5%;
     position: absolute;
     font-size: 21px;
 }

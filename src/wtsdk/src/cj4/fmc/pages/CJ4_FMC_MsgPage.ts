@@ -1,5 +1,5 @@
-import { Message, MessageLevel } from "../../../messages/Message";
-import { CJ4_FMC_MessageController } from "../CJ4_FMC_MessageController";
+import { Message } from "../../../messages/Message";
+import { MESSAGE_LEVEL } from "../../../messages/MessageDefinition";
 import { CJ4_FMC_Page } from "../CJ4_FMC_Page";
 
 export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
@@ -40,7 +40,7 @@ export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
   }
 
   public update(force: boolean = false): void {
-    this._msgs = Array.from(CJ4_FMC_MessageController.getInstance().getAllMsgs().values()) as Message[];
+    this._msgs = this._fmc._fmcMsgReceiver.getActiveMsgs();
     const chksum = this.getMsgsChecksum();
     if (force === true || chksum !== this._msgsChecksum) {
       this._msgsChecksum = chksum;
@@ -55,7 +55,7 @@ export class CJ4_FMC_MsgPage extends CJ4_FMC_Page {
     rows.push(["-----NEW MESSAGES-------[blue s-text]"]);
     for (let i = this._offset; i < Math.min(6,this._msgs.length); i++) {
       const msg = this._msgs[i];
-      rows.push([`${msg.content}[${msg.level === MessageLevel.Yellow ? "yellow" : "white"}]`]);
+      rows.push([`${msg.content}[${msg.level === MESSAGE_LEVEL.Yellow ? "yellow" : "white"}]`]);
       rows.push([""]);
     }
 

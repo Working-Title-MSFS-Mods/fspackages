@@ -4,6 +4,7 @@ export abstract class CJ4_FMC_Page {
 
   public refreshInterval: number = 1000;
 
+  /** Sets a boolean indicating if the page should be invalidated */
   set isDirty(v: boolean) {
     this._isDirty = v;
   }
@@ -31,7 +32,8 @@ export abstract class CJ4_FMC_Page {
   /** Renders the page */
   abstract render(): void;
 
-  invalidate(): void {
+  /** Rerenders the page and reinitializes event bindings */
+  protected invalidate(): void {
     this._isDirty = true;
     this._fmc.clearDisplay();
     this.render();

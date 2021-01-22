@@ -167,7 +167,7 @@ class WT_FMC_Renderer {
     getTRow(index) {
         const container = document.getElementById("wt_container");
         if (!container) {
-            console.warn("Warning: Row " + index + " not found");
+            // console.warn("Warning: Row " + index + " not found");
             return undefined;
         }
 

@@ -269,7 +269,7 @@ class WT_BaseLnav {
                 let alertDisco = this._activeWaypointDist < (this._groundSpeed / 3600) * 120;
                 SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", alertDisco ? 1 : 0);
                 if (alertDisco === 1) {
-                    CJ4_FMC_MessageController.getInstance().post("FPLN DISCONTINUITY", MessageLevel.Yellow, () => {
+                    MessageService.getInstance().post(FMS_MESSAGE_ID.FPLN_DISCO, () => {
                         return SimVar.GetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number") === 0;
                     });
                 }
