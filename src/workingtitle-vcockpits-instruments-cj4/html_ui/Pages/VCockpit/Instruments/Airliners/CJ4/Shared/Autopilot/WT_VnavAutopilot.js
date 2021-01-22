@@ -159,7 +159,7 @@ class WT_VerticalAutopilot {
     }
 
     set targetAltitude(value) {
-        this._navModeSelector.managedAltitudeTarget;
+        this._navModeSelector.managedAltitudeTarget = value;
     }
 
     get indicatedAltitude() {
@@ -413,8 +413,11 @@ class WT_VerticalAutopilot {
         }
     }
 
-    setArmedVnavVerticalState() {
-        if (this._vnavPathStatus === VnavPathStatus.PATH_ARMED) {
+    setArmedVnavVerticalState(nopath = false) {
+        if (nopath === VerticalNavModeState.NOPATH) {
+            this._navModeSelector.setArmedVnavState(VerticalNavModeState.NOPATH);
+        }
+        else if (this._vnavPathStatus === VnavPathStatus.PATH_ARMED) {
             this._navModeSelector.setArmedVnavState(VerticalNavModeState.PATH);
         }
         else {
@@ -422,6 +425,9 @@ class WT_VerticalAutopilot {
                 this._navModeSelector.setArmedVnavState();
             }
             if (this._navModeSelector.currentArmedVnavState === VerticalNavModeState.FLC && this._constraintStatus !== ConstraintStatus.LEVEL_CLIMB) {
+                this._navModeSelector.setArmedVnavState();
+            }
+            if (this._navModeSelector.currentArmedVnavState === VerticalNavModeState.NOPATH && this._vnavPathStatus !== VnavPathStatus.PATH_EXISTS) {
                 this._navModeSelector.setArmedVnavState();
             }
         }
@@ -446,8 +452,8 @@ class WT_VerticalAutopilot {
                             console.log("above path arming");
                             return true;
                         } else {
-                            console.log("no path");
                             this.setArmedVnavVerticalState(VerticalNavModeState.NOPATH);
+                            console.log("no path");
                         }
                     }
                 }
