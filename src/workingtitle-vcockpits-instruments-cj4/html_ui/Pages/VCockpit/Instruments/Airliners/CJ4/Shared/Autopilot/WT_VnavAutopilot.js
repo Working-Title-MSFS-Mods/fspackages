@@ -385,15 +385,14 @@ class WT_VerticalAutopilot {
         this.setSnowflake();
         this.monitorValues();
 
-        // TODO: intercept is too random, need to find better conditions @chris
         if (this._vnavPathStatus !== VnavPathStatus.PATH_ACTIVE && this.distanceToTod > 0.1) {
-            const timeToTod = this.distanceToTod / this.groundSpeed * 3600 + 20; // offsetting by 20 because intercept starts 20 secs before tod
-            console.log(timeToTod);
-            if (timeToTod <= 60) {
+            const todAlertDistance = AutopilotMath.calculateDescentDistance(this.path.fpa, 250) + (0.017 * this.groundSpeed);
+            if (todAlertDistance > this.distanceToTod) {
                 MessageService.getInstance().post(FMS_MESSAGE_ID.TOD, () => {
-                    return this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE || timeToTod >= 65 || this.distanceToTod < 0.1;
+                    return this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE || (todAlertDistance < this.distanceToTod - 0.2) || this.distanceToTod < 0.1;
                 }, () => {
-                    return timeToTod <= 6;
+                    const todBlinkDistance = AutopilotMath.calculateDescentDistance(this.path.fpa, 250) + (0.0014 * this.groundSpeed);
+                    return todBlinkDistance > this.distanceToTod;
                 });
             }
         }
