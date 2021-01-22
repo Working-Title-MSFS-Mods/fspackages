@@ -446,14 +446,14 @@ class WT_VerticalAutopilot {
 
     canPathActivate() {
         console.log("can path activate running");
-        if (this.path.deviation < 1000 && this.path.deviation > -300) {
+        if (this.path.deviation < 1000 && this.path.deviation > -250) {
             return true;
         }
         return false;
     }
 
     canGlidepathActivate() {
-        if (this.glidepath.deviation < 100 && this.glidepath.deviation > -300) {
+        if (this.glidepath.deviation < 100 && this.glidepath.deviation > -250) {
             return true;
         }
         return false;
@@ -461,7 +461,7 @@ class WT_VerticalAutopilot {
 
     canGlideslopeActivate() {
         const gs = this.trackGlideslope();
-        if (gs < 100 && gs > -300) {
+        if (gs < 100 && gs > -250) {
             return true;
         }
         return false;
