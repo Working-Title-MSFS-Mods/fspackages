@@ -237,6 +237,9 @@ class CJ4_FMC extends FMCMainDisplay {
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden1", "number", yokeHide);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden2", "number", yokeHide);
 
+        const hdg = WTDataStore.get("AP_HEADING", 0);
+        SimVar.SetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degree", hdg);
+
         // set constraint altitude to 0 on flight start/FMC reboot
         SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
 
@@ -769,7 +772,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
     updatePersistentHeading() {
         if (this._frameUpdates % 500 == 499) {
-            WTDataStore.set("AP_HEADING", SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree"));
+            WTDataStore.set("AP_HEADING", SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degree"));
         }
     }
 
