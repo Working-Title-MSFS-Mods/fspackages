@@ -1399,6 +1399,21 @@ export class FlightPlanManager {
   }
 
   /**
+   * Modifies a hold at the specified waypoint index in the flight plan.
+   * @param index The waypoint index to hold at.
+   * @param details The details of the hold to execute.
+   */
+  public async modifyHoldDetails(index: number, details: HoldDetails): Promise<void> {
+    const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    const waypoint = currentFlightPlan.getWaypoint(index);
+
+    if (waypoint && waypoint.hasHold) {
+      waypoint.holdDetails = details;
+      await this._updateFlightPlanVersion();
+    }
+  }
+
+  /**
    * Deletes a hold at the specified waypoint index in the flight plan.
    * @param index The waypoint index to delete the hold at.
    */

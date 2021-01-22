@@ -27,7 +27,7 @@ class NavPresetElement {
    */
   setDisplayed(displayed) {
     if (displayed !== this.isDisplayed) {
-      this.element.style.visibility = displayed ? '' : 'hidden';
+      this.element.style.display = displayed ? 'block' : 'none';
       this.isDisplayed = displayed;
     }
   }

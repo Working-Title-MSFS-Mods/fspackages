@@ -21,6 +21,7 @@ class CJ4_PFD extends BaseAirliners {
         this.fdMode = WTDataStore.get("CJ4_FD_MODE", 0);
         this._msgInfo = undefined;
         this.presetMapNavigationSource = 1;
+        this.previousNavToNavTransferState = 0;
     }
     get templateID() { return "CJ4_PFD"; }
     get IsGlassCockpit() { return true; }
@@ -94,6 +95,24 @@ class CJ4_PFD extends BaseAirliners {
                 dict.changed = false;
             }
 
+            const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+            if (this.previousNavToNavTransferState !== navToNavTransferState && navToNavTransferState === 3) {
+                this.radioNav.setRADIONAVSource(NavSource.VOR1);
+                this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
+
+                this.mapNavigationSource = 1;
+                this.presetMapNavigationSource = 0;
+                this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
+
+                if (this.mapDisplayMode === Jet_NDCompass_Display.PPOS) {
+                    this.mapDisplayMode = Jet_NDCompass_Display.ARC;
+                }
+
+                this.onModeChanged();
+            }
+
+            this.previousNavToNavTransferState = navToNavTransferState;
+
             if (this.mapNavigationMode === Jet_NDCompass_Navigation.VOR) {
                 const radioFix = this.radioNav.getVORBeacon(this.mapNavigationSource);
                 if (radioFix.name && radioFix.name.indexOf("ILS") !== -1) {
@@ -101,14 +120,7 @@ class CJ4_PFD extends BaseAirliners {
                 }
             }
 
-            const navTransferring = SimVar.GetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number');
-            if (navTransferring) {
-                if (this.mapNavigationMode === Jet_NDCompass_Navigation.NAV) {
-                    this.onEvent('Upr_Push_NAV');
-                }
-                    
-                SimVar.SetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number', 0);
-            }
+            
 
             // TODO: refactor VNAV alt to SVG          
 

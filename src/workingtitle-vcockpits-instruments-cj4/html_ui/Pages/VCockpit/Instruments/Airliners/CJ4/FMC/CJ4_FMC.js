@@ -73,7 +73,6 @@ class CJ4_FMC extends FMCMainDisplay {
         this._pfdMsgReceiver = new CJ4_PFD_MessageReceiver();
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_TOP, this._pfdMsgReceiver);
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_BOT, this._pfdMsgReceiver);
-
     }
 
     get templateID() {
@@ -515,6 +514,12 @@ class CJ4_FMC extends FMCMainDisplay {
             if (!this._navModeSelector) {
                 this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
             }
+
+            if (!this._navToNavTransfer) {
+                this._navToNavTransfer = new NavToNavTransfer(this.flightPlanManager, this.radioNav, this._navModeSelector);
+            }
+
+            this._navToNavTransfer.update(dt);
 
             //RUN VNAV ALWAYS
             if (this._vnav === undefined) {

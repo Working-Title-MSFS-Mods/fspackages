@@ -39,6 +39,9 @@ class LNavDirector {
 
     /** An instance of the localizer director. */
     this.locDirector = new LocDirector(navModeSelector);
+
+    /** The current nav sensitivity. */
+    this.currentNavSensitivity = NavSensitivity.NORMAL;
   }
 
   /**
@@ -59,6 +62,8 @@ class LNavDirector {
 
         const navSensitivity = this.getNavSensitivity(planeState.position);
         SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY', 'number', navSensitivity);
+
+        this.postDisplayedNavSensitivity(navSensitivity);
 
         const navSensitivityScalar = this.getNavSensitivityScalar(planeState.position, navSensitivity);
         SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number', navSensitivityScalar);
@@ -251,6 +256,7 @@ class LNavDirector {
       if (currentWaypoint && currentWaypoint.endsInDiscontinuity) {
         this.state = LNavState.IN_DISCONTINUITY;
         SimVar.SetSimVarValue("L:WT_CJ4_IN_DISCONTINUITY", "number", 1);
+        MessageService.getInstance().post(FMS_MESSAGE_ID.FPLN_DISCO, () => this.state !== LNavState.IN_DISCONTINUITY);
 
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
         LNavDirector.setCourse(SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG, planeState);
@@ -292,6 +298,31 @@ class LNavDirector {
    */
   setInhibitSequencing() {
     this.sequencingMode = FlightPlanSequencing.INHIBIT;
+  }
+
+  /**
+   * Posts the correct nav sensitivity to the displays.
+   * @param {number} navSensitivity The current nav sensitivity.
+   */
+  postDisplayedNavSensitivity(navSensitivity) {
+    if (navSensitivity !== this.currentNavSensitivity) {
+      this.currentNavSensitivity = navSensitivity;
+      
+      switch (this.currentNavSensitivity) {
+        case NavSensitivity.TERMINAL:
+          MessageService.getInstance().post(FMS_MESSAGE_ID.TERM, () => this.currentNavSensitivity !== NavSensitivity.TERMINAL);
+          break;
+        case NavSensitivity.TERMINALLPV:
+          MessageService.getInstance().post(FMS_MESSAGE_ID.TERM_LPV, () => this.currentNavSensitivity !== NavSensitivity.TERMINALLPV);
+          break;
+        case NavSensitivity.APPROACH:
+          MessageService.getInstance().post(FMS_MESSAGE_ID.APPR, () => this.currentNavSensitivity !== NavSensitivity.APPR);
+          break;
+        case NavSensitivity.APPROACH:
+          MessageService.getInstance().post(FMS_MESSAGE_ID.APPR_LPV, () => this.currentNavSensitivity !== NavSensitivity.APPROACHLPV);
+          break;
+      }
+    }
   }
 
   /**

@@ -102,7 +102,7 @@ class HoldsDirector {
     const windComponents = AutopilotMath.windComponents(holdDetails.holdCourse, planeState.windDirection, planeState.windSpeed);
     holdDetails.legDistance = ((holdDetails.speed + Math.abs(windComponents.headwind / 2)) / 3600) * holdDetails.legTime;
 
-    this.fpm.addHoldAtWaypointIndex(this.holdWaypointIndex, holdDetails);
+    this.fpm.modifyHoldDetails(this.holdWaypointIndex, holdDetails);
   }
 
   /** 

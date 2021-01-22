@@ -14,6 +14,8 @@ export enum FMS_MESSAGE_ID {
   TERM_LPV,
   APPR,
   APPR_LPV,
+  SEQ_INHIBIT,
+  LOC_WILL_BE_TUNED
 }
 
 /** A class that contains the CJ4 message definitions */
@@ -44,6 +46,10 @@ export class CJ4_MessageDefinitions {
       [new MessageDefinition("APPR", MESSAGE_TARGET.PFD_TOP)], MESSAGE_LEVEL.White, 52)],
     [FMS_MESSAGE_ID.APPR_LPV, new OperatingMessage(
       [new MessageDefinition("LPV APPR", MESSAGE_TARGET.PFD_TOP)], MESSAGE_LEVEL.White, 53)],
+    [FMS_MESSAGE_ID.SEQ_INHIBIT, new OperatingMessage(
+      [new MessageDefinition("SEQ INHB", MESSAGE_TARGET.PFD_TOP)], MESSAGE_LEVEL.White, 60)],
+    [FMS_MESSAGE_ID.LOC_WILL_BE_TUNED, new OperatingMessage(
+      [new MessageDefinition("LOC WILL BE TUNED", MESSAGE_TARGET.FMC)], MESSAGE_LEVEL.White, 50)],
   ]);
   
   /** Gets the message definitions */

@@ -158,7 +158,7 @@ class CJ4_FMC_HoldsPage {
 
         this._state.isModifying = true;
         this._fmc.fpHasChanged = true;
-        this._fmc.flightPlanManager.addHoldAtWaypointIndex(currentHold.index, newDetails)
+        this._fmc.flightPlanManager.modifyHoldDetails(currentHold.index, newDetails)
           .then(() => this.update());
       });
     }
@@ -189,7 +189,7 @@ class CJ4_FMC_HoldsPage {
 
         this._state.isModifying = true;
         this._fmc.fpHasChanged = true;
-        this._fmc.flightPlanManager.addHoldAtWaypointIndex(currentHold.index, newDetails)
+        this._fmc.flightPlanManager.modifyHoldDetails(currentHold.index, newDetails)
           .then(() => this.update());
       });
     }
@@ -220,7 +220,7 @@ class CJ4_FMC_HoldsPage {
 
         this._state.isModifying = true;
         this._fmc.fpHasChanged = true;
-        this._fmc.flightPlanManager.addHoldAtWaypointIndex(currentHold.index, newDetails)
+        this._fmc.flightPlanManager.modifyHoldDetails(currentHold.index, newDetails)
           .then(() => this.update());
       });
     }
@@ -240,7 +240,7 @@ class CJ4_FMC_HoldsPage {
       newDetails.holdSpeedType = speedType;
 
       this._state.isModifying = true;
-      this._fmc.flightPlanManager.addHoldAtWaypointIndex(currentHold.index, newDetails)
+      this._fmc.flightPlanManager.modifyHoldDetails(currentHold.index, newDetails)
         .then(() => this.update());
     });
   }

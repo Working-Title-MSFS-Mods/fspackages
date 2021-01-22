@@ -579,8 +579,8 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
-                        const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-                        if (navSensitivity >= 1) {
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        if (navToNavTransferState === 2 || navToNavTransferState === 3) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
 
                             if (this.navTransferTuning && this.navPreset) {
