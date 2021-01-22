@@ -1,3 +1,6 @@
+const { FMS_MESSAGE_ID } = require("../../../../../../../../../wtsdk/src/wtsdk");
+const { MessageService } = require("../../WTLibs/wtsdk");
+
 /** A class that manages lateral guidance for holds. */
 class HoldsDirector {
 
@@ -74,7 +77,7 @@ class HoldsDirector {
             break;
         }
       }
-      
+
       this.fixCoords = fixCoords;
       this.prevFixCoords = prevFixCoords;
 
@@ -150,6 +153,12 @@ class HoldsDirector {
 
     const distanceRemaining = this.calculateDistanceRemaining(planeState);
     SimVar.SetSimVarValue("L:WT_CJ4_WPT_DISTANCE", "number", distanceRemaining);
+
+    if (this.isHoldActive()) {
+      MessageService.getInstance().post(FMS_MESSAGE_ID.HOLD, () => {
+        return !this.isHoldActive();
+      });
+    }
   }
 
   /**
@@ -183,7 +192,7 @@ class HoldsDirector {
       if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
         this.recalculateHold(planeState);
         this.cancelAlert();
-  
+
         SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', this.holdWaypointIndex);
         this.state = HoldsDirectorState.OUTBOUND;
       }
@@ -206,7 +215,7 @@ class HoldsDirector {
       if (this.isAbeam(dtk, planeState.position, this.fixCoords)) {
         this.recalculateHold(planeState);
         this.cancelAlert();
-  
+
         SimVar.SetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number', this.holdWaypointIndex);
         this.state = HoldsDirectorState.ENTRY_PARALLEL_OUTBOUND;
       }
@@ -215,7 +224,7 @@ class HoldsDirector {
         this.trackLeg(this.prevFixCoords, this.fixCoords, planeState);
       }
     }
-    
+
     if (this.state === HoldsDirectorState.ENTRY_PARALLEL_OUTBOUND) {
       const dtk = AutopilotMath.desiredTrack(this.parallelLeg[0], this.parallelLeg[1], planeState.position);
 
@@ -280,7 +289,7 @@ class HoldsDirector {
       else {
         this.trackLeg(this.inboundLeg[0], this.inboundLeg[1], planeState);
         this.alertIfClose(planeState, this.inboundLeg[1]);
-      } 
+      }
     }
   }
 
@@ -441,15 +450,15 @@ class HoldsDirector {
    */
   isReadyOrEntering(index) {
     return this.state === HoldsDirectorState.NONE
-    || this.state === HoldsDirectorState.EXITED
-    || (
-      this.holdWaypointIndex === index
+      || this.state === HoldsDirectorState.EXITED
+      || (
+        this.holdWaypointIndex === index
         && (
           this.state === HoldsDirectorState.ENTRY_TEARDROP_INBOUND
           || this.state === HoldsDirectorState.ENTRY_PARALLEL_INBOUND
           || this.state === HoldsDirectorState.ENTRY_DIRECT_INBOUND
         )
-    );
+      );
   }
 
   /**
@@ -514,8 +523,8 @@ class HoldsDirector {
   static calculateHoldFixes(holdFixCoords, holdDetails) {
     let holdCourse = holdDetails.holdCourse;
     if (!holdDetails.isHoldCourseTrue) {
-        const magVar = GeoMath.getMagvar(holdFixCoords.lat, holdFixCoords.long);
-        holdCourse = GeoMath.removeMagvar(holdCourse, magVar);
+      const magVar = GeoMath.getMagvar(holdFixCoords.lat, holdFixCoords.long);
+      holdCourse = GeoMath.removeMagvar(holdCourse, magVar);
     }
 
     const windComponents = AutopilotMath.windComponents(holdCourse, holdDetails.windDirection, holdDetails.windSpeed);
