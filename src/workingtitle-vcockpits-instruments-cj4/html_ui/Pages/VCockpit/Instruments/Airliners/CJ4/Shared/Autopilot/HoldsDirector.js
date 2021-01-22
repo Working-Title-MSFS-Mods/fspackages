@@ -1,6 +1,3 @@
-const { FMS_MESSAGE_ID } = require("../../../../../../../../../wtsdk/src/wtsdk");
-const { MessageService } = require("../../WTLibs/wtsdk");
-
 /** A class that manages lateral guidance for holds. */
 class HoldsDirector {
 
