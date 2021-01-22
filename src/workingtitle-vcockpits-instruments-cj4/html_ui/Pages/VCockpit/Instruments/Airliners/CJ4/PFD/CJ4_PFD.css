@@ -784,7 +784,7 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    font-size: calc(2.1 * 1vh * var(--bodyHeightScale));
+    font-size: calc(1.9 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Coms #Com1_Value,
@@ -793,7 +793,7 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Atc1_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Unit {
-    font-size: calc(2.1 * 1vh * var(--bodyHeightScale));
+    font-size: calc(2.3 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Cabs {
