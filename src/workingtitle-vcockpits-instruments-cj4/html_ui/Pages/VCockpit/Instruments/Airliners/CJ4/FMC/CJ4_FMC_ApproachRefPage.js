@@ -282,7 +282,7 @@ class CJ4_FMC_ApproachRefPage {
             ["OFF[green]/[white]ON[s-text]"],
             ["", "V[d-text blue]REF:[s-text blue] " + formatNumber(vRef) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + formatNumber(vApp) + "[s-text + " + vspeedColor + "]"],
+            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + Math.ceil(vApp) + "[s-text + " + vspeedColor + "]"],
             [ldgWtText + "/" + grossWeightText + "[s-text]"],
             [" LFL/" + arrRunwayOutput + "[blue]"],
             [landingDistText + "/" + arrRunwayLengthText + "[s-text]"],

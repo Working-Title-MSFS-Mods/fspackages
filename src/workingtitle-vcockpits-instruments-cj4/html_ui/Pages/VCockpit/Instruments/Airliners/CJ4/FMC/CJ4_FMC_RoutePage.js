@@ -104,6 +104,11 @@ class CJ4_FMC_RoutePage {
             if (flightNoValue) {
                 this._flightNoCell = flightNoValue;
             }
+            this._depRwyCell = "";
+            const selectedDepRunway = this._fmc.flightPlanManager.getDepartureRunway();
+            if (selectedDepRunway) {
+                this._depRwyCell = "RW" + selectedDepRunway.designation;
+            }
         }
 
         if (this._fmc.flightPlanManager.getCurrentFlightPlanIndex() === 1) {
@@ -168,7 +173,7 @@ class CJ4_FMC_RoutePage {
             [" ROUTE[blue]", "ALTN[blue] "],
             ["----------", "----"],
             ["", "ORIG RWY[blue] "],
-            [""],
+            ["", this._depRwyCell],
             [" VIA[blue]", "TO[blue] "],
             this._rows[0].getTemplate()[0],
             ["----------------[blue]", "FLT NO[blue] "],
