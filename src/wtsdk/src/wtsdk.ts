@@ -11,3 +11,6 @@ export * from "./cj4/pfd/CJ4_PFD_MsgInfo";
 export * from "./flightplanning/GeoMath";
 export * from "./flightplanning/GPS";
 export * from "./flightplanning/WorldMagneticModel";
+export * from "./flightplanning/WaypointBuilder";
+export * from "./flightplanning/ProcedureDetails";
+export * from "./flightplanning/DirectTo";
