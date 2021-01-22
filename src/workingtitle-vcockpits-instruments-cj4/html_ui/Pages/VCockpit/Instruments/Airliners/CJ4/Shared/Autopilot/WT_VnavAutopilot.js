@@ -1,3 +1,5 @@
+const { threadId } = require("worker_threads");
+
 class WT_VerticalAutopilot {
     constructor(vnav, modeSelector) {
 
@@ -789,6 +791,9 @@ class WT_VerticalAutopilot {
         }
         setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
         this.vsSlot2Value = setVerticalSpeed;
+        if (this.vsSlot !== 2) {
+            this.vsSlot = 2;
+        }
     }
 
     /**
