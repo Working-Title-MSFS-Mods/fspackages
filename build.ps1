@@ -130,6 +130,10 @@ function Wait-FileChange {
                 Push-Location "src\wtsdk"
                 $global:FileChanged = $true
                 & npm run build | Write-Host
+                if (!$?) {
+                    Pop-Location 
+                    throw "npm build failed"
+                }
                 Pop-Location           
                 Write-Host "build finished" -ForegroundColor Green
             }
@@ -148,6 +152,10 @@ if($Project -Like "*cj4*"){
     Write-Host "npm run build...please wait..." -ForegroundColor Yellow
     Push-Location "src\wtsdk"
     & npm run build | Write-Host
+    if (!$?) {
+        Pop-Location 
+        throw "npm build failed"
+    }
     Pop-Location  
 }
 
