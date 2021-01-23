@@ -1,5 +1,3 @@
-const { threadId } = require("worker_threads");
-
 class WT_VerticalAutopilot {
     constructor(vnav, modeSelector) {
 
