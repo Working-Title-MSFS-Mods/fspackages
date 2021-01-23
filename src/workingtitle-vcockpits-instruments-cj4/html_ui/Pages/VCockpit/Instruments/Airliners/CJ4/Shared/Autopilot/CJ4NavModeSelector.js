@@ -1060,7 +1060,7 @@ class CJ4NavModeSelector {
       approach = destination.infos.approaches[flightPlan.procedureDetails.approachIndex];
     }
 
-    const approachName = approach && approach.name;
+    const approachName = approach ? approach.name : '';
 
     if (approachName.startsWith('RN')) {
       this.approachMode = WT_ApproachType.RNAV;
