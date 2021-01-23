@@ -52,11 +52,17 @@ class SvgFlightPlanElement extends SvgMapElement {
 
                 const activeWaypointIndex = plan.activeWaypointIndex;
                 const missedSegment = plan.getSegment(SegmentType.Missed);
+                const approachSegment = plan.getSegment(SegmentType.Approach);
+                const drawDestination = approachSegment.waypoints.length === 0;
 
                 if (waypoints.length > 1) {
 
                     const inMissedApproach = activeWaypointIndex >= missedSegment.offset;
-                    const mainPathEnd = inMissedApproach ? waypoints.length - 1 : missedSegment.offset;
+                    let mainPathEnd = inMissedApproach ? waypoints.length - 1 : missedSegment.offset;
+
+                    if (drawDestination) {
+                        mainPathEnd++;
+                    }
 
                     //Active leg
                     if (waypoints[activeWaypointIndex] && waypoints[activeWaypointIndex - 1]) {
@@ -66,7 +72,7 @@ class SvgFlightPlanElement extends SvgMapElement {
                     //Missed approach preview
                     if (!inMissedApproach) {
                         this.buildPathFromWaypoints(waypoints, missedSegment.offset - 1, waypoints.length - 1, map, 'cyan', (index !== 0));
-                    }  
+                    }
 
                     //Remainder of plan
                     this.buildPathFromWaypoints(waypoints, activeWaypointIndex, mainPathEnd, map, 'white', (index !== 0));
@@ -92,7 +98,7 @@ class SvgFlightPlanElement extends SvgMapElement {
         } else {
             context.setLineDash([]);
         }
-    
+
         let prevWaypoint;
         for (let i = startIndex; i < endIndex; i++) {
             const waypoint = waypoints[i];
