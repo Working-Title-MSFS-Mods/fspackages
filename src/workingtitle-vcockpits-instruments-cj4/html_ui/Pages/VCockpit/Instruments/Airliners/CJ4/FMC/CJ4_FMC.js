@@ -555,11 +555,26 @@ class CJ4_FMC extends FMCMainDisplay {
                 Coherent.call("HEADING_BUG_SET", 2, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
             }
 
+                state.position = new LatLongAlt(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+    state.magVar = SimVar.GetSimVarValue("MAGVAR", "degrees");
+
+    state.groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+    state.trueAirspeed = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+
+    state.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
+    state.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
+
+    state.trueHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
+    state.magneticHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
+    state.trueTrack = SimVar.GetSimVarValue('GPS GROUND TRUE TRACK', 'Radians') * Avionics.Utils.RAD2DEG;
+    
+    state.bankAngle = SimVar.GetSimVarValue('PLANE BANK DEGREES', 'Radians') * Avionics.Utils.RAD2DEG;
+
             //WT MANUAL BANK FD
             const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
             if (fdOn && !this._apMasterStatus) {
                 const bank = 0;
-                const planeHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees');
+                const planeHeading = Simplane.getHeadingMagnetic();
                 const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
                 if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV
                     || this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO || this._navModeSelector.currentLateralActiveState === LateralNavModeState.GA)) {
@@ -577,18 +592,16 @@ class CJ4_FMC extends FMCMainDisplay {
                         const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
                         const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
                         const correctionAngle = 0.23 * cdi;
-                        const desiredHeading = loc + correctionAngle;
-                        const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-                        const windCorrectedHeading = this._lnav.normalizeCourse(desiredHeading - this._lnav.calculateWindCorrection(desiredHeading, airspeedTrue));
+                        const desiredHeading = AutopilotMath.normalizeHeading(loc + correctionAngle);
+                        const windCorrectedHeading = AutopilotMath.normalizeHeading(desiredHeading - AutopilotMath.windCorrectionAngle(desiredHeading, Simplane.getTrueSpeed(), Simplane.getWindDirection(), Simplane.getWindStrength()));
                         const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
                         this.driveFlightDirector(deltaAngle, bank);
                     } else if (signal && !isIls) {
                         const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
                         const obs = SimVar.GetSimVarValue("NAV OBS:" + nav, "degrees");
                         const correctionAngle = 0.23 * cdi;
-                        const desiredHeading = obs + correctionAngle;
-                        const airspeedTrue = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-                        const windCorrectedHeading = this._lnav.normalizeCourse(desiredHeading - this._lnav.calculateWindCorrection(desiredHeading, airspeedTrue));
+                        const desiredHeading = AutopilotMath.normalizeHeading(obs + correctionAngle);
+                        const windCorrectedHeading = AutopilotMath.normalizeHeading(desiredHeading - AutopilotMath.windCorrectionAngle(desiredHeading, Simplane.getTrueSpeed(), Simplane.getWindDirection(), Simplane.getWindStrength()));
                         const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
                         this.driveFlightDirector(deltaAngle, bank);
                     } else {
