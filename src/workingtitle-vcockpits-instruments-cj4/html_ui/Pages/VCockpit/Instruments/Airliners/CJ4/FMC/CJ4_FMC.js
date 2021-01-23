@@ -555,21 +555,6 @@ class CJ4_FMC extends FMCMainDisplay {
                 Coherent.call("HEADING_BUG_SET", 2, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
             }
 
-                state.position = new LatLongAlt(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-    state.magVar = SimVar.GetSimVarValue("MAGVAR", "degrees");
-
-    state.groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-    state.trueAirspeed = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
-
-    state.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
-    state.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
-
-    state.trueHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
-    state.magneticHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
-    state.trueTrack = SimVar.GetSimVarValue('GPS GROUND TRUE TRACK', 'Radians') * Avionics.Utils.RAD2DEG;
-    
-    state.bankAngle = SimVar.GetSimVarValue('PLANE BANK DEGREES', 'Radians') * Avionics.Utils.RAD2DEG;
-
             //WT MANUAL BANK FD
             const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
             if (fdOn && !this._apMasterStatus) {
