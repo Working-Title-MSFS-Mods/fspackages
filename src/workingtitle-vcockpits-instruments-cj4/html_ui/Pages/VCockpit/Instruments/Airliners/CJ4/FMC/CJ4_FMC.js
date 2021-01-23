@@ -398,8 +398,10 @@ class CJ4_FMC extends FMCMainDisplay {
                 value = this._fmcMsgReceiver.getMsgText();
             }
         }
-        this._msg = value;
-        this._templateRenderer.setMsg(value);
+        if (value !== this._msg) {
+            this._msg = value;
+            this._templateRenderer.setMsg(value);
+        }
     }
 
     clearDisplay() {
