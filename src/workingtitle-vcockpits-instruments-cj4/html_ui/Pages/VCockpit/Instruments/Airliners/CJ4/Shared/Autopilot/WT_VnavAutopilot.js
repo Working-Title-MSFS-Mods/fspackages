@@ -189,7 +189,7 @@ class WT_VerticalAutopilot {
         const currentIndex = this._vnav.flightplan.activeWaypointIndex;
         const currentSegmentIndex = this._vnav._verticalFlightPlan[currentIndex].segment;
         let segment = this._vnav._verticalFlightPlanSegments.length - 1;
-        if (currentSegmentIndex) {
+        if (currentSegmentIndex >= 0) {
             segment = currentSegmentIndex;
         }
         return this._vnav._verticalFlightPlanSegments[segment];
@@ -277,11 +277,14 @@ class WT_VerticalAutopilot {
                 if (this.canPathActivate()) {
                     console.log("path activate");
                     this._vnavPathStatus = VnavPathStatus.PATH_ACTIVE;
-                    this.fmaVerticalActiveState = VerticalNavModeState.PATH;
+                    this.verticalMode = VerticalNavModeState.PATH;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     if (this._glidepathStatus === GlidepathStatus.GP_ACTIVE) {
                         this._glidepathStatus = GlidepathStatus.NONE;
                     }
+                }
+                if (this._pathInterceptStatus === PathInterceptStatus.LEVELED) {
+                    this.manageAltitude();
                 }
                 break;
             case VnavPathStatus.PATH_ACTIVE:
@@ -447,7 +450,7 @@ class WT_VerticalAutopilot {
                     const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
                     const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
                     if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
-                        && this.verticalSpeed > reqVs && this.selectedAltitude < this.indicatedAltitude - 100) {
+                        && this.selectedAltitude < this.indicatedAltitude - 100) {
                         console.log("normal path arming");
                         return true;
                     } else if (this.path.deviation > 1000 && this.selectedAltitude < this.indicatedAltitude - 100) {
@@ -455,8 +458,9 @@ class WT_VerticalAutopilot {
                             console.log("above path arming");
                             return true;
                         } else {
-                            this.setArmedVnavVerticalState(VerticalNavModeState.NOPATH);
-                            console.log("no path");
+                            if (this._navModeSelector.currentArmedVnavState !== VerticalNavModeState.NOPATH) {
+                                this.setArmedVnavVerticalState(VerticalNavModeState.NOPATH);
+                            }
                         }
                     }
                 }
@@ -465,7 +469,6 @@ class WT_VerticalAutopilot {
     }
 
     canPathActivate() {
-        console.log("can path activate running");
         if (this.path.deviation < 1000 && this.path.deviation > -250) {
             return true;
         }
@@ -648,6 +651,8 @@ class WT_VerticalAutopilot {
                     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.PATH;
                     this._vnavPathStatus = VnavPathStatus.NONE;
                 } else if (!this.path.fpta || this.vnavState === VnavState.NONE) {
+                    console.log("this.path.fpta " + this.path.fpta);
+                    console.log("leveled this.vnavState " + this.vnavState);
                     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.NONE;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     this._vnavPathStatus = VnavPathStatus.NONE;
@@ -655,6 +660,7 @@ class WT_VerticalAutopilot {
                     this.vsSlot = 1;
                     this.vsSlot2Value = 0;
                 } else if (this.path.fpa == 0) {
+                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
                     this.currentAltitudeTracking = AltitudeState.MANAGED;
                     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.PATH;
                     this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.ALTV;
