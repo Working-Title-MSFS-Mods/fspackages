@@ -62,8 +62,6 @@ class LocDirector {
       if (Math.abs(radioState.lateralDevation) < 120) {
         this.state = LocDirectorState.ACTIVE;
         this.navModeSelector.queueEvent(NavModeEvent.LOC_ACTIVE);
-
-        SimVar.SetSimVarValue('L:WT_CJ4_NAV_TRANSFER', 'number', 1);
       }
     }
     else {

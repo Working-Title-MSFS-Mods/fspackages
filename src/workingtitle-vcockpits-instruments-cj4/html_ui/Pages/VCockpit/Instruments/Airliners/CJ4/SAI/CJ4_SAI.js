@@ -1144,4 +1144,3 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
 }
 customElements.define('cj4-sai-compass-indicator', CJ4_SAI_CompassIndicator);
 registerInstrument("cj4-sai-display-element", CJ4_SAI);
-//# sourceMappingURL=CJ4_SAI.js.map

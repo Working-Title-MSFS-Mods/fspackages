@@ -1,11 +1,23 @@
-import { DirectTo } from './flightplanning/DirectTo';
-import { FlightPlanManager } from './flightplanning/FlightPlanManager';
-import { FlightPlanSegment } from './flightplanning/FlightPlanSegment';
-import { GPS } from './flightplanning/GPS';
-import { HoldDetails } from './flightplanning/HoldDetails';
-import { LegsProcedure } from './flightplanning/LegsProcedure';
-import { ManagedFlightPlan } from './flightplanning/ManagedFlightPlan';
-import { ProcedureDetails } from './flightplanning/ProcedureDetails';
-import { RawDataMapper } from './flightplanning/RawDataMapper';
+export * from "./flightplanning/FlightPlanManager";
+export * from "./flightplanning/ManagedFlightPlan";
+export * from "./flightplanning/FlightPlanSegment";
+export * from "./flightplanning/HoldDetails";
+export * from "./flightplanning/GeoMath";
+export * from "./flightplanning/GPS";
+export * from "./flightplanning/WorldMagneticModel";
+export * from "./flightplanning/WaypointBuilder";
+export * from "./flightplanning/ProcedureDetails";
+export * from "./flightplanning/DirectTo";
 
-export { DirectTo, FlightPlanManager, FlightPlanSegment, GPS, LegsProcedure, ManagedFlightPlan, ProcedureDetails, RawDataMapper, HoldDetails }
+export * from "./messages/MessageService";
+export * from "./messages/Message";
+export * from "./messages/MessageDefinition";
+
+export * from "./cj4/CJ4_MessageDefinitions";
+export * from "./cj4/fmc/pages/CJ4_FMC_MsgPage";
+export * from "./cj4/fmc/CJ4_FMC_NavigationService";
+export * from "./cj4/fmc/CJ4_FMC_MessageReceiver";
+export * from "./cj4/pfd/CJ4_PFD_MsgInfo";
+export * from "./cj4/pfd/CJ4_PFD_MessageReceiver";
+export * from "./cj4/pfd/CJ4_PFD_Message";
+export * from "./cj4/pfd/CJ4_PFD_MessagePacket";

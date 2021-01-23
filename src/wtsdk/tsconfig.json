@@ -1,22 +1,29 @@
 {
     "compilerOptions": {
-        "target": "ES2017",
-        "typeRoots": [
-            "./types"
-        ],
-        "lib": [
-            "es2017",
-            "dom"
-        ],
+        "moduleResolution": "node",
+        "target": "ES2015",
+        "module":"ES2015",
+        "lib": ["es2015", "es2016", "es2017", "dom"],
+        // TODO lets enable strict when he have time to fix all 
         "allowJs": true,
-        "isolatedModules": true,
-        "esModuleInterop": true,
-        "outDir": "./.tmp",
-        "sourceMap": false,
+        "strict": false,
+        "sourceMap": true,
+        "declaration": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "skipLibCheck": true,
-
+        "declarationDir": "dist/types",
+        "outDir": "dist",
+        "typeRoots": [
+            // "./node_modules/@types",
+            "./src/types"
+        ],
     },
+    "filesGlob": [
+        "./src/types/*.d.ts"
+    ],
     "include": [
-        "src"
+        "./src"
     ]
 }

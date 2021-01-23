@@ -16,8 +16,11 @@ class CJ4NavModeSelector {
     /** The current flight plan version. */
     this.currentPlanVersion = 0;
 
-    /** The current loaded approach name. */
-    this.currentApproachName = '';
+    /** The current loaded approach index. */
+    this.currentApproachIndex = undefined;
+
+    /** The current loaded destination runway index. */
+    this.currentDestinationRunwayIndex = undefined;
 
     /** The current active lateral nav mode. */
     this.currentLateralActiveState = LateralNavModeState.ROLL;
@@ -190,13 +193,16 @@ class CJ4NavModeSelector {
     if (planVersion != this.currentPlanVersion) {
       this.currentPlanVersion = planVersion;
 
-      const approach = this.flightPlanManager.getApproach();
-      if (approach && approach.name !== this.currentApproachName) {
-        this.currentApproachName = approach.name;
+      const flightPlan = this.flightPlanManager.getFlightPlan(0);
+      const approachIndex = flightPlan.procedureDetails.approachIndex;
+      const destinationRunwayIndex = flightPlan.procedureDetails.destinationRunwayIndex;
+
+      if (approachIndex !== this.currentApproachIndex) {
+        this.currentApproachIndex = approachIndex;
         this.queueEvent(NavModeEvent.APPROACH_CHANGED);
       }
-      else if (this.flightPlanManager.getFlightPlan(0).procedureDetails.destinationRunwayIndex !== -1) {
-        this.currentApproachName = 'VISUAL';
+      else if (approachIndex === -1 && this.currentDestinationRunwayIndex !== destinationRunwayIndex) {
+        this.currentDestinationRunwayIndex = destinationRunwayIndex;
         this.queueEvent(NavModeEvent.APPROACH_CHANGED);
       }
     }
@@ -1045,7 +1051,18 @@ class CJ4NavModeSelector {
    * Handles when the currently loaded approach has been changed.
    */
   handleApproachChanged() {
-    if (this.currentApproachName.startsWith('RN')) {
+
+    let approach = undefined;
+    
+    const flightPlan = this.flightPlanManager.getFlightPlan(0);
+    const destination = flightPlan.destinationAirfield;
+    if (destination) {
+      approach = destination.infos.approaches[flightPlan.procedureDetails.approachIndex];
+    }
+
+    const approachName = approach ? approach.name : '';
+
+    if (approachName.startsWith('RN')) {
       this.approachMode = WT_ApproachType.RNAV;
       if (this.currentLateralActiveState === LateralNavModeState.APPR) {
         this.isVNAVOn = false;
@@ -1060,7 +1077,7 @@ class CJ4NavModeSelector {
       // }
     }
 
-    if (this.currentApproachName.startsWith('ILS') || this.currentApproachName.startsWith('LDA')) {
+    if (approachName.startsWith('ILS') || approachName.startsWith('LDA')) {
       this.approachMode = WT_ApproachType.ILS;
       if (this.currentLateralActiveState === LateralNavModeState.APPR) {
         this.isVNAVOn = false;

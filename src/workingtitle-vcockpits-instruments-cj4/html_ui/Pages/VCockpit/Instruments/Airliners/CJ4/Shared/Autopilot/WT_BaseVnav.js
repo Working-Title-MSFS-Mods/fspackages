@@ -12,18 +12,18 @@ class WT_BaseVnav {
          */
         this._fpm = fpm;
 
-         /**
-         * The FMC class
-         * @type {CJ4_FMC}
-         */
+        /**
+        * The FMC class
+        * @type {CJ4_FMC}
+        */
         this._fmc = fmc;
 
-         /**
-         * Whether VNAV is calculating or not
-         * @type {boolean}
-         */
+        /**
+        * Whether VNAV is calculating or not
+        * @type {boolean}
+        */
         this._vnavCalculating = false;
-       
+
         /**
          * Whether VNAV is calculating or not
          * @type {WayPoint}
@@ -36,10 +36,10 @@ class WT_BaseVnav {
          */
         this._verticalFlightPlan = [];
 
-         /**
-         * The vertical flight plan array of VNAV segments
-         * @type {Array}
-         */
+        /**
+        * The vertical flight plan array of VNAV segments
+        * @type {Array}
+        */
         this._verticalFlightPlanSegments = [];
 
         /**
@@ -61,6 +61,12 @@ class WT_BaseVnav {
         this._firstPossibleDescentIndex = 0;
 
         /**
+         * The index of the last waypoint that is a climb/departure waypoint.
+         * @type {number}
+         */
+        this._lastClimbIndex = 0;
+
+        /**
          * The index of the first path segment (path segments run in reverse order to 0,
          * so the first one is the highest number).
          * @type {number}
@@ -73,11 +79,11 @@ class WT_BaseVnav {
          */
         this._pathExists = false;
 
-         /**
-         * The next constraint.
-         * @type {object}
-         */
-        this._activeConstraint = { };
+        /**
+        * The next constraint.
+        * @type {object}
+        */
+        this._activeConstraint = {};
 
         /**
          * The furthest distance away to show a constraint on the PFD.
@@ -158,8 +164,6 @@ class WT_BaseVnav {
         this._vnavState = value;
     }
 
-
-
     /**
      * Run on first activation.
      */
@@ -190,9 +194,9 @@ class WT_BaseVnav {
             this._currentDistanceInFP = this._activeWaypoint.cumulativeDistanceInFP - this._activeWaypointDist;
 
             if (this._fpChecksum !== this.flightplan.checksum) {
-                this._activeConstraint = { };
+                this._activeConstraint = {};
                 this._atConstraints = [];
-                switch(this._vnavState) {
+                switch (this._vnavState) {
                     case VnavState.NONE:
                     case VnavState.PATH:
                         this.vnavState = this.buildVerticalFlightPlan();
@@ -203,7 +207,7 @@ class WT_BaseVnav {
                 if (this._fpm.isLoadedApproach()) {
                     this._approachGlidePath = this.buildGlidepath();
 
-                } else {this._approachGlidePath = undefined;}
+                } else { this._approachGlidePath = undefined; }
 
                 this._fpChecksum = this.flightplan.checksum;
             }
@@ -243,7 +247,7 @@ class WT_BaseVnav {
     }
 
     reactivateVerticalDirect() {
-        const directWaypoint = this.allWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident) });
+        const directWaypoint = this.allWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident); });
         if (directWaypoint) {
             const directWaypointIndex = this.allWaypoints.indexOf(directWaypoint);
             let constraintAddedBeforeDirectWaypoint = false;
@@ -276,12 +280,13 @@ class WT_BaseVnav {
     buildVerticalFlightPlan(verticalDirect = false, vDirectTargetIndex, vDirectAltitude, vDirectFpa) {
         this._verticalFlightPlan = [];
         this._atConstraints = [];
-        this._activeConstraint = { };
+        this._activeConstraint = {};
         const waypointCount = this.allWaypoints.length;
         let lastClimbIndex = 0;
+        let firstPossibleDescentIndex = 0;
         let firstApproachWaypointIndex = this.getFirstApproachWaypointIndex();
         let lastApproachWaypointIndex = this.getLastApproachWaypointIndex();
-       
+
         for (let i = 0; i < waypointCount; i++) { //Assemble this._verticalFlightPlan
             const segmentType = this._fpm.getSegmentFromWaypoint(this.allWaypoints[i]).type;
             const isClimb = (segmentType === SegmentType.Departure || segmentType === SegmentType.Missed) ? true : false;
@@ -305,11 +310,11 @@ class WT_BaseVnav {
                 const atConstraint = {
                     index: i,
                     altitude: vwp.waypointFPTA
-                }
+                };
                 this._atConstraints.push(atConstraint);
             }
             if (verticalDirect && i <= vDirectTargetIndex) {
-                switch(i) {
+                switch (i) {
                     case vDirectTargetIndex:
                         vwp.upperConstraintAltitude = vDirectAltitude;
                         vwp.lowerConstraintAltitude = vDirectAltitude;
@@ -325,6 +330,7 @@ class WT_BaseVnav {
             }
             this._verticalFlightPlan.push(vwp);
             lastClimbIndex = (isClimb && i < lastApproachWaypointIndex) ? i : lastClimbIndex;
+            firstPossibleDescentIndex = (isClimb && vwp.hasConstraint && i < lastApproachWaypointIndex) ? i : firstPossibleDescentIndex;
         }
         console.log("lastClimbIndex " + lastClimbIndex);
         this._verticalFlightPlanSegments = [];
@@ -348,7 +354,8 @@ class WT_BaseVnav {
                 segment = segment + 1;
             }
         }
-        this._firstPossibleDescentIndex = lastClimbIndex + 1;
+        this._lastClimbIndex = lastClimbIndex;
+        this._firstPossibleDescentIndex = firstPossibleDescentIndex + 1;
         this._firstPathSegment = this._verticalFlightPlanSegments.length - 1;
         const isPath = segment === 0 & nextSegmentEndIndex === undefined ? false : true;
         const state = verticalDirect ? VnavState.DIRECT : isPath ? VnavState.PATH : VnavState.NONE;
@@ -358,8 +365,8 @@ class WT_BaseVnav {
 
     isSegmentFlat(endingIndex, waypointFPTA) {
         for (let i = this._atConstraints.length - 1; i >= 0; i--) {
-            if (this._atConstraints[i].index < endingIndex && !this._verticalFlightPlan[this._atConstraints[i].index].isClimb && 
-                    waypointFPTA == this._atConstraints[i].altitude) {
+            if (this._atConstraints[i].index < endingIndex && !this._verticalFlightPlan[this._atConstraints[i].index].isClimb &&
+                waypointFPTA == this._atConstraints[i].altitude) {
                 return this._atConstraints[i].index;
             }
         }
@@ -409,7 +416,7 @@ class WT_BaseVnav {
                         break;
                     }
                     if (fpa <= segmentMinFPA) {
-                        bestFPA = segmentMinFPA
+                        bestFPA = segmentMinFPA;
                         console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to segmentMinFPA " + bestFPA);
                         break;
                     }
@@ -461,7 +468,7 @@ class WT_BaseVnav {
             this._verticalFlightPlan[l].waypointFPA = bestFPA;
             console.log("setting: " + this._verticalFlightPlan[l].ident + " FPA: " + bestFPA + " segment: " + segment);
         }
-        switch(segmentIsFirst) {
+        switch (segmentIsFirst) {
             case true:
                 break;
             case false:
@@ -505,8 +512,8 @@ class WT_BaseVnav {
             lowerConstraint: 0,
             isAtConstraint: false,
             hasConstraint: false
-        }
-        switch(waypoint.legAltitudeDescription) {
+        };
+        switch (waypoint.legAltitudeDescription) {
             case 1:
                 constraints.upperConstraint = Math.floor(waypoint.legAltitude1);
                 constraints.lowerConstraint = Math.floor(waypoint.legAltitude1);
@@ -557,9 +564,9 @@ class WT_BaseVnav {
         }
         const constraintObject = {
             index: index,
-            altitude: Math.floor(constraint),
+            altitude: Math.round(constraint),
             isClimb: isClimb
-        }
+        };
         return constraintObject;
     }
 
@@ -583,7 +590,7 @@ class WT_BaseVnav {
     }
 
     manageConstraints() {
-        if (this._activeConstraint == { } || this._activeConstraint.index === undefined) {
+        if (this._activeConstraint == {} || this._activeConstraint.index === undefined) {
             this._activeConstraint = this.getConstraint();
         }
 
@@ -620,7 +627,7 @@ class WT_BaseVnav {
             deviation: undefined,
             fpa: undefined,
             fpta: undefined
-        }
+        };
         if (this._fpm.isLoadedApproach() && this._approachRunwayIndex === undefined && !this._fmc._fpHasChanged) {
             this.buildGlidepath();
         }
@@ -638,9 +645,14 @@ class WT_BaseVnav {
 
     trackPath() {
         const currentPathSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-        const flightPathTarget = this._verticalFlightPlanSegments[currentPathSegment].targetIndex;
+        //console.log("currentPathSegment " + currentPathSegment);
+        let trackSegment = currentPathSegment;
+        if (!currentPathSegment) {
+            trackSegment = this._verticalFlightPlanSegments.length - 1;
+        }
+        const flightPathTarget = this._verticalFlightPlanSegments[trackSegment].targetIndex;
         const fpta = this._verticalFlightPlan[flightPathTarget].waypointFPTA;
-        const fpa = this._verticalFlightPlanSegments[currentPathSegment].fpa;
+        const fpa = this._verticalFlightPlanSegments[trackSegment].fpa;
         const distance = this.allWaypoints[flightPathTarget].cumulativeDistanceInFP - this._currentDistanceInFP;
         const desiredAltitude = fpta + AutopilotMath.calculateFPTA(fpa, distance);
         SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", (this.indicatedAltitude - desiredAltitude));
@@ -648,13 +660,17 @@ class WT_BaseVnav {
             deviation: this.indicatedAltitude - desiredAltitude,
             fpa: fpa,
             fpta: fpta
-        }
+        };
         return path;
     }
 
     getDistanceToTarget() {
+        let segment = this._verticalFlightPlanSegments.length - 1;
         const currentPathSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-        const flightPathTarget = this._verticalFlightPlanSegments[currentPathSegment].targetIndex;
+        if (currentPathSegment) {
+            segment = currentPathSegment;
+        }
+        const flightPathTarget = this._verticalFlightPlanSegments[segment].targetIndex;
         return this.allWaypoints[flightPathTarget].cumulativeDistanceInFP - this._currentDistanceInFP;
     }
 
@@ -675,10 +691,21 @@ class WT_BaseVnav {
         let fpa = undefined;
         let todDistanceInFP = undefined;
         const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-        if (this._firstPathSegment >= 0 && this.flightplan.activeWaypointIndex < this._firstPossibleDescentIndex) {
+        if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE) {
+            if (currentSegment && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
+                todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[currentSegment].targetIndex].cumulativeDistanceInFP + this._verticalFlightPlanSegments[currentSegment].distanceToNextTod;
+                todExists = true;
+            } else {
+                todExists = false;
+            }
+        }
+        else if (this._firstPathSegment >= 0 && this.flightplan.activeWaypointIndex <= this._lastClimbIndex) {
             altitude = this._fmc.cruiseFlightLevel * 100;
             fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].waypointFPTA;
             fpa = this._verticalFlightPlanSegments[this._firstPathSegment].fpa;
+            if (this.indicatedAltitude > fpta + 100) {
+                altitude = this.indicatedAltitude;
+            }
             const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
             todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
             todExists = true;
@@ -686,11 +713,7 @@ class WT_BaseVnav {
         else if (this._firstPathSegment < 0 || !this._verticalFlightPlan[this.flightplan.activeWaypointIndex]) {
             todExists = false;
         }
-        else if (currentSegment && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
-            todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[currentSegment].targetIndex].cumulativeDistanceInFP + this._verticalFlightPlanSegments[currentSegment].distanceToNextTod;
-            todExists = true;
-        }
-        else if (this.flightplan.activeWaypointIndex >= this._firstPossibleDescentIndex) {
+        else if (this.flightplan.activeWaypointIndex > this._lastClimbIndex) {
             altitude = this.indicatedAltitude;
             if (currentSegment) {
                 fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
@@ -703,22 +726,22 @@ class WT_BaseVnav {
             }
         }
         if (todExists) {
-            this.setTodWaypoint(true, todDistanceInFP)
+            this.setTodWaypoint(true, todDistanceInFP);
         } else {
             this.setTodWaypoint();
         }
     }
 
     setTodWaypoint(calculate = false, todDistanceInFP) {
+
         if (calculate === true) {
-            const todDistanceFromDest = this.destination.cumulativeDistanceInFP - todDistanceInFP;
             const todDistanceFromCurrPos = todDistanceInFP < this._currentDistanceInFP ? 0 : todDistanceInFP - this._currentDistanceInFP;
+            const todDistanceFromDest = this.destination.cumulativeDistanceInFP - todDistanceInFP;
             // console.log("todDistanceInFP " + todDistanceInFP + " this._currentDistanceInFP " + this._currentDistanceInFP);
             // console.log("todDistanceFromCurrPos " + todDistanceFromCurrPos + " todDistanceFromDest " + todDistanceFromDest);
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", todDistanceFromDest);
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", todDistanceFromCurrPos);
-        }
-        else {
+        } else {
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", 0);
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", 0);
         }
@@ -763,15 +786,10 @@ class WT_BaseVnav {
                 }
                 const altitudeDifference = fafAltitude - lastApproachWaypoint.legAltitude1;
                 return AutopilotMath.calculateFPA(altitudeDifference, fafDistance);
-            } 
-        } 
+            }
+        }
         return undefined;
     }
-
-    setCheckPreselector() {
-        this._fmc.showErrorMessage("CHECK PRESELECTOR");
-    }
-
 }
 
 
@@ -780,83 +798,83 @@ class WT_BaseVnav {
  */
 class VerticalWaypoint {
     constructor(index = undefined, ident = undefined, isClimb = false) {
-      /** 
-       * The waypoint's index in the lateral flight plan. 
-       * @type {number}
-       */
-      this.indexInFlightPlan = index;
-        
-      /**
-       * The ident of the vertical waypoint.
-       * @type {string}
-       */
-      this.ident = ident;
-  
-      /**
-       * The calculated flight path angle TO the waypoint.
-       * @type {number}
-       */
-      this.waypointFPA = undefined;
-  
-      /**
-       * The calculated flight plan target altitude for the waypoint.
-       * @type {number}
-       */
-      this.waypointFPTA = undefined;
-  
-      /**
-       * The highest altitude allowed at this vertical wapyoint.
-       * @type {number}
-       */
-      this.upperConstraintAltitude = undefined;
-  
-      /**
-       * The lowest altitude allowed at this vertical wapyoint.
-       * @type {number}
-       */
-      this.lowerConstraintAltitude = undefined;
-  
-      /**
-       * The FPA from the upper constraint altitude to the next fixed vnav target.
-       * @type {number}
-       */
-      this.upperConstraintFPA = undefined;
-  
-      /**
-       * The FPA from the lower constraint altitude to the next fixed vnav target.
-       * @type {number}
-       */
-      this.lowerConstraintFPA = undefined;
+        /** 
+         * The waypoint's index in the lateral flight plan. 
+         * @type {number}
+         */
+        this.indexInFlightPlan = index;
 
-      /**
-       * The leg distance from the prior waypoint to this waypoint.
-       * @type {number}
-       */
-      this.legDistanceTo = undefined;
-  
-      /**
-       * Whether this waypoint is part of the climb or not.
-       * @type {boolean}
-       */
-      this.isClimb = isClimb;
+        /**
+         * The ident of the vertical waypoint.
+         * @type {string}
+         */
+        this.ident = ident;
 
-      /**
-       * Whether this waypoint is an AT constraint.
-       * @type {boolean}
-       */
-      this.isAtConstraint = false;
+        /**
+         * The calculated flight path angle TO the waypoint.
+         * @type {number}
+         */
+        this.waypointFPA = undefined;
 
-      /**
-       * Whether this waypoint has a constraint.
-       * @type {boolean}
-       */
-      this.hasConstraint = false;
+        /**
+         * The calculated flight plan target altitude for the waypoint.
+         * @type {number}
+         */
+        this.waypointFPTA = undefined;
 
-      /**
-       * Which vertical path segment is this waypoint part of.
-       * @type {number}
-       */
-      this.segment = undefined;
+        /**
+         * The highest altitude allowed at this vertical wapyoint.
+         * @type {number}
+         */
+        this.upperConstraintAltitude = undefined;
+
+        /**
+         * The lowest altitude allowed at this vertical wapyoint.
+         * @type {number}
+         */
+        this.lowerConstraintAltitude = undefined;
+
+        /**
+         * The FPA from the upper constraint altitude to the next fixed vnav target.
+         * @type {number}
+         */
+        this.upperConstraintFPA = undefined;
+
+        /**
+         * The FPA from the lower constraint altitude to the next fixed vnav target.
+         * @type {number}
+         */
+        this.lowerConstraintFPA = undefined;
+
+        /**
+         * The leg distance from the prior waypoint to this waypoint.
+         * @type {number}
+         */
+        this.legDistanceTo = undefined;
+
+        /**
+         * Whether this waypoint is part of the climb or not.
+         * @type {boolean}
+         */
+        this.isClimb = isClimb;
+
+        /**
+         * Whether this waypoint is an AT constraint.
+         * @type {boolean}
+         */
+        this.isAtConstraint = false;
+
+        /**
+         * Whether this waypoint has a constraint.
+         * @type {boolean}
+         */
+        this.hasConstraint = false;
+
+        /**
+         * Which vertical path segment is this waypoint part of.
+         * @type {number}
+         */
+        this.segment = undefined;
     }
 }
 
@@ -865,31 +883,31 @@ class VerticalWaypoint {
  */
 class PathSegment {
     constructor(startIndex = undefined, targetIndex = undefined, fpa = undefined, distanceToNextTod = 0) {
-        
-      /**
-       * The first waypoint index of this segment.
-       * @type {number}
-       */
-      this.startIndex = startIndex;
 
-      /**
-       * The last waypoint index of this segment and the vertical target of this segment.
-       * @type {number}
-       */
-      this.targetIndex = targetIndex;
+        /**
+         * The first waypoint index of this segment.
+         * @type {number}
+         */
+        this.startIndex = startIndex;
 
-       /**
-       * The segment flight path angle (fpa).
-       * @type {number}
-       */
-      this.fpa = fpa;
+        /**
+         * The last waypoint index of this segment and the vertical target of this segment.
+         * @type {number}
+         */
+        this.targetIndex = targetIndex;
 
-      /**
-       * The distance from the end of this segment to the next TOD;
-       * 0 if it is a continuous descent or at the end of the path.
-       * @type {number}
-       */
-      this.distanceToNextTod = distanceToNextTod;
+        /**
+        * The segment flight path angle (fpa).
+        * @type {number}
+        */
+        this.fpa = fpa;
+
+        /**
+         * The distance from the end of this segment to the next TOD;
+         * 0 if it is a continuous descent or at the end of the path.
+         * @type {number}
+         */
+        this.distanceToNextTod = distanceToNextTod;
     }
 }
 

@@ -864,4 +864,3 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
     }
 }
 customElements.define("jet-pfd-vspeed-indicator", Jet_PFD_VerticalSpeedIndicator);
-//# sourceMappingURL=VerticalSpeedIndicator.js.map

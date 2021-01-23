@@ -282,7 +282,6 @@ class CJ4_FMC_VNavSetupPage {
             fmc.registerPeriodicPageRefresh(() => {
                 const vnavActive = fmc._navModeSelector.isVNAVOn ? " ACTIVE[green]" : " INACTIVE[white]";
                 const gsDeviation = SimVar.GetSimVarValue("NAV GSI:1", "Number");
-                console.log("NAV GLIDE SLOPE ERROR " + gsDeviation);
                 const altDeviation = fmc._navModeSelector.isVNAVOn ? SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet") : gsDeviation;
                 //const setVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
 

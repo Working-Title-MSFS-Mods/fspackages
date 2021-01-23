@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.9.1 Changes
+# Working Title CJ4 v0.10.0 Changes
 
-Welcome to the Working Title CJ4 v0.9.1. This is a hotfix release for 0.9.0 to fix the most pressing issues that came up after release.
+Welcome to the Working Title CJ4 v0.10.0. This release brings even more navigation features and accuracy to the CJ4, and we're excited to deliver it! Version 0.10.0 continues our Open Beta series, and as such you may find issues while flying the aircraft. Please report issues encountered on our GitHub issues tracker.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -14,15 +14,56 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 The FP SYNC option is one way: it updates the simulator flight plan from the FMC. To load a plan into the FMS you can either enter it manually or use the _FPLN RECALL (GAME/SB)_ option in _IDX -> PAGE2 -> ROUTE MENU_
 Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan exactly.
 
-## Bugfixes
-- Fixed issue where ATC window did not refresh electrical system status properly
-- Fixed issue where map lines would be improperly drawn in certain situations and zoom factors
-- Fixed issue where after flying one hold, LNAV would not fly any additional holds
-- Fixed issue where LNAV would skip to the last hold if holds were on back-to-back legs
-- Fixed speed tape overspeed indicator and warning speeds
-- LNAV should no longer wander back and forth in the case of overlapping or duplicate flight plan fixes
-- Fix for DIRECT TO not reactivating the current dirto from the DTO page
-- Fix for DIRECT TO not working after one successful DTO
+## Key Features
+- Missed approaches
+- Mandatory hold legs from navdata
+- Revamped VNAV with VNAV Path Smoothing and Vertical Direct-To
+- FMS/PFD/MFD message system
+- Custom ILS guidance
+- Ability to arm APPR mode
+- Automatic NAV-to-NAV transfers
+- Relative terrain map
+
+## FMC
+- Scratchpad error messages now clear after 1 second
+- FMC messages now display at the bottom of the display
+
+### POS INIT
+- Initialize Position message now shows if position not initialized
+
+### LEGS
+- Sequencing will automatically enter INHIBIT when reaching the destination runway
+- Changing sequencing from INHIBIT to AUTO when the active leg is the runway will automatically sequence into the missed approach
+- Missed approach segment is now displayed at the end of the plan
+- POINT/BEARING/DISTANCE
+
+### FUEL
+- 
+
+## PFD
+- Added correct nav source swapping behavior
+- Added ability to change preset (standby) nav source via DATA knob
+- Added preselect nav source (ghost needle) info block
+- Nav source should now automatically switch when APPR is active and preselect nav source is armed (NAV-to-NAV transfer)
+- PPOS is now prohibited when FMS is not selected as the nav source
+- PFD message lines now populate based on plane conditions and pending FMC messages
+- FGS display layout has been completely reworked to support armed lateral modes
+- Wind indicator position refined to better match real unit
+- Flap speeds have been added to the airspeed tape
+- Styling of mach indicator corrected
+
+## PFD/MFD
+- TERR and WX mode indicators should now better reflect the real world unit
+- Range-to-altitude Select (altitude banana) now reflects preselector altitude even while VNAV is operating
+
+## MFD
+- Oil Temp and Pressure display format corrected
+- 
+
+## Flight Planning
+- Legs with altitude terminations should now be placed in a more reasonable location
+- Origin runway fix should now be at the start instead of the end of the runway
+- Hold-to-manual-termination (HM) legs are now properly parsed and inserted into the plan
 
 ## ⚠️ Known Issues
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.

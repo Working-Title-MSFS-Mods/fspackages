@@ -19,14 +19,15 @@
 }
 
 @keyframes blink {
-  50% {
-    opacity: 0.0;
-  }
+    50% {
+        opacity: 0.0;
+    }
 }
+
 @-webkit-keyframes blink {
-  50% {
-    opacity: 0.0;
-  }
+    50% {
+        opacity: 0.0;
+    }
 }
 
 html {
@@ -91,8 +92,8 @@ html body {
 }
 
 .blinking {
-  animation: blink 0.5s step-start 0s infinite;
-  -webkit-animation: blink 0.5s step-start 0s infinite;
+    animation: blink 0.9s step-start 0s infinite;
+    -webkit-animation: blink 0.9s step-start 0s infinite;
 }
 
 svg text {
@@ -705,7 +706,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols {
-    top: 60%;
+    top: 72%;
     left: 87%;
     width: 11%;
     height: 5%;
@@ -780,10 +781,10 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Com2,
 cj4-pfd-element #Mainframe #NavBar #Coms #Atc1,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    font-size: calc(1.9 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Coms #Com1_Value,
@@ -792,7 +793,7 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Atc1_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Unit {
-    font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+    font-size: calc(2.3 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Cabs {
@@ -1053,41 +1054,70 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     letter-spacing: 0px;
 }
 
-#PFDMessage1{
-    top: 1%;
-    left: 8px;
+#PFDMessageTop {
+    top: 3%;
+    left: 1.2%;
+    width: 11.5%;
     position: absolute;
-    font-size: 22px;
+    /* border:solid 1px red; */
+    text-align: right;
+    font-size: 21px;
 }
 
-#PFDMessage2{
-    top: 5%;
-    left: 9%;
+#PFDMessageBottom {
+    top: 8%;
+    left: 1.2%;
+    min-width: 11.5%;
+    width: 11.5%;
     position: absolute;
-    font-size: 22px;
+    font-size: 21px;
+}
+
+/* clear the floats for the two columns */
+#PFDMessageBottom:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#PFDMessageBotLeft {
+    float: left;
+    min-width: 50%;
+    width: 50%;
+    text-align: left;
+}
+
+#PFDMessageBotRight {
+    float: left;
+    min-width: 50%;
+    width: 50%;
+    text-align: right;
+}
+
+.yellow {
+    color: yellow;
 }
 
 #NavPreset {
     position: relative;
-    font-size: 20px;
-    top: 220px;
+    font-size: 22px;
+    top: 330px;
     left: 8px;
     width: 58px;
 }
 
 .preset-name {
     color: cyan;
-    padding: 4px 0 0 7px;
+    padding: 4px 0 0 4px;
     border: 2px solid cyan;
 }
 
 .preset-tuning {
     color: cyan;
-    margin-bottom: 60px;
 }
 
 #Symbols ul {
-    font-size: 20px;
+    font-size: 22px;
     list-style: none;
     padding: 0;
     text-align: right;
@@ -1098,7 +1128,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 #Symbols .active {
-    font-size: 22px;
+    font-size: 24px;
     color: cyan;
 }
 

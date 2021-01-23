@@ -3776,7 +3776,14 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("FORMAT", this.textSize, 0.4);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
-                this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+
+                const navSource = SimVar.GetSimVarValue('L:WT_CJ4_LNAV_MODE', 'number');
+                if (navSource === 0) {
+                    this.addRadio("PPOS", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
+                }
+                else {
+                    this.addRadio("PPOS", this.textSize, null);
+                }
             }
             this.endSection();
             this.beginSection();

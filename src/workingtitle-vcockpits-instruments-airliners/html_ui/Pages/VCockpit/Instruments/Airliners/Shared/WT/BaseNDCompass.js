@@ -147,6 +147,13 @@ class Jet_NDCompass extends HTMLElement {
                 this._navigationMode = Jet_NDCompass_Navigation.NONE;
             }
         }
+
+        try {
+            this.navPreset = new NavPresetElement(document.querySelector('#NavPreset .preset-info'));
+            this.navTransferTuning = new NavTransferTuningElement(document.querySelector('#NavPreset .preset-tuning'));
+        }
+        catch (err) { }
+
         this.construct();
     }
     init() {
@@ -171,12 +178,6 @@ class Jet_NDCompass extends HTMLElement {
                     break;
                 }
         }
-
-        try {
-            this.navPreset = new NavPresetElement(document.querySelector('#NavPreset .preset-info'));
-            this.navTransferTuning = new NavTransferTuningElement(document.querySelector('#NavPreset .preset-tuning'));
-        }
-        catch (err) { }
     }
     constructArc() {
     }
@@ -578,21 +579,21 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
-                        const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-                        if (navSensitivity == 1) {
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        if (navToNavTransferState === 2 || navToNavTransferState === 3) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
 
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(true);
                                 this.navPreset.setDisplayed(false);
-                            }     
+                            }
                         } else {
                             this.ghostNeedleGroup.setAttribute("visibility", "hidden");
 
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(false);
                                 this.navPreset.setDisplayed(true);
-                            }  
+                            }
                         }
                     }
                     else {

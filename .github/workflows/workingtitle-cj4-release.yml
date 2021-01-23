@@ -9,6 +9,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm run install:cj4
       - name: Build Package
         run: powershell.exe -noexit .\build.ps1 -OutputPath '.\build' -Project 'workingtitle-project-cj4meta.xml' -CleanBuild       
       - name: Get clean tag name

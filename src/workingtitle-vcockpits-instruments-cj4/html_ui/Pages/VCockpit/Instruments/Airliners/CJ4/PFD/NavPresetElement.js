@@ -15,7 +15,10 @@ class NavPresetElement {
     this.isDisplayed = undefined;
 
     /** The current frequency to display in the element. */
-    this.preset = '';
+    this.presetNavSource = 1;
+
+    /** The current preset text. */
+    this.currentPresetText = '';
   }
 
   /**
@@ -24,36 +27,44 @@ class NavPresetElement {
    */
   setDisplayed(displayed) {
     if (displayed !== this.isDisplayed) {
-      this.element.style.visibility = displayed ? '' : 'hidden';
+      this.element.style.display = displayed ? 'block' : 'none';
       this.isDisplayed = displayed;
     }
+  }
+
+  /**
+   * Sets the preset nav source.
+   * @param {number} navSource The nav source to set as preset.
+   */
+  setPreset(navSource) {
+    this.presetNavSource = navSource;
   }
 
   /**
    * Updates the nav preset label.
    */
   update() {
-    const navSource = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number");
     let preset = '';
 
-    if (navSource === 0) {
+    if (this.presetNavSource === 0) {
+      preset = 'FMS1';
+    }
+
+    if (this.presetNavSource === 1) {
       const hasLoc = SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'Bool');
       preset = hasLoc ? 'LOC1' : 'VOR1';
     }
 
-    if (navSource === 1) {
+    if (this.presetNavSource === 2) {
       const hasLoc = SimVar.GetSimVarValue('NAV HAS LOCALIZER:2', 'Bool');
       preset = hasLoc ? 'LOC2' : 'VOR2';
     }
 
-    if (navSource === 2) {
-      preset = 'FMS1';
-    }
-
-    if (preset !== this.preset) {
+    if (preset !== this.currentPresetText) {
       const el = this.element.querySelector('.preset-name');
       if (el) {
         el.textContent = preset;
+        this.currentPresetText = preset;
       }
     }
   }

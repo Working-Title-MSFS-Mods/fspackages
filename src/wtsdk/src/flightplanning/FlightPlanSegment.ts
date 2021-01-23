@@ -1,5 +1,3 @@
-import { WayPoint } from "MSFS";
-
 /**
  * A segment of a flight plan.
  */
