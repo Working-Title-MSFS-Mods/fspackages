@@ -15,9 +15,12 @@ export * from "./messages/MessageDefinition";
 
 export * from "./cj4/CJ4_MessageDefinitions";
 export * from "./cj4/fmc/pages/CJ4_FMC_MsgPage";
+export * from "./cj4/fmc/pages/CJ4_FMC_NavControlPage";
 export * from "./cj4/fmc/CJ4_FMC_NavigationService";
 export * from "./cj4/fmc/CJ4_FMC_MessageReceiver";
 export * from "./cj4/pfd/CJ4_PFD_MsgInfo";
 export * from "./cj4/pfd/CJ4_PFD_MessageReceiver";
 export * from "./cj4/pfd/CJ4_PFD_Message";
 export * from "./cj4/pfd/CJ4_PFD_MessagePacket";
+
+export * from "./cj4/fmc/navradio/CJ4_NavRadioSystem";

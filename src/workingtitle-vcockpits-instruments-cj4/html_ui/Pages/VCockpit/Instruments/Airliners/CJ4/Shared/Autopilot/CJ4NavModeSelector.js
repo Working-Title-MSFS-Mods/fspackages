@@ -1076,8 +1076,7 @@ class CJ4NavModeSelector {
       //   this.currentArmedVnavState = VerticalNavModeState.GP;
       // }
     }
-
-    if (approachName.startsWith('ILS') || approachName.startsWith('LDA')) {
+    else if (approachName.startsWith('ILS') || approachName.startsWith('LDA')) {
       this.approachMode = WT_ApproachType.ILS;
       if (this.currentLateralActiveState === LateralNavModeState.APPR) {
         this.isVNAVOn = false;
@@ -1085,8 +1084,10 @@ class CJ4NavModeSelector {
 
       if (this.currentVerticalActiveState === VerticalNavModeState.GP) {
         this.currentVerticalActiveState = VerticalNavModeState.GS;
-      }
-      
+      } 
+    }
+    else {
+      this.approachMode = WT_ApproachType.NONE;
     }
   }
 

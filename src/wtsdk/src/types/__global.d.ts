@@ -23,10 +23,12 @@ declare class CJ4_FMC extends FMCMainDisplay {
   unregisterPeriodicPageRefresh(): void;
   _fmcMsgReceiver: any;
   _templateRenderer: WT_FMC_Renderer;
+  _navRadioSystem: any;
 }
 
 declare class WT_FMC_Renderer {
-  setTemplateRaw(template: any[], defaultAlternatingLayout?: boolean): void;
+  setTemplateRaw(template: Array<string[]>, defaultAlternatingLayout?: boolean): void;
+  renderSwitch(itemsArr: string[], selectedIndex: number, onClass: string = "green", offClass: string = "white s-text"): string
 }
 
 declare class LZUTF8 {
@@ -174,6 +176,11 @@ declare class LatLongAlt {
 declare class SimVar {
   static GetSimVarValue(name: string, unit: string, dataSource?: string): any;
   static SetSimVarValue(name: string, unit: string, value: any, dataSource?: string): Promise<void>;
+  static GetSimVarArrayValues(simvars: SimVar.SimVarBatch, callback: (values: any[][]) => void, dataSource: string = "");
+  static SimVarBatch = class {
+    constructor(totalItemsSimVar: string, currentIndexSimVar: string)
+    public add(simvar: string, unit: string, destUnit: string);
+  }
 }
 
 declare class Simplane {
@@ -199,4 +206,11 @@ declare class FMCMainDisplay {
   onRightInput: { (): void }[];
   onPrevPage: { (): void };
   onNextPage: { (): void };
+  inOut: string;
+  showErrorMessage(message: string);
+  defaultInputErrorMessage: string;
+}
+
+declare class RadioNav {
+  static isHz50Compliant(_MHz: number);
 }

@@ -73,6 +73,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this._pfdMsgReceiver = new CJ4_PFD_MessageReceiver();
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_TOP, this._pfdMsgReceiver);
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_BOT, this._pfdMsgReceiver);
+
+        this._navRadioSystem = new CJ4_NavRadioSystem();
     }
 
     get templateID() {
@@ -253,6 +255,8 @@ class CJ4_FMC extends FMCMainDisplay {
         const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
         this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
+
+        this._navRadioSystem.initialize();
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
@@ -261,6 +265,7 @@ class CJ4_FMC extends FMCMainDisplay {
         const dt = now - this._lastUpdateTime;
         this._lastUpdateTime = now;
 
+        this._navRadioSystem.update();
         this.updateAutopilot(dt);
         this.updateNearestAirports(dt);
         this.adjustFuelConsumption();
@@ -516,7 +521,7 @@ class CJ4_FMC extends FMCMainDisplay {
             }
 
             if (!this._navToNavTransfer) {
-                this._navToNavTransfer = new NavToNavTransfer(this.flightPlanManager, this.radioNav, this._navModeSelector);
+                this._navToNavTransfer = new NavToNavTransfer(this.flightPlanManager, this._navRadioSystem, this._navModeSelector);
             }
 
             this._navToNavTransfer.update(dt);

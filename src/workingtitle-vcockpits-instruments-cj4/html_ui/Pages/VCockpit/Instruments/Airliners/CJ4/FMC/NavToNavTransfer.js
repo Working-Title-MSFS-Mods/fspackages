@@ -6,16 +6,16 @@ class NavToNavTransfer {
   /**
    * Creates an instance of NavToNavTransfer.
    * @param {FlightPlanManager} fpm The instance of the FlightPlanManager.
-   * @param {RadioNav} radioNav The instance of RadioNav.
+   * @param {CJ4_NavRadioSystem} navRadioSystem The instance of RadioNav.
    * @param {CJ4NavModeSelector} navModeSelector The instance of the nav mode selector.
    */
-  constructor(fpm, radioNav, navModeSelector) {
+  constructor(fpm, navRadioSystem, navModeSelector) {
 
     /** The instance of the FlightPlanManager. */
     this.fpm = fpm;
 
     /** The instance of RadioNav. */
-    this.radioNav = radioNav;
+    this.navRadioSystem = navRadioSystem;
 
     /** The instance of the nav mode selector. */
     this.navModeSelector = navModeSelector;
@@ -32,19 +32,15 @@ class NavToNavTransfer {
 
   /**
    * Updates the NavToNavTransfer.
-   * @param {number} deltaTime The time since the previous update.
    */
-  update(deltaTime) {
+  update() {
     const approachType = this.navModeSelector.approachMode;
     const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
 
     if (approachType === WT_ApproachType.ILS) {
       
       if (this.previousNavSensitivity === 0 && navSensitivity >= 1) {
-        this.transferState = NavToNavTransfer.TUNE_PENDING;
-        
-        MessageService.getInstance().post(FMS_MESSAGE_ID.LOC_WILL_BE_TUNED, () => this.transferState !== NavToNavTransfer.TUNE_PENDING);
-        this.termTimestamp = Date.now();
+        this.tryTuneLocalizer();
       }
       else if (this.previousNavSensitivity >= 1 && navSensitivity === 0) {
         this.transferState = NavToNavTransfer.NONE;
@@ -53,20 +49,20 @@ class NavToNavTransfer {
 
       if (this.transferState === NavToNavTransfer.TUNE_PENDING) {
         const timeStamp = Date.now();
-
-        if (timeStamp - this.termTimestamp > 30000) {
-
-          const frequency = this.fpm.getApproachNavFrequency();
-          this.radioNav.setVORStandbyFrequency(1, frequency).then(() => {
-            this.radioNav.swapVORFrequencies(1);
-          });
-
-          this.transferState = NavToNavTransfer.ARMED;
+        if (timeStamp - this.termTimestamp > 30000 || this.navRadioSystem.radioStates[1].mode === NavRadioMode.Auto) {
+          this.armNavToNavTransfer();
         }
       }
 
-      if (this.transferState === NavToNavTransfer.ARMED && this.navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
-        this.transferState = NavToNavTransfer.TRANSFER;
+      if (this.transferState === NavToNavTransfer.ARMED) {
+        const frequency = this.fpm.getApproachNavFrequency();
+
+        if (this.navRadioSystem.radioStates[1].frequency !== frequency) {
+          MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => this.fpm.getApproachNavFrequency() === this.navRadioSystem.radioStates[1].frequency);
+        }
+        else if (this.navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+          this.transferState = NavToNavTransfer.TRANSFER;
+        }
       }
 
       this.previousNavSensitivity = navSensitivity;
@@ -78,6 +74,31 @@ class NavToNavTransfer {
     }
 
     SimVar.SetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number', this.transferState);
+  }
+
+  /**
+   * Attempts to auto-tune the localizer.
+   */
+  tryTuneLocalizer() {
+    if (this.navRadioSystem.radioStates[1].mode === NavRadioMode.Auto) {
+      this.armNavToNavTransfer();
+    }
+    else {
+      this.transferState = NavToNavTransfer.TUNE_PENDING;
+
+      MessageService.getInstance().post(FMS_MESSAGE_ID.LOC_WILL_BE_TUNED, () => this.transferState !== NavToNavTransfer.TUNE_PENDING);
+      this.termTimestamp = Date.now();
+    }
+  }
+
+  /**
+   * Arms the nav-to-nav transfer.
+   */
+  armNavToNavTransfer() {
+    const frequency = this.fpm.getApproachNavFrequency();
+    this.navRadioSystem.radioStates[1].setManualFrequency(frequency);
+
+    this.transferState = NavToNavTransfer.ARMED;
   }
 }
 
