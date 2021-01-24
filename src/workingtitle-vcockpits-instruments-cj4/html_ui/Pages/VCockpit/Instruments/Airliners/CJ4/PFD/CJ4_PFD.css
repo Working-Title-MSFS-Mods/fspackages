@@ -221,6 +221,24 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #ILS {
     height: 100%;
 }
 
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .failline{
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 5%;
+    width: 90%;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .failline line{
+    stroke: #FFE133;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .fail>.failline{
+    display: block;
+}
+
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
     position: absolute;
     width: 40vh;
@@ -408,6 +426,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #vn
     bottom: 8%;
     right:25%;
     text-align: center;
+    overflow-y: hidden
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #approachVerticalArmField {
