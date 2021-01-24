@@ -40,7 +40,8 @@ class WT_MapViewWaypointLabel extends WT_MapViewSimpleTextLabel {
     }
 
     /**
-     * @param {WT_MapViewState} state
+     * Updates this label according to the current map view state.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     update(state) {
         state.projection.project(this.waypoint.location, this._position);

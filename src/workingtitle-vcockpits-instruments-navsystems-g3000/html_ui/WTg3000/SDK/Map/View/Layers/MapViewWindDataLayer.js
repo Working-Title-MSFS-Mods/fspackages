@@ -1,4 +1,13 @@
+/**
+ * A box that displays wind speed and direction at the player airplane's position. The box contains an arrow indicating the wind
+ * direction and a numeric display indicating the wind speed. The box displays "NO WIND DATA" when the airplane is on the ground.
+ * The use of this layer requires the .wind module to be added to the map model.
+ */
 class WT_MapViewWindDataLayer extends WT_MapViewLayer {
+    /**
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(className = WT_MapViewWindDataLayer.CLASS_DEFAULT, configName = WT_MapViewWindDataLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
     }

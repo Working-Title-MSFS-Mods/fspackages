@@ -1,4 +1,13 @@
+/**
+ * A map model controller that uses the data store to sync a map model across instruments. In addition to syncing a single
+ * model across instruments, the map controller also supports syncing user-configurable settings across multiple map models.
+ */
 class WT_MapController extends WT_DataStoreController {
+    /**
+     * @param {String} id - the unique string ID of the new controller.
+     * @param {WT_MapModel} model - the model controlled by the new controller.
+     * @param {WT_MapView} view - the view associated with the new controller's model.
+     */
     constructor(id, model, view) {
         super(id, model);
 

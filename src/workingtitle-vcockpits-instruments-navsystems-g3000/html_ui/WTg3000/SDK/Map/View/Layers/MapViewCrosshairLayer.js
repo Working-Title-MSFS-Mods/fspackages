@@ -1,5 +1,12 @@
+/**
+ * A crosshair positioned at the target location of the map view.
+ */
 class WT_MapViewCrosshairLayer extends WT_MapViewLayer {
-    constructor(displayTexts, className = WT_MapViewCrosshairLayer.CLASS_DEFAULT, configName = WT_MapViewCrosshairLayer.CONFIG_NAME_DEFAULT) {
+    /**
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
+    constructor(className = WT_MapViewCrosshairLayer.CLASS_DEFAULT, configName = WT_MapViewCrosshairLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewCrosshairLayer.OPTIONS_DEF);

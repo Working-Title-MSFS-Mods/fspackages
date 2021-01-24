@@ -1,4 +1,15 @@
+/**
+ * Bing map terrain texture and NEXRAD weather overlay. The use of this layer requires the .terrain and .weatherDisplay modules
+ * to be added to the map model.
+ */
 class WT_MapViewBingLayer extends WT_MapViewLayer {
+    /**
+     * @param {String} bingMapID - the ID of the underlying bing map instance to which to bind the new layer. Note that a maximum
+     *                             of four unique IDs can be bound. Attempting to bind more than four will result in a game freeze/
+     *                             crash.
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(bingMapID, className = WT_MapViewBingLayer.CLASS_DEFAULT, configName = WT_MapViewBingLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
@@ -18,6 +29,10 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         return this._bingMap;
     }
 
+    /**
+     * Puts this bing layer to sleep, allowing other code to use the bing map instance to which
+     * this layer is bound.
+     */
     sleep() {
         this._bingMap.setConfig(0);
         this._bingMap.setReference(EBingReference.SEA);

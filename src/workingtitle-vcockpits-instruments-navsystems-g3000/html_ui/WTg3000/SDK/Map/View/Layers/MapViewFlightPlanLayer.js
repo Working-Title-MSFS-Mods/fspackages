@@ -1,3 +1,7 @@
+/**
+ * The active flight plan (including Direct To). This layer will draw the active flight plan's waypoints and paths between
+ * waypoints/fixes. Options are available to style the path/waypoint for the active leg differently from non-active legs.
+ */
 class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     /**
      * @param {WT_FlightPlanManager} flightPlanManager - the flight plan manager containing the active flight plan to render.
@@ -395,7 +399,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     }
 
     _clearRenderedWaypoints() {
-        for (let waypoint of this._fpRenderer.waypointsRendered()) {
+        for (let waypoint of this._fpRenderer.getWaypointsRendered()) {
             this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
         }
         this._waypointRenderer.deregister(this._drctRenderer.originRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
@@ -404,7 +408,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     }
 
     _registerRenderedWaypoints() {
-        for (let waypoint of this._fpRenderer.waypointsRendered()) {
+        for (let waypoint of this._fpRenderer.getWaypointsRendered()) {
             this._registerWaypoint(waypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN);
         }
         let drctOrigin = this._drctRenderer.originRendered();

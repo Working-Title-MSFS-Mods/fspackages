@@ -15,7 +15,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the type of the airplane.
      * @returns {Number} the type of the airplane.
      */
     type() {
@@ -23,10 +23,10 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current geographic position.
      * @param {WT_GeoPoint} [reference] - a WT_GeoPoint object in which to store the result. If not supplied, a new WT_GeoPoint
      *                                      object will be created.
-     * @returns {WT_GeoPoint}  the current position of the airplane on the earth.
+     * @returns {WT_GeoPoint}  the current position of the airplane.
      */
     position(reference) {
         let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
@@ -35,7 +35,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current true heading.
      * @returns {Number} the true heading of the airplane in degrees.
      */
     headingTrue() {
@@ -43,7 +43,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current true ground track.
      * @returns {Number} the true track of the airplane in degrees.
      */
     trackTrue() {
@@ -51,7 +51,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current turn speed.
      * @returns {Number} the current turn speed of the airplane in degrees per second.
      */
     turnSpeed() {
@@ -59,7 +59,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the magnetic variation (declination) at the airplane's current position.
      * @returns {Number} the magnetic variation, in degrees, at the current position of the airplane.
      */
     magVar() {
@@ -67,7 +67,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current true altitude.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
      * @returns {WT_NumberUnit} the current altitude of the airplane. Default unit is feet.
@@ -78,7 +78,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current indicated altitude.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
      * @returns {WT_NumberUnit} the current indicated altitude of the airplane. Default unit is feet.
@@ -89,7 +89,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current ground speed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
      * @returns {WT_NumberUnit} the current ground speed of the airplane. Default unit is knots.
@@ -100,7 +100,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current true airspeed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
      * @returns {WT_NumberUnit} the current true airspeed of the airplane. Default unit is knots.
@@ -111,7 +111,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the airplane's current vertical speed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
      * @returns {WT_NumberUnit} the current vertical speed of the airplane. Default unit is feet per minute.
@@ -122,7 +122,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Checks whether the airplane is currently on the ground.
      * @returns {Boolean} whether the airplane is currently on the ground.
      */
     isOnGround() {
@@ -130,7 +130,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     *
+     * Gets the current amount of fuel remaining on the airplane.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
      * @returns {WT_NumberUnit} the current amount of fuel remaining on the airplane. Default unit is gallons.

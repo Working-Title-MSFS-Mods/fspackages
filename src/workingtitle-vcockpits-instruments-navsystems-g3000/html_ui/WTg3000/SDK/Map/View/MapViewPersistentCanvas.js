@@ -26,11 +26,11 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     _createBuffer() {
-        return new WT_MapViewPersistenCanvasDrawable();
+        return new WT_MapViewPersistentCanvasDrawable();
     }
 
     _createDisplay() {
-        let display = new WT_MapViewPersistenCanvasDrawable();
+        let display = new WT_MapViewPersistentCanvasDrawable();
         display.canvas.style.position = "absolute";
         display.canvas.style.left = 0;
         display.canvas.style.top = 0;
@@ -92,28 +92,6 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         return this._margin;
     }
 
-    /**
-     * @readonly
-     * @property {Boolean} isDisplayInvalid - whether the displayed canvas is invalid. The canvas is invalid if the current map projection
-     *                                        range has changed since the last redraw or if the offset of the canvas in either the x- or y-
-     *                                        axes is greater than the margin.
-     * @type {Boolean}
-     */
-    get isDisplayInvalid() {
-        return this._isDisplayInvalid;
-    }
-
-    /**
-     * @readonly
-     * @property {Boolean} isBufferInvalid - whether the buffer is invalid. The buffer is invalid if the current map projection range has
-     *                                       changed since the last time the buffer was reset or if the offset of the buffer in either the
-     *                                       x- or y- axes is greater than the margin.
-     * @type {Boolean}
-     */
-    get isBufferInvalid() {
-        return this._isBufferInvalid;
-    }
-
     _updateProjectionRenderers() {
         if (this.display.projectionRenderer) {
             this.display.projectionRenderer.viewClipExtent = this._viewClipExtent;
@@ -130,6 +108,11 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
         this._updateProjectionRenderers();
     }
 
+    /**
+     * Sets the viewable size of this sublayer.
+     * @param {Number} width - the new width of this sublayer, in pixels.
+     * @param {Number} height - the new height of this sublayer, in pixels.
+     */
     setSize(width, height) {
         this._nominalWidth = width;
         this._nominalHeight = height;
@@ -190,7 +173,9 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     /**
-     * @param {WT_MapViewState} state
+     * Clears the buffer canvas and syncs its reference projection parameters to the current map view projection
+     * parameters. If the buffer canvas was invalidated, this operation will make it valid again.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     resetBuffer(state) {
         this.buffer.clear();
@@ -200,8 +185,11 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     /**
-     * @param {WT_MapViewState} state
-     * @param {Boolean} [fromBuffer]
+     * Clears the display canvas and syncs its reference projection parameters to the current map view projection
+     * parameters or those of the buffer canvas. If the latter, the contents of the buffer canvas are copied to
+     * the display canvas as well. If the display canvas was invalidated, this operation will make it valid again.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {Boolean} [fromBuffer] - whether to redraw using the buffer canvas as the source.
      */
     redrawDisplay(state, fromBuffer = true) {
         this.display._isInvalid = false;
@@ -218,7 +206,9 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 
     /**
-     * @param {WT_MapViewState} state
+     * Updates the transformation of the buffer and display canvases to compensate for changes in the current
+     * map view projection since the last time the canvases were redrawn, and invalidates them if necessary.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     update(state) {
         let range = state.projection.range;
@@ -246,7 +236,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
     }
 }
 
-class WT_MapViewPersistenCanvasDrawable extends WT_MapViewCanvasDrawable {
+class WT_MapViewPersistentCanvasDrawable extends WT_MapViewCanvasDrawable {
     constructor() {
         super();
 
@@ -288,7 +278,8 @@ class WT_MapViewPersistenCanvasDrawable extends WT_MapViewCanvasDrawable {
 
     /**
      * @readonly
-     * @property {Boolean} reference - whether this drawable is invalid.
+     * @property {Boolean} reference - whether this drawable is invalid. The drawable is invalid if the current map projection range has changed
+     *                                 since the last redraw or if the offset of the drawable in either the x- or y-axes is greater than the margin.
      * @type {Boolean}
      */
     get isInvalid() {

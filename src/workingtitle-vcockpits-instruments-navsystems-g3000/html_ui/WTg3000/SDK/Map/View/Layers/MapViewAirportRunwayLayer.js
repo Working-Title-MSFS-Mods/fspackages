@@ -1,8 +1,12 @@
+/**
+ * A graphic representation of an airport's runways. Runways are represented as rectangles with a center line.
+ * Runways are labeled with their designation. The label is placed at the start of the runway.
+ */
 class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
     /**
-     * @param {WT_MapViewRunwayCanvasRenderer} runwayRenderer
-     * @param {String} className
-     * @param {String} configName
+     * @param {WT_MapViewRunwayCanvasRenderer} runwayRenderer - the renderer to use to draw the runways and labels.
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
     constructor(runwayRenderer, className = WT_MapViewAirportRunwayLayer.CLASS_DEFAULT, configName = WT_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);

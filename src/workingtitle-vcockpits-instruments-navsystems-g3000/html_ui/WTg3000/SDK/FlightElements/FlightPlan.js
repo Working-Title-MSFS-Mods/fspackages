@@ -1196,6 +1196,15 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 
     /**
      * @readonly
+     * @property {Number} desiredTrack
+     * @type {Number}
+     */
+    get desiredTrack() {
+        return this._desiredTrack;
+    }
+
+    /**
+     * @readonly
      * @property {Boolean} discontinuity
      * @type {Boolean}
      */
@@ -1221,14 +1230,6 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
         if (this.flightPlan) {
             this.flightPlan._onLegAltitudeConstraintChanged(this, constraint, old);
         }
-    }
-
-    /**
-     *
-     * @returns {Number}
-     */
-    desiredTrack() {
-        return this._desiredTrack;
     }
 
     _updateDTK() {
