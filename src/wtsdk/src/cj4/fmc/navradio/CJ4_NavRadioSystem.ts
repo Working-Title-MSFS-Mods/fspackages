@@ -25,8 +25,10 @@ export class CJ4_NavRadioSystem {
     const presetsString = WTDataStore.get(`WT_CJ4_NAV_RADIO_PRESETS`, '[]');
     this.presets = JSON.parse(presetsString);
 
-    this.radioStates[1].initialize();
-    this.radioStates[2].initialize();
+    setInterval(() => {
+      this.radioStates[1].initialize();
+      this.radioStates[2].initialize();
+    }, 1000);
   }
 
   /**
