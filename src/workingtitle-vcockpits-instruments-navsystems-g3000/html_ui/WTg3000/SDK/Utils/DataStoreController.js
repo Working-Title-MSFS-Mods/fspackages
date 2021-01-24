@@ -1,4 +1,15 @@
+/**
+ * A model controller that uses the data store to sync values across instruments. Each controller has zero or more
+ * settings, to which the specifics of handling changes to the model are delegated. Each controller also has a
+ * unique string ID such that only controllers with the same ID are synced. In cases where the model is relatively
+ * straightforward, the controller itself can trivially double as the model.
+ */
 class WT_DataStoreController {
+    /**
+     * @param {String} id - the unique string ID of the new controller.
+     * @param {*} model - the model controlled by the new controller. If a null value should be used if the new
+     *                    controller is to act as the model as well.
+     */
     constructor(id, model) {
         this._id = id;
         this._model = model;

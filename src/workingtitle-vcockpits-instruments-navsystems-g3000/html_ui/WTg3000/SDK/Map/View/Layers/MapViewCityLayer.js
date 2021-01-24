@@ -1,10 +1,12 @@
+/**
+ * Icons and labels for cities. The use of this layer requires the .cities module to be added to the map model.
+ */
 class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
     /**
-     *
-     * @param {WT_CitySearcher} citySearcher
-     * @param {WT_MapViewTextLabelManager} labelManager
-     * @param {String} [className]
-     * @param {String} [configName]
+     * @param {WT_CitySearcher} citySearcher - the searcher to use to enumerate cities within a geographic area.
+     * @param {WT_MapViewTextLabelManager} labelManager - the label manager to use for city labels.
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
     constructor(citySearcher, labelManager, className = WT_MapViewCityLayer.CLASS_DEFAULT, configName = WT_MapViewCityLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);

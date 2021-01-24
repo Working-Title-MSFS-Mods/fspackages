@@ -1,4 +1,11 @@
+/**
+ * A movable pointer (cursor). The use of this layer requires the .pointer module to be added to the map model.
+ */
 class WT_MapViewPointerLayer extends WT_MapViewLayer {
+    /**
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(className = WT_MapViewPointerLayer.CLASS_DEFAULT, configName = WT_MapViewPointerLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 

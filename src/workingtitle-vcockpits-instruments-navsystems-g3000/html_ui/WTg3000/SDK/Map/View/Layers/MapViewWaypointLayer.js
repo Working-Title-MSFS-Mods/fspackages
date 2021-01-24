@@ -1,5 +1,6 @@
 /**
- * A display of waypoints, which includes user waypoints, airports, VORs, NDBs, and intersections.
+ * A display of waypoints, which includes user waypoints, airports, VORs, NDBs, and intersections, and airways. The use of this layer requires the
+ * .waypoints module to be added to the map model.
  */
 class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
     /**

@@ -359,11 +359,11 @@ class WT_ProcedureLeg {
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} [previousFix] - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @param {WT_Waypoint} [previousFix] - the terminator fix of the previous leg in the sequence to which this leg belongs.
      * @param {WT_ProcedureLeg} [nextLeg] - the next leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory, previousFix, nextLeg) {
         return Promise.reject();
@@ -445,7 +445,7 @@ class WT_InitialFix extends WT_ProcedureLeg {
 
     /**
      * @readonly
-     * @property {String} fixICAO - the ICAO string of the terminal waypoint fix for this leg.
+     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg.
      * @type {String}
      */
     get fixICAO() {
@@ -453,9 +453,8 @@ class WT_InitialFix extends WT_ProcedureLeg {
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * Generates a terminator waypoint fix for this leg.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory) {
         return icaoWaypointFactory.getWaypoint(this.fixICAO);
@@ -480,7 +479,7 @@ class WT_ProcedureLegCourse extends WT_ProcedureLeg {
 }
 
 /**
- * A procedure leg consisting of flying a direct course to a pre-defined waypoint fix.
+ * A procedure leg consisting of flying a direct course to a pre-defined terminator waypoint fix.
  */
 class WT_FlyToFix extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
@@ -495,7 +494,7 @@ class WT_FlyToFix extends WT_ProcedureLegCourse {
 
     /**
      * @readonly
-     * @property {String} fixICAO - the ICAO string of the terminal waypoint fix for this leg.
+     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg.
      * @type {String}
      */
     get fixICAO() {
@@ -503,7 +502,7 @@ class WT_FlyToFix extends WT_ProcedureLegCourse {
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
      * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
      */
@@ -555,10 +554,10 @@ class WT_FlyHeadingUntilDistanceFromReference extends WT_ProcedureLegCourseRefer
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @param {WT_Waypoint} previousFix - the terminator fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
@@ -642,7 +641,7 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
 
     /**
      * @readonly
-     * @property {String} fixICAO - the ICAO string of the terminal waypoint fix for this leg, if one exists.
+     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg, if one exists.
      * @type {String}
      */
     get fixICAO() {
@@ -650,10 +649,10 @@ class WT_FlyReferenceRadialForDistance extends WT_ProcedureLegCourseReferenceDis
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @param {WT_Waypoint} previousFix - the terminator fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         if (this.fixICAO) {
@@ -682,11 +681,11 @@ class WT_FlyHeadingToIntercept extends WT_ProcedureLegCourse {
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
+     * @param {WT_Waypoint} previousFix - the terminator fix of the previous leg in the sequence to which this leg belongs.
      * @param {WT_ProcedureLeg} nextLeg - the next leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory, previousFix, nextLeg) {
         let reference;
@@ -747,10 +746,10 @@ class WT_FlyHeadingUntilReferenceRadialCrossing extends WT_ProcedureLegCourseRef
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @param {WT_Waypoint} previousFix - the terminator fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
@@ -779,9 +778,9 @@ class WT_FlyToBearingDistanceFromReference extends WT_ProcedureLegCourseReferenc
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory) {
         let reference = await icaoWaypointFactory.getWaypoint(this.referenceICAO);
@@ -804,10 +803,10 @@ class WT_FlyHeadingToAltitude extends WT_ProcedureLegCourse {
     }
 
     /**
-     * Generates a (terminal) waypoint fix for this leg.
+     * Generates a terminator waypoint fix for this leg.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
+     * @param {WT_Waypoint} previousFix - the terminator fix of the previous leg in the sequence to which this leg belongs.
+     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
      */
     async waypointFix(icaoWaypointFactory, previousFix) {
         let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(this.course, previousFix.location);

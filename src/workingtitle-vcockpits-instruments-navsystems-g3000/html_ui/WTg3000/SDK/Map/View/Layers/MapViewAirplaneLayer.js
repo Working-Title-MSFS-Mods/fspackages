@@ -1,4 +1,12 @@
+/**
+ * An icon of the player airplane. The icon is placed at the airplane's present position, and its orientation is
+ * synchronized to the airplane's heading.
+ */
 class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
+    /**
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(className = WT_MapViewAirplaneLayer.CLASS_DEFAULT, configName = WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 

@@ -1,3 +1,6 @@
+/**
+ * A renderer that draws a flight plan to an HTML canvas.
+ */
 class WT_MapViewFlightPlanCanvasRenderer {
     constructor(legStyleChooser) {
         this._legStyleChooser = legStyleChooser;
@@ -34,7 +37,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
 
     /**
      * @readonly
-     * @property {WT_FlightPlan} flightPlan
+     * @property {WT_FlightPlan} flightPlan - the flight plan assigned to this renderer.
      * @type {WT_FlightPlan}
      */
     get flightPlan() {
@@ -42,21 +45,31 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     *
-     * @returns {WT_FlightPlanLeg}
+     * Gets the active flight plan leg.
+     * @returns {WT_FlightPlanLeg} the active flight plan leg, or null if there is no active leg.
      */
-    activeLeg() {
+    getActiveLeg() {
         return this._activeLeg;
     }
 
+    /**
+     * Checks whether the flight plan assigned to this renderer needs to be redrawn. A flight plan needs to
+     * be redrawn if any modifications have been made to it since the last time it was drawn, if a new
+     * flight plan was assigned, or if a previously assigned flight plan was removed.
+     * @returns {Boolean} whether the flight plan assigned to this renderer needs to be redrawn.
+     */
     needsRedraw() {
         return this._needsRedraw;
     }
 
     /**
-     * @returns {IterableIterator<WT_Waypoint>}
+     * Gets a list of waypoints that were rendered the last time this renderer's .render() method was called.
+     * Waypoints are rendered if they are part of the assigned flight plan (the origin, destination, or a leg
+     * terminator fix) and were projected within the boundaries of the canvas to which the flight plan was rendered.
+     * @returns {IterableIterator<WT_Waypoint>} a list of the waypoints that were last rendered, in the form of an
+     *                                          IterableIterator.
      */
-    waypointsRendered() {
+    getWaypointsRendered() {
         return this._waypointsRendered.values();
     }
 
@@ -76,6 +89,11 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._optsManager.setOptions(options);
     }
 
+    /**
+     * Assigns a flight plan to this renderer. Assigning a value of null will remove the currently
+     * assigned flight plan without replacing it with another one.
+     * @param {WT_FlightPlan} flightPlan - a flight plan.
+     */
     setFlightPlan(flightPlan) {
         if (flightPlan === this.flightPlan) {
             return;
@@ -94,11 +112,12 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_FlightPlanLeg} leg
+     * Sets the active leg for the flight plan assigned to this renderer. A value of null indicates the
+     * flight plan has no active leg.
+     * @param {WT_FlightPlanLeg} leg - the active leg.
      */
     setActiveLeg(leg) {
-        if (leg === this.activeLeg()) {
+        if (leg === this.getActiveLeg()) {
             return;
         }
 
@@ -314,17 +333,18 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
-     * @param {WT_GVector2[]} bounds
-     * @param {Number} index
-     * @param {WT_FlightPlanLeg} leg
-     * @param {WT_GeoPoint} previousEndpoint
-     * @param {Boolean} discontinuity
+     * Renders a single flight plan leg.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project and render
+     *                                                        the flight plan.
+     * @param {CanvasRenderingContext2D} context - the 2D rendering context of the canvas to which to render.
+     * @param {WT_GVector2[]} bounds - the boundaries of the canvas, represented as an array containing the coordinates
+     *                                 of the top-left corner at index 0 and the bottom-right corner at index 1.
+     * @param {WT_FlightPlanLeg} leg - the leg to render.
+     * @param {WT_GeoPoint} previousEndpoint - the terminator fix of the previous leg.
+     * @param {Boolean} discontinuity - whether the previous leg ended in a discontinuity.
      */
-    _renderLeg(state, projectionRenderer, context, bounds, index, leg, previousEndpoint, discontinuity) {
+    _renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity) {
         if (projectionRenderer.isInViewBounds(leg.fix.location, bounds, 0.05)) {
             this._waypointsRendered.add(leg.fix);
         }
@@ -333,7 +353,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             return;
         }
 
-        let isActive = leg === this.activeLeg();
+        let isActive = leg === this.getActiveLeg();
         let useRhumb = false;
         if (leg instanceof WT_FlightPlanProcedureLeg) {
             switch (leg.procedureLeg.type) {
@@ -346,7 +366,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
             }
         }
 
-        let style = this._legStyleChooser.chooseStyle(leg, this.activeLeg(), discontinuity);
+        let style = this._legStyleChooser.chooseStyle(leg, this.getActiveLeg(), discontinuity);
         let renderFunc = this._legRenderFuncs[style];
         if (renderFunc) {
             renderFunc(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
@@ -356,10 +376,11 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
+     * Renders the flight plan assigned to this renderer to an HTML canvas.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project and render
+     *                                                        the flight plan.
+     * @param {CanvasRenderingContext2D} context - the 2D rendering context of the canvas to which to render.
      */
     render(state, projectionRenderer, context) {
         this._needsRedraw = false;
@@ -380,13 +401,13 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._waypointsRendered.add(destination);
         }
 
-        let start = (this.activeLeg() && !this.drawPreviousLegs) ? this.activeLeg().index : 0;
+        let start = (this.getActiveLeg() && !this.drawPreviousLegs) ? this.getActiveLeg().index : 0;
         let startPrevious = this._legs[start - 1];
         let previousEndpoint = startPrevious ? startPrevious.endpoint : null;
         let discontinuity = startPrevious ? startPrevious.discontinuity : false;
         for (let i = start; i < this._legs.length; i++) {
             let leg = this._legs[i];
-            this._renderLeg(state, projectionRenderer, context, bounds, i, leg, previousEndpoint, discontinuity);
+            this._renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity);
             previousEndpoint = leg.endpoint;
             discontinuity = leg.discontinuity;
         }

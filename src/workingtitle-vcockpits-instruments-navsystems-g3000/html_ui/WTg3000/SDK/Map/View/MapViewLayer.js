@@ -241,7 +241,7 @@ class WT_MapViewSubLayer {
     }
 
     /**
-     * Sets the size of this sublayer.
+     * Sets the viewable size of this sublayer.
      * @param {Number} width - the new width of this sublayer, in pixels.
      * @param {Number} height - the new height of this sublayer, in pixels.
      */

@@ -151,9 +151,9 @@ class WT_MapViewRunwayCanvasRenderer {
 
 class WT_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
     /**
-     * @param {WT_Runway} runway
-     * @param {Number} priority
-     * @param {Boolean} [alwaysShow]
+     * @param {WT_Runway} runway - the runway with which the new label is associated.
+     * @param {Number} priority - the display priority of the new label.
+     * @param {Boolean} [alwaysShow] - whether the new label is immune to culling. False by default.
      */
     constructor(runway, priority, alwaysShow = false) {
         super(runway.designation, priority, alwaysShow);
@@ -165,7 +165,7 @@ class WT_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
 
     /**
      * @readonly
-     * @property {WT_Runway} runway
+     * @property {WT_Runway} runway - the runway with which this label is associated.
      * @type {WT_Runway}
      */
     get runway() {
@@ -173,7 +173,8 @@ class WT_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
     }
 
     /**
-     * @param {WT_MapViewState} state
+     * Updates this label according to the current map view state.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     update(state) {
         state.projection.project(this.runway.start, this._position);
@@ -185,6 +186,8 @@ class WT_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
 class WT_MapViewRunwayLabelLayerAirportEntry {
     /**
      * @param {WT_Airport} airport
+     * @param {Object} styleOptions
+     * @param {WT_MapViewTextLabelManager} labelManager
      */
     constructor(airport, styleOptions, labelManager) {
         this._airport = airport;

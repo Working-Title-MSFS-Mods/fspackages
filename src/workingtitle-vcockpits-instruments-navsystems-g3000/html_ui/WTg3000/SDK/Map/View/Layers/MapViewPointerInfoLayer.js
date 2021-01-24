@@ -1,4 +1,14 @@
+/**
+ * A box that displays information related to the map pointer. The box contains information on the lat/long coordinates at
+ * the pointer's position, the bearing from the reference point (by default the player airplane's present position) to the
+ * pointer's position, and the distance from the reference point to the pointer's position. The use of this layer requires
+ * the .pointer module to be added to the map model.
+ */
 class WT_MapViewPointerInfoLayer extends WT_MapViewLayer {
+    /**
+     * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
+     * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
+     */
     constructor(className = WT_MapViewPointerInfoLayer.CLASS_DEFAULT, configName = WT_MapViewPointerInfoLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
     }
@@ -147,8 +157,8 @@ class WT_MapViewPointerInfo extends HTMLElement {
 
     /**
      * @param {WT_MapViewState} state
-     * @param {LatLong} reference
-     * @param {LatLong} pointer
+     * @param {WT_GeoPoint} reference
+     * @param {WT_GeoPoint} pointer
      */
     _updateDistance(state, reference, pointer) {
         let distance = state.projection.distance(reference, pointer, this._tempDistance);
@@ -157,8 +167,8 @@ class WT_MapViewPointerInfo extends HTMLElement {
 
     /**
      * @param {WT_MapViewState} state
-     * @param {LatLong} reference
-     * @param {LatLong} pointer
+     * @param {WT_GeoPoint} reference
+     * @param {WT_GeoPoint} pointer
      */
     _updateBearing(state, reference, pointer) {
         let bearing = this._tempAngle.set(state.projection.bearing(reference, pointer));
@@ -167,7 +177,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
 
     /**
      * @param {WT_MapViewState} state
-     * @param {LatLong} pointer
+     * @param {WT_GeoPoint} pointer
      */
     _updateLatLong(state, pointer) {
         let latSign = Math.sign(pointer.lat);

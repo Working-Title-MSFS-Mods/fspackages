@@ -1,5 +1,5 @@
 /**
- * Borders and labels for countries and states/provinces.
+ * Borders and labels for countries and states/provinces. The use of this layer requires the .borders module to be added to the map model.
  */
 class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     /**
@@ -369,7 +369,8 @@ class WT_MapViewBorderLabel extends WT_MapViewSimpleTextLabel {
     }
 
     /**
-     * @param {WT_MapViewState} state
+     * Updates this label according to the current map view state.
+     * @param {WT_MapViewState} state - the current map view state.
      */
     update(state) {
         state.projection.project(this._geoPosition, this._position);
