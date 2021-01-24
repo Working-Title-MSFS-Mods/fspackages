@@ -849,18 +849,18 @@ class CJ4_APDisplay extends NavSystemElement {
         this.altimeterIndex = 0;
     }
     init(root) {
-        this.apprActiveField = this.gps.getChildById("apprActiveField");
+        this.AP_ApprActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("apprActiveField"));
         // this.fdSyncField = this.gps.getChildById("fdSyncField");
-        this.AP_LateralActive = this.gps.getChildById("lateralActiveField");
-        this.AP_LateralArmed = this.gps.getChildById("lateralArmField");
+        this.AP_LateralActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("lateralActiveField"));
+        this.AP_LateralArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("lateralArmField"));
         this.AP_Status = this.gps.getChildById("ap_ydEngageField");
         this.AP_FDIndicatorArrow = this.gps.getChildById("fdIndicatorArrow");
-        this.AP_VerticalActive = this.gps.getChildById("verticalActiveField");
+        this.AP_VerticalActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalActiveField"));
         this.AP_ModeReference_Icon = this.gps.getChildById("verticalCaptureDataField_Icon");
         this.AP_ModeReference_Value = this.gps.getChildById("verticalCaptureDataField_Value");
-        this.AP_Armed = this.gps.getChildById("verticalArmField");
-        this.vnavArmField = this.gps.getChildById("vnavArmField");
-        this.approachVerticalArmField = this.gps.getChildById("approachVerticalArmField");
+        this.AP_VerticalArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalArmField"));
+        this.AP_VNAVArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("vnavArmField"));
+        this.AP_ApprVerticalArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("approachVerticalArmField"));
 
         if (this.gps.instrumentXmlConfig) {
             let altimeterIndexElems = this.gps.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
@@ -925,12 +925,12 @@ class CJ4_APDisplay extends NavSystemElement {
 
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
                 }
                 else if (verticalMode == "FLC" || verticalMode == "VFLC") {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";
                     if (Simplane.getAutoPilotMachModeActive()) {
                         const machValue = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
@@ -941,39 +941,39 @@ class CJ4_APDisplay extends NavSystemElement {
                     }
                 }
                 else {
-                    Avionics.Utils.diffAndSet(this.AP_VerticalActive, verticalMode);
+                    this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 
                 //VERTICAL ALTITUDE ARMED
-                Avionics.Utils.diffAndSet(this.AP_Armed, altitudeArmed);
+                this.AP_VerticalArmed.setDisplayValue(altitudeArmed);
 
                 //VERTICAL VNAV ARMED
-                Avionics.Utils.diffAndSet(this.vnavArmField, vnavArmed);
+                this.AP_VNAVArmed.setDisplayValue(vnavArmed);
 
                 //VERTICAL APPR VERTICAL (GS/GP) ARMED
-                Avionics.Utils.diffAndSet(this.approachVerticalArmField, approachVerticalArmed);
+                this.AP_ApprVerticalArmed.setDisplayValue(approachVerticalArmed);
 
                 //LATERAL ACTIVE
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, lateralMode);
+                this.AP_LateralActive.setDisplayValue(lateralMode);
 
                 //LATERAL ARMED
-                Avionics.Utils.diffAndSet(this.AP_LateralArmed, lateralArmed); 
+                this.AP_LateralArmed.setDisplayValue(lateralArmed);
 
                 //APPR ACTIVE
-                Avionics.Utils.diffAndSet(this.apprActiveField, approachActive);
+                this.AP_ApprActive.setDisplayValue(approachActive);
             }
         }
         else {
-            Avionics.Utils.diffAndSet(this.AP_VerticalActive, ""); //VERTICAL MODE
+            this.AP_VerticalActive.setDisplayValue(""); //VERTICAL MODE
             Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
-            Avionics.Utils.diffAndSet(this.AP_Armed, ""); //VERTICAL ALTITUDE ARMED
-            Avionics.Utils.diffAndSet(this.vnavArmField, ""); //VERTICAL VNAV ARMED
-            Avionics.Utils.diffAndSet(this.approachVerticalArmField, ""); //VERTICAL APPR VERTICAL (GS/GP) ARMED
-            Avionics.Utils.diffAndSet(this.AP_LateralActive, ""); //LATERAL ACTIVE
-            Avionics.Utils.diffAndSet(this.AP_LateralArmed, ""); //LATERAL ARMED
-            Avionics.Utils.diffAndSet(this.apprActiveField, ""); //APPR ACTIVE
+            this.AP_VerticalArmed.setDisplayValue(""); //VERTICAL ALTITUDE ARMED
+            this.AP_VNAVArmed.setDisplayValue(""); //VERTICAL VNAV ARMED
+            this.AP_ApprVerticalArmed.setDisplayValue(""); //VERTICAL APPR VERTICAL (GS/GP) ARMED
+            this.AP_LateralActive.setDisplayValue(""); //LATERAL ACTIVE
+            this.AP_LateralArmed.setDisplayValue(""); //LATERAL ARMED
+            this.AP_ApprActive.setDisplayValue(""); //APPR ACTIVE
         }
     }
     onExit() {
@@ -994,27 +994,57 @@ class CJ4_ILS extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
+
         if (this.ils) {
             this.altWentAbove500 = true;
-            let showLoc = 0;
-            let showGs = 0;
+            let lDevState = LDevState.NONE;
+            let vDevState = VDevState.NONE;
             
             if (this.gps.mapNavigationSource === 1 || this.gps.mapNavigationSource === 2) {
                 const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + this.gps.mapNavigationSource, "bool");
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.gps.mapNavigationSource, "bool");
-                showLoc = isLoc ? 1 : 0;
-                showGs = isGs ? 1 : 0;
+                lDevState = isLoc ? LDevState.ILS : LDevState.NONE;
+                vDevState = isGs ? VDevState.ILS : VDevState.NONE;
             }
             else if (this.gps.mapNavigationSource === 0) {
+                const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "bool");
+                const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:1", "bool");
+                const isGhostLoc = isLoc && !Simplane.getIsGrounded();
+                const isGhostGs = isGs && !Simplane.getIsGrounded();
                 const isVnav = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') === 1;
                 const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
                 const isPpos = this.gps.mapDisplayMode === 4;
-                showLoc = isRnav || isPpos ? 2 : 0;
-                showGs = isVnav ? 2 : 0;
-            }
 
-            this.ils.showLocalizer(showLoc, this.gps.mapNavigationSource);
-            this.ils.showGlideslope(showGs);
+                lDevState = isRnav || isPpos ? LDevState.LNAV : LDevState.NONE;
+                vDevState = isVnav ? VDevState.VNAV : VDevState.NONE;
+
+                switch(lDevState) {
+                    case LDevState.NONE:
+                        if (isGhostLoc) {
+                            lDevState = LDevState.GHOST_ONLY;
+                        }
+                        break;
+                    case LDevState.LNAV:
+                        if (isGhostLoc) {
+                            lDevState = LDevState.GHOST_AND_LNAV;
+                        }
+                        break;
+                }
+                switch(vDevState) {
+                    case VDevState.NONE:
+                        if (isGhostGs) {
+                            vDevState = VDevState.GHOST_ONLY;
+                        }
+                        break;
+                    case VDevState.VNAV:
+                        if (isGhostGs) {
+                            vDevState = VDevState.GHOST_AND_VNAV;
+                        }
+                        break;
+                }
+            }
+            this.ils.showLocalizer(lDevState, this.gps.mapNavigationSource);
+            this.ils.showGlideslope(vDevState);
             this.ils.update(_deltaTime);
         }
     }
@@ -1023,4 +1053,19 @@ class CJ4_ILS extends NavSystemElement {
     onEvent(_event) {
     }
 }
+class LDevState { }
+LDevState.ILS = 'ILS';
+LDevState.LNAV = 'LNAV';
+LDevState.GHOST_ONLY = 'GHOST_ONLY';
+LDevState.GHOST_AND_LNAV = 'GHOST_AND_LNAV';
+LDevState.NONE = 'NONE';
+
+class VDevState { }
+VDevState.ILS = 'ILS';
+VDevState.VNAV = 'VNAV';
+VDevState.GHOST_ONLY = 'GHOST_ONLY';
+VDevState.GHOST_AND_VNAV = 'GHOST_AND_VNAV';
+VDevState.NONE = 'NONE';
+
+
 registerInstrument("cj4-pfd-element", CJ4_PFD);

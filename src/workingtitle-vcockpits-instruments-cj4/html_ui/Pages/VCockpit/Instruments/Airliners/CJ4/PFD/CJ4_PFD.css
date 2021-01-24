@@ -92,8 +92,8 @@ html body {
 }
 
 .blinking {
-    animation: blink 0.9s step-start 0s infinite;
-    -webkit-animation: blink 0.9s step-start 0s infinite;
+    animation: blink 1.0s step-start 0s infinite;
+    -webkit-animation: blink 1.0s step-start 0s infinite;
 }
 
 svg text {
