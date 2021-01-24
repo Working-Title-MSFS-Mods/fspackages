@@ -60,6 +60,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Pressing LSK next to nav radio frequency with nothing in scratchpad now goes to NAV CONTROL
 - Adjusting a frequency with nav radios in AUTO automatically switches back to MAN
 - Frequencies should now be remembered on shutdown and restart
+- Added expanded nav radio input format support
 
 ### NAV CONTROL
 - Added NAV CONTROL page

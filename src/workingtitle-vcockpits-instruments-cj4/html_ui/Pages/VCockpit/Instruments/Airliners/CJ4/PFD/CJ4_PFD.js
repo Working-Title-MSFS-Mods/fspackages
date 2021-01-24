@@ -910,7 +910,14 @@ class CJ4_APDisplay extends NavSystemElement {
                 this.AP_VerticalArmed.setDisplayValue(altitudeArmed);
 
                 //VERTICAL VNAV ARMED
-                this.AP_VNAVArmed.setDisplayValue(vnavArmed);
+                if (vnavArmed === 'NOPATH') {
+                    this.AP_VNAVArmed.setDisplayValue('<span>PATH</span><svg class="failline" viewBox="0 0 39 16"><line x1="1" y1="7" x2="39" y2="7"/></svg>');
+                    this.AP_VNAVArmed.element.classList.add('fail');
+                }
+                else {
+                    this.AP_VNAVArmed.element.classList.remove('fail');
+                    this.AP_VNAVArmed.setDisplayValue(vnavArmed);
+                }
 
                 //VERTICAL APPR VERTICAL (GS/GP) ARMED
                 this.AP_ApprVerticalArmed.setDisplayValue(approachVerticalArmed);
@@ -969,10 +976,14 @@ class CJ4_ILS extends NavSystemElement {
             else if (this.gps.mapNavigationSource === 0) {
                 const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "bool");
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:1", "bool");
-                const isGhostLoc = isLoc && !Simplane.getIsGrounded();
-                const isGhostGs = isGs && !Simplane.getIsGrounded();
+                const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+
+                const isGhostLoc = isLoc && navToNavTransferState >= 2 && !Simplane.getIsGrounded();
+                const isGhostGs = isGs && navToNavTransferState >= 2 && !Simplane.getIsGrounded();
+
                 const isVnav = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') === 1;
                 const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
+
                 const isPpos = this.gps.mapDisplayMode === 4;
 
                 lDevState = isRnav || isPpos ? LDevState.LNAV : LDevState.NONE;

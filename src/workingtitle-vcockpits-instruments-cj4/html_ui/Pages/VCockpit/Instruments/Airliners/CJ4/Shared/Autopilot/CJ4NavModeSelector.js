@@ -230,9 +230,7 @@ class CJ4NavModeSelector {
           mode = "LOC2";
         }
 
-        if (armed) {
-          mode = "APPR " + mode;
-        }
+        mode = "APPR " + mode;
       }
 
       return mode;
@@ -895,14 +893,10 @@ class CJ4NavModeSelector {
       switch(this.approachMode) {
         case WT_ApproachType.ILS:
         case WT_ApproachType.RNAV:
-          this.currentLateralArmedState = LateralNavModeState.APPR;
+          this.currentLateralArmedState = this.currentLateralArmedState !== LateralNavModeState.APPR ? LateralNavModeState.APPR : LateralNavModeState.NONE;
           break;
       }
     };
-
-    if (this.currentLateralArmedState === LateralNavModeState.APPR) {
-      this.currentLateralArmedState = LateralNavModeState.NONE;
-    }
 
     switch (this.currentLateralActiveState) {
       case LateralNavModeState.ROLL:
