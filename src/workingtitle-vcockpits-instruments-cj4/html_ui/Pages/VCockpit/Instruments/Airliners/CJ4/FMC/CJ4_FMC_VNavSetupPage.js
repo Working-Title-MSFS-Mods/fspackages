@@ -312,7 +312,7 @@ class CJ4_FMC_VNavSetupPage {
                 if (segment) {
                     desiredFPA = fmc._currentVerticalAutopilot.currentSegment.fpa;
                     segmentIndex = fmc._vnav._verticalFlightPlanSegments.indexOf(fmc._currentVerticalAutopilot.currentSegment);
-                    targetAlt = !fmc._currentVerticalAutopilot._targetAltitude ? 0 : fmc._currentVerticalAutopilot._targetAltitude;
+                    targetAlt = !fmc._currentVerticalAutopilot.targetAltitude ? 0 : fmc._currentVerticalAutopilot.targetAltitude;
                     vnavTargetWaypointIdent = fmc._vnav._verticalFlightPlan[fmc._currentVerticalAutopilot.currentSegment.targetIndex].ident;
                     vnavTargetAltitude = fmc._vnav._verticalFlightPlan[fmc._currentVerticalAutopilot.currentSegment.targetIndex].waypointFPTA;
                     vnavTargetDistance = fmc._vnav.allWaypoints[fmc._currentVerticalAutopilot.currentSegment.targetIndex].cumulativeDistanceInFP - fmc._vnav._currentDistanceInFP;

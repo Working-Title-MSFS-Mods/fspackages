@@ -56,38 +56,33 @@ class LNavDirector {
     if (this.activeFlightPlan) {
       const previousWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex - 1);
       const activeWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex);
+
+      const planeState = LNavDirector.getAircraftState();
+
+      const navSensitivity = this.getNavSensitivity(planeState.position);
+      SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY', 'number', navSensitivity);
+
+      this.postDisplayedNavSensitivity(navSensitivity);
+
+      const navSensitivityScalar = this.getNavSensitivityScalar(planeState.position, navSensitivity);
+      SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number', navSensitivityScalar);
         
-      if (!this.delegateToHoldsDirector(activeWaypoint) && !this.delegateToLocDirector() && activeWaypoint && previousWaypoint) {
-        const planeState = LNavDirector.getAircraftState();
-
-        const navSensitivity = this.getNavSensitivity(planeState.position);
-        SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY', 'number', navSensitivity);
-
-        this.postDisplayedNavSensitivity(navSensitivity);
-
-        const navSensitivityScalar = this.getNavSensitivityScalar(planeState.position, navSensitivity);
-        SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number', navSensitivityScalar);
-
-        switch (this.state) {
-          case LNavState.TRACKING:
-          case LNavState.TURN_COMPLETING:
-            this.generateGuidance(planeState, navSensitivity, activeWaypoint, previousWaypoint);
-            break;
-        }
+      if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint && previousWaypoint) {
+        this.generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity);
       }
     }
   }
 
   /**
-   * Updates LNAV direction and tracking.
-   * @param {AircraftState} planeState The current aircraft state.
-   * @param {number} navSensitivity The current navigation sensitivity.
+   * Generates lateral guidance for LNAV.
    * @param {WayPoint} activeWaypoint The current active waypoint.
-   * @param {WayPoint} previousWaypoint The current previous waypoint.
+   * @param {AircraftState} planeState The current aircraft state.
+   * @param {WayPoint} previousWaypoint The previous waypoint.
+   * @param {number} navSensitivity The current nav sensitivity.
    */
-  generateGuidance(planeState, navSensitivity, activeWaypoint, previousWaypoint) {
+  generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity) {
     const activeLatLon = new LatLon(activeWaypoint.infos.coordinates.lat, activeWaypoint.infos.coordinates.long);
-    
+
     const nextWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
     const nextLatLon = nextWaypoint ? new LatLon(nextWaypoint.infos.coordinates.lat, nextWaypoint.infos.coordinates.long) : undefined;
 
@@ -104,7 +99,7 @@ class LNavDirector {
     else {
       const planeToActiveBearing = planeLatLon.initialBearingTo(activeLatLon);
       const nextStartTrack = nextWaypoint ? activeLatLon.initialBearingTo(nextLatLon) : planeToActiveBearing;
-      
+
       const anticipationDistance = this.getAnticipationDistance(planeState, Avionics.Utils.angleDiff(planeToActiveBearing, nextStartTrack));
       if (!nextWaypoint || !nextWaypoint.isFlyover) {
         this.alertIfClose(planeState, distanceToActive, anticipationDistance);
@@ -112,29 +107,32 @@ class LNavDirector {
         if (distanceToActive < anticipationDistance && !nextWaypoint.isFlyover) {
           this.sequenceToNextWaypoint(planeState, activeWaypoint);
         }
-        else {
-          if (this.state === LNavState.TRACKING) {
-            LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, distanceToActive > this.options.minimumTrackingDistance);
-          }
-          
-          if (this.state === LNavState.TURN_COMPLETING) {
-            this.handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint);
-          }
-        }
+      }
+    }
+
+    if (!this.delegateToLocDirector()) {
+      switch (this.state) {
+        case LNavState.TRACKING:
+          const shouldExecute = distanceToActive > this.options.minimumTrackingDistance && this.navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV;
+          LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, shouldExecute);
+          break;
+        case LNavState.TURN_COMPLETING:
+          this.handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint);
+          break;
       }
     }
   }
 
   /**
    * Handles the turn completion phase of lateral guidance.
-   * @param {AircraftState} planeState The current aircraft state. 
+   * @param {AircraftState} planeState The current aircraft state.
    * @param {number} dtk The current desired track.
    * @param {WayPoint} previousWaypoint The previous (from) waypoint.
    * @param {WayPoint} activeWaypoint The active (to) waypoint.
    */
-  handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint) {
+  handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint, execute) {
     const angleDiffToTarget = Avionics.Utils.angleDiff(planeState.trueHeading, dtk);
-    if (angleDiffToTarget < this.options.degreesRollout) {
+    if (angleDiffToTarget < this.options.degreesRollout || this.navModeSelector.currentLateralActiveState !== LateralNavModeState.LNAV) {
       this.state = LNavState.TRACKING;
     }
     else {
@@ -316,9 +314,9 @@ class LNavDirector {
           MessageService.getInstance().post(FMS_MESSAGE_ID.TERM_LPV, () => this.currentNavSensitivity !== NavSensitivity.TERMINALLPV);
           break;
         case NavSensitivity.APPROACH:
-          MessageService.getInstance().post(FMS_MESSAGE_ID.APPR, () => this.currentNavSensitivity !== NavSensitivity.APPR);
+          MessageService.getInstance().post(FMS_MESSAGE_ID.APPR, () => this.currentNavSensitivity !== NavSensitivity.APPROACH);
           break;
-        case NavSensitivity.APPROACH:
+        case NavSensitivity.APPROACHLPV:
           MessageService.getInstance().post(FMS_MESSAGE_ID.APPR_LPV, () => this.currentNavSensitivity !== NavSensitivity.APPROACHLPV);
           break;
       }

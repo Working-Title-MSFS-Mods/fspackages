@@ -61,8 +61,11 @@ class CJ4_FMC_NavRadioPageOne {
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.pre2 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 2);
 
-        this._freqProxy.vor1 = this._fmc.radioNav.getVORActiveFrequency(1);
-        this._freqProxy.vor2 = this._fmc.radioNav.getVORActiveFrequency(2);
+        this._freqProxy.vor1 = this._fmc._navRadioSystem.radioStates[1].frequency;
+        this._freqProxy.vor2 = this._fmc._navRadioSystem.radioStates[2].frequency;
+
+        this._freqProxy.vor1Mode = this._fmc._navRadioSystem.radioStates[1].mode;
+        this._freqProxy.vor2Mode = this._fmc._navRadioSystem.radioStates[2].mode;
 
         this._freqProxy.atc1 = SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number");
         this._freqProxy.adf1 = this._fmc.radioNav.getADFActiveFrequency(1);
@@ -88,7 +91,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" RECALL", "RECALL "],
             [this._freqMap.rcl1.toFixed(3) + "", this._freqMap.pre2.toFixed(3) + ""],
             [" NAV 1", "NAV 2 "],
-            [(this._freqMap.vor1 == 0 ? "__LSB__RSB" : this._freqMap.vor1.toFixed(2)) + "[green]", (this._freqMap.vor2 == 0 ? "__LSB__RSB" : this._freqMap.vor2.toFixed(2)) + "[green]"],
+            [`${this._freqMap.vor1.toFixed(2)}[green] ${this._freqMap.vor1Mode}[blue s-text]`, `${this._freqMap.vor2Mode}[blue s-text] ${this._freqMap.vor2.toFixed(2)}[green]`],
             [" DME1", "DME2 "],
             ["HOLD[s-text]", "HOLD[s-text]"],
             [" ATC1", "TCAS MODE "],
@@ -125,11 +128,9 @@ class CJ4_FMC_NavRadioPageOne {
         let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
         this._fmc.clearUserInput();
         if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
-            this._fmc.radioNav.setVORStandbyFrequency(index, numValue).then(() => {
-                this._fmc.radioNav.swapVORFrequencies(index);
-                this._fmc.requestCall(() => {
-                    this.update();
-                });
+            this._fmc._navRadioSystem.radioStates[index].setManualFrequency(numValue);
+            this._fmc.requestCall(() => {
+                this.update();
             });
         }
         else {
@@ -155,11 +156,21 @@ class CJ4_FMC_NavRadioPageOne {
         };
 
         this._fmc.onLeftInput[2] = () => {
-            this.enterVorFreq(this._fmc.inOut, 1);
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                this._fmc._navigationService.showPage(CJ4_FMC_NavControlPage, 1);
+            }
+            else {
+                this.enterVorFreq(this._fmc.inOut, 1);
+            }
         };
 
         this._fmc.onRightInput[2] = () => {
-            this.enterVorFreq(this._fmc.inOut, 2);
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                this._fmc._navigationService.showPage(CJ4_FMC_NavControlPage, 2);
+            }
+            else {
+                this.enterVorFreq(this._fmc.inOut, 2);
+            }
         };
 
         this._fmc.onLeftInput[5] = () => {
