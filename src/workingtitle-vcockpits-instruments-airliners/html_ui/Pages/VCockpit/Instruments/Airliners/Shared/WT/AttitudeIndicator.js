@@ -305,6 +305,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             attitudeContainer.appendChild(this.attitude_root);
             {
                 this.attitude_bank = document.createElementNS(Avionics.SVG.NS, "g");
+                this.attitude_bank.setAttribute("id", "AttitudeBank");
                 this.attitude_root.appendChild(this.attitude_bank);
                 let topTriangle = document.createElementNS(Avionics.SVG.NS, "path");
                 topTriangle.setAttribute("d", "M 0 -180 l -5 -10 l 10 0 Z");
@@ -404,10 +405,12 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.vBarAircraftSymbol.appendChild(triangleInnerRight);
 
                 this.slipSkidTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+                this.slipSkidTriangle.setAttribute("id", "AttitudeSlipSkidTriangle");
                 this.slipSkidTriangle.setAttribute("d", "M 0 -179 l -13 20 l 26 0 Z");
                 this.slipSkidTriangle.setAttribute("fill", "white");
                 this.attitude_root.appendChild(this.slipSkidTriangle);
                 this.slipSkid = document.createElementNS(Avionics.SVG.NS, "path");
+                this.slipSkid.setAttribute("id", "AttitudeSlipSkid");
                 this.slipSkid.setAttribute("d", "M -13 -152 L -13 -157 L 13 -157 L 13 -152 Z");
                 this.slipSkid.setAttribute("fill", "white");
                 this.attitude_root.appendChild(this.slipSkid);
