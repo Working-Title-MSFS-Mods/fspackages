@@ -877,7 +877,22 @@ class CJ4_APDisplay extends NavSystemElement {
         const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
         const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
         const flightDirector = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") == 1;
-        
+        const precisionApproachMode = false //TODO set to match description in manual (enables double arrow in FMA)
+        const rightFDEngaged = false //TODO set when right FD is primary (turns arrow in FMA)
+
+        // TODO work in basic implementation of arrow logic
+        // if(rightFDEngaged){
+        //     this.AP_FDIndicatorArrow.classList.add("right")
+        // }else{
+        //     this.AP_FDIndicatorArrow.classList.remove("right")
+        // }
+
+        // if(precisionApproachMode){
+        //     this.AP_FDIndicatorArrow.classList.add("both")
+        // }else{
+        //     this.AP_FDIndicatorArrow.classList.remove("both")
+        // }
+
         if (apMasterActive) {
             Avionics.Utils.diffAndSet(this.AP_Status, "AP");
             this.AP_FDIndicatorArrow.setAttribute("state", "Engaged");
