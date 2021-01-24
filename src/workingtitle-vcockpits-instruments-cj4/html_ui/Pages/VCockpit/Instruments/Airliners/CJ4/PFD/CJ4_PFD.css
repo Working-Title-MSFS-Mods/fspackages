@@ -727,37 +727,28 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols text {
     text-anchor: end;
 }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime {
-    bottom: 5%;
-    left: 3.45%;
-    width: 15%;
-    height: 5%;
-    position: absolute;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime svg {
-    width: 100%;
-    height: 100%;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text {
-    width: 100%;
-    height: 100%;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Title {
-    font-size: 18px;
-    fill: white;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Value {
-    font-size: 18px;
-    fill: #11d011;
-    text-anchor: start;
-}
 
 cj4-pfd-element #Mainframe #NDMapOverlay[extended=on] {
     top: 35%;
+}
+
+cj4-pfd-element #Mainframe #ElapsedTime {
+    transform: rotateX(0);
+    position: absolute;
+    background-color: black;
+    width: 25%;
+    height: 3%;
+    bottom: 6.7%;
+    left: 1.2%
+}
+
+cj4-pfd-element #Mainframe #ElapsedTime #ET {
+    font-size: calc(2 * 1vh * var(--bodyHeightScale));
+    padding-right: 2%
+}
+
+cj4-pfd-element #Mainframe #ElapsedTime #ET_Value {
+    font-size: calc(2.3 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar {
@@ -771,7 +762,7 @@ cj4-pfd-element #Mainframe #NavBar {
 
 cj4-pfd-element #Mainframe #NavBar #Coms {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;;
     width: 100%;
     height: 100%;
 }
@@ -784,7 +775,15 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    font-size: calc(1.9 * 1vh * var(--bodyHeightScale));
+    font-size: calc(2 * 1vh * var(--bodyHeightScale));
+}
+
+cj4-pfd-element #Mainframe #NavBar #Coms #Com1{
+    padding-left: 1.2%
+}
+
+cj4-pfd-element #Mainframe #NavBar #Coms #Utc{
+    padding-right: 0.5%
 }
 
 cj4-pfd-element #Mainframe #NavBar #Coms #Com1_Value,
@@ -885,6 +884,7 @@ cj4-pfd-element #Mainframe #PopupMenu svg {
 }
 
 #Approach,
+#ElapsedTime .Modifiable,
 #Coms div.Modifiable {
     color: #11d011 !important;
 }
