@@ -28,7 +28,7 @@ Y Offset=0.0, 0.0
 Z Offset=0.0, 0.0
 
 [Particle.0]
-Lifetime=0.01, 0.01
+Lifetime=0.5, 0.5
 Type=19
 X Scale=0.15, 0.15
 Y Scale=0.15, 0.15
@@ -95,7 +95,7 @@ Y Offset=0.0, 0.0
 Z Offset=0.0, 0.0
 
 [Particle.1]
-Lifetime=0.01, 0.01
+Lifetime=0.5, 0.5
 Type=19
 X Scale=1.68, 1.68
 Y Scale=1.68, 1.68
@@ -161,7 +161,7 @@ Y Offset=0.0, 0.0
 Z Offset=0.0, 0.0
 
 [Particle.2]
-Lifetime=0.01, 0.01
+Lifetime=0.5, 0.5
 Type=19
 X Scale=3.19, 3.19
 Y Scale=3.19, 3.19
@@ -227,7 +227,7 @@ Y Offset=0.0, 0.0
 Z Offset=0.0, 0.0
 
 [Particle.3]
-Lifetime=0.01, 0.01
+Lifetime=0.5, 0.5
 Type=19
 X Scale=1.10, 1.10
 Y Scale=1.10, 1.10
