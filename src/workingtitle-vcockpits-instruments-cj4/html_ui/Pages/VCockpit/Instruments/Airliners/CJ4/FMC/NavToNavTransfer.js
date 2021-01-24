@@ -58,7 +58,8 @@ class NavToNavTransfer {
         const frequency = this.fpm.getApproachNavFrequency();
 
         if (this.navRadioSystem.radioStates[1].frequency !== frequency) {
-          MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => this.fpm.getApproachNavFrequency() === this.navRadioSystem.radioStates[1].frequency);
+          MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => 
+            this.fpm.getApproachNavFrequency() === this.navRadioSystem.radioStates[1].frequency || this.transferState !== NavToNavTransfer.ARMED);
         }
         else if (this.navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
           this.transferState = NavToNavTransfer.TRANSFER;
