@@ -25,3 +25,5 @@ export * from "./cj4/pfd/CJ4_PFD_MessagePacket";
 export * from "./cj4/pfd/CJ4_FGSDisplaySlot";
 
 export * from "./cj4/fmc/navradio/CJ4_NavRadioSystem";
+
+export * from "./utils/SimVarCache";
