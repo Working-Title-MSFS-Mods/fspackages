@@ -9,8 +9,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
         this.gs_cursorMaxY = 0;
         this.gs_cursorPosX = 0;
         this.gs_cursorPosY = 0;
-        this.locVisible = 0;
-        this.gsVisible = 0;
+        this.lDevState = LDevState.NONE;
+        this.vDevState = VDevState.NONE;
         this.infoVisible = false;
         this.isHud = false;
         this._aircraft = Aircraft.A320_NEO;
@@ -47,8 +47,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
         if (this.aircraft == Aircraft.CJ4) {
             this.construct_CJ4();
         }
-        this.showGlideslope(this.gsVisible);
-        this.showLocalizer(this.locVisible);
+        this.showGlideslope(this.vDevState);
+        this.showLocalizer(this.lDevState);
         this.showNavInfo(this.infoVisible);
     }
     construct_CJ4() {
@@ -226,15 +226,15 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
     update(_deltaTime) {
 
-        if (this.gsVisible > 0 || this.locVisible > 0 || this.infoVisible) {
+        if (this.vDevState !== VDevState.NONE || this.lDevState !== LDevState.NONE || this.infoVisible) {
             const navSensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
 
             //GLIDESLOPE/LPV/VNAV INDICATOR
-            if (this.gs_cursorGroup && this.gsVisible > 0) {
+            if (this.gs_cursorGroup && this.vDevState !== VDevState.NONE) {
 
                 //VDEV SNOWFLAKE
                 const snowflake = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') == 1;
-                if (this.gsVisible == 2 && snowflake) {
+                if ((this.vDevState === VDevState.VNAV || this.vDevState === VDevState.GHOST_AND_VNAV) && snowflake) {
                     this.vertical_snowFlake.setAttribute("visibility", "visible");
 
                     let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
@@ -261,8 +261,9 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 }
 
                 //ILS GLIDESLOPE
-                if (this.gsVisible == 1 && this.tunedNav > 0) {
-                    let gsi = -SimVar.GetSimVarValue("NAV GSI:" + this.tunedNav, "number") / 127.0;
+                if (this.vDevState === VDevState.ILS || this.vDevState === VDevState.GHOST_ONLY || this.vDevState === VDevState.GHOST_AND_VNAV) {
+                    const navSource = this.vDevState === VDevState.ILS ? this.tunedNav : 1;
+                    let gsi = -SimVar.GetSimVarValue("NAV GSI:" + navSource, "number") / 127.0;
                     let delta = (gsi + 1.0) * 0.5;
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
@@ -293,10 +294,11 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
             }
 
             //LOC/RNAV/LNAV INDICATOR
-            if (this.loc_cursorGroup && this.locVisible > 0) {
+            if (this.loc_cursorGroup && this.lDevState !== LDevState.NONE) {
+                const navSource = this.lDevState === LDevState.ILS ? this.tunedNav : 1;
                 let cdi = 0;
                 //LDEV SNOWFLAKE
-                if (this.locVisible == 2) {
+                if (this.lDevState === LDevState.LNAV || this.lDevState === LDevState.GHOST_AND_LNAV) {
                     
                     const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
                     const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
@@ -315,8 +317,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 }
 
                 //LOC
-                if (this.locVisible == 1) {
-                    cdi = SimVar.GetSimVarValue("NAV CDI:" + this.tunedNav, "number") / 127.0;
+                if (this.lDevState === LDevState.GHOST_AND_LNAV || this.lDevState === LDevState.GHOST_ONLY || this.lDevState === LDevState.ILS) {
+                    cdi = SimVar.GetSimVarValue("NAV CDI:" + navSource, "number") / 127.0;
 
                     let delta = (cdi + 1.0) * 0.5;
                     let x = this.loc_cursorMinX + (this.loc_cursorMaxX - this.loc_cursorMinX) * delta;
@@ -363,29 +365,63 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
     }
     showLocalizer(_val, tunedNav) {
         this.tunedNav = tunedNav;
-        this.locVisible = _val;
-        if (this.locVisible > 0) {
-            this.loc_mainGroup.setAttribute("visibility", "visible");
-        }
-        else if (this.loc_mainGroup) {
-            this.loc_mainGroup.setAttribute("visibility", "hidden");
-            this.loc_cursorShapeLeft.removeAttribute("visibility");
-            this.loc_cursorShapeRight.removeAttribute("visibility");
-            this.lateral_snowFlake.removeAttribute("visibility");
+        this.lDevState = _val;
+
+        switch(this.lDevState) {
+            case LDevState.NONE:
+                if (this.loc_mainGroup) {
+                    this.loc_mainGroup.setAttribute("visibility", "hidden");
+                    this.loc_cursorShapeLeft.removeAttribute("visibility");
+                    this.loc_cursorShapeRight.removeAttribute("visibility");
+                    this.lateral_snowFlake.removeAttribute("visibility");
+                }
+                break;
+            case LDevState.GHOST_ONLY:
+            case LDevState.GHOST_AND_LNAV:
+                this.loc_mainGroup.setAttribute("visibility", "visible");
+                this.loc_cursorShapeLeft.setAttribute("fill", "cyan");
+                this.loc_cursorShapeRight.setAttribute("fill", "cyan");
+                break;
+            case LDevState.ILS:
+                this.loc_mainGroup.setAttribute("visibility", "visible");
+                this.loc_cursorShapeLeft.setAttribute("fill", "#11d011");
+                this.loc_cursorShapeRight.setAttribute("fill", "#11d011");
+                break;
+            case LDevState.LNAV:
+                this.loc_mainGroup.setAttribute("visibility", "visible");
+                break;
         }
     }
+
     showGlideslope(_val) {
-        this.gsVisible = _val;
-        if (this.gsVisible > 0) {
-            this.gs_mainGroup.setAttribute("visibility", "visible");
-        }
-        else if (this.gs_mainGroup) {
-            this.gs_mainGroup.setAttribute("visibility", "hidden");
-            this.gs_cursorShapeUp.removeAttribute("visibility");
-            this.gs_cursorShapeDown.removeAttribute("visibility");
-            this.vertical_snowFlake.removeAttribute("visibility");
+        this.vDevState = _val;
+
+        switch(this.vDevState) {
+            case VDevState.NONE:
+                if (this.gs_mainGroup) {
+                    this.gs_mainGroup.setAttribute("visibility", "hidden");
+                    this.gs_cursorShapeUp.removeAttribute("visibility");
+                    this.gs_cursorShapeDown.removeAttribute("visibility");
+                    this.vertical_snowFlake.removeAttribute("visibility");
+                }
+                break;
+            case VDevState.GHOST_ONLY:
+            case VDevState.GHOST_AND_VNAV:
+                this.gs_mainGroup.setAttribute("visibility", "visible");
+                this.gs_cursorShapeDown.setAttribute("fill", "cyan");
+                this.gs_cursorShapeUp.setAttribute("fill", "cyan");
+                break;
+            case VDevState.ILS:
+                this.gs_mainGroup.setAttribute("visibility", "visible");
+                this.gs_cursorShapeDown.setAttribute("fill", "#11d011");
+                this.gs_cursorShapeUp.setAttribute("fill", "#11d011");
+                break;
+            case VDevState.VNAV:
+                this.gs_mainGroup.setAttribute("visibility", "visible");
+                break;
         }
     }
+
     showNavInfo(_val) {
         this.infoVisible = _val;
         if (this.InfoGroup) {
