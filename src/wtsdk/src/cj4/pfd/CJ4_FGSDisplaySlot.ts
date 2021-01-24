@@ -6,6 +6,9 @@ export class CJ4_FGSDisplaySlot {
   /** The current FGS slot display value. */
   private currentDisplayValue: string = '';
 
+  /** Whether or not the FGS mode is currently failed. */
+  private currentlyIsFailed: boolean = false;
+
   /** The current timeout to cancel value change blinking. */
   private blinkTimeout: number;
 
@@ -29,9 +32,16 @@ export class CJ4_FGSDisplaySlot {
 
       this.currentDisplayValue = value;
       clearTimeout(this.blinkTimeout);
-      
+
+      const valueSpan = this.element.querySelector('span');
+      if (valueSpan !== undefined && valueSpan !== null) {
+        this.element.removeChild(valueSpan);
+      }
+
       if (value !== undefined || value !== '') {
-        this.element.textContent = value;
+        const valueSpan = document.createElement('span');
+        valueSpan.textContent = value;
+        this.element.appendChild(valueSpan);
 
         if (this.shouldFlash) {
           this.element.classList.add('blinking');
@@ -39,8 +49,24 @@ export class CJ4_FGSDisplaySlot {
         }
       }
       else {
-        this.element.classList.remove('blinking');
-        this.element.textContent = '';
+        this.element.classList.remove('blinking');      
+      }
+    }
+  }
+
+  /**
+   * Sets the FGS slot failure strikethrough.
+   * @param isFailed 
+   */
+  public setFailed(isFailed: boolean): void {
+    if (this.currentlyIsFailed !== isFailed) {
+      this.currentlyIsFailed = isFailed;
+
+      if (isFailed) {
+        this.element.classList.add('fail');
+      }
+      else {
+        this.element.classList.remove('fail');
       }
     }
   }

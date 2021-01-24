@@ -911,11 +911,11 @@ class CJ4_APDisplay extends NavSystemElement {
 
                 //VERTICAL VNAV ARMED
                 if (vnavArmed === 'NOPATH') {
-                    this.AP_VNAVArmed.setDisplayValue('<span>PATH</span><svg class="failline" viewBox="0 0 39 16"><line x1="1" y1="7" x2="39" y2="7"/></svg>');
-                    this.AP_VNAVArmed.element.classList.add('fail');
+                    this.AP_VNAVArmed.setDisplayValue('PATH');
+                    this.AP_VNAVArmed.setFailed(true);
                 }
                 else {
-                    this.AP_VNAVArmed.element.classList.remove('fail');
+                    this.AP_VNAVArmed.setFailed(false);
                     this.AP_VNAVArmed.setDisplayValue(vnavArmed);
                 }
 
