@@ -7,9 +7,9 @@ export class CJ4_FMC_NavigationService {
   constructor(private _fmc: CJ4_FMC) { }
 
   /** Constructs and shows a page given the type as argument */
-  public showPage<T extends CJ4_FMC_Page>(page: new (fmc: CJ4_FMC) => T): void {
+  public showPage<T extends CJ4_FMC_Page>(page: new (fmc: CJ4_FMC, ...args: any[]) => T, ...args: any[]): void {
     this._fmc.clearDisplay();
-    this._currentPage = new page(this._fmc);
+    this._currentPage = new page(this._fmc, ...args);
     this._currentPage.updateCheck();
 
     if (this._currentPage.hasRefresh()) {

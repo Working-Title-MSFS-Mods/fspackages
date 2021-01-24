@@ -395,6 +395,15 @@ class WT_BaseVnav {
         if (!isFlatSegment) {
             for (let k = endingIndex - 1; k >= 0; k--) {
                 const wptToEvaluate = this._verticalFlightPlan[k];
+                for (let m = this._atConstraints.length - 1; m >= 0; m--) {
+                    if (this._atConstraints[m].index <= k && !this._verticalFlightPlan[this._atConstraints[m].index].isClimb) {
+                        maxAltitude = this._atConstraints[m].altitude;
+                        console.log("preceding at constraint at index " + this._atConstraints[m].index + "; altitude " + maxAltitude);
+                        break;
+                    } else {
+                        maxAltitude = 0;
+                    }
+                }
                 let upperAltitude = maxAltitude > 0 ? Math.min(maxAltitude, wptToEvaluate.upperConstraintAltitude) : wptToEvaluate.upperConstraintAltitude;
                 const altToUpperConstraint = upperAltitude - vwp.waypointFPTA;
                 const altToLowerConstraint = wptToEvaluate.lowerConstraintAltitude - vwp.waypointFPTA;
@@ -449,15 +458,7 @@ class WT_BaseVnav {
                     console.log("segmentMaxFPA updated to " + segmentMaxFPA + "; segmentMinFPA updated to " + segmentMinFPA);
                     console.log(wptToEvaluate.ident + " added to segment " + segment);
                 }
-                for (let m = this._atConstraints.length - 1; m >= 0; m--) {
-                    if (this._atConstraints[m].index <= k && !this._verticalFlightPlan[this._atConstraints[m].index].isClimb) {
-                        maxAltitude = this._atConstraints[m].altitude;
-                        console.log("preceding at constraint at index " + this._atConstraints[m].index + "; altitude " + maxAltitude);
-                        break;
-                    } else {
-                        maxAltitude = 0;
-                    }
-                }
+                
             }
         }
         const segmentStartIndex = isFlatSegment ? flatPathStartIndex : Math.min(segmentBreakIndex + 1, endingIndex);
@@ -646,9 +647,9 @@ class WT_BaseVnav {
     trackPath() {
         const currentPathSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
         //console.log("currentPathSegment " + currentPathSegment);
-        let trackSegment = currentPathSegment;
-        if (!currentPathSegment) {
-            trackSegment = this._verticalFlightPlanSegments.length - 1;
+        let trackSegment = this._verticalFlightPlanSegments.length - 1;
+        if (currentPathSegment >= 0 ) {
+            trackSegment = currentPathSegment;
         }
         const flightPathTarget = this._verticalFlightPlanSegments[trackSegment].targetIndex;
         const fpta = this._verticalFlightPlan[flightPathTarget].waypointFPTA;
