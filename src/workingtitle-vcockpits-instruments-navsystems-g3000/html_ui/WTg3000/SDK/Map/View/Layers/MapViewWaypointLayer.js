@@ -58,6 +58,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._airwayRenderer = new WT_MapViewAirwayCanvasRenderer(airwayRendererEventHandler, this._airwayLayer.buffer.context, 300);
         this._shouldDrawUnfinishedAirways = false;
 
+        this._viewDiagonal = 0;
+
         this._lastRadius = new WT_NumberUnit(0, WT_Unit.NMILE);
         this._lastCenter = {lat: 0, long: 0};
         this._searchParamChangeTimer = 0;
@@ -76,6 +78,10 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._lastStandaloneWaypointsCount = 0;
         this._lastShowAirway = false;
         this._lastTime = 0;
+
+        this._tempNM = new WT_NumberUnit(0, WT_Unit.NMILE);
+        this._tempVector1 = new WT_GVector2(0, 0);
+        this._tempVector2 = new WT_GVector2(0, 0);
     }
 
     /**
@@ -263,7 +269,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateDeprecateBounds(state) {
-        let size = Math.max(state.projection.viewWidth, state.projection.viewHeight) * WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR;
+        let size = this._viewDiagonal * WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR;
 
         let left = (state.projection.viewWidth - size) / 2;
         let right = left + size;
@@ -277,6 +283,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _onViewChanged(state) {
+        this._viewDiagonal = Math.sqrt(state.projection.viewWidth * state.projection.viewWidth + state.projection.viewHeight * state.projection.viewHeight);
         this._updateDeprecateBounds(state);
         this._airwayRenderer.desiredLabelDistance = Math.min(state.projection.viewWidth, state.projection.viewHeight) * 0.75;
     }
@@ -363,10 +370,23 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
     /**
      *
      * @param {WT_MapViewState} state
+     * @param {WT_GVector2} lastCenter
+     * @param {WT_NumberUnit} lastRadius
+     * @param {WT_NumberUnit} currentRadius
+     * @param {Number} viewMargin
+     */
+    _isSearchInvalid(state, lastCenter, lastRadius, currentRadius, viewMargin) {
+        let centerOffset = this._tempVector1.set(state.projection.viewCenter).subtract(state.projection.project(lastCenter, this._tempVector2));
+        return !lastRadius.equals(currentRadius) || centerOffset.length > viewMargin;
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
      */
     _handleSearchParameters(state) {
-        let long = Math.max(state.projection.viewWidth, state.projection.viewHeight);
-        let searchRadius = state.projection.range.scale(long / state.projection.viewHeight * WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR / 2);
+        let searchRadius = this._tempNM.set(state.projection.range).scale(this._viewDiagonal / state.projection.viewHeight * WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR / 2, true);
+        let margin = this._viewDiagonal * (WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR - 1) / 2;
 
         if (!this._searchRequestsOpened) {
             this._updateSearchParams(state.projection.center, searchRadius);
@@ -377,8 +397,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
             // multiple times when e.g. the player is cycling through multiple map zoom levels in a short period of time or panning
             // the map quickly using the cursor.
             if (this._searchParamChangeTimer > 0) {
-                let lastCenterOffset = state.projection.viewCenter.minus(state.projection.project(this._lastCenter));
-                if (!this._lastRadius.equals(searchRadius) || Math.abs(lastCenterOffset.x) > long * 0.9 || Math.abs(lastCenterOffset.y) > long * 0.9) {
+                if (this._isSearchInvalid(state, this._lastCenter, this._lastRadius, searchRadius, margin)) {
                     this._startSearchParamChangeTimer(state.projection.center, searchRadius, WT_MapViewWaypointLayer.SEARCH_PARAM_CHANGE_DELAY);
                     return;
                 }
@@ -390,8 +409,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
                     return;
                 }
             } else {
-                let searchCenterOffset = state.projection.viewCenter.minus(state.projection.project(this._lastSearchParams.center));
-                if (!this._lastSearchParams.radius.equals(searchRadius) || Math.abs(searchCenterOffset.x) > long * 0.9 || Math.abs(searchCenterOffset.y) > long * 0.9) {
+                if (this._isSearchInvalid(state, this._lastSearchParams.center, this._lastSearchParams.radius, searchRadius, margin)) {
                     this._startSearchParamChangeTimer(state.projection.center, searchRadius, WT_MapViewWaypointLayer.SEARCH_PARAM_CHANGE_DELAY);
                     return;
                 }
@@ -728,7 +746,7 @@ WT_MapViewWaypointLayer.SEARCH_AIRPORT_DENSITY = 0.01;                  // per s
 WT_MapViewWaypointLayer.SEARCH_VOR_DENSITY = 0.0005;                    // per square nautical mile
 WT_MapViewWaypointLayer.SEARCH_NDB_DENSITY = 0.0005;                    // per square nautical mile
 WT_MapViewWaypointLayer.SEARCH_INT_DENSITY = 0.04;                      // per square nautical mile
-WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR = 1.91421356237;
+WT_MapViewWaypointLayer.WAYPOINT_SEARCH_RANGE_FACTOR = 1.5;
 WT_MapViewWaypointLayer.AIRWAY_OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewWaypointLayer.WAYPOINT_DEPRECATE_DELAY = 30;                  // seconds.
 WT_MapViewWaypointLayer.OPTIONS_DEF = {
