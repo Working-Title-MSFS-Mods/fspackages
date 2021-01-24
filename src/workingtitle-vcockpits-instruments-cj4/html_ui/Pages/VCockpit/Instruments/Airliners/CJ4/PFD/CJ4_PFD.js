@@ -812,11 +812,11 @@ class CJ4_APDisplay extends NavSystemElement {
     init(root) {
         this.AP_ApprActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("apprActiveField"));
         // this.fdSyncField = this.gps.getChildById("fdSyncField");
-        this.AP_LateralActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("lateralActiveField"));
+        this.AP_LateralActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("lateralActiveField"), true);
         this.AP_LateralArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("lateralArmField"));
         this.AP_Status = this.gps.getChildById("ap_ydEngageField");
         this.AP_FDIndicatorArrow = this.gps.getChildById("fdIndicatorArrow");
-        this.AP_VerticalActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalActiveField"));
+        this.AP_VerticalActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalActiveField"), true);
         this.AP_ModeReference_Icon = this.gps.getChildById("verticalCaptureDataField_Icon");
         this.AP_ModeReference_Value = this.gps.getChildById("verticalCaptureDataField_Value");
         this.AP_VerticalArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalArmField"));

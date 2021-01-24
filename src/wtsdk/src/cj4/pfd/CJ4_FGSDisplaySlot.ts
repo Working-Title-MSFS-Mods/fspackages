@@ -12,8 +12,9 @@ export class CJ4_FGSDisplaySlot {
   /**
    * Creates an instance of a CJ4_FGSDisplaySlot.
    * @param element The underlying HTML element.
+   * @param shouldFlash Whether or not the element should flash on change.
    */
-  constructor(private element: HTMLElement) {
+  constructor(private element: HTMLElement, private shouldFlash = false) {
     if (element === undefined || element === null) {
       throw new Error('Element cannot be undefined or null.');
     }
@@ -25,14 +26,17 @@ export class CJ4_FGSDisplaySlot {
    */
   public setDisplayValue(value: string): void {
     if (value !== this.currentDisplayValue) {
-      this.currentDisplayValue = value;
 
+      this.currentDisplayValue = value;
       clearTimeout(this.blinkTimeout);
+      
       if (value !== undefined || value !== '') {
         this.element.textContent = value;
-        this.element.classList.add('blinking');
 
-        this.blinkTimeout = setTimeout(() => this.element.classList.remove('blinking'), 4000);
+        if (this.shouldFlash) {
+          this.element.classList.add('blinking');
+          this.blinkTimeout = setTimeout(() => this.element.classList.remove('blinking'), 4000);
+        }
       }
       else {
         this.element.classList.remove('blinking');
