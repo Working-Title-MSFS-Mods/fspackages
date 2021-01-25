@@ -351,12 +351,16 @@ class CJ4_PFD extends BaseAirliners {
                 }
                 break;
             case "Upr_DATA_INC":
-                this.scrollNavPresetForward();
-                this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
+                if (this.popup.mode == CJ4_PopupMenu.NONE) {
+                    this.scrollNavPresetForward();
+                    this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
+                }
                 break;
             case "Upr_DATA_DEC":
-                this.scrollNavPresetBackward();
-                this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
+                if (this.popup.mode == CJ4_PopupMenu.NONE) {
+                    this.scrollNavPresetBackward();
+                    this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
+                }
                 break;
         }
     }
@@ -838,8 +842,8 @@ class CJ4_APDisplay extends NavSystemElement {
         const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
         const ydActive = SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") == 1;
         const flightDirector = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") == 1;
-        const precisionApproachMode = false //TODO set to match description in manual (enables double arrow in FMA)
-        const rightFDEngaged = false //TODO set when right FD is primary (turns arrow in FMA)
+        const precisionApproachMode = false; //TODO set to match description in manual (enables double arrow in FMA)
+        const rightFDEngaged = false; //TODO set when right FD is primary (turns arrow in FMA)
 
         // TODO work in basic implementation of arrow logic
         // if(rightFDEngaged){
@@ -889,8 +893,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
-                }
-                else if (verticalMode == "FLC" || verticalMode == "VFLC") {
+                } else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";
                     if (Simplane.getAutoPilotMachModeActive()) {
@@ -899,8 +902,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     } else {
                         Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0));
                     }
-                }
-                else {
+                } else {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
@@ -913,8 +915,7 @@ class CJ4_APDisplay extends NavSystemElement {
                 if (vnavArmed === 'NOPATH') {
                     this.AP_VNAVArmed.setDisplayValue('PATH');
                     this.AP_VNAVArmed.setFailed(true);
-                }
-                else {
+                } else {
                     this.AP_VNAVArmed.setFailed(false);
                     this.AP_VNAVArmed.setDisplayValue(vnavArmed);
                 }
@@ -931,8 +932,7 @@ class CJ4_APDisplay extends NavSystemElement {
                 //APPR ACTIVE
                 this.AP_ApprActive.setDisplayValue(approachActive);
             }
-        }
-        else {
+        } else {
             this.AP_VerticalActive.setDisplayValue(""); //VERTICAL MODE
             Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
             this.AP_VerticalArmed.setDisplayValue(""); //VERTICAL ALTITUDE ARMED
@@ -972,8 +972,7 @@ class CJ4_ILS extends NavSystemElement {
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + this.gps.mapNavigationSource, "bool");
                 lDevState = isLoc ? LDevState.ILS : LDevState.NONE;
                 vDevState = isGs ? VDevState.ILS : VDevState.NONE;
-            }
-            else if (this.gps.mapNavigationSource === 0) {
+            } else if (this.gps.mapNavigationSource === 0) {
                 const isLoc = SimVar.GetSimVarValue("NAV HAS LOCALIZER:1", "bool");
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:1", "bool");
                 const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
@@ -1037,6 +1036,5 @@ VDevState.VNAV = 'VNAV';
 VDevState.GHOST_ONLY = 'GHOST_ONLY';
 VDevState.GHOST_AND_VNAV = 'GHOST_AND_VNAV';
 VDevState.NONE = 'NONE';
-
 
 registerInstrument("cj4-pfd-element", CJ4_PFD);
