@@ -526,7 +526,9 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                     else {
-                        this.setAttribute("course", compass.toString());
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        //this.setAttribute("course", compass.toString());
                         this.setAttribute("course_deviation", "0");
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");
