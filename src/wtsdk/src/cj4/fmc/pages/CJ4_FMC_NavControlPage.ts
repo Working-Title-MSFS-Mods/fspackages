@@ -148,7 +148,7 @@ export class CJ4_FMC_NavControlPage extends CJ4_FMC_Page {
    */
   private handleFreqPressed(getter: () => number, setter: (value: number) => void): void {
     if (this._fmc.inOut !== undefined && this._fmc.inOut !== '') {
-      const numValue = parseFloat(this._fmc.inOut);
+      const numValue = this.radioSystem.parseFrequencyInput(this._fmc.inOut);
 
       if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
         setter(numValue);
