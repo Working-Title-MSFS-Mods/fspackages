@@ -35,7 +35,7 @@ class LNavDirector {
     this.state = LNavState.TRACKING;
 
     /** An instance of the LNAV holds director. */
-    this.holdsDirector = new HoldsDirector(fpm);
+    this.holdsDirector = new HoldsDirector(fpm, navModeSelector);
 
     /** An instance of the localizer director. */
     this.locDirector = new LocDirector(navModeSelector);

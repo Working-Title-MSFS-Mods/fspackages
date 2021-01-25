@@ -358,7 +358,7 @@ class CJ4_FMC_HoldsPage {
    * Handles when EXIT HOLD is pressed.
    */
   handleExitHold() {
-    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
     if (holdsDirector) {
       holdsDirector.exitActiveHold();
       this.update();
@@ -369,7 +369,7 @@ class CJ4_FMC_HoldsPage {
    * Handles when CANCEL EXIT is pressed.
    */
   handleCancelExit() {
-    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
     if (holdsDirector) {
       holdsDirector.cancelHoldExit();
       this.update();
@@ -382,7 +382,7 @@ class CJ4_FMC_HoldsPage {
    * @returns {boolean} True if active, false otherwise.
    */
   isHoldActive(currentHold) {
-    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
     if (holdsDirector) {
       return holdsDirector.isHoldActive(currentHold.index);
     }
@@ -396,7 +396,7 @@ class CJ4_FMC_HoldsPage {
    * @returns {boolean} True if exiting, false otherwise.
    */
   isHoldExiting(currentHold) {
-    const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+    const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
     if (holdsDirector) {
       return holdsDirector.isHoldExiting(currentHold.index);
     }

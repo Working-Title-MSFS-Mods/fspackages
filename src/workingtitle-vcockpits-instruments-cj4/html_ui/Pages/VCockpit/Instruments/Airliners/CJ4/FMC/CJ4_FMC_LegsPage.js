@@ -162,10 +162,10 @@ class CJ4_FMC_LegsPage {
         let holdActive = false;
         let holdExiting = false;
 
-        const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+        const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
 
         if (holdsDirector) {
-            const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+            const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
             holdActive = holdsDirector.isHoldActive(holdIndex);
             holdExiting = holdsDirector.isHoldExiting(holdIndex);
         }
@@ -184,10 +184,10 @@ class CJ4_FMC_LegsPage {
         let runwayIndex = 0;
 
         let holdExited = false;
-        const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+        const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
 
         if (holdsDirector) {
-            const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+            const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
             holdExited = holdsDirector.isHoldExited(holdIndex);
         }
 
@@ -499,10 +499,10 @@ class CJ4_FMC_LegsPage {
             let holdActive = false;
             let holdExiting = false;
 
-            const holdsDirector = this._fmc._lnav && this._fmc._lnav._holdsDirector;
+            const holdsDirector = this._fmc._lnav && this._fmc._lnav.holdsDirector;
 
             if (holdsDirector) {
-                const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex() - 1;
+                const holdIndex = this._fmc.flightPlanManager.getActiveWaypointIndex();
                 holdActive = holdsDirector.isHoldActive(holdIndex);
                 holdExiting = holdsDirector.isHoldExiting(holdIndex);
             }
