@@ -14,7 +14,7 @@ SimVar.GetSimVarValue = (name, unit, dataSource = "") => {
 
 const oldSetSimvar = SimVar.SetSimVarValue;
 SimVar.SetSimVarValue = (name: string, unit: string, value: any, dataSource?: string): Promise<void> => {
-  if(!name.startsWith("K:") && !name.startsWith("A:")){
+  if (!name.startsWith("K:") && !name.startsWith("A:") && !name.startsWith("C:")) {
     const key = name + unit;
     svCache.set(key, value);
   }
