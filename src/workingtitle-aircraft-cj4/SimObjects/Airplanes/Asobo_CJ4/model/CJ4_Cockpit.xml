@@ -56,6 +56,12 @@
 					<ANIMTIP_2>TT:COCKPIT.TOOLTIPS.ALTERNATOR_RH_RESET</ANIMTIP_2>
 				</UseTemplate>
 			</Component>
+			<UseTemplate Name="ASOBO_ELECTRICAL_Switch_Circuit_Template">
+				<NODE_ID>switch_electricicalPanel_STBY_FTL</NODE_ID>
+				<ANIM_NAME>switch_electricicalPanel_STBY_FTL</ANIM_NAME>
+				<PART_ID>switch_electricicalPanel_STBY_FTL</PART_ID>
+				<CIRCUIT_ID>49</CIRCUIT_ID>
+			</UseTemplate>
 			<CameraTitle>Instrument02</CameraTitle>
 		</Component>
 
@@ -1093,9 +1099,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>switch_electricicalPanel_emerLights</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>switch_electricicalPanel_STBY_FTL</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>lever_pilot_oxygenSupply</NODE_ID>
