@@ -7,7 +7,7 @@ export class CJ4_FGSDisplaySlot {
   private currentDisplayValue: string = '';
 
   /** Whether or not the FGS mode is currently failed. */
-  private currentlyIsFailed: boolean = false;
+  private currentlyIsFailed: boolean = undefined;
 
   /** The current timeout to cancel value change blinking. */
   private blinkTimeout: number;

@@ -205,7 +205,12 @@ class AutopilotMath {
    * @returns {number} The lateral distance in NM to descend the specified vertical distance at the specified FPA.
    */
   static calculateDescentDistance(fpa, verticalDistance) {
-    return ((verticalDistance) / (Math.tan(fpa * (Math.PI / 180)))) / 6076.12;
+    if (fpa === 0) {
+      return 0;
+    }
+    else {
+      return ((verticalDistance) / (Math.tan(fpa * (Math.PI / 180)))) / 6076.12;
+    }
   }
 
   /**
