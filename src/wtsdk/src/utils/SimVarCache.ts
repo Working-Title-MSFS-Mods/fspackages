@@ -2,13 +2,21 @@
 const oldGetSimVar = SimVar.GetSimVarValue;
 const svCache = new Map();
 SimVar.GetSimVarValue = (name, unit, dataSource = "") => {
-  if (svCache.has(name)) {
-    return svCache.get(name);
+  const key = name + unit;
+  if (svCache.has(key)) {
+    return svCache.get(key);
   } else {
     const val = oldGetSimVar(name, unit, dataSource);
-    svCache.set(name, val);
+    svCache.set(key, val);
     return val;
   }
+};
+
+const oldSetSimvar = SimVar.SetSimVarValue;
+SimVar.SetSimVarValue = (name: string, unit: string, value: any, dataSource?: string): Promise<void> => {
+  const key = name + unit;
+  svCache.set(key, value);
+  return oldSetSimvar(name, unit, value, dataSource);
 };
 
 const clearSv = () => {
