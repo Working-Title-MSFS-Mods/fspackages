@@ -2,7 +2,7 @@ class CJ4_FMC_TakeoffRefPage {
     static ShowPage1(fmc) { //TAKEOFF REF Page 1
         fmc.clearDisplay();
         let originIdent = "";
-        let origin = fmc.flightPlanManager.getOrigin();
+        const origin = fmc.flightPlanManager.getOrigin();
         if (origin) {
             originIdent = origin.ident;
         }
@@ -23,8 +23,7 @@ class CJ4_FMC_TakeoffRefPage {
 
         if (fmc.manualQnh && fmc.manualQnh > 0) {
             fmc.takeoffQnh = fmc.manualQnh;
-        }
-        else {
+        } else {
             fmc.takeoffQnh = SimVar.GetSimVarValue("KOHLSMAN SETTING HG", "inHg");
         }
 
@@ -92,56 +91,48 @@ class CJ4_FMC_TakeoffRefPage {
             [""]
         ]);
         fmc.onRightInput[0] = () => {
-            let windIn = fmc.inOut.split("/");
+            const windIn = fmc.inOut.split("/");
             if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0) {
                 fmc.takeoffWindDir = new Number(windIn[0]);
                 fmc.takeoffWindSpeed = new Number(windIn[1]);
                 fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
                 fmc.clearUserInput();
-            }
-            else {
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
         fmc.onRightInput[1] = () => {
-            let tempIn = fmc.inOut;
+            const tempIn = fmc.inOut;
             if (tempIn && isNaN(tempIn) || tempIn < -54 || tempIn > 54) {
                 fmc.showErrorMessage("INVALID");
-            }
-            else if (tempIn) {
+            } else if (tempIn) {
                 fmc.takeoffOat = tempIn;
-            }
-            else {
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
         fmc.onRightInput[2] = () => {
-            let qnhInput = Number(fmc.inOut);
+            const qnhInput = Number(fmc.inOut);
             if (!isNaN(qnhInput)) {
                 if (qnhInput > 28 && qnhInput < 32) {
                     fmc.takeoffQnh = qnhInput;
                     fmc.manualQnh = fmc.takeoffQnh;
-                }
-                else if (qnhInput > 280 && qnhInput < 320) {
+                } else if (qnhInput > 280 && qnhInput < 320) {
                     fmc.takeoffQnh = qnhInput / 10;
                     fmc.manualQnh = fmc.takeoffQnh;
-                }
-                else if (qnhInput > 2800 && qnhInput < 3200) {
+                } else if (qnhInput > 2800 && qnhInput < 3200) {
                     fmc.takeoffQnh = qnhInput / 100;
                     fmc.manualQnh = fmc.takeoffQnh;
-                }
-                else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
+                } else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
                     fmc.takeoffQnh = qnhInput / 33.864;
                     fmc.manualQnh = fmc.takeoffQnh;
-                }
-                else {
+                } else {
                     fmc.showErrorMessage("INVALID");
                 }
-            }
-            else {
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
@@ -162,33 +153,37 @@ class CJ4_FMC_TakeoffRefPage {
             { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); }
         };
 
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
+        fmc.onPrevPage = () => {
+            CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
+        };
+        fmc.onNextPage = () => {
+            CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+        };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage2(fmc) { //TAKEOFF REF Page 2
         fmc.clearDisplay();
         let originIdent = "";
-        let origin = fmc.flightPlanManager.getOrigin();
+        const origin = fmc.flightPlanManager.getOrigin();
         if (origin) {
             originIdent = origin.ident;
         }
-        let tow = (fmc.grossWeight - 100);
-        let mtow = 17110;
+        const tow = (fmc.grossWeight - 100);
+        const mtow = 17110;
         let vT = 140;
-        let sendVS = "SEND>"
+        let sendVS = "SEND>";
         let depRunway = "";
         let depRunwayLength = null;
-        let selectedRunway = fmc.flightPlanManager.getDepartureRunway();
+        const selectedRunway = fmc.flightPlanManager.getDepartureRunway();
         if (selectedRunway) {
             depRunway = "RW" + Avionics.Utils.formatRunway(selectedRunway.designation);
             depRunwayLength = new Number((selectedRunway.length) * 3.28);
         }
-        let seaLevelDist = new Number((tow - 11000) * .1512) + 1568; //Finds the sea level distance based on weight
+        const seaLevelDist = new Number((tow - 11000) * .1512) + 1568; //Finds the sea level distance based on weight
         fmc.endTakeoffDist = new Number((((tow - 11000) * .0000126) + .05775) * fmc.takeoffPressAlt) + seaLevelDist; //Finds the distance you would travel further than the sea level value for a given pressure altitude.  That value is then added to the previous line number to get the distance for a given weight and given altitude
 
-        let takeoffWeightTempFactor = ((tow - 11000) * .000556) + 5.22; //Amount of feet per degree based on weight
-        let takeoffTempFactor = (((tow - 11000) * .0001702) + 1.04) + takeoffWeightTempFactor; //Amount of feet per degree based on altitude which is then added to the weight factor
+        const takeoffWeightTempFactor = ((tow - 11000) * .000556) + 5.22; //Amount of feet per degree based on weight
+        const takeoffTempFactor = (((tow - 11000) * .0001702) + 1.04) + takeoffWeightTempFactor; //Amount of feet per degree based on altitude which is then added to the weight factor
 
         if (tow > 15000 && fmc.takeoffOat > 5 && fmc.takeoffPressAlt > 4000) { //This line is for the exception where you are hot, high, and heavy, the OAT effects really make a big difference hence the 120 feet per degree factor
             fmc.endTakeoffDist = fmc.endTakeoffDist + (fmc.takeoffOat * 50);
@@ -214,9 +209,9 @@ class CJ4_FMC_TakeoffRefPage {
         vR = vR - (fmc.takeoffPressAlt * .000375);
         v2 = v2 - (fmc.takeoffPressAlt * .000625);
 
-        let v1WeightFactorAbove = .055 + ((tow - 11000) * .00002733);  //Changes in V Speeds by temp by weight.  Below 0 degrees, the change is negligible so it's not included
-        let vRWeightFactorAbove = .203 - ((tow - 11000) * .00001816);
-        let v2WeightFactorAbove = .314 - ((tow - 11000) * .00005139);
+        const v1WeightFactorAbove = .055 + ((tow - 11000) * .00002733); //Changes in V Speeds by temp by weight.  Below 0 degrees, the change is negligible so it's not included
+        const vRWeightFactorAbove = .203 - ((tow - 11000) * .00001816);
+        const v2WeightFactorAbove = .314 - ((tow - 11000) * .00005139);
 
         if (fmc.takeoffOat > 0) { //V speed adjustment based on temperature above zero
             v1 = v1 - (fmc.takeoffOat * v1WeightFactorAbove);
@@ -240,11 +235,11 @@ class CJ4_FMC_TakeoffRefPage {
             fmc.endTakeoffDist = fmc.endTakeoffDist * 1.03;
         }
 
-        let tailWindFactor = (((((tow - 11000) * .00000159) + .00275)) * fmc.takeoffPressAlt) + (((tow - 11000) * .0065) + 60); // Number of feet per 1kt of tailwind to add based on weight and altitude
+        const tailWindFactor = (((((tow - 11000) * .00000159) + .00275)) * fmc.takeoffPressAlt) + (((tow - 11000) * .0065) + 60); // Number of feet per 1kt of tailwind to add based on weight and altitude
 
         if (fmc.takeoffWindDir != "---" && selectedRunway) {
-            let depRunwayDirection = new Number(selectedRunway.direction);
-            let headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
+            const depRunwayDirection = new Number(selectedRunway.direction);
+            const headwind = Math.trunc(fmc.takeoffWindSpeed * (Math.cos((depRunwayDirection * Math.PI / 180) - (fmc.takeoffWindDir * Math.PI / 180))));
             if (headwind > 0) {
                 fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * 23);
             } else {
@@ -257,14 +252,16 @@ class CJ4_FMC_TakeoffRefPage {
             : "OFF[s-text]/[white]ON[green]";
 
         let vspeedSendMsg = "";
-        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS)
+        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
             vspeedSendMsg = "IN PROGRESS";
-        else if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+        } else if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT) {
             vspeedSendMsg = "COMPLETE";
+        }
 
         let vspeedColor = "";
-        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT)
+        if (fmc.toVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT) {
             vspeedColor = "blue";
+        }
 
         if (!fmc.flightPlanManager.getDepartureRunway() || fmc.takeoffOat === "□□□") {
             fmc.endTakeoffDist = null;
@@ -326,6 +323,8 @@ class CJ4_FMC_TakeoffRefPage {
         if (fmc.toVSpeedStatus !== CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
             fmc.onRightInput[5] = () => {
                 fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
+                const renderRow = fmc._templateRenderer.getTRow(11);
+                fmc._templateRenderer.renderLetters("IN PROGRESS [s-text]", renderRow, "right");
                 setTimeout(() => {
                     //added custom LVARS for all v speeds and FMC Set
                     SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", Math.round(v1));
@@ -348,18 +347,22 @@ class CJ4_FMC_TakeoffRefPage {
             };
         }
 
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage3(fmc); };
+        fmc.onPrevPage = () => {
+            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
+        };
+        fmc.onNextPage = () => {
+            CJ4_FMC_TakeoffRefPage.ShowPage3(fmc);
+        };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage3(fmc) { //TAKEOFF REF Page 3
         fmc.clearDisplay();
         let originIdent = "";
-        let origin = fmc.flightPlanManager.getOrigin();
+        const origin = fmc.flightPlanManager.getOrigin();
         if (origin) {
             originIdent = origin.ident;
         }
-        let tow = (fmc.grossWeight - 100);
+        const tow = (fmc.grossWeight - 100);
         const towText = WT_ConvertUnit.getWeight(tow, "", "").getString(0, "") + (tow > 17110 ? "[yellow]" : "");
         const mtowText = WT_ConvertUnit.isMetric() ? "7761" : "17110";
 
@@ -378,8 +381,12 @@ class CJ4_FMC_TakeoffRefPage {
             [""],
             [""]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage2(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
+        fmc.onPrevPage = () => {
+            CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
+        };
+        fmc.onNextPage = () => {
+            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
+        };
         fmc.updateSideButtonActiveStatus();
     }
 }
