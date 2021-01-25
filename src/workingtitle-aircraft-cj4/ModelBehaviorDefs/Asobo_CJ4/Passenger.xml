@@ -32,12 +32,6 @@
 
 	<Template Name="ASOBO_PASSENGER_Switch_PRESSOURCE_Template">
 		<Component ID="#NODE_ID#" Node="#NODE_ID#">
-			<UseTemplate Name="ASOBO_GT_Update">
-				<UPDATE_ONCE>True</UPDATE_ONCE>
-				<UPDATE_CODE>
-                2 (&gt;L:PRESSOURCE) 					<!-- Set default -->
-				</UPDATE_CODE>
-			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Switch_5States">
 				<SWITCH_POSITION_VAR>PRESSOURCE</SWITCH_POSITION_VAR>
 				<SWITCH_POSITION_TYPE>L</SWITCH_POSITION_TYPE>
@@ -57,6 +51,12 @@
 				<CODE_POS_4>
 				(* FRESH *) 4
 				</CODE_POS_4>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Update">
+				<UPDATE_ONCE>True</UPDATE_ONCE>
+				<UPDATE_CODE>
+                2 (&gt;L:PRESSOURCE) 					<!-- Set default -->
+				</UPDATE_CODE>
 			</UseTemplate>
 		</Component>
 	</Template>
