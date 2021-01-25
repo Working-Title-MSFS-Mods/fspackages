@@ -7,7 +7,7 @@ Priority=0
 [Properties]
 
 [Emitter.0]
-Lifetime=0.50, 0.50
+Lifetime=0.0, 0.0
 Delay=0.0, 0.0
 Bounce=0.0
 Light=1
@@ -28,7 +28,7 @@ Y Offset=0.0, 0.0
 Z Offset=0.0, 0.0
 
 [Particle.0]
-Lifetime=0.0, 0.0
+Lifetime=0.5, 0.5
 Type=19
 X Scale=0.3, 0.3
 Y Scale=0.3, 0.3
