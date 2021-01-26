@@ -221,30 +221,26 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #ILS {
     height: 100%;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .failline{
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 5%;
-    width: 90%;
-}
-
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .failline line{
-    stroke: #FFE133;
-    stroke-width: 2;
-    stroke-linecap: round;
-}
-
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .fail>.failline{
-    display: block;
-}
-
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
     position: absolute;
     width: 40vh;
     height: 8%;
     top: 0%;
     left: calc(50% - 20vh);
+}
+
+.fmaValue{
+    position: relative;
+    padding: 0 2px;
+}
+
+.fail.fmaValue::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    border-bottom: 3.5px solid #FFE133;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #AutopilotBg {
