@@ -221,30 +221,26 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #ILS {
     height: 100%;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .failline{
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 5%;
-    width: 90%;
-}
-
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .failline line{
-    stroke: #FFE133;
-    stroke-width: 2;
-    stroke-linecap: round;
-}
-
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .fail>.failline{
-    display: block;
-}
-
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
     position: absolute;
     width: 40vh;
     height: 8%;
     top: 0%;
     left: calc(50% - 20vh);
+}
+
+.fmaValue{
+    position: relative;
+    padding: 0 2px;
+}
+
+.fail.fmaValue::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    border-bottom: 3.5px solid #FFE133;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #AutopilotBg {
@@ -714,7 +710,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     text-anchor: end;
 }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids svg {
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids .bearing-pointer svg {
     width: 100%;
     height: 100%;
 }
@@ -736,12 +732,10 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Ri
 #VORDMENavaids {
     font-size: 22px;
     position: absolute;
-    top: 400px;
-    top: 320px;
+    top: 408px;
     height: 210px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
@@ -1040,14 +1034,14 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 .bearing-pointer.arc {
     position: absolute;
     left: 86px;
-    top: -268px;
+    top: -355px;
     width: 600px;
 }
 
 .bearing-pointer.rose {
     position: absolute;
     left: 156px;
-    top: -260px;
+    top: -355px;
     width: 460px;
     stroke-width: 1.4;
 }
@@ -1055,11 +1049,6 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 .bearing-pointer-needle {
     transform-origin: 100px 100px;
     transition: transform .1s ease-in;
-}
-
-#VORDMENavaid_Left #ID,
-#VORDMENavaid_Right #ID {
-    padding-left: 4px;
 }
 
 #VSpeeds text {
@@ -1145,7 +1134,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 #NavPreset {
     position: relative;
     font-size: 22px;
-    top: 330px;
+    top: 340px;
     left: 8px;
     width: 58px;
 }
@@ -1179,4 +1168,19 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 #Symbols .overlay-wx-line1,
 #Symbols .overlay-wx-line2 {
     color: cyan;
+}
+
+.bearing-pointer-info {
+    width: 40px;
+}
+
+table.bearing-pointer-info tr td svg.bearing-pointer-icon {
+    width: 18px;
+    height: 18px;
+}
+
+table.bearing-pointer-info {
+    border-spacing: 0px;
+    border-collapse: collapse;
+    margin-left: 7px;
 }

@@ -11,6 +11,7 @@ Welcome to the Working Title CJ4 v0.10.0. This release brings even more navigati
 - Ability to arm LNV, APPR LOC, and APPR LNV modes
 - Automatic NAV-to-NAV transfers
 - Relative terrain map
+- External lighting changes
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -33,10 +34,12 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - GA mode will now sequence to the missed approach if the active waypoint is the runway fix
 - Pressing NAV with FMS selected as the active nav source will now arm LNV if currently in ROLL, HDG, TO, or GA.
 - Pressing APPR will now only arm APPR LOC or APPR LNV if outside of the capture area
+- Will stay in VNAV until glideslope intercept when engaging approach mode.
 
 ## FMC
 - Scratchpad error messages now clear after 1 second
 - FMC messages now display at the bottom of the display
+- CRZ ALT inputs now allow "F" plus flight level.  Eg. F200 = FL200.
 
 ### POS INIT
 - Initialize Position message now shows if position not initialized
@@ -48,7 +51,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - POINT/BEARING/DISTANCE fixes should now have magnetic variance properly applied
 
 ### FUEL
-- Fixed fuel timing calculation and display to avoid bad hour wraparound (neoenstien)
+- Fixed fuel timing calculation and display to avoid bad hour wrap-around (neoenstien)
 
 ### DIR
 - Added ability to perform vertical direct-to
@@ -80,7 +83,9 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - PPOS is now prohibited when FMS is not selected as the nav source
 - PFD message lines now populate based on plane conditions and pending FMC messages
 - FGS display layout has been completely reworked to support armed lateral modes (TheFlieger)
+- FGS display arrow shape is now more accurate (TheFlieger)
 - FGS display now flashes modes on mode changes
+- FGS display now shows NOPATH as PATH with a yellow line through it.
 - Wind indicator position refined to better match real unit (Slip)
 - Flap speeds have been added to the airspeed tape
 - Fixed the VSpeed display formatting to reflect real unit
@@ -98,6 +103,11 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Removed radial markings for inner circle in PPOS mode (TheFlieger)
 - Fixed issue where displayed DTK would sometimes be negative
 - Adjusted styling of bottom information line for more accuracy
+- Fixed bearing pointer data block formatting
+- Fixed issue where bearing pointers would show in incorrect spot in PPOS mode
+- Fixed issue where bearing pointer data block would show VOR when a LOC was tuned
+- Bearing pointer needle should no longer show when untuned or when a LOC only is tuned
+- Bearing pointer display block format updated & aligned correctly
 
 ## MFD
 - Oil Temp and Pressure display format corrected
@@ -109,14 +119,25 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Hold-to-manual-termination (HM) legs are now properly parsed and inserted into the plan
 - Corrected issue where hold course would get incorrect magnetic variance applied (neoenstien)
 
+## Aircraft Light
+- Strobe lights flash is now realistic (on for 1/2 second)
+- Added white nav lights to back of light assembly on wingtips (Where it should be)
+- Masked lights so bleed won't go over wings.  
+- Added pulse lights
+- Taxi, Landing, and Pulse lights buttons are exclusive meaning only one can be on at a time.  
+
+## Misc
+- Bleed air source is set to NORM on plane load
+- "Aural warning ok" message removed
+- Gear up/down won't play when you are on the ground and you load in.
+- Spoiler drag has been brought back to a more realistic value.
+
 # ⚠️ Known Issues
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
-* On FPLN you cant enter airways properly when arrival/approach procedures are already selected (to be fixed soon).
 * Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse.
 * Sometimes a heading to altitude instruction on takeoff will display further than the first RNAV fix on an RNAV departure procedure; in these cases the workaround is to cross-check the DP chart and remove the erroneous waypoint either by deleting the heading to altitude fix or dropping the first RNAV fix onto the magenta line in the LEGS page.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
-* Sometimes when turning more than 90 degrees onto an approach segment, VNAV might give a NOPATH condition because it sees that you are too high.  Engage FLC or VS and descend down and it should recapture the path.
 * If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.
 

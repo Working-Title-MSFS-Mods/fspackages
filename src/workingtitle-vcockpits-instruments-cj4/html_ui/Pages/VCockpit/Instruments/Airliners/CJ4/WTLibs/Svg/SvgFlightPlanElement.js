@@ -48,6 +48,9 @@ class SvgFlightPlanElement extends SvgMapElement {
             const fplnCount = (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) ? 2 : 1;
             for (let index = 0; index < fplnCount; index++) {
                 const plan = fpm.getFlightPlan(index);
+                if (!plan) {
+                    continue;
+                }
                 const waypoints = plan.waypoints;
 
                 const activeWaypointIndex = plan.activeWaypointIndex;

@@ -185,9 +185,12 @@ class WT_BaseVnav {
 
         this._activeWaypoint = this.allWaypoints[this.flightplan.activeWaypointIndex];
         this._currentFlightSegment = this._fpm.getSegmentFromWaypoint(this._activeWaypoint);
+        if (this.vnavState !== VnavState.NONE && (!this.allWaypoints || this.allWaypoints.length < 2)) {
+            this.vnavState = VnavState.NONE;
+        }
 
         //CAN VNAV EVEN RUN?
-        if (this.destination && this.allWaypoints && this.allWaypoints.length > 0 && this._activeWaypoint) {
+        if (this.destination && this.allWaypoints && this.allWaypoints.length > 1 && this._activeWaypoint) {
             this._vnavCalculating = true;
             this._currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
             this._activeWaypointDist = Avionics.Utils.computeDistance(this._currPos, this._activeWaypoint.infos.coordinates);
