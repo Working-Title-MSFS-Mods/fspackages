@@ -887,9 +887,6 @@ class CJ4NavModeSelector {
 
    
     const setProperApprState = () => {
-      SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
-      this.isVNAVOn = false;
-
       switch(this.approachMode) {
         case WT_ApproachType.ILS:
         case WT_ApproachType.RNAV:
