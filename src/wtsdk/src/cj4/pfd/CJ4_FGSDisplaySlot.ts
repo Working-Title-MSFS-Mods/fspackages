@@ -12,6 +12,9 @@ export class CJ4_FGSDisplaySlot {
   /** The current timeout to cancel value change blinking. */
   private blinkTimeout: number;
 
+  /** The span that contains the display value. */
+  private valueSpan: HTMLSpanElement;
+
   /**
    * Creates an instance of a CJ4_FGSDisplaySlot.
    * @param element The underlying HTML element.
@@ -21,6 +24,8 @@ export class CJ4_FGSDisplaySlot {
     if (element === undefined || element === null) {
       throw new Error('Element cannot be undefined or null.');
     }
+
+    this.valueSpan = this.element.querySelector('.fmaValue');
   }
 
   /**
@@ -33,15 +38,8 @@ export class CJ4_FGSDisplaySlot {
       this.currentDisplayValue = value;
       clearTimeout(this.blinkTimeout);
 
-      const valueSpan = this.element.querySelector('span');
-      if (valueSpan !== undefined && valueSpan !== null) {
-        this.element.removeChild(valueSpan);
-      }
-
       if (value !== undefined || value !== '') {
-        const valueSpan = document.createElement('span');
-        valueSpan.textContent = value;
-        this.element.appendChild(valueSpan);
+        this.valueSpan.textContent = value;
 
         if (this.shouldFlash) {
           this.element.classList.add('blinking');
@@ -49,6 +47,7 @@ export class CJ4_FGSDisplaySlot {
         }
       }
       else {
+        this.valueSpan.textContent = '';
         this.element.classList.remove('blinking');      
       }
     }
@@ -63,10 +62,10 @@ export class CJ4_FGSDisplaySlot {
       this.currentlyIsFailed = isFailed;
 
       if (isFailed) {
-        this.element.classList.add('fail');
+        this.valueSpan.classList.add('fail');
       }
       else {
-        this.element.classList.remove('fail');
+        this.valueSpan.classList.remove('fail');
       }
     }
   }
