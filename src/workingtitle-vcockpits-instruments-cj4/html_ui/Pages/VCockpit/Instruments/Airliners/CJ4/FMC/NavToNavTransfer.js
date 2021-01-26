@@ -57,12 +57,11 @@ class NavToNavTransfer {
       if (this.transferState === NavToNavTransfer.ARMED) {
         const frequency = this.fpm.getApproachNavFrequency();
 
-        if (this.navRadioSystem.radioStates[1].frequency !== frequency) {
-          MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => 
-            this.fpm.getApproachNavFrequency() === this.navRadioSystem.radioStates[1].frequency || this.transferState !== NavToNavTransfer.ARMED);
+        if (isFinite(frequency) && frequency >= 108 && frequency <= 117.95) {
+          this.tryTransferActive(frequency);
         }
-        else if (this.navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
-          this.transferState = NavToNavTransfer.TRANSFER;
+        else {
+          MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'number') === 1);
         }
       }
 
@@ -75,6 +74,19 @@ class NavToNavTransfer {
     }
 
     SimVar.SetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number', this.transferState);
+  }
+
+  /**
+   * Attempts to set the nav to nav transfer to transferred.
+   * @param {number} frequency The frequency of the approach.
+   */
+  tryTransferActive(frequency) {
+    if (this.navRadioSystem.radioStates[1].frequency !== frequency) {
+      MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => this.fpm.getApproachNavFrequency() === this.navRadioSystem.radioStates[1].frequency || this.transferState !== NavToNavTransfer.ARMED);
+    }
+    else if (this.navModeSelector.currentLateralActiveState === LateralNavModeState.APPR) {
+      this.transferState = NavToNavTransfer.TRANSFER;
+    }
   }
 
   /**
@@ -97,7 +109,9 @@ class NavToNavTransfer {
    */
   armNavToNavTransfer() {
     const frequency = this.fpm.getApproachNavFrequency();
-    this.navRadioSystem.radioStates[1].setManualFrequency(frequency);
+    if (isFinite(frequency) && frequency >= 108 && frequency <= 117.95) {
+      this.navRadioSystem.radioStates[1].setManualFrequency(frequency);
+    }
 
     this.transferState = NavToNavTransfer.ARMED;
   }
