@@ -121,6 +121,11 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + this.gs_cursorPosY + ")");
                 this.gs_mainGroup.appendChild(this.gs_cursorGroup);
 
+                this.snowflake_Group = document.createElementNS(Avionics.SVG.NS, "g");
+                this.snowflake_Group.setAttribute("id", "SnowflakeGroup");
+                this.snowflake_Group.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + this.gs_cursorPosY + ")");
+                this.gs_mainGroup.appendChild(this.snowflake_Group);
+
                 {
                     let x = 12;
                     let y = 20;
@@ -138,7 +143,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     this.vertical_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
                     this.vertical_snowFlake.setAttribute("stroke", "magenta");
                     this.vertical_snowFlake.setAttribute("stroke-width", "2.5");
-                    this.gs_cursorGroup.appendChild(this.vertical_snowFlake);
+                    this.snowflake_Group.appendChild(this.vertical_snowFlake);
                 }
             }
             this.centerGroup.appendChild(this.gs_mainGroup);
@@ -254,7 +259,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
-                    this.gs_cursorGroup.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
+                    this.snowflake_Group.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
                 }
                 else {
                     this.vertical_snowFlake.setAttribute("visibility", "hidden");
@@ -395,8 +400,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
     showGlideslope(_val) {
         this.vDevState = _val;
-
-        switch(this.vDevState) {
+        console.log("vDev State " + this.vDevState);
+            switch(this.vDevState) {
             case VDevState.NONE:
                 if (this.gs_mainGroup) {
                     this.gs_mainGroup.setAttribute("visibility", "hidden");
