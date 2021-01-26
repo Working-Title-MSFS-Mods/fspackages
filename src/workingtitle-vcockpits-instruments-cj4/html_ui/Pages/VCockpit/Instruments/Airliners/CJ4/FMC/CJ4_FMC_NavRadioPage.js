@@ -125,7 +125,7 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     enterVorFreq(value, index) {
-        let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
+        let numValue = this._fmc._navRadioSystem.parseFrequencyInput(value);
         this._fmc.clearUserInput();
         if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
             this._fmc._navRadioSystem.radioStates[index].setManualFrequency(numValue);

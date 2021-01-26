@@ -14,7 +14,7 @@ const libraryName = 'wtsdk'
 export default {
     input: `./src/${libraryName}.ts`,
     output: [
-        { file: `..\\workingtitle-vcockpits-instruments-cj4\\html_ui\\Pages\\VCockpit\\Instruments\\Airliners\\CJ4\\WTLibs\\${libraryName}.js`, format: 'umd', sourcemap: 'inline', extend: true, name: 'window' }
+        { file: `..\\workingtitle-vcockpits-instruments-cj4\\html_ui\\Pages\\VCockpit\\Instruments\\Airliners\\CJ4\\WTLibs\\${libraryName}.js`, format: 'umd', sourcemap: false, extend: true, name: 'window' }
     ],
     // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
     external: [],

@@ -35,7 +35,7 @@ class LNavDirector {
     this.state = LNavState.TRACKING;
 
     /** An instance of the LNAV holds director. */
-    this.holdsDirector = new HoldsDirector(fpm);
+    this.holdsDirector = new HoldsDirector(fpm, navModeSelector);
 
     /** An instance of the localizer director. */
     this.locDirector = new LocDirector(navModeSelector);
@@ -111,9 +111,13 @@ class LNavDirector {
     }
 
     if (!this.delegateToLocDirector()) {
+      this.tryActivateIfArmed(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity);
+
       switch (this.state) {
         case LNavState.TRACKING:
-          const shouldExecute = distanceToActive > this.options.minimumTrackingDistance && this.navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV;
+          const activeMode = this.navModeSelector.currentLateralActiveState;
+          const shouldExecute = distanceToActive > this.options.minimumTrackingDistance
+            && (activeMode === LateralNavModeState.LNAV || (activeMode === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV));
           LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, shouldExecute);
           break;
         case LNavState.TURN_COMPLETING:
@@ -319,6 +323,36 @@ class LNavDirector {
         case NavSensitivity.APPROACHLPV:
           MessageService.getInstance().post(FMS_MESSAGE_ID.APPR_LPV, () => this.currentNavSensitivity !== NavSensitivity.APPROACHLPV);
           break;
+      }
+    }
+  }
+
+  /**
+   * Attempts to activate LNAV automatically if LNAV or APPR LNV1 is armed.
+   * @param {LatLongAlt} legStart The coordinates of the start of the leg.
+   * @param {LatLongAlt} legEnd The coordinates of the end of the leg.
+   * @param {AircraftState} planeState The current aircraft state.
+   * @param {number} navSensitivity The sensitivity to use for tracking.
+   */
+  tryActivateIfArmed(legStart, legEnd, planeState, navSensitivity) {
+    const armedState = this.navModeSelector.currentLateralArmedState;
+    if (armedState === LateralNavModeState.LNAV || (armedState === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV)) {
+      const xtk = AutopilotMath.crossTrack(legStart, legEnd, planeState.position);
+      let activationXtk = 1.9;
+
+      switch (navSensitivity) {
+        case NavSensitivity.TERMINAL:
+        case NavSensitivity.TERMINALLPV:
+          activationXtk = 0.9;
+          break;
+        case NavSensitivity.APPROACH:
+        case NavSensitivity.APPROACHLPV:
+          activationXtk = 0.28;
+          break;
+      }
+
+      if (Math.abs(xtk) < activationXtk) {
+        this.navModeSelector.queueEvent(NavModeEvent.LNAV_ACTIVE);
       }
     }
   }
