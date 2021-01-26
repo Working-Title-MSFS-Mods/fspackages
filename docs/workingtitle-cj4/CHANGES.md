@@ -11,6 +11,7 @@ Welcome to the Working Title CJ4 v0.10.0. This release brings even more navigati
 - Ability to arm LNV, APPR LOC, and APPR LNV modes
 - Automatic NAV-to-NAV transfers
 - Relative terrain map
+- Aircraft lighting changes
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -33,10 +34,12 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - GA mode will now sequence to the missed approach if the active waypoint is the runway fix
 - Pressing NAV with FMS selected as the active nav source will now arm LNV if currently in ROLL, HDG, TO, or GA.
 - Pressing APPR will now only arm APPR LOC or APPR LNV if outside of the capture area
+- Will stay in VNAV until glideslope intercept when engaging approach mode.
 
 ## FMC
 - Scratchpad error messages now clear after 1 second
 - FMC messages now display at the bottom of the display
+- CRZ ALT inputs now allow "F" plus flight level.  Eg. F200 = FL200.
 
 ### POS INIT
 - Initialize Position message now shows if position not initialized
@@ -48,7 +51,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - POINT/BEARING/DISTANCE fixes should now have magnetic variance properly applied
 
 ### FUEL
-- Fixed fuel timing calculation and display to avoid bad hour wraparound (neoenstien)
+- Fixed fuel timing calculation and display to avoid bad hour wrap-around (neoenstien)
 
 ### DIR
 - Added ability to perform vertical direct-to
@@ -82,6 +85,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - FGS display layout has been completely reworked to support armed lateral modes (TheFlieger)
 - FGS display arrow shape is now more accurate (TheFlieger)
 - FGS display now flashes modes on mode changes
+- FGS display now shows NOPATH as PATH with a yellow line through it.
 - Wind indicator position refined to better match real unit (Slip)
 - Flap speeds have been added to the airspeed tape
 - Fixed the VSpeed display formatting to reflect real unit
@@ -103,6 +107,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Fixed issue where bearing pointers would show in incorrect spot in PPOS mode
 - Fixed issue where bearing pointer data block would show VOR when a LOC was tuned
 - Bearing pointer needle should no longer show when untuned or when a LOC only is tuned
+- Bearing pointer display block format updated & aligned correctly
 
 ## MFD
 - Oil Temp and Pressure display format corrected
@@ -113,6 +118,19 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Origin runway fix should now be at the start instead of the end of the runway
 - Hold-to-manual-termination (HM) legs are now properly parsed and inserted into the plan
 - Corrected issue where hold course would get incorrect magnetic variance applied (neoenstien)
+
+## Aircraft Light
+- Strobe lights flash is now realistic (on for 1/2 second)
+- Added white nav lights to back of light assembly on wingtips (Where it should be)
+- Masked lights so bleed won't go over wings.  
+- Added pulse lights
+- Taxi, Landing, and Pulse lights buttons are exclusive meaning only one can be on at a time.  
+
+## Misc
+- Bleed air source is set to NORM on plane load
+- "Aural warning ok" message removed
+- Gear up/down won't play when you are on the ground and you load in.
+- Spoiler drag has been brought back to a more realistic value.
 
 # ⚠️ Known Issues
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
