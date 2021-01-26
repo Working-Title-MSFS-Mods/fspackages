@@ -21,10 +21,6 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ## Default Livery Conflicts
 The alternate default liveries that now ship with MSFS are not compatible with the CJ4 yet at this time. They currently ship with panel.cfg files that do not include our FADEC module. Please use the standard livery or a known compatible 3rd party or community livery.
 
-## Remarks to flight plan synchronization between the Game and FMS 
-The FP SYNC option is one way: it updates the simulator flight plan from the FMC. To load a plan into the FMS you can either enter it manually or use the _FPLN RECALL (GAME/SB)_ option in _IDX -> PAGE2 -> ROUTE MENU_
-Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan exactly.
-
 # Changes
 
 ## Autopilot
@@ -72,7 +68,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 
 ### FMC MESSAGES
 - Added MESSAGES page
-- Added numerous FMC messages including CHECK SPEED, LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
+- Added numerous FMC messages including LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
 
 ## PFD
 - Added correct nav source swapping behavior
