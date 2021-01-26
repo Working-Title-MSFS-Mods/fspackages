@@ -518,7 +518,16 @@ class Jet_NDCompass extends HTMLElement {
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
-                        this.setAttribute("course", beacon.course.toString());
+
+                        let didFreqJustTune = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                        if (didFreqJustTune === 2){
+                            this.setAttribute("course", beacon.course.toString());
+                            SimVar.SetSimVarValue(`NAV OBS:${source}`, "degree", beacon.course);
+                        } else {
+                            this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        }
+
                         this.setAttribute("course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
                             displayVerticalDeviation = true;
