@@ -11,7 +11,7 @@ Welcome to the Working Title CJ4 v0.10.0. This release brings even more navigati
 - Ability to arm LNV, APPR LOC, and APPR LNV modes
 - Automatic NAV-to-NAV transfers
 - Relative terrain map
-- Aircraft lighting changes
+- External lighting changes
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
