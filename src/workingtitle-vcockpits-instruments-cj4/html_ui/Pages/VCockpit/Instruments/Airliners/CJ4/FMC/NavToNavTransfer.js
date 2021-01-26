@@ -61,7 +61,10 @@ class NavToNavTransfer {
           this.tryTransferActive(frequency);
         }
         else {
-          MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'number') === 1);
+          const hasLoc = SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'number');
+          if (!hasLoc) {
+            MessageService.getInstance().post(FMS_MESSAGE_ID.CHECK_LOC_TUNING, () => SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'number') === 1);
+          }
         }
       }
 
