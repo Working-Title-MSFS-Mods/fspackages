@@ -654,13 +654,17 @@ class VORDMENavAid {
             if (hasLocalizer && this.navTypeText.textContent !== 'LOC') {
                 this.navTypeText.textContent = 'LOC';
             }
-            else if (this.navTypeText.textContent !== 'VOR') {
+            else if (!hasLocalizer && this.navTypeText.textContent !== 'VOR') {
                 this.navTypeText.textContent = 'VOR';
             }
         }
         else {
             this.setDistanceValue(0);
             this.setIDValue(0);
+            
+            if (this.navTypeText.textContent !== 'VOR') {
+                this.navTypeText.textContent = 'VOR';
+            }
         }
     }
 
@@ -780,7 +784,6 @@ class VORDMENavAid {
                     show = true;
                     break;
                 case BearingPointerMode.VOR:
-                    type = "VOR";
                     show = true;
                     break;
                 case BearingPointerMode.FMS:
@@ -796,7 +799,7 @@ class VORDMENavAid {
                 this.parent.style.display = show ? "block" : "none";
             }
 
-            if (this.navTypeText != null) {
+            if (this.navTypeText != null && type !== "") {
                 this.navTypeText.textContent = type;
             }
         }
