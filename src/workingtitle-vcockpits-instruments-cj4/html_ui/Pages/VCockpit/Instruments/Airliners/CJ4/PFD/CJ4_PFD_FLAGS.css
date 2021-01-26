@@ -7,6 +7,10 @@
   line-height: 0.8;
 }
 
+.yellow.box{
+  font-size: 1.5rem;
+}
+
 .red{
   color: red;
   border-color: red;
@@ -67,6 +71,32 @@
 }
 
 .red_vs #VSpeedAlt{
+  display: block;
+}
+
+#AirspeedAlt{
+  left: 12.3%;
+  top: 51%;
+}
+
+.red_ias #Airspeed{
+  display: none;
+}
+
+.red_ias #AirspeedAlt{
+  display: block;
+}
+
+#AOAAlt{
+  left: 0.95%;
+  top: 51.3%;
+}
+
+.yellow_aoa #AOA{
+  display: none;
+}
+
+.yellow_aoa #AOAAlt{
   display: block;
 }
 
