@@ -12,6 +12,11 @@
   border-color: red;
 }
 
+.yellow{
+  color: #FFE133;
+  border-color: #FFE133;
+}
+
 #HorizonAlt{
   left: 45.8%;
   top: 46.5%;
@@ -63,4 +68,13 @@
 
 .red_vs #VSpeedAlt{
   display: block;
+}
+
+#Atc1_Fail{
+  opacity: 0;
+  margin-left: -4px;
+}
+
+.yellow_atc1 #Atc1_Fail{
+  opacity: 1;
 }
