@@ -35,9 +35,9 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 ## FMC
 - Scratchpad error messages now clear after 1 second
 - FMC messages now display at the bottom of the display
+- Added MESSAGES page
+- Added numerous FMC messages including LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
 - CRZ ALT inputs now allow "F" plus flight level.  Eg. F200 = FL200.
-
-### POS INIT
 - Initialize Position message now shows if position not initialized
 
 ### LEGS
@@ -45,9 +45,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Changing sequencing from INHIBIT to AUTO when the active leg is the runway will automatically sequence into the missed approach
 - Missed approach segment is now displayed at the end of the plan
 - POINT/BEARING/DISTANCE fixes should now have magnetic variance properly applied
-
-### FUEL
-- Fixed fuel timing calculation and display to avoid bad hour wrap-around (neoenstien)
+- Entering positive/negative distance for along-track offset waypoints now has the desired effect
 
 ### DIR
 - Added ability to perform vertical direct-to
@@ -65,10 +63,6 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Added NAV CONTROL page
 - Added ability to put nav radios in AUTO mode, which will automatically tune nearest VORs every 6 minutes for location backup
 - Added nav radio presets
-
-### FMC MESSAGES
-- Added MESSAGES page
-- Added numerous FMC messages including LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
 
 ## PFD
 - Added correct nav source swapping behavior
@@ -104,6 +98,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Fixed issue where bearing pointer data block would show VOR when a LOC was tuned
 - Bearing pointer needle should no longer show when untuned or when a LOC only is tuned
 - Bearing pointer display block format updated & aligned correctly
+- Map display range rings should now coincide with the ranges in FMS
 
 ## MFD
 - Oil Temp and Pressure display format corrected
@@ -123,6 +118,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Taxi, Landing, and Pulse lights buttons are exclusive meaning only one can be on at a time.  
 
 ## Misc
+- Fixed fuel timing calculation and display to avoid bad hour wrap-around (neoenstien)
 - Bleed air source is set to NORM on plane load
 - "Aural warning ok" message removed
 - Gear up/down won't play when you are on the ground and you load in.
