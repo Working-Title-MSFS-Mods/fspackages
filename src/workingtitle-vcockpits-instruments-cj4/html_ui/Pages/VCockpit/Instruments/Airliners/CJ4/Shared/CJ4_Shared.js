@@ -2986,16 +2986,16 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.setMode(_mode);
         switch (_mode) {
             case Jet_NDCompass_Display.ARC:
-                this.zoomFactor = 2.8;
+                this.zoomFactor = 3.6;
                 break;
             case Jet_NDCompass_Display.ROSE:
-                this.zoomFactor = 3.8;
+                this.zoomFactor = 4.3;
                 break;
             case Jet_NDCompass_Display.PLAN:
-                this.zoomFactor = 4.1;
+                this.zoomFactor = 5.4;
                 break;
             case Jet_NDCompass_Display.PPOS:
-                this.zoomFactor = 2.8;
+                this.zoomFactor = 3.6;
                 break;
             default:
                 this.zoomFactor = 1.0;
