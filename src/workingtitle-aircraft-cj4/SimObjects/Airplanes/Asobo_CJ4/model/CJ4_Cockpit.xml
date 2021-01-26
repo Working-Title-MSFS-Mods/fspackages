@@ -748,10 +748,6 @@
 				<SEQ1_SUFFIX></SEQ1_SUFFIX>
 				<NO_BRT_DIM_EMISSIVE>True</NO_BRT_DIM_EMISSIVE>
 			</DefaultTemplateParameters>
-			<Update Once="True">
-        		1 (&gt;I:XMLVAR_MCDU_1_Brightness)
-        		1 (&gt;I:XMLVAR_MCDU_2_Brightness)
-			</Update>
 			<UseTemplate Name="ASOBO_FMC_CJ4">
 				<FAILURE>(A:CIRCUIT ON:47, Bool)</FAILURE>
 				<ANIM_NEVER_FAILS>True</ANIM_NEVER_FAILS>
@@ -818,6 +814,13 @@
 				<ANIM_NAME_DEP_ARR>CDU_Push_DEPARR_ID_2</ANIM_NAME_DEP_ARR>
 				<NODE_ID_SCREEN>FMS_Screen_ID_2</NODE_ID_SCREEN>
 				-->
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Update">
+				<UPDATE_ONCE>True</UPDATE_ONCE>
+				<UPDATE_CODE>
+        		0.8 (&gt;I:XMLVAR_MCDU_1_Brightness)
+        		0.8 (&gt;I:XMLVAR_MCDU_2_Brightness)
+				</UPDATE_CODE>
 			</UseTemplate>
 		</Component>
 
