@@ -125,6 +125,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Spoiler drag has been brought back to a more realistic value.
 
 # ⚠️ Known Issues
+* PITCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
