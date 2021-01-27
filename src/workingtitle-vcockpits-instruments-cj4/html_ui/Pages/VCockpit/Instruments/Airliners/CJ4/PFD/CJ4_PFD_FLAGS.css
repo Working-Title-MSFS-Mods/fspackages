@@ -5,10 +5,16 @@
   position: absolute;
   padding: 0.4rem 0.15rem 0 0.15rem;
   line-height: 0.8;
+  background: black
 }
 
 .yellow.box {
   font-size: 1.5rem;
+}
+
+.blue {
+  color: cyan;
+  border-color: cyan;
 }
 
 .red {
@@ -19,6 +25,11 @@
 .yellow {
   color: #FFE133;
   border-color: #FFE133;
+}
+
+.full.blue.box {
+  background: cyan;
+  border-color: cyan;
 }
 
 #HorizonAlt {
@@ -40,11 +51,6 @@
 
 .red_att #HorizonAlt {
   display: block;
-}
-
-.blue.box {
-  background: blue;
-  border-color: blue;
 }
 
 #HorizonAlign {
@@ -116,6 +122,15 @@
 }
 
 .yellow_aoa #AOAAlt {
+  display: block;
+}
+
+#Copyright {
+  left: 29.2%;
+  top: 78.15%;
+}
+
+.copyright #Copyright {
   display: block;
 }
 
