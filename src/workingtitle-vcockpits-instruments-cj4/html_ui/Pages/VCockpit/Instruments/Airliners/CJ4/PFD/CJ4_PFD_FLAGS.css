@@ -1,4 +1,4 @@
-.box{
+.box {
   display: none;
   border: 0.175rem solid white;
   font-size: 1.75rem;
@@ -7,104 +7,123 @@
   line-height: 0.8;
 }
 
-.yellow.box{
+.yellow.box {
   font-size: 1.5rem;
 }
 
-.red{
+.red {
   color: red;
   border-color: red;
 }
 
-.yellow{
+.yellow {
   color: #FFE133;
   border-color: #FFE133;
 }
 
-#HorizonAlt{
+#HorizonAlt {
   left: 45.8%;
   top: 46.5%;
 }
 
-.red_att #Horizon #Pitch,
-.red_att #Horizon #AttitudeBank,
-.red_att #Horizon #AttitudeSlipSkidTriangle,
-.red_att #Horizon #AttitudeSlipSkid,
-.red_att #Horizon #Background,
-.red_att #Horizon #RadioAltitude{
+.red_att #Horizon #Pitch, .red_att #Horizon #AttitudeBank, .red_att #Horizon #AttitudeSlipSkidTriangle, .red_att #Horizon #AttitudeSlipSkid, .red_att #Horizon #Background, .red_att #Horizon #RadioAltitude {
   display: none;
 }
 
-.red_att #ILS #GlideSlopeGroup,
-.red_att #ILS #LocalizerGroup{
+.red_att #ILS #GlideSlopeGroup, .red_att #ILS #LocalizerGroup {
   visibility: visible;
 }
 
-.red_att #ILS #CursorGroup{
+.red_att #ILS #CursorGroup {
   display: none;
 }
 
-.red_att #HorizonAlt{
+.red_att #HorizonAlt {
   display: block;
 }
 
-#AltimeterAlt{
+.blue.box {
+  background: blue;
+  border-color: blue;
+}
+
+#HorizonAlign {
+  display: none;
+}
+
+#HorizonAlign_AttHdg {
+  display: block;
+  left: 33.1%;
+  top: 41.6%;
+}
+
+#HorizonAlign_TaxiWarning {
+  display: block;
+  left: 37.9%;
+  top: 48.6%;
+}
+
+.blue_align #HorizonAlign {
+  display: block;
+}
+
+#AltimeterAlt {
   left: 80.75%;
   top: 51%;
 }
 
-.red_alt #Altimeter{
+.red_alt #Altimeter {
   display: none;
 }
 
-.red_alt #AltimeterAlt{
+.red_alt #AltimeterAlt {
   display: block;
 }
 
-#VSpeedAlt{
+#VSpeedAlt {
   left: 93.7%;
   top: 51%;
 }
 
-.red_vs #VSpeed{
+.red_vs #VSpeed {
   display: none;
 }
 
-.red_vs #VSpeedAlt{
+.red_vs #VSpeedAlt {
   display: block;
 }
 
-#AirspeedAlt{
+#AirspeedAlt {
   left: 12.3%;
   top: 51%;
 }
 
-.red_ias #Airspeed{
+.red_ias #Airspeed {
   display: none;
 }
 
-.red_ias #AirspeedAlt{
+.red_ias #AirspeedAlt {
   display: block;
 }
 
-#AOAAlt{
+#AOAAlt {
   left: 0.95%;
   top: 51.3%;
 }
 
-.yellow_aoa #AOA{
+.yellow_aoa #AOA {
   display: none;
 }
 
-.yellow_aoa #AOAAlt{
+.yellow_aoa #AOAAlt {
   display: block;
 }
 
-#Atc1_Fail{
+#Atc1_Fail {
   opacity: 0;
   margin-left: -4px;
 }
 
-.yellow_atc1 #Atc1_Fail{
+.yellow_atc1 #Atc1_Fail {
   opacity: 1;
 }
