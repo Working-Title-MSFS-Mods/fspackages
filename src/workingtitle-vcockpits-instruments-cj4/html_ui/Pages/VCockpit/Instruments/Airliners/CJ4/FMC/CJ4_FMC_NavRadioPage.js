@@ -96,7 +96,7 @@ class CJ4_FMC_NavRadioPageOne {
             [this._freqMap.vhf1.toFixed(3) + "[green]", this._freqMap.vhf2.toFixed(3) + "[green]"],
             [" RECALL", "RECALL "],
             [this._freqMap.rcl1.toFixed(3) + "", this._freqMap.pre2.toFixed(3) + ""],
-            [" NAV 1", "NAV 2 "],
+            [" NAV1", "NAV2 "],
             [`${this._freqMap.vor1.toFixed(2)}[green] ${this._freqMap.vor1Mode}[blue s-text]`, `${this._freqMap.vor2Mode}[blue s-text] ${this._freqMap.vor2.toFixed(2)}[green]`],
             [" DME1", "DME2 "],
             ["HOLD[s-text]", "HOLD[s-text]"],
