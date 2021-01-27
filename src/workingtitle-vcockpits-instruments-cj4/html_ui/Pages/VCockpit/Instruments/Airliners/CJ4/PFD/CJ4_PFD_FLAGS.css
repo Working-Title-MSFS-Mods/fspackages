@@ -109,11 +109,16 @@
   top: 51.3%;
 }
 
+.red_aoa #AOA,
 .yellow_aoa #AOA {
   display: none;
 }
 
-.yellow_aoa #AOAAlt {
+.red_aoa #AOAAltR {
+  display: block;
+}
+
+.yellow_aoa #AOAAltY {
   display: block;
 }
 
