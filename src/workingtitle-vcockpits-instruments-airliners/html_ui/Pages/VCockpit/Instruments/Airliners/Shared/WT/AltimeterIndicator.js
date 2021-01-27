@@ -106,6 +106,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         if (!this.pressureSVG)
             this.pressureSVG = document.createElementNS(Avionics.SVG.NS, "text");
         this.pressureSVG.textContent = "";
+        this.pressureSVG.setAttribute("id", "Pressure");
         this.pressureSVG.setAttribute("x", (posX - 62).toString());
         this.pressureSVG.setAttribute("y", (posY + 20).toString());
         this.pressureSVG.setAttribute("fill", "cyan");
@@ -324,6 +325,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.centerSVG.appendChild(this.baroMinsSVG);
         }
         this.rootGroup.appendChild(this.centerSVG);
+        this.targetAltitude = document.createElementNS(Avionics.SVG.NS, "g");
+        this.targetAltitude.setAttribute("id", "TargetAltitude");
         this.targetAltitudeBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
         this.targetAltitudeBgSVG.setAttribute("fill", "black");
         this.targetAltitudeBgSVG.setAttribute("x", "5");
@@ -332,7 +335,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeBgSVG.setAttribute("height", "40");
         this.targetAltitudeBgSVG.setAttribute("fill", "black");
         this.targetAltitudeBgSVG.setAttribute("fill-opacity", "0.5");
-        this.rootGroup.appendChild(this.targetAltitudeBgSVG);
+        this.targetAltitude.appendChild(this.targetAltitudeBgSVG);
         this.targetAltitudeTextSVG1 = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetAltitudeTextSVG1.setAttribute("x", "72");
         this.targetAltitudeTextSVG1.setAttribute("y", (posY - 10).toString());
@@ -342,7 +345,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeTextSVG1.setAttribute("letter-spacing", "2");
         this.targetAltitudeTextSVG1.setAttribute("text-anchor", "end");
         this.targetAltitudeTextSVG1.setAttribute("alignment-baseline", "bottom");
-        this.rootGroup.appendChild(this.targetAltitudeTextSVG1);
+        this.targetAltitude.appendChild(this.targetAltitudeTextSVG1);
         this.targetAltitudeTextSVG2 = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetAltitudeTextSVG2.setAttribute("x", "73");
         this.targetAltitudeTextSVG2.setAttribute("y", (posY - 10).toString());
@@ -352,7 +355,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeTextSVG2.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeTextSVG2.setAttribute("text-anchor", "start");
         this.targetAltitudeTextSVG2.setAttribute("alignment-baseline", "bottom");
-        this.rootGroup.appendChild(this.targetAltitudeTextSVG2);
+        this.targetAltitude.appendChild(this.targetAltitudeTextSVG2);
+        this.rootGroup.appendChild(this.targetAltitude);
 
         let borderline = document.createElementNS(Avionics.SVG.NS, "line");
         let blx = "140";

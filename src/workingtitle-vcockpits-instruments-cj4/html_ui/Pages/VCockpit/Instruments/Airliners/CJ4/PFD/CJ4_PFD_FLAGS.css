@@ -41,14 +41,6 @@
   display: none;
 }
 
-.red_att #ILS #GlideSlopeGroup, .red_att #ILS #LocalizerGroup {
-  visibility: visible;
-}
-
-.red_att #ILS #CursorGroup {
-  display: none;
-}
-
 .red_att #HorizonAlt {
   display: block;
 }
@@ -78,7 +70,7 @@
   top: 51%;
 }
 
-.red_alt #Altimeter {
+.red_alt #Altimeter #TargetAltitude, .red_alt #Altimeter #TargetAltitudeM, .red_alt #Altimeter #TargetAltitudeIndicator, .red_alt #Altimeter #CursorGroupM, .red_alt #Altimeter #CursorGroup, .red_alt #Altimeter #graduationGroup, .red_alt #Altimeter #GroundRibbonGroup, .red_alt #Altimeter #BaroMinsIndicator, .red_alt #Altimeter #Pressure {
   display: none;
 }
 
