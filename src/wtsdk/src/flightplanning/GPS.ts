@@ -1,6 +1,3 @@
-import { LatLongAlt, SimVar } from 'MSFS';
-import { GeoMath } from './GeoMath';
-
 /**
  * Methods for interacting with the FS9GPS subsystem.
  */
@@ -11,7 +8,7 @@ export class GPS {
    */
   public static async clearPlan(): Promise<void> {
     const totalGpsWaypoints = SimVar.GetSimVarValue('C:fs9gps:FlightPlanWaypointsNumber', 'number');
-    for (var i = 0; i < totalGpsWaypoints; i++) {
+    for (let i = 0; i < totalGpsWaypoints; i++) {
 
       //Always remove waypoint 0 here, which shifts the rest of the waypoints down one
       await GPS.deleteWaypoint(0);
@@ -76,7 +73,7 @@ export class GPS {
     const waypointIdents = [];
     const totalGpsWaypoints = SimVar.GetSimVarValue('C:fs9gps:FlightPlanWaypointsNumber', 'number');
 
-    for (var i = 0; i < totalGpsWaypoints; i++) {
+    for (let i = 0; i < totalGpsWaypoints; i++) {
       await SimVar.SetSimVarValue('C:fs9gps:FlightPlanWaypointIndex', 'number', i);
       waypointIdents.push(SimVar.GetSimVarValue('C:fs9gps:FlightPlanWaypointIdent', 'string'));
     }

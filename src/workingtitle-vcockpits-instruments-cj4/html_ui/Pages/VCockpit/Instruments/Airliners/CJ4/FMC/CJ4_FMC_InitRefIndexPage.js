@@ -452,11 +452,18 @@ class CJ4_FMC_InitRefIndexPage {
                     let destinationDistanceDirect = Avionics.Utils.computeDistance(currPos, destination.infos.coordinates);
                     let destinationDistanceFlightplan = 0;
                     destinationDistance = destinationDistanceDirect;
+                    let destinationCumulativeDistanceInFP = destination.cumulativeDistanceInFP;
+                    const approach = fmc.flightPlanManager.getApproachWaypoints();
+                    if (approach && approach.length > 0) {
+                        const allWaypoints = fmc.flightPlanManager.getAllWaypoints();
+                        const lastApproachIndex = allWaypoints.indexOf(approach[approach.length - 1]);
+                        destinationCumulativeDistanceInFP = allWaypoints[lastApproachIndex].cumulativeDistanceInFP;
+                    }
                     if (fmc.flightPlanManager.getActiveWaypoint()) {
-                        destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+                        destinationDistanceFlightplan = new Number(destinationCumulativeDistanceInFP - fmc.flightPlanManager.getActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
                     }
                     else {
-                        destinationDistanceFlightplan = destination.cumulativeDistanceInFP;
+                        destinationDistanceFlightplan = destinationCumulativeDistanceInFP;
                     }
                     destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                         : destinationDistanceFlightplan;
@@ -613,12 +620,18 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[3] = async () => {
             fmc.setMsg("LOAD FPLN...[yellow]");
             fmc.flightPlanManager.pauseSync();
-            await FlightPlanAsoboSync.LoadFromGame(fmc.flightPlanManager);
-            fmc.flightPlanManager.resumeSync();
-            fmc.flightPlanManager.setActiveWaypointIndex(1);
-            fmc.setMsg("FPLN LOADED[green]");
-            SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
-            CJ4_FMC_RoutePage.ShowPage1(fmc);
+            FlightPlanAsoboSync.LoadFromGame(fmc.flightPlanManager).catch((err) => {
+                console.log("ERROR " + err);
+                fmc.flightPlanManager.resumeSync();
+                fmc.setMsg("FPLN LOAD FAIL[red]");
+
+            }).then(() => {
+                fmc.flightPlanManager.resumeSync();
+                fmc.flightPlanManager.setActiveWaypointIndex(1);
+                fmc.setMsg("FPLN LOADED[green]");
+                SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+                CJ4_FMC_RoutePage.ShowPage1(fmc);
+            });
         };
 
         // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
@@ -1235,7 +1248,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.9.1[s-text white]"],
+            ["0.10.0[s-text white]"],
             [""],
             [""],
             [""],
@@ -1276,4 +1289,3 @@ class CJ4_FMC_InitRefIndexPage {
         }, 1000, true);
     }
 }
-//# sourceMappingURL=CJ4_FMC_InitRefIndexPage.js.map

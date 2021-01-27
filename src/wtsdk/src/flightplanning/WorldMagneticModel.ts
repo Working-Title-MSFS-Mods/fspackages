@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 export function WorldMagneticModel() {
   
     this.coff = [
@@ -198,7 +199,7 @@ export function WorldMagneticModel() {
     }
     this.k[1][1] = 0.0;
     this.fm[0] = 0.0;// !!!!!! WMM C and Fortran both have a bug in that fm[0] is not initialised 
-  };
+  }
   
   WorldMagneticModel.prototype.declination = function(altitudeKm, latitudeDegrees, longitudeDegrees, yearFloat) {
   

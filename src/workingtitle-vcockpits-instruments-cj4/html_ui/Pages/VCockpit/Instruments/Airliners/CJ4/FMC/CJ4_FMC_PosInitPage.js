@@ -163,4 +163,3 @@ class CJ4_FMC_PosInitPage {
         fmc.updateSideButtonActiveStatus();
     }
 }
-//# sourceMappingURL=CJ4_FMC_PosInitPage.js.map

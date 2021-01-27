@@ -47,20 +47,38 @@ class SvgFlightPlanElement extends SvgMapElement {
 
             const fplnCount = (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) ? 2 : 1;
             for (let index = 0; index < fplnCount; index++) {
-                const waypoints = fpm.getAllWaypoints(index);
-                const activeWaypointIndex = fpm.getActiveWaypointIndex();
+                const plan = fpm.getFlightPlan(index);
+                if (!plan) {
+                    continue;
+                }
+                const waypoints = plan.waypoints;
+
+                const activeWaypointIndex = plan.activeWaypointIndex;
+                const missedSegment = plan.getSegment(SegmentType.Missed);
+                const approachSegment = plan.getSegment(SegmentType.Approach);
+                const drawDestination = approachSegment.waypoints.length === 0;
 
                 if (waypoints.length > 1) {
-                    const holdIndex = SimVar.GetSimVarValue('L:WT_NAV_HOLD_INDEX', 'number');
-                    const activeIndex = fpm.getActiveWaypointIndex();
-                    if (holdIndex != -1 && activeIndex == holdIndex + 1) {
-                        // console.log("holdIndex " + holdIndex + " activeIndex " + activeIndex);
-                        this.buildPathFromWaypoints(waypoints.slice(holdIndex, holdIndex + 1), map, 'magenta', (index !== 0), true);
-                        this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1), map, 'white', (index !== 0), true);
-                    } else {
-                        this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex - 1, activeWaypointIndex + 1), map, 'magenta');
-                        this.buildPathFromWaypoints(waypoints.slice(activeWaypointIndex), map, 'white', (index !== 0));
+
+                    const inMissedApproach = activeWaypointIndex >= missedSegment.offset;
+                    let mainPathEnd = inMissedApproach ? waypoints.length - 1 : missedSegment.offset;
+
+                    if (drawDestination) {
+                        mainPathEnd++;
                     }
+
+                    //Active leg
+                    if (waypoints[activeWaypointIndex] && waypoints[activeWaypointIndex - 1]) {
+                        this.buildPathFromWaypoints(waypoints, activeWaypointIndex - 1, activeWaypointIndex + 1, map, 'magenta', false);
+                    }
+
+                    //Missed approach preview
+                    if (!inMissedApproach) {
+                        this.buildPathFromWaypoints(waypoints, missedSegment.offset - 1, waypoints.length - 1, map, 'cyan', (index !== 0));
+                    }
+
+                    //Remainder of plan
+                    this.buildPathFromWaypoints(waypoints, activeWaypointIndex, mainPathEnd, map, 'white', (index !== 0));
                 }
             }
         }
@@ -72,7 +90,7 @@ class SvgFlightPlanElement extends SvgMapElement {
      * @param {MapInstrument} map The map instrument to convert coordinates with.
      * @returns {string} A path string.
      */
-    buildPathFromWaypoints(waypoints, map, style = 'white', isDashed = false, isHold = false) {
+    buildPathFromWaypoints(waypoints, startIndex, endIndex, map, style = 'white', isDashed = false) {
         const context = this._flightPathCanvas.getContext('2d');
         context.beginPath();
 
@@ -85,61 +103,55 @@ class SvgFlightPlanElement extends SvgMapElement {
         }
 
         let prevWaypoint;
-        if (!isHold || (isHold && style == 'white')) {
-            for (let i = 0; i < waypoints.length; i++) {
-                const waypoint = waypoints[i];
-                const pos = map.coordinatesToXY(waypoint.infos.coordinates);
+        for (let i = startIndex; i < endIndex; i++) {
+            const waypoint = waypoints[i];
+            const pos = map.coordinatesToXY(waypoint.infos.coordinates);
 
-                if (i === 0 || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
-                    context.moveTo(pos.x, pos.y);
+            if (i === startIndex || (prevWaypoint && prevWaypoint.endsInDiscontinuity)) {
+                context.moveTo(pos.x, pos.y);
+            }
+            else {
+                //Draw great circle segments if more than 2 degrees longitude difference
+                const longDiff = Math.abs(waypoint.infos.coordinates.long - prevWaypoint.infos.coordinates.long);
+                if (longDiff > 2) {
+                    const numSegments = Math.floor(longDiff / 2);
+                    const startingLatLon = new LatLon(prevWaypoint.infos.coordinates.lat, prevWaypoint.infos.coordinates.long);
+                    const endingLatLon = new LatLon(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
+
+                    const segmentPercent = 1 / numSegments;
+                    for (let j = 0; j <= numSegments; j++) {
+                        const segmentEnd = startingLatLon.intermediatePointTo(endingLatLon, j * segmentPercent);
+                        const segmentEndVec = map.coordinatesToXY(new LatLongAlt(segmentEnd.lat, segmentEnd.lon));
+
+                        context.lineTo(segmentEndVec.x, segmentEndVec.y);
+                    }
                 }
                 else {
-                    //Draw great circle segments if more than 2 degrees longitude difference
-                    const longDiff = Math.abs(waypoint.infos.coordinates.long - prevWaypoint.infos.coordinates.long);
-                    if (longDiff > 2) {
-                        const numSegments = Math.floor(longDiff / 2);
-                        const startingLatLon = new LatLon(prevWaypoint.infos.coordinates.lat, prevWaypoint.infos.coordinates.long);
-                        const endingLatLon = new LatLon(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
-
-                        const segmentPercent = 1 / numSegments;
-                        for (let j = 0; j <= numSegments; j++) {
-                            const segmentEnd = startingLatLon.intermediatePointTo(endingLatLon, j * segmentPercent);
-                            const segmentEndVec = map.coordinatesToXY(new LatLongAlt(segmentEnd.lat, segmentEnd.lon));
-
-                            context.lineTo(segmentEndVec.x, segmentEndVec.y);
-                        }
-                    }
-                    else {
-                        context.lineTo(pos.x, pos.y);
-                    }
+                    context.lineTo(pos.x, pos.y);
                 }
-
-                prevWaypoint = waypoint;
             }
+
+            prevWaypoint = waypoint;
         }
 
-        if ((!isHold && style == 'white') || (isHold && style == 'magenta')) {
-            // console.log("style " + style + (isHold ? " is hold" : ""));
+        for (let i = startIndex + 1; i < endIndex; i++) {
+            const waypoint = waypoints[i];
+            if (waypoint.hasHold) {
 
-            for (let i = 0; i < waypoints.length; i++) {
-                const waypoint = waypoints[i];
-                if (waypoint.hasHold) {
-
-                    let course = waypoint.holdDetails.holdCourse;
-                    if (!waypoint.holdDetails.isHoldCourseTrue) {
-                        const magVar = GeoMath.getMagvar(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
-                        course = AutopilotMath.normalizeHeading(course + magVar);
-                    }
-
-                    const corners = HoldsDirector.calculateHoldFixes(waypoint.infos.coordinates, waypoint.holdDetails)
-                        .map(c => map.coordinatesToXY(c));
-
-                    context.moveTo(corners[0].x, corners[0].y);
-                    this.drawHoldArc(corners[0], corners[1], context, waypoint.holdDetails.turnDirection === 1);
-                    context.lineTo(corners[2].x, corners[2].y);
-                    this.drawHoldArc(corners[2], corners[3], context, waypoint.holdDetails.turnDirection === 1);
-                    context.lineTo(corners[0].x, corners[0].y);
+                let course = waypoint.holdDetails.holdCourse;
+                if (!waypoint.holdDetails.isHoldCourseTrue) {
+                    const magVar = GeoMath.getMagvar(waypoint.infos.coordinates.lat, waypoint.infos.coordinates.long);
+                    course = AutopilotMath.normalizeHeading(course + magVar);
                 }
+
+                const corners = HoldsDirector.calculateHoldFixes(waypoint.infos.coordinates, waypoint.holdDetails)
+                    .map(c => map.coordinatesToXY(c));
+
+                context.moveTo(corners[0].x, corners[0].y);
+                this.drawHoldArc(corners[0], corners[1], context, waypoint.holdDetails.turnDirection === 1);
+                context.lineTo(corners[2].x, corners[2].y);
+                this.drawHoldArc(corners[2], corners[3], context, waypoint.holdDetails.turnDirection === 1);
+                context.lineTo(corners[0].x, corners[0].y);
             }
         }
 
@@ -217,33 +229,6 @@ class SvgBackOnTrackElement extends SvgMapElement {
         return container;
     }
     updateDraw(map) {
-        let p1 = map.coordinatesToXY(this.llaRequested);
-        let p2;
-        if (this.targetWaypoint) {
-            p2 = map.coordinatesToXY(this.targetWaypoint.infos.coordinates);
-        }
-        else if (this.targetLla) {
-            p2 = map.coordinatesToXY(this.targetLla);
-        }
-        let dx = p2.x - p1.x;
-        let dy = p2.y - p1.y;
-        let d = Math.sqrt(dx * dx + dy * dy);
-        dx /= d;
-        dy /= d;
-        p1.x += dx * 20;
-        p1.y += dy * 20;
-        p2.x -= dx * 20;
-        p2.y -= dy * 20;
-        this._colorLine.setAttribute("x1", fastToFixed(p1.x, 0));
-        this._colorLine.setAttribute("y1", fastToFixed(p1.y, 0));
-        this._colorLine.setAttribute("x2", fastToFixed(p2.x, 0));
-        this._colorLine.setAttribute("y2", fastToFixed(p2.y, 0));
-        if (this._outlineLine) {
-            this._outlineLine.setAttribute("x1", fastToFixed(p1.x, 0));
-            this._outlineLine.setAttribute("y1", fastToFixed(p1.y, 0));
-            this._outlineLine.setAttribute("x2", fastToFixed(p2.x, 0));
-            this._outlineLine.setAttribute("y2", fastToFixed(p2.y, 0));
-        }
     }
 }
 SvgBackOnTrackElement.ID = 0;

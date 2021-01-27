@@ -1,12 +1,19 @@
 class CJ4_FMC_VNavSetupPage {
     static ShowPage1(fmc) { //VNAV SETUP Page 1
         fmc.clearDisplay();
+
+        let vnavClimbIas = WTDataStore.get('CJ4_vnavClimbIas', 240);
+        let vnavClimbMach = WTDataStore.get('CJ4_vnavClimbMach', 0.64);
+        let departureSpeedLimit = WTDataStore.get('CJ4_departureSpeedLimit', 250);
+        let departureSpeedLimitAltitude = WTDataStore.get('CJ4_departureSpeedLimitAltitude', 10000);
+        let departureTransitionAlt = WTDataStore.get('CJ4_departureTransitionAlt', 18000);
+
         fmc._templateRenderer.setTemplateRaw([
             [" ACT VNAV CLIMB[blue]", "1/3[blue]"],
             [" TGT SPEED[blue]", "TRANS ALT [blue]"],
-            ["240/.64", "18000"],
+            [vnavClimbMach + "/" + vnavClimbIas, "" + departureTransitionAlt],
             [" SPD/ALT LIMIT[blue]"],
-            ["250/10000"],
+            [departureSpeedLimit + "/" + departureSpeedLimitAltitude],
             [""],
             ["---/-----"],
             [""],
@@ -16,6 +23,58 @@ class CJ4_FMC_VNavSetupPage {
             ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
+
+        fmc.onLeftInput[0] = () => {
+            let value = fmc.inOut.split("/");
+            value[0] = parseFloat(value[0]).toPrecision(2);
+            value[1] = parseInt(value[1]);
+            if (value.length == 2 && value[0] >= 0.4 && value[0] <= 0.77 && value[1] >= 110 && value[1] <= 305) {
+                vnavClimbMach = value[0];
+                vnavClimbIas = value[1];
+                WTDataStore.set('CJ4_vnavClimbMach', vnavClimbMach);
+                WTDataStore.set('CJ4_vnavClimbIas', vnavClimbIas);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
+        fmc.onLeftInput[1] = () => {
+            let value = fmc.inOut.split("/");
+            value[0] = parseInt(value[0]);
+            value[1] = parseInt(value[1]);
+            if (value.length == 2 && value[0] > 0 && value[0] <= 305 && value[1] >= 0 && value[1] <= 45000) {
+                departureSpeedLimit = value[0];
+                departureSpeedLimitAltitude = value[1];
+                WTDataStore.set('CJ4_departureSpeedLimit', departureSpeedLimit);
+                WTDataStore.set('CJ4_departureSpeedLimitAltitude', departureSpeedLimitAltitude);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
+        fmc.onRightInput[0] = () => {
+            let value = parseInt(fmc.inOut);
+            if (value >= 0 && value <= 450) {
+                departureTransitionAlt = value * 100;
+                WTDataStore.set('CJ4_departureTransitionAlt', departureTransitionAlt);
+            }
+            else if (value > 450 && value <= 45000) {
+                departureTransitionAlt = value;
+                WTDataStore.set('CJ4_departureTransitionAlt', departureTransitionAlt);
+            }
+            else {
+                fmc.showErrorMessage("INVALID");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_VNavSetupPage.ShowPage1(fmc);
+        };
+
         fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage2(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
@@ -38,6 +97,7 @@ class CJ4_FMC_VNavSetupPage {
             ["-----------------------[blue]"],
             ["", "PERF INIT>"]
         ]);
+        
         fmc.onPrevPage = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.onNextPage = () => { CJ4_FMC_VNavSetupPage.ShowPage3(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
@@ -210,36 +270,24 @@ class CJ4_FMC_VNavSetupPage {
     static ShowPage5(fmc) { //VNAV MONITOR
         fmc.clearDisplay();
 
+        let targetAlt = 0;
+        let vnavTargetWaypointIdent = "NONE";
         let vnavTargetAltitude = 0;
         let vnavTargetDistance = 0;
-        let topOfDescent = 0;
-        let distanceToTod = 0;
-        let gpExists = false;
-        let gpAngle = 0;
+        let segmentIndex = 0;
+        let desiredFPA = 0;
 
         //RUN ACTUAL VNAV PATH CONTROL
         if (fmc._vnav) {
             fmc.registerPeriodicPageRefresh(() => {
-                let isVNAVActivate = SimVar.GetSimVarValue("L:WT_CJ4_VNAV_ON", "boolean") === 1;
-                const vnavActive = isVNAVActivate ? " ACTIVE[green]" : " INACTIVE[white]";
-                const vnavTargetWaypointIdent = WTDataStore.get('CJ4_vnavTargetWaypoint', 'none');
-                const vnavValues = WTDataStore.get('CJ4_vnavValues', 'none');
-                if (vnavValues != "none") {
-                    const parsedVnavValues = JSON.parse(vnavValues);
-                    vnavTargetAltitude = parseInt(parsedVnavValues.vnavTargetAltitude);
-                    vnavTargetDistance = parseFloat(parsedVnavValues.vnavTargetDistance);
-                    topOfDescent = parseFloat(parsedVnavValues.topOfDescent);
-                    distanceToTod = parseFloat(parsedVnavValues.distanceToTod);
-                    gpExists = parsedVnavValues.gpExists;
-                    gpAngle = parseFloat(parsedVnavValues.gpAngle);
-                }
-                const altDeviation = SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
-                const desiredFPA = WTDataStore.get('CJ4_vpa', 3);
-                const setVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
+                const vnavActive = fmc._navModeSelector.isVNAVOn ? " ACTIVE[green]" : " INACTIVE[white]";
+                const gsDeviation = SimVar.GetSimVarValue("NAV GSI:1", "Number");
+                const altDeviation = fmc._navModeSelector.isVNAVOn ? SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet") : gsDeviation;
+                //const setVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute");
 
-                let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-                let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
-                const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
+                //let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+                //let apCurrentVerticalSpeed = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute");
+                //const desiredVerticalSpeed = -101.2686667 * groundSpeed * Math.tan(desiredFPA * (Math.PI / 180));
 
                 const altSlot = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number");
                 const vsSlot = SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number");
@@ -253,23 +301,33 @@ class CJ4_FMC_VNavSetupPage {
                 const altVar2 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"));
                 const altVar3 = parseInt(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
                 const altLock = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") ? "Y" : "N";
-                const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "Y" : "N";
-                const constraint = SimVar.GetSimVarValue("L:WT_VNAV_constraintExists", "number");
-                const pathArm = SimVar.GetSimVarValue("L:WT_VNAV_pathArm", "number");
-                const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_pathActive", "number");
-                const inhibit = SimVar.GetSimVarValue("L:WT_VNAV_inhibitExecute", "number");
-                const obeyConstraint = SimVar.GetSimVarValue("L:WT_VNAV_obeyingConstraint", "number");
-                const pathStatus = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number");
-                const pitchHold = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "bool");
-                const pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
-                const togaHold = SimVar.GetSimVarValue("AUTOPILOT TAKEOFF POWER ACTIVE", "number") == 1;
+                //const altArm = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") ? "Y" : "N";
+                // const constraint = SimVar.GetSimVarValue("L:WT_VNAV_constraintExists", "number");
+                // const obeyConstraint = SimVar.GetSimVarValue("L:WT_VNAV_obeyingConstraint", "number");
+                const pathStatus = fmc._currentVerticalAutopilot._vnavPathStatus;
+                const segment = fmc._currentVerticalAutopilot.currentSegment;
+                const interceptStatus = fmc._currentVerticalAutopilot._pathInterceptStatus;
+                
+
+                if (segment) {
+                    desiredFPA = fmc._currentVerticalAutopilot.currentSegment.fpa;
+                    segmentIndex = fmc._vnav._verticalFlightPlanSegments.indexOf(fmc._currentVerticalAutopilot.currentSegment);
+                    targetAlt = !fmc._currentVerticalAutopilot.targetAltitude ? 0 : fmc._currentVerticalAutopilot.targetAltitude;
+                    vnavTargetWaypointIdent = fmc._vnav._verticalFlightPlan[fmc._currentVerticalAutopilot.currentSegment.targetIndex].ident;
+                    vnavTargetAltitude = fmc._vnav._verticalFlightPlan[fmc._currentVerticalAutopilot.currentSegment.targetIndex].waypointFPTA;
+                    vnavTargetDistance = fmc._vnav.allWaypoints[fmc._currentVerticalAutopilot.currentSegment.targetIndex].cumulativeDistanceInFP - fmc._vnav._currentDistanceInFP;
+                }
+                // const pitchHold = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "bool");
+                // const pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
+                // const togaHold = SimVar.GetSimVarValue("AUTOPILOT TAKEOFF POWER ACTIVE", "number") == 1;
+                const distanceToTod = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
 
                 fmc._templateRenderer.setTemplateRaw([
-                    [vnavTargetWaypointIdent, " WT VNAV[blue]" + vnavActive + " " + pathStatus],
-                    [" T ALT[blue]", "T DIST [blue]", "FPA[blue]"],
+                    [vnavTargetWaypointIdent + "", " WT VNAV[blue]" + vnavActive + " "],
+                    [" T ALT[blue]", "T DIST [blue]", "Seg FPA[blue]"],
                     [vnavTargetAltitude.toFixed(0) + "FT", vnavTargetDistance.toFixed(1) + "NM", desiredFPA.toFixed(1) + "°"],
-                    [" ARM[blue]", "INHIB [blue]", "ACT[blue]"],
-                    [pathArm == 1 ? "YES[green]" : "NO", inhibit == 1 ? "YES[green]" : "NO", pathActive == 1 ? "YES[green]" : "NO"],
+                    [" SEGMENT[blue]", "TARGET ALT [blue]", "INTC STATUS[blue]"],
+                    ["" + segmentIndex, "" + targetAlt.toFixed(0), interceptStatus + ""],
                     ["ALTDEV [blue]", "TOD[blue]", " ALT/VS SLOT[blue]"],
                     [altDeviation.toFixed(0) + "FT", distanceToTod.toFixed(1) + "NM", altSlot + "/" + vsSlot],
                     ["VSVAR/VAR:1/VAR:2/VAR:3[blue]"],
@@ -278,7 +336,7 @@ class CJ4_FMC_VNavSetupPage {
                     [altVar + "/" + altVar1 + "/" + altVar2 + "/" + altVar3],
                     // ["PTCH HLD[blue]", "TOGA[blue]", "PTCH REF[blue]"],
                     // [pitchHold ? "YES[green]" : "NO[white]", togaHold ? "YES[green]" : "NO[white]", pitchRef.toFixed(1) + "[white]"],
-                    ["ALK:" + altLock, "OBEY? [white]" + obeyConstraint == 1 ? "Y[green]" : "N", "CSTR? [white]" + constraint == 1 ? "Y[green]" : "N"],
+                    ["ALK:" + altLock, pathStatus + ""],
                     ["<CONSTRAINTS", "MENU>"]
                 ]);
 

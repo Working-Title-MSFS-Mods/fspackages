@@ -3,7 +3,6 @@ import { LegsProcedure } from './LegsProcedure';
 import { RawDataMapper } from './RawDataMapper';
 import { ProcedureDetails } from './ProcedureDetails';
 import { DirectTo } from './DirectTo';
-import { WayPoint, BaseInstrument, WayPointInfo, VORInfo, NDBInfo, IntersectionInfo, AirportInfo, LatLongAlt, Avionics, SimVar, OneWayRunway } from 'MSFS';
 import { GeoMath } from './GeoMath';
 
 /**
@@ -66,7 +65,7 @@ export class ManagedFlightPlan {
       waypoints.push(this.originAirfield);
     }
 
-    for (var segment of this._segments) {
+    for (const segment of this._segments) {
       waypoints.push(...segment.waypoints);
     }
 
@@ -83,11 +82,13 @@ export class ManagedFlightPlan {
     return lastSeg.offset + lastSeg.waypoints.length + (this.hasDestination ? 1 : 0);
   }
 
-  public get checksum():number {
+  public get checksum(): number {
     let checksum = 0;
     const waypoints = this.waypoints;
-    for( let i = 0; i < waypoints.length; i++)
-        checksum += waypoints[i].infos.coordinates.lat;
+    for (let i = 0; i < waypoints.length; i++) {
+      checksum += waypoints[i].infos.coordinates.lat;
+      checksum += waypoints[i].legAltitude1 + waypoints[i].legAltitude2 + waypoints[i].legAltitudeDescription + waypoints[i].speedConstraint;
+    }
     return checksum;
   }
 
@@ -98,7 +99,7 @@ export class ManagedFlightPlan {
       waypoints.push(this.originAirfield);
     }
 
-    for (var segment of this._segments.filter(s => s.type < SegmentType.Approach)) {
+    for (const segment of this._segments.filter(s => s.type < SegmentType.Approach)) {
       waypoints.push(...segment.waypoints);
     }
 
@@ -326,7 +327,7 @@ export class ManagedFlightPlan {
       index = 1;
     }
 
-    for (var segment of this._segments) {
+    for (const segment of this._segments) {
       segment.offset = index;
       index += segment.waypoints.length;
     }
@@ -348,7 +349,7 @@ export class ManagedFlightPlan {
    * @returns The located segment, if any. 
    */
   public findSegmentByWaypointIndex(index: number): FlightPlanSegment {
-    for (var i = 0; i < this._segments.length; i++) {
+    for (let i = 0; i < this._segments.length; i++) {
       const segMaxIdx = this._segments[i].offset + this._segments[i].waypoints.length;
       if (segMaxIdx > index) {
         return this._segments[i];
@@ -363,9 +364,9 @@ export class ManagedFlightPlan {
    */
   public reflowDistances(): void {
     let cumulativeDistance = 0;
-    let waypoints = this.waypoints;
+    const waypoints = this.waypoints;
 
-    for (var i = 0; i < waypoints.length; i++) {
+    for (let i = 0; i < waypoints.length; i++) {
       if (i > 0) {
 
         //If there's an approach selected and this is the last approach waypoint, use the destination waypoint for coordinates
@@ -440,9 +441,9 @@ export class ManagedFlightPlan {
     planCopy.directTo.interceptPoints = planCopy.directTo.interceptPoints?.map(w => copyWaypoint(w) as WayPoint);
 
     const copySegments = [];
-    for (var segment of this._segments) {
+    for (const segment of this._segments) {
       const copySegment = new FlightPlanSegment(segment.type, segment.offset, []);
-      for (var waypoint of segment.waypoints) {
+      for (const waypoint of segment.waypoints) {
         copySegment.waypoints.push(copyWaypoint(waypoint) as WayPoint);
       }
 
@@ -458,7 +459,7 @@ export class ManagedFlightPlan {
    * @returns The copied flight plan.
    */
   public copy(): ManagedFlightPlan {
-    let newFlightPlan = Object.assign(new ManagedFlightPlan(), this);
+    const newFlightPlan = Object.assign(new ManagedFlightPlan(), this);
     newFlightPlan.setParentInstrument(this._parentInstrument);
 
     newFlightPlan._segments = [];
@@ -514,7 +515,7 @@ export class ManagedFlightPlan {
     const planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "Radians") * Avionics.Utils.RAD2DEG;
 
     const headingToFix = Avionics.Utils.computeGreatCircleHeading(planeCoords, waypoint.infos.coordinates);
-    let angleDiff = Math.abs(Avionics.Utils.angleDiff(planeHeading, headingToFix));
+    const angleDiff = Math.abs(Avionics.Utils.angleDiff(planeHeading, headingToFix));
 
     const turnDurationSeconds = (angleDiff / 3) + 6;
     const interceptDistance = (groundSpeed / 60 / 60) * turnDurationSeconds * 1.25;
@@ -581,7 +582,7 @@ export class ManagedFlightPlan {
 
     let segment = this.departure;
     if (segment !== FlightPlanSegment.Empty) {
-      for (var i = 0; i < segment.waypoints.length; i++) {
+      for (let i = 0; i < segment.waypoints.length; i++) {
         this.removeWaypoint(segment.offset);
       }
 
@@ -590,7 +591,7 @@ export class ManagedFlightPlan {
 
     if (legs.length > 0 || selectedOriginRunwayIndex !== -1 || (departureIndex !== -1 && runwayIndex !== -1)) {
       segment = this.addSegment(SegmentType.Departure);
-      let procedure = new LegsProcedure(legs, origin, this._parentInstrument);
+      let procedure = new LegsProcedure(legs, origin, undefined, this._parentInstrument);
 
       let runway;
       if (selectedOriginRunwayIndex !== -1) {
@@ -616,14 +617,14 @@ export class ManagedFlightPlan {
             selectedRunwayOutput = "0" + runway.designation;
           }
         }
-        const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.endCoordinates);
+        const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.beginningCoordinates);
         runwayWaypoint.legAltitudeDescription = 1;
         runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
         runwayWaypoint.isRunway = true;
 
         this.addWaypoint(runwayWaypoint, undefined, segment.type);
 
-        procedure = new LegsProcedure(legs, runwayWaypoint, this._parentInstrument);
+        procedure = new LegsProcedure(legs, runwayWaypoint, origin, this._parentInstrument);
       }
 
       let waypointIndex = segment.offset;
@@ -673,7 +674,7 @@ export class ManagedFlightPlan {
         startIndex = segment.offset;
       }
 
-      const procedure = new LegsProcedure(legs, this.getWaypoint(segment.offset - 1), this._parentInstrument);
+      const procedure = new LegsProcedure(legs, this.getWaypoint(segment.offset - 1), this.getWaypoint(segment.offset - 2), this._parentInstrument);
 
       let waypointIndex = segment.offset;
       while (procedure.hasNext()) {
@@ -709,9 +710,32 @@ export class ManagedFlightPlan {
     }
 
     let { startIndex, segment } = this.truncateSegment(SegmentType.Approach);
+    let { startIndex: missedStartIndex, segment: missedSegment } = this.truncateSegment(SegmentType.Missed);
 
     if (legs.length > 0 || approachIndex !== -1 || destinationRunwayIndex !== -1) {
 
+      //If we're in the missed approach segment, shift everything backwards to
+      //load a second approach.
+      if (missedSegment.waypoints.length > 0) {
+        this.removeSegment(SegmentType.Approach)
+        segment = this.addSegment(SegmentType.Approach);
+
+        const fromIndex = missedStartIndex - missedSegment.offset - 2;
+        const toIndex = missedStartIndex - missedSegment.offset - 1;
+
+        segment.waypoints.push(missedSegment.waypoints[fromIndex]);
+        segment.waypoints.push(missedSegment.waypoints[toIndex]);
+
+        this.reflowSegments();
+        this.reflowDistances();
+        startIndex = segment.offset + 1;
+
+        this.activeWaypointIndex = startIndex;
+      }
+
+      this.removeSegment(SegmentType.Missed);
+      missedSegment = this.addSegment(SegmentType.Missed);
+      
       if (segment === FlightPlanSegment.Empty) {
         segment = this.addSegment(SegmentType.Approach);
         startIndex = segment.offset;
@@ -722,7 +746,7 @@ export class ManagedFlightPlan {
         }
       }
 
-      const procedure = new LegsProcedure(legs, this.getWaypoint(startIndex - 1), this._parentInstrument);
+      const procedure = new LegsProcedure(legs, this.getWaypoint(startIndex - 1), this.getWaypoint(startIndex - 2), this._parentInstrument);
 
       let waypointIndex = startIndex;
       while (procedure.hasNext()) {
@@ -759,7 +783,7 @@ export class ManagedFlightPlan {
         if (approachIndex === -1 && destinationRunwayIndex !== -1 && destinationRunwayExtension !== -1) {
           const runwayExtensionWaypoint = procedure.buildWaypoint(`RX${selectedRunwayOutput}`,
             Avionics.Utils.bearingDistanceToCoordinates(runway.direction + 180, destinationRunwayExtension, runway.beginningCoordinates.lat, runway.beginningCoordinates.long));
-          this.addWaypoint(runwayExtensionWaypoint);
+          this.addWaypoint(runwayExtensionWaypoint, undefined, SegmentType.Approach);
         }
 
         const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.beginningCoordinates);
@@ -767,7 +791,20 @@ export class ManagedFlightPlan {
         runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
         runwayWaypoint.isRunway = true;
 
-        this.addWaypoint(runwayWaypoint);
+        this.addWaypoint(runwayWaypoint, undefined, SegmentType.Approach);
+
+        if (approachIndex !== -1) {
+          missedStartIndex = missedSegment.offset;
+          const missedProcedure = new LegsProcedure(destinationInfo.approaches[approachIndex].missedLegs, this.getWaypoint(missedStartIndex - 1),
+            this.getWaypoint(missedStartIndex - 2), this._parentInstrument);
+         
+          while (missedProcedure.hasNext()) {
+            const waypoint = await missedProcedure.getNext();
+            if (waypoint !== undefined) {
+              this.addWaypoint(waypoint, ++missedStartIndex, missedSegment.type);
+            }
+          }
+        }
       }
     }
   }
@@ -787,10 +824,10 @@ export class ManagedFlightPlan {
 
     if (segment !== FlightPlanSegment.Empty) {
       const finalIndex = segment.offset + segment.waypoints.length;
-      if(startIndex < finalIndex){
-        for (var i = startIndex; i < finalIndex; i++) {
+      if (startIndex < finalIndex) {
+        for (let i = startIndex; i < finalIndex; i++) {
           this.removeWaypoint(startIndex);
-        } 
+        }
       }
     }
 
@@ -799,7 +836,7 @@ export class ManagedFlightPlan {
       segment = FlightPlanSegment.Empty;
     }
     else {
-      segment.waypoints[Math.max((startIndex - 1) - segment.offset, 0)].endsInDiscontinuity = true;
+      segment.waypoints[Math.min(Math.max((startIndex - 1) - segment.offset, 0), segment.waypoints.length - 1)].endsInDiscontinuity = true;
     }
 
     return { startIndex, segment };
@@ -837,7 +874,7 @@ export class ManagedFlightPlan {
    * @returns The converted ManagedFlightPlan.
    */
   public static fromObject(flightPlanObject: any, parentInstrument: BaseInstrument): ManagedFlightPlan {
-    let plan = Object.assign(new ManagedFlightPlan(), flightPlanObject);
+    const plan = Object.assign(new ManagedFlightPlan(), flightPlanObject);
     plan.setParentInstrument(parentInstrument);
 
     plan.directTo = Object.assign(new DirectTo(), plan.directTo);
@@ -872,7 +909,7 @@ export class ManagedFlightPlan {
     };
 
     const visitObject = (obj: any): any => {
-      for (var key in obj) {
+      for (const key in obj) {
         if (typeof obj[key] === 'object' && obj[key] && obj[key].scroll === undefined) {
           if (Array.isArray(obj[key])) {
             visitArray(obj[key]);

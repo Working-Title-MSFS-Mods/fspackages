@@ -80,6 +80,7 @@ class CJ4_FMC_PerfInitPage {
         ]);
         fmc.onRightInput[0] = () => {
             let value = fmc.inOut;
+            value = value.replace(/^F(\d{1,3})/, "FL$1")
             if (fmc.setCruiseFlightLevelAndTemperature(value)) {
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
@@ -107,6 +108,14 @@ class CJ4_FMC_PerfInitPage {
             fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
+        fmc.onLeftInput[3] = () => {
+            if (fmc.inOut == FMCMainDisplay.clrValue){
+                fmc.clearUserInput();
+                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            }else {
+                fmc.showErrorMessage("INVALID");
+            }
+        };
 		fmc.onRightInput[2] = () => {
             let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
 			if (fmc.inOut == FMCMainDisplay.clrValue){
@@ -124,6 +133,14 @@ class CJ4_FMC_PerfInitPage {
             }
 			fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+        };
+        fmc.onRightInput[3] = () => {
+            if (fmc.inOut == FMCMainDisplay.clrValue){
+                fmc.clearUserInput();
+                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            }else {
+                fmc.showErrorMessage("INVALID");
+            }
         };
         fmc.onRightInput[4] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
@@ -202,4 +219,3 @@ class CJ4_FMC_PerfInitPage {
         fmc.updateSideButtonActiveStatus();
     }
 }
-//# sourceMappingURL=CJ4_FMC_PerfInitPage.js.map

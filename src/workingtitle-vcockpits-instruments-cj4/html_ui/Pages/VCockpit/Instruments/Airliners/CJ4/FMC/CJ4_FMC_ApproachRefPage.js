@@ -2,12 +2,12 @@ class CJ4_FMC_ApproachRefPage {
     static ShowPage1(fmc) { //APPROACH REF Page 1
         fmc.clearDisplay();
         let destinationIdent = "";
-        let destination = fmc.flightPlanManager.getDestination();
+        const destination = fmc.flightPlanManager.getDestination();
         if (destination) {
             destinationIdent = destination.ident;
         }
         let originIdent = "";
-        let origin = fmc.flightPlanManager.getOrigin();
+        const origin = fmc.flightPlanManager.getOrigin();
         if (origin) {
             originIdent = origin.ident;
         }
@@ -26,16 +26,14 @@ class CJ4_FMC_ApproachRefPage {
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number(arrRunway.length);
             runwayLoaded = true;
-        }
-        else if (fmc.vfrLandingRunway) {
+        } else if (fmc.vfrLandingRunway) {
             arrRunway = fmc.vfrLandingRunway;
             arrRunwayOutput = "RW" + Avionics.Utils.formatRunway(arrRunway.designation).trim();
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number(arrRunway.length);
             runwayLoaded = true;
-        }
-        else {
+        } else {
             arrRunwayOutput = "NO APPROACH RW";
             runwayLoaded = false;
         }
@@ -67,11 +65,10 @@ class CJ4_FMC_ApproachRefPage {
         let arrRunwayConditionActive = fmc.arrRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
 
-        let selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
+        const selAptValue = destinationIdent ? destinationIdent + "[green]/[white]" + originIdent + "[s-text]" : "----";
 
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
         const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.landingQnh.toFixed(2);
-
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
@@ -90,29 +87,26 @@ class CJ4_FMC_ApproachRefPage {
         ]);
 
         fmc.onRightInput[0] = () => {
-            let windIn = fmc.inOut.split("/");
+            const windIn = fmc.inOut.split("/");
             if (windIn.length == 2 && windIn[0] <= 360 && windIn[0] >= 0 && windIn[1] >= 0) {
                 fmc.landingWindDir = new Number(windIn[0]);
                 fmc.landingWindSpeed = new Number(windIn[1]);
                 fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
                 fmc.clearUserInput();
-            }
-            else {
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
 
         fmc.onRightInput[1] = () => {
-            let tempIn = fmc.inOut;
+            const tempIn = fmc.inOut;
             if (tempIn && isNaN(tempIn) || tempIn < -54 || tempIn > 54) {
                 fmc.showErrorMessage("INVALID");
-            }
-            else if (tempIn) {
+            } else if (tempIn) {
                 fmc.landingOat = tempIn;
                 fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
-            }
-            else {
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
@@ -120,25 +114,20 @@ class CJ4_FMC_ApproachRefPage {
         };
 
         fmc.onRightInput[2] = () => {
-            let qnhInput = Number(fmc.inOut);
+            const qnhInput = Number(fmc.inOut);
             if (!isNaN(qnhInput)) {
                 if (qnhInput > 28 && qnhInput < 32) {
                     fmc.landingQnh = qnhInput;
-                }
-                else if (qnhInput > 280 && qnhInput < 320) {
+                } else if (qnhInput > 280 && qnhInput < 320) {
                     fmc.landingQnh = qnhInput / 10;
-                }
-                else if (qnhInput > 2800 && qnhInput < 3200) {
+                } else if (qnhInput > 2800 && qnhInput < 3200) {
                     fmc.landingQnh = qnhInput / 100;
-                }
-                else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
+                } else if (qnhInput > 940 && qnhInput < 1090) { //parse hPA input
                     fmc.landingQnh = qnhInput / 33.864;
-                }
-                else {
+                } else {
                     fmc.showErrorMessage("INVALID");
                 }
-            }
-            else {
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
@@ -166,7 +155,7 @@ class CJ4_FMC_ApproachRefPage {
     }
     static ShowPage2(fmc) { //APPROACH REF Page 2
         fmc.clearDisplay();
-        let grossWeightValue = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
+        const grossWeightValue = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
         let arrRunwayDirection = "";
         let arrRunwayElevation = "";
         let arrRunwayLength = "";
@@ -179,8 +168,7 @@ class CJ4_FMC_ApproachRefPage {
             arrRunwayDirection = new Number(arrRunway.direction);
             arrRunwayElevation = new Number(arrRunway.elevation * 3.28);
             arrRunwayLength = new Number((arrRunway.length) * 3.28);
-        }
-        else if (fmc.vfrLandingRunway) {
+        } else if (fmc.vfrLandingRunway) {
             arrRunway = fmc.vfrLandingRunway;
             arrRunwayOutput = "RW" + Avionics.Utils.formatRunway(arrRunway.designation).trim();
             arrRunwayDirection = new Number(arrRunway.direction);
@@ -189,12 +177,12 @@ class CJ4_FMC_ApproachRefPage {
         }
 
         //ADDED FUEL FLOW
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+        const totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
         //ADDED CODE FROM PROG
-        let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+        const currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
 
         //default values
         let activeWaypointDist = 0;
@@ -204,40 +192,39 @@ class CJ4_FMC_ApproachRefPage {
         //destination data
         if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getNextActiveWaypoint()) {
             activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-            let destination = fmc.flightPlanManager.getDestination();
+            const destination = fmc.flightPlanManager.getDestination();
             destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+            const destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            const destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
             destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                 : destinationDistanceFlightplan;
-        }
-        else if (fmc.flightPlanManager.getDestination()) {
-            let destination = fmc.flightPlanManager.getDestination();
-            let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+        } else if (fmc.flightPlanManager.getDestination()) {
+            const destination = fmc.flightPlanManager.getDestination();
+            const destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
             destinationDistance = destinationDistanceDirect;
         }
 
         //END OF ADDED PROG CODE
 
-        let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
+        const eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
-        let fuelBurn = eteToDestination * totalFuelFlow;
-        let ldgWt = grossWeightValue - fuelBurn;
+        const fuelBurn = eteToDestination * totalFuelFlow;
+        const ldgWt = grossWeightValue - fuelBurn;
 
         let vRef = ((ldgWt - 10500) * .00393) + 92; //V Speeds based on weight at 0C
         let vApp = ((ldgWt - 10500) * .00408) + 98;
         let ldgFieldLength = ((ldgWt - 10500) * .126) + 2180; // Sea level base value for a given weight
 
         if (ldgWt <= 13500) {
-            let ldgFieldAltFactor = ((13500 - ldgWt) * .000005) + .0825; //Gets factor value for rate of change based on weight
+            const ldgFieldAltFactor = ((13500 - ldgWt) * .000005) + .0825; //Gets factor value for rate of change based on weight
             ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);//Gets landing distance for a given altitude and added to the sea level value
         }
         if (ldgWt >= 14000 && ldgWt <= 14500) {
-            let ldgFieldAltFactor = ((14500 - ldgWt) * .0000632) + .1175;
+            const ldgFieldAltFactor = ((14500 - ldgWt) * .0000632) + .1175;
             ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);
         }
         if (ldgWt >= 15000 && ldgWt <= 15660) {
-            let ldgFieldAltFactor = ((15660 - ldgWt) * .000205) + .1991;
+            const ldgFieldAltFactor = ((15660 - ldgWt) * .000205) + .1991;
             ldgFieldLength = ldgFieldLength + (fmc.landingPressAlt * ldgFieldAltFactor);
         }
         if (fmc.landingOat > 0) { //Takes the basic length and adds or subtracts distance based on weight and temperature difference from 15C.  Does not account for Pressure altitude yet
@@ -248,12 +235,12 @@ class CJ4_FMC_ApproachRefPage {
         }
 
         if (fmc.landingWindDir != "---" && arrRunway != "") {
-            let headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
+            const headwind = Math.trunc(fmc.landingWindSpeed * (Math.cos((arrRunwayDirection * Math.PI / 180) - (fmc.landingWindDir * Math.PI / 180))));
             if (headwind > 0) {
-                let headwindFactor = (fmc.landingPressAlt * .00683) + 15;
+                const headwindFactor = (fmc.landingPressAlt * .00683) + 15;
                 ldgFieldLength = ldgFieldLength - (headwind * headwindFactor);
             } else {
-                let tailWindFactor = (fmc.landingPressAlt * .01608) + 55;
+                const tailWindFactor = (fmc.landingPressAlt * .01608) + 55;
                 ldgFieldLength = ldgFieldLength - (headwind * tailWindFactor);
             }
         }
@@ -265,8 +252,7 @@ class CJ4_FMC_ApproachRefPage {
         let vspeedSendMsg = "";
         if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
             vspeedSendMsg = "IN PROGRESS";
-        }
-        else if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT) {
+        } else if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.SENT) {
             vspeedSendMsg = "COMPLETE";
         }
         let vspeedColor = "";
@@ -296,7 +282,7 @@ class CJ4_FMC_ApproachRefPage {
             ["OFF[green]/[white]ON[s-text]"],
             ["", "V[d-text blue]REF:[s-text blue] " + formatNumber(vRef) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + formatNumber(vApp) + "[s-text + " + vspeedColor + "]"],
+            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + Math.ceil(vApp) + "[s-text + " + vspeedColor + "]"],
             [ldgWtText + "/" + grossWeightText + "[s-text]"],
             [" LFL/" + arrRunwayOutput + "[blue]"],
             [landingDistText + "/" + arrRunwayLengthText + "[s-text]"],
@@ -323,21 +309,25 @@ class CJ4_FMC_ApproachRefPage {
             };
         }
 
-        fmc.onPrevPage = () => { CJ4_FMC_ApproachRefPage.ShowPage1(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_ApproachRefPage.ShowPage3(fmc); };
+        fmc.onPrevPage = () => {
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+        };
+        fmc.onNextPage = () => {
+            CJ4_FMC_ApproachRefPage.ShowPage3(fmc);
+        };
         fmc.updateSideButtonActiveStatus();
     }
 
     static ShowPage3(fmc) { //APPROACH REF Page 3
         fmc.clearDisplay();
 
-        let grossWeightValue = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
+        const grossWeightValue = SimVar.GetSimVarValue("TOTAL WEIGHT", "kg") * 2.205;
 
-        let totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
+        const totalFuelFlow = Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour"))
             + Math.round(SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour"));
 
-        let currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
-        let groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
+        const currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+        const groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
 
         let activeWaypointDist = 0;
         let destinationIdent = "";
@@ -346,22 +336,21 @@ class CJ4_FMC_ApproachRefPage {
         //destination data
         if (fmc.flightPlanManager.getDestination() && fmc.flightPlanManager.getActiveWaypoint() && fmc.flightPlanManager.getNextActiveWaypoint()) {
             activeWaypointDist = new Number(fmc.flightPlanManager.getDistanceToActiveWaypoint());
-            let destination = fmc.flightPlanManager.getDestination();
+            const destination = fmc.flightPlanManager.getDestination();
             destinationIdent = new String(fmc.flightPlanManager.getDestination().ident);
-            let destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
-            let destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
+            const destinationDistanceDirect = new Number(activeWaypointDist + Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+            const destinationDistanceFlightplan = new Number(destination.cumulativeDistanceInFP - fmc.flightPlanManager.getNextActiveWaypoint().cumulativeDistanceInFP + activeWaypointDist);
             destinationDistance = destinationDistanceDirect > destinationDistanceFlightplan ? destinationDistanceDirect
                 : destinationDistanceFlightplan;
-        }
-        else if (fmc.flightPlanManager.getDestination()) {
-            let destination = fmc.flightPlanManager.getDestination();
-            let destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
+        } else if (fmc.flightPlanManager.getDestination()) {
+            const destination = fmc.flightPlanManager.getDestination();
+            const destinationDistanceDirect = new Number(Avionics.Utils.computeDistance(currPos, destination.infos.coordinates));
             destinationDistance = destinationDistanceDirect;
         }
-        let eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
+        const eteToDestination = destinationDistance && groundSpeed > 0 ? (destinationDistance / groundSpeed)
             : 0;
-        let fuelBurn = eteToDestination * totalFuelFlow;
-        let ldgWt = grossWeightValue - fuelBurn;
+        const fuelBurn = eteToDestination * totalFuelFlow;
+        const ldgWt = grossWeightValue - fuelBurn;
 
         const ldgWtText = ldgWt < 10300 ? "-----"
             : WT_ConvertUnit.getWeight(ldgWt, "", "").getString(0, "") + (ldgWt > 15660 ? "[yellow]" : "");
@@ -385,8 +374,12 @@ class CJ4_FMC_ApproachRefPage {
             [""],
             [""]
         ]);
-        fmc.onPrevPage = () => { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_ApproachRefPage.ShowPage1(fmc); };
+        fmc.onPrevPage = () => {
+            CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
+        };
+        fmc.onNextPage = () => {
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+        };
         fmc.updateSideButtonActiveStatus();
     }
 }

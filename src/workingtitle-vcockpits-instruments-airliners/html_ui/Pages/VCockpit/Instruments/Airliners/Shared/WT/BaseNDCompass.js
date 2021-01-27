@@ -147,6 +147,13 @@ class Jet_NDCompass extends HTMLElement {
                 this._navigationMode = Jet_NDCompass_Navigation.NONE;
             }
         }
+
+        try {
+            this.navPreset = new NavPresetElement(document.querySelector('#NavPreset .preset-info'));
+            this.navTransferTuning = new NavTransferTuningElement(document.querySelector('#NavPreset .preset-tuning'));
+        }
+        catch (err) { }
+
         this.construct();
     }
     init() {
@@ -423,6 +430,10 @@ class Jet_NDCompass extends HTMLElement {
         }
     }
     updateNavigationInfo() {
+        if (this.navPreset) {
+            this.navPreset.update();
+        }
+        
         if (this.courseGroup && this.displayMode !== Jet_NDCompass_Display.PLAN) {
             if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 const waypointName = Simplane.getNextWaypointName();
@@ -489,6 +500,12 @@ class Jet_NDCompass extends HTMLElement {
                 if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode === Jet_NDCompass_Navigation.VOR) {
                     let beacon;
                     this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                    if (this.navTransferTuning && this.navPreset) {
+                        this.navTransferTuning.setDisplayed(false);
+                        this.navPreset.setDisplayed(true);
+                    }
+
                     if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                         beacon = this.gps.radioNav.getBestILSBeacon();
                     }
@@ -523,10 +540,10 @@ class Jet_NDCompass extends HTMLElement {
                     displayCourseDeviation = true;
                     let crossTrack = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
                     const sensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
-                    let deviation = -(crossTrack / 2);
+                    let deviation = -(crossTrack);
 
                     if (sensitivity === 0) {
-                        deviation = deviation * 2;
+                        deviation = deviation / 2;
                     }
                     else if (sensitivity > 2) {
                         deviation = deviation / 0.3;
@@ -550,6 +567,11 @@ class Jet_NDCompass extends HTMLElement {
 
                         let course = SimVar.GetSimVarValue("NAV LOCALIZER:1", "degree");
 
+                        let frequency = SimVar.GetSimVarValue('NAV ACTIVE FREQUENCY:1', 'MHz');
+                        if (this.navTransferTuning) {
+                            this.navTransferTuning.setFrequency(frequency);
+                        }
+
                         let deviation = (SimVar.GetSimVarValue("NAV CDI:1", "number") / 127);
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
@@ -557,17 +579,32 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
-                        const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-                        if (navSensitivity == 1) {
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        if (navToNavTransferState === 2 || navToNavTransferState === 3) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
+
+                            if (this.navTransferTuning && this.navPreset) {
+                                this.navTransferTuning.setDisplayed(true);
+                                this.navPreset.setDisplayed(false);
+                            }
                         } else {
                             this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                            if (this.navTransferTuning && this.navPreset) {
+                                this.navTransferTuning.setDisplayed(false);
+                                this.navPreset.setDisplayed(true);
+                            }
                         }
                     }
                     else {
                         this.setAttribute("ghost_needle_course", compass.toString());
                         this.setAttribute("ghost_needle_deviation", "0");
                         this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                        if (this.navTransferTuning && this.navPreset) {
+                            this.navTransferTuning.setDisplayed(false);
+                            this.navPreset.setDisplayed(true);
+                        }
                     }
                 } 
                 this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");

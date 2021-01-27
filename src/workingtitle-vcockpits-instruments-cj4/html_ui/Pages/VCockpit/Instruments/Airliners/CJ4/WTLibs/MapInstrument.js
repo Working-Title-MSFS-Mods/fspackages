@@ -145,27 +145,27 @@ class MapInstrument extends ISvgMapRootElement {
     }
     get dummyObstacles() {
         if (!this._dummyObstacles) {
-            let obstacleA = new SvgObstacleElement("high-voltage-pyl");
+            const obstacleA = new SvgObstacleElement("high-voltage-pyl");
             obstacleA.lat = 47.349613;
             obstacleA.long = -122.123143;
             obstacleA.alt = 328;
-            let obstacleB = new SvgObstacleElement("radio-tower");
+            const obstacleB = new SvgObstacleElement("radio-tower");
             obstacleB.lat = 47.277525;
             obstacleB.long = -122.291616;
             obstacleB.alt = 426;
-            let obstacleC = new SvgObstacleElement("radio-tower");
+            const obstacleC = new SvgObstacleElement("radio-tower");
             obstacleC.lat = 47.263344;
             obstacleC.long = -122.348211;
             obstacleC.alt = 393;
-            let obstacleD = new SvgObstacleElement("maybe-tree");
+            const obstacleD = new SvgObstacleElement("maybe-tree");
             obstacleD.lat = 47.426000;
             obstacleD.long = -122.436833;
             obstacleD.alt = 196;
-            let obstacleE = new SvgObstacleElement("space-needle");
+            const obstacleE = new SvgObstacleElement("space-needle");
             obstacleE.lat = 47.620402;
             obstacleE.long = -122.349301;
             obstacleE.alt = 603;
-            let obstacleF = new SvgObstacleElement("university-of-washington-tower");
+            const obstacleF = new SvgObstacleElement("university-of-washington-tower");
             obstacleF.lat = 47.660527;
             obstacleF.long = -122.314670;
             obstacleF.alt = 325;
@@ -192,7 +192,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.configPath = this.getAttribute("config-path");
         }
         for (let i = 0; i < MapInstrument.observedAttributes.length; i++) {
-            let attr = MapInstrument.observedAttributes[i];
+            const attr = MapInstrument.observedAttributes[i];
             if (this.hasAttribute(attr)) {
                 this.attributeChangedCallback(attr, null, this.getAttribute(attr));
             }
@@ -224,7 +224,7 @@ class MapInstrument extends ISvgMapRootElement {
         ];
     }
     attributeChangedCallback(name, oldValue, newValue) {
-        let lowercaseName = name.toLowerCase();
+        const lowercaseName = name.toLowerCase();
         if (lowercaseName == "bing-mode") {
             var attr = newValue.toLowerCase();
             if (attr === "vfr") {
@@ -583,21 +583,21 @@ class MapInstrument extends ISvgMapRootElement {
             }
             if (this.drawCounter === 45 || (this.showConstraints && (!this.constraints || this.constraints.length === 0))) {
                 if (this.showConstraints) {
-                    let wpWithConstraints = this.flightPlanManager.getWaypointsWithAltitudeConstraints();
+                    const wpWithConstraints = this.flightPlanManager.getWaypointsWithAltitudeConstraints();
                     this.constraints = [];
                     for (let i = 0; i < wpWithConstraints.length; i++) {
-                        let svgConstraint = new SvgConstraintElement(wpWithConstraints[i]);
+                        const svgConstraint = new SvgConstraintElement(wpWithConstraints[i]);
                         this.constraints.push(svgConstraint);
                     }
                 }
             }
-            let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-            let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+            const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+            const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
             let planeLla;
             let needCenterOnPlane = false;
             if (lat && long && isFinite(lat) && isFinite(long)) {
                 planeLla = new LatLongAlt(lat, long);
-                let unsmoothedMove = this.navMap.setPlaneCoordinates(lat, long, 0.95);
+                const unsmoothedMove = this.navMap.setPlaneCoordinates(lat, long, 0.95);
                 if (unsmoothedMove) {
                     console.warn("Plane appears to have been teleported. FlightPlan active Waypoint index recalculated.");
                     this.flightPlanManager.recomputeActiveWaypointIndex();
@@ -605,10 +605,10 @@ class MapInstrument extends ISvgMapRootElement {
                 if (this.eBingMode === EBingMode.PLANE) {
                     needCenterOnPlane = true;
                     if (this.bEnableCenterOnFplnWaypoint) {
-                        let airlinerMcduCurrentFplnWaypointIndex = SimVar.GetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number");
+                        const airlinerMcduCurrentFplnWaypointIndex = SimVar.GetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number");
                         if (airlinerMcduCurrentFplnWaypointIndex >= 0) {
                             if (this.flightPlanManager) {
-                                let airlinerMcduCurrentFplnWaypoint = this.flightPlanManager.getWaypoint(airlinerMcduCurrentFplnWaypointIndex, NaN, true);
+                                const airlinerMcduCurrentFplnWaypoint = this.flightPlanManager.getWaypoint(airlinerMcduCurrentFplnWaypointIndex, NaN, true);
                                 if (airlinerMcduCurrentFplnWaypoint && airlinerMcduCurrentFplnWaypoint.infos.coordinates) {
                                     this.setNavMapCenter(airlinerMcduCurrentFplnWaypoint.infos.coordinates);
                                     needCenterOnPlane = false;
@@ -636,7 +636,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.scrollDisp.x = 0;
             this.scrollDisp.y = 0;
             if (this.bingMap) {
-                let rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
+                const rangeTarget = this.getDisplayRange() * 1000 / Math.abs(this.rangeDefinition.getRangeDefinition(this.rangeDefinitionContext));
                 this.navMap.setRange(rangeTarget);
                 var bingRadius = this.navMap.NMWidth * 0.5 * this.rangeFactor * this.overdrawFactor; // MOD: Need to expand map range to compensate for overdraw
                 if (!this.isDisplayingWeather())
@@ -645,7 +645,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.bingMap.setParams({ lla: this.navMap.lastCenterCoordinates, radius: bingRadius });
             }
             if (typeof CJ4_MFD === 'function' && planeLla && (this.drawCounter % 2 === 1)) {
-                let centerCoordinates = planeLla;
+                const centerCoordinates = planeLla;
                 if (this.showAirports) {
                     this.airportLoader.searchLat = centerCoordinates.lat;
                     this.airportLoader.searchLong = centerCoordinates.long;
@@ -751,7 +751,7 @@ class MapInstrument extends ISvgMapRootElement {
                     }
 
                     if (this.flightPlanManager && this.bIsFlightPlanVisible) {
-                        let l = this.flightPlanManager.getWaypointsCount(0);
+                        const l = this.flightPlanManager.getWaypointsCount(0);
                         if (l > 1) {
 
                             this.navMap.mapElements.push(this.flightPlanElement);
@@ -760,7 +760,7 @@ class MapInstrument extends ISvgMapRootElement {
 
                         if (SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 1) {
                             this.navMap.mapElements.push(this.tmpFlightPlanElement);
-                            let lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
+                            const lTmpFlightPlan = this.flightPlanManager.getWaypointsCount(1);
                             if (lTmpFlightPlan > 1) {
                                 this.updateFplnWaypoints(1);
                             }
@@ -792,11 +792,11 @@ class MapInstrument extends ISvgMapRootElement {
                         }
                     }
 
-                    let margin = 0.05;
-                    let maxElements = WTDataStore.get("WT_CJ4_MaxMapSymbols", 40);
+                    const margin = 0.05;
+                    const maxElements = WTDataStore.get("WT_CJ4_MaxMapSymbols", 40);
                     if (this.showVORs) {
                         for (let i = 0; i < this.vorLoader.waypoints.length; i++) {
-                            let vor = this.vorLoader.waypoints[i];
+                            const vor = this.vorLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(vor.infos.coordinates, margin)) {
                                 if (vor.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
@@ -810,7 +810,7 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                     if (this.showIntersections && (this.rangeIndex < this.intersectionMaxRange)) {
                         for (let i = 0; i < this.intersectionLoader.waypoints.length; i++) {
-                            let intersection = this.intersectionLoader.waypoints[i];
+                            const intersection = this.intersectionLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
                                 if (intersection.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
@@ -824,7 +824,7 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                     if (this.showNDBs && (this.rangeIndex < this.ndbMaxRange)) {
                         for (let i = 0; i < this.ndbLoader.waypoints.length; i++) {
-                            let ndb = this.ndbLoader.waypoints[i];
+                            const ndb = this.ndbLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(ndb.infos.coordinates, margin)) {
                                 if (ndb.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
@@ -838,7 +838,7 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                     if (this.showAirports) {
                         for (let i = 0; i < this.airportLoader.waypoints.length; i++) {
-                            let airport = this.airportLoader.waypoints[i];
+                            const airport = this.airportLoader.waypoints[i];
                             if (airport && airport.infos instanceof AirportInfo) {
                                 if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(airport.infos.coordinates, margin)) {
                                     if (airport.getSvgElement(this.navMap.index)) {
@@ -854,7 +854,7 @@ class MapInstrument extends ISvgMapRootElement {
                     }
                     if (this.showTermWpts && (this.rangeIndex < this.termWptsMaxRange)) {
                         for (let i = 0; i < this.termWptsLoader.waypoints.length; i++) {
-                            let intersection = this.termWptsLoader.waypoints[i];
+                            const intersection = this.termWptsLoader.waypoints[i];
                             if (this._displayMapElements.length < maxElements && this.navMap.isLatLongInFrame(intersection.infos.coordinates, margin)) {
                                 if (intersection.getSvgElement(this.navMap.index)) {
                                     if (!this.navMap.mapElements.find(w => {
@@ -870,7 +870,7 @@ class MapInstrument extends ISvgMapRootElement {
                     this.updateDisplayMapElements();
 
                     if (this.showCities) {
-                        for (let city of this.cityManager.displayedCities) {
+                        for (const city of this.cityManager.displayedCities) {
                             if (this.getDeclutteredRange() <= this.cityMaxRanges[city.size]) {
                                 this.navMap.mapElements.push(city);
                             }
@@ -925,10 +925,28 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateFplnWaypoints(fplnIdx = 0) {
-        let l = this.flightPlanManager.getWaypointsCount(fplnIdx);
+        const plan = this.flightPlanManager.getFlightPlan(fplnIdx);
+
+        const missedSegment = plan.getSegment(SegmentType.Missed);
+        const approachSegment = plan.getSegment(SegmentType.Approach);
+
+        const activeIndex = plan.activeWaypointIndex;
+        const drawDestination = approachSegment.waypoints.length === 0;
+        const drawMissedSegment = missedSegment.waypoints.length > 0 && activeIndex >= missedSegment.offset;
+
+        const l = plan.waypoints.length;
+        let waypointsToDraw = l - (missedSegment.waypoints.length + 1);
+        if (drawMissedSegment) {
+            waypointsToDraw += missedSegment.waypoints.length;
+        }
+
+        if (drawDestination) {
+            waypointsToDraw++;
+        }
+
         if (l > 1) {
-            for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < l; i++) {
-                let waypoint = this.flightPlanManager.getWaypoint(i, fplnIdx);
+            for (let i = Math.max(0, this.flightPlanManager.getActiveWaypointIndex() - 1); i < waypointsToDraw; i++) {
+                const waypoint = this.flightPlanManager.getWaypoint(i, fplnIdx);
                 if (waypoint && waypoint.ident !== "" && waypoint.ident !== "USER" && waypoint.ident !== "POI" && this.navMap.isLatLongInFrame(waypoint.infos.coordinates, 0.1)) {
                     if (waypoint.getSvgElement(this.navMap.index)) {
                         if (!this.navMap.mapElements.find(w => {
@@ -971,18 +989,18 @@ class MapInstrument extends ISvgMapRootElement {
         }
     }
     updateDisplayMapElements() {
-        let l = this._displayMapElements.length;
+        const l = this._displayMapElements.length;
         if (l > 0) {
-            let maxElements = Math.min(WTDataStore.get("WT_CJ4_MaxMapSymbols", 40), l);
+            const maxElements = Math.min(WTDataStore.get("WT_CJ4_MaxMapSymbols", 40), l);
             this.navMap.mapElements.push(...this._displayMapElements.slice(0, maxElements));
         }
     }
     loadBingMapConfig() {
         if (this.eBingMode !== EBingMode.HORIZON) {
-            let setConfig = () => {
+            const setConfig = () => {
                 if (this.navMap.configLoaded) {
                     for (let i = 0; i < 3; i++) {
-                        let conf = this.navMap.config.generateBing(i);
+                        const conf = this.navMap.config.generateBing(i);
                         if (conf)
                             this.bingMap.addConfig(conf);
                     }
@@ -997,7 +1015,7 @@ class MapInstrument extends ISvgMapRootElement {
         else {
             var svgConfig = null;
             var svgConfigLoaded = false;
-            let loadSVGConfig = () => {
+            const loadSVGConfig = () => {
                 if (typeof (SvgMapConfig) !== "undefined") {
                     svgConfig = new SvgMapConfig();
                     svgConfig.load(this.configPath, () => {
@@ -1009,10 +1027,10 @@ class MapInstrument extends ISvgMapRootElement {
                 }
             };
             loadSVGConfig();
-            let setBingConfig = () => {
+            const setBingConfig = () => {
                 if (svgConfigLoaded && this.instrument.isComputingAspectRatio()) {
                     for (let i = 0; i < 3; i++) {
-                        let conf = svgConfig.generateBing(i);
+                        const conf = svgConfig.generateBing(i);
                         if (conf) {
                             conf.aspectRatio = (this.instrument.isAspectRatioForced()) ? this.instrument.getForcedScreenRatio() : 1.0;
                             this.bingMap.addConfig(conf);
@@ -1038,7 +1056,7 @@ class MapInstrument extends ISvgMapRootElement {
         // Adapt code to new range display formatting
         if (this.mapRangeElement) {
             if (this.showRangeDisplay) {
-                let currentRange = this.getDisplayRange();
+                const currentRange = this.getDisplayRange();
                 if (this.rangeValue != currentRange) {
                     Avionics.Utils.diffAndSet(this.mapRangeElementRange, MapInstrument.getFormattedRangeDisplayText(currentRange));
                     this.rangeValue = currentRange;
@@ -1210,8 +1228,8 @@ class MapInstrument extends ISvgMapRootElement {
             }
         }
         if (this.eBingMode === EBingMode.CURSOR) {
-            let cursorSpeed = 2;
-            let mapSpeed = 4;
+            const cursorSpeed = 2;
+            const mapSpeed = 4;
             switch (_event) {
                 case "PanLeft":
                 case "JOYSTICK_LEFT":
@@ -1258,10 +1276,10 @@ class MapInstrument extends ISvgMapRootElement {
     }
     onBackOnTrack(_lat, _long) {
         let bot;
-        let previousBot = this.backOnTracks[this.backOnTracks.length - 1];
+        const previousBot = this.backOnTracks[this.backOnTracks.length - 1];
         if (previousBot) {
-            let dLat = Math.abs(previousBot.llaRequested.lat - _lat);
-            let dLon = Math.abs(previousBot.llaRequested.long - _long);
+            const dLat = Math.abs(previousBot.llaRequested.lat - _lat);
+            const dLon = Math.abs(previousBot.llaRequested.long - _long);
             if (dLat < 0.5 / 60 && dLon < 0.5 / 60) {
                 bot = previousBot;
             }
@@ -1290,10 +1308,10 @@ class MapInstrument extends ISvgMapRootElement {
 
     centerOnPlane() {
         // MOD: allow for arbitrary placement of plane
-        let r_x = Math.min(this.navMap.aspectRatio, 1);
-        let r_y = Math.min(1 / this.navMap.aspectRatio, 1);
-        let posX = 500 * (1 - r_x) + 1000 * (1 - this.planeTrackedPosX) * r_x;
-        let posY = 500 * (1 - r_y) + 1000 * (1 - this.planeTrackedPosY) * r_y;
+        const r_x = Math.min(this.navMap.aspectRatio, 1);
+        const r_y = Math.min(1 / this.navMap.aspectRatio, 1);
+        const posX = 500 * (1 - r_x) + 1000 * (1 - this.planeTrackedPosX) * r_x;
+        const posY = 500 * (1 - r_y) + 1000 * (1 - this.planeTrackedPosY) * r_y;
         this.setNavMapCenter(this.navMap.XYToCoordinatesFromPlaneWithRotation(new Vec2(posX, posY)));
     }
 
@@ -1354,8 +1372,8 @@ class MapInstrument extends ISvgMapRootElement {
         return this.weatherRanges[this.weatherRanges.length - 1];
     }
     updateBingMapSize() {
-        let w = this.curWidth;
-        let h = this.curHeight;
+        const w = this.curWidth;
+        const h = this.curHeight;
         let max = Math.max(w, h);
 
         // to compensate for potential rotation, we need to overdraw the map
@@ -1520,16 +1538,16 @@ class MapInstrument extends ISvgMapRootElement {
     scrollMap(_dispX, _dispY) {
         if (this.navMap.lastCenterCoordinates) {
             // MOD: Adjust for map rotation
-            let hdg = -this.rotation;
-            let hdgRad = hdg * Avionics.Utils.DEG2RAD;
-            let newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
-            let newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
+            const hdg = -this.rotation;
+            const hdgRad = hdg * Avionics.Utils.DEG2RAD;
+            const newX = _dispX * Math.cos(hdgRad) - _dispY * Math.sin(hdgRad);
+            const newY = _dispY * Math.cos(hdgRad) + _dispX * Math.sin(hdgRad);
             _dispX = newX;
             _dispY = newY;
             var scaleFactor = parseInt(window.getComputedStyle(this).height) / 1000;
-            let long = -_dispX * this.navMap.angularWidth / (1000 * scaleFactor);
-            let lat = _dispY * this.navMap.angularHeight / (1000 * scaleFactor);
-            let newCoordinates = new LatLongAlt(this.navMap.lastCenterCoordinates);
+            const long = -_dispX * this.navMap.angularWidth / (1000 * scaleFactor);
+            const lat = _dispY * this.navMap.angularHeight / (1000 * scaleFactor);
+            const newCoordinates = new LatLongAlt(this.navMap.lastCenterCoordinates);
             newCoordinates.long += long;
             newCoordinates.lat += lat;
             if (newCoordinates.long > 180) {

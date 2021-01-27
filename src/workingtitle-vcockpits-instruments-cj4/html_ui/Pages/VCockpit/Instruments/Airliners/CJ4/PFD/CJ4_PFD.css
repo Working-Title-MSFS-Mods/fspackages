@@ -19,14 +19,15 @@
 }
 
 @keyframes blink {
-  50% {
-    opacity: 0.0;
-  }
+    50% {
+        opacity: 0.0;
+    }
 }
+
 @-webkit-keyframes blink {
-  50% {
-    opacity: 0.0;
-  }
+    50% {
+        opacity: 0.0;
+    }
 }
 
 html {
@@ -91,8 +92,8 @@ html body {
 }
 
 .blinking {
-  animation: blink 0.5s step-start 0s infinite;
-  -webkit-animation: blink 0.5s step-start 0s infinite;
+    animation: blink 1.0s step-start 0s infinite;
+    -webkit-animation: blink 1.0s step-start 0s infinite;
 }
 
 svg text {
@@ -228,6 +229,20 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos {
     left: calc(50% - 20vh);
 }
 
+.fmaValue{
+    position: relative;
+    padding: 0 2px;
+}
+
+.fail.fmaValue::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 100%;
+    border-bottom: 3.5px solid #FFE133;
+}
+
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #AutopilotBg {
     top: 0;
     left: 0;
@@ -240,29 +255,49 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos #Autopilot
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left {
     position: absolute;
-    width: 24%;
+    width: 45%;
     height: 100%;
     left: 0%;
     top: 0%;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #apprActiveField {
     position: absolute;
     width: 100%;
     color: green;
     font-size: 1.5vh;
     top: 8%;
-    right: -85%;
-    text-align: center;
+    left: 8%;
+    display: none
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralArmed {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #lateralActiveField {
+    position: absolute;
+    color: green;
+    font-size: 1.5vh;
+    top: 8%;
+    left: 0%;
+    width: 90%;
+    text-align: right;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #fdSyncField {
     position: absolute;
     width: 100%;
     color: white;
     font-size: 1.25vh;
     bottom: 8%;
-    text-align: center;
+    left: 3%;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #lateralArmField {
+    position: absolute;
+    width: 90%;
+    color: white;
+    font-size: 1.25vh;
+    bottom: 8%;
+    left: 0;
+    text-align: right;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center {
@@ -273,42 +308,56 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center {
     top: 0%;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_Status {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #ap_ydEngageField {
     position: absolute;
-    width: 50%;
+    width: 100%;
     color: green;
     font-size: 1.5vh;
     top: 8%;
-    left: 75%;
+    left: 50%;
     text-align: center;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow {
     position: absolute;
-    width: 50%;
-    color: green;
-    font-size: 1.5vh;
-    top: 8%;
-    right: 0%;
-    text-align: center;
-}
-
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow {
-    position: absolute;
-    width: 30%;
-    left: 82%;
+    width: 42%;
+    left: 77%;
     bottom: 0;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Inactive] {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow[state=Inactive] {
     display: none;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow polygon{
-  fill: white; }
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow path{
+    fill: white; }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Engaged] polygon{
-  fill: #11d011; }
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow polyline{
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: "round";
+    stroke: white;
+    display: none;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow.both polyline{
+    display: block;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow #rotationGroup {
+    transform: rotate(0deg);
+}
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow.right #rotationGroup {
+    transform: rotate(180deg);
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow[state=Engaged] path{
+    fill: #11d011;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #fdIndicatorArrow[state=Engaged] polyline{
+  stroke: #11d011;
+}
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
     width: 52%;
@@ -318,7 +367,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right {
     top: 0%;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalActiveField {
     position: absolute;
     width: 80%;
     color: white;
@@ -328,7 +377,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP
     text-align: left;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField {
     position: absolute;
     width: 62%;
     color: cyan;
@@ -338,24 +387,24 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP
     text-align: left;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField_Icon {
     display: none;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon #Speedbug {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField_Icon #Speedbug {
     width: 20%;
     margin-left: 2%;
     margin-right: -7%;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference_Icon #Speedbug path {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField_Icon #Speedbug path {
     fill: transparent;
     stroke: cyan;
     stroke-width: 2;
     stroke-linecap: round;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_Armed {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArmField {
     position: absolute;
     width: 50%;
     color: white;
@@ -365,14 +414,25 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP
     text-align: center;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ArmedReference {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #vnavArmField {
+    position: absolute;
+    width: 30%;
+    color: white;
+    font-size: 1.25vh;
+    bottom: 8%;
+    right:25%;
+    text-align: center;
+    overflow-y: hidden
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #approachVerticalArmField {
     position: absolute;
     width: 50%;
     color: white;
     font-size: 1.25vh;
     bottom: 8%;
-    right: 0%;
-    text-align: center;
+    right: 8%;
+    text-align: right;
 }
 
 cj4-pfd-element #Mainframe #PFD[visible=false] {
@@ -650,7 +710,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     text-anchor: end;
 }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids svg {
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids .bearing-pointer svg {
     width: 100%;
     height: 100%;
 }
@@ -670,14 +730,12 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #VORDMENavaid_Ri
 }
 
 #VORDMENavaids {
-    font-size: 28px;
+    font-size: 22px;
     position: absolute;
-    top: 400px;
-    top: 320px;
-    height: 200px;
+    top: 408px;
+    height: 210px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
@@ -686,7 +744,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols {
-    top: 85%;
+    top: 72%;
     left: 87%;
     width: 11%;
     height: 5%;
@@ -707,37 +765,28 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols text {
     text-anchor: end;
 }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime {
-    bottom: 5%;
-    left: 3.45%;
-    width: 15%;
-    height: 5%;
-    position: absolute;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime svg {
-    width: 100%;
-    height: 100%;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text {
-    width: 100%;
-    height: 100%;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Title {
-    font-size: 18px;
-    fill: white;
-}
-
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #ElapsedTime text.Value {
-    font-size: 18px;
-    fill: #11d011;
-    text-anchor: start;
-}
 
 cj4-pfd-element #Mainframe #NDMapOverlay[extended=on] {
     top: 35%;
+}
+
+cj4-pfd-element #Mainframe #ElapsedTime {
+    transform: rotateX(0);
+    position: absolute;
+    background-color: black;
+    width: 25%;
+    height: 3%;
+    bottom: 6.7%;
+    left: 1.2%
+}
+
+cj4-pfd-element #Mainframe #ElapsedTime #ET {
+    font-size: calc(2 * 1vh * var(--bodyHeightScale));
+    padding-right: 2%
+}
+
+cj4-pfd-element #Mainframe #ElapsedTime #ET_Value {
+    font-size: calc(2.3 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar {
@@ -751,7 +800,7 @@ cj4-pfd-element #Mainframe #NavBar {
 
 cj4-pfd-element #Mainframe #NavBar #Coms {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;;
     width: 100%;
     height: 100%;
 }
@@ -761,10 +810,18 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Com2,
 cj4-pfd-element #Mainframe #NavBar #Coms #Atc1,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    font-size: calc(2 * 1vh * var(--bodyHeightScale));
+}
+
+cj4-pfd-element #Mainframe #NavBar #Coms #Com1{
+    padding-left: 1.2%
+}
+
+cj4-pfd-element #Mainframe #NavBar #Coms #Utc{
+    padding-right: 0.5%
 }
 
 cj4-pfd-element #Mainframe #NavBar #Coms #Com1_Value,
@@ -773,7 +830,7 @@ cj4-pfd-element #Mainframe #NavBar #Coms #Atc1_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Utc_Value,
 cj4-pfd-element #Mainframe #NavBar #Coms #Rat_Unit {
-    font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+    font-size: calc(2.3 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Mainframe #NavBar #Cabs {
@@ -865,6 +922,7 @@ cj4-pfd-element #Mainframe #PopupMenu svg {
 }
 
 #Approach,
+#ElapsedTime .Modifiable,
 #Coms div.Modifiable {
     color: #11d011 !important;
 }
@@ -893,17 +951,19 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox #Speed {
     fill: #11d011;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_Status,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #apprActiveField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #lateralActiveField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Center #ap_ydEngageField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalActiveField {
     color: #11d011 !important;
     font-size: 22px
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #AP_LateralArmed,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_Armed,
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #AP_ArmedReference {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #fdSyncField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Left #lateralArmField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArmField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #vnavArmField,
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #approachVerticalArmField {
     font-size: 22px;
     margin-bottom: -6px;
 }
@@ -956,26 +1016,32 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 .bearing-block-arrow {
-    width: 25px;
+    width: 18px;
     padding-top: 8px;
+    padding-left: 4px;
     float: left;
+    position: relative;
+    top: -10px;
 }
 
 .bearing-block-dist {
+    width: 45px;
     float: left;
+    margin-left: 6px;
+    line-height: 22px;
 }
 
 .bearing-pointer.arc {
     position: absolute;
     left: 86px;
-    top: -268px;
+    top: -355px;
     width: 600px;
 }
 
 .bearing-pointer.rose {
     position: absolute;
     left: 156px;
-    top: -260px;
+    top: -355px;
     width: 460px;
     stroke-width: 1.4;
 }
@@ -985,13 +1051,12 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     transition: transform .1s ease-in;
 }
 
-#VORDMENavaid_Left #ID,
-#VORDMENavaid_Right #ID {
-    padding-left: 4px;
+#VSpeeds text {
+    font-size: 31px;
 }
 
-#VSpeeds text {
-    font-size: 22px;
+#VSpeeds text.subscript-vspeed {
+    font-size: 23px;
 }
 
 #Airspeed #CursorGroup text {
@@ -1022,15 +1087,100 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     letter-spacing: 0px;
 }
 
-#PFDMessage1{
-    top: 1%;
-    left: 2%;
+#PFDMessageTop {
+    top: 3%;
+    left: 1.2%;
+    width: 11.5%;
     position: absolute;
-    font-size: 22px;
+    /* border:solid 1px red; */
+    text-align: right;
+    font-size: 21px;
 }
-#PFDMessage2{
-    top: 5%;
-    left: 9%;
+
+#PFDMessageBottom {
+    top: 8%;
+    left: 1.2%;
+    min-width: 11.5%;
+    width: 11.5%;
     position: absolute;
+    font-size: 21px;
+}
+
+/* clear the floats for the two columns */
+#PFDMessageBottom:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#PFDMessageBotLeft {
+    float: left;
+    min-width: 50%;
+    width: 50%;
+    text-align: left;
+}
+
+#PFDMessageBotRight {
+    float: left;
+    min-width: 50%;
+    width: 50%;
+    text-align: right;
+}
+
+.yellow {
+    color: yellow;
+}
+
+#NavPreset {
+    position: relative;
     font-size: 22px;
+    top: 340px;
+    left: 8px;
+    width: 58px;
+}
+
+.preset-name {
+    color: cyan;
+    padding: 4px 0 0 4px;
+    border: 2px solid cyan;
+}
+
+.preset-tuning {
+    color: cyan;
+}
+
+#Symbols ul {
+    font-size: 22px;
+    list-style: none;
+    padding: 0;
+    text-align: right;
+}
+
+#Symbols li {
+    padding: 0;
+}
+
+#Symbols .active {
+    font-size: 24px;
+    color: cyan;
+}
+
+#Symbols .overlay-wx-line1,
+#Symbols .overlay-wx-line2 {
+    color: cyan;
+}
+
+.bearing-pointer-info {
+    width: 40px;
+}
+
+table.bearing-pointer-info tr td svg.bearing-pointer-icon {
+    width: 18px;
+    height: 18px;
+}
+
+table.bearing-pointer-info {
+    border-spacing: 0px;
+    border-collapse: collapse;
+    margin-left: 7px;
 }

@@ -21,19 +21,19 @@ class CJ4_FMC_MfdAdvPage {
         fmc.updateSideButtonActiveStatus();
 
         fmc.onLeftInput[0] = () => {
-            let wpindex = SimVar.GetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number");
-            let newIndex = Math.max(0, wpindex - 1);
+            const wpindex = SimVar.GetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number");
+            const newIndex = Math.max(0, wpindex - 1);
             SimVar.SetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number", newIndex);
         };
 
         fmc.onLeftInput[1] = () => {
-            let wpindex = SimVar.GetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number");
-            let newIndex = Math.min(wpindex + 1, fmc.flightPlanManager.getWaypointsCount()-1);
+            const wpindex = SimVar.GetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number");
+            const newIndex = Math.min(wpindex + 1, fmc.flightPlanManager.getWaypointsCount() - 1);
             SimVar.SetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number", newIndex);
         };
 
         fmc.onLeftInput[2] = () => {
-            let newIndex = fmc.flightPlanManager.getActiveWaypointIndex();
+            const newIndex = fmc.flightPlanManager.getActiveWaypointIndex();
             SimVar.SetSimVarValue("L:AIRLINER_MCDU_CURRENT_FPLN_WAYPOINT", "number", newIndex);
         };
     }

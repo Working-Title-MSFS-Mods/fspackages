@@ -40,8 +40,6 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
         this.minimums = this.querySelector("#MinimumsValue");
-        this.pfdMessage1 = this.querySelector('#PFDMessage1');
-        this.pfdMessage2 = this.querySelector('#PFDMessage2');
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -60,8 +58,6 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.updateElapsedTime();
         this.updateMinimums();
         this.updateWaypointAlert(_dTime);
-        this.updatePFDMessage1();
-        this.updatePFDMessage2();
     }
     onEvent(_event) {
         if (_event == "Push_ET") {
@@ -106,65 +102,6 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
             this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
-        }
-    }
-
-    /**
-     * Updates the PFD message line as necessary.
-     */
-    updatePFDMessage1() {
-        if (this.pfdMessage1) {
-            const navSensitivity = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number');
-            if (navSensitivity !== this._currentNavSensitivity) {
-                this._currentNavSensitivity = navSensitivity;
-
-                switch (navSensitivity) {
-                    case 0:
-                        this.pfdMessage1.textContent = '';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 1:
-                        this.pfdMessage1.textContent = 'TERM';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 2:
-                        this.pfdMessage1.textContent = 'LPV TERM';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 3:
-                        this.pfdMessage1.textContent = 'APPR';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                    case 4:
-                        this.pfdMessage1.textContent = 'LPV APPR';
-                        this.pfdMessage1.style.color = 'white';
-                        break;
-                }
-            }
-        }
-    }
-
-    updatePFDMessage2() {
-        if (this.pfdMessage2) {
-            const altDev = Math.abs(SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet"));
-            const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
-            const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-
-            if (!pathActive && todDistanceRemaining > 0.1) {
-                if (altDev > 300 && altDev <= 1000) {
-                    this.pfdMessage2.textContent = 'TOD';
-                    this.pfdMessage2.style.color = 'white';
-                }
-
-                if (altDev < 400) {
-                    this.pfdMessage2.classList.add('blinking');
-                }
-            }
-            else {
-                this.pfdMessage2.textContent = '';
-                this.pfdMessage2.style.color = 'white';
-                this.pfdMessage2.classList.remove('blinking');
-            }
         }
     }
 
@@ -499,7 +436,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         if (ils.id > 0) {
                             freq = ils.freq.toFixed(2);
                             course = Utils.leadingZeros(Math.round(ils.course), 3);
-                            ident = ils.name;
+                            ident = ils.ident;
 
                             if (ils.distance) {
                                 if (ils.distance < 100)
@@ -638,7 +575,6 @@ class VORDMENavAid {
             this.navTypeText = _parent.querySelector("#State");
             this.idText = _parent.querySelector("#ID");
             this.distanceText = _parent.querySelector("#Distance");
-            this.distanceUnits = _parent.querySelector("#Unit");
             this.pointer = _parent.querySelector('.bearing-pointer');
             this.pointerNeedle = _parent.querySelector('.bearing-pointer .bearing-pointer-needle');
         }
@@ -683,15 +619,22 @@ class VORDMENavAid {
         const hasRadial = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
         const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this.index, "bool");
         const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + this.index, "bool");
+        const hasLocalizer = SimVar.GetSimVarValue('NAV HAS LOCALIZER:' + this.index, 'bool');
 
         const isTuned = hasRadial || hasDME || hasCloseDME;
 
         if (this.hasNav !== isTuned) {
-            this.pointer.style = isTuned ? '' : 'display: none';
+            if (!hasLocalizer) {
+                this.pointer.style = isTuned ? '' : 'display: none';
+            }
+            else {
+                this.pointer.style = 'display: none';
+            }
+            
             this.hasNav = isTuned;
         }
 
-        let hideDistance = (parentNavMode === Jet_NDCompass_Navigation.VOR || parentNavMode === Jet_NDCompass_Navigation.ILS) && parentRadioIndex === this.index;
+        const hideDistance = (parentNavMode === Jet_NDCompass_Navigation.VOR || parentNavMode === Jet_NDCompass_Navigation.ILS) && parentRadioIndex === this.index;
         this.setDistanceValue(hideDistance ? 0 : this.getDMEDistance(this.index));
 
         if (isTuned) {
@@ -707,10 +650,21 @@ class VORDMENavAid {
 
             this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
             this.setIDValue(ident);
+
+            if (hasLocalizer && this.navTypeText.textContent !== 'LOC') {
+                this.navTypeText.textContent = 'LOC';
+            }
+            else if (!hasLocalizer && this.navTypeText.textContent !== 'VOR') {
+                this.navTypeText.textContent = 'VOR';
+            }
         }
         else {
             this.setDistanceValue(0);
             this.setIDValue(0);
+            
+            if (this.navTypeText.textContent !== 'VOR') {
+                this.navTypeText.textContent = 'VOR';
+            }
         }
     }
 
@@ -785,18 +739,20 @@ class VORDMENavAid {
 
     /**
      * Handles when the map display style is changed.
-     * @param {Jet_NDCompass_Display} style The map compass display style. 
+     * @param {Jet_NDCompass_Display} style The map compass display style.
      */
     onDisplayChange(style) {
         if (this.currentStyle !== style) {
             this.currentStyle = style;
             switch (this.currentStyle) {
+                case Jet_NDCompass_Display.PPOS:
                 case Jet_NDCompass_Display.ARC: {
                     const clipSection = this.pointer && this.pointer.querySelector('.bearing-pointer-clip');
                     if (clipSection) {
                         clipSection.setAttribute('clip-path', 'url(#arc)');
                         this.pointer.className = 'bearing-pointer arc';
                     }
+                    this.pointer.style.display = '';
                     break;
                 }
                 case Jet_NDCompass_Display.ROSE: {
@@ -805,8 +761,12 @@ class VORDMENavAid {
                         clipSection.setAttribute('clip-path', 'url(#rose)');
                         this.pointer.className = 'bearing-pointer rose';
                     }
+                    this.pointer.style.display = '';
                     break;
                 }
+                default:
+                    this.pointer.style.display = 'none';
+                    break;
             }
         }
     }
@@ -824,7 +784,6 @@ class VORDMENavAid {
                     show = true;
                     break;
                 case BearingPointerMode.VOR:
-                    type = "VOR";
                     show = true;
                     break;
                 case BearingPointerMode.FMS:
@@ -840,7 +799,7 @@ class VORDMENavAid {
                 this.parent.style.display = show ? "block" : "none";
             }
 
-            if (this.navTypeText != null) {
+            if (this.navTypeText != null && type !== "") {
                 this.navTypeText.textContent = type;
             }
         }
@@ -869,13 +828,10 @@ class VORDMENavAid {
             if (this.distanceText != null) {
                 if (showDistance) {
                     this.distanceText.style = '';
-                    this.distanceUnits.style = '';
-
-                    this.distanceText.textContent = fastToFixed(this.distanceValue, this.distanceValue < 100 ? 1 : 0);
+                    this.distanceText.textContent = this.distanceValue.toFixed(this.distanceValue < 100 ? 1 : 0);
                 }
                 else {
                     this.distanceText.style = 'visibility: hidden;';
-                    this.distanceUnits.style = 'visibility: hidden;';
                 }
             }
         }
