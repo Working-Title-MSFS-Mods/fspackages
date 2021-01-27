@@ -575,7 +575,6 @@ class VORDMENavAid {
             this.navTypeText = _parent.querySelector("#State");
             this.idText = _parent.querySelector("#ID");
             this.distanceText = _parent.querySelector("#Distance");
-            this.distanceUnits = _parent.querySelector("#Unit");
             this.pointer = _parent.querySelector('.bearing-pointer');
             this.pointerNeedle = _parent.querySelector('.bearing-pointer .bearing-pointer-needle');
         }
@@ -620,15 +619,22 @@ class VORDMENavAid {
         const hasRadial = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
         const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this.index, "bool");
         const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + this.index, "bool");
+        const hasLocalizer = SimVar.GetSimVarValue('NAV HAS LOCALIZER:' + this.index, 'bool');
 
         const isTuned = hasRadial || hasDME || hasCloseDME;
 
         if (this.hasNav !== isTuned) {
-            this.pointer.style = isTuned ? '' : 'display: none';
+            if (!hasLocalizer) {
+                this.pointer.style = isTuned ? '' : 'display: none';
+            }
+            else {
+                this.pointer.style = 'display: none';
+            }
+            
             this.hasNav = isTuned;
         }
 
-        let hideDistance = (parentNavMode === Jet_NDCompass_Navigation.VOR || parentNavMode === Jet_NDCompass_Navigation.ILS) && parentRadioIndex === this.index;
+        const hideDistance = (parentNavMode === Jet_NDCompass_Navigation.VOR || parentNavMode === Jet_NDCompass_Navigation.ILS) && parentRadioIndex === this.index;
         this.setDistanceValue(hideDistance ? 0 : this.getDMEDistance(this.index));
 
         if (isTuned) {
@@ -644,10 +650,21 @@ class VORDMENavAid {
 
             this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
             this.setIDValue(ident);
+
+            if (hasLocalizer && this.navTypeText.textContent !== 'LOC') {
+                this.navTypeText.textContent = 'LOC';
+            }
+            else if (!hasLocalizer && this.navTypeText.textContent !== 'VOR') {
+                this.navTypeText.textContent = 'VOR';
+            }
         }
         else {
             this.setDistanceValue(0);
             this.setIDValue(0);
+            
+            if (this.navTypeText.textContent !== 'VOR') {
+                this.navTypeText.textContent = 'VOR';
+            }
         }
     }
 
@@ -722,18 +739,20 @@ class VORDMENavAid {
 
     /**
      * Handles when the map display style is changed.
-     * @param {Jet_NDCompass_Display} style The map compass display style. 
+     * @param {Jet_NDCompass_Display} style The map compass display style.
      */
     onDisplayChange(style) {
         if (this.currentStyle !== style) {
             this.currentStyle = style;
             switch (this.currentStyle) {
+                case Jet_NDCompass_Display.PPOS:
                 case Jet_NDCompass_Display.ARC: {
                     const clipSection = this.pointer && this.pointer.querySelector('.bearing-pointer-clip');
                     if (clipSection) {
                         clipSection.setAttribute('clip-path', 'url(#arc)');
                         this.pointer.className = 'bearing-pointer arc';
                     }
+                    this.pointer.style.display = '';
                     break;
                 }
                 case Jet_NDCompass_Display.ROSE: {
@@ -742,8 +761,12 @@ class VORDMENavAid {
                         clipSection.setAttribute('clip-path', 'url(#rose)');
                         this.pointer.className = 'bearing-pointer rose';
                     }
+                    this.pointer.style.display = '';
                     break;
                 }
+                default:
+                    this.pointer.style.display = 'none';
+                    break;
             }
         }
     }
@@ -761,7 +784,6 @@ class VORDMENavAid {
                     show = true;
                     break;
                 case BearingPointerMode.VOR:
-                    type = "VOR";
                     show = true;
                     break;
                 case BearingPointerMode.FMS:
@@ -777,7 +799,7 @@ class VORDMENavAid {
                 this.parent.style.display = show ? "block" : "none";
             }
 
-            if (this.navTypeText != null) {
+            if (this.navTypeText != null && type !== "") {
                 this.navTypeText.textContent = type;
             }
         }
@@ -806,13 +828,10 @@ class VORDMENavAid {
             if (this.distanceText != null) {
                 if (showDistance) {
                     this.distanceText.style = '';
-                    this.distanceUnits.style = '';
-
-                    this.distanceText.textContent = fastToFixed(this.distanceValue, this.distanceValue < 100 ? 1 : 0);
+                    this.distanceText.textContent = this.distanceValue.toFixed(this.distanceValue < 100 ? 1 : 0);
                 }
                 else {
                     this.distanceText.style = 'visibility: hidden;';
-                    this.distanceUnits.style = 'visibility: hidden;';
                 }
             }
         }

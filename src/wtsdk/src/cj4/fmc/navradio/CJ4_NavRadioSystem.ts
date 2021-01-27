@@ -61,6 +61,36 @@ export class CJ4_NavRadioSystem {
   }
 
   /**
+   * Parses an input frequency string to return a valid nav frequency.
+   * @param value The value to parse.
+   * @returns The nav frequency, if valid.
+   */
+  public parseFrequencyInput(value: string): number {
+    let frequency = parseFloat(value);
+    if (isFinite(frequency)) {
+      frequency = Math.round(frequency * 100) / 100;
+
+      if (frequency >= 108 && frequency <= 117.95) {
+        return frequency;
+      }
+
+      if (frequency >= 8 && frequency <= 17.95) {
+        return frequency + 100;
+      }
+
+      if (frequency >= 118 && frequency <= 179) {
+        return (frequency / 10) + 100;
+      }
+
+      if (frequency >= 800 && frequency <= 1795) {
+        return (frequency / 100) + 100;
+      }
+    }
+
+    return NaN;
+  }
+
+  /**
    * Updates the auto-tuning of the nav radios.
    */
   private updateAutoTuning() {

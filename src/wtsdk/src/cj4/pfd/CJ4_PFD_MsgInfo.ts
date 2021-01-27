@@ -56,7 +56,9 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
       if (msgsJson !== "") {
         // read msg packet
         const msgs: CJ4_PFD_MessagePacket = JSON.parse(msgsJson);
-
+        if (msgs === null) {
+          return;
+        }
         // get bottom msg
         if (msgs.bot) {
           const msg: any = JSON.parse(msgs.bot); // For some reason can't access properties when parsing back to CJ4_PFD_Message :(
@@ -79,7 +81,7 @@ export class CJ4_PFD_MsgInfo extends HTMLElement {
 
       // Doing the MSG manually here as it is pretty "static"
       const fmcMsgLevel = SimVar.GetSimVarValue("L:WT_CJ4_DISPLAY_MSG", "number");
-      if(fmcMsgLevel !== this._lastFmcMsgLevel){
+      if (fmcMsgLevel !== this._lastFmcMsgLevel) {
         this._fmcMsgTimestamp = Date.now();
         this._lastFmcMsgLevel = fmcMsgLevel
       }

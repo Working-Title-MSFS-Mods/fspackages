@@ -18,18 +18,30 @@ export class CJ4_NearestVORSearch {
     batch.add("C:fs9gps:NearestVorCurrentDistance", "nautical miles", "number");
     batch.add("C:fs9gps:NearestVorCurrentFrequency", "MHz", "number");
 
-    await Promise.all([
-      SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLatitude", "degree latitude", lat, instrId),
-      SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLongitude", "degree longitude", long, instrId),
-      SimVar.SetSimVarValue("C:fs9gps:NearestVorMaximumItems", "number", maxItems, instrId),
-      SimVar.SetSimVarValue("C:fs9gps:NearestVorMaximumDistance", "nautical miles", distance, instrId)]);
-
-    await new Promise<void>((resolve) => {
+    const startSearch = async () => {
+      await SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLatitude", "degree latitude", lat, instrId);
+      await SimVar.SetSimVarValue("C:fs9gps:NearestVorCurrentLongitude", "degree longitude", long, instrId);
+      await SimVar.SetSimVarValue("C:fs9gps:NearestVorMaximumItems", "number", maxItems, instrId);
+      await SimVar.SetSimVarValue("C:fs9gps:NearestVorMaximumDistance", "nautical miles", distance, instrId);
+    };
+    
+    await startSearch();
+    await new Promise<void>(async (resolve) => {
       let numItems = 0;
+      let retries = 0;
+
       const checkNumItems = () => {
         setTimeout(() => {
           const currentNumItems = SimVar.GetSimVarValue('C:fs9gps:NearestVorItemsNumber', 'number', instrId);
           if (currentNumItems === 0 || currentNumItems !== numItems) {
+            if (currentNumItems === 0) {
+              retries++;
+            }
+
+            if (retries > 8) {
+              retries = 0;
+              startSearch().then(() => {});
+            }
             numItems = currentNumItems;
             checkNumItems();
           }

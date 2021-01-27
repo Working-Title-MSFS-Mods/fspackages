@@ -118,11 +118,12 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
-            // RegisterViewListener("JS_LISTENER_ATC");
 
-            // RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
-            // this.addEventListener("FlightStart", async function () {
-            // }.bind(this));
+            this.addEventListener("FlightStart", async function () {
+                if (localStorage.length > 0) {
+                    localStorage.clear();
+                }
+            }.bind(this));
         }
     }
 
@@ -398,8 +399,10 @@ class CJ4_FMC extends FMCMainDisplay {
                 value = this._fmcMsgReceiver.getMsgText();
             }
         }
-        this._msg = value;
-        this._templateRenderer.setMsg(value);
+        if (value !== this._msg) {
+            this._msg = value;
+            this._templateRenderer.setMsg(value);
+        }
     }
 
     clearDisplay() {

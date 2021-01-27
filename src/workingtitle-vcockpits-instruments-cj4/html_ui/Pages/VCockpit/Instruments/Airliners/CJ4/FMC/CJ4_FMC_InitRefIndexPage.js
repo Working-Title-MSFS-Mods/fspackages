@@ -620,12 +620,18 @@ class CJ4_FMC_InitRefIndexPage {
         fmc.onLeftInput[3] = async () => {
             fmc.setMsg("LOAD FPLN...[yellow]");
             fmc.flightPlanManager.pauseSync();
-            await FlightPlanAsoboSync.LoadFromGame(fmc.flightPlanManager);
-            fmc.flightPlanManager.resumeSync();
-            fmc.flightPlanManager.setActiveWaypointIndex(1);
-            fmc.setMsg("FPLN LOADED[green]");
-            SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
-            CJ4_FMC_RoutePage.ShowPage1(fmc);
+            FlightPlanAsoboSync.LoadFromGame(fmc.flightPlanManager).catch((err) => {
+                console.log("ERROR " + err);
+                fmc.flightPlanManager.resumeSync();
+                fmc.setMsg("FPLN LOAD FAIL[red]");
+
+            }).then(() => {
+                fmc.flightPlanManager.resumeSync();
+                fmc.flightPlanManager.setActiveWaypointIndex(1);
+                fmc.setMsg("FPLN LOADED[green]");
+                SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+                CJ4_FMC_RoutePage.ShowPage1(fmc);
+            });
         };
 
         // fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage15(fmc); };
@@ -1242,7 +1248,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.9.1[s-text white]"],
+            ["0.10.0[s-text white]"],
             [""],
             [""],
             [""],

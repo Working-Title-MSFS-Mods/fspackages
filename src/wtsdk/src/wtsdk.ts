@@ -1,3 +1,4 @@
+export * from "./flightplanning/FlightPlanAsoboSync";
 export * from "./flightplanning/FlightPlanManager";
 export * from "./flightplanning/ManagedFlightPlan";
 export * from "./flightplanning/FlightPlanSegment";
@@ -22,5 +23,8 @@ export * from "./cj4/pfd/CJ4_PFD_MsgInfo";
 export * from "./cj4/pfd/CJ4_PFD_MessageReceiver";
 export * from "./cj4/pfd/CJ4_PFD_Message";
 export * from "./cj4/pfd/CJ4_PFD_MessagePacket";
+export * from "./cj4/pfd/CJ4_FGSDisplaySlot";
 
 export * from "./cj4/fmc/navradio/CJ4_NavRadioSystem";
+
+export * from "./utils/SimVarCache";

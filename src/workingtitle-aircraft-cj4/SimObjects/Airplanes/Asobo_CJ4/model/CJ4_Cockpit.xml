@@ -56,6 +56,12 @@
 					<ANIMTIP_2>TT:COCKPIT.TOOLTIPS.ALTERNATOR_RH_RESET</ANIMTIP_2>
 				</UseTemplate>
 			</Component>
+			<UseTemplate Name="ASOBO_ELECTRICAL_Switch_Circuit_Template">
+				<NODE_ID>switch_electricicalPanel_STBY_FTL</NODE_ID>
+				<ANIM_NAME>switch_electricicalPanel_STBY_FTL</ANIM_NAME>
+				<PART_ID>switch_electricicalPanel_STBY_FTL</PART_ID>
+				<CIRCUIT_ID>49</CIRCUIT_ID>
+			</UseTemplate>
 			<CameraTitle>Instrument02</CameraTitle>
 		</Component>
 
@@ -342,21 +348,21 @@
 						<NODE_ID>LIGHTING_Push_Light_Navigation_1</NODE_ID>
 						<ANIM_NAME>LIGHTING_Push_Light_Navigation_1</ANIM_NAME>
 					</UseTemplate>
-					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Landing_Template">
+					<!-- <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Landing_Template">
 						<PART_ID>LIGHTING_Switch_Light_Landing</PART_ID>
-					</UseTemplate>
-					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Taxi_Template">
+					</UseTemplate> -->
+					<!-- <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Taxi_Template">
 						<PART_ID>LIGHTING_Switch_Light_Taxi</PART_ID>
-					</UseTemplate>
+					</UseTemplate> -->
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Strobe_Template">
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Logo_Template">
 					</UseTemplate>
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Beacon_Template">
 					</UseTemplate>
-					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Recognition_Template">
+					<!-- <UseTemplate Name="ASOBO_LIGHTING_Switch_Light_Recognition_Template">
 						<TOOLTIPID>%((A:LIGHT RECOGNITION, bool))%{if}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_ON %{else}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_OFF%{end}</TOOLTIPID>
-					</UseTemplate>
+					</UseTemplate> -->
 					<UseTemplate Name="ASOBO_LIGHTING_Switch_Light_SeatBelt_Template">
 						<PART_ID>LIGHTING_PUSH_LIGHT_SEATBELT</PART_ID>
 					</UseTemplate>
@@ -453,6 +459,48 @@
 					</UseTemplate>
 				</Component>
 			</Component>
+			<UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+				<NODE_ID>LIGHTING_Push_Light_Landing_1</NODE_ID>
+				<ANIM_NAME>LIGHTING_Push_Light_Landing_1</ANIM_NAME>
+				<TOOLTIPID>%((A:LIGHT LANDING, Bool))%{if}TT:COCKPIT.TOOLTIPS.LANDING_LIGHT_ON %{else}TT:COCKPIT.TOOLTIPS.LANDING_LIGHT_OFF%{end}</TOOLTIPID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
+				<LEFT_SINGLE_CODE>
+					(&gt;K:LANDING_LIGHTS_TOGGLE)
+					(A:LIGHT TAXI, Bool) if{ (&gt;K:TOGGLE_TAXI_LIGHTS) }
+					(A:LIGHT RECOGNITION, Bool) if{ (&gt;K:TOGGLE_RECOGNITION_LIGHTS) }
+				</LEFT_SINGLE_CODE>
+				<ONLY_SEQ1/>
+				<SEQ1_EMISSIVE_CODE>(A:LIGHT LANDING, Bool)</SEQ1_EMISSIVE_CODE>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+				<NODE_ID>LIGHTING_Push_Light_Taxi_1</NODE_ID>
+				<ANIM_NAME>LIGHTING_Push_Light_Taxi_1</ANIM_NAME>
+				<TOOLTIPID>%((A:LIGHT TAXI, Bool))%{if}TT:COCKPIT.TOOLTIPS.TAXI_LIGHT_ON %{else}TT:COCKPIT.TOOLTIPS.TAXI_LIGHT_OFF%{end}</TOOLTIPID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
+				<LEFT_SINGLE_CODE>
+					(&gt;K:TOGGLE_TAXI_LIGHTS)
+					(A:LIGHT RECOGNITION, Bool) if{ (&gt;K:TOGGLE_RECOGNITION_LIGHTS) }
+					(A:LIGHT LANDING, Bool) if{ (&gt;K:LANDING_LIGHTS_TOGGLE) }
+				</LEFT_SINGLE_CODE>
+				<ONLY_SEQ1/>
+				<SEQ1_EMISSIVE_CODE>(A:LIGHT TAXI, Bool)</SEQ1_EMISSIVE_CODE>
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Push_Button_Airliner">
+				<NODE_ID>LIGHTING_Push_Light_Recognition_1</NODE_ID>
+				<ANIM_NAME>LIGHTING_Push_Light_Recognition_1</ANIM_NAME>
+				<TOOLTIPID>%((A:LIGHT RECOGNITION, Bool))%{if}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_ON %{else}TT:COCKPIT.TOOLTIPS.PULSE_LIGHT_OFF%{end}</TOOLTIPID>
+				<WWISE_EVENT_1>WT_soft_button_on</WWISE_EVENT_1>
+				<WWISE_EVENT_2>WT_soft_button_off</WWISE_EVENT_2>
+				<LEFT_SINGLE_CODE>
+					(&gt;K:TOGGLE_RECOGNITION_LIGHTS)
+					(A:LIGHT TAXI, Bool) if{ (&gt;K:TOGGLE_TAXI_LIGHTS) }
+					(A:LIGHT LANDING, Bool) if{ (&gt;K:LANDING_LIGHTS_TOGGLE) }
+				</LEFT_SINGLE_CODE>
+				<ONLY_SEQ1/>
+				<SEQ1_EMISSIVE_CODE>(A:LIGHT RECOGNITION, Bool)</SEQ1_EMISSIVE_CODE>
+			</UseTemplate>
 			<CameraTitle>Instrument04</CameraTitle>
 		</Component>
 
@@ -700,10 +748,6 @@
 				<SEQ1_SUFFIX></SEQ1_SUFFIX>
 				<NO_BRT_DIM_EMISSIVE>True</NO_BRT_DIM_EMISSIVE>
 			</DefaultTemplateParameters>
-			<Update Once="True">
-        		1 (&gt;I:XMLVAR_MCDU_1_Brightness)
-        		1 (&gt;I:XMLVAR_MCDU_2_Brightness)
-			</Update>
 			<UseTemplate Name="ASOBO_FMC_CJ4">
 				<FAILURE>(A:CIRCUIT ON:47, Bool)</FAILURE>
 				<ANIM_NEVER_FAILS>True</ANIM_NEVER_FAILS>
@@ -770,6 +814,13 @@
 				<ANIM_NAME_DEP_ARR>CDU_Push_DEPARR_ID_2</ANIM_NAME_DEP_ARR>
 				<NODE_ID_SCREEN>FMS_Screen_ID_2</NODE_ID_SCREEN>
 				-->
+			</UseTemplate>
+			<UseTemplate Name="ASOBO_GT_Update">
+				<UPDATE_ONCE>True</UPDATE_ONCE>
+				<UPDATE_CODE>
+        		0.8 (&gt;I:XMLVAR_MCDU_1_Brightness)
+        		0.8 (&gt;I:XMLVAR_MCDU_2_Brightness)
+				</UPDATE_CODE>
 			</UseTemplate>
 		</Component>
 
@@ -1093,9 +1144,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>switch_electricicalPanel_emerLights</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>switch_electricicalPanel_STBY_FTL</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>lever_pilot_oxygenSupply</NODE_ID>

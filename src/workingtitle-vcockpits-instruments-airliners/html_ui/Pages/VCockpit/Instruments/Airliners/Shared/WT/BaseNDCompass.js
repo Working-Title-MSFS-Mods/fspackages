@@ -540,10 +540,10 @@ class Jet_NDCompass extends HTMLElement {
                     displayCourseDeviation = true;
                     let crossTrack = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
                     const sensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
-                    let deviation = -(crossTrack / 2);
+                    let deviation = -(crossTrack);
 
                     if (sensitivity === 0) {
-                        deviation = deviation * 2;
+                        deviation = deviation / 2;
                     }
                     else if (sensitivity > 2) {
                         deviation = deviation / 0.3;

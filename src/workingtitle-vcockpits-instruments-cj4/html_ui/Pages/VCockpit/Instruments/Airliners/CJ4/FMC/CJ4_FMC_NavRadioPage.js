@@ -7,7 +7,7 @@ class CJ4_FMC_NavRadioPageOne {
         this._isDirty = true;
 
         this._transponderMode = 1;
-        let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
+        const modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         if (modeValue == 4) {
             this._transponderMode = 0;
         }
@@ -35,14 +35,20 @@ class CJ4_FMC_NavRadioPageOne {
         });
     }
 
-    get transponderMode() { return this._transponderMode; }
+    get transponderMode() {
+        return this._transponderMode;
+    }
     set transponderMode(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._transponderMode = value;
 
         // set simvar
         let modeValue = 1;
-        if (value == 0) modeValue = 4;
+        if (value == 0) {
+            modeValue = 4;
+        }
 
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", modeValue);
 
@@ -102,38 +108,36 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     enterVhfFreq(value, index, isStandby = false) {
-        let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
+        const numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
         this._fmc.clearUserInput();
         if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
             this._fmc.radioNav.setVHFStandbyFrequency(this._fmc.instrumentIndex, index, numValue).then(() => {
-                if (!isStandby)
+                if (!isStandby) {
                     this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
+                }
                 this._fmc.requestCall(() => {
                     this.update();
                 });
             });
-        }
-        else if (value.length === 0) {
+        } else if (value.length === 0) {
             this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
             this._fmc.requestCall(() => {
                 this.update();
             });
-        }
-        else {
+        } else {
             this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
         }
     }
 
     enterVorFreq(value, index) {
-        let numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
+        const numValue = this._fmc._navRadioSystem.parseFrequencyInput(value);
         this._fmc.clearUserInput();
         if (isFinite(numValue) && numValue >= 108 && numValue <= 117.95 && RadioNav.isHz50Compliant(numValue)) {
             this._fmc._navRadioSystem.radioStates[index].setManualFrequency(numValue);
             this._fmc.requestCall(() => {
                 this.update();
             });
-        }
-        else {
+        } else {
             this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
         }
     }
@@ -158,8 +162,7 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc.onLeftInput[2] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 this._fmc._navigationService.showPage(CJ4_FMC_NavControlPage, 1);
-            }
-            else {
+            } else {
                 this.enterVorFreq(this._fmc.inOut, 1);
             }
         };
@@ -167,15 +170,14 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc.onRightInput[2] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 this._fmc._navigationService.showPage(CJ4_FMC_NavControlPage, 2);
-            }
-            else {
+            } else {
                 this.enterVorFreq(this._fmc.inOut, 2);
             }
         };
 
         this._fmc.onLeftInput[5] = () => {
-            let value = this._fmc.inOut;
-            let numValue = parseFloat(value);
+            const value = this._fmc.inOut;
+            const numValue = parseFloat(value);
             this._fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 this._fmc.radioNav.setADFActiveFrequency(1, numValue).then(() => {
@@ -183,15 +185,14 @@ class CJ4_FMC_NavRadioPageOne {
                         this.update();
                     });
                 });
-            }
-            else {
+            } else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
             }
         };
 
         this._fmc.onLeftInput[4] = () => {
-            let value = this._fmc.inOut;
-            let numValue = parseFloat(value);
+            const value = this._fmc.inOut;
+            const numValue = parseFloat(value);
             this._fmc.clearUserInput();
             if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 this._fmc.atc1Frequency = numValue;
@@ -200,17 +201,24 @@ class CJ4_FMC_NavRadioPageOne {
                         this.update();
                     });
                 });
-            }
-            else {
+            } else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
             }
         };
 
-        this._fmc.onRightInput[4] = () => { this.transponderMode = this.transponderMode + 1; };
+        this._fmc.onRightInput[4] = () => {
+            this.transponderMode = this.transponderMode + 1;
+        };
 
-        this._fmc.onRightInput[5] = () => { CJ4_FMC_NavRadioPage.ShowPage3(this._fmc); };
-        this._fmc.onPrevPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(this._fmc); };
-        this._fmc.onNextPage = () => { CJ4_FMC_NavRadioPage.ShowPage2(this._fmc); };
+        this._fmc.onRightInput[5] = () => {
+            CJ4_FMC_NavRadioPage.ShowPage3(this._fmc);
+        };
+        this._fmc.onPrevPage = () => {
+            CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
+        };
+        this._fmc.onNextPage = () => {
+            CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
+        };
         this._fmc.updateSideButtonActiveStatus();
     }
 
@@ -227,7 +235,7 @@ class CJ4_FMC_NavRadioPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
 
-        // create page instance and init 
+        // create page instance and init
         NavRadioPage1Instance = new CJ4_FMC_NavRadioPageOne(fmc);
         NavRadioPage1Instance.update();
     }
@@ -235,13 +243,15 @@ class CJ4_FMC_NavRadioPage {
     static ShowPage2(fmc) {
         fmc.clearDisplay();
 
+        const flightId = SimVar.GetSimVarValue("ATC ID", "string");
+
         let adf1FrequencyCell = "[]";
         if (fmc.adf1Frequency > 0) {
             adf1FrequencyCell = fmc.adf1Frequency.toFixed(0);
         }
         fmc.onLeftInput[2] = () => {
-            let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            const value = fmc.inOut;
+            const numValue = parseFloat(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf1Frequency = numValue;
@@ -250,8 +260,7 @@ class CJ4_FMC_NavRadioPage {
                         CJ4_FMC_NavRadioPage.ShowPage2(fmc);
                     });
                 });
-            }
-            else {
+            } else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
@@ -259,9 +268,19 @@ class CJ4_FMC_NavRadioPage {
         if (fmc.adf2Frequency > 0) {
             adf2FrequencyCell = fmc.adf2Frequency.toFixed(0);
         }
+
+        fmc.onRightInput[0] = () => {
+            const value = fmc.inOut;
+            SimVar.SetSimVarValue("ATC ID", "string", value).then(() => {
+                fmc.requestCall(() => {
+                    CJ4_FMC_NavRadioPage.ShowPage2(fmc);
+                });
+            });
+        };
+
         fmc.onRightInput[2] = () => {
-            let value = fmc.inOut;
-            let numValue = parseFloat(value);
+            const value = fmc.inOut;
+            const numValue = parseFloat(value);
             fmc.clearUserInput();
             if (isFinite(numValue) && numValue >= 100 && numValue <= 1799) {
                 fmc.adf2Frequency = numValue;
@@ -270,15 +289,14 @@ class CJ4_FMC_NavRadioPage {
                         CJ4_FMC_NavRadioPage.ShowPage2(fmc);
                     });
                 });
-            }
-            else {
+            } else {
                 fmc.showErrorMessage(fmc.defaultInputErrorMessage);
             }
         };
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue]", "TUNE[blue]"],
             ["", "FLIGHT ID"],
-            ["", "N5DX29"],
+            ["", flightId],
             [""],
             [""],
             ["ADF 1", "ADF 2"],
@@ -328,9 +346,9 @@ class CJ4_FMC_NavRadioPage {
     static parseRadioInput(input) {
         const normalizeInput = (channel) => {
             let normalized = channel > 100 ? channel : channel + 100;
-            let normalizedAsString = normalized.toFixed(3);
+            const normalizedAsString = normalized.toFixed(3);
 
-            let channelEnd = normalizedAsString.substring(5);
+            const channelEnd = normalizedAsString.substring(5);
             if (channelEnd === "20" || channelEnd === "70") {
                 normalized += .005;
             }
@@ -340,8 +358,7 @@ class CJ4_FMC_NavRadioPage {
 
         if (input.indexOf('.') !== -1) {
             return normalizeInput(parseFloat(input));
-        }
-        else {
+        } else {
             switch (input.length) {
                 case 3:
                     return normalizeInput(parseFloat(input) / 10);

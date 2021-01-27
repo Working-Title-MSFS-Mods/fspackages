@@ -4,11 +4,15 @@ class HoldsDirector {
   /** 
    * Creates an instance of a HoldsDirector.
    * @param {FlightPlanManager} fpm An instance of the flight plan manager.
+   * @param {CJ4NavModeSelector} navModeSelector The nav mode selector to use with this instance.
    */
-  constructor(fpm) {
+  constructor(fpm, navModeSelector) {
 
     /** The flight plan manager. */
     this.fpm = fpm;
+
+    /** The nav mode selector. */
+    this.navModeSelector = navModeSelector;
 
     /** The hold waypoint index. */
     this.holdWaypointIndex = -1;
@@ -352,6 +356,7 @@ class HoldsDirector {
     const deltaAngle = Math.abs(Avionics.Utils.angleDiff(dtk, bearingToWaypoint));
 
     const headingToSet = deltaAngle < Math.abs(interceptAngle) ? AutopilotMath.normalizeHeading(dtk + interceptAngle) : bearingToWaypoint;
+    this.tryActivateIfArmed(legStart, legEnd, planeState, NavSensitivity.NORMAL);
 
     if (distanceRemaining > 1 && execute) {
       HoldsDirector.setCourse(headingToSet, planeState);
@@ -395,6 +400,24 @@ class HoldsDirector {
     const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
 
     return trackDiff > 91;
+  }
+
+  /**
+   * Attempts to activate LNAV automatically if LNAV or APPR LNV1 is armed.
+   * @param {LatLongAlt} legStart The coordinates of the start of the leg.
+   * @param {LatLongAlt} legEnd The coordinates of the end of the leg.
+   * @param {AircraftState} planeState The current aircraft state.
+   * @param {number} navSensitivity The sensitivity to use for tracking.
+   */
+  tryActivateIfArmed(legStart, legEnd, planeState) {
+    const armedState = this.navModeSelector.currentLateralArmedState;
+    if (armedState === LateralNavModeState.LNAV) {
+      const xtk = AutopilotMath.crossTrack(legStart, legEnd, planeState.position);
+
+      if (Math.abs(xtk) < 1.9) {
+        this.navModeSelector.queueEvent(NavModeEvent.LNAV_ACTIVE);
+      }
+    }
   }
 
   /**
