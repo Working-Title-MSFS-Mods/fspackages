@@ -245,7 +245,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let gsiFeet = -SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet");
                     let gsi = gsiFeet / 3.28;
                     let delta = 0.5 + ((gsi / 250.0) / 2);
-                    
+
                     switch (navSensitivity) {
                         case 3:
                             delta = 0.5 + ((gsi / 125.0) / 2);
@@ -256,7 +256,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                             break;
                         }
                     }
-                
+
                     let y = this.gs_cursorMinY + (this.gs_cursorMaxY - this.gs_cursorMinY) * delta;
                     y = Math.min(this.gs_cursorMinY, Math.max(this.gs_cursorMaxY, y));
                     this.snowflake_Group.setAttribute("transform", "translate(" + this.gs_cursorPosX + ", " + y + ")");
@@ -286,7 +286,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                         this.gs_cursorShapeDown.setAttribute("visibility", "visible");
                     }
 
-                    }
+                }
                 else {
                     this.gs_cursorShapeUp.setAttribute("visibility", "hidden");
                     this.gs_cursorShapeDown.setAttribute("visibility", "hidden");
@@ -304,12 +304,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 let cdi = 0;
                 //LDEV SNOWFLAKE
                 if (this.lDevState === LDevState.LNAV || this.lDevState === LDevState.GHOST_AND_LNAV) {
-                    
+
                     const xtk = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
                     const sensitivityScalar = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
                     const deviation = (-(xtk / 2) / 0.3) / sensitivityScalar;
                     cdi = Math.min(Math.max(deviation, -1.0), 1.0);
-                    
+
                     let delta = (cdi + 1.0) * 0.5;
                     let x = this.loc_cursorMinX + (this.loc_cursorMaxX - this.loc_cursorMinX) * delta;
                     x = Math.max(this.loc_cursorMinX, Math.min(this.loc_cursorMaxX, x));
@@ -372,7 +372,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
         this.tunedNav = tunedNav;
         this.lDevState = _val;
 
-        switch(this.lDevState) {
+        switch (this.lDevState) {
             case LDevState.NONE:
                 if (this.loc_mainGroup) {
                     this.loc_mainGroup.setAttribute("visibility", "hidden");
@@ -400,8 +400,8 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
 
     showGlideslope(_val) {
         this.vDevState = _val;
-        console.log("vDev State " + this.vDevState);
-            switch(this.vDevState) {
+        // console.log("vDev State " + this.vDevState);
+        switch (this.vDevState) {
             case VDevState.NONE:
                 if (this.gs_mainGroup) {
                     this.gs_mainGroup.setAttribute("visibility", "hidden");

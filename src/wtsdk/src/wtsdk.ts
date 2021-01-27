@@ -1,3 +1,4 @@
+export * from "./flightplanning/FlightPlanAsoboSync";
 export * from "./flightplanning/FlightPlanManager";
 export * from "./flightplanning/ManagedFlightPlan";
 export * from "./flightplanning/FlightPlanSegment";

@@ -394,7 +394,7 @@ class CJ4_FMC_LegsPage {
                                 let insertIndex = selectedWpIndex;
                                 if (userWaypoint.offset !== false) {
                                     if (scratchPadWaypointIndex !== selectedWpIndex || (i == 1 && this._currentPage == 1 && userWaypoint.offset <= 0)) {
-                                        this._fmc.showErrorMessage("INVALID INSERT");
+                                        this._fmc.showErrorMessage("WPT NOT MATCHED");
                                         this._fmc.setMsg();
                                         return;
                                     } else {

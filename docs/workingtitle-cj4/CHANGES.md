@@ -21,10 +21,6 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ## Default Livery Conflicts
 The alternate default liveries that now ship with MSFS are not compatible with the CJ4 yet at this time. They currently ship with panel.cfg files that do not include our FADEC module. Please use the standard livery or a known compatible 3rd party or community livery.
 
-## Remarks to flight plan synchronization between the Game and FMS 
-The FP SYNC option is one way: it updates the simulator flight plan from the FMC. To load a plan into the FMS you can either enter it manually or use the _FPLN RECALL (GAME/SB)_ option in _IDX -> PAGE2 -> ROUTE MENU_
-Due to the increased accuracy and capabilities of the FMC managed flight plan, you may find that the sync to the game does not always work as expected or does not reflect the FMC flight plan exactly.
-
 # Changes
 
 ## Autopilot
@@ -39,19 +35,18 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 ## FMC
 - Scratchpad error messages now clear after 1 second
 - FMC messages now display at the bottom of the display
+- Added MESSAGES page
+- Added numerous FMC messages including LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
 - CRZ ALT inputs now allow "F" plus flight level.  Eg. F200 = FL200.
-
-### POS INIT
 - Initialize Position message now shows if position not initialized
+- Fixed inserting airways in the middle of a flight plan on the FPLN page
 
 ### LEGS
 - Sequencing will automatically enter INHIBIT when reaching the destination runway
 - Changing sequencing from INHIBIT to AUTO when the active leg is the runway will automatically sequence into the missed approach
 - Missed approach segment is now displayed at the end of the plan
 - POINT/BEARING/DISTANCE fixes should now have magnetic variance properly applied
-
-### FUEL
-- Fixed fuel timing calculation and display to avoid bad hour wrap-around (neoenstien)
+- Entering positive/negative distance for along-track offset waypoints now has the desired effect
 
 ### DIR
 - Added ability to perform vertical direct-to
@@ -69,10 +64,6 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Added NAV CONTROL page
 - Added ability to put nav radios in AUTO mode, which will automatically tune nearest VORs every 6 minutes for location backup
 - Added nav radio presets
-
-### FMC MESSAGES
-- Added MESSAGES page
-- Added numerous FMC messages including CHECK SPEED, LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
 
 ## PFD
 - Added correct nav source swapping behavior
@@ -108,6 +99,7 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Fixed issue where bearing pointer data block would show VOR when a LOC was tuned
 - Bearing pointer needle should no longer show when untuned or when a LOC only is tuned
 - Bearing pointer display block format updated & aligned correctly
+- Map display range rings should now coincide with the ranges in FMS
 
 ## MFD
 - Oil Temp and Pressure display format corrected
@@ -118,7 +110,8 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Origin runway fix should now be at the start instead of the end of the runway
 - Hold-to-manual-termination (HM) legs are now properly parsed and inserted into the plan
 - Corrected issue where hold course would get incorrect magnetic variance applied (neoenstien)
-
+- FPLN RECALL (Game) will now also import Custom waypoints from the world map
+ 
 ## Aircraft Light
 - Strobe lights flash is now realistic (on for 1/2 second)
 - Added white nav lights to back of light assembly on wingtips (Where it should be)
@@ -127,16 +120,18 @@ Due to the increased accuracy and capabilities of the FMC managed flight plan, y
 - Taxi, Landing, and Pulse lights buttons are exclusive meaning only one can be on at a time.  
 
 ## Misc
+- Fixed fuel timing calculation and display to avoid bad hour wrap-around (neoenstien)
 - Bleed air source is set to NORM on plane load
 - "Aural warning ok" message removed
 - Gear up/down won't play when you are on the ground and you load in.
 - Spoiler drag has been brought back to a more realistic value.
 
 # ⚠️ Known Issues
+* PITCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
-* Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse.
+* Autopilot modes cannot be triggered via keybindings or controllers and must currently be triggered in the cockpit with the mouse. External binding applications are adding support for LVars and HEvents. Used SimVars are documented [here](https://github.com/Working-Title-MSFS-Mods/fspackages/wiki/Sim-Variables)
 * Sometimes a heading to altitude instruction on takeoff will display further than the first RNAV fix on an RNAV departure procedure; in these cases the workaround is to cross-check the DP chart and remove the erroneous waypoint either by deleting the heading to altitude fix or dropping the first RNAV fix onto the magenta line in the LEGS page.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
 * If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.

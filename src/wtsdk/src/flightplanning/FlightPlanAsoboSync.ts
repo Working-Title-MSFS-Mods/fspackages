@@ -1,4 +1,5 @@
 import { FlightPlanManager } from "./FlightPlanManager";
+import { WaypointBuilder } from "./WaypointBuilder";
 
 /** A class for syncing a flight plan with the game */
 export class FlightPlanAsoboSync {
@@ -6,13 +7,14 @@ export class FlightPlanAsoboSync {
   static fpListenerInitialized = false;
 
   public static init() {
-    if(!FlightPlanAsoboSync.fpListenerInitialized){
+    if (!FlightPlanAsoboSync.fpListenerInitialized) {
       RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
       FlightPlanAsoboSync.fpListenerInitialized = true;
     }
   }
 
   public static async LoadFromGame(fpln: FlightPlanManager): Promise<void> {
+    console.log("LOAD FPLN");
     return new Promise((resolve, reject) => {
       FlightPlanAsoboSync.init();
       setTimeout(() => {
@@ -46,6 +48,9 @@ export class FlightPlanAsoboSync {
                 console.log(wpt.icao);
                 if (wpt.icao.trim() !== "") {
                   await fpln.addWaypoint(wpt.icao);
+                } else if (wpt.ident === "Custom") {
+                  const cwpt = WaypointBuilder.fromCoordinates("CUST" + i, wpt.lla, fpln._parentInstrument);
+                  await fpln.addUserWaypoint(cwpt);
                 }
               }
 
