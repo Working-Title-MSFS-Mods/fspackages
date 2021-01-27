@@ -39,6 +39,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Added numerous FMC messages including LOC WILL BE TUNED, CHECK LOC TUNING, FPLN DISCONTINUITY, etc
 - CRZ ALT inputs now allow "F" plus flight level.  Eg. F200 = FL200.
 - Initialize Position message now shows if position not initialized
+- Fixed inserting airways in the middle of a flight plan on the FPLN page
 
 ### LEGS
 - Sequencing will automatically enter INHIBIT when reaching the destination runway
@@ -109,7 +110,8 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Origin runway fix should now be at the start instead of the end of the runway
 - Hold-to-manual-termination (HM) legs are now properly parsed and inserted into the plan
 - Corrected issue where hold course would get incorrect magnetic variance applied (neoenstien)
-
+- FPLN RECALL (Game) will now also import Custom waypoints from the world map
+ 
 ## Aircraft Light
 - Strobe lights flash is now realistic (on for 1/2 second)
 - Added white nav lights to back of light assembly on wingtips (Where it should be)
