@@ -77,7 +77,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
     }
     construct_CJ4() {
-        this.originalTargetAltitude = Simplane.getAutoPilotSelectedAltitudeLockValue();
+        let selAlt = Simplane.getAutoPilotSelectedAltitudeLockValue()
+        this.originalTargetAltitude = selAlt > -1 ? selAlt: 0;
         this.targetAltitudeChanged = false;
         this.rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         this.rootSVG.setAttribute("id", "ViewBox");
@@ -360,39 +361,41 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
         this.targetAltitudeM = document.createElementNS(Avionics.SVG.NS, "g");
         this.targetAltitudeM.setAttribute("id", "targetAltitudeM");
+        this.targetAltitudeM.setAttribute("visibility", "hidden");
         this.targetAltitudeMBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
         this.targetAltitudeMBgSVG.setAttribute("fill", "black");
-        this.targetAltitudeMBgSVG.setAttribute("x", "5");
-        this.targetAltitudeMBgSVG.setAttribute("y", (posY - 45).toString());
-        this.targetAltitudeMBgSVG.setAttribute("width", "104");
-        this.targetAltitudeMBgSVG.setAttribute("height", "40");
+        this.targetAltitudeMBgSVG.setAttribute("x", "22");
+        this.targetAltitudeMBgSVG.setAttribute("y", (posY - 30).toString());
+        this.targetAltitudeMBgSVG.setAttribute("width", "87");
+        this.targetAltitudeMBgSVG.setAttribute("height", "25");
         this.targetAltitudeMBgSVG.setAttribute("fill-opacity", "0.5");
         this.targetAltitudeM.appendChild(this.targetAltitudeMBgSVG);
         this.targetAltitudeMTextSVG1 = document.createElementNS(Avionics.SVG.NS, "text");
-        this.targetAltitudeMTextSVG1.setAttribute("x", "72");
+        this.targetAltitudeMTextSVG1.textContent = "-----";
+        this.targetAltitudeMTextSVG1.setAttribute("x", "92");
         this.targetAltitudeMTextSVG1.setAttribute("y", (posY - 10).toString());
+        this.targetAltitudeMTextSVG1.setAttribute("width", _width.toString());
         this.targetAltitudeMTextSVG1.setAttribute("fill", "cyan");
-        this.targetAltitudeMTextSVG1.setAttribute("font-size", (this.fontSize * 1.4).toString());
+        this.targetAltitudeMTextSVG1.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.targetAltitudeMTextSVG1.setAttribute("font-family", "Roboto-Light");
-        this.targetAltitudeMTextSVG1.setAttribute("letter-spacing", "2");
         this.targetAltitudeMTextSVG1.setAttribute("text-anchor", "end");
         this.targetAltitudeMTextSVG1.setAttribute("alignment-baseline", "bottom");
         this.targetAltitudeM.appendChild(this.targetAltitudeMTextSVG1);
         this.targetAltitudeMTextSVG2 = document.createElementNS(Avionics.SVG.NS, "text");
-        this.targetAltitudeMTextSVG2.textContent = "-----";
-        this.targetAltitudeMTextSVG2.setAttribute("x", "30");
+        this.targetAltitudeMTextSVG2.textContent = "M";
+        this.targetAltitudeMTextSVG2.setAttribute("x", "107");
         this.targetAltitudeMTextSVG2.setAttribute("y", (posY - 10).toString());
-        this.targetAltitudeMTextSVG2.setAttribute("width", _width.toString());
         this.targetAltitudeMTextSVG2.setAttribute("fill", "cyan");
         this.targetAltitudeMTextSVG2.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.targetAltitudeMTextSVG2.setAttribute("font-family", "Roboto-Light");
-        this.targetAltitudeMTextSVG2.setAttribute("text-anchor", "start");
+        this.targetAltitudeMTextSVG2.setAttribute("text-anchor", "end");
         this.targetAltitudeMTextSVG2.setAttribute("alignment-baseline", "bottom");
         this.targetAltitudeM.appendChild(this.targetAltitudeMTextSVG2);
         this.rootGroup.appendChild(this.targetAltitudeM);
 
         this.targetAltitude = document.createElementNS(Avionics.SVG.NS, "g");
         this.targetAltitude.setAttribute("id", "TargetAltitude");
+        this.targetAltitude.setAttribute("visibility", "hidden");
         this.targetAltitudeBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
         this.targetAltitudeBgSVG.setAttribute("fill", "black");
         this.targetAltitudeBgSVG.setAttribute("x", "5");
@@ -1572,7 +1575,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     }
     updateCursorScrolling(_altitude) {
         if(this.aircraft == Aircraft.CJ4 && this.isMTRSVisible()){
-            let meters = Math.round(_altitude / 3.28084);
+            let divider = 5;
+            let meters = Math.floor(_altitude / 3.28084 / divider) * divider;
             this.CursorMNumber.textContent = meters;
             this.cursorM.setAttribute("visibility", "visible");
         }else{
@@ -1651,18 +1655,32 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var APMode = this.getAutopilotMode();
             var stdMode = (baroMode == "STD") ? true : false;
             if (this.aircraft == Aircraft.CJ4){
-                let divider = 100;
-                let leadingZeros = 2;
-
+                if(this.isMTRSVisible()){
+                    this.targetAltitude.setAttribute("visibility", "hidden");
+                    this.targetAltitudeM.setAttribute("visibility", "visible");
+                }else{
+                    this.targetAltitudeM.setAttribute("visibility", "hidden");
+                    this.targetAltitude.setAttribute("visibility", "visible");
+                }
+                console.log("TEST" + targetAltitude + this.originalTargetAltitude);
                 if(!this.targetAltitudeChanged && targetAltitude != this.originalTargetAltitude){
                     this.targetAltitudeChanged = true;
-                    this.targetAltitudeTextSVG2.setAttribute("x", "73");
+                    this.targetAltitudeTextSVG2.setAttribute("x", "73");                    
                 }
+
                 if(this.targetAltitudeChanged){
-                    var integral = Math.floor(targetAltitude / divider);
-                    var modulo = Math.floor(targetAltitude - (integral * divider));
-                    this.targetAltitudeTextSVG1.textContent = integral.toString();
-                    this.targetAltitudeTextSVG2.textContent = Utils.leadingZeros(modulo, leadingZeros);
+                    if(this.isMTRSVisible()){
+                        let divider = 10;
+                        var integral = Math.floor(targetAltitude / 3.28084 / divider) * divider;
+                        this.targetAltitudeMTextSVG1.textContent = integral.toString();
+                    }else{
+                        let divider = 100;
+                        let leadingZeros = 2;
+                        var integral = Math.floor(targetAltitude / divider);
+                        var modulo = Math.floor(targetAltitude - (integral * divider));
+                        this.targetAltitudeTextSVG1.textContent = integral.toString();
+                        this.targetAltitudeTextSVG2.textContent = Utils.leadingZeros(modulo, leadingZeros);
+                    }
                     var offsetY = this.valueToSvg(currentAltitude, targetAltitude);
                     offsetY -= 48;
                     this.targetAltitudeIndicatorSVG.setAttribute("y", offsetY.toString());
