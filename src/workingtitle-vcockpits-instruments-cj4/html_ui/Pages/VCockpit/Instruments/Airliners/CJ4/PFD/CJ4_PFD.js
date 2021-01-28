@@ -110,7 +110,7 @@ class CJ4_PFD extends BaseAirliners {
                 this.onModeChanged();
             }
             
-            if (this.mapNavigationSource === 0 && navToNavTransferState === 3 && this.presetMapNavigationSource !== 1) {
+            if (this.mapNavigationSource === 0 && navToNavTransferState >= 3 && this.presetMapNavigationSource !== 1) {
                 this.presetMapNavigationSource = 1;
                 this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
             }
