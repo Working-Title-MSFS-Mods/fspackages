@@ -96,6 +96,10 @@ class WT_VerticalAutopilot {
         return Math.floor(this._navModeSelector.selectedAlt2);
     }
 
+    get lockedAltitude() {
+        return Math.floor(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:3", "feet"));
+    }
+
     get path() {
         return this._vnav.trackPath();
     }
@@ -298,7 +302,8 @@ class WT_VerticalAutopilot {
                 }
                 if (this.verticalMode !== VerticalNavModeState.PATH && this._pathInterceptStatus !== PathInterceptStatus.LEVELING 
                         && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
-                    this._vnavPathStatus = VnavPathStatus.NONE
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
                 this.checkAndSetTrackedAltitude(this._vnavPathStatus);
@@ -469,7 +474,7 @@ class WT_VerticalAutopilot {
                     const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
                     const reqVs = -1 * AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
                     if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
-                        && this.selectedAltitude < this.indicatedAltitude - 100) {
+                        && this.selectedAltitude < this.indicatedAltitude - 100 && this.selectedAltitude < this.lockedAltitude - 100) {
                         console.log("normal path arming");
                         return true;
                     } else if (this.path.deviation > 1000 && this.selectedAltitude < this.indicatedAltitude - 100) {
@@ -622,11 +627,6 @@ class WT_VerticalAutopilot {
                     }
                 }
                 else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
-                    this.setVerticalNavModeState(VerticalNavModeState.PATH);
-                    this._navModeSelector.setProperAltitudeArmedState();
-                    if (this.altSlot !== AltitudeSlot.SELECTED) {
-                        this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
-                    }
                     if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
                         console.log("setting PathInterceptStatus.LEVELING");
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, this.targetAltitude);
@@ -636,6 +636,11 @@ class WT_VerticalAutopilot {
                         && this.indicatedAltitude < this.targetAltitude + 500) {
                         this._pathInterceptStatus = PathInterceptStatus.CONTINUOUS;
                         this._continuousIndex = this._vnav.flightplan.activeWaypointIndex;
+                    }
+                    this.setVerticalNavModeState(VerticalNavModeState.PATH);
+                    this._navModeSelector.setProperAltitudeArmedState();
+                    if (this.altSlot !== AltitudeSlot.SELECTED) {
+                        this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
                     }
                 }
                 else {
@@ -676,12 +681,6 @@ class WT_VerticalAutopilot {
                     this.vsSlot2Value = 0;
                     console.log("RESETTING FROM LEVELED");
                 }
-                // else if (this.path.fpa == 0) {
-                //     this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
-                //     this.currentAltitudeTracking = AltitudeState.MANAGED;
-                //     this._navModeSelector.currentArmedVnavState = VerticalNavModeState.PATH;
-                //     this._navModeSelector.currentVerticalActiveState = VerticalNavModeState.ALTV;
-                // }
                 break;
         }
     }
@@ -1036,13 +1035,15 @@ class WT_VerticalAutopilot {
             return;
         }
         const isGlidepathActive = this._glidepathStatus === GlidepathStatus.GP_ARMED || this._glidepathStatus === GlidepathStatus.GP_ACTIVE ? true : false;
-        const isPathActive = this._vnavPathStatus === VnavPathStatus.PATH_ARMED || this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE ? true : false;
+        const isPathActive = this._vnavPathStatus === VnavPathStatus.PATH_EXISTS || this._vnavPathStatus === VnavPathStatus.PATH_ARMED || this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE ? true : false;
         let newSnowflakeStatus = false;
         if (isGlidepathActive || isPathActive) {
             if (this._pathInterceptStatus === PathInterceptStatus.LEVELED) {
                 newSnowflakeStatus = false;
-            } else {
+            } else if (this.path.deviation && Math.abs(this.path.deviation) < 1000) {
                 newSnowflakeStatus = true;
+            } else {
+                newSnowflakeStatus = false;
             }
         }
         if (this.snowflake !== newSnowflakeStatus) {

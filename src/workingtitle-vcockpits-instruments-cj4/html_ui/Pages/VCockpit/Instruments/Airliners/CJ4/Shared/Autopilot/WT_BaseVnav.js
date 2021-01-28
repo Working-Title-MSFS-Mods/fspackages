@@ -233,7 +233,7 @@ class WT_BaseVnav {
         if (approach && approach.length > 0) {
             return this.allWaypoints.indexOf(approach[approach.length - 1]);
         }
-        return undefined;
+        return false;
     }
 
     activateVerticalDirect(targetIndex, altitude, callback = EmptyCallback.Void) {
@@ -289,6 +289,9 @@ class WT_BaseVnav {
         let firstPossibleDescentIndex = 0;
         let firstApproachWaypointIndex = this.getFirstApproachWaypointIndex();
         let lastApproachWaypointIndex = this.getLastApproachWaypointIndex();
+        if (!lastApproachWaypointIndex) {
+            lastApproachWaypointIndex = this.allWaypoints.length - 1;
+        }
 
         for (let i = 0; i < waypointCount; i++) { //Assemble this._verticalFlightPlan
             const segmentType = this._fpm.getSegmentFromWaypoint(this.allWaypoints[i]).type;
