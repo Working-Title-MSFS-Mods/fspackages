@@ -12,13 +12,15 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 
 # Changes
 
-- Fixed flight model error that caused stalling conditions during landing
-- Fixed Preset Errors that caused the Nav-To-Nav transfer to not occur and the localizer to not be selected
+- Correct missed lift adjustment in FM leading to incorrect stall speeds
+- PFD should no longer allow any preset but NAV1 when nav-to-nav is armed and the active nav source is FMS
+- PFD should automatically set the preset nav source to NAV1 when nav-to-nav-is armed
+- Corrected stuck CHECK LOC TUNING scenarios where addon navdata is incorrect
 - Change navaid datablock to "LOC" from "ILS"
 - Fix VNAV not leveling off at constraints during a climb
 - Alt alert cancel on ALT knob push
--
-
+- VNAV Setup page should no longer display CRZALTCELL
+- Fixed issue where VNAV state would become corrupted when capturing a preselected altitude while in VPATH.
 
 # ⚠️ Known Issues
 * PITCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
