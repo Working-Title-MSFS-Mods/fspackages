@@ -202,7 +202,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 line.SVGLine.setAttribute("fill", "white");
                 if (line.IsPrimary) {
                     line.SVGText1 = document.createElementNS(Avionics.SVG.NS, "text");
-                    line.SVGText1.setAttribute("x", "-38");
+                    line.SVGText1.setAttribute("x", "-36");
                     line.SVGText1.setAttribute("y", "6");
                     line.SVGText1.setAttribute("fill", "white");
                     line.SVGText1.setAttribute("font-size", (this.fontSize).toString());
@@ -210,7 +210,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     line.SVGText1.setAttribute("text-anchor", "end");
                     line.SVGText1.setAttribute("alignment-baseline", "central");
                     line.SVGText2 = document.createElementNS(Avionics.SVG.NS, "text");
-                    line.SVGText2.setAttribute("x", "-36");
+                    line.SVGText2.setAttribute("x", "-34");
                     line.SVGText2.setAttribute("y", "4");
                     line.SVGText2.setAttribute("fill", "white");
                     line.SVGText2.setAttribute("font-size", (this.fontSize * 0.72).toString());
@@ -232,7 +232,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             }
             this.centerSVG.appendChild(graduationGroup);
 
-            var cursorPosX = _left + 10;
+            var cursorPosX = _left + 12;
             var cursorPosY = _top + _height * 0.5;
             var cursorWidth = width;
             var cursorHeight = 80;
@@ -329,7 +329,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             }
             this.centerSVG.appendChild(this.targetAltitudeIndicatorSVG);
 
-            var baroMinsPosX = gradWidth - 37;
+            var baroMinsPosX = gradWidth - 34;
             var baroMinsPosY = _top + _height * 0.5;
             var baroMinsWidth = 100;
             var baroMinsHeight = 100;
@@ -343,14 +343,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.baroMinsSVG.setAttribute("y", (baroMinsPosY - baroMinsHeight * 0.5).toString());
             this.baroMinsSVG.setAttribute("width", baroMinsWidth.toString());
             this.baroMinsSVG.setAttribute("height", baroMinsHeight.toString());
-            this.baroMinsSVG.setAttribute("viewBox", "-21 0 100 100");
+            this.baroMinsSVG.setAttribute("viewBox", "-19 0 100 100");
             {
                 if (!this.baroMinsShape)
                     this.baroMinsPointer = document.createElementNS(Avionics.SVG.NS, "path");
                 this.baroMinsPointer.setAttribute("d", "M -50 50 L 24 50 L 39 30 L 39 70 L 24 50 Z");
                 this.baroMinsPointer.setAttribute("fill", "none");
                 this.baroMinsPointer.setAttribute("stroke", "cyan");
-                this.baroMinsPointer.setAttribute("stroke-width", "3");
+                this.baroMinsPointer.setAttribute("stroke-width", "2");
                 this.baroMinsPointer.setAttribute("fill", "cyan");
                 this.baroMinsSVG.appendChild(this.baroMinsPointer);
             }
