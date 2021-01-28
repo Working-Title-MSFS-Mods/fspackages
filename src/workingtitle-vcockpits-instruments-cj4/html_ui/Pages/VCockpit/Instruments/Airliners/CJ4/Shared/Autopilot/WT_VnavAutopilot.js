@@ -689,7 +689,7 @@ class WT_VerticalAutopilot {
                 else if (this.lockedAltitude == this.selectedAltitude && this.targetAltitude < this.lockedAltitude) {
                     this.vsSlot = 1;
                     this.vsSlot2Value = 0;
-                    this.altSlot = AltitudeSlot.LOCK;
+                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     this.verticalMode = VerticalNavModeState.ALTS;
                     this._vnavPathStatus = VnavPathStatus.NONE;
