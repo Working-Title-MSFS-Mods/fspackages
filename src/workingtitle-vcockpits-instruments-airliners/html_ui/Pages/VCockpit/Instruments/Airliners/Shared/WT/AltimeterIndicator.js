@@ -230,6 +230,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     graduationGroup.appendChild(line.SVGText2);
             }
             this.centerSVG.appendChild(graduationGroup);
+
             var cursorPosX = _left + 10;
             var cursorPosY = _top + _height * 0.5;
             var cursorWidth = width;
@@ -241,10 +242,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             else
                 Utils.RemoveAllChildren(this.cursorSVG);
             this.cursorSVG.setAttribute("x", cursorPosX.toString());
-            this.cursorSVG.setAttribute("y", (cursorPosY - cursorHeight * 0.5).toString());
+            this.cursorSVG.setAttribute("y", (cursorPosY - cursorHeight * 0.5 - 25).toString());
             this.cursorSVG.setAttribute("width", cursorWidth.toString());
-            this.cursorSVG.setAttribute("height", cursorHeight.toString());
-            this.cursorSVG.setAttribute("viewBox", "0 0 " + cursorWidth + " " + cursorHeight);
+            this.cursorSVG.setAttribute("height", (cursorHeight+25).toString());
+            this.cursorSVG.setAttribute("viewBox", "0 -25 " + cursorWidth + " " + (cursorHeight+25));
             {
                 this.cursorSVGDefs = document.createElementNS(Avionics.SVG.NS, "defs");
                 this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
@@ -271,8 +272,36 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorIntegrals[2].construct(this.cursorSVGIntegralContainer, _cursorPosX + 65, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 1.55, "green");
                 this.cursorDecimals.construct(this.cursorSVGIntegralContainer, _cursorPosX + 93, _cursorPosY + 5, _width, "Roboto-Bold", this.fontSize * 0.95, "green");
                 this.cursorSVG.appendChild(this.cursorSVGIntegralContainer);
+                this.cursorM = document.createElementNS(Avionics.SVG.NS, "g");
+                this.cursorM.setAttribute("visibility", "hidden");
+                this.cursorMSVGShape = document.createElementNS(Avionics.SVG.NS, "rect");
+                this.cursorMSVGShape.setAttribute("x", "0");
+                this.cursorMSVGShape.setAttribute("y", "-25");
+                this.cursorMSVGShape.setAttribute("width", "95");
+                this.cursorMSVGShape.setAttribute("height", "30");
+                this.cursorMSVGShape.setAttribute("fill", "black");
+                this.cursorMSVGShape.setAttribute("stroke", "white");
+                this.cursorMSVGShape.setAttribute("stroke-width", "1.5");
+                this.cursorM.appendChild(this.cursorMSVGShape);
+                this.CursorMNumber = document.createElementNS(Avionics.SVG.NS, "text");
+                this.CursorMNumber.setAttribute("x", "75");
+                this.CursorMNumber.setAttribute("y", "-1.5");
+                this.CursorMNumber.setAttribute("font-size", (this.fontSize * 1).toString());
+                this.CursorMNumber.setAttribute("text-anchor", "end");
+                this.cursorM.appendChild(this.CursorMNumber);
+                this.CursorMM = document.createElementNS(Avionics.SVG.NS, "text");
+                this.CursorMM.textContent = "M";
+                this.CursorMM.setAttribute("x", "90");
+                this.CursorMM.setAttribute("y", "-1.5");
+                this.CursorMM.setAttribute("font-size", (this.fontSize * 1).toString());
+                this.CursorMM.setAttribute("text-anchor", "end");
+                this.CursorMM.setAttribute("id", "MeterUnit");
+                this.cursorM.appendChild(this.CursorMM);
+                this.cursorSVG.appendChild(this.cursorM);
                 this.centerSVG.appendChild(this.cursorSVG);
+                console.log(this.cursorM.outerHTML);
             }
+
             var targetAltitudeIndicatorPosX = gradWidth - 13;
             var targetAltitudeIndicatorPosY = _top + _height * 0.5;
             var targetAltitudeIndicatorWidth = 100;
@@ -328,6 +357,40 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.centerSVG.appendChild(this.baroMinsSVG);
         }
         this.rootGroup.appendChild(this.centerSVG);
+
+        this.targetAltitudeM = document.createElementNS(Avionics.SVG.NS, "g");
+        this.targetAltitudeM.setAttribute("id", "targetAltitudeM");
+        this.targetAltitudeMBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.targetAltitudeMBgSVG.setAttribute("fill", "black");
+        this.targetAltitudeMBgSVG.setAttribute("x", "5");
+        this.targetAltitudeMBgSVG.setAttribute("y", (posY - 45).toString());
+        this.targetAltitudeMBgSVG.setAttribute("width", "104");
+        this.targetAltitudeMBgSVG.setAttribute("height", "40");
+        this.targetAltitudeMBgSVG.setAttribute("fill-opacity", "0.5");
+        this.targetAltitudeM.appendChild(this.targetAltitudeMBgSVG);
+        this.targetAltitudeMTextSVG1 = document.createElementNS(Avionics.SVG.NS, "text");
+        this.targetAltitudeMTextSVG1.setAttribute("x", "72");
+        this.targetAltitudeMTextSVG1.setAttribute("y", (posY - 10).toString());
+        this.targetAltitudeMTextSVG1.setAttribute("fill", "cyan");
+        this.targetAltitudeMTextSVG1.setAttribute("font-size", (this.fontSize * 1.4).toString());
+        this.targetAltitudeMTextSVG1.setAttribute("font-family", "Roboto-Light");
+        this.targetAltitudeMTextSVG1.setAttribute("letter-spacing", "2");
+        this.targetAltitudeMTextSVG1.setAttribute("text-anchor", "end");
+        this.targetAltitudeMTextSVG1.setAttribute("alignment-baseline", "bottom");
+        this.targetAltitudeM.appendChild(this.targetAltitudeMTextSVG1);
+        this.targetAltitudeMTextSVG2 = document.createElementNS(Avionics.SVG.NS, "text");
+        this.targetAltitudeMTextSVG2.textContent = "-----";
+        this.targetAltitudeMTextSVG2.setAttribute("x", "30");
+        this.targetAltitudeMTextSVG2.setAttribute("y", (posY - 10).toString());
+        this.targetAltitudeMTextSVG2.setAttribute("width", _width.toString());
+        this.targetAltitudeMTextSVG2.setAttribute("fill", "cyan");
+        this.targetAltitudeMTextSVG2.setAttribute("font-size", (this.fontSize * 1.0).toString());
+        this.targetAltitudeMTextSVG2.setAttribute("font-family", "Roboto-Light");
+        this.targetAltitudeMTextSVG2.setAttribute("text-anchor", "start");
+        this.targetAltitudeMTextSVG2.setAttribute("alignment-baseline", "bottom");
+        this.targetAltitudeM.appendChild(this.targetAltitudeMTextSVG2);
+        this.rootGroup.appendChild(this.targetAltitudeM);
+
         this.targetAltitude = document.createElementNS(Avionics.SVG.NS, "g");
         this.targetAltitude.setAttribute("id", "TargetAltitude");
         this.targetAltitudeBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
@@ -336,7 +399,6 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeBgSVG.setAttribute("y", (posY - 45).toString());
         this.targetAltitudeBgSVG.setAttribute("width", "104");
         this.targetAltitudeBgSVG.setAttribute("height", "40");
-        this.targetAltitudeBgSVG.setAttribute("fill", "black");
         this.targetAltitudeBgSVG.setAttribute("fill-opacity", "0.5");
         this.targetAltitude.appendChild(this.targetAltitudeBgSVG);
         this.targetAltitudeTextSVG1 = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1509,6 +1571,13 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.thousandIndicator.setAttribute("visibility", (showThousandIndicator) ? "visible" : "hidden");
     }
     updateCursorScrolling(_altitude) {
+        if(this.aircraft == Aircraft.CJ4 && this.isMTRSVisible()){
+            let meters = Math.round(_altitude / 3.28084);
+            this.CursorMNumber.textContent = meters;
+            this.cursorM.setAttribute("visibility", "visible");
+        }else{
+            this.cursorM.setAttribute("visibility", "hidden");
+        }
         if (this.cursorIntegrals) {
             let hideZeros = (this.aircraft == Aircraft.A320_NEO) ? true : false;
             // if(this.aircraft == Aircraft.CJ4){

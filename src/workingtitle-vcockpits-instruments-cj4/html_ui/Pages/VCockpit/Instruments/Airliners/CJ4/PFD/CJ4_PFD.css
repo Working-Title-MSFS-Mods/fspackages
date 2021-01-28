@@ -1067,6 +1067,10 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
     transform: translateY(-1px)
 }
 
+#Altimeter #MeterUnit{
+    fill: #adadad !important;
+}
+
 #Altimeter #CenterGroup #graduationGroup>text[font-size="25"] {
     font-size: 38px;
     letter-spacing: 0px;
