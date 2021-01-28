@@ -300,7 +300,6 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.cursorM.appendChild(this.CursorMM);
                 this.cursorSVG.appendChild(this.cursorM);
                 this.centerSVG.appendChild(this.cursorSVG);
-                console.log(this.cursorM.outerHTML);
             }
 
             var targetAltitudeIndicatorPosX = gradWidth - 13;
@@ -1662,7 +1661,6 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.targetAltitudeM.setAttribute("visibility", "hidden");
                     this.targetAltitude.setAttribute("visibility", "visible");
                 }
-                console.log("TEST" + targetAltitude + this.originalTargetAltitude);
                 if (!this.targetAltitudeChanged && targetAltitude != this.originalTargetAltitude) {
                     this.targetAltitudeChanged = true;
                     this.targetAltitudeTextSVG2.setAttribute("x", "73");

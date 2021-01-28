@@ -17,6 +17,7 @@ class CJ4_PFD extends BaseAirliners {
         this.isMachActive = undefined;
         this.MACH_SYNC_TIME = 1000;
         this._machSyncTimer = this.MACH_SYNC_TIME;
+        this.minMode = "OFF";
         this.fdMode = WTDataStore.get("CJ4_FD_MODE", 0);
         this._msgInfo = undefined;
         this.presetMapNavigationSource = 1;
@@ -526,6 +527,15 @@ class CJ4_PFD extends BaseAirliners {
             SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", parseInt(vApp));
             SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", false);
         }
+
+        this.minMode = _dict.get(CJ4_PopupMenu_Key.MIN_ALT_SRC);
+        const baroSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_BARO));
+        SimVar.SetSimVarValue("L:WT_CJ4_BARO_SET", "Number", baroSet);
+        WTDataStore.set("CJ4_MIN_BARO", baroSet);
+        const raSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_RADIO));
+        SimVar.SetSimVarValue("L:WT_CJ4_RADIO_SET", "Number", raSet);
+        WTDataStore.set("CJ4_MIN_RADIO", raSet);
+
         this.radioSrc1 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR1_SRC);
         this.radioSrc2 = _dict.get(CJ4_PopupMenu_Key.BRG_PTR2_SRC);
 
@@ -556,9 +566,6 @@ class CJ4_PFD extends BaseAirliners {
         if (modeChanged) {
             this.onModeChanged();
         }
-
-        const baroSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL));
-        SimVar.SetSimVarValue("L:WT_CJ4_BARO_SET", "Number", baroSet);
     }
     fillDictionary(_dict) {
         if (this.mapDisplayMode == Jet_NDCompass_Display.ROSE) {
@@ -603,6 +610,9 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VT, vT);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VRF, vRef);
         _dict.set(CJ4_PopupMenu_Key.VSPEED_VAP, vApp);
+        _dict.set(CJ4_PopupMenu_Key.MIN_ALT_SRC, this.minMode);
+        _dict.set(CJ4_PopupMenu_Key.MIN_ALT_BARO, WTDataStore.get("CJ4_MIN_BARO", 0));
+        _dict.set(CJ4_PopupMenu_Key.MIN_ALT_RADIO, WTDataStore.get("CJ4_MIN_RADIO", 0));
         _dict.set(CJ4_PopupMenu_Key.BRG_PTR1_SRC, this.radioSrc1);
         _dict.set(CJ4_PopupMenu_Key.BRG_VOR1_FREQ, this.radioNav.getVORActiveFrequency(1).toFixed(3));
         _dict.set(CJ4_PopupMenu_Key.BRG_ADF1_FREQ, this.radioNav.getADFActiveFrequency(1).toFixed(0));
