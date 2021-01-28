@@ -145,6 +145,18 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             bg.setAttribute("fill", "black");
             bg.setAttribute("fill-opacity", "0.5");
             this.centerSVG.appendChild(bg);
+
+            this.radioMinsRect = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.radioMinsRect.setAttribute("id", "radioMins");
+            this.radioMinsRect.setAttribute("fill", "none");
+            this.radioMinsRect.setAttribute("stroke", "cyan");
+            this.radioMinsRect.setAttribute("stroke-width", "2");
+            this.radioMinsRect.setAttribute("x", "4");
+            this.radioMinsRect.setAttribute("y", "0");
+            this.radioMinsRect.setAttribute("width", "4");
+            this.radioMinsRect.setAttribute("height", "100");
+            this.centerSVG.appendChild(this.radioMinsRect);
+
             this.groundRibbonHasFixedHeight = true;
             var groundRibbonPosX = _left;
             var groundRibbonPosY = 0;
@@ -187,6 +199,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 this.groundRibbonSVG.appendChild(this.groundRibbonSVGShape);
             }
             this.centerSVG.appendChild(this.groundRibbonSVG);
+
             this.graduationScrollPosX = _left + gradWidth;
             this.graduationScrollPosY = _top + _height * 0.5;
             for (var i = 0; i < this.totalGraduations; i++) {
@@ -1424,11 +1437,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     }
     update(_dTime) {
         let indicatedAltitude = Simplane.getAltitude();
-        var groundReference = indicatedAltitude - Simplane.getAltitudeAboveGround();
+        let aboveGroundAltitude = Simplane.getAltitudeAboveGround();
+        var groundReference = indicatedAltitude - aboveGroundAltitude;
         var baroMode = Simplane.getPressureSelectedMode(this.aircraft);
         var selectedAltitude;
         let minMode = localStorage.getItem("WT_CJ4_MIN_SRC");
-        // let radioMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
         if (this.aircraft === Aircraft.AS01B || this.aircraft === Aircraft.B747_8 || this.aircraft === Aircraft.A320_NEO) {
             selectedAltitude = Math.max(0, Simplane.getAutoPilotDisplayedAltitudeLockValue());
         }
@@ -1442,6 +1455,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.updateTargetAltitude(indicatedAltitude, selectedAltitude, baroMode);
         this.updateBaroPressure(baroMode);
         this.updateBaroMinimums(minMode, indicatedAltitude);
+        this.updateRadioMinimums(minMode, aboveGroundAltitude, indicatedAltitude, groundReference);
         this.updateMtrs(indicatedAltitude, selectedAltitude);
         this.updateAltitudeAlertFlash(_dTime);
     }
@@ -1804,6 +1818,28 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 }
             } else {
                 this.baroMinsSVG.setAttribute("visibility", "hidden");
+            }
+        }
+    }
+
+    updateRadioMinimums(minMode, aboveGroundAltitude, indicatedAltitude, groundReference) {
+        if (this.radioMinsRect) {
+            if (minMode == "RA") {
+                let refDelta = 275;
+                let radioMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
+                let deltaAltitude = aboveGroundAltitude - radioMinsSet;
+                if (deltaAltitude > refDelta || radioMinsSet == 0) {
+                    this.radioMinsRect.setAttribute("visibility", "hidden");
+                }else{
+                    console.log(indicatedAltitude);
+                    var radioY = this.valueToSvg(indicatedAltitude, (groundReference + radioMinsSet))
+                    var groundY = this.valueToSvg(indicatedAltitude, groundReference)
+                    this.radioMinsRect.setAttribute("y", (radioY).toString());
+                    this.radioMinsRect.setAttribute("height", (groundY-radioY).toString());
+                    this.radioMinsRect.setAttribute("visibility", "visible");
+                }
+            } else {
+                this.radioMinsRect.setAttribute("visibility", "hidden");
             }
         }
     }
