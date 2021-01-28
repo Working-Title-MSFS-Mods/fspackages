@@ -1049,13 +1049,15 @@ class WT_VerticalAutopilot {
             return;
         }
         const isGlidepathActive = this._glidepathStatus === GlidepathStatus.GP_ARMED || this._glidepathStatus === GlidepathStatus.GP_ACTIVE ? true : false;
-        const isPathActive = this._vnavPathStatus === VnavPathStatus.PATH_ARMED || this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE ? true : false;
+        const isPathActive = this._vnavPathStatus === VnavPathStatus.PATH_EXISTS || this._vnavPathStatus === VnavPathStatus.PATH_ARMED || this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE ? true : false;
         let newSnowflakeStatus = false;
         if (isGlidepathActive || isPathActive) {
             if (this._pathInterceptStatus === PathInterceptStatus.LEVELED) {
                 newSnowflakeStatus = false;
-            } else {
+            } else if (Math.abs(this.path.deviation) < 1000) {
                 newSnowflakeStatus = true;
+            } else {
+                newSnowflakeStatus = false;
             }
         }
         if (this.snowflake !== newSnowflakeStatus) {
