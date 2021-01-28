@@ -13,7 +13,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.graduationSpacing = 42;
         this.groundRibbonHasFixedHeight = false;
         this.groundLineSVGHeight = 0;
-        this.mtrsVisible = false;
+        this.mtrsVisible = WTDataStore.get('CJ4_MTRS_MODE', false);;
         this.hudAPAltitude = 0;
         this.isHud = false;
         this._aircraft = Aircraft.A320_NEO;

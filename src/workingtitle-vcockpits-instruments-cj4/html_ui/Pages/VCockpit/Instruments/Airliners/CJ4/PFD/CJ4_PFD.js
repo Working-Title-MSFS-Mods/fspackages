@@ -480,6 +480,7 @@ class CJ4_PFD extends BaseAirliners {
 
         const mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
+        WTDataStore.set("CJ4_MTRS_MODE", (mtrsOn == "ON") ? true : false);
 
         const fltDirStatus = _dict.get(CJ4_PopupMenu_Key.FLT_DIR);
         this.fdMode = fltDirStatus == "X-PTR" ? 1 : 0;
