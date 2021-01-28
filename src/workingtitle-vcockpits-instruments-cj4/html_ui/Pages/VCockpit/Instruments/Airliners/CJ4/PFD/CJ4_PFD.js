@@ -18,6 +18,7 @@ class CJ4_PFD extends BaseAirliners {
         this.MACH_SYNC_TIME = 1000;
         this._machSyncTimer = this.MACH_SYNC_TIME;
         this.minMode = "OFF";
+        localStorage.setItem("WT_CJ4_MIN_SRC", this.minMode);
         this.fdMode = WTDataStore.get("CJ4_FD_MODE", 0);
         this._msgInfo = undefined;
         this.presetMapNavigationSource = 1;
@@ -529,6 +530,7 @@ class CJ4_PFD extends BaseAirliners {
         }
 
         this.minMode = _dict.get(CJ4_PopupMenu_Key.MIN_ALT_SRC);
+        localStorage.setItem("WT_CJ4_MIN_SRC", this.minMode);
         const baroSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_BARO));
         SimVar.SetSimVarValue("L:WT_CJ4_BARO_SET", "Number", baroSet);
         WTDataStore.set("CJ4_MIN_BARO", baroSet);

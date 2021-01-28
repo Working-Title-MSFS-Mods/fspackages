@@ -1427,7 +1427,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         var groundReference = indicatedAltitude - Simplane.getAltitudeAboveGround();
         var baroMode = Simplane.getPressureSelectedMode(this.aircraft);
         var selectedAltitude;
-        let baroMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+        let minMode = localStorage.getItem("WT_CJ4_MIN_SRC");
+        // let radioMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
         if (this.aircraft === Aircraft.AS01B || this.aircraft === Aircraft.B747_8 || this.aircraft === Aircraft.A320_NEO) {
             selectedAltitude = Math.max(0, Simplane.getAutoPilotDisplayedAltitudeLockValue());
         }
@@ -1440,7 +1441,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.updateGroundReference(indicatedAltitude, groundReference);
         this.updateTargetAltitude(indicatedAltitude, selectedAltitude, baroMode);
         this.updateBaroPressure(baroMode);
-        this.updateBaroMinimums(baroMinsSet, indicatedAltitude);
+        this.updateBaroMinimums(minMode, indicatedAltitude);
         this.updateMtrs(indicatedAltitude, selectedAltitude);
         this.updateAltitudeAlertFlash(_dTime);
     }
@@ -1783,22 +1784,26 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             SimVar.SetSimVarValue("L:HUD_AP_SELECTED_ALTITUDE", "Number", this.hudAPAltitude);
         }
     }
-    updateBaroMinimums(baroMinsSet, indicatedAltitude) {
+    updateBaroMinimums(minMode, indicatedAltitude) {
         if (this.baroMinsSVG) {
-            let refDelta = 275;
-            let deltaAltitude = baroMinsSet - indicatedAltitude;
-            if (deltaAltitude < -refDelta || deltaAltitude > refDelta || baroMinsSet == 0) {
+            if (minMode == "BARO") {
+                let baroMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+                let refDelta = 275;
+                let deltaAltitude = baroMinsSet - indicatedAltitude;
+                if (deltaAltitude < -refDelta || deltaAltitude > refDelta || baroMinsSet == 0) {
+                    this.baroMinsSVG.setAttribute("visibility", "hidden");
+                } else {
+                    var _top = 0;
+                    var _height = this.refHeight;
+                    let deltaValue = indicatedAltitude - baroMinsSet;
+                    let deltaSVG = deltaValue * this.graduationSpacing * (this.nbSecondaryGraduations + 1) / 100;
+                    let offsetY = _top + _height * 0.5 + deltaSVG;
+                    offsetY -= 48;
+                    this.baroMinsSVG.setAttribute("y", offsetY.toString());
+                    this.baroMinsSVG.setAttribute("visibility", "visible");
+                }
+            } else {
                 this.baroMinsSVG.setAttribute("visibility", "hidden");
-            }
-            else {
-                var _top = 0;
-                var _height = this.refHeight;
-                let deltaValue = indicatedAltitude - baroMinsSet;
-                let deltaSVG = deltaValue * this.graduationSpacing * (this.nbSecondaryGraduations + 1) / 100;
-                let offsetY = _top + _height * 0.5 + deltaSVG;
-                offsetY -= 48;
-                this.baroMinsSVG.setAttribute("y", offsetY.toString());
-                this.baroMinsSVG.setAttribute("visibility", "visible");
             }
         }
     }
