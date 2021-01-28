@@ -95,7 +95,7 @@ class CJ4_PFD extends BaseAirliners {
             }
 
             const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
-            if (this.previousNavToNavTransferState !== navToNavTransferState && navToNavTransferState === 3) {
+            if (this.previousNavToNavTransferState !== navToNavTransferState && navToNavTransferState === 4) {
                 this.radioNav.setRADIONAVSource(NavSource.VOR1);
                 this.mapNavigationMode = Jet_NDCompass_Navigation.VOR;
 
@@ -108,6 +108,11 @@ class CJ4_PFD extends BaseAirliners {
                 }
 
                 this.onModeChanged();
+            }
+            
+            if (this.mapNavigationSource === 0 && navToNavTransferState === 3 && this.presetMapNavigationSource !== 1) {
+                this.presetMapNavigationSource = 1;
+                this.mapOverlay.compass.root.navPreset.setPreset(this.presetMapNavigationSource);
             }
 
             this.previousNavToNavTransferState = navToNavTransferState;
@@ -977,8 +982,8 @@ class CJ4_ILS extends NavSystemElement {
                 const isGs = SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:1", "bool");
                 const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
 
-                const isGhostLoc = isLoc && navToNavTransferState >= 2 && !Simplane.getIsGrounded();
-                const isGhostGs = isGs && navToNavTransferState >= 2 && !Simplane.getIsGrounded();
+                const isGhostLoc = isLoc && navToNavTransferState >= 3 && !Simplane.getIsGrounded();
+                const isGhostGs = isGs && navToNavTransferState >= 3 && !Simplane.getIsGrounded();
 
                 const isVnav = SimVar.GetSimVarValue('L:WT_CJ4_SNOWFLAKE', 'number') === 1;
                 const isRnav = SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY', 'number') > 2;
