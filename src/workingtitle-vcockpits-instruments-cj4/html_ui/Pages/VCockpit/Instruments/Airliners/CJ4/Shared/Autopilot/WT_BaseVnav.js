@@ -741,7 +741,7 @@ class WT_BaseVnav {
         }
         else if (this.flightplan.activeWaypointIndex > this._lastClimbIndex) {
             altitude = this.indicatedAltitude;
-            if (currentSegment) {
+            if (currentSegment >= 0) {
                 fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
                 fpa = this._verticalFlightPlanSegments[currentSegment].fpa;
                 const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
