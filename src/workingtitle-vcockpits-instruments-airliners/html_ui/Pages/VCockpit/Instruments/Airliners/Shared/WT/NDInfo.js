@@ -39,7 +39,8 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.VORRight = new VORDMENavAid(this.querySelector("#VORDMENavaid_Right"), 2);
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
-        this.minimums = this.querySelector("#MinimumsValue");
+        this.minimumsValue = this.querySelector("#MinimumsValue");
+        this.minimumsUnit = this.querySelector("#MinimumsUnit");
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -500,10 +501,18 @@ class Jet_MFD_NDInfo extends HTMLElement {
         }
     }
     updateMinimums() {
-        if (this.minimums) {
-            let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
-            this.minimums.textContent = baroSet;
-            this.minimums.parentElement.style.display = (baroSet == 0) ? 'none' : '';
+        if (this.minimumsValue) {
+            let minMode = localStorage.getItem("WT_CJ4_MIN_SRC");
+            this.minimumsUnit.textContent = minMode;
+            if(minMode == "BARO"){
+                this.minimumsValue.textContent = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+                this.minimumsValue.parentElement.style.display = "block";
+            }else if(minMode == "RA"){
+                this.minimumsValue.textContent = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
+                this.minimumsValue.parentElement.style.display = "block";
+            }else{
+                this.minimumsValue.parentElement.style.display = "none";
+            }
         }
     }
     getILSIdent() {
