@@ -1,3 +1,4 @@
+
 .box, .smallbox {
   display: none;
   border: 0.175rem solid white;
@@ -5,7 +6,9 @@
   position: absolute;
   padding: 0.4rem 0.15rem 0 0.15rem;
   line-height: 0.8;
-  background: black
+  /* In case a clearer distinction from the background is needed */
+  /* box-shadow: -1px -1px black, 1px 1px black;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; */
 }
 
 .smallbox{
@@ -33,7 +36,7 @@
 }
 
 #HorizonAlt {
-  left: 45.8%;
+  left: 45.7%;
   top: 46.5%;
 }
 
@@ -65,12 +68,25 @@
   display: block;
 }
 
+#FDAlt_R, #FDAlt_Y {
+  left: 38%;
+  top: 47%;
+}
+
+.red_fd #FDAlt_R {
+display: block;
+}
+
+.yellow_fd #FDAlt_Y {
+display: block;
+}
+
 #AltimeterAlt {
   left: 80.75%;
   top: 51%;
 }
 
-.red_alt #Altimeter #TargetAltitude, .red_alt #Altimeter #TargetAltitudeM, .red_alt #Altimeter #TargetAltitudeIndicator, .red_alt #Altimeter #CursorGroupM, .red_alt #Altimeter #CursorGroup, .red_alt #Altimeter #graduationGroup, .red_alt #Altimeter #GroundRibbonGroup, .red_alt #Altimeter #BaroMinsIndicator, .red_alt #Altimeter #Pressure {
+.red_alt #Altimeter #TargetAltitude, .red_alt #Altimeter #TargetAltitudeM, .red_alt #Altimeter #CenterGroup, .red_alt #Altimeter #TargetAltitudeIndicator, .red_alt #Altimeter #CursorGroupM, .red_alt #Altimeter #CursorGroup, .red_alt #Altimeter #graduationGroup, .red_alt #Altimeter #GroundRibbonGroup, .red_alt #Altimeter #BaroMinsIndicator, .red_alt #Altimeter #Pressure {
   display: none;
 }
 
@@ -104,7 +120,7 @@
   display: block;
 }
 
-#AOAAlt {
+#AOAAlt_R,  #AOAAlt_Y {
   left: 0.95%;
   top: 51.3%;
 }
@@ -114,11 +130,53 @@
   display: none;
 }
 
-.red_aoa #AOAAltR {
+.red_aoa #AOAAlt_R {
   display: block;
 }
 
-.yellow_aoa #AOAAltY {
+.yellow_aoa #AOAAlt_Y {
+  display: block;
+}
+
+#AirspeedAlt {
+  left: 12.3%;
+  top: 51%;
+}
+
+#GSAlt_R, #GSAlt_Y {
+  left: 68.45%;
+  top: 86.85%;
+}
+
+.red_gs #GlideSlopeGroup, .yellow_gs #GlideSlopeGroup,
+.red_gs #GlideSlopeGroup #CursorGroup, .yellow_gs #GlideSlopeGroup #CursorGroup,
+.red_gs #GlideSlopeGroup #SnowflakeGroup, .yellow_gs #GlideSlopeGroup #SnowflakeGroup {
+  visibility: hidden;
+}
+
+.red_gs #GSAlt_R {
+  display: block;
+}
+
+.yellow_gs #GSAlt_Y {
+  display: block;
+}
+
+#LOCAlt_R, #LOCAlt_Y {
+  left: 55%;
+  top: 86.85%;
+}
+
+.red_loc #LocalizerGroup, .yellow_loc #LocalizerGroup,
+.red_loc #LocalizerGroup #CursorGroup, .yellow_loc #LocalizerGroup #CursorGroup{
+  visibility: hidden;
+}
+
+.red_loc #LOCAlt_R {
+  display: block;
+}
+
+.yellow_loc #LOCAlt_Y {
   display: block;
 }
 
@@ -129,6 +187,7 @@
 
 .copyright #Copyright {
   display: block;
+  background: black
 }
 
 #Atc1_Fail {

@@ -2,7 +2,7 @@
     <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
     <div id="Mainframe">
         <div id="Electricity" state="off">
-            <div id="PFD">
+            <div id="PFD" class="red_att red_fd">
                 <div id="HorizonContainer">
                     <jet-pfd-attitude-indicator id="Horizon" background="true"></jet-pfd-attitude-indicator>
                     <div id="HorizonAlt" class="red box">ATT</div>
@@ -10,6 +10,8 @@
                         <div id="HorizonAlign_AttHdg" class="full blue box">ATT/HDG ALIGNING</div>
                         <div id="HorizonAlign_TaxiWarning" class="full blue box">DO NOT TAXI</div>
                     </div>
+                    <div id="FDAlt_R" class="red smallbox">FD</div>
+                    <div id="FDAlt_Y" class="yellow smallbox">FD</div>
                 </div>
                 <div id="InstrumentsContainer">
                     <div id="AutopilotInfos">
@@ -72,8 +74,13 @@
                     <jet-pfd-vspeed-indicator id="VSpeed"></jet-pfd-vspeed-indicator>
                     <div id="VSpeedAlt" class="red box">VS</div>
                     <jet-pfd-aoa-indicator id="AOA"></jet-pfd-aoa-indicator>
-                    <div id="AOAAlt" class="yellow box">AOA</div>
+                    <div id="AOAAlt_R" class="red smallbox">AOA</div>
+                    <div id="AOAAlt_Y" class="yellow smallbox">AOA</div>
                     <jet-pfd-ils-indicator id="ILS"></jet-pfd-ils-indicator>
+                    <div id="GSAlt_R" class="red smallbox">GS</div>
+                    <div id="GSAlt_Y" class="yellow smallbox">GS</div>
+                    <div id="LOCAlt_R" class="red smallbox">LOC</div>
+                    <div id="LOCAlt_Y" class="yellow smallbox">LOC</div>
                 </div>
             </div>
 
