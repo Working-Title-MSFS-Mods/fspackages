@@ -427,7 +427,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             else
                                 suffix = " R";
                         }
-                        let type = "ILS";
+                        let type = "LOC";
                         let freq = "--.--";
                         let course = "---";
                         let ident = "";
