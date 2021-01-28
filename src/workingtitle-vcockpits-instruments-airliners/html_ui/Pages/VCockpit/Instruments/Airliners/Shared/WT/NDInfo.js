@@ -505,11 +505,13 @@ class Jet_MFD_NDInfo extends HTMLElement {
             let minMode = localStorage.getItem("WT_CJ4_MIN_SRC");
             this.minimumsUnit.textContent = minMode;
             if(minMode == "BARO"){
-                this.minimumsValue.textContent = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
-                this.minimumsValue.parentElement.style.display = "block";
+                let baroMins = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+                this.minimumsValue.textContent = baroMins;
+                this.minimumsValue.parentElement.style.display = (baroMins == 0) ? 'none' : 'block';
             }else if(minMode == "RA"){
-                this.minimumsValue.textContent = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
-                this.minimumsValue.parentElement.style.display = "block";
+                let radioMins = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
+                this.minimumsValue.textContent = radioMins
+                this.minimumsValue.parentElement.style.display = (radioMins == 0) ? 'none' : 'block';
             }else{
                 this.minimumsValue.parentElement.style.display = "none";
             }
