@@ -627,7 +627,12 @@ class WT_VerticalAutopilot {
                     if (this.altSlot !== AltitudeSlot.SELECTED) {
                         this.setAltitudeAndSlot(AltitudeSlot.SELECTED);
                     }
-                    if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
+                    if (this._navModeSelector.isAltitudeLocked) {
+                        console.log("setting PathInterceptStatus.LEVELING because of alt select");
+                        this.setAltitudeAndSlot(AltitudeSlot.SELECTED, this.targetAltitude);
+                        this._pathInterceptStatus = PathInterceptStatus.LEVELING;
+                    }
+                    else if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
                         console.log("setting PathInterceptStatus.LEVELING");
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, this.targetAltitude);
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
