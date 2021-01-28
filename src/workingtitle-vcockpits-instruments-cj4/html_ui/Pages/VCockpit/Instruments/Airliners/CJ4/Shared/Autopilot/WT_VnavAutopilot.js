@@ -302,7 +302,8 @@ class WT_VerticalAutopilot {
                 }
                 if (this.verticalMode !== VerticalNavModeState.PATH && this._pathInterceptStatus !== PathInterceptStatus.LEVELING 
                         && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
-                    this._vnavPathStatus = VnavPathStatus.NONE
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
                 this.checkAndSetTrackedAltitude(this._vnavPathStatus);
@@ -626,13 +627,7 @@ class WT_VerticalAutopilot {
                     }
                 }
                 else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
-                    if (this._navModeSelector.isAltitudeLocked && this.indicatedAltitude < this.selectedAltitude + 1000) {
-                        console.log("setting PathInterceptStatus.LEVELING because of alt select");
-                        this.setAltitudeAndSlot(AltitudeSlot.SELECTED, this.targetAltitude);
-                        this._pathInterceptStatus = PathInterceptStatus.LEVELING;
-                        break;
-                    }
-                    else if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
+                    if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
                         console.log("setting PathInterceptStatus.LEVELING");
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, this.targetAltitude);
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
@@ -685,15 +680,6 @@ class WT_VerticalAutopilot {
                     this.vsSlot = 1;
                     this.vsSlot2Value = 0;
                     console.log("RESETTING FROM LEVELED");
-                }
-                else if (this.lockedAltitude == this.selectedAltitude && this.targetAltitude < this.lockedAltitude) {
-                    this.vsSlot = 1;
-                    this.vsSlot2Value = 0;
-                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
-                    this._pathInterceptStatus = PathInterceptStatus.NONE;
-                    this.verticalMode = VerticalNavModeState.ALTS;
-                    this._vnavPathStatus = VnavPathStatus.NONE;
-                    this._navModeSelector.currentArmedVnavState = VerticalNavModeState.NONE;
                 }
                 break;
         }
