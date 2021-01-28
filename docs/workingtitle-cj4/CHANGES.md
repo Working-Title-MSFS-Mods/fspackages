@@ -1,4 +1,4 @@
-# Working Title CJ4 v0.10.0
+# Working Title CJ4 v0.10.1
 
 Welcome to the Working Title CJ4 v0.10.1.  This hotfix is for pressing issues we did not catch during our QA.
 
@@ -13,10 +13,10 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 # Changes
 
 - Fixed flight model error that caused stalling conditions during landing
--Fixed Preset Errors that caused the Nav-To-Nav transfer to not occur and the localizer to not be selected
--Change navaid datablock to "LOC" from "ILS"
--Fix VNAV not leveling off at constraints during a climb
--Alt alert cancel on ALT knob push
+- Fixed Preset Errors that caused the Nav-To-Nav transfer to not occur and the localizer to not be selected
+- Change navaid datablock to "LOC" from "ILS"
+- Fix VNAV not leveling off at constraints during a climb
+- Alt alert cancel on ALT knob push
 -
 
 
