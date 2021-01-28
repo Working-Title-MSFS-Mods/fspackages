@@ -19,7 +19,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this._aircraft = Aircraft.A320_NEO;
         this._isAltitudeAlerting = false;
         this._lastAltitudeAlertSet = false;
-        this.ALTALERTANIMTIME = 4000; 
+        this.ALTALERTANIMTIME = 4000;
         this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
     }
     static get observedAttributes() {
@@ -78,7 +78,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     }
     construct_CJ4() {
         let selAlt = Simplane.getAutoPilotSelectedAltitudeLockValue()
-        this.originalTargetAltitude = selAlt > -1 ? selAlt: 0;
+        this.originalTargetAltitude = selAlt > -1 ? selAlt : 0;
         this.targetAltitudeChanged = false;
         this.rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         this.rootSVG.setAttribute("id", "ViewBox");
@@ -245,8 +245,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.cursorSVG.setAttribute("x", cursorPosX.toString());
             this.cursorSVG.setAttribute("y", (cursorPosY - cursorHeight * 0.5 - 25).toString());
             this.cursorSVG.setAttribute("width", cursorWidth.toString());
-            this.cursorSVG.setAttribute("height", (cursorHeight+25).toString());
-            this.cursorSVG.setAttribute("viewBox", "0 -25 " + cursorWidth + " " + (cursorHeight+25));
+            this.cursorSVG.setAttribute("height", (cursorHeight + 25).toString());
+            this.cursorSVG.setAttribute("viewBox", "0 -25 " + cursorWidth + " " + (cursorHeight + 25));
             {
                 this.cursorSVGDefs = document.createElementNS(Avionics.SVG.NS, "defs");
                 this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
@@ -330,7 +330,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             }
             this.centerSVG.appendChild(this.targetAltitudeIndicatorSVG);
 
-            var baroMinsPosX = gradWidth - 13;
+            var baroMinsPosX = gradWidth - 37;
             var baroMinsPosY = _top + _height * 0.5;
             var baroMinsWidth = 100;
             var baroMinsHeight = 100;
@@ -344,10 +344,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.baroMinsSVG.setAttribute("y", (baroMinsPosY - baroMinsHeight * 0.5).toString());
             this.baroMinsSVG.setAttribute("width", baroMinsWidth.toString());
             this.baroMinsSVG.setAttribute("height", baroMinsHeight.toString());
-            this.baroMinsSVG.setAttribute("viewBox", "0 0 100 100");
+            this.baroMinsSVG.setAttribute("viewBox", "-21 0 100 100");
             {
                 if (!this.baroMinsShape)
-                this.baroMinsPointer = document.createElementNS(Avionics.SVG.NS, "path");
+                    this.baroMinsPointer = document.createElementNS(Avionics.SVG.NS, "path");
                 this.baroMinsPointer.setAttribute("d", "M -50 50 L 24 50 L 39 30 L 39 70 L 24 50 Z");
                 this.baroMinsPointer.setAttribute("fill", "none");
                 this.baroMinsPointer.setAttribute("stroke", "cyan");
@@ -1574,12 +1574,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             this.thousandIndicator.setAttribute("visibility", (showThousandIndicator) ? "visible" : "hidden");
     }
     updateCursorScrolling(_altitude) {
-        if(this.aircraft == Aircraft.CJ4 && this.isMTRSVisible()){
+        if (this.aircraft == Aircraft.CJ4 && this.isMTRSVisible()) {
             let divider = 5;
             let meters = Math.floor(_altitude / 3.28084 / divider) * divider;
             this.CursorMNumber.textContent = meters;
             this.cursorM.setAttribute("visibility", "visible");
-        }else{
+        } else {
             this.cursorM.setAttribute("visibility", "hidden");
         }
         if (this.cursorIntegrals) {
@@ -1596,8 +1596,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             //         this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
             //     }
             // }else{
-                this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined);
-                this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
+            this.cursorIntegrals[0].update(_altitude, 10000, (hideZeros) ? 10000 : undefined);
+            this.cursorIntegrals[1].update(_altitude, 1000, (hideZeros) ? 1000 : undefined);
             // }
             this.cursorIntegrals[2].update(_altitude, 100);
         }
@@ -1654,26 +1654,26 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         if (this.targetAltitudeIndicatorSVG) {
             var APMode = this.getAutopilotMode();
             var stdMode = (baroMode == "STD") ? true : false;
-            if (this.aircraft == Aircraft.CJ4){
-                if(this.isMTRSVisible()){
+            if (this.aircraft == Aircraft.CJ4) {
+                if (this.isMTRSVisible()) {
                     this.targetAltitude.setAttribute("visibility", "hidden");
                     this.targetAltitudeM.setAttribute("visibility", "visible");
-                }else{
+                } else {
                     this.targetAltitudeM.setAttribute("visibility", "hidden");
                     this.targetAltitude.setAttribute("visibility", "visible");
                 }
                 console.log("TEST" + targetAltitude + this.originalTargetAltitude);
-                if(!this.targetAltitudeChanged && targetAltitude != this.originalTargetAltitude){
+                if (!this.targetAltitudeChanged && targetAltitude != this.originalTargetAltitude) {
                     this.targetAltitudeChanged = true;
-                    this.targetAltitudeTextSVG2.setAttribute("x", "73");                    
+                    this.targetAltitudeTextSVG2.setAttribute("x", "73");
                 }
 
-                if(this.targetAltitudeChanged){
-                    if(this.isMTRSVisible()){
+                if (this.targetAltitudeChanged) {
+                    if (this.isMTRSVisible()) {
                         let divider = 10;
                         var integral = Math.floor(targetAltitude / 3.28084 / divider) * divider;
                         this.targetAltitudeMTextSVG1.textContent = integral.toString();
-                    }else{
+                    } else {
                         let divider = 100;
                         let leadingZeros = 2;
                         var integral = Math.floor(targetAltitude / divider);
@@ -1687,7 +1687,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.targetAltitudeIndicatorSVG.setAttribute("visibility", "visible");
                 }
             }
-            else if(this.aircraft == Aircraft.B747_8 || this.aircraft == Aircraft.AS01B) {
+            else if (this.aircraft == Aircraft.B747_8 || this.aircraft == Aircraft.AS01B) {
                 if (APMode != AutopilotMode.MANAGED) {
                     let divider = 100;
                     let refDelta = 275;
@@ -1808,8 +1808,8 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     updateAltitudeAlertFlash(deltaTime) {
         const isAlertSet = SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number") === 1;
 
-        if(this._lastAltitudeAlertSet !== isAlertSet && isAlertSet){
-            this._isAltitudeAlerting = isAlertSet; 
+        if (this._lastAltitudeAlertSet !== isAlertSet && isAlertSet) {
+            this._isAltitudeAlerting = isAlertSet;
             this.targetAltitudeTextSVG1.classList.add("blinking");
             this.targetAltitudeTextSVG2.classList.add("blinking");
             this.targetAltitudeIndicatorSVGShape.classList.add("blinking");
@@ -1818,14 +1818,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
         if (this._isAltitudeAlerting) {
             this._altAlertAnimationTimer -= deltaTime;
-            if(this._altAlertAnimationTimer < 0){   
+            if (this._altAlertAnimationTimer < 0) {
                 this.targetAltitudeTextSVG1.classList.remove("blinking");
                 this.targetAltitudeTextSVG2.classList.remove("blinking");
                 this.targetAltitudeIndicatorSVGShape.classList.remove("blinking");
                 this._isAltitudeAlerting = false;
                 this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
             }
-        }      
+        }
     }
 }
 customElements.define("jet-pfd-altimeter-indicator", Jet_PFD_AltimeterIndicator);
