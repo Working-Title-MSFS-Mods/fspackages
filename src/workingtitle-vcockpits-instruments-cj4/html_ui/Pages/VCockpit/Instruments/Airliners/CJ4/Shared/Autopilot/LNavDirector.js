@@ -66,7 +66,7 @@ class LNavDirector {
 
       const navSensitivityScalar = this.getNavSensitivityScalar(planeState.position, navSensitivity);
       SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number', navSensitivityScalar);
-        
+
       if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint && previousWaypoint) {
         this.generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity);
       }
@@ -95,6 +95,8 @@ class LNavDirector {
 
     if (AutopilotMath.isAbeam(dtk, planeState.position, activeWaypoint.infos.coordinates)) {
       this.sequenceToNextWaypoint(planeState, activeWaypoint);
+      this.update();
+      return;
     }
     else {
       const planeToActiveBearing = planeLatLon.initialBearingTo(activeLatLon);
@@ -106,13 +108,14 @@ class LNavDirector {
 
         if (distanceToActive < anticipationDistance && !nextWaypoint.isFlyover) {
           this.sequenceToNextWaypoint(planeState, activeWaypoint);
+          this.update();
+          return;
         }
       }
     }
 
     if (!this.delegateToLocDirector()) {
       this.tryActivateIfArmed(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity);
-
       switch (this.state) {
         case LNavState.TRACKING:
           const activeMode = this.navModeSelector.currentLateralActiveState;
@@ -136,7 +139,7 @@ class LNavDirector {
    */
   handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint, execute) {
     const angleDiffToTarget = Avionics.Utils.angleDiff(planeState.trueHeading, dtk);
-    if (angleDiffToTarget < this.options.degreesRollout || this.navModeSelector.currentLateralActiveState !== LateralNavModeState.LNAV) {
+    if (Math.abs(angleDiffToTarget) < this.options.degreesRollout || this.navModeSelector.currentLateralActiveState !== LateralNavModeState.LNAV) {
       this.state = LNavState.TRACKING;
     }
     else {
@@ -212,10 +215,11 @@ class LNavDirector {
    * @param {number} turnAngle The next turn angle, in degrees.
    */
   getAnticipationDistance(planeState, turnAngle) {
-    const turnRadius = AutopilotMath.turnRadius(planeState.trueAirspeed, this.options.maxBankAngle);
+    const headwind = AutopilotMath.windComponents(planeState.trueHeading, planeState.windDirection, planeState.windSpeed).headwind;
+    const turnRadius = AutopilotMath.turnRadius(planeState.trueAirspeed - headwind, this.options.maxBankAngle);
 
     const bankDiff = (Math.sign(turnAngle) * this.options.maxBankAngle) - planeState.bankAngle;
-    const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * (planeState.trueAirspeed / 3600);
+    const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * ((planeState.trueAirspeed - headwind) / 3600);
 
     const turnAnticipationAngle = Math.min(this.options.maxTurnAnticipationAngle, Math.abs(turnAngle)) * Avionics.Utils.DEG2RAD;
     return Math.min((turnRadius * Math.abs(Math.tan(turnAnticipationAngle / 2))) + enterBankDistance, this.options.maxTurnAnticipationDistance(planeState));
@@ -266,7 +270,7 @@ class LNavDirector {
       }
       else if (nextWaypoint && nextWaypoint.isRunway) {
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
-        
+
         this.state = LNavState.TURN_COMPLETING;
         this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1);
       }
@@ -309,7 +313,7 @@ class LNavDirector {
   postDisplayedNavSensitivity(navSensitivity) {
     if (navSensitivity !== this.currentNavSensitivity) {
       this.currentNavSensitivity = navSensitivity;
-      
+
       switch (this.currentNavSensitivity) {
         case NavSensitivity.TERMINAL:
           MessageService.getInstance().post(FMS_MESSAGE_ID.TERM, () => this.currentNavSensitivity !== NavSensitivity.TERMINAL);
@@ -417,7 +421,7 @@ class LNavDirector {
     state.trueHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
     state.magneticHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
     state.trueTrack = SimVar.GetSimVarValue('GPS GROUND TRUE TRACK', 'Radians') * Avionics.Utils.RAD2DEG;
-    
+
     state.bankAngle = SimVar.GetSimVarValue('PLANE BANK DEGREES', 'Radians') * Avionics.Utils.RAD2DEG;
 
     return state;
