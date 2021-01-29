@@ -489,9 +489,31 @@ class CJ4_PFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
+
         const baroUnits = _dict.get(CJ4_PopupMenu_Key.UNITS_PRESS);
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", (baroUnits == "HPA") ? 1 : 0);
         WTDataStore.set("CJ4_BARO_MODE", (baroUnits == "HPA") ? true : false);
+
+        const baroUnit = _dict.get(CJ4_PopupMenu_Key.BARO_STD);
+        if (baroUnit == "STD") {
+            //TODO SET STD
+        } else {
+            const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET);
+            if(baroUnits == "HPA"){
+                    SimVar.SetSimVarValue("KOHLSMAN SETTING MB", "Millibars", baroSetting);
+                }else{
+                    SimVar.SetSimVarValue("KOHLSMAN SETTING HG", "Inches of Mercury", baroSetting);
+                }
+        }
+
+        // 
+        // if(baroUnits == "HPA"){
+        //     console.log(baroSetting+"millibars");
+        //     SimVar.SetSimVarValue("KOHLSMAN SETTING MB", "millibars", baroSetting);
+        // }else{
+        //     console.log(baroSetting+"inches of mercury");
+        //     SimVar.SetSimVarValue("KOHLSMAN SETTING HG", "inches of mercury", baroSetting);
+        // }
 
         const mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
@@ -592,11 +614,11 @@ class CJ4_PFD extends BaseAirliners {
         }
         _dict.set(CJ4_PopupMenu_Key.MAP_RANGE, this.map.range.toString());
 
-        if(this.showTerrain){
+        if (this.showTerrain) {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "TERR");
-        }else if(this.showWeather){
+        } else if (this.showWeather) {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "WX");
-        }else{
+        } else {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "OFF");
         }
 
@@ -607,7 +629,19 @@ class CJ4_PFD extends BaseAirliners {
         } else if (this.mapNavigationMode == Jet_NDCompass_Navigation.NAV) {
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "FMS1");
         }
+
         const baroHPA = WTDataStore.get("CJ4_BARO_MODE", false);
+        if (Simplane.getPressureSelectedMode() != "STD") {
+            if (baroHPA) {
+                _dict.set(CJ4_PopupMenu_Key.BARO_SET, Simplane.getPressureValue("millibars"));
+                _dict.set(CJ4_PopupMenu_Key.BARO_STD, "HPA");
+            } else {
+                _dict.set(CJ4_PopupMenu_Key.BARO_SET, Simplane.getPressureValue("inches of mercury"));
+                _dict.set(CJ4_PopupMenu_Key.BARO_STD, "IN");
+            }
+        } else {
+            _dict.set(CJ4_PopupMenu_Key.BARO_STD, "STD");
+        }
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", baroHPA);
         _dict.set(CJ4_PopupMenu_Key.UNITS_PRESS, (baroHPA) ? "HPA" : "IN");
         _dict.set(CJ4_PopupMenu_Key.UNITS_MTR_ALT, (this.horizon.isMTRSVisible()) ? "ON" : "OFF");

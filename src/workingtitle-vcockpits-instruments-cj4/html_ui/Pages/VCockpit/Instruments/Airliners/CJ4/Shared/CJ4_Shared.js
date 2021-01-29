@@ -3728,7 +3728,8 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FLT_DIR"] = 29] = "FLT_DIR";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_MAP_OVERLAY"] = 30] = "PFD_MAP_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_STD"] = 30] = "BARO_STD";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_SET"] = 31] = "BARO_SET";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
@@ -3846,6 +3847,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
                 this.addSubMenu("TAWS", this.textSize, null);
                 this.addSubMenu("BARO SET", this.textSize, null);
+                // this.addSubMenu("BARO SET", this.textSize, this.showBaroSetPage.bind(this));
             }
             this.endSection();
         }
@@ -4004,6 +4006,40 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MIN_ALT_SRC]);
                 this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO]);
                 this.addRadioRange("RA", this.textSize, 0, 2500, 1, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showBaroSetPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BARO SET", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                if(WTDataStore.get("CJ4_BARO_MODE", false)){
+                    this.addRadioRange("HPA", this.textSize, 980, 1050, 1, [CJ4_PopupMenu_Key.BARO_STD, CJ4_PopupMenu_Key.BARO_SET]);
+                }else{
+                    this.addRadioRange("IN", this.textSize, 27.00, 32.00, 0.01, [CJ4_PopupMenu_Key.BARO_STD, CJ4_PopupMenu_Key.BARO_SET]);
+                }
+                this.addRadio("STD", this.textSize, [CJ4_PopupMenu_Key.BARO_STD]);
             }
             this.endSection();
         }
