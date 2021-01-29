@@ -2951,7 +2951,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         if (!this.lastTerrainUpdate) {
             this.lastTerrainUpdate = 0;
         }
-        
+
         this.lastTerrainUpdate += _deltaTime;
 
         if (this.lastTerrainUpdate > 1000) {
@@ -3683,6 +3683,19 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
         }
     }
 }
+
+let PopupMenu_ItemType;
+(function (PopupMenu_ItemType) {
+    PopupMenu_ItemType[PopupMenu_ItemType["TITLE"] = 0] = "TITLE";
+    PopupMenu_ItemType[PopupMenu_ItemType["LIST"] = 1] = "LIST";
+    PopupMenu_ItemType[PopupMenu_ItemType["RANGE"] = 2] = "RANGE";
+    PopupMenu_ItemType[PopupMenu_ItemType["RADIO"] = 3] = "RADIO";
+    PopupMenu_ItemType[PopupMenu_ItemType["RADIO_LIST"] = 4] = "RADIO_LIST";
+    PopupMenu_ItemType[PopupMenu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
+    PopupMenu_ItemType[PopupMenu_ItemType["SUBMENU"] = 6] = "SUBMENU";
+    PopupMenu_ItemType[PopupMenu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
+})(PopupMenu_ItemType || (PopupMenu_ItemType = {}));
+
 var CJ4_PopupMenu_Key;
 (function (CJ4_PopupMenu_Key) {
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_FORMAT"] = 0] = "MAP_FORMAT";
@@ -3742,6 +3755,37 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                 return true;
         }
         return false;
+    }
+    onChanged(_item) {
+        console.log(_item.radioVal)
+        if (this.dictionary && _item.enabled) {
+            switch (_item.type) {
+                case PopupMenu_ItemType.RADIO:
+                case PopupMenu_ItemType.RADIO_LIST:
+                case PopupMenu_ItemType.RADIO_RANGE:
+                    if (_item.radioVal){
+                        this.dictionary.set(_item.dictKeys[0], _item.radioName);
+                    }
+                    break;
+                case PopupMenu_ItemType.LIST:
+                    this.dictionary.set(_item.dictKeys[0], _item.listValues[_item.listVal]);
+                    break;
+                case PopupMenu_ItemType.RANGE:
+                    this.dictionary.set(_item.dictKeys[0], _item.rangeVal.toString());
+                    break;
+                case PopupMenu_ItemType.CHECKBOX:
+                    this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
+                    break;
+            }
+            switch (_item.type) {
+                case PopupMenu_ItemType.RADIO_LIST:
+                    this.dictionary.set(_item.dictKeys[1], _item.listValues[_item.listVal]);
+                    break;
+                case PopupMenu_ItemType.RADIO_RANGE:
+                    this.dictionary.set(_item.dictKeys[1], _item.rangeVal.toString());
+                    break;
+            }
+        }
     }
 }
 class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
