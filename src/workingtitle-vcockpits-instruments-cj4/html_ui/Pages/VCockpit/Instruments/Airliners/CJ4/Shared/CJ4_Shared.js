@@ -3728,6 +3728,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FLT_DIR"] = 29] = "FLT_DIR";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FL_ALERT"] = 30] = "FL_ALERT";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
@@ -3915,14 +3916,11 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                //this.addTitle("UNITS", this.textSize, 0.3);
-                this.addList("PRESS", this.textSize, ["IN", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
-                this.addList("MTR ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
+                this.addList("PRESSURE", this.textSize, ["IN", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
                 this.addList("FLT DIR", this.textSize, ["V-BAR", "X-PTR"], [CJ4_PopupMenu_Key.FLT_DIR]);
-            }
-            this.endSection();
-            this.beginSection();
-            {
+                this.addList("MTRS ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
+                this.addList("FL ALERT", this.textSize, ["ON", "OFF"], null);
+                // this.addList("FL ALERT", this.textSize, ["ON", "OFF"], [CJ4_PopupMenu_Key.FL_ALERT]); //TODO Hook up Altitude Alerting
                 this.addList("AOA DISP", this.textSize, ["AUTO", "ON", "OFF"], [CJ4_PopupMenu_Key.AOA]);
             }
             this.endSection();
