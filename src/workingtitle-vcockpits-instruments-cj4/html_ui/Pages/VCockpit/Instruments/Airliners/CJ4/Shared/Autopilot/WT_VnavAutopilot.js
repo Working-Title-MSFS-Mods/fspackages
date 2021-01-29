@@ -1059,7 +1059,7 @@ class WT_VerticalAutopilot {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this.path.deviation);
             }
         } else {
-            if (SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet") != 0) {
+            if (SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet") != 0) {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
             }
         }
