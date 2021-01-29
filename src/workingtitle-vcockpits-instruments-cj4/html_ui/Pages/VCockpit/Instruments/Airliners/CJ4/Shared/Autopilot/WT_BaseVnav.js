@@ -659,7 +659,6 @@ class WT_BaseVnav {
             const runwayDistance = Avionics.Utils.computeDistance(this._currPos, this.allWaypoints[this._approachRunwayIndex].infos.coordinates);
             const runwayAltitude = this._verticalFlightPlan[this._approachRunwayIndex].lowerConstraintAltitude;
             const desiredAltitude = runwayAltitude + AutopilotMath.calculateFPTA(this._approachGlidePath, runwayDistance);
-            SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", (this.gpsAltitude - desiredAltitude));
             path.deviation = this.gpsAltitude - desiredAltitude;
             path.fpa = this._approachGlidePath;
             path.fpta = runwayAltitude;
