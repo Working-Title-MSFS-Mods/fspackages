@@ -3728,7 +3728,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FLT_DIR"] = 29] = "FLT_DIR";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FL_ALERT"] = 30] = "FL_ALERT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_MAP_OVERLAY"] = 30] = "PFD_MAP_OVERLAY";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
@@ -3758,7 +3758,6 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
         return false;
     }
     onChanged(_item) {
-        console.log(_item.radioVal)
         if (this.dictionary && _item.enabled) {
             switch (_item.type) {
                 case PopupMenu_ItemType.RADIO:
@@ -3842,7 +3841,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
                 this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
-                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("OVERLAYS", this.textSize, this.showOverlaysPage.bind(this));
                 this.addSubMenu("RADAR", this.textSize, null);
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
                 this.addSubMenu("TAWS", this.textSize, null);
@@ -3916,12 +3915,52 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
+                //this.addTitle("UNITS", this.textSize, 0.3);
                 this.addList("PRESSURE", this.textSize, ["IN", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
                 this.addList("FLT DIR", this.textSize, ["V-BAR", "X-PTR"], [CJ4_PopupMenu_Key.FLT_DIR]);
                 this.addList("MTRS ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
                 this.addList("FL ALERT", this.textSize, ["ON", "OFF"], null);
                 // this.addList("FL ALERT", this.textSize, ["ON", "OFF"], [CJ4_PopupMenu_Key.FL_ALERT]); //TODO Hook up Altitude Alerting
                 this.addList("AOA DISP", this.textSize, ["AUTO", "ON", "OFF"], [CJ4_PopupMenu_Key.AOA]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showOverlaysPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("OVERLAYS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TERR/WX", this.textSize, 0.37);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_OVERLAY]);
+                this.addRadio("TERR", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_OVERLAY]);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_OVERLAY]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TFC", this.textSize, 0.18);
+                this.addRadio("OFF", this.textSize, null);
+                this.addRadio("ON", this.textSize, null);
             }
             this.endSection();
         }
