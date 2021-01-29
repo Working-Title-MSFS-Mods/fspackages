@@ -90,12 +90,12 @@ class LocDirector {
       const magVar = SimVar.GetSimVarValue('MAGVAR', 'Degrees');
 
       const trueCourse = GeoMath.removeMagvar(radioState.course, magVar);
-      const setCorse = AutopilotMath.normalizeHeading(trueCourse + (interceptAngle * interceptRateScalar));
+      const setCourse = AutopilotMath.normalizeHeading(trueCourse + (interceptAngle * interceptRateScalar));
 
       this.previousDeviation = radioState.lateralDevation;
       this.previousTime = now;
 
-      LNavDirector.setCourse(setCorse, LNavDirector.getAircraftState());
+      LNavDirector.setCourse(setCourse, LNavDirector.getAircraftState());
     }
     else {
       this.state = LocDirectorState.NONE;
