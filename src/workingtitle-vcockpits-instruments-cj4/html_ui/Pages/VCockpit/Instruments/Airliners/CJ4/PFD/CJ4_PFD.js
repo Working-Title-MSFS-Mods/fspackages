@@ -499,11 +499,11 @@ class CJ4_PFD extends BaseAirliners {
             //TODO SET STD
         } else {
             const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET);
-            if(baroUnits == "HPA"){
-                    SimVar.SetSimVarValue("KOHLSMAN SETTING MB", "Millibars", baroSetting);
-                }else{
-                    SimVar.SetSimVarValue("KOHLSMAN SETTING HG", "Inches of Mercury", baroSetting);
-                }
+            if (baroUnits == "HPA") {
+                SimVar.SetSimVarValue("KOHLSMAN SETTING MB", "Millibars", baroSetting);
+            } else {
+                SimVar.SetSimVarValue("KOHLSMAN SETTING HG", "Inches of Mercury", baroSetting);
+            }
         }
 
         // 
@@ -565,7 +565,17 @@ class CJ4_PFD extends BaseAirliners {
         }
 
         this.minMode = _dict.get(CJ4_PopupMenu_Key.MIN_ALT_SRC);
-        localStorage.setItem("WT_CJ4_MIN_SRC", this.minMode);
+        switch (this.minMode) {
+            case "BARO":
+                SimVar.SetSimVarValue("L:WT_CJ4_MIN_SRC", "Number", 1);
+                break;
+            case "RA":
+                SimVar.SetSimVarValue("L:WT_CJ4_MIN_SRC", "Number", 2);
+                break;
+            default:
+                SimVar.SetSimVarValue("L:WT_CJ4_MIN_SRC", "Number", 0);
+                break;
+        }
         const baroSet = parseInt(_dict.get(CJ4_PopupMenu_Key.MIN_ALT_BARO));
         SimVar.SetSimVarValue("L:WT_CJ4_BARO_SET", "Number", baroSet);
         WTDataStore.set("CJ4_MIN_BARO", baroSet);

@@ -502,18 +502,23 @@ class Jet_MFD_NDInfo extends HTMLElement {
     }
     updateMinimums() {
         if (this.minimumsValue) {
-            let minMode = localStorage.getItem("WT_CJ4_MIN_SRC");
-            this.minimumsUnit.textContent = minMode;
-            if(minMode == "BARO"){
-                let baroMins = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
-                this.minimumsValue.textContent = baroMins;
-                this.minimumsValue.parentElement.style.display = (baroMins == 0) ? 'none' : 'block';
-            }else if(minMode == "RA"){
-                let radioMins = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
-                this.minimumsValue.textContent = radioMins
-                this.minimumsValue.parentElement.style.display = (radioMins == 0) ? 'none' : 'block';
-            }else{
-                this.minimumsValue.parentElement.style.display = "none";
+            let minMode = SimVar.GetSimVarValue("L:WT_CJ4_MIN_SRC", "Number");
+            switch (minMode) {
+                case 1:
+                    let baroMins = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+                    this.minimumsValue.textContent = baroMins;
+                    this.minimumsUnit.textContent = "BARO";
+                    this.minimumsValue.parentElement.style.display = (baroMins == 0) ? 'none' : 'block';
+                    break;
+                case 2:
+                    let radioMins = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
+                    this.minimumsValue.textContent = radioMins
+                    this.minimumsUnit.textContent = "RA";
+                    this.minimumsValue.parentElement.style.display = (radioMins == 0) ? 'none' : 'block';
+                    break;
+                default:
+                    this.minimumsValue.parentElement.style.display = "none";
+                    break;
             }
         }
     }

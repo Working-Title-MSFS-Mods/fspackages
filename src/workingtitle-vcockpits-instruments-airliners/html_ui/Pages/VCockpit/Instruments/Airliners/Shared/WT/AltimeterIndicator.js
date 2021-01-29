@@ -1441,7 +1441,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         var groundReference = indicatedAltitude - aboveGroundAltitude;
         var baroMode = Simplane.getPressureSelectedMode(this.aircraft);
         var selectedAltitude;
-        let minMode = localStorage.getItem("WT_CJ4_MIN_SRC");
+        let minMode = SimVar.GetSimVarValue("L:WT_CJ4_MIN_SRC", "Number");
         if (this.aircraft === Aircraft.AS01B || this.aircraft === Aircraft.B747_8 || this.aircraft === Aircraft.A320_NEO) {
             selectedAltitude = Math.max(0, Simplane.getAutoPilotDisplayedAltitudeLockValue());
         }
@@ -1800,7 +1800,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     }
     updateBaroMinimums(minMode, indicatedAltitude) {
         if (this.baroMinsSVG) {
-            if (minMode == "BARO") {
+            if (minMode == 1) {
                 let baroMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
                 let refDelta = 275;
                 let deltaAltitude = baroMinsSet - indicatedAltitude;
@@ -1824,7 +1824,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
     updateRadioMinimums(minMode, aboveGroundAltitude, indicatedAltitude, groundReference) {
         if (this.radioMinsRect) {
-            if (minMode == "RA") {
+            if (minMode == 2) {
                 let refDelta = 275;
                 let radioMinsSet = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
                 let deltaAltitude = aboveGroundAltitude - radioMinsSet;
