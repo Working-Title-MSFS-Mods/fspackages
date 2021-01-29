@@ -260,7 +260,7 @@ class LNavDirector {
    * @param {WayPoint} currentWaypoint The current active waypoint.
    */
   sequenceToNextWaypoint(planeState, currentWaypoint) {
-    if (this.sequencingMode !== FlightPlanSequencing.INHIBIT && planeState.groundSpeed > 25) {
+    if (this.sequencingMode !== FlightPlanSequencing.INHIBIT && planeState.groundSpeed > 25 && !planeState.onGround) {
       const nextWaypoint = this.fpm.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
 
       if (currentWaypoint && currentWaypoint.endsInDiscontinuity) {
@@ -429,6 +429,7 @@ class LNavDirector {
 
     state.groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
     state.trueAirspeed = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+    state.onGround = SimVar.GetSimVarValue('SIM ON GROUND', 'bool') !== 0;
 
     state.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
     state.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
@@ -482,7 +483,7 @@ class LNavDirector {
 
   /**
    * Gets the current system nav sensitivity.
-   * @param {LatLongAlt} planeCoords 
+   * @param {LatLongAlt} planeCoords
    */
   getNavSensitivity(planeCoords) {
     const destinationDistance = this.getDestinationDistance(planeCoords);
@@ -661,6 +662,12 @@ class AircraftState {
      * @type {number}
      */
     this.bankAngle = undefined;
+
+    /**
+     * Whether or not the plane is on the ground.
+     * @type {boolean}
+     */
+    this.onGround = undefined;
   }
 }
 
