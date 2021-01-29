@@ -3728,8 +3728,9 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FLT_DIR"] = 29] = "FLT_DIR";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_STD"] = 30] = "BARO_STD";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_SET"] = 31] = "BARO_SET";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_MAP_OVERLAY"] = 30] = "PFD_MAP_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_STD"] = 31] = "BARO_STD";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_SET"] = 32] = "BARO_SET";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
@@ -3846,8 +3847,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addSubMenu("RADAR", this.textSize, null);
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
                 this.addSubMenu("TAWS", this.textSize, null);
-                this.addSubMenu("BARO SET", this.textSize, null);
-                // this.addSubMenu("BARO SET", this.textSize, this.showBaroSetPage.bind(this));
+                this.addSubMenu("BARO SET", this.textSize, this.showBaroSetPage.bind(this));
             }
             this.endSection();
         }
