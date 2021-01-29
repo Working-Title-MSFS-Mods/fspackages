@@ -3817,7 +3817,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("FORMAT", this.textSize, 0.4);
+                this.addTitle("FORMAT", this.textSize, 0.31);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
 
@@ -3832,7 +3832,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("CONTROLS", this.textSize, 0.5);
+                this.addTitle("CONTROLS", this.textSize, 0.41);
                 this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
                 this.addList("RANGE", this.textSize, ["5", "10", "25", "50", "100", "200", "300"], [CJ4_PopupMenu_Key.MAP_RANGE]);
             }
@@ -3874,7 +3874,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("BRG PTR 1", this.textSize, 0.5);
+                this.addTitle("BRG PTR 1", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("FMS1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("VOR1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
@@ -3883,7 +3883,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("BRG PTR 2", this.textSize, 0.5);
+                this.addTitle("BRG PTR 2", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
@@ -3989,7 +3989,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("V SPEEDS", this.textSize, 0.45);
+                this.addTitle("SPEEDS", this.textSize, 0.32);
                 this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
                 this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
                 this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
@@ -4000,7 +4000,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("MINIMUMS", this.textSize, 0.6);
+                this.addTitle("MINIMUMS", this.textSize, 0.4);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MIN_ALT_SRC]);
                 this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO]);
                 this.addRadioRange("RA", this.textSize, 0, 2500, 1, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO]);
@@ -4043,7 +4043,7 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("V SPEEDS", this.textSize, 0.45);
+                this.addTitle("SPEEDS", this.textSize, 0.32);
                 this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
                 this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
                 this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
@@ -4058,7 +4058,7 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("MINIMUMS", this.textSize, 0.6);
+                this.addTitle("MINIMUMS", this.textSize, 0.4);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MIN_ALT_SRC]);
                 this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO]);
                 this.addRadioRange("RA", this.textSize, 0, 2500, 1, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO]);
