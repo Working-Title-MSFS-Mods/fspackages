@@ -393,11 +393,7 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
-    setMsg(value = "", isOsMsg = true) {
-        if (!isOsMsg && this._msg !== "") {
-            return;
-        }
-
+    setMsg(value = "") {
         if (value === "") {
             if (this._fmcMsgReceiver.hasMsg()) {
                 value = this._fmcMsgReceiver.getMsgText();
@@ -923,7 +919,7 @@ class CJ4_FMC extends FMCMainDisplay {
             }
 
             MessageService.getInstance().update();
-            this.setMsg(this._fmcMsgReceiver.getMsgText(), false);
+            this.setMsg(this._fmcMsgReceiver.getMsgText());
             this._pfdMsgReceiver.update();
             this._msgUpdateCd = 500;
         }
