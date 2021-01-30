@@ -2742,6 +2742,50 @@ class CJ4_SystemFMS extends NavSystemElement {
                                     .setAttribute("style", "color: magenta");
                             }
                         }
+                        
+                        // VNAV WINDOW
+                        //
+
+                        this._previousWaypointContainer // PREVIOUS ETA SHOULD BE  BLANK
+                        .querySelector(".cj4x-navigation-data-waypoint-eta")
+                        .textContent = "";
+                        
+                        const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                            vnavTODorDirect.textContent = "DIRECT";
+                            vnavTODorDirect.setAttribute("style", "color: green");
+
+                        const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                            vnavFix.textContent = "CAKNU";
+                            vnavFix.setAttribute("style", "color: green");
+
+                        this._destinationWaypointContainer
+                            .querySelector(".cj4x-navigation-data-waypoint-eta")
+                            .textContent = "";
+
+                        const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
+                            vnavFixETADist.textContent = activeWaypointETEValue + "/" + activeWaypointDistance + "NM";
+                            vnavFixETADist.setAttribute("style", "color: green");
+
+                        const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
+                            vnavFixConstraint.textContent = "12000";
+                            vnavFixConstraint.setAttribute("style", "color: green");
+
+                        const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
+                            vnavFixAngleRate.textContent = "1.9 2800";
+                            vnavFixAngleRate.setAttribute("style", "color: green");
+
+                        
+                        const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                            vnavAdvisoryDescent.textContent = "DES";
+                            vnavAdvisoryDescent.setAttribute("style", "color green");
+
+                        const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
+                            vnavAdvisoryDescentTimeDistance.textContent = "00:50/  312NM";
+                            vnavAdvisoryDescentTimeDistance.setAttribute("style", "color green");
+                        
+
+
+
                     }
                 }
             }
