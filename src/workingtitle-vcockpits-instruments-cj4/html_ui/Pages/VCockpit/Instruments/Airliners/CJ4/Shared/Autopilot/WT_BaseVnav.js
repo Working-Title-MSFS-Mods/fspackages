@@ -717,7 +717,10 @@ class WT_BaseVnav {
         let fpta = undefined;
         let fpa = undefined;
         let todDistanceInFP = undefined;
-        const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
+        let currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
+        if (currentSegment == undefined && this._verticalFlightPlanSegments.length > 0 && this._verticalFlightPlanSegments[0].fpa > 0) {
+            currentSegment = 0;
+        }
         if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE) {
             todExists = false;
         }
