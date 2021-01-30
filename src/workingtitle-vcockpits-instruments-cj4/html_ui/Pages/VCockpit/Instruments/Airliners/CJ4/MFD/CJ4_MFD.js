@@ -118,6 +118,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.mapOverlay.showGwx(true);
             }
             else {
+
                 this.map.setMode(this.mapDisplayMode);
                 this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
 
@@ -209,19 +210,19 @@ class CJ4_MFD extends BaseAirliners {
                 }
             }
 
+            const rangeSelectDisabled = WTDataStore.get('WT_CJ4_RANGE_SEL_DISABLED', 0);
+            if (rangeSelectDisabled || this.mapDisplayMode == Jet_NDCompass_Display.PLAN) {
+                this.map.map.instrument.showAltitudeIntercept = false;
+            }
+            else {
+                this.map.map.instrument.showAltitudeIntercept = true;
+            }
+
             if (this.showSystemOverlay == 1 || this.showSystemOverlay == 2) {
                 this.systemOverlay.show(true, this.showSystemOverlay);
             }
             else {
                 this.systemOverlay.show(false);
-            }
-
-            const rangeSelectDisabled = WTDataStore.get('WT_CJ4_RANGE_SEL_DISABLED', 0);
-            if (rangeSelectDisabled) {
-                this.map.map.instrument.showAltitudeIntercept = false;
-            }
-            else {
-                this.map.map.instrument.showAltitudeIntercept = true;
             }
 
             // if (this.showFms) {
