@@ -311,7 +311,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.onModeChanged();
                 break;
             case "Lwr_Push_TFC":
-                this.map.toggleSymbol(CJ4_MapSymbol.TRAFFIC);
+                CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.TRAFFIC);
                 break;
             case "Lwr_Push_SYS":
                 this.showSystemOverlay++;
@@ -549,7 +549,7 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR2");
         else if (this.mapNavigationMode == Jet_NDCompass_Navigation.NAV)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "FMS1");
-        _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS, (this.map.hasSymbol(CJ4_MapSymbol.AIRPORTS)) ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS, (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.AIRPORTS)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS, (this.map.hasSymbol(CJ4_MapSymbol.CONSTRAINTS)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS, (this.map.hasSymbol(CJ4_MapSymbol.INTERSECTS)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS, (this.map.hasSymbol(CJ4_MapSymbol.AIRWAYS)) ? "ON" : "OFF");
