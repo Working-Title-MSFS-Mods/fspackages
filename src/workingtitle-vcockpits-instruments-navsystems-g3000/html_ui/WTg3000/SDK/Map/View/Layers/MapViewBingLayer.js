@@ -37,6 +37,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._bingMap.setConfig(0);
         this._bingMap.setReference(EBingReference.SEA);
         this._bingMap.showWeather(EWeatherRadar.OFF, 0);
+        this._bingMap.showIsolines(false);
     }
 
     /**
@@ -131,6 +132,13 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
     /**
      * @param {WT_MapViewState} state
      */
+    _updateIsolines(state) {
+        this._bingMap.showIsolines(state.model.terrain.showIsolines);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
     _updateNEXRAD(state) {
         let show = state.model.weatherDisplay.nexradShow && state.model.range.compare(state.model.weatherDisplay.nexradRange) <= 0;
         if (show && this._bingMap.getWeather() != EWeatherRadar.TOPVIEW) {
@@ -147,6 +155,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
         this._updateCenterAndRange(state);
         this._updateRotation(state);
         this._updateTerrainColors(state);
+        this._updateIsolines(state);
         this._updateNEXRAD(state);
     }
 }

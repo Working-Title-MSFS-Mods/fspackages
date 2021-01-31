@@ -12,5 +12,6 @@ WT_MapModelTerrainModule.TerrainMode = {
     RELATIVE: 2
 };
 WT_MapModelTerrainModule.OPTIONS_DEF = {
-    mode: {default: WT_MapModelTerrainModule.TerrainMode.OFF, auto: true}
+    mode: {default: WT_MapModelTerrainModule.TerrainMode.OFF, auto: true},
+    showIsolines: {default: false, auto: true}
 };
