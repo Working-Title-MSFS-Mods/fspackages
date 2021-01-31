@@ -303,7 +303,7 @@ class WT_MapView extends HTMLElement {
                     layerContainer.layer.onProjectionViewChanged(this._state);
                 }
             }
-            if (layerContainer.layer.isVisible(this._state)) {
+            if (layerContainer.layer.isEnabled() && layerContainer.layer.isVisible(this._state)) {
                 layerContainer.container.style.display = "block";
                 layerContainer.layer.onUpdate(this._state);
             } else {

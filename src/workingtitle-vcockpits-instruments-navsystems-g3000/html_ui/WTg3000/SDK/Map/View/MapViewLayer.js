@@ -11,6 +11,8 @@ class WT_MapViewLayer {
 
         this._htmlElement = this._createHTMLElement();
         this._htmlElement.classList.add(className);
+
+        this._isEnabled = true;
     }
 
     /**
@@ -42,6 +44,22 @@ class WT_MapViewLayer {
      */
     get htmlElement() {
         return this._htmlElement;
+    }
+
+    /**
+     * Checks whether this layer is enabled.
+     * @returns {Boolean} whether this layer is enabled.
+     */
+    isEnabled() {
+        return this._isEnabled;
+    }
+
+    /**
+     * Enables or disables this layer. Disabled layers are hidden from view and are not updated with the map view is updated.
+     * @param {Boolean} value - true if this layer should be enabled, false if this layer should be disabled.
+     */
+    setEnabled(value) {
+        this._isEnabled = value;
     }
 
     /**
