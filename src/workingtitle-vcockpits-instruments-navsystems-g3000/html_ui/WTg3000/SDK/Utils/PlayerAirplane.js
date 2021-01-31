@@ -174,6 +174,18 @@ class WT_PlayerAirplane {
         let ff = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${index + 1}`, "gallons per hour");
         return reference ? reference.set(ff, WT_Unit.GPH) : new WT_NumberUnit(ff, WT_Unit.GPH);
     }
+
+    /**
+     * @readonly
+     * @property {WT_PlayerAirplane} INSTANCE
+     * @type {WT_PlayerAirplane}
+     */
+    static get INSTANCE() {
+        if (!WT_PlayerAirplane._instance) {
+            WT_PlayerAirplane._instance = new WT_PlayerAirplane();
+        }
+        return WT_PlayerAirplane._instance;
+    }
 }
 WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH);
 /**
@@ -184,4 +196,3 @@ WT_PlayerAirplane.Type = {
     TBM930: 1,
     CITATION_LONGITUDE: 2
 };
-WT_PlayerAirplane.INSTANCE = new WT_PlayerAirplane();
