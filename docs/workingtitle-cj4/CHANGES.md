@@ -13,21 +13,19 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 # Changes
 
 - Fix blacked out VNAV Cruise page
-- Fix missing TOD in some scenarios
+- Fixes for VNAV TOD issues in odd situations including a DIRTO
+- Fixes for treating below constraints as at constraints when there is no at constraint in the APPR
 - Fixes and improvements to LNAV turn anticipation and tracking
+- Slightly adjust down bank rate calc to account for in and out acceleration in LNAV
 - Fixed issue with GS/GP not appearing on FMA
 - GP related Snowflake fixes
 - Fix Nearest Airports Direct to
-- Disable waypoint sequencing while on the ground
 - Fix Nav-To-Nav transfer while in Auto
-- Remove range banana from plan view
-- Adjust message priorities
-- Ensure that nearest VOR search returns in distance order.
-- Slightly adjust down bank rate calc to account for in and out acceleration
-- Fixes for VNAV TOD issues in odd situations including a DIRTO
-- Fixes for treating below constraints as at constraints when there is no at constraint in the APPR
-- disable COM3
 - Possible fixes for AP modes (TO/HDG problems and FLC/ALTCAP problems)
+- Disable waypoint sequencing while on the ground
+- Remove range banana from PLAN view
+- Ensure that nearest VOR search returns in distance order.
+- Disable COM3 which caused ghost ATIS during flights
 
 
 # ⚠️ Known Issues
