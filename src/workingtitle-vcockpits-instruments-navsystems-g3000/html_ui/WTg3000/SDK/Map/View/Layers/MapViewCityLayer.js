@@ -320,7 +320,7 @@ WT_MapViewCityLayer.REDRAW_DELAY = 500 // ms
 WT_MapViewCityLayer.DRAW_TIME_BUDGET = 1; // ms
 WT_MapViewCityLayer.REGISTERED_CITIES_UPDATE_INTERVAL = 200; // ms
 WT_MapViewCityLayer.OPTIONS_DEF = {
-    iconSize: {default: [25, 20, 15], auto: true},
+    iconSize: {default: [20, 16, 12], auto: true},
     iconFillColor: {default: ["white", "white", "white"], auto: true},
     iconOutlineWidth: {default: [2, 2, 2], auto: true},
     iconOutlineColor: {default: ["black", "black", "black"], auto: true},
