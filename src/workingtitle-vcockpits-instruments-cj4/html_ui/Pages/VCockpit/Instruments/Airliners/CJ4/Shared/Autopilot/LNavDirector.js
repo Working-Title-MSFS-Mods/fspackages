@@ -42,6 +42,9 @@ class LNavDirector {
 
     /** The current nav sensitivity. */
     this.currentNavSensitivity = NavSensitivity.NORMAL;
+
+    /** The previous crosstrack deviation. */
+    this.previousDeviation = 0;
   }
 
   /**
@@ -66,9 +69,9 @@ class LNavDirector {
 
       const navSensitivityScalar = this.getNavSensitivityScalar(planeState.position, navSensitivity);
       SimVar.SetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number', navSensitivityScalar);
-        
+
       if (!this.delegateToHoldsDirector(activeWaypoint) && activeWaypoint && previousWaypoint) {
-        this.generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity);
+        this.generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity, navSensitivityScalar);
       }
     }
   }
@@ -79,8 +82,9 @@ class LNavDirector {
    * @param {AircraftState} planeState The current aircraft state.
    * @param {WayPoint} previousWaypoint The previous waypoint.
    * @param {number} navSensitivity The current nav sensitivity.
+   * @param {number} navSensitivityScalar The current nav sensitivity scalar.
    */
-  generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity) {
+  generateGuidance(activeWaypoint, planeState, previousWaypoint, navSensitivity, navSensitivityScalar) {
     const activeLatLon = new LatLon(activeWaypoint.infos.coordinates.lat, activeWaypoint.infos.coordinates.long);
 
     const nextWaypoint = this.activeFlightPlan.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
@@ -95,6 +99,7 @@ class LNavDirector {
 
     if (AutopilotMath.isAbeam(dtk, planeState.position, activeWaypoint.infos.coordinates)) {
       this.sequenceToNextWaypoint(planeState, activeWaypoint);
+      return;
     }
     else {
       const planeToActiveBearing = planeLatLon.initialBearingTo(activeLatLon);
@@ -106,22 +111,22 @@ class LNavDirector {
 
         if (distanceToActive < anticipationDistance && !nextWaypoint.isFlyover) {
           this.sequenceToNextWaypoint(planeState, activeWaypoint);
+          return;
         }
       }
     }
 
     if (!this.delegateToLocDirector()) {
       this.tryActivateIfArmed(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity);
-
       switch (this.state) {
         case LNavState.TRACKING:
           const activeMode = this.navModeSelector.currentLateralActiveState;
           const shouldExecute = distanceToActive > this.options.minimumTrackingDistance
             && (activeMode === LateralNavModeState.LNAV || (activeMode === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV));
-          LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, shouldExecute);
+          LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, navSensitivityScalar, shouldExecute);
           break;
         case LNavState.TURN_COMPLETING:
-          this.handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint);
+          this.handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint, navSensitivity, navSensitivityScalar);
           break;
       }
     }
@@ -133,17 +138,19 @@ class LNavDirector {
    * @param {number} dtk The current desired track.
    * @param {WayPoint} previousWaypoint The previous (from) waypoint.
    * @param {WayPoint} activeWaypoint The active (to) waypoint.
+   * @param {number} navSensitivity The current nav sensitivity.
+   * @param {number} navSensitivityScalar The current nav sensitivity scalar.
    */
-  handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint, execute) {
+  handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint, navSensitivity, navSensitivityScalar) {
     const angleDiffToTarget = Avionics.Utils.angleDiff(planeState.trueHeading, dtk);
-    if (angleDiffToTarget < this.options.degreesRollout || this.navModeSelector.currentLateralActiveState !== LateralNavModeState.LNAV) {
+    if (Math.abs(angleDiffToTarget) < this.options.degreesRollout || this.navModeSelector.currentLateralActiveState !== LateralNavModeState.LNAV) {
       this.state = LNavState.TRACKING;
     }
     else {
       const turnDirection = Math.sign(angleDiffToTarget);
       const targetHeading = AutopilotMath.normalizeHeading(planeState.trueHeading + (turnDirection * 90));
 
-      LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, false);
+      LNavDirector.trackLeg(previousWaypoint.infos.coordinates, activeWaypoint.infos.coordinates, planeState, navSensitivity, navSensitivityScalar, false);
       LNavDirector.setCourse(targetHeading, planeState);
     }
   }
@@ -212,10 +219,11 @@ class LNavDirector {
    * @param {number} turnAngle The next turn angle, in degrees.
    */
   getAnticipationDistance(planeState, turnAngle) {
-    const turnRadius = AutopilotMath.turnRadius(planeState.trueAirspeed, this.options.maxBankAngle);
+    const headwind = AutopilotMath.windComponents(planeState.trueHeading, planeState.windDirection, planeState.windSpeed).headwind;
+    const turnRadius = AutopilotMath.turnRadius(planeState.trueAirspeed - headwind, this.options.maxBankAngle);
 
     const bankDiff = (Math.sign(turnAngle) * this.options.maxBankAngle) - planeState.bankAngle;
-    const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * (planeState.trueAirspeed / 3600);
+    const enterBankDistance = (Math.abs(bankDiff) / this.options.bankRate) * ((planeState.trueAirspeed - headwind) / 3600);
 
     const turnAnticipationAngle = Math.min(this.options.maxTurnAnticipationAngle, Math.abs(turnAngle)) * Avionics.Utils.DEG2RAD;
     return Math.min((turnRadius * Math.abs(Math.tan(turnAnticipationAngle / 2))) + enterBankDistance, this.options.maxTurnAnticipationDistance(planeState));
@@ -252,7 +260,7 @@ class LNavDirector {
    * @param {WayPoint} currentWaypoint The current active waypoint.
    */
   sequenceToNextWaypoint(planeState, currentWaypoint) {
-    if (this.sequencingMode !== FlightPlanSequencing.INHIBIT && planeState.groundSpeed > 25) {
+    if (this.sequencingMode !== FlightPlanSequencing.INHIBIT && planeState.groundSpeed > 25 && !planeState.onGround) {
       const nextWaypoint = this.fpm.getWaypoint(this.activeFlightPlan.activeWaypointIndex + 1);
 
       if (currentWaypoint && currentWaypoint.endsInDiscontinuity) {
@@ -266,7 +274,7 @@ class LNavDirector {
       }
       else if (nextWaypoint && nextWaypoint.isRunway) {
         this.sequencingMode = FlightPlanSequencing.INHIBIT;
-        
+
         this.state = LNavState.TURN_COMPLETING;
         this.fpm.setActiveWaypointIndex(this.activeFlightPlan.activeWaypointIndex + 1);
       }
@@ -309,7 +317,7 @@ class LNavDirector {
   postDisplayedNavSensitivity(navSensitivity) {
     if (navSensitivity !== this.currentNavSensitivity) {
       this.currentNavSensitivity = navSensitivity;
-      
+
       switch (this.currentNavSensitivity) {
         case NavSensitivity.TERMINAL:
           MessageService.getInstance().post(FMS_MESSAGE_ID.TERM, () => this.currentNavSensitivity !== NavSensitivity.TERMINAL);
@@ -363,9 +371,10 @@ class LNavDirector {
    * @param {LatLongAlt} legEnd The coordinates of the end of the leg.
    * @param {AircraftState} planeState The current aircraft state.
    * @param {number} navSensitivity The sensitivity to use for tracking.
+   * @param {number} navSensitivityScalar The nav sensitivity scalar.
    * @param {boolean} execute Whether or not to execute the calculated course.
    */
-  static trackLeg(legStart, legEnd, planeState, navSensitivity, execute = true) {
+  static trackLeg(legStart, legEnd, planeState, navSensitivity, navSensitivityScalar = 1, execute = true) {
     const dtk = AutopilotMath.desiredTrack(legStart, legEnd, planeState.position);
     const xtk = AutopilotMath.crossTrack(legStart, legEnd, planeState.position);
 
@@ -378,7 +387,17 @@ class LNavDirector {
     const bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(planeState.position, legEnd);
     const deltaAngle = Math.abs(Avionics.Utils.angleDiff(dtk, bearingToWaypoint));
 
-    const headingToSet = deltaAngle < Math.abs(interceptAngle) ? AutopilotMath.normalizeHeading(dtk + interceptAngle) : bearingToWaypoint;
+    const interceptRate = Math.sign(this.previousDeviation) === 1
+      ? Math.max(this.previousDeviation - xtk, 0)
+      : -1 * Math.min(this.previousDeviation - xtk, 0);
+
+    const fullDeflection = LNavDirector.getFullDeflectionValue(navSensitivity, navSensitivityScalar);
+    const interceptRateScalar = Math.abs(xtk) < (fullDeflection / 2)
+      ? 1 - Math.min(interceptRate / (fullDeflection / 10), 1)
+      : 1;
+
+    const headingToSet = deltaAngle < Math.abs(interceptAngle) ? AutopilotMath.normalizeHeading(dtk + (interceptAngle * interceptRateScalar)) : bearingToWaypoint;
+    this.previousDeviation = xtk;
 
     if (execute) {
       LNavDirector.setCourse(headingToSet, planeState);
@@ -410,6 +429,7 @@ class LNavDirector {
 
     state.groundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
     state.trueAirspeed = SimVar.GetSimVarValue('AIRSPEED TRUE', 'knots');
+    state.onGround = SimVar.GetSimVarValue('SIM ON GROUND', 'bool') !== 0;
 
     state.windDirection = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degrees");
     state.windSpeed = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
@@ -417,7 +437,7 @@ class LNavDirector {
     state.trueHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES TRUE', 'Radians') * Avionics.Utils.RAD2DEG;
     state.magneticHeading = SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Radians') * Avionics.Utils.RAD2DEG;
     state.trueTrack = SimVar.GetSimVarValue('GPS GROUND TRUE TRACK', 'Radians') * Avionics.Utils.RAD2DEG;
-    
+
     state.bankAngle = SimVar.GetSimVarValue('PLANE BANK DEGREES', 'Radians') * Avionics.Utils.RAD2DEG;
 
     return state;
@@ -463,7 +483,7 @@ class LNavDirector {
 
   /**
    * Gets the current system nav sensitivity.
-   * @param {LatLongAlt} planeCoords 
+   * @param {LatLongAlt} planeCoords
    */
   getNavSensitivity(planeCoords) {
     const destinationDistance = this.getDestinationDistance(planeCoords);
@@ -511,6 +531,25 @@ class LNavDirector {
   }
 
   /**
+   * Gets the full scale deviation value for a specified nav sensitivity.
+   * @param {number} sensitivity The current nav sensitivity.
+   * @param {number} scalar The nav sensitivity scalar for LPV approaches.
+   */
+  static getFullDeflectionValue(sensitivity, scalar) {
+    switch (sensitivity) {
+      case NavSensitivity.NORMAL:
+        return 2;
+      case NavSensitivity.TERMINALLPV:
+      case NavSensitivity.TERMINAL:
+        return 1;
+      case NavSensitivity.APPROACH:
+        return 0.3;
+      case NavSensitivity.APPROACHLPV:
+        return 0.3 * scalar;
+    }
+  }
+
+  /**
    * Gets the approach runway from the flight plan.
    * @returns {WayPoint} The approach runway waypoint.
    */
@@ -546,7 +585,7 @@ class LNavDirectorOptions {
     this.maxBankAngle = 30;
 
     /** The rate of bank in degrees per second. */
-    this.bankRate = 10;
+    this.bankRate = 8;
 
     /** The maximum turn angle in degrees to calculate turn anticipation to. */
     this.maxTurnAnticipationAngle = 110;
@@ -623,6 +662,12 @@ class AircraftState {
      * @type {number}
      */
     this.bankAngle = undefined;
+
+    /**
+     * Whether or not the plane is on the ground.
+     * @type {boolean}
+     */
+    this.onGround = undefined;
   }
 }
 

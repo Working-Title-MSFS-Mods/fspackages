@@ -1857,7 +1857,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
         if (this._isAltitudeAlerting) {
             this._altAlertAnimationTimer -= deltaTime;
-            if (this._altAlertAnimationTimer < 0) {
+            if(this._altAlertAnimationTimer < 0 || SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Cancel", "Number") === 1){   
                 this.targetAltitudeTextSVG1.classList.remove("blinking");
                 this.targetAltitudeTextSVG2.classList.remove("blinking");
                 this.targetAltitudeIndicatorSVGShape.classList.remove("blinking");
