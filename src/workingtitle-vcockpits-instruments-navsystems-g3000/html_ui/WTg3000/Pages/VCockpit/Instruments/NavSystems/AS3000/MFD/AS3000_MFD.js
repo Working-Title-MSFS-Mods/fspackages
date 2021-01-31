@@ -6,10 +6,10 @@ class AS3000_MFD extends NavSystem {
 
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.INT)
+            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
+            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
+            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
+            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
         };
 
         this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);

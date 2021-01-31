@@ -3,11 +3,11 @@
  */
 class WT_ICAOSearcher {
     /**
-     * @param {BaseInstrument} instrument - the instrument with which to register the new searcher.
+     * @param {String} id - a unique string ID to assign to the new searcher.
      * @param {Object} keys - an object defining the search keys the new searcher should use.
      */
-    constructor(instrument, keys) {
-        this._instrument = instrument;
+    constructor(id, keys) {
+        this._id = id;
         this._keys = keys;
 
         this._nextAvailableID = [];
@@ -16,14 +16,15 @@ class WT_ICAOSearcher {
 
     /**
      * @readonly
-     * @property {BaseInstrument} instrument - the instrument with which this searcher is registered.
+     * @property {String} id - this searcher's unique string ID.
+     * @type {String}
      */
-    get instrument() {
-        return this._instrument;
+    get id() {
+        return this._id;
     }
 
     _closeRequest(id) {
-        SimVar.SetSimVarValue(`C:fs9gps:${this._setRangeKey}`, "nautical miles", 0, `${this.instrument.instrumentIdentifier}-${WT_ICAOSearcher.SIMVAR_KEY_SUFFIX}_${id}`).then(
+        SimVar.SetSimVarValue(`C:fs9gps:${this._setRangeKey}`, "nautical miles", 0, `${this.id}-${WT_ICAOSearcher.SIMVAR_KEY_SUFFIX}_${id}`).then(
             () => {
                 this._nextAvailableID.push(id);
             });
@@ -115,7 +116,7 @@ class WT_ICAOSearchRequest {
     constructor(searcher, id, center, radius, searchLimit) {
         this._searcher = searcher;
         this._keys = searcher._keys;
-        this._simVarSearchInstanceKey = `${searcher.instrument.instrumentIdentifier}-${WT_ICAOSearcher.SIMVAR_KEY_SUFFIX}_${id}`;
+        this._simVarSearchInstanceKey = `${searcher.id}-${WT_ICAOSearcher.SIMVAR_KEY_SUFFIX}_${id}`;
         this._id = id;
         this._center = new WT_GeoPoint(center.lat, center.long);
         this._radius = new WT_NumberUnit(radius.number, radius.unit);
