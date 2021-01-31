@@ -1,6 +1,7 @@
 class WT_FlightPlanAsoboInterface {
     constructor(icaoWaypointFactory) {
         this._icaoWaypointFactory = icaoWaypointFactory;
+        RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
     }
 
     async getGameActiveWaypointIndex() {
