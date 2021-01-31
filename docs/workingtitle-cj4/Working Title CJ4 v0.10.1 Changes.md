@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.10.2
+# Working Title CJ4 v0.10.1
 
-Welcome to the Working Title CJ4 v0.10.2.  This hotfix is for pressing issues we did not catch during our QA.
+Welcome to the Working Title CJ4 v0.10.1.  This hotfix is for pressing issues we did not catch during our QA.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -12,22 +12,12 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 
 # Changes
 
-- Fix blacked out VNAV Cruise page
-- Fix missing TOD in some scenarios
-- Fixes and improvements to LNAV turn anticipation and tracking
-- Fixed issue with GS/GP not appearing on FMA
-- GP related Snowflake fixes
-- Fix Nearest Airports Direct to
-- Disable waypoint sequencing while on the ground
-- Fix Nav-To-Nav transfer while in Auto
-- Remove range banana from plan view
-- Adjust message priorities
-- Ensure that nearest VOR search returns in distance order.
-- Slightly adjust down bank rate calc to account for in and out acceleration
-- Fixes for VNAV TOD issues in odd situations including a DIRTO
-- Fixes for treating below constraints as at constraints when there is no at constraint in the APPR
-- disable COM3
-- Possible fixes for AP modes (TO/HDG problems and FLC/ALTCAP problems)
+- Fixed flight model error that caused stalling conditions during landing
+- Fixed Preset Errors that caused the Nav-To-Nav transfer to not occur and the localizer to not be selected
+- Change navaid datablock to "LOC" from "ILS"
+- Fix VNAV not leveling off at constraints during a climb
+- Alt alert cancel on ALT knob push
+-
 
 
 # ⚠️ Known Issues
