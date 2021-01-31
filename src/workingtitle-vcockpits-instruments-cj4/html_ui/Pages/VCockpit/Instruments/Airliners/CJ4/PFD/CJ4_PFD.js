@@ -502,24 +502,17 @@ class CJ4_PFD extends BaseAirliners {
 
         const baroUnit = _dict.get(CJ4_PopupMenu_Key.BARO_STD);
         if (baroUnit == "STD") {
-            //TODO SET STD
+            SimVar.SetSimVarValue("L:XMLVAR_Baro1_ForcedToSTD", "Bool", true);
         } else {
-            const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET);
+            SimVar.SetSimVarValue("L:XMLVAR_Baro1_ForcedToSTD", "Bool", false);
             if (baroUnits == "HPA") {
-                SimVar.SetSimVarValue("KOHLSMAN SETTING MB", "Millibars", baroSetting);
+                const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET) * 16;
+                SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting);
             } else {
-                SimVar.SetSimVarValue("KOHLSMAN SETTING HG", "Inches of Mercury", baroSetting);
+                const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET) * 33.864 * 16;
+                SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting);
             }
         }
-
-        // 
-        // if(baroUnits == "HPA"){
-        //     console.log(baroSetting+"millibars");
-        //     SimVar.SetSimVarValue("KOHLSMAN SETTING MB", "millibars", baroSetting);
-        // }else{
-        //     console.log(baroSetting+"inches of mercury");
-        //     SimVar.SetSimVarValue("KOHLSMAN SETTING HG", "inches of mercury", baroSetting);
-        // }
 
         const mtrsOn = _dict.get(CJ4_PopupMenu_Key.UNITS_MTR_ALT);
         this.horizon.showMTRS((mtrsOn == "ON") ? true : false);
