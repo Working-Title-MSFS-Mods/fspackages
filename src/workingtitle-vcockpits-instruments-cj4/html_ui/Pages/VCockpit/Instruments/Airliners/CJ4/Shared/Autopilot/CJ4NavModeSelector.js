@@ -421,6 +421,7 @@ class CJ4NavModeSelector {
     switch (this.currentVerticalActiveState) {
       case VerticalNavModeState.TO:
       case VerticalNavModeState.GA:
+        this.currentVerticalActiveState = VerticalNavModeState.FLC;
         SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
       case VerticalNavModeState.PTCH:
       case VerticalNavModeState.VS:
@@ -592,7 +593,8 @@ class CJ4NavModeSelector {
   }
 
   checkCorrectAltSlot() {
-    if (!this.isVNAVOn) {
+    if (!this.isVNAVOn || this.currentVerticalActiveState === VerticalNavModeState.ALTSCAP || this.currentVerticalActiveState === VerticalNavModeState.ALTVCAP 
+      || this.currentVerticalActiveState === VerticalNavModeState.ALTCAP) {
       SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
     }
   }
@@ -750,15 +752,20 @@ class CJ4NavModeSelector {
       case LateralNavModeState.LNAV:
       case LateralNavModeState.TO:
       case LateralNavModeState.GA:
+        if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 0) {
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+        }
         SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 1);
         SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
         this.currentLateralActiveState = LateralNavModeState.HDG;
         break;
       case LateralNavModeState.HDG:
+        if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 1) {
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+        }
         SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
         SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-        SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
         this.currentLateralActiveState = LateralNavModeState.ROLL;
         break;
       case LateralNavModeState.APPR:
