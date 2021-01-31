@@ -83,14 +83,17 @@ class CJ4_FMC_VNavSetupPage {
     static ShowPage2(fmc) { //VNAV SETUP Page 2
 
         let crzAltCell = "-----"
-        if (fmc.cruiseFlightLevel)
+        if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
+        }
+        const transitionFL = 180;
+        const cruiseAltText = crzAltCell == "-----" ? "-----" : crzAltCell < transitionFL ? crzAltCell * 100 : "FL" + crzAltCell;
 
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
             [" ACT VNAV CRUISE[blue]", "2/3[blue]"],
             [" TGT SPEED[blue]", "CRZ ALT [blue]"],
-            ["300/.74", crzAltCell],
+            ["300/.74", cruiseAltText + ""],
             [""],
             [""],
             [""],

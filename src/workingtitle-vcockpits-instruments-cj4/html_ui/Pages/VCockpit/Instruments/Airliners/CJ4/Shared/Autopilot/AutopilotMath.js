@@ -7,36 +7,36 @@ class AutopilotMath {
   * @param {number} maxAngle The maximum intercept angle, in degrees.
   * @returns {number} The desired intercept angle, in degrees.
   */
- static interceptAngle(xtk, navSensitivity, maxAngle = 45) {
-     let sensitivityModifier = 1;
-     let minimumInterceptAngle = 2.5;
-     let minimumXtk = 0.025;
+  static interceptAngle(xtk, navSensitivity, maxAngle = 45) {
+    let sensitivityModifier = 1;
+    let minimumInterceptAngle = 2.5;
+    let minimumXtk = 0.025;
 
-     switch (navSensitivity) {
-         case NavSensitivity.TERMINALLPV:
-         case NavSensitivity.TERMINAL:
-             sensitivityModifier = 1.1;
-             minimumInterceptAngle = 3.0;
-             minimumXtk = 0.015;
-             break;
-         case NavSensitivity.APPROACH:
-         case NavSensitivity.APPROACHLPV:
-             sensitivityModifier = 1.25;
-             minimumInterceptAngle = 3.0;
-             minimumXtk = 0.005;
-             break;
-     }
+    switch (navSensitivity) {
+      case NavSensitivity.TERMINALLPV:
+      case NavSensitivity.TERMINAL:
+        sensitivityModifier = 1.1;
+        minimumInterceptAngle = 3.0;
+        minimumXtk = 0.015;
+        break;
+      case NavSensitivity.APPROACH:
+      case NavSensitivity.APPROACHLPV:
+        sensitivityModifier = 1.25;
+        minimumInterceptAngle = 3.0;
+        minimumXtk = 0.005;
+        break;
+    }
 
-     let absInterceptAngle = Math.min(Math.pow(Math.abs(xtk) * 20, 1.35) * sensitivityModifier, maxAngle);
+    let absInterceptAngle = Math.min(Math.pow(Math.abs(xtk) * 20, 1.35) * sensitivityModifier, maxAngle);
 
-     //If we still have some XTK, bake in a minimum intercept angle to keep us on the line
-     if (Math.abs(xtk) > minimumXtk) {
-         absInterceptAngle = Math.max(absInterceptAngle, minimumInterceptAngle);
-     }
+    //If we still have some XTK, bake in a minimum intercept angle to keep us on the line
+    if (Math.abs(xtk) > minimumXtk) {
+      absInterceptAngle = Math.max(absInterceptAngle, minimumInterceptAngle);
+    }
 
-     const interceptAngle = xtk < 0 ? absInterceptAngle : -1 * absInterceptAngle;
-     return interceptAngle;
- }
+    const interceptAngle = xtk < 0 ? absInterceptAngle : -1 * absInterceptAngle;
+    return interceptAngle;
+  }
 
   /**
    * Calculates the wind correction angle.
@@ -111,7 +111,7 @@ class AutopilotMath {
     const cLon = (fromFix.long + toFix.long) / 2;
     const radius = Avionics.Utils.computeGreatCircleDistance(fromFix, toFix) / 2;
 
-    const centerDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, new LatLongAlt(cLat, cLon)); 
+    const centerDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, new LatLongAlt(cLat, cLon));
     return -1 * (centerDistance - radius);
   }
 
@@ -172,10 +172,10 @@ class AutopilotMath {
    */
   static windComponents(heading, windDirection, windSpeed) {
     const relativeWindHeading = AutopilotMath.normalizeHeading(windDirection - heading);
-    const headwind = windSpeed * Math.sin(relativeWindHeading * Avionics.Utils.DEG2RAD);
-    const crosswind = windSpeed * Math.cos(relativeWindHeading * Avionics.Utils.DEG2RAD);
+    const headwind = windSpeed * Math.cos(relativeWindHeading * Avionics.Utils.DEG2RAD);
+    const crosswind = windSpeed * Math.sin(relativeWindHeading * Avionics.Utils.DEG2RAD);
 
-    return {headwind, crosswind};
+    return { headwind, crosswind };
   }
 
   /**

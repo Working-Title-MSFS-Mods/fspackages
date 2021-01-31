@@ -59,7 +59,7 @@ export class CJ4_NearestVORSearch {
         icao: vor[0],
         distance: vor[1],
         frequency: parseFloat(vor[2].toFixed(2))
-      })));
+      })).sort((a, b) => a.distance - b.distance));
     }, instrId));
   }
 }

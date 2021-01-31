@@ -72,10 +72,6 @@ class WT_VerticalAutopilot {
         return this._vnav._vnavState;
     }
 
-    get glidePath() {
-        return this._vnav._approachGlidePath;
-    }
-
     get distanceToTod() {
         return SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
     }
@@ -1046,15 +1042,25 @@ class WT_VerticalAutopilot {
                 newSnowflakeStatus = false;
             }
         }
+        if (isGlidepathActive) {
+            newSnowflakeStatus = true;
+        }
         if (this.snowflake !== newSnowflakeStatus) {
             this.snowflake = newSnowflakeStatus;
         }
         if (this.snowflake) {
-            if (this.path.fpa == 0) {
+            if (isGlidepathActive) {
+                SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this.glidepath.deviation);
+            }
+            else if (this.path.fpa == 0) {
                 console.log("this.path.fpa == 0 ; this.nextPath.deviation: " + this.nextPath.deviation);
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this.nextPath.deviation);
             } else {
                 SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", this.path.deviation);
+            }
+        } else {
+            if (SimVar.GetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet") != 0) {
+                SimVar.SetSimVarValue("L:WT_CJ4_VPATH_ALT_DEV", "feet", 0);
             }
         }
     }

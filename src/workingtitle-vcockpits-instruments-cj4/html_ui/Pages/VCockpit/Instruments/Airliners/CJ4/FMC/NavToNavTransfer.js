@@ -110,7 +110,7 @@ class NavToNavTransfer {
   handleArmed() {
     const frequency = this.fpm.getApproachNavFrequency();
     if (isNaN(frequency)) {
-      const hasLoc = SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'number') !== 0
+      const hasLoc = SimVar.GetSimVarValue('NAV HAS LOCALIZER:1', 'number') !== 0;
       if (!hasLoc) {
         this.transferState = NavToNavTransfer.TUNE_FAILED;
       }
@@ -140,15 +140,12 @@ class NavToNavTransfer {
    * Attempts to auto-tune the localizer.
    */
   tryTuneLocalizer() {
-    if (this.navRadioSystem.radioStates[1].mode === NavRadioMode.Auto) {
-      this.armNavToNavTransfer();
-    }
-    else {
-      this.transferState = NavToNavTransfer.TUNE_PENDING;
-
+    if (this.navRadioSystem.radioStates[1].mode !== NavRadioMode.Auto) {
       MessageService.getInstance().post(FMS_MESSAGE_ID.LOC_WILL_BE_TUNED, () => this.transferState !== NavToNavTransfer.TUNE_PENDING);
       this.termTimestamp = Date.now();
     }
+
+    this.transferState = NavToNavTransfer.TUNE_PENDING;
   }
 }
 
