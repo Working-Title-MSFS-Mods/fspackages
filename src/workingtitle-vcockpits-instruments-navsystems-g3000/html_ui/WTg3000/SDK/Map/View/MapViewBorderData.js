@@ -1,6 +1,5 @@
 /**
- * Loads geographic border data from a topojson file, generates LOD levels for the borders, and
- * stores the processed data for future access.
+ * Loads geographic border data with LOD levels and stores the data for future access.
  */
 class WT_MapViewBorderData {
     /**
@@ -10,9 +9,7 @@ class WT_MapViewBorderData {
      *                                           determines the number of LOD levels. Each element in the array should be the
      *                                           Visvalingam threshold (in steradians) for the associated LOD level.
      */
-    constructor(admin1ScaleRankThreshold = WT_MapViewBorderData.ADMIN_1_SCALERANK_THRESHOLD_DEFAULT, lodSimplifyThresholds = WT_MapViewBorderData.LOD_SIMPLIFY_THRESHOLDS_DEFAULT) {
-        this._admin1ScaleRankThreshold = admin1ScaleRankThreshold;
-        this._lodSimplifyThresholds = lodSimplifyThresholds;
+    constructor() {
         this._isReady = false;
         this._loadBorderJSON(WT_MapViewBorderData.DATA_FILE_PATH);
     }
@@ -38,58 +35,33 @@ class WT_MapViewBorderData {
         request.send();
     }
 
-    _filterScaleRank(threshold, feature) {
-        return feature.properties.scalerank <= threshold;
-    }
-
-    _createFeatureInfo(feature) {
-        let bounds = d3.geoBounds(feature);
-        // avoid +90 or -90 latitude
-        bounds[0][1] = Math.min(89.9, Math.max(-89.9, bounds[0][1]));
-        bounds[1][1] = Math.min(89.9, Math.max(-89.9, bounds[1][1]));
-
-        return {
-            feature: feature,
-            geoBounds: bounds,
-            geoCentroid: d3.geoCentroid(feature),
-            geoArea: d3.geoArea(feature)
-        };
-    }
-
-    _processFeaturesObject(topology, object, array, simplifyThreshold, scaleRankThreshold) {
-        array.push(...topojson.feature(topojson.simplify(topology, simplifyThreshold), object).features.filter(
-            this._filterScaleRank.bind(this, scaleRankThreshold)
-        ).map(
-            this._createFeatureInfo.bind(this)
-        ));
-    }
-
-    _processBorders(topology) {
-        this._admin0Borders = [];
-        this._admin1Borders = [];
-        for (let i = 0; i < this._lodSimplifyThresholds.length; i++) {
-            this._admin0Borders.push([]);
-            this._admin1Borders.push([]);
-            this._processFeaturesObject(topology, topology.objects.admin0Boundaries, this._admin0Borders[i], this._lodSimplifyThresholds[i], Infinity);
-            this._processFeaturesObject(topology, topology.objects.admin0MapUnitBoundaries, this._admin0Borders[i], this._lodSimplifyThresholds[i], Infinity);
-            this._processFeaturesObject(topology, topology.objects.admin1Boundaries, this._admin1Borders[i], this._lodSimplifyThresholds[i], this._admin1ScaleRankThreshold);
-        }
-    }
-
-    _processPolygons(topology) {
-        this._admin0Polygons = [];
-        this._processFeaturesObject(topology, topology.objects.admin0Polygons, this._admin0Polygons, Number.MIN_VALUE, Infinity);
-
-        this._admin1Polygons = [];
-        this._processFeaturesObject(topology, topology.objects.admin1Polygons, this._admin1Polygons, Number.MIN_VALUE, this._admin1ScaleRankThreshold);
-    }
-
     _loadData(data) {
-        let topology = JSON.parse(data);
-        let presimplified = topojson.presimplify(topology, topojson.sphericalTriangleArea);
-        this._processBorders(presimplified);
-        this._processPolygons(presimplified);
+        this._data = JSON.parse(data);
         this._isReady = true;
+    }
+
+    /**
+     * Counts the number of LOD levels encoded in these data.
+     * @returns {Number} the number of LOD levels encoded in these data.
+     */
+    countLODLevels() {
+        if (!this.isReady()){
+            return undefined;
+        }
+        return this._data.lodSimplifyThresholds.length;
+    }
+
+    /**
+     * Gets the geometry simplification threshold for an LOD level. Geometry is simplified at each LOD level using
+     * the Visvalingam method.
+     * @param {Number} lod - the LOD level.
+     * @returns {Number} the simplification threshold, in steradians.
+     */
+    getSimplifyThreshold(lod) {
+        if (!this.isReady()){
+            return undefined;
+        }
+        return this._data.lodSimplifyThresholds[lod];
     }
 
     /**
@@ -103,8 +75,8 @@ class WT_MapViewBorderData {
         }
 
         switch (adminLevel) {
-            case WT_MapViewBorderData.AdminLevel.ADMIN_0: return this._admin0Polygons;
-            case WT_MapViewBorderData.AdminLevel.ADMIN_1: return this._admin1Polygons;
+            case WT_MapViewBorderData.AdminLevel.ADMIN_0: return this._data.admin0Polygons;
+            case WT_MapViewBorderData.AdminLevel.ADMIN_1: return this._data.admin1Polygons;
         }
     }
 
@@ -120,12 +92,12 @@ class WT_MapViewBorderData {
         }
 
         switch (adminLevel) {
-            case WT_MapViewBorderData.AdminLevel.ADMIN_0: return this._admin0Borders[lod];
-            case WT_MapViewBorderData.AdminLevel.ADMIN_1: return this._admin1Borders[lod];
+            case WT_MapViewBorderData.AdminLevel.ADMIN_0: return this._data.admin0Borders[lod];
+            case WT_MapViewBorderData.AdminLevel.ADMIN_1: return this._data.admin1Borders[lod];
         }
     }
 }
-WT_MapViewBorderData.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/borders.json";
+WT_MapViewBorderData.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/borders_processed.json";
 WT_MapViewBorderData.ADMIN_1_SCALERANK_THRESHOLD_DEFAULT = 2;
 WT_MapViewBorderData.LOD_SIMPLIFY_THRESHOLDS_DEFAULT = [
     Number.MIN_VALUE,
@@ -149,3 +121,71 @@ WT_MapViewBorderData.AdminLevel = {
  * @property {Number[]} geoCentroid
  * @property {Number} geoArea
  */
+
+ class WT_MapViewBorderDataProcessor {
+     constructor(topology) {
+         this._topology = topology;
+     }
+
+     /**
+      * @readonly
+      */
+     get topology() {
+         return this._topology;
+     }
+
+     _filterScaleRank(threshold, feature) {
+        return feature.properties.scalerank <= threshold;
+    }
+
+    _createFeatureInfo(feature) {
+        let bounds = d3.geoBounds(feature);
+        // avoid +90 or -90 latitude
+        bounds[0][1] = Math.min(89.9, Math.max(-89.9, bounds[0][1]));
+        bounds[1][1] = Math.min(89.9, Math.max(-89.9, bounds[1][1]));
+
+        return {
+            feature: feature,
+            geoBounds: bounds,
+            geoCentroid: d3.geoCentroid(feature),
+            geoArea: d3.geoArea(feature)
+        };
+    }
+
+    _processFeaturesObject(topology, object, array, simplifyThreshold, scaleRankThreshold) {
+        let simplified = topojson.simplify(topology, simplifyThreshold);
+        array.push(...topojson.feature(simplified, object).features.filter(
+            this._filterScaleRank.bind(this, scaleRankThreshold)
+        ).map(
+            this._createFeatureInfo.bind(this)
+        ));
+    }
+
+    _processBorders(processed, topology, admin1ScaleRankThreshold, lodSimplifyThresholds) {
+        processed.admin0Borders = [];
+        processed.admin1Borders = [];
+        for (let i = 0; i < this._lodSimplifyThresholds.length; i++) {
+            this._admin0Borders.push([]);
+            this._admin1Borders.push([]);
+            this._processFeaturesObject(topology, topology.objects.admin0Boundaries, processed.admin0Borders[i], lodSimplifyThresholds[i], Infinity);
+            this._processFeaturesObject(topology, topology.objects.admin0MapUnitBoundaries, processed.admin0Borders[i], lodSimplifyThresholds[i], Infinity);
+            this._processFeaturesObject(topology, topology.objects.admin1Boundaries, processed.admin1Borders[i], lodSimplifyThresholds[i], admin1ScaleRankThreshold);
+        }
+    }
+
+    _processPolygons(processed, topology, admin1ScaleRankThreshold) {
+        processed.admin0Polygons = [];
+        this._processFeaturesObject(topology, topology.objects.admin0Polygons, processed.admin0Polygons, Number.MIN_VALUE, Infinity);
+
+        processed.admin1Polygons = [];
+        this._processFeaturesObject(topology, topology.objects.admin1Polygons, processed.admin1Polygons, Number.MIN_VALUE, admin1ScaleRankThreshold);
+    }
+
+     process(admin1ScaleRankThreshold, lodSimplifyThresholds) {
+        let processed = {};
+        let presimplified = topojson.presimplify(this.topology, topojson.sphericalTriangleArea);
+        this._processBorders(processed, presimplified, admin1ScaleRankThreshold, lodSimplifyThresholds);
+        this._processPolygons(processed, presimplified, admin1ScaleRankThreshold);
+        return processed;
+     }
+ }
