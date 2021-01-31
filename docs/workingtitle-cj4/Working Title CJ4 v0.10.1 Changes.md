@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.10.2
+# Working Title CJ4 v0.10.1
 
-Welcome to the Working Title CJ4 v0.10.2.  This hotfix is for pressing issues we did not catch during our QA.
+Welcome to the Working Title CJ4 v0.10.1.  This hotfix is for pressing issues we did not catch during our QA.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -12,21 +12,16 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 
 # Changes
 
-- Fix blacked out VNAV Cruise page and VNAV SETUP now defaults to CLB
-- Fixes for VNAV TOD and PATH intercept issues in some situations including a DIRTO
-- Fixes and improvements to LNAV turn anticipation and tracking
-- Fixed GS/GP display issues on FMA in some circumstances
-- Fix Nearest Airports Direct-To
-- Fix Nav-To-Nav transfer while in Auto Tuning
-- Improvements to out-of-sync AP modes after using TO/GA mode or when enabling FLC during ALTCAP
-- Disable waypoint sequencing while on the ground
-- Remove range banana from PLAN view
-- Ensure that nearest VOR search returns in distance order.
-- Disable COM3 which caused ghost ATIS during flights
+- Fixed flight model error that caused stalling conditions during landing
+- Fixed Preset Errors that caused the Nav-To-Nav transfer to not occur and the localizer to not be selected
+- Change navaid datablock to "LOC" from "ILS"
+- Fix VNAV not leveling off at constraints during a climb
+- Alt alert cancel on ALT knob push
+-
 
 
 # ⚠️ Known Issues
-* PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
+* PITCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. You must uninstall them or remove their panel.cfg from the livery folder. This is a limitation of the Asobo livery system.
