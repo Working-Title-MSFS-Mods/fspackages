@@ -302,17 +302,17 @@ class WT_MapViewRoadData {
  * @enum {Number}
  */
 WT_MapViewRoadData.Region = {
-    NA: 0,
-    SA: 1,
-    EI: 2,
-    EN: 3,
-    EW: 4,
-    EC: 5,
-    EE: 6,
-    AF: 7,
-    CA: 8,
-    EA: 9,
-    OC: 10
+    NA: 0,  // North America
+    SA: 1,  // South America
+    EI: 2,  // European Isles (GB, Ireland, Iceland)
+    EN: 3,  // Northern Europe
+    EW: 4,  // Western Europe
+    EC: 5,  // Central Europe
+    EE: 6,  // Eastern Europe
+    AF: 7,  // Africa
+    AC: 8,  // Middle East/Central Asia
+    AE: 9,  // East Asia
+    OC: 10  // Oceania
 };
 /**
  * @enum {Number}
@@ -332,8 +332,8 @@ WT_MapViewRoadData.DATA_FILE_REGION_STRING = [
     "EC",
     "EE",
     "AF",
-    "CA",
-    "EA",
+    "AC",
+    "AE",
     "OC"
 ];
 WT_MapViewRoadData.DATA_FILE_TYPE_STRING = [

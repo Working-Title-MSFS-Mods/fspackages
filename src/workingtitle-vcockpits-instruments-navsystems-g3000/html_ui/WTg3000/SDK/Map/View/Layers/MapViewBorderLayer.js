@@ -21,7 +21,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         this.addSubLayer(this._borderLayer);
 
         this._renderQueue = new WT_MapViewRenderQueue();
-        this._bufferedContext = new WT_MapViewBufferedCanvasContext(this._borderLayer.buffer.context, this._renderQueue);
+        let bufferedPathContext = new WT_CanvasBufferedLinePathContext(this._borderLayer.buffer.canvas, this._borderLayer.buffer.context);
+        this._bufferedContext = new WT_MapViewBufferedCanvasContext(bufferedPathContext, this._renderQueue);
+        this._lastLiveRender = 0;
         this._renderer = {
             canRender: this._canContinueRender.bind(this),
             render: this._resolveDrawCall.bind(this),
@@ -122,7 +124,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             this._enqueueFeaturesToDraw(state, this._borderData.getBorders(WT_MapViewBorderData.AdminLevel.ADMIN_1, lod));
         }
 
-        this._borderLayer.buffer.context.beginPath();
+        this._lastLiveRender = state.currentTime / 1000;
+        this._bufferedContext.context.beginPath();
         this._renderQueue.start(this._renderer, state);
     }
 
@@ -135,9 +138,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _applyStrokeToBuffer(lineWidth, strokeColor) {
-        this._borderLayer.buffer.context.lineWidth = lineWidth;
-        this._borderLayer.buffer.context.strokeStyle = strokeColor;
-        this._borderLayer.buffer.context.stroke();
+        this._bufferedContext.context.lineWidth = lineWidth;
+        this._bufferedContext.context.strokeStyle = strokeColor;
+        this._bufferedContext.context.stroke();
     }
 
     /**
@@ -157,8 +160,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateDrawBorders(state) {
-        if (this._drawUnfinishedBorders) {
+        if (this._drawUnfinishedBorders && state.currentTime / 1000 - this._lastLiveRender > this.liveRenderInterval) {
             this._drawBordersToDisplay(state);
+            this._lastLiveRender = state.currentTime / 1000;
         }
     }
 
@@ -258,7 +262,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         if (shouldInvalidate) {
             this._borderLayer.redrawDisplay(state, false);
             this._clearLabels();
-            this._drawUnfinishedBorders = true;
+            this._drawUnfinishedBorders = this.liveRender;
         }
 
         if (isDisplayInvalid) {
@@ -301,10 +305,13 @@ WT_MapViewBorderLayer.CLASS_DEFAULT = "borderLayer";
 WT_MapViewBorderLayer.CONFIG_NAME_DEFAULT = "border";
 WT_MapViewBorderLayer.OVERDRAW_FACTOR = 1.66421356237;
 WT_MapViewBorderLayer.REDRAW_DELAY = 500; // ms
-WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 2; // ms
+WT_MapViewBorderLayer.DRAW_TIME_BUDGET = 0.5; // ms
 WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MAX = 0.75; // fraction of view area
 WT_MapViewBorderLayer.LABEL_FEATURE_AREA_MIN = 0.0025; // fraction of view area
 WT_MapViewBorderLayer.OPTIONS_DEF = {
+    liveRender: {default: true, auto: true},
+    liveRenderInterval: {default: 1, auto: true},
+
     strokeWidth: {default: 2, auto: true},
     strokeColor: {default: "white", auto: true},
     outlineWidth: {default: 0, auto: true},
@@ -324,6 +331,8 @@ WT_MapViewBorderLayer.OPTIONS_DEF = {
     stateFontOutlineColor: {default: "black", auto: true}
 };
 WT_MapViewBorderLayer.CONFIG_PROPERTIES = [
+    "liveRender",
+    "liveRenderInterval",
     "strokeWidth",
     "strokeColor",
     "outlineWidth",
