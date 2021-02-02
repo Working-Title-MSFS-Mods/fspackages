@@ -181,7 +181,7 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         this._isEnabled = false;
 
         let roadData = new WT_MapViewRoadData(
-            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA],
+            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA, WT_MapViewRoadData.Region.EI, WT_MapViewRoadData.Region.AF, WT_MapViewRoadData.Region.OC],
             [WT_MapViewRoadData.Type.HIGHWAY, WT_MapViewRoadData.Type.PRIMARY]
         );
         this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), roadData, AS3000_PFD_InnerMap.LAYER_OPTIONS);

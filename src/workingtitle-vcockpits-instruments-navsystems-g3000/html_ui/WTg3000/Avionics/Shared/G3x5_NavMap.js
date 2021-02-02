@@ -363,12 +363,12 @@ WT_G3x5_NavMap.CITY_SMALL_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
 WT_G3x5_NavMap.ROAD_SHOW_KEY = "WT_Map_Road_Show";
 
 WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY = "WT_Map_RoadHighway_Range";
-WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_MAX = WT_Unit.NMILE.createNumber(150);
+WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_MAX = WT_Unit.NMILE.createNumber(400);
 WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(50);
 
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY = "WT_Map_RoadPrimary_Range";
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX = WT_Unit.NMILE.createNumber(150);
-WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(50);
+WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(15);
 
 class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
     constructor(controller) {

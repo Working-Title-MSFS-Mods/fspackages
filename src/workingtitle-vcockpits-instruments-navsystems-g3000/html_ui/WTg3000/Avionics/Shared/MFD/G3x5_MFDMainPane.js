@@ -9,7 +9,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._citySearcher = citySearcher;
         this._borderData = new WT_MapViewBorderData();
         this._roadData = new WT_MapViewRoadData(
-            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA],
+            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA, WT_MapViewRoadData.Region.EI, WT_MapViewRoadData.Region.AF, WT_MapViewRoadData.Region.OC],
             [WT_MapViewRoadData.Type.HIGHWAY, WT_MapViewRoadData.Type.PRIMARY]
         );
 

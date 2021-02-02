@@ -368,7 +368,7 @@ class WT_VFRMapWT extends WT_VFRMap {
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = new WT_MapViewBorderData();
         let roadData = new WT_MapViewRoadData(
-            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA],
+            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA, WT_MapViewRoadData.Region.EI, WT_MapViewRoadData.Region.AF, WT_MapViewRoadData.Region.OC],
             [WT_MapViewRoadData.Type.HIGHWAY, WT_MapViewRoadData.Type.PRIMARY]
         );
 
@@ -584,7 +584,7 @@ WT_VFRMapWT.CITY_LARGE_RANGE = WT_Unit.NMILE.createNumber(1000);
 WT_VFRMapWT.CITY_MEDIUM_RANGE = WT_Unit.NMILE.createNumber(100);
 WT_VFRMapWT.CITY_SMALL_RANGE = WT_Unit.NMILE.createNumber(25);
 
-WT_VFRMapWT.ROAD_HIGHWAY_RANGE = WT_Unit.NMILE.createNumber(150);
+WT_VFRMapWT.ROAD_HIGHWAY_RANGE = WT_Unit.NMILE.createNumber(500);
 WT_VFRMapWT.ROAD_PRIMARY_RANGE = WT_Unit.NMILE.createNumber(150);
 
 window.customElements.define("vfrmap-panel", VFRMapPanel);

@@ -99,39 +99,41 @@ class WT_MapViewRoadData {
     }
 
     _openZips() {
-        zip.configure({useWebWorkers: false});
         for (let region of this._regions) {
             this._openZipsForRegion(region);
         }
     }
 
     _openFile(path, loadFunc) {
-        let request = new XMLHttpRequest();
-        request.overrideMimeType("application/json");
+        return new Promise(resolve => {
+            let request = new XMLHttpRequest();
+            request.overrideMimeType("application/json");
 
-        request.addEventListener("load",
-            async function() {
-                loadFunc(request.responseText);
-            }
-        );
-        request.open("GET", path);
-        request.send();
+            request.addEventListener("load",
+                function() {
+                    loadFunc(request.responseText);
+                    resolve();
+                }
+            );
+            request.open("GET", path);
+            request.send();
+        });
     }
 
-    _openFilesForType(dir, region, type) {
+    async _openFilesForType(dir, region, type) {
         let file = `${WT_MapViewRoadData.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadData.DATA_FILE_TYPE_STRING[type]}`;
 
         for (let i = 0; i < WT_MapViewRoadData.LOD_COUNT; i++) {
-            this._openFile(`${dir}/${file}_lod${i}.json`, this._loadLODData.bind(this, region, type, i));
+            await this._openFile(`${dir}/${file}_lod${i}.json`, this._loadLODData.bind(this, region, type, i));
         }
 
         this._openFile(`${dir}/${file}_${WT_MapViewRoadData.DATA_FILE_BVH_STRING}.json`, this._loadBVHData.bind(this, region, type));
     }
 
-    _openFilesForRegion(region) {
+    async _openFilesForRegion(region) {
         let dir = `${WT_MapViewRoadData.DATA_FILE_DIR}/${WT_MapViewRoadData.DATA_FILE_REGION_STRING[region]}`;
         for (let type of this._types) {
-            this._openFilesForType(dir, region, type);
+            await this._openFilesForType(dir, region, type);
         }
     }
 
@@ -302,11 +304,15 @@ class WT_MapViewRoadData {
 WT_MapViewRoadData.Region = {
     NA: 0,
     SA: 1,
-    EU: 2,
-    AF: 3,
-    CA: 4,
-    EA: 5,
-    OC: 6
+    EI: 2,
+    EN: 3,
+    EW: 4,
+    EC: 5,
+    EE: 6,
+    AF: 7,
+    CA: 8,
+    EA: 9,
+    OC: 10
 };
 /**
  * @enum {Number}
@@ -320,7 +326,11 @@ WT_MapViewRoadData.DATA_FILE_DIR = "/WTg3000/SDK/Assets/Data/Roads";
 WT_MapViewRoadData.DATA_FILE_REGION_STRING = [
     "NA",
     "SA",
-    "EU",
+    "EI",
+    "EN",
+    "EW",
+    "EC",
+    "EE",
     "AF",
     "CA",
     "EA",
