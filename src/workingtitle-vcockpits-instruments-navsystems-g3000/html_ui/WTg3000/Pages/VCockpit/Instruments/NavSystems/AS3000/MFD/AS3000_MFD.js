@@ -15,7 +15,7 @@ class AS3000_MFD extends NavSystem {
         this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
 
-        this._citySearcher = new WT_CitySearcher(AS3000_MFD.CITY_DATA_PATH);
+        this._citySearcher = new WT_CitySearcher();
     }
 
     get IsGlassCockpit() { return true; }
@@ -104,7 +104,6 @@ class AS3000_MFD extends NavSystem {
     }
 }
 AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL = 2; // seconds
-AS3000_MFD.CITY_DATA_PATH = "/WTg3000/SDK/Assets/Data/cities.json";
 
 class AS3000_Engine extends NavSystemElementContainer {
     constructor(_name, _root) {

@@ -14,7 +14,7 @@ class AS3000_PFD extends NavSystem {
         this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
 
-        this._citySearcher = new WT_CitySearcher(AS3000_PFD.CITY_DATA_PATH);
+        this._citySearcher = new WT_CitySearcher();
     }
 
     get IsGlassCockpit() { return true; }
@@ -136,7 +136,6 @@ class AS3000_PFD extends NavSystem {
     }
 }
 AS3000_PFD.FLIGHT_PLAN_SYNC_INTERVAL = 2;
-AS3000_PFD.CITY_DATA_PATH = "/WTg3000/SDK/Assets/Data/cities.json";
 
 class AS3000_PFD_SoftKeyElement extends SoftKeyElement {
     constructor(_name = "", _callback = null, _statusCB = null, _valueCB = null, _stateCB = null) {
@@ -181,7 +180,11 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         this._instrumentID = instrumentID;
         this._isEnabled = false;
 
-        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        let roadData = new WT_MapViewRoadData(
+            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA],
+            [WT_MapViewRoadData.Type.HIGHWAY, WT_MapViewRoadData.Type.PRIMARY]
+        );
+        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), roadData, AS3000_PFD_InnerMap.LAYER_OPTIONS);
 
         this._initController();
 

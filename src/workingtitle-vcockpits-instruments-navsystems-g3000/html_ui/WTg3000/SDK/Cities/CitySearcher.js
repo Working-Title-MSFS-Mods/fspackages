@@ -2,17 +2,14 @@
  * A searcher that finds cities located within a circular geographic area.
  */
 class WT_CitySearcher {
-    /**
-     * @param {String} path - the path to the file containing the city data.
-     */
-    constructor(path) {
+    constructor() {
         this._isReady = false;
 
         this._tempGeoPoint1 = new WT_GeoPoint(0, 0, 0);
         this._tempGeoPoint2 = new WT_GeoPoint(0, 0, 0);
         this._tempVector = new WT_GVector3(0, 0, 0);
 
-        this._loadTreeJSON(path);
+        this._loadTreeJSON(WT_CitySearcher.DATA_FILE_PATH);
     }
 
     _loadTreeJSON(path) {
@@ -152,6 +149,7 @@ class WT_CitySearcher {
         return cities;
     }
 }
+WT_CitySearcher.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Cities/cities.json";
 
 /**
  * @typedef WT_CityTreeNode

@@ -215,6 +215,21 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     _initLandTab() {
         this._landTab = new WT_G3x5_TSCMapSettingsTab("Land", this.parentPage);
 
+        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Roads",
+            WT_G3x5_NavMap.ROAD_SHOW_KEY, [
+                WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY,
+                WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY,
+            ], [
+                WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_MAX,
+                WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX,
+            ], [
+                "Highway",
+                "Primary Road"
+            ], "Road Settings", [
+                "Map Highway Range",
+                "Map Primary Road Range"
+            ]
+        ));
         this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Cities",
             WT_G3x5_NavMap.CITY_SHOW_KEY, [
                 WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY,

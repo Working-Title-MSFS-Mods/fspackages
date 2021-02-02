@@ -1,5 +1,5 @@
 class WT_G3x5_NavMap {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, borderData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, borderData, roadData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._layerOptions = layerOptions;
@@ -8,6 +8,7 @@ class WT_G3x5_NavMap {
         this._fpm = flightPlanManager;
         this._citySearcher = citySearcher;
         this._borderData = borderData;
+        this._roadData = roadData;
     }
 
     /**
@@ -100,6 +101,7 @@ class WT_G3x5_NavMap {
         this.model.addModule(new WT_MapModelBordersModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
         this.model.addModule(new WT_MapModelCitiesModule());
+        this.model.addModule(new WT_MapModelRoadsModule());
     }
 
     _initView() {
@@ -108,6 +110,7 @@ class WT_G3x5_NavMap {
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
+        this.view.addLayer(new WT_MapViewRoadLayer(this._roadData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
@@ -155,13 +158,15 @@ class WT_G3x5_NavMap {
             // DCLTR1
             {
                 stateBorder: true,
-                city: true
+                city: true,
+                road: true
             },
 
             // DCLTR2
             {
                 stateBorder: true,
                 city: true,
+                road: true,
                 userWaypoint: true,
                 vor: true,
                 ndb: true,
@@ -173,6 +178,7 @@ class WT_G3x5_NavMap {
                 nexrad: true,
                 stateBorder: true,
                 city: true,
+                road: true,
                 userWaypoint: true,
                 vor: true,
                 ndb: true,
@@ -209,6 +215,10 @@ class WT_G3x5_NavMap {
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY, "cities", "largeRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_LARGE_RANGE_DEFAULT));
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_KEY, "cities", "mediumRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_DEFAULT));
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY, "cities", "smallRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_SMALL_RANGE_DEFAULT));
+
+        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "road", "roads", "show", WT_G3x5_NavMap.ROAD_SHOW_KEY, this._dcltrSetting));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY, "roads", "highwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT));
+        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
 
         this.controller.init();
         this.controller.update();
@@ -248,6 +258,12 @@ WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(0.3),
     WT_Unit.NMILE.createNumber(0.9),
     WT_Unit.NMILE.createNumber(3)
+];
+WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS = [
+    WT_Unit.NMILE.createNumber(0),
+    WT_Unit.NMILE.createNumber(0.01),
+    WT_Unit.NMILE.createNumber(0.07),
+    WT_Unit.NMILE.createNumber(0.5)
 ];
 
 WT_G3x5_NavMap.MAP_RANGE_LEVELS =
@@ -343,6 +359,16 @@ WT_G3x5_NavMap.CITY_MEDIUM_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(50);
 WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY = "WT_Map_CitySmall_Range";
 WT_G3x5_NavMap.CITY_SMALL_RANGE_MAX = WT_Unit.NMILE.createNumber(100);
 WT_G3x5_NavMap.CITY_SMALL_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
+
+WT_G3x5_NavMap.ROAD_SHOW_KEY = "WT_Map_Road_Show";
+
+WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY = "WT_Map_RoadHighway_Range";
+WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_MAX = WT_Unit.NMILE.createNumber(150);
+WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(50);
+
+WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY = "WT_Map_RoadPrimary_Range";
+WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX = WT_Unit.NMILE.createNumber(150);
+WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(50);
 
 class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
     constructor(controller) {
