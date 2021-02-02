@@ -2961,7 +2961,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
             curve.add(0, '#000000');
             curve.add(altitude, '#000000');
-            curve.add(altitude + 1000, '#ff9900');
+            curve.add(altitude + 1000, '#4bd05b');
+            curve.add(altitude + 2000, '#d3c505');
             curve.add(altitude + 3000, '#cc0000');
 
             const altitudeColors = [SvgMapConfig.hexaToRGB('#0000ff')];
