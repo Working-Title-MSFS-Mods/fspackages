@@ -2882,18 +2882,7 @@ class CJ4_SystemWarnings extends Cabin_Warnings {
         super.onUpdate(_dTime);
     }
 }
-var CJ4_MapSymbol;
-(function (CJ4_MapSymbol) {
-    CJ4_MapSymbol[CJ4_MapSymbol["TRAFFIC"] = 0] = "TRAFFIC";
-    CJ4_MapSymbol[CJ4_MapSymbol["CONSTRAINTS"] = 1] = "CONSTRAINTS";
-    CJ4_MapSymbol[CJ4_MapSymbol["AIRSPACES"] = 2] = "AIRSPACES";
-    CJ4_MapSymbol[CJ4_MapSymbol["AIRWAYS"] = 3] = "AIRWAYS";
-    CJ4_MapSymbol[CJ4_MapSymbol["AIRPORTS"] = 4] = "AIRPORTS";
-    CJ4_MapSymbol[CJ4_MapSymbol["INTERSECTS"] = 5] = "INTERSECTS";
-    CJ4_MapSymbol[CJ4_MapSymbol["NAVAIDS"] = 6] = "NAVAIDS";
-    CJ4_MapSymbol[CJ4_MapSymbol["NDBS"] = 7] = "NDBS";
-    CJ4_MapSymbol[CJ4_MapSymbol["TERMWPTS"] = 8] = "TERMWPTS";
-})(CJ4_MapSymbol || (CJ4_MapSymbol = {}));
+
 class CJ4_MapContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
         super(_name, _root, null);
@@ -2951,7 +2940,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         if (!this.lastTerrainUpdate) {
             this.lastTerrainUpdate = 0;
         }
-        
+
         this.lastTerrainUpdate += _deltaTime;
 
         if (this.lastTerrainUpdate > 1000) {
@@ -3107,6 +3096,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.map.instrument.showAirports = (this.symbols & (1 << CJ4_MapSymbol.AIRPORTS)) ? true : false;
         this.map.instrument.showIntersections = (this.symbols & (1 << CJ4_MapSymbol.INTERSECTS)) ? true : false;
         this.map.instrument.showTermWpts = (this.symbols & (1 << CJ4_MapSymbol.TERMWPTS)) ? true : false;
+        this.map.instrument.showMissedAppr = (this.symbols & (1 << CJ4_MapSymbol.MISSEDAPPR)) ? true : false;
     }
     getAdaptiveRanges() {
         let ranges = Array.from(this.zoomRanges);

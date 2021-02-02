@@ -893,14 +893,16 @@ class CJ4_FMC extends FMCMainDisplay {
                 }
                 break;
             case CJ4_FMC.ALTALERT_STATE.ALERT:
-                if (!Simplane.getIsGrounded() && SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number") === 0) {
+                if (!Simplane.getIsGrounded() && SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number") === 0 && SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Cancel", "Number") === 0) {
                     this._altAlertPreselect = preselector;
                     SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 1);
                 }
 
-                // go to NONE when preselector changed
+                // go to NONE when preselector changed or
                 if (Math.abs(preselector - this._altAlertPreselect) > 1000) {
                     this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+                    SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Cancel", "Number", 0);
+
                 }
                 break;
         }
