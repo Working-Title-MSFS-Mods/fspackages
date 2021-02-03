@@ -1921,7 +1921,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
 
             if(indicatedSpeed <= 40){
                 SimVar.SetSimVarValue("L:WT_CJ4_VREF_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool", false);
                 SimVar.SetSimVarValue("L:WT_CJ4_VAP_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", false);
 
                 this.vSpeedSVG.setAttribute("opacity", "1");
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool")){
