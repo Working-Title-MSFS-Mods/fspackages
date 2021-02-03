@@ -33,6 +33,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.approachDistance = this.querySelector("#APP_Distance_Value");
         this.waypoint = this.querySelector("#Waypoint");
         this.waypointName = this.querySelector("#WP_Name");
+        this.waypointTtg = this.querySelector("#WP_Ttg_Value");
         this.waypointTrack = this.querySelector("#WP_Track_Value");
         this.waypointDistance = this.querySelector("#WP_Distance_Value");
         this.VORLeft = new VORDMENavAid(this.querySelector("#VORDMENavaid_Left"), 1);
@@ -268,6 +269,22 @@ class Jet_MFD_NDInfo extends HTMLElement {
                                 this.waypointDistance.textContent = this.currentWaypointDistance.toFixed(0);
                         }
                     }
+                    if ((_eta != this.currentWaypointEta) || _force) {
+                        this.currentWaypointEta = _eta;
+                        if (this.waypointTtg != null) {
+                            if (Simplane.getGroundSpeed() >= 50) {
+                                const overHour = (_eta >= 3600);
+                                if (overHour) {
+                                    this.waypointTtg.textContent = new Date(_eta * 1000).toISOString().substr(11, 5);
+                                } else {
+                                    this.waypointTtg.textContent = new Date(_eta * 1000).toISOString().substr(13, 3);
+                                }
+                            }
+                            else {
+                                this.waypointTtg.textContent = "--:--";
+                            }
+                        }
+                    }
                 }
                 else {
                     if (this.waypointName != null) {
@@ -278,6 +295,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     }
                     if (this.waypointDistance != null) {
                         this.waypointDistance.textContent = "-.-";
+                    }
+                    if (this.waypointTtg != null) {
+                        this.waypointTtg.textContent = "--:--";
                     }
                 }
             }
@@ -375,7 +395,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             if (SimVar.GetSimVarValue("NAV HAS NAV:" + vor.id, "Bool")) {
                                 course = Utils.leadingZeros(Math.round(vor.course), 3);
                             }
-                            
+
                             ident = vor.ident;
                             if (this.aircraft == Aircraft.CJ4) {
                                 let hasLocalizer = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + vor.id, "Bool");
@@ -615,7 +635,7 @@ class VORDMENavAid {
      */
     handleVORModeUpdate(parentNavMode, parentRadioIndex) {
         const ident = SimVar.GetSimVarValue("NAV IDENT:" + this.index, "string");
-        
+
         const hasRadial = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
         const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this.index, "bool");
         const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + this.index, "bool");
@@ -630,7 +650,7 @@ class VORDMENavAid {
             else {
                 this.pointer.style = 'display: none';
             }
-            
+
             this.hasNav = isTuned;
         }
 
@@ -661,7 +681,7 @@ class VORDMENavAid {
         else {
             this.setDistanceValue(0);
             this.setIDValue(0);
-            
+
             if (this.navTypeText.textContent !== 'VOR') {
                 this.navTypeText.textContent = 'VOR';
             }
