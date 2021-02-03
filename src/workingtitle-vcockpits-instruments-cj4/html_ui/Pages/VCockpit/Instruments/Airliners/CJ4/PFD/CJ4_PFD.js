@@ -538,6 +538,12 @@ class CJ4_PFD extends BaseAirliners {
         const vT = _dict.get(CJ4_PopupMenu_Key.VSPEED_VT);
         const vRef = _dict.get(CJ4_PopupMenu_Key.VSPEED_VRF);
         const vApp = _dict.get(CJ4_PopupMenu_Key.VSPEED_VAP);
+        WTDataStore.set("CJ4_V1_SELECT", v1)
+        WTDataStore.set("CJ4_VR_SELECT", vR)
+        WTDataStore.set("CJ4_V2_SELECT", v2)
+        WTDataStore.set("CJ4_VT_SELECT", vT)
+        WTDataStore.set("CJ4_VREF_SELECT", vRef)
+        WTDataStore.set("CJ4_VAP_SELECT", vApp)
         const v1_on = (_dict.get(CJ4_PopupMenu_Key.VSPEED_V1_ON) == "ON") ? true : false;
         const vR_on = (_dict.get(CJ4_PopupMenu_Key.VSPEED_VR_ON) == "ON") ? true : false;
         const v2_on = (_dict.get(CJ4_PopupMenu_Key.VSPEED_V2_ON) == "ON") ? true : false;
@@ -545,7 +551,6 @@ class CJ4_PFD extends BaseAirliners {
         const vRef_on = (_dict.get(CJ4_PopupMenu_Key.VSPEED_VRF_ON) == "ON") ? true : false;
         const vApp_on = (_dict.get(CJ4_PopupMenu_Key.VSPEED_VAP_ON) == "ON") ? true : false;
         
-        // console.log("READ SimOn:" + SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool") +  "BtnOn:" + v1_on + "FmcSet:" + SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool"))
         if(v1_on){
             SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", false);
             SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", true);
@@ -692,30 +697,35 @@ class CJ4_PFD extends BaseAirliners {
             }
         }
         const v1 = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
+        const v1_on = SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool");
+        const v1_sel = v1_on && !SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool");
         const vR = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots").toFixed(0);
+        const vR_on = SimVar.GetSimVarValue("L:WT_CJ4_VR_ON", "Bool");
+        const vR_sel = vR_on && !SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool");
         const v2 = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots").toFixed(0);
+        const v2_on = SimVar.GetSimVarValue("L:WT_CJ4_V2_ON", "Bool");
+        const v2_sel = v2_on && !SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool");
         const vT = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots").toFixed(0);
+        const vT_on = SimVar.GetSimVarValue("L:WT_CJ4_VT_ON", "Bool");
+        const vT_sel = vT_on && !SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool");
         const vRef = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots").toFixed(0);
+        const vRef_on = SimVar.GetSimVarValue("L:WT_CJ4_VREF_ON", "Bool");
+        const vRef_sel = vRef_on && !SimVar.GetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool");
         const vApp = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots").toFixed(0);
-        // console.log("FILL SimOn:" + SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool") + "FmcSet:" + SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool"))
-        const v1_on = SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool") && !SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool");
-        const vR_on = SimVar.GetSimVarValue("L:WT_CJ4_VR_ON", "Bool") && !SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool");
-        const v2_on = SimVar.GetSimVarValue("L:WT_CJ4_V2_ON", "Bool") && !SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool");
-        const vT_on = SimVar.GetSimVarValue("L:WT_CJ4_VT_ON", "Bool") && !SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool");
-        const vRef_on = SimVar.GetSimVarValue("L:WT_CJ4_VREF_ON", "Bool") && !SimVar.GetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool");
-        const vApp_on = SimVar.GetSimVarValue("L:WT_CJ4_VAP_ON", "Bool") && !SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool");
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_V1, v1);
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VR, vR);
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_V2, v2);
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VT, vT);
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VRF, vRef);
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VAP, vApp);
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_V1_ON, v1_on ? "ON" : "OFF");
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VR_ON, vR_on ? "ON" : "OFF");
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_V2_ON, v2_on ? "ON" : "OFF");
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VT_ON, vT_on ? "ON" : "OFF");
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VRF_ON, vRef_on ? "ON" : "OFF");
-        _dict.set(CJ4_PopupMenu_Key.VSPEED_VAP_ON, vApp_on ? "ON" : "OFF");
+        const vApp_on = SimVar.GetSimVarValue("L:WT_CJ4_VAP_ON", "Bool");
+        const vApp_sel = vApp_on && !SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool");
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_V1, v1_on ? v1 : WTDataStore.get("CJ4_V1_SELECT", 50));
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VR, vR_on ? vR : WTDataStore.get("CJ4_VR_SELECT", 50));
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_V2, v2_on ? v2 : WTDataStore.get("CJ4_V2_SELECT", 50));
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VT, vT_on ? vT : WTDataStore.get("CJ4_VT_SELECT", 50));
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VRF, vRef_on ? vRef : WTDataStore.get("CJ4_VREF_SELECT", 50));
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VAP, vApp_on ? vApp : WTDataStore.get("CJ4_VAP_SELECT", 50));
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_V1_ON, v1_sel ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VR_ON, vR_sel ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_V2_ON, v2_sel ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VT_ON, vT_sel ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VRF_ON, vRef_sel ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.VSPEED_VAP_ON, vApp_sel ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MIN_ALT_SRC, this.minMode);
         _dict.set(CJ4_PopupMenu_Key.MIN_ALT_BARO, WTDataStore.get("CJ4_MIN_BARO", 0));
         _dict.set(CJ4_PopupMenu_Key.MIN_ALT_RADIO, WTDataStore.get("CJ4_MIN_RADIO", 0));
