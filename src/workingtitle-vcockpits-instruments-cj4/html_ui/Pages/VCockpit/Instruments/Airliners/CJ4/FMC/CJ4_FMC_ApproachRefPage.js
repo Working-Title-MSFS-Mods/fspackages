@@ -297,12 +297,13 @@ class CJ4_FMC_ApproachRefPage {
                 fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.INPROGRESS;
                 setTimeout(() => {
                     fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.SENT;
-                    //new custom Cj4 LVARS for all V Speeds
+                    //new custom Cj4 LVARS for all V Speeds & new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
                     SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", vRef);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VREF_ON", "Bool", true);
                     SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
-                    //new LVARS to track whether vSpeed is set by FMS or not, used in PFD Airspeed Indicator to manage color magenta vs cyan
-                    SimVar.SetSimVarValue("L:WT_CJ4_VRF_FMCSET", "Bool", true);
                     SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VAP_ON", "Bool", true);
                     CJ4_FMC_ApproachRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution
                 }, 2000);
                 CJ4_FMC_ApproachRefPage.ShowPage2(fmc);

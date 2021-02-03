@@ -3836,7 +3836,7 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                 changed = true;
             }
             if (item.rangeElem) {
-                if(item.checkboxElem || item.radioElem){
+                if (item.checkboxElem || item.radioElem) {
                     dictIndex++;
                 }
                 item.rangeVal = item.rangeMin;
@@ -3941,6 +3941,9 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                         this.highlightItem.rangeVal -= this.highlightItem.rangeStep * this.getSpeedAccel();
                         this.highlightItem.rangeVal = Math.max(this.highlightItem.rangeVal, this.highlightItem.rangeMin);
                         this.highlightItem.rangeElem.textContent = this.highlightItem.rangeVal.toFixed(this.highlightItem.rangeDecimals);
+                        // if (this.highlightItem.checkboxVal) {
+                        //     this.highlightItem.checkboxVal = false;
+                        // }
                         this.onChanged(this.highlightItem);
                         this.speedInc += this.speedInc_UpFactor;
                     }
@@ -3957,6 +3960,9 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                         this.highlightItem.rangeVal += this.highlightItem.rangeStep * this.getSpeedAccel();
                         this.highlightItem.rangeVal = Math.min(this.highlightItem.rangeVal, this.highlightItem.rangeMax);
                         this.highlightItem.rangeElem.textContent = this.highlightItem.rangeVal.toFixed(this.highlightItem.rangeDecimals);
+                        // if (this.highlightItem.checkboxVal) {
+                        //     this.highlightItem.checkboxVal = false;
+                        // }
                         this.onChanged(this.highlightItem);
                         this.speedInc += this.speedInc_UpFactor;
                     }
