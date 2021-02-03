@@ -32,6 +32,8 @@ export class CJ4_NearestVORSearch {
     }
 
     while (true) {
+      const lat: number = SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude");
+      const long: number = SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude");
       const currentLat: number = SimVar.GetSimVarValue("C:fs9gps:NearestVorCurrentLatitude", "degree latitude", instrId);
       const currentLon: number = SimVar.GetSimVarValue("C:fs9gps:NearestVorCurrentLongitude", "degree longitude", instrId);
 
