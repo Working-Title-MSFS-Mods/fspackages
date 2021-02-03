@@ -3684,6 +3684,7 @@ let PopupMenu_ItemType;
     PopupMenu_ItemType[PopupMenu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
     PopupMenu_ItemType[PopupMenu_ItemType["SUBMENU"] = 6] = "SUBMENU";
     PopupMenu_ItemType[PopupMenu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
+    PopupMenu_ItemType[PopupMenu_ItemType["CHECKBOX_RANGE"] = 8] = "CHECKBOX_RANGE";
 })(PopupMenu_ItemType || (PopupMenu_ItemType = {}));
 
 var CJ4_PopupMenu_Key;
@@ -3721,7 +3722,42 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_MAP_OVERLAY"] = 30] = "PFD_MAP_OVERLAY";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_STD"] = 31] = "BARO_STD";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_SET"] = 32] = "BARO_SET";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V1_ON"] = 33] = "VSPEED_V1_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VR_ON"] = 34] = "VSPEED_VR_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V2_ON"] = 35] = "VSPEED_V2_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VT_ON"] = 36] = "VSPEED_VT_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VRF_ON"] = 37] = "VSPEED_VRF_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VAP_ON"] = 38] = "VSPEED_VAP_ON";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
+class CJ4_PopupMenu_Item {
+    constructor(_type, _section, _y, _height) {
+        this.y = 0;
+        this.height = 0;
+        this.listVal = 0;
+        this.rangeMin = 0;
+        this.rangeMax = 0;
+        this.rangeStep = 0;
+        this.rangeDecimals = 0;
+        this.rangeVal = 0;
+        this.radioVal = false;
+        this.checkboxVal = false;
+        this.type = _type;
+        this.section = _section;
+        this.y = _y;
+        this.height = _height;
+    }
+    get interactive() {
+        if (this.type != PopupMenu_ItemType.TITLE)
+            return true;
+        return false;
+    }
+    get enabled() {
+        if (this.dictKeys != null || this.subMenu)
+            return true;
+        return false;
+    }
+}
+
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
         super(...arguments);
@@ -3730,6 +3766,7 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     get isOnMainPage() {
         return this._isOnMainPage;
     }
+
     reactsOnEvent(_event) {
         switch (_event) {
             case "Upr_DATA_PUSH":
@@ -3749,13 +3786,88 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
         }
         return false;
     }
+    endSection() {
+        let stroke = document.createElementNS(Avionics.SVG.NS, "rect");
+        stroke.setAttribute("x", "0");
+        stroke.setAttribute("y", this.section.startY.toString());
+        stroke.setAttribute("width", this.menuWidth.toString());
+        stroke.setAttribute("height", (this.section.endY - this.section.startY).toString());
+        stroke.setAttribute("fill", "none");
+        stroke.setAttribute("stroke", "white");
+        stroke.setAttribute("stroke-width", this.sectionBorderSize.toString());
+        this.sectionRoot.appendChild(stroke);
+        let defaultRadio = null;
+        for (let i = 0; i < this.section.items.length; i++) {
+            let item = this.section.items[i];
+            if (item.radioElem) {
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[0])) {
+                    if (this.dictionary.get(item.dictKeys[0]) == item.radioName) {
+                        defaultRadio = item;
+                        break;
+                    }
+                }
+                else if (!defaultRadio && this.section.defaultRadio) {
+                    defaultRadio = item;
+                }
+            }
+        }
+        for (let i = 0; i < this.section.items.length; i++) {
+            let item = this.section.items[i];
+            let dictIndex = 0;
+            let changed = false;
+            if (item.radioElem) {
+                if (item == defaultRadio) {
+                    this.activateItem(item, true);
+                    changed = true;
+                }
+            }
+            if (item.listElem) {
+                item.listVal = 0;
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    let value = this.dictionary.get(item.dictKeys[dictIndex]);
+                    for (let j = 0; j < item.listValues.length; j++) {
+                        if (item.listValues[j] == value) {
+                            item.listVal = j;
+                            break;
+                        }
+                    }
+                }
+                item.listElem.textContent = item.listValues[item.listVal];
+                changed = true;
+            }
+            if (item.rangeElem) {
+                if(item.checkboxElem || item.radioElem){
+                    dictIndex++;
+                }
+                item.rangeVal = item.rangeMin;
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    item.rangeVal = parseFloat(this.dictionary.get(item.dictKeys[dictIndex]));
+                    item.rangeVal = Math.max(item.rangeMin, Math.min(item.rangeVal, item.rangeMax));
+                }
+                item.rangeElem.textContent = item.rangeVal.toFixed(item.rangeDecimals);
+                changed = true;
+            }
+            if (item.checkboxElem) {
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    if (this.dictionary.get(item.dictKeys[0]) == "ON") {
+                        this.activateItem(item, true);
+                        changed = true;
+                    }
+                }
+            }
+            if (changed)
+                this.onChanged(item);
+        }
+        this.allSections.push(this.section);
+        this.section = null;
+    }
     onChanged(_item) {
         if (this.dictionary && _item.enabled) {
             switch (_item.type) {
                 case PopupMenu_ItemType.RADIO:
                 case PopupMenu_ItemType.RADIO_LIST:
                 case PopupMenu_ItemType.RADIO_RANGE:
-                    if (_item.radioVal){
+                    if (_item.radioVal) {
                         this.dictionary.set(_item.dictKeys[0], _item.radioName);
                     }
                     break;
@@ -3768,6 +3880,9 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                 case PopupMenu_ItemType.CHECKBOX:
                     this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
                     break;
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
+                    break;
             }
             switch (_item.type) {
                 case PopupMenu_ItemType.RADIO_LIST:
@@ -3776,8 +3891,159 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                 case PopupMenu_ItemType.RADIO_RANGE:
                     this.dictionary.set(_item.dictKeys[1], _item.rangeVal.toString());
                     break;
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    this.dictionary.set(_item.dictKeys[1], _item.rangeVal.toString());
+                    break;
             }
         }
+    }
+    onActivate() {
+        super.onActivate();
+        if (this.highlightItem && this.highlightItem.enabled) {
+            switch (this.highlightItem.type) {
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    if (!this.highlightItem.checkboxVal) {
+                        this.activateItem(this.highlightItem, true);
+                    }
+                    else {
+                        this.activateItem(this.highlightItem, false);
+                        this.highlightItem.checkboxVal = false;
+                    }
+                    this.onChanged(this.highlightItem);
+                    break;
+            }
+        }
+    }
+    activateItem(_item, _val) {
+        super.activateItem(_item, _val);
+        if (!_item.enabled)
+            return;
+        switch (_item.type) {
+            case PopupMenu_ItemType.CHECKBOX_RANGE:
+                if (_val) {
+                    _item.checkboxVal = true;
+                    _item.checkboxTickElem.setAttribute("visibility", "visible");
+                }
+                else {
+                    _item.checkboxVal = false;
+                    _item.checkboxTickElem.setAttribute("visibility", "hidden");
+                }
+                break;
+        }
+    }
+
+    onDataDec() {
+        super.onDataInc();
+        if (this.highlightItem && this.highlightItem.enabled) {
+            switch (this.highlightItem.type) {
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    if (this.highlightItem.rangeVal > this.highlightItem.rangeMin) {
+                        this.highlightItem.rangeVal -= this.highlightItem.rangeStep * this.getSpeedAccel();
+                        this.highlightItem.rangeVal = Math.max(this.highlightItem.rangeVal, this.highlightItem.rangeMin);
+                        this.highlightItem.rangeElem.textContent = this.highlightItem.rangeVal.toFixed(this.highlightItem.rangeDecimals);
+                        this.onChanged(this.highlightItem);
+                        this.speedInc += this.speedInc_UpFactor;
+                    }
+                    break;
+            }
+        }
+    }
+    onDataInc() {
+        super.onDataInc();
+        if (this.highlightItem && this.highlightItem.enabled) {
+            switch (this.highlightItem.type) {
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    if (this.highlightItem.rangeVal < this.highlightItem.rangeMax) {
+                        this.highlightItem.rangeVal += this.highlightItem.rangeStep * this.getSpeedAccel();
+                        this.highlightItem.rangeVal = Math.min(this.highlightItem.rangeVal, this.highlightItem.rangeMax);
+                        this.highlightItem.rangeElem.textContent = this.highlightItem.rangeVal.toFixed(this.highlightItem.rangeDecimals);
+                        this.onChanged(this.highlightItem);
+                        this.speedInc += this.speedInc_UpFactor;
+                    }
+                    break;
+            }
+        }
+    }
+    addCheckboxRange(_text, _textSize, _min, _max, _step, _dictKeys) {
+        let enabled = (_dictKeys != null) ? true : false;
+        let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
+        let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
+        let cy = this.section.endY + this.lineHeight * 0.5;
+        let shape;
+        if (this.shape3D && enabled) {
+            let b = this.shape3DBorderSize;
+            let topLeftBorder = document.createElementNS(Avionics.SVG.NS, "path");
+            topLeftBorder.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy - size * 0.5) + " l" + (size) + " 0 l" + (-b) + " " + (b) + " l" + (-(size - b * 2)) + " 0 l0 " + (size - b * 2) + " l" + (-b) + " " + (b) + " Z");
+            topLeftBorder.setAttribute("fill", this.shape3DBorderLeft);
+            this.sectionRoot.appendChild(topLeftBorder);
+            let bottomRightBorder = document.createElementNS(Avionics.SVG.NS, "path");
+            bottomRightBorder.setAttribute("d", "M" + (cx + size * 0.5) + " " + (cy + size * 0.5) + " l" + (-size) + " 0 l" + (b) + " " + (-b) + " l" + (size - b * 2) + " 0 l0 " + (-(size - b * 2)) + " l" + (b) + " " + (-b) + " Z");
+            bottomRightBorder.setAttribute("fill", this.shape3DBorderRight);
+            this.sectionRoot.appendChild(bottomRightBorder);
+            shape = document.createElementNS(Avionics.SVG.NS, "rect");
+            shape.setAttribute("x", (cx - size * 0.5 + b).toString());
+            shape.setAttribute("y", (cy - size * 0.5 + b).toString());
+            shape.setAttribute("width", (size - b * 2).toString());
+            shape.setAttribute("height", (size - b * 2).toString());
+            shape.setAttribute("fill", this.shapeFillColor);
+            this.sectionRoot.appendChild(shape);
+        }
+        else {
+            shape = document.createElementNS(Avionics.SVG.NS, "rect");
+            shape.setAttribute("x", (cx - size * 0.5).toString());
+            shape.setAttribute("y", (cy - size * 0.5).toString());
+            shape.setAttribute("width", size.toString());
+            shape.setAttribute("height", size.toString());
+            shape.setAttribute("fill", (enabled) ? this.shapeFillColor : ((this.shapeFillIfDisabled) ? this.disabledColor : "none"));
+            shape.setAttribute("stroke", (enabled) ? "white" : this.disabledColor);
+            shape.setAttribute("stroke-width", "1");
+            this.sectionRoot.appendChild(shape);
+        }
+        let tick = document.createElementNS(Avionics.SVG.NS, "path");
+        tick.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy) + " l" + (size * 0.4) + " " + (size * 0.5) + " l" + (size * 0.6) + " " + (-size));
+        tick.setAttribute("fill", "none");
+        tick.setAttribute("stroke", this.interactionColor);
+        tick.setAttribute("stroke-width", "4");
+        tick.setAttribute("visibility", "hidden");
+        this.sectionRoot.appendChild(tick);
+        let text = document.createElementNS(Avionics.SVG.NS, "text");
+        text.textContent = _text;
+        text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
+        text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+        text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+        text.setAttribute("font-size", _textSize.toString());
+        text.setAttribute("font-family", this.textStyle);
+        text.setAttribute("alignment-baseline", "central");
+        this.sectionRoot.appendChild(text); let hl = document.createElementNS(Avionics.SVG.NS, "rect");
+        hl.setAttribute("x", (this.columnLeft3 - 2).toString());
+        hl.setAttribute("y", (this.section.endY + 2).toString());
+        hl.setAttribute("width", (this.menuWidth - 2 - (this.columnLeft3 - 2)).toString());
+        hl.setAttribute("height", ((this.section.endY + this.lineHeight - 2) - (this.section.endY + 2)).toString());
+        hl.setAttribute("fill", this.interactionColor);
+        hl.setAttribute("visibility", "hidden");
+        this.sectionRoot.appendChild(hl);
+        let range = document.createElementNS(Avionics.SVG.NS, "text");
+        range.setAttribute("x", this.columnLeft3.toString());
+        range.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+        range.setAttribute("fill", (enabled) ? this.interactionColor : this.disabledColor);
+        range.setAttribute("font-size", _textSize.toString());
+        range.setAttribute("font-family", this.textStyle);
+        range.setAttribute("alignment-baseline", "central");
+        this.sectionRoot.appendChild(range);
+        let item = new CJ4_PopupMenu_Item(PopupMenu_ItemType.CHECKBOX_RANGE, this.section, this.section.endY, this.lineHeight);
+        item.dictKeys = _dictKeys;
+        item.checkboxElem = shape;
+        item.checkboxTickElem = tick;
+        item.rangeElem = range;
+        item.rangeHLElem = hl;
+        item.rangeMin = _min;
+        item.rangeMax = _max;
+        item.rangeVal = _min;
+        item.rangeStep = _step;
+        item.rangeDecimals = Utils.countDecimals(_step);
+        this.section.items.push(item);
+        super.registerWithMouse(item);
+        this.section.endY += this.lineHeight;
     }
 }
 class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
@@ -3982,12 +4248,16 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("SPEEDS", this.textSize, 0.32);
-                this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
-                this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
-                this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
-                this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
-                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addCheckboxRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addCheckboxRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addCheckboxRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addCheckboxRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckboxRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addCheckboxRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
@@ -4024,9 +4294,9 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                if(WTDataStore.get("CJ4_BARO_MODE", false)){
+                if (WTDataStore.get("CJ4_BARO_MODE", false)) {
                     this.addRadioRange("HPA", this.textSize, 980, 1050, 1, [CJ4_PopupMenu_Key.BARO_STD, CJ4_PopupMenu_Key.BARO_SET]);
-                }else{
+                } else {
                     this.addRadioRange("IN", this.textSize, 27.00, 32.00, 0.01, [CJ4_PopupMenu_Key.BARO_STD, CJ4_PopupMenu_Key.BARO_SET]);
                 }
                 this.addRadio("STD", this.textSize, [CJ4_PopupMenu_Key.BARO_STD]);
@@ -4070,16 +4340,16 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("SPEEDS", this.textSize, 0.32);
-                this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
-                this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
-                this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
-                this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
+                this.addCheckboxRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addCheckboxRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addCheckboxRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addCheckboxRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addCheckboxRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addCheckboxRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
