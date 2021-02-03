@@ -301,7 +301,7 @@ class CJ4_FMC_ApproachRefPage {
                     SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots", vRef);
                     SimVar.SetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool", true);
                     SimVar.SetSimVarValue("L:WT_CJ4_VREF_ON", "Bool", true);
-                    SimVar.SetSimVarValue("L:WT_CJ4_VAP", "Knots", vApp);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VAP_SPEED", "Knots", vApp);
                     SimVar.SetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool", true);
                     SimVar.SetSimVarValue("L:WT_CJ4_VAP_ON", "Bool", true);
                     CJ4_FMC_ApproachRefPage.ShowPage2(fmc); // TODO: this will probably send us back to this page even when user navigated away, find better solution

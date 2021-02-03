@@ -58,13 +58,13 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
-        SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
         SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_VR_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_V2_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_VT_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_VREF_ON", "Bool", false);
+        SimVar.SetSimVarValue("L:WT_CJ4_VAP_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
         SimVar.SetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool", WTDataStore.get("CJ4_BARO_MODE", false));
         SimVar.SetSimVarValue("L:WT_CJ4_MIN_SRC", "Number", 0);
@@ -711,7 +711,7 @@ class CJ4_PFD extends BaseAirliners {
         const vRef = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots").toFixed(0);
         const vRef_on = SimVar.GetSimVarValue("L:WT_CJ4_VREF_ON", "Bool");
         const vRef_sel = vRef_on && !SimVar.GetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool");
-        const vApp = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots").toFixed(0);
+        const vApp = SimVar.GetSimVarValue("L:WT_CJ4_VAP_SPEED", "Knots").toFixed(0);
         const vApp_on = SimVar.GetSimVarValue("L:WT_CJ4_VAP_ON", "Bool");
         const vApp_sel = vApp_on && !SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool");
         _dict.set(CJ4_PopupMenu_Key.VSPEED_V1, v1_on ? v1 : WTDataStore.get("CJ4_V1_SELECT", 50));

@@ -1907,14 +1907,26 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
     }
     updateVSpeeds() {
         if (this.vSpeedSVG) {
-            let v1 = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
-            let v2 = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
-            let vR = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
-            let vT = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
-            if (Simplane.getIndicatedSpeed() < 40){
+            let indicatedSpeed = Simplane.getIndicatedSpeed();
+            if(indicatedSpeed >= 200){
+                SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VR_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_V2_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VT_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", false);
+            }
+
+            if(indicatedSpeed <= 40){
+                SimVar.SetSimVarValue("L:WT_CJ4_VREF_ON", "Bool", false);
+                SimVar.SetSimVarValue("L:WT_CJ4_VAP_ON", "Bool", false);
+
                 this.vSpeedSVG.setAttribute("opacity", "1");
-                this.v1Speed.textContent = v1.toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool")){
+                    let v1 = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
+                    this.v1Speed.textContent = v1.toFixed(0);
                     if (SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool")) {
                         this.v1Speed.setAttribute("fill", "magenta");
                         this.titleV1V.setAttribute("fill", "magenta");
@@ -1930,8 +1942,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     this.title1.setAttribute("fill", "none");
                 }
 
-                this.vRSpeed.textContent = vR.toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VR_ON", "Bool")){
+                    let vR = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
+                    this.vRSpeed.textContent = vR.toFixed(0);
                     if (SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool")) {
                         this.vRSpeed.setAttribute("fill", "magenta");
                         this.titleVRV.setAttribute("fill", "magenta");
@@ -1947,8 +1960,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     this.titleR.setAttribute("fill", "none");
                 }
                 
-                this.v2Speed.textContent = v2.toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_V2_ON", "Bool")){
+                    let v2 = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
+                    this.v2Speed.textContent = v2.toFixed(0);
                     if (SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool")) {
                         this.v2Speed.setAttribute("fill", "magenta");
                         this.titleV2V.setAttribute("fill", "magenta");
@@ -1964,8 +1978,9 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
                     this.title2.setAttribute("fill", "none");
                 }
 
-                this.vXSpeed.textContent = vT.toFixed(0);
                 if (SimVar.GetSimVarValue("L:WT_CJ4_VT_ON", "Bool")){
+                    let vT = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
+                    this.vXSpeed.textContent = vT.toFixed(0);
                     if (SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool")) {
                         this.vXSpeed.setAttribute("fill", "magenta");
                         this.titleVTV.setAttribute("fill", "magenta");
@@ -1983,17 +1998,6 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             }
             else {
                 this.vSpeedSVG.setAttribute("opacity", "0");
-            }
-
-            if (Simplane.getIndicatedSpeed() > 200 && SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots") != 0) {
-                SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", 0);
-                SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", 0);
-                SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", 0);
-                SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 0);
-                SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
-                SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
-                SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
-                SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
             }
         }
     }
@@ -2508,160 +2512,135 @@ class Jet_PFD_AirspeedIndicator extends HTMLElement {
             _marker.svg.setAttribute("visibility", "hidden");
     }
     updateMarkerV1(_marker, currentAirspeed) {
-        let v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
-        if (v1Speed >= 40) {
-            _marker.engaged = true;
-        }
-        else if (_marker.engaged && !_marker.passed) {
-            v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
-        }
-        if (v1Speed >= 40) {
+        if(SimVar.GetSimVarValue("L:WT_CJ4_V1_ON", "Bool")){
+            let v1Speed = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots");
             var posY = this.valueToSvg(currentAirspeed, v1Speed);
-            _marker.setOffscreen(false);
             if (posY >= this.refHeight + 25) {
-                _marker.passed = true;
+                _marker.svg.setAttribute("visibility", "hidden");
+            }else{
+                if (SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool")) {
+                    _marker.textSVG.setAttribute("fill", "magenta");
+                    _marker.lineSVG.style.stroke = "magenta";
+                }
+                else {
+                    _marker.textSVG.setAttribute("fill", "cyan");
+                    _marker.lineSVG.style.stroke = "cyan";
+                }
+                _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+                _marker.svg.setAttribute("visibility", "visible");
             }
-            _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-            _marker.svg.setAttribute("visibility", "visible");
-        }
-        else {
+        }else{
             _marker.svg.setAttribute("visibility", "hidden");
-        }
-        if (SimVar.GetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool")) {
-            _marker.textSVG.setAttribute("fill", "magenta");
-            _marker.lineSVG.style.stroke = "magenta";
-        }
-        else {
-            _marker.textSVG.setAttribute("fill", "cyan");
-            _marker.lineSVG.style.stroke = "cyan";
         }
     }
     updateMarkerVR(_marker, currentAirspeed) {
-        let vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
-        if (vRSpeed >= 40) {
-            _marker.engaged = true;
-        }
-        else if (_marker.engaged && !_marker.passed) {
-            vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
-        }
-        if (vRSpeed >= 40) {
+        if(SimVar.GetSimVarValue("L:WT_CJ4_VR_ON", "Bool")){
+            let vRSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots");
             var posY = this.valueToSvg(currentAirspeed, vRSpeed);
             if (posY >= this.refHeight + 25) {
-                _marker.passed = true;
+                _marker.svg.setAttribute("visibility", "hidden");
+            }else{
+                if (SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool")) {
+                    _marker.textSVG.setAttribute("fill", "magenta");
+                    _marker.lineSVG.style.stroke = "magenta";
+                }
+                else {
+                    _marker.textSVG.setAttribute("fill", "cyan");
+                    _marker.lineSVG.style.stroke = "cyan";
+                }
+                _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+                _marker.svg.setAttribute("visibility", "visible");
             }
-            _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-            _marker.svg.setAttribute("visibility", "visible");
-        }
-        else {
+        }else{
             _marker.svg.setAttribute("visibility", "hidden");
-        }
-        if (SimVar.GetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool")) {
-            _marker.textSVG.setAttribute("fill", "magenta");
-            _marker.lineSVG.style.stroke = "magenta";
-
-        }
-        else {
-            _marker.textSVG.setAttribute("fill", "cyan");
-            _marker.lineSVG.style.stroke = "cyan";
         }
     }
     updateMarkerV2(_marker, currentAirspeed) {
-        let v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
-        if (v2Speed >= 40) {
-            _marker.engaged = true;
-        }
-        else if (_marker.engaged && !_marker.passed) {
-            v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
-        }
-        if (v2Speed >= 40) {
+        if(SimVar.GetSimVarValue("L:WT_CJ4_V2_ON", "Bool")){
+            let v2Speed = SimVar.GetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots");
             var posY = this.valueToSvg(currentAirspeed, v2Speed);
             if (posY >= this.refHeight + 25) {
-                _marker.passed = true;
+                _marker.svg.setAttribute("visibility", "hidden");
+            }else{
+                if (SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool")) {
+                    _marker.textSVG.setAttribute("fill", "magenta");
+                    _marker.lineSVG.style.stroke = "magenta";
+                }
+                else {
+                    _marker.textSVG.setAttribute("fill", "cyan");
+                    _marker.lineSVG.style.stroke = "cyan";
+                }
+                _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+                _marker.svg.setAttribute("visibility", "visible");
             }
-            _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-            _marker.svg.setAttribute("visibility", "visible");
-        }
-        else {
+        }else{
             _marker.svg.setAttribute("visibility", "hidden");
-        }
-        if (SimVar.GetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool")) {
-            _marker.textSVG.setAttribute("fill", "magenta");
-            _marker.lineSVG.style.stroke = "magenta";
-
-        }
-        else {
-            _marker.textSVG.setAttribute("fill", "cyan");
-            _marker.lineSVG.style.stroke = "cyan";
         }
     }
     updateMarkerVRef(_marker, currentAirspeed) {
-        let vRefSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots");
-        if (vRefSpeed >= 40) {
+        if(SimVar.GetSimVarValue("L:WT_CJ4_VREF_ON", "Bool")){
+            let vRefSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VREF_SPEED", "Knots");
             var posY = this.valueToSvg(currentAirspeed, vRefSpeed);
-            _marker.setOffscreen(false);
-            _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-            _marker.svg.setAttribute("visibility", "visible");
-        }
-        else {
+            if (posY >= this.refHeight + 25) {
+                _marker.svg.setAttribute("visibility", "hidden");
+            }else{
+                if (SimVar.GetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool")) {
+                    _marker.textSVG.setAttribute("fill", "magenta");
+                    _marker.lineSVG.style.stroke = "magenta";
+                }
+                else {
+                    _marker.textSVG.setAttribute("fill", "cyan");
+                    _marker.lineSVG.style.stroke = "cyan";
+                }
+                _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+                _marker.svg.setAttribute("visibility", "visible");
+            }
+        }else{
             _marker.svg.setAttribute("visibility", "hidden");
-        }
-        if (SimVar.GetSimVarValue("L:WT_CJ4_VREF_FMCSET", "Bool")) {
-            _marker.textSVG.setAttribute("fill", "magenta");
-            _marker.lineSVG.style.stroke = "magenta";
-
-        }
-        else {
-            _marker.textSVG.setAttribute("fill", "cyan");
-            _marker.lineSVG.style.stroke = "cyan";
         }
     }
     updateMarkerVApp(_marker, currentAirspeed) {
-        let vAppSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VAP", "Knots");
-        if (vAppSpeed >= 40 && this.aircraft == Aircraft.CJ4) {
-            var posY = this.valueToSvg(currentAirspeed, vAppSpeed);
-            _marker.setOffscreen(false);
-            _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-            _marker.svg.setAttribute("visibility", "visible");
-        }
-        else {
+        if(SimVar.GetSimVarValue("L:WT_CJ4_VAP_ON", "Bool")){
+            let VAppSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VAP_SPEED", "Knots");
+            var posY = this.valueToSvg(currentAirspeed, VAppSpeed);
+            if (posY >= this.refHeight + 25) {
+                _marker.svg.setAttribute("visibility", "hidden");
+            }else{
+                if (SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool")) {
+                    _marker.textSVG.setAttribute("fill", "magenta");
+                    _marker.lineSVG.style.stroke = "magenta";
+                }
+                else {
+                    _marker.textSVG.setAttribute("fill", "cyan");
+                    _marker.lineSVG.style.stroke = "cyan";
+                }
+                _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+                _marker.svg.setAttribute("visibility", "visible");
+            }
+        }else{
             _marker.svg.setAttribute("visibility", "hidden");
-        }
-        if (SimVar.GetSimVarValue("L:WT_CJ4_VAP_FMCSET", "Bool")) {
-            _marker.textSVG.setAttribute("fill", "magenta");
-            _marker.lineSVG.style.stroke = "magenta";
-
-        }
-        else {
-            _marker.textSVG.setAttribute("fill", "cyan");
-            _marker.lineSVG.style.stroke = "cyan";
         }
     }
     updateMarkerVX(_marker, currentAirspeed) {
-        let vxSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
-        if (vxSpeed >= 40) {
-            _marker.engaged = true;
-        }
-        else if (_marker.engaged && !_marker.passed) {
-            vxSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
-        }
-        if (vxSpeed >= 40) {
-            var posY = this.valueToSvg(currentAirspeed, vxSpeed);
+        if(SimVar.GetSimVarValue("L:WT_CJ4_VT_ON", "Bool")){
+            let VTSpeed = SimVar.GetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots");
+            var posY = this.valueToSvg(currentAirspeed, VTSpeed);
             if (posY >= this.refHeight + 25) {
-                _marker.passed = true;
+                _marker.svg.setAttribute("visibility", "hidden");
+            }else{
+                if (SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool")) {
+                    _marker.textSVG.setAttribute("fill", "magenta");
+                    _marker.lineSVG.style.stroke = "magenta";
+                }
+                else {
+                    _marker.textSVG.setAttribute("fill", "cyan");
+                    _marker.lineSVG.style.stroke = "cyan";
+                }
+                _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
+                _marker.svg.setAttribute("visibility", "visible");
             }
-            _marker.svg.setAttribute("y", (posY - this.speedMarkersHeight * 0.5).toString());
-            _marker.svg.setAttribute("visibility", "visible");
-        }
-        else {
+        }else{
             _marker.svg.setAttribute("visibility", "hidden");
-        }
-        if (this.aircraft == Aircraft.CJ4 && SimVar.GetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool")) {
-            _marker.textSVG.setAttribute("fill", "magenta");
-            _marker.lineSVG.style.stroke = "magenta";
-        }
-        else if (this.aircraft == Aircraft.CJ4) {
-            _marker.textSVG.setAttribute("fill", "cyan");
-            _marker.lineSVG.style.stroke = "cyan";
         }
     }
     updateMarkerFlaps15Marker(_marker, currentAirspeed) {
