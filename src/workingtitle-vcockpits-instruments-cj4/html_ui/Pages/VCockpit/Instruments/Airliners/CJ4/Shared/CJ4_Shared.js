@@ -4254,16 +4254,16 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("SPEEDS", this.textSize, 0.32);
-                this.addCheckboxRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
-                this.addCheckboxRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
-                this.addCheckboxRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
-                this.addCheckboxRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
+                this.addCheckboxRange("V1", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addCheckboxRange("VR", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addCheckboxRange("V2", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addCheckboxRange("VT", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addCheckboxRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addCheckboxRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addCheckboxRange("VRF", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addCheckboxRange("VAP", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
@@ -4346,16 +4346,16 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("SPEEDS", this.textSize, 0.32);
-                this.addCheckboxRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
-                this.addCheckboxRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
-                this.addCheckboxRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
-                this.addCheckboxRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
+                this.addCheckboxRange("V1", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addCheckboxRange("VR", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addCheckboxRange("V2", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addCheckboxRange("VT", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addCheckboxRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addCheckboxRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addCheckboxRange("VRF", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addCheckboxRange("VAP", this.textSize, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
