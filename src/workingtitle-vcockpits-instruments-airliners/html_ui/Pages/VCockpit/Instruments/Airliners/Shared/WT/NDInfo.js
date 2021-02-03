@@ -89,9 +89,15 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             if (!isAlertSet) {
                 this._displayWaypointInfo = true;
-                this.waypointName.style.visibility = 'visible';
-                this.waypointDistance.parentElement.style.visibility = 'visible';
-                this.waypointTtg.parentElement.style.visibility = 'visible';
+                if (this.waypointName) {
+                    this.waypointName.style.visibility = 'visible';
+                }
+                if (this.waypointDistance) {
+                    this.waypointDistance.parentElement.style.visibility = 'visible';
+                }
+                if (this.waypointTtg) {
+                    this.waypointTtg.parentElement.style.visibility = 'visible';
+                }
             }
         }
 
@@ -104,7 +110,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
             this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
-            this.waypointTtg.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
+            if (this.waypointTtg) {
+                this.waypointTtg.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
+            }
         }
     }
 
