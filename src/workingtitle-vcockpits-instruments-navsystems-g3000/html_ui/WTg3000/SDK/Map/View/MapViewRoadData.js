@@ -310,9 +310,10 @@ WT_MapViewRoadData.Region = {
     EC: 5,  // Central Europe
     EE: 6,  // Eastern Europe
     AF: 7,  // Africa
-    AC: 8,  // Middle East/Central Asia
-    AE: 9,  // East Asia
-    OC: 10  // Oceania
+    ME: 8,  // Middle East
+    AC: 9,  // Central Asia
+    AE: 10,  // East Asia
+    OC: 11  // Oceania
 };
 /**
  * @enum {Number}

@@ -553,7 +553,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._airwayLayer.buffer.context.strokeStyle = this.airwayStrokeColor;
         this._airwayLayer.buffer.context.stroke();
 
-        this._airwayLayer.redrawDisplay(state);
+        this._airwayLayer.syncDisplay(state);
 
         this._clearAirwayWaypoints();
         for (let waypoint of this._airwayRenderer.waypointsRendered) {
@@ -622,6 +622,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     _onAirwayRenderFinished(state) {
         this._drawAirwaysToDisplay(state);
+        this._airwayLayer.resetBuffer();
         this._drawAirwayLabels();
         this._shouldDrawUnfinishedAirways = false;
     }
@@ -635,7 +636,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - the current map view state.
      */
     _startDrawAirways(state) {
-        this._airwayLayer.resetBuffer(state);
+        this._airwayLayer.syncBuffer(state);
         this._airwayRenderer.render(this._getAirwaysToDraw(state, this._standaloneWaypoints), this._airwayLayer.buffer.projectionRenderer);
     }
 
@@ -654,15 +655,14 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         let isImageInvalid = this._airwayLayer.display.isInvalid ||
                              (!showAirway && this._lastShowAirway);
 
-        let shouldRedraw = isImageInvalid ||
-                           (this._lastStandaloneWaypointsCount != this._standaloneWaypoints.size) ||
-                           (showAirway != this._lastShowAirway) ||
-                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
+        let shouldPredraw = (this._lastStandaloneWaypointsCount != this._standaloneWaypoints.size) ||
+                            (showAirway != this._lastShowAirway) ||
+                            (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
 
         this._lastShowAirway = showAirway;
 
         if (isImageInvalid) {
-            this._airwayLayer.redrawDisplay(state, false);
+            this._airwayLayer.syncDisplay(state, false);
             this._clearAirwayWaypoints();
             this._clearAirwayLabels();
             this._shouldDrawUnfinishedAirways = true;
@@ -670,7 +670,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         if (!showAirway) {
             return;
         }
-        if (shouldRedraw) {
+        if (isImageInvalid || (shouldPredraw && !this._airwayRenderer.isRendering)) {
             this._startDrawAirways(state);
         }
         this._airwayRenderer.update(state);
@@ -698,6 +698,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._waypointRenderer.update(state);
         this._iconLayer.display.clear();
         this._iconLayer.copyBufferToCanvas();
+        this._iconLayer.resetBuffer();
     }
 
     /**

@@ -301,7 +301,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
      */
     constructor(useBuffer, syncSizeToView) {
         super(syncSizeToView);
-        this._useBuffer = useBuffer;
+        this._hasBuffer = useBuffer;
 
         if (useBuffer) {
             this._buffer = this._createBuffer();
@@ -326,11 +326,11 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
 
     /**
      * @readonly
-     * @property {Boolean} useBuffer - whether this canvas sublayer has an offscreen buffer.
+     * @property {Boolean} hasBuffer - whether this canvas sublayer has an offscreen buffer.
      * @type {Boolean}
      */
-    get useBuffer() {
-        return this._useBuffer;
+    get hasBuffer() {
+        return this._hasBuffer;
     }
 
     /**
@@ -362,7 +362,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     set width(width) {
         this.display.canvas.width = width;
         this.display.canvas.style.width = `${width}px`;
-        if (this.useBuffer) {
+        if (this.hasBuffer) {
             this.buffer.canvas.width = width;
         }
     }
@@ -378,7 +378,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     set height(height) {
         this.display.canvas.height = height;
         this.display.canvas.style.height = `${height}px`;
-        if (this.useBuffer) {
+        if (this.hasBuffer) {
             this.buffer.canvas.height = height;
         }
     }
@@ -393,7 +393,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
      * @param {Number} [height] - the height of the area to copy, in pixels.
      */
     copyBufferToCanvas(left, top, width, height) {
-        if (!this.buffer) {
+        if (!this.hasBuffer) {
             return;
         }
 
@@ -405,6 +405,21 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
         }
         this.display.context.drawImage(this.buffer.canvas, left, top, width, height, left, top, width, height);
         return {left: left, top: top, width: width, height: height};
+    }
+
+    /**
+     * Resets the buffer canvas. This will erase the canvas of all drawn pixels, reset its state (including all styles,
+     * transformations, and cached paths), and clear the Coherent GT command buffer associated with it.
+     */
+    resetBuffer() {
+        if (!this.hasBuffer) {
+            return;
+        }
+
+        this.buffer.canvas.width = 0;
+        this.buffer.canvas.height = 0;
+        this.buffer.canvas.width = this.width;
+        this.buffer.canvas.height = this.height;
     }
 }
 

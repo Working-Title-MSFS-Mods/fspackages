@@ -194,6 +194,7 @@ class WT_MapViewWaypointHighlightLayer extends WT_MapViewMultiLayer {
     _updateHighlightLayer(state) {
         this._highlightLayer.display.clear();
         this._highlightLayer.copyBufferToCanvas();
+        this._highlightLayer.resetBuffer();
     }
 
     /**

@@ -115,7 +115,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      * @param {Boolean} showStateBorders
      */
     _startDrawBorders(state, showStateBorders) {
-        this._borderLayer.resetBuffer(state);
+        this._borderLayer.syncBuffer(state);
 
         let lod = this._selectLOD(state.projection.viewResolution);
         this._renderQueue.clear();
@@ -152,7 +152,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
         this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
-        this._borderLayer.redrawDisplay(state);
+        this._borderLayer.syncDisplay(state);
     }
 
     /**
@@ -172,6 +172,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      */
     _finishDrawBorders(state) {
         this._drawBordersToDisplay(state);
+        this._borderLayer.resetBuffer();
         this._updateLabels(state);
         this._drawUnfinishedBorders = false;
     }
@@ -253,14 +254,13 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         let shouldInvalidate = isDisplayInvalid ||
                                (!shouldShowStateBorders && this._lastShowStateBorders);
 
-        let shouldRedraw = shouldInvalidate ||
-                           (shouldShowStateBorders != this._lastShowStateBorders) ||
-                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
+        let shouldPredraw = (shouldShowStateBorders != this._lastShowStateBorders) ||
+                            (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
 
         this._lastShowStateBorders = shouldShowStateBorders;
 
         if (shouldInvalidate) {
-            this._borderLayer.redrawDisplay(state, false);
+            this._borderLayer.syncDisplay(state, false);
             this._clearLabels();
             this._drawUnfinishedBorders = this.liveRender;
         }
@@ -273,13 +273,13 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         if (this._redrawTimer > 0) {
             this._redrawTimer -= state.currentTime - this._lastTime;
             if (this._redrawTimer <= 0) {
-                shouldRedraw = true;
+                shouldInvalidate = true;
             } else {
                 return;
             }
         }
 
-        if (shouldRedraw) {
+        if (shouldInvalidate || (shouldPredraw && !this._renderQueue.isBusy)) {
             this._startDrawBorders(state, shouldShowStateBorders);
         } else if (this._renderQueue.isBusy) {
             this._continueDrawBorders(state);

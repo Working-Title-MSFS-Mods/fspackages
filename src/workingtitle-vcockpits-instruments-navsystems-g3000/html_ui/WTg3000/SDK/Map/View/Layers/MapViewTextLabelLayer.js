@@ -42,6 +42,7 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
         }
         this._textLayer.display.clear();
         this._textLayer.copyBufferToCanvas();
+        this._textLayer.resetBuffer();
     }
 
     /**

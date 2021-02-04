@@ -426,10 +426,11 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      */
     _renderFlightPlan(state) {
         this._clearRenderedWaypoints();
-        this._pathLayer.resetBuffer(state);
+        this._pathLayer.syncBuffer(state);
         this._fpRenderer.render(state, this._pathLayer.buffer.projectionRenderer, this._pathLayer.buffer.context);
         this._drctRenderer.render(state, this._pathLayer.buffer.projectionRenderer, this._pathLayer.buffer.context);
-        this._pathLayer.redrawDisplay(state);
+        this._pathLayer.syncDisplay(state);
+        this._pathLayer.resetBuffer();
         this._registerRenderedWaypoints();
     }
 
@@ -439,6 +440,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
     _updateWaypointLayer(state) {
         this._iconLayer.display.clear();
         this._iconLayer.copyBufferToCanvas();
+        this._iconLayer.resetBuffer();
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Roads. The use of this layer requires the .roads module to be added to the map model.
+ * Road overlay. The use of this layer requires the .roads module to be added to the map model.
  */
 class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     /**
@@ -27,6 +27,9 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
          */
         this._renderQueues = [];
         this._renderers = [];
+        /**
+         * @type {WT_CanvasBufferedLinePathContext[]}
+         */
         this._bufferedContexts = [];
         this._lastLiveRender = [];
         for (let type = 0; type < this._roadLayers.length; type++) {
@@ -96,6 +99,13 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         return 0;
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewPersistentCanvas} layer
+     * @param {WT_CanvasBufferedLinePathContext} bufferedContext
+     * @param {WT_MapViewRoadFeature[]} features
+     */
     _enqueueFeaturesToDraw(state, layer, bufferedContext, features) {
         for (let feature of features) {
             layer.buffer.projectionRenderer.renderCanvas(feature, bufferedContext);
@@ -121,7 +131,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         let bufferedContext = this._bufferedContexts[type];
         let renderer = this._renderers[type];
 
-        layer.resetBuffer(state);
+        layer.syncBuffer(state);
 
         let lod = this._selectLOD(state.projection.viewResolution);
         let searchRadius = this._tempNM1.set(state.projection.range).scale(WT_MapViewRoadLayer.OVERDRAW_FACTOR / 2, true);
@@ -163,7 +173,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         }
         this._applyStrokeToContext(bufferedPathContext, this.strokeWidth * state.dpiScale, this.strokeColor);
 
-        layer.redrawDisplay(state);
+        layer.syncDisplay(state);
     }
 
     /**
@@ -183,6 +193,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
      */
     _finishRenderRoads(type, state) {
         this._drawRoadsToDisplay(type, state);
+        this._roadLayers[type].resetBuffer();
         this._shouldDrawUnfinished[type] = false;
     }
 
@@ -208,11 +219,10 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         let shouldInvalidate = isDisplayInvalid ||
                                showChanged;
 
-        let shouldRedraw = shouldInvalidate ||
-                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
+        let shouldPredraw = offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9;
 
         if (shouldInvalidate) {
-            layer.redrawDisplay(state, false);
+            layer.syncDisplay(state, false);
             this._shouldDrawUnfinished[type] = this.liveRender;
         }
         if (show) {
@@ -224,13 +234,13 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
             if (this._redrawTimer[type] > 0) {
                 this._redrawTimer[type] -= state.currentTime - this._lastTime;
                 if (this._redrawTimer[type] <= 0) {
-                    shouldRedraw = true;
+                    shouldInvalidate = true;
                 } else {
                     return;
                 }
             }
 
-            if (shouldRedraw) {
+            if (shouldInvalidate || (shouldPredraw && !this._renderQueues[type].isBusy)) {
                 this._startRenderRoads(state, type);
             } else if (this._renderQueues[type].isBusy) {
                 this._continueRenderRoads(state, type);
@@ -263,7 +273,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
 }
 WT_MapViewRoadLayer.CLASS_DEFAULT = "roadLayer";
 WT_MapViewRoadLayer.CONFIG_NAME_DEFAULT = "roads";
-WT_MapViewRoadLayer.OVERDRAW_FACTOR = 1.66421356237;
+WT_MapViewRoadLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewRoadLayer.REDRAW_DELAY = 500; // ms
 WT_MapViewRoadLayer.DRAW_TIME_BUDGET = 0.5; // ms
 WT_MapViewRoadLayer.OPTIONS_DEF = {

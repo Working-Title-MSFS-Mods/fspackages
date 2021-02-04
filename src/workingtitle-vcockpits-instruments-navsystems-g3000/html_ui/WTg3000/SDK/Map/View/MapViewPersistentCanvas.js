@@ -177,7 +177,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
      * parameters. If the buffer canvas was invalidated, this operation will make it valid again.
      * @param {WT_MapViewState} state - the current map view state.
      */
-    resetBuffer(state) {
+    syncBuffer(state) {
         this.buffer.clear();
         this.buffer._isInvalid = false;
         this._updateReference(state, this.buffer.reference);
@@ -191,7 +191,7 @@ class WT_MapViewPersistentCanvas extends WT_MapViewCanvas {
      * @param {WT_MapViewState} state - the current map view state.
      * @param {Boolean} [fromBuffer] - whether to redraw using the buffer canvas as the source.
      */
-    redrawDisplay(state, fromBuffer = true) {
+    syncDisplay(state, fromBuffer = true) {
         this.display._isInvalid = false;
         this.display.clear();
         if (fromBuffer) {

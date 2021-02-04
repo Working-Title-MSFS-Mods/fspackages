@@ -47,7 +47,7 @@ class WT_MapViewRenderQueue {
                 break;
             }
         }
-        if (this.size === 0 && renderCount > 0) {
+        if (this.size === 0) {
             this._finishRender(data);
         } else {
             this._renderer.onPaused(data);

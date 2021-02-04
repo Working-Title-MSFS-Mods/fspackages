@@ -294,7 +294,6 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             case "bearingLabelFontSize":
             case "bearingLabelFontOutlineWidth":
             case "bearingLabelFontOutlineColor":
-                this._needRestyleBearingLabels = true;
             case "bearingTickMinorStart":
             case "bearingTickMinorInterval":
             case "bearingTickMinorLength":
@@ -348,7 +347,6 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
 
         this._needRedrawArc = true;
         this._needRedrawBearings = true;
-        this._needRestyleBearingLabels = true;
         this._needRedrawForwardTick = true;
         this._needReclipTicks = true;
         this._needRepositionLabel = true;
@@ -517,17 +515,13 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._bearingLabelLayer.buffer.context.clearRect(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
         this._bearingLabelLayer.display.context.clearRect(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
 
-        if (this._needRestyleBearingLabels) {
-            if (this.bearingLabelFontOutlineWidth > 0) {
-                this._bearingLabelLayer.buffer.context.lineWidth = this.bearingLabelFontOutlineWidth * state.dpiScale * 2;
-                this._bearingLabelLayer.buffer.context.strokeStyle = this.bearingLabelFontOutlineWidth;
-            }
-
-            this._bearingLabelLayer.buffer.context.font = `${this.bearingLabelFontSize * state.dpiScale}px ${this.bearingLabelFont}`;
-            this._bearingLabelLayer.buffer.context.fillStyle = this.bearingLabelFontColor;
-
-            this._needRestyleBearingLabels = false;
+        if (this.bearingLabelFontOutlineWidth > 0) {
+            this._bearingLabelLayer.buffer.context.lineWidth = this.bearingLabelFontOutlineWidth * state.dpiScale * 2;
+            this._bearingLabelLayer.buffer.context.strokeStyle = this.bearingLabelFontOutlineWidth;
         }
+
+        this._bearingLabelLayer.buffer.context.font = `${this.bearingLabelFontSize * state.dpiScale}px ${this.bearingLabelFont}`;
+        this._bearingLabelLayer.buffer.context.fillStyle = this.bearingLabelFontColor;
 
         let halfAngularWidth = this.arcAngularWidth / 2;
         let centerAngle = (-this.rotation + this.facing + 360) % 360;
@@ -539,7 +533,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         for (let angle of bearingLabelToDrawAngles) {
             this._drawBearingLabelToBuffer(angle, tickLengthPx, offsetPx, fontSizePx);
         }
-        this._bearingLabelLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height)
+        this._bearingLabelLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
+        this._bearingLabelLayer.resetBuffer();
     }
 
     /**
@@ -586,6 +581,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._applyStrokeToContext(this._bearingTickLayer.buffer.context, this.arcStrokeWidth * state.dpiScale, this.arcStrokeColor);
 
         this._bearingLastDrawnBounds = this._bearingTickLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
+        this._bearingTickLayer.resetBuffer();
 
         this._needRedrawBearings = false;
     }

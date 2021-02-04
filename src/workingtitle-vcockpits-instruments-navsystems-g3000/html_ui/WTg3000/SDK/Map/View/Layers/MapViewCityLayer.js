@@ -166,7 +166,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
 
     _drawCitiesToDisplay(size, state) {
         let layer = this._cityLayers[size];
-        layer.redrawDisplay(state);
+        layer.syncDisplay(state);
     }
 
     _updateRenderCities(size, state) {
@@ -177,6 +177,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
 
     _finishRenderCities(size, state) {
         this._drawCitiesToDisplay(size, state);
+        this._cityLayers[size].resetBuffer();
         if (!this._shouldDrawUnfinished[size]) {
             for (let city of this._drawnCities[size]) {
                 this._registerCity(city);
@@ -202,7 +203,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         let layer = this._cityLayers[size];
         let renderQueue = this._renderQueues[size];
 
-        layer.resetBuffer(state);
+        layer.syncBuffer(state);
 
         renderQueue.clear();
         this._enqueueCities(size);
@@ -236,11 +237,10 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         let shouldInvalidate = isDisplayInvalid ||
                                showChanged;
 
-        let shouldRedraw = shouldInvalidate ||
-                           (offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9);
+        let shouldPredraw = offsetXAbs > transform.margin * 0.9 || offsetYAbs > transform.margin * 0.9;
 
         if (shouldInvalidate) {
-            layer.redrawDisplay(state, false);
+            layer.syncDisplay(state, false);
             this._clearDrawnCities(size);
             this._shouldDrawUnfinished[size] = true;
         }
@@ -253,13 +253,13 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
             if (this._redrawTimer[size] > 0) {
                 this._redrawTimer[size] -= state.currentTime - this._lastTime;
                 if (this._redrawTimer[size] <= 0) {
-                    shouldRedraw = true;
+                    shouldInvalidate = true;
                 } else {
                     return;
                 }
             }
 
-            if (shouldRedraw) {
+            if (shouldInvalidate || (shouldPredraw && !this._renderQueues[size].isBusy)) {
                 this._startRenderCities(state, size);
             } else if (this._renderQueues[size].isBusy) {
                 this._continueRenderCities(state, size);

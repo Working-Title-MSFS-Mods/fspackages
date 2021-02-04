@@ -93,9 +93,10 @@ class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
     }
 
     _redrawRunways(state) {
-        this._runwayLayer.resetBuffer(state);
+        this._runwayLayer.syncBuffer(state);
         this._runwayRenderer.render(state, this._runwayLayer.buffer.context, this._runwayLayer.buffer.projectionRenderer);
-        this._runwayLayer.redrawDisplay(state);
+        this._runwayLayer.syncDisplay(state);
+        this._runwayLayer.resetBuffer();
     }
 
     _updateRunwayLayer(state) {

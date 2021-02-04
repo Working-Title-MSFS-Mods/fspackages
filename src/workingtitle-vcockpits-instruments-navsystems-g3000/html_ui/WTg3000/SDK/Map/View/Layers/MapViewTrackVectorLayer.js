@@ -194,6 +194,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let toDrawWidth = Math.min(state.projection.viewWidth, Math.max(...points.map(point => point.x)) + thick + 5) - toDrawLeft;
         let toDrawHeight = Math.min(state.projection.viewHeight, Math.max(...points.map(point => point.y)) + thick + 5) - toDrawTop;
         this._lastDrawnBounds = this._vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
+        this._vectorLayer.resetBuffer();
     }
 
     /**
@@ -238,6 +239,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let toDrawWidth = Math.min(state.projection.viewWidth, bounds[1].x + thick + 5) - toDrawLeft;
         let toDrawHeight = Math.min(state.projection.viewHeight, bounds[1].y + thick + 5) - toDrawTop;
         this._lastDrawnBounds = this._vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
+        this._vectorLayer.resetBuffer();
     }
 
     /**
