@@ -2828,7 +2828,7 @@ class CJ4_SystemAnnunciations extends Cabin_Annunciations {
                 }
             }
         }
-        if (this.annunciations)
+        if (this.annunciations && (this.displayWarning.length > 0 || this.displayCaution.length))
             this.annunciations.setAttribute("state", this.gps.blinkGetState(800, 400) ? "Blink" : "None");
         if (this.needReload) {
             let warningOn = 0;
