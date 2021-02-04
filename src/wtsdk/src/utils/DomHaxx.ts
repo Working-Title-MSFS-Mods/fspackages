@@ -6,11 +6,15 @@ let callidx = 0;
 Element.prototype.setAttribute = function (orig) {
   return function (name, value) {
     try {
-      // if (name === "needDeletion" || (name === "state" && value === "off")) return;
+      if (name === "needDeletion" || (name === "state" && value === "off")) return;
 
       // if (this.id === "") {
       //   this.id = "custom" + callidx++;
       // }
+
+      if (typeof value === 'number') {
+        value = Math.round(value);
+      }
 
       if(!this.attrCache){
         this.attrCache = new Map();
@@ -23,8 +27,8 @@ Element.prototype.setAttribute = function (orig) {
       }
 
       if (compVal !== value.toString()) {
-        orig.apply(this, arguments);
         this.attrCache.set(key, value.toString());
+        orig.apply(this, arguments);
         //console.log(callidx + "|" + name + "=" + value);
       }
     } catch (error) {

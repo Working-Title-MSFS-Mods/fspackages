@@ -1164,7 +1164,8 @@ class MapInstrument extends ISvgMapRootElement {
         this.updateSize(true);
     }
     updateSize(_bForce = false) {
-        if (_bForce || this.curWidth <= 0 || this.curHeight <= 0) {
+        if (_bForce || !this.sizeSet) {
+            this.sizeSet = true;
             this.curWidth = this.clientWidth;
             this.curHeight = this.clientHeight;
         }

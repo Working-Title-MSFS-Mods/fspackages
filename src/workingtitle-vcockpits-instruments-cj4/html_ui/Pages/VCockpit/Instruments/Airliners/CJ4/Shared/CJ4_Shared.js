@@ -17,6 +17,10 @@ class CJ4_SystemContainer extends NavSystemElementContainer {
         this.warnings = new CJ4_SystemWarnings();
         this.curPage = undefined;
         this.element = new NavSystemElementGroup([this.engines, this.electrics, this.fms, this.annunciations, this.warnings]);
+        this.lastN1Left = 0;
+        this.lastN1Right = 0;
+        this.lastITTLeft = 0;
+        this.lastITTRight = 0;
     }
     init() {
         super.init();
@@ -1850,52 +1854,64 @@ class CJ4_SystemEngines extends NavSystemElement {
 
         }
         {
-            let N1Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent");
-            let n1_y = this.N1ToPixels(N1Eng1);
-            if ((this.N1LeftZoneY1 - n1_y) > 10)
-                this.N1LeftCursor.setAttribute("d", "M" + (this.N1LeftZoneX - 1) + " " + n1_y + " l-10 0 l0 " + (this.N1LeftZoneY1 - n1_y) + " l5 0 l0 " + -(this.N1LeftZoneY1 - n1_y - 8) + " Z");
-            else
-                this.N1LeftCursor.setAttribute("d", "");
-            this.N1LeftValue.textContentCached = N1Eng1.toFixed(1);
+            let N1Eng1 = Math.round(SimVar.GetSimVarValue("TURB ENG CORRECTED N1:1", "percent") * 10) / 10;
+            if (N1Eng1 !== this.lastN1Left) {
+                let n1_y = this.N1ToPixels(N1Eng1);
+                if ((this.N1LeftZoneY1 - n1_y) > 10)
+                    this.N1LeftCursor.setAttribute("d", "M" + (this.N1LeftZoneX - 1) + " " + n1_y + " l-10 0 l0 " + (this.N1LeftZoneY1 - n1_y) + " l5 0 l0 " + -(this.N1LeftZoneY1 - n1_y - 8) + " Z");
+                else
+                    this.N1LeftCursor.setAttribute("d", "");
+                this.N1LeftValue.textContentCached = N1Eng1.toFixed(1);
+                this.lastN1Left = N1Eng1;
+            }
         }
         {
-            let N1Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N1:2", "percent");
-            let n1_y = this.N1ToPixels(N1Eng2);
-            if ((this.N1LeftZoneY1 - n1_y) > 10)
-                this.N1RightCursor.setAttribute("d", "M" + (this.N1RightZoneX + 1) + " " + n1_y + " l10 0 l0 " + (this.N1RightZoneY1 - n1_y) + " l-5 0 l0 " + -(this.N1RightZoneY1 - n1_y - 8) + " Z");
-            else
-                this.N1RightCursor.setAttribute("d", "");
-            this.N1RightValue.textContentCached = N1Eng2.toFixed(1);
+            let N1Eng2 = Math.round(SimVar.GetSimVarValue("TURB ENG CORRECTED N1:2", "percent") * 10) / 10;
+            if (N1Eng2 !== this.lastN1Right) {
+                let n1_y = this.N1ToPixels(N1Eng2);
+                if ((this.N1LeftZoneY1 - n1_y) > 10)
+                    this.N1RightCursor.setAttribute("d", "M" + (this.N1RightZoneX + 1) + " " + n1_y + " l10 0 l0 " + (this.N1RightZoneY1 - n1_y) + " l-5 0 l0 " + -(this.N1RightZoneY1 - n1_y - 8) + " Z");
+                else
+                    this.N1RightCursor.setAttribute("d", "");
+                this.N1RightValue.textContentCached = N1Eng2.toFixed(1);
+                this.lastN1Right = N1Eng2;
+            }
         }
     }
     updateITT() {
         {
-            let ITTEng1 = SimVar.GetSimVarValue("TURB ENG1 ITT", "celsius");
-            let itt_y = this.ITTToPixels(ITTEng1);
-            if ((this.ITTLeftZoneY1 - itt_y) > 10)
-                this.ITTLeftCursor.setAttribute("d", "M" + (this.ITTLeftZoneX - 1) + " " + itt_y + " l-10 0 l0 " + (this.ITTLeftZoneY1 - itt_y) + " l5 0 l0 " + -(this.ITTLeftZoneY1 - itt_y - 8) + " Z");
-            else
-                this.ITTLeftCursor.setAttribute("d", "");
-            let startValue = 825;
-            let endValue = (ITTEng1 > 200) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
-            let beacon_y1 = this.ITTToPixels(startValue);
-            let beacon_y2 = this.ITTToPixels(endValue);
-            this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
-            this.ITTLeftBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
+            let ITTEng1 = Math.round(SimVar.GetSimVarValue("TURB ENG1 ITT", "celsius") * 10) / 10;
+            if (ITTEng1 !== this.lastITTLeft) {
+                let itt_y = this.ITTToPixels(ITTEng1);
+                if ((this.ITTLeftZoneY1 - itt_y) > 10)
+                    this.ITTLeftCursor.setAttribute("d", "M" + (this.ITTLeftZoneX - 1) + " " + itt_y + " l-10 0 l0 " + (this.ITTLeftZoneY1 - itt_y) + " l5 0 l0 " + -(this.ITTLeftZoneY1 - itt_y - 8) + " Z");
+                else
+                    this.ITTLeftCursor.setAttribute("d", "");
+                let startValue = 825;
+                let endValue = (ITTEng1 > 200) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+                let beacon_y1 = this.ITTToPixels(startValue);
+                let beacon_y2 = this.ITTToPixels(endValue);
+                this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
+                this.ITTLeftBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
+                this.lastITTLeft = ITTEng1;
+            }
         }
         {
-            let ITTEng2 = SimVar.GetSimVarValue("TURB ENG2 ITT", "celsius");
-            let itt_y = this.ITTToPixels(ITTEng2);
-            if ((this.ITTLeftZoneY1 - itt_y) > 10)
-                this.ITTRightCursor.setAttribute("d", "M" + (this.ITTRightZoneX + 1) + " " + itt_y + " l10 0 l0 " + (this.ITTRightZoneY1 - itt_y) + " l-5 0 l0 " + -(this.ITTRightZoneY1 - itt_y - 8) + " Z");
-            else
-                this.ITTRightCursor.setAttribute("d", "");
-            let startValue = 825;
-            let endValue = (ITTEng2 > 200) ? (this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1] : 850;
-            let beacon_y1 = this.ITTToPixels(startValue);
-            let beacon_y2 = this.ITTToPixels(endValue);
-            this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
-            this.ITTRightBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
+            let ITTEng2 = Math.round(SimVar.GetSimVarValue("TURB ENG2 ITT", "celsius") * 10) / 10;
+            if (ITTEng2 !== this.lastITTRight) {
+                let itt_y = this.ITTToPixels(ITTEng2);
+                if ((this.ITTLeftZoneY1 - itt_y) > 10)
+                    this.ITTRightCursor.setAttribute("d", "M" + (this.ITTRightZoneX + 1) + " " + itt_y + " l10 0 l0 " + (this.ITTRightZoneY1 - itt_y) + " l-5 0 l0 " + -(this.ITTRightZoneY1 - itt_y - 8) + " Z");
+                else
+                    this.ITTRightCursor.setAttribute("d", "");
+                let startValue = 825;
+                let endValue = (ITTEng2 > 200) ? (this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1] : 850;
+                let beacon_y1 = this.ITTToPixels(startValue);
+                let beacon_y2 = this.ITTToPixels(endValue);
+                this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
+                this.ITTRightBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
+                this.lastITTRight = ITTEng2;
+            }
         }
     }
     updateIGN() {
