@@ -13,9 +13,9 @@ Element.prototype.setAttribute = function (orig) {
       //   this.id = "custom" + callidx++;
       // }
 
-      if (typeof value === 'number') {
-        value = Math.round(value);
-      }
+      // if (!isNaN(parseFloat(value))) {
+      //   value = Math.round(parseFloat(value)).toString();
+      // }
 
       if(!this.attrCache){
         this.attrCache = new Map();
