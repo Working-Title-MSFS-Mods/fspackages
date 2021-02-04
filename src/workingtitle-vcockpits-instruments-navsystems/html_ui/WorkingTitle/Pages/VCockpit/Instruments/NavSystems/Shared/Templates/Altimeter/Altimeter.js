@@ -64,7 +64,7 @@ class Altimeter extends HTMLElement {
             this.verticalDeviationText.setAttribute("font-size", "45");
             this.verticalDeviationText.setAttribute("font-family", "Roboto-Bold");
             this.verticalDeviationText.setAttribute("text-anchor", "middle");
-            this.verticalDeviationText.textContent = "V";
+            this.verticalDeviationText.textContentCached = "V";
             this.verticalDeviationGroup.appendChild(this.verticalDeviationText);
             for (let i = -2; i <= 2; i++) {
                 if (i != 0) {
@@ -110,7 +110,7 @@ class Altimeter extends HTMLElement {
             this.selectedAltText.setAttribute("font-size", "45");
             this.selectedAltText.setAttribute("font-family", "Roboto-Bold");
             this.selectedAltText.setAttribute("text-anchor", "middle");
-            this.selectedAltText.textContent = "----";
+            this.selectedAltText.textContentCached = "----";
             this.root.appendChild(this.selectedAltText);
         }
         {
@@ -149,7 +149,7 @@ class Altimeter extends HTMLElement {
                     gradText.setAttribute("fill", "white");
                     gradText.setAttribute("font-size", "45");
                     gradText.setAttribute("font-family", "Roboto-Bold");
-                    gradText.textContent = "XXXX";
+                    gradText.textContentCached = "XXXX";
                     this.graduationGroup.appendChild(gradText);
                     this.graduationTexts.push(gradText);
                     for (let j = 1; j < 5; j++) {
@@ -219,7 +219,7 @@ class Altimeter extends HTMLElement {
                 this.digit1Top.setAttribute("fill", "white");
                 this.digit1Top.setAttribute("font-size", "50");
                 this.digit1Top.setAttribute("font-family", "Roboto-Bold");
-                this.digit1Top.textContent = "X";
+                this.digit1Top.textContentCached = "X";
                 cursorBaseSvg.appendChild(this.digit1Top);
                 this.digit1Bot = document.createElementNS(Avionics.SVG.NS, "text");
                 this.digit1Bot.setAttribute("x", "16");
@@ -227,7 +227,7 @@ class Altimeter extends HTMLElement {
                 this.digit1Bot.setAttribute("fill", "white");
                 this.digit1Bot.setAttribute("font-size", "50");
                 this.digit1Bot.setAttribute("font-family", "Roboto-Bold");
-                this.digit1Bot.textContent = "X";
+                this.digit1Bot.textContentCached = "X";
                 cursorBaseSvg.appendChild(this.digit1Bot);
                 this.digit2Top = document.createElementNS(Avionics.SVG.NS, "text");
                 this.digit2Top.setAttribute("x", "44");
@@ -235,7 +235,7 @@ class Altimeter extends HTMLElement {
                 this.digit2Top.setAttribute("fill", "white");
                 this.digit2Top.setAttribute("font-size", "50");
                 this.digit2Top.setAttribute("font-family", "Roboto-Bold");
-                this.digit2Top.textContent = "X";
+                this.digit2Top.textContentCached = "X";
                 cursorBaseSvg.appendChild(this.digit2Top);
                 this.digit2Bot = document.createElementNS(Avionics.SVG.NS, "text");
                 this.digit2Bot.setAttribute("x", "44");
@@ -243,7 +243,7 @@ class Altimeter extends HTMLElement {
                 this.digit2Bot.setAttribute("fill", "white");
                 this.digit2Bot.setAttribute("font-size", "50");
                 this.digit2Bot.setAttribute("font-family", "Roboto-Bold");
-                this.digit2Bot.textContent = "X";
+                this.digit2Bot.textContentCached = "X";
                 cursorBaseSvg.appendChild(this.digit2Bot);
                 this.digit3Top = document.createElementNS(Avionics.SVG.NS, "text");
                 this.digit3Top.setAttribute("x", "72");
@@ -251,7 +251,7 @@ class Altimeter extends HTMLElement {
                 this.digit3Top.setAttribute("fill", "white");
                 this.digit3Top.setAttribute("font-size", "50");
                 this.digit3Top.setAttribute("font-family", "Roboto-Bold");
-                this.digit3Top.textContent = "X";
+                this.digit3Top.textContentCached = "X";
                 cursorBaseSvg.appendChild(this.digit3Top);
                 this.digit3Bot = document.createElementNS(Avionics.SVG.NS, "text");
                 this.digit3Bot.setAttribute("x", "72");
@@ -259,7 +259,7 @@ class Altimeter extends HTMLElement {
                 this.digit3Bot.setAttribute("fill", "white");
                 this.digit3Bot.setAttribute("font-size", "50");
                 this.digit3Bot.setAttribute("font-family", "Roboto-Bold");
-                this.digit3Bot.textContent = "X";
+                this.digit3Bot.textContentCached = "X";
                 cursorBaseSvg.appendChild(this.digit3Bot);
             }
             let cursorRotatingSvg = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -280,7 +280,7 @@ class Altimeter extends HTMLElement {
                     digit.setAttribute("fill", "white");
                     digit.setAttribute("font-size", "50");
                     digit.setAttribute("font-family", "Roboto-Bold");
-                    digit.textContent = "XX";
+                    digit.textContentCached = "XX";
                     this.endDigits.push(digit);
                     this.endDigitsGroup.appendChild(digit);
                 }
@@ -316,7 +316,7 @@ class Altimeter extends HTMLElement {
             this.baroText.setAttribute("font-size", "45");
             this.baroText.setAttribute("font-family", "Roboto-Bold");
             this.baroText.setAttribute("text-anchor", "middle");
-            this.baroText.textContent = "--.--IN";
+            this.baroText.textContentCached = "--.--IN";
             this.root.appendChild(this.baroText);
         }
         {
@@ -353,7 +353,7 @@ class Altimeter extends HTMLElement {
                             verticalSpeedGroup.appendChild(rect);
                             if (texts[i] != "") {
                                 let text = document.createElementNS(Avionics.SVG.NS, "text");
-                                text.textContent = texts[i];
+                                text.textContentCached = texts[i];
                                 text.setAttribute("y", ((250 - dashes[i] - height / 2) + fontSize / 3).toString());
                                 text.setAttribute("x", "235");
                                 text.setAttribute("fill", "white");
@@ -402,7 +402,7 @@ class Altimeter extends HTMLElement {
                             verticalSpeedGroup.appendChild(rect);
                             if ((dashes[i] % 100) == 0) {
                                 let text = document.createElementNS(Avionics.SVG.NS, "text");
-                                text.textContent = (dashes[i] / 100).toString();
+                                text.textContentCached = (dashes[i] / 100).toString();
                                 text.setAttribute("y", ((250 - dashes[i] - height / 2) + fontSize / 3).toString());
                                 text.setAttribute("x", (200 + 3 * width).toString());
                                 text.setAttribute("fill", "white");
@@ -424,7 +424,7 @@ class Altimeter extends HTMLElement {
                             indicatorBackground.setAttribute("fill", "#1a1d21");
                             this.indicator.appendChild(indicatorBackground);
                             this.indicatorText = document.createElementNS(Avionics.SVG.NS, "text");
-                            this.indicatorText.textContent = "-0000";
+                            this.indicatorText.textContentCached = "-0000";
                             this.indicatorText.setAttribute("x", "235");
                             this.indicatorText.setAttribute("y", "260");
                             this.indicatorText.setAttribute("fill", "white");
@@ -446,7 +446,7 @@ class Altimeter extends HTMLElement {
                         this.selectedVSText.setAttribute("font-size", "25");
                         this.selectedVSText.setAttribute("font-family", "Roboto-Bold");
                         this.selectedVSText.setAttribute("text-anchor", "middle");
-                        this.selectedVSText.textContent = "----";
+                        this.selectedVSText.textContentCached = "----";
                         verticalSpeedGroup.appendChild(this.selectedVSText);
                     }
                     break;
@@ -470,7 +470,7 @@ class Altimeter extends HTMLElement {
                 if (this.currentCenterGrad != center) {
                     this.currentCenterGrad = center;
                     for (let i = 0; i < this.graduationTexts.length; i++) {
-                        this.graduationTexts[i].textContent = fastToFixed(((3 - i) * 100) + center, 0);
+                        this.graduationTexts[i].textContentCached = fastToFixed(((3 - i) * 100) + center, 0);
                     }
                 }
                 let endValue = value % 100;
@@ -478,16 +478,16 @@ class Altimeter extends HTMLElement {
                 this.endDigitsGroup.setAttribute("transform", "translate(0, " + ((endValue - endCenter) * 45 / 10) + ")");
                 for (let i = 0; i < this.endDigits.length; i++) {
                     let digitValue = Math.round((((2 - i) * 10) + value) % 100 / 10) * 10;
-                    this.endDigits[i].textContent = fastToFixed(Math.abs((digitValue % 100) / 10), 0) + "0";
+                    this.endDigits[i].textContentCached = fastToFixed(Math.abs((digitValue % 100) / 10), 0) + "0";
                 }
                 if (Math.abs(value) >= 90) {
                     let d3Value = (Math.abs(value) % 1000) / 100;
-                    this.digit3Bot.textContent = Math.abs(value) < 100 ? "" : fastToFixed(Math.floor(d3Value), 0);
-                    this.digit3Top.textContent = fastToFixed((Math.floor(d3Value) + 1) % 10, 0);
+                    this.digit3Bot.textContentCached = Math.abs(value) < 100 ? "" : fastToFixed(Math.floor(d3Value), 0);
+                    this.digit3Top.textContentCached = fastToFixed((Math.floor(d3Value) + 1) % 10, 0);
                     if (endValue > 90 || endValue < -90) {
                         if (endValue < 0) {
-                            this.digit3Bot.textContent = fastToFixed((Math.floor(d3Value) + 1) % 10, 0);
-                            this.digit3Top.textContent = Math.abs(value) < 100 ? "" : fastToFixed(Math.floor(d3Value), 0);
+                            this.digit3Bot.textContentCached = fastToFixed((Math.floor(d3Value) + 1) % 10, 0);
+                            this.digit3Top.textContentCached = Math.abs(value) < 100 ? "" : fastToFixed(Math.floor(d3Value), 0);
                         }
                         let translate = (endValue > 0 ? (endValue - 90) : (endValue + 100)) * 5.7;
                         this.digit3Bot.setAttribute("transform", "translate(0, " + translate + ")");
@@ -499,12 +499,12 @@ class Altimeter extends HTMLElement {
                     }
                     if (Math.abs(value) >= 990) {
                         let d2Value = (Math.abs(value) % 10000) / 1000;
-                        this.digit2Bot.textContent = Math.abs(value) < 1000 ? "" : fastToFixed(Math.floor(d2Value), 0);
-                        this.digit2Top.textContent = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
+                        this.digit2Bot.textContentCached = Math.abs(value) < 1000 ? "" : fastToFixed(Math.floor(d2Value), 0);
+                        this.digit2Top.textContentCached = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
                         if ((endValue > 90 || endValue < -90) && d3Value > 9) {
                             if (endValue < 0) {
-                                this.digit2Bot.textContent = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
-                                this.digit2Top.textContent = Math.abs(value) < 1000 ? "" : fastToFixed(Math.floor(d2Value), 0);
+                                this.digit2Bot.textContentCached = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
+                                this.digit2Top.textContentCached = Math.abs(value) < 1000 ? "" : fastToFixed(Math.floor(d2Value), 0);
                             }
                             let translate = (endValue > 0 ? (endValue - 90) : (endValue + 100)) * 5.7;
                             this.digit2Bot.setAttribute("transform", "translate(0, " + translate + ")");
@@ -516,12 +516,12 @@ class Altimeter extends HTMLElement {
                         }
                         if (Math.abs(value) >= 9990) {
                             let d1Value = (Math.abs(value) % 100000) / 10000;
-                            this.digit1Bot.textContent = Math.abs(value) < 10000 ? "" : fastToFixed(Math.floor(d1Value), 0);
-                            this.digit1Top.textContent = fastToFixed((Math.floor(d1Value) + 1) % 10, 0);
+                            this.digit1Bot.textContentCached = Math.abs(value) < 10000 ? "" : fastToFixed(Math.floor(d1Value), 0);
+                            this.digit1Top.textContentCached = fastToFixed((Math.floor(d1Value) + 1) % 10, 0);
                             if ((endValue > 90 || endValue < -90) && d3Value > 9 && d2Value > 9) {
                                 if (endValue < 0) {
-                                    this.digit1Bot.textContent = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
-                                    this.digit1Top.textContent = Math.abs(value) < 10000 ? "" : fastToFixed(Math.floor(d2Value), 0);
+                                    this.digit1Bot.textContentCached = fastToFixed((Math.floor(d2Value) + 1) % 10, 0);
+                                    this.digit1Top.textContentCached = Math.abs(value) < 10000 ? "" : fastToFixed(Math.floor(d2Value), 0);
                                 }
                                 let translate = (endValue > 0 ? (endValue - 90) : (endValue + 100)) * 5.7;
                                 this.digit1Bot.setAttribute("transform", "translate(0, " + translate + ")");
@@ -536,39 +536,39 @@ class Altimeter extends HTMLElement {
                             this.digit1Bot.setAttribute("transform", "");
                             this.digit1Top.setAttribute("transform", "");
                             if (value < 0) {
-                                this.digit1Bot.textContent = "-";
+                                this.digit1Bot.textContentCached = "-";
                             }
                             else {
-                                this.digit1Bot.textContent = "";
+                                this.digit1Bot.textContentCached = "";
                             }
-                            this.digit1Top.textContent = "";
+                            this.digit1Top.textContentCached = "";
                         }
                     }
                     else {
                         this.digit2Bot.setAttribute("transform", "");
                         this.digit2Top.setAttribute("transform", "");
                         if (value < 0) {
-                            this.digit2Bot.textContent = "-";
+                            this.digit2Bot.textContentCached = "-";
                         }
                         else {
-                            this.digit2Bot.textContent = "";
+                            this.digit2Bot.textContentCached = "";
                         }
-                        this.digit1Bot.textContent = "";
-                        this.digit1Top.textContent = "";
-                        this.digit2Top.textContent = "";
+                        this.digit1Bot.textContentCached = "";
+                        this.digit1Top.textContentCached = "";
+                        this.digit2Top.textContentCached = "";
                     }
                 }
                 else {
                     if (value < 0) {
-                        this.digit3Bot.textContent = "-";
+                        this.digit3Bot.textContentCached = "-";
                     }
                     else {
-                        this.digit3Bot.textContent = "";
+                        this.digit3Bot.textContentCached = "";
                     }
-                    this.digit2Bot.textContent = "";
-                    this.digit1Bot.textContent = "";
-                    this.digit2Top.textContent = "";
-                    this.digit1Top.textContent = "";
+                    this.digit2Bot.textContentCached = "";
+                    this.digit1Bot.textContentCached = "";
+                    this.digit2Top.textContentCached = "";
+                    this.digit1Top.textContentCached = "";
                     this.digit3Bot.setAttribute("transform", "");
                     this.digit3Top.setAttribute("transform", "");
                 }
@@ -577,7 +577,7 @@ class Altimeter extends HTMLElement {
                 this.groundLine.setAttribute("transform", "translate(0," + Math.min(300 + parseFloat(newValue) * 160 / 100, 700) + ")");
                 break;
             case "reference-altitude":
-                this.selectedAltText.textContent = newValue;
+                this.selectedAltText.textContentCached = newValue;
                 if (newValue != "----") {
                     this.selectedAltitude = parseFloat(newValue);
                     this.selectedAltitudeBug.setAttribute("transform", "translate(0, " + (Math.round(this.altitude / 100) * 100 - this.selectedAltitude) * 160 / 100 + ")");
@@ -603,14 +603,14 @@ class Altimeter extends HTMLElement {
                     }
                     else {
                         this.selectedVSBug.setAttribute("transform", "translate(0, " + -Math.max(Math.min(this.selectedVS, 2500), -2500) / 10 + ")");
-                        this.selectedVSText.textContent = newValue;
+                        this.selectedVSText.textContentCached = newValue;
                     }
                     this.selectedVSBug.setAttribute("display", "");
                 }
                 else {
                     this.selectedVSBug.setAttribute("display", "none");
                     if (!this.compactVs) {
-                        this.selectedVSText.textContent = newValue;
+                        this.selectedVSText.textContentCached = newValue;
                     }
                 }
                 break;
@@ -649,10 +649,10 @@ class Altimeter extends HTMLElement {
             case "baro-mode":
                 if (newValue == "HPA") {
                     this.baroMode = "HPA";
-                    this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure) * 33.8639, 0) + "HPA";
+                    this.baroText.textContentCached = fastToFixed(parseFloat(this.lastPressure) * 33.8639, 0) + "HPA";
                 } else {
                     this.baroMode = "IN";
-                    this.baroText.textContent = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
+                    this.baroText.textContentCached = fastToFixed(parseFloat(this.lastPressure), 2) + "IN";
                 }
                 WTDataStore.set("Alt.BaroMode", this.baroMode);
             case "vspeed":
@@ -670,7 +670,7 @@ class Altimeter extends HTMLElement {
                 }
                 else {
                     this.indicator.setAttribute("transform", "translate(0, " + -Math.max(Math.min(vSpeed, 2500), -2500) / 10 + ")");
-                    this.indicatorText.textContent = Math.abs(vSpeed) >= 100 ? fastToFixed(Math.round(vSpeed / 50) * 50, 0) : "";
+                    this.indicatorText.textContentCached = Math.abs(vSpeed) >= 100 ? fastToFixed(Math.round(vSpeed / 50) * 50, 0) : "";
                 }
                 let trendValue = Math.min(Math.max(250 + (vSpeed / 10) * -1.5, -50), 550);
                 this.trendElement.setAttribute("y", Math.min(trendValue, 250).toString());
@@ -680,7 +680,7 @@ class Altimeter extends HTMLElement {
                 switch (newValue) {
                     case "VDI":
                         this.currentMode = 1;
-                        this.verticalDeviationText.textContent = "V";
+                        this.verticalDeviationText.textContentCached = "V";
                         this.verticalDeviationText.setAttribute("fill", "#d12bc7");
                         this.diamondBug.setAttribute("visibility", "hidden");
                         this.chevronBug.setAttribute("visibility", "inherit");
@@ -689,7 +689,7 @@ class Altimeter extends HTMLElement {
                         break;
                     case "GS":
                         this.currentMode = 2;
-                        this.verticalDeviationText.textContent = "G";
+                        this.verticalDeviationText.textContentCached = "G";
                         this.verticalDeviationText.setAttribute("fill", "#10c210");
                         this.diamondBug.setAttribute("visibility", "inherit");
                         this.diamondBug.setAttribute("fill", "#10c210");
@@ -699,7 +699,7 @@ class Altimeter extends HTMLElement {
                         break;
                     case "GSPreview":
                         this.currentMode = 4;
-                        this.verticalDeviationText.textContent = "G";
+                        this.verticalDeviationText.textContentCached = "G";
                         this.verticalDeviationText.setAttribute("fill", "#DFDFDF");
                         this.diamondBug.setAttribute("visibility", "hidden");
                         this.chevronBug.setAttribute("visibility", "hidden");
@@ -708,7 +708,7 @@ class Altimeter extends HTMLElement {
                         break;
                     case "GP":
                         this.currentMode = 3;
-                        this.verticalDeviationText.textContent = "G";
+                        this.verticalDeviationText.textContentCached = "G";
                         this.verticalDeviationText.setAttribute("fill", "#d12bc7");
                         this.diamondBug.setAttribute("visibility", "inherit");
                         this.diamondBug.setAttribute("fill", "#d12bc7");

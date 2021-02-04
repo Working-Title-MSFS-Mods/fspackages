@@ -104,7 +104,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             bg.setAttribute("fill-opacity", "0.5");
             this.centerGroup.appendChild(bg);
             this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-            this.topSpeedText.textContent = "";
+            this.topSpeedText.textContentCached = "";
             this.topSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
             this.topSpeedText.setAttribute("y", (_top + 18).toString());
             this.topSpeedText.setAttribute("fill", "green");
@@ -145,7 +145,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 this.graduationsGroup.appendChild(line);
                 if (grad >= 1000) {
                     var text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = (grad / 1000).toString();
+                    text.textContentCached = (grad / 1000).toString();
                     text.setAttribute("x", (this.cursorPosX1 - 2).toString());
                     text.setAttribute("y", (y + 4).toString());
                     text.setAttribute("fill", "white");
@@ -169,7 +169,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 this.graduationsGroup.appendChild(line);
                 if (grad >= 1000) {
                     var text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = (grad / 1000).toString();
+                    text.textContentCached = (grad / 1000).toString();
                     text.setAttribute("x", (this.cursorPosX1 - 2).toString());
                     text.setAttribute("y", y.toString());
                     text.setAttribute("fill", "white");
@@ -237,7 +237,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.cursorSVGGroup.appendChild(this.pinkDonut);
 
             this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-            this.bottomSpeedText.textContent = "";
+            this.bottomSpeedText.textContentCached = "";
             this.bottomSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
             this.bottomSpeedText.setAttribute("y", (_top + _height * 0.95).toString());
             this.bottomSpeedText.setAttribute("fill", "green");
@@ -288,7 +288,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         var _graduationStartY = _top + _height * 0.05;
         var _graduationHeight = (_top + _height * 0.95) - _graduationStartY;
         this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.topSpeedText.textContent = "";
+        this.topSpeedText.textContentCached = "";
         this.topSpeedText.setAttribute("x", (_left - 10).toString());
         this.topSpeedText.setAttribute("y", (_top - 22).toString());
         this.topSpeedText.setAttribute("fill", "white");
@@ -324,7 +324,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.graduationsGroup.appendChild(line);
             if (isPrimary) {
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = (this.gradSpeeds[i] / 1000).toString();
+                text.textContentCached = (this.gradSpeeds[i] / 1000).toString();
                 text.setAttribute("x", _left.toString());
                 text.setAttribute("y", y.toString());
                 text.setAttribute("fill", "white");
@@ -344,7 +344,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.graduationsGroup.appendChild(line);
             if (isPrimary) {
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = (this.gradSpeeds[i] / 1000).toString();
+                text.textContentCached = (this.gradSpeeds[i] / 1000).toString();
                 text.setAttribute("x", _left.toString());
                 text.setAttribute("y", y.toString());
                 text.setAttribute("fill", "white");
@@ -395,7 +395,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         }
         this.rootGroup.appendChild(this.centerGroup);
         this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.bottomSpeedText.textContent = "";
+        this.bottomSpeedText.textContentCached = "";
         this.bottomSpeedText.setAttribute("x", (_left - 10).toString());
         this.bottomSpeedText.setAttribute("y", (_top + _height + 25).toString());
         this.bottomSpeedText.setAttribute("fill", "white");
@@ -444,7 +444,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         var _graduationStartY = _top + _height * 0.05;
         var _graduationHeight = (_top + _height * 0.95) - _graduationStartY;
         this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.topSpeedText.textContent = "";
+        this.topSpeedText.textContentCached = "";
         this.topSpeedText.setAttribute("x", (_left - 5).toString());
         this.topSpeedText.setAttribute("y", (_top - 25).toString());
         this.topSpeedText.setAttribute("fill", "white");
@@ -480,7 +480,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.graduationsGroup.appendChild(line);
             if (isPrimary) {
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = (this.gradSpeeds[i] / 1000).toString();
+                text.textContentCached = (this.gradSpeeds[i] / 1000).toString();
                 text.setAttribute("x", _left.toString());
                 text.setAttribute("y", y.toString());
                 text.setAttribute("fill", "white");
@@ -500,7 +500,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.graduationsGroup.appendChild(line);
             if (isPrimary) {
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = (this.gradSpeeds[i] / 1000).toString();
+                text.textContentCached = (this.gradSpeeds[i] / 1000).toString();
                 text.setAttribute("x", _left.toString());
                 text.setAttribute("y", y.toString());
                 text.setAttribute("fill", "white");
@@ -551,7 +551,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
         }
         this.rootGroup.appendChild(this.centerGroup);
         this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.bottomSpeedText.textContent = "";
+        this.bottomSpeedText.textContentCached = "";
         this.bottomSpeedText.setAttribute("x", (_left - 5).toString());
         this.bottomSpeedText.setAttribute("y", (_top + _height + 25).toString());
         this.bottomSpeedText.setAttribute("fill", "white");
@@ -619,7 +619,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.graduationsGroup.appendChild(line);
             if (isPrimary) {
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = (this.gradSpeeds[i] / 1000).toString();
+                text.textContentCached = (this.gradSpeeds[i] / 1000).toString();
                 text.setAttribute("x", _left.toString());
                 text.setAttribute("y", y.toString());
                 text.setAttribute("fill", "white");
@@ -639,7 +639,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.graduationsGroup.appendChild(line);
             if (isPrimary) {
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = (this.gradSpeeds[i] / 1000).toString();
+                text.textContentCached = (this.gradSpeeds[i] / 1000).toString();
                 text.setAttribute("x", _left.toString());
                 text.setAttribute("y", y.toString());
                 text.setAttribute("fill", "white");
@@ -686,7 +686,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.cursorSVGTextBg.setAttribute("fill", "black");
             this.cursorSVGGroup.appendChild(this.cursorSVGTextBg);
             this.cursorSVGText = document.createElementNS(Avionics.SVG.NS, "text");
-            this.cursorSVGText.textContent = "17";
+            this.cursorSVGText.textContentCached = "17";
             this.cursorSVGText.setAttribute("x", this.cursorPosX1.toString());
             this.cursorSVGText.setAttribute("y", this.cursorPosY1.toString());
             this.cursorSVGText.setAttribute("fill", this.cursorTextColor);
@@ -768,7 +768,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 if (this.cursorSVGText) {
                     var displaySpeed = Math.floor(vSpeed / 100);
                     if (Math.abs(displaySpeed) > 0) {
-                        this.cursorSVGText.textContent = Math.abs(displaySpeed).toString();
+                        this.cursorSVGText.textContentCached = Math.abs(displaySpeed).toString();
                         let posY;
                         if (displaySpeed > 0)
                             posY = this.cursorPosY1 - 13;
@@ -781,7 +781,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                         }
                     }
                     else {
-                        this.cursorSVGText.textContent = "";
+                        this.cursorSVGText.textContentCached = "";
                         if (this.cursorSVGTextBg) {
                             this.cursorSVGTextBg.setAttribute("visibility", "hidden");
                         }
@@ -798,19 +798,19 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 displaySpeed = Math.round(displaySpeed / 5) * 5;
                 if (this.topSpeedText) {
                     if (_speed >= threshold)
-                        this.topSpeedText.textContent = displaySpeed.toString();
+                        this.topSpeedText.textContentCached = displaySpeed.toString();
                     else if (_speed <= -threshold)
-                        this.topSpeedText.textContent = "";
+                        this.topSpeedText.textContentCached = "";
                     else
-                        this.topSpeedText.textContent = "";
+                        this.topSpeedText.textContentCached = "";
                 }
                 if (this.bottomSpeedText) {
                     if (_speed >= threshold)
-                        this.bottomSpeedText.textContent = "";
+                        this.bottomSpeedText.textContentCached = "";
                     else if (_speed <= -threshold)
-                        this.bottomSpeedText.textContent = displaySpeed.toString();
+                        this.bottomSpeedText.textContentCached = displaySpeed.toString();
                     else
-                        this.bottomSpeedText.textContent = "";
+                        this.bottomSpeedText.textContentCached = "";
                 }
             }
         }

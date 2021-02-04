@@ -73,7 +73,7 @@ class SvgCityElement {
 
         this._label = document.createElementNS(Avionics.SVG.NS, "text");
         this._label.id = this.id(map);
-        this._label.textContent = this.name;
+        this._label.textContentCached = this.name;
         this._label.setAttribute("text-anchor", "middle");
         this._label.setAttribute("fill", map.config.cityLabelColor);
         this._label.setAttribute("stroke", map.config.cityLabelStrokeColor);

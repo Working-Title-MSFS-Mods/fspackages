@@ -223,7 +223,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                             this.attitude_pitch[0].appendChild(rect);
                             if (text) {
                                 let rightText = document.createElementNS(Avionics.SVG.NS, "text");
-                                rightText.textContent = Math.abs(angle).toString();
+                                rightText.textContentCached = Math.abs(angle).toString();
                                 rightText.setAttribute("x", ((width / 2) + 5).toString());
                                 rightText.setAttribute("y", (pitchFactor * angle - height / 2 + fontSize / 2).toString() - 4);
                                 rightText.setAttribute("text-anchor", "start");
@@ -439,7 +439,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.radioAltitudeColorLimit = 400;
                 this.radioAltitudeRotate = false;
                 this.radioAltitude = document.createElementNS(Avionics.SVG.NS, "text");
-                this.radioAltitude.textContent = "";
+                this.radioAltitude.textContentCached = "";
                 this.radioAltitude.setAttribute("x", "30");
                 this.radioAltitude.setAttribute("y", "165");
                 this.radioAltitude.setAttribute("text-anchor", "end");
@@ -544,7 +544,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             case "decision_height":
                 if (this.radioDecisionHeight) {
                     let val = parseFloat(newValue);
-                    this.radioDecisionHeight.textContent = fastToFixed(val, 0);
+                    this.radioDecisionHeight.textContentCached = fastToFixed(val, 0);
                 }
                 break;
             case "half_bank-active":
@@ -574,7 +574,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 else
                     textVal = absVal - (absVal % 10);
             }
-            this.radioAltitude.textContent = (textVal * Math.sign(val)).toString();
+            this.radioAltitude.textContentCached = (textVal * Math.sign(val)).toString();
             if (this.radioAltitudeColorLimit > 0) {
                 if (val >= this.radioAltitudeColorLimit)
                     this.radioAltitude.setAttribute("fill", this.radioAltitudeColorOk);

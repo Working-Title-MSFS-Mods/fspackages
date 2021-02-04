@@ -232,13 +232,13 @@ class Jet_NDCompass extends HTMLElement {
             if (this.referenceMode == Jet_NDCompass_Reference.TRACK) {
                 compass = simTrack;
                 if (this.currentRefMode) {
-                    this.currentRefMode.textContent = "TRK";
+                    this.currentRefMode.textContentCached = "TRK";
                 }
             }
             else {
                 compass = simHeading;
                 if (this.currentRefMode) {
-                    this.currentRefMode.textContent = "HDG";
+                    this.currentRefMode.textContentCached = "HDG";
                 }
             }
             let roundedCompass = fastToFixed(compass, 2);
@@ -246,7 +246,7 @@ class Jet_NDCompass extends HTMLElement {
             if (this.currentRefGroup)
                 this.currentRefGroup.classList.toggle('hide', false);
             if (this.currentRefValue)
-                this.currentRefValue.textContent = Utils.leadingZeros(compass % 360, 3, 0);
+                this.currentRefValue.textContentCached = Utils.leadingZeros(compass % 360, 3, 0);
         }
         else {
             this.setAttribute("rotation", "0");
@@ -279,7 +279,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.selectedTrackGroup.classList.toggle('hide', true);
                 if (this.selectedRefGroup) {
                     if (this.selectedRefValue)
-                        this.selectedRefValue.textContent = selectedHeading.toString();
+                        this.selectedRefValue.textContentCached = selectedHeading.toString();
                     this.selectedRefGroup.classList.toggle('hide', false);
                 }
                 if (this.headingGroup)
@@ -320,7 +320,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.selectedTrackGroup.classList.toggle('hide', true);
                 if (this.selectedRefGroup) {
                     if (this.selectedRefValue)
-                        this.selectedRefValue.textContent = selectedHeading.toString();
+                        this.selectedRefValue.textContentCached = selectedHeading.toString();
                     this.selectedRefGroup.classList.toggle('hide', false);
                 }
             }
@@ -368,7 +368,7 @@ class Jet_NDCompass extends HTMLElement {
                     this.selectedTrackGroup.classList.toggle('hide', true);
                 if (this.selectedRefGroup) {
                     if (this.selectedRefValue)
-                        this.selectedRefValue.textContent = selectedHeading.toString();
+                        this.selectedRefValue.textContentCached = selectedHeading.toString();
                     this.selectedRefGroup.classList.toggle('hide', false);
                 }
             }
@@ -385,7 +385,7 @@ class Jet_NDCompass extends HTMLElement {
                 this.selectedTrackGroup.classList.toggle('hide', false);
             if (this.selectedRefGroup) {
                 if (this.selectedRefValue)
-                    this.selectedRefValue.textContent = selectedTrack.toString();
+                    this.selectedRefValue.textContentCached = selectedTrack.toString();
                 this.selectedRefGroup.classList.toggle('hide', false);
             }
             if (this.headingGroup)
@@ -421,10 +421,10 @@ class Jet_NDCompass extends HTMLElement {
                 if (range < 1.0 && this.mapRanges[i].removeInteger) {
                     let rangeText = (Math.floor(range * 100) / 100).toFixed(2);
                     let radixPos = rangeText.indexOf('.');
-                    this.mapRanges[i].text.textContent = rangeText.slice(radixPos);
+                    this.mapRanges[i].text.textContentCached = rangeText.slice(radixPos);
                 }
                 else {
-                    this.mapRanges[i].text.textContent = range.toString();
+                    this.mapRanges[i].text.textContentCached = range.toString();
                 }
             }
         }
@@ -947,7 +947,7 @@ class Jet_NDCompass extends HTMLElement {
         let range = new Jet_NDCompass_Range();
         {
             range.text = document.createElementNS(Avionics.SVG.NS, "text");
-            range.text.textContent = "";
+            range.text.textContentCached = "";
             range.text.setAttribute("x", _x.toString());
             range.text.setAttribute("y", _y.toString());
             range.text.setAttribute("fill", _color);

@@ -38,7 +38,7 @@ class NavTransferTuningElement {
     if (fixedFrequency !== this.frequency) {
       const frequencyLabelEl = this.element.querySelector('.preset-tuning-frequency');
       if (frequencyLabelEl) {
-        frequencyLabelEl.textContent = fixedFrequency;
+        frequencyLabelEl.textContentCached = fixedFrequency;
       }
 
       this.frequency = fixedFrequency;

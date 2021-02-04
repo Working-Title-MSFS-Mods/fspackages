@@ -63,7 +63,7 @@ class NavPresetElement {
     if (preset !== this.currentPresetText) {
       const el = this.element.querySelector('.preset-name');
       if (el) {
-        el.textContent = preset;
+        el.textContentCached = preset;
         this.currentPresetText = preset;
       }
     }

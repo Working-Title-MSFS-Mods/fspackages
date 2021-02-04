@@ -356,11 +356,11 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 if (this.tunedNav > 0) {
                     this.InfoGroup.setAttribute("visibility", "visible");
                     if (this.ILSIdent)
-                        this.ILSIdent.textContent = localizer.ident;
+                        this.ILSIdent.textContentCached = localizer.ident;
                     if (this.ILSFreq)
-                        this.ILSFreq.textContent = localizer.freq.toFixed(2);
+                        this.ILSFreq.textContentCached = localizer.freq.toFixed(2);
                     if (this.ILSDist)
-                        this.ILSDist.textContent = SimVar.GetSimVarValue("NAV HAS DME:" + localizer.id, "Bool") ? SimVar.GetSimVarValue("NAV DME:" + localizer.id, "nautical miles").toFixed(1) + "NM" : "";
+                        this.ILSDist.textContentCached = SimVar.GetSimVarValue("NAV HAS DME:" + localizer.id, "Bool") ? SimVar.GetSimVarValue("NAV DME:" + localizer.id, "nautical miles").toFixed(1) + "NM" : "";
                 }
                 else {
                     this.InfoGroup.setAttribute("visibility", "hidden");

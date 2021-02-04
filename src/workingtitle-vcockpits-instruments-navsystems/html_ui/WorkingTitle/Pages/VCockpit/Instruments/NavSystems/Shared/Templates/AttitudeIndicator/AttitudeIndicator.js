@@ -103,7 +103,7 @@ class AttitudeIndicator extends HTMLElement {
                 this.attitude_pitch.appendChild(rect);
                 if (text) {
                     let leftText = document.createElementNS(Avionics.SVG.NS, "text");
-                    leftText.textContent = Math.abs(angle).toString();
+                    leftText.textContentCached = Math.abs(angle).toString();
                     leftText.setAttribute("x", ((-width / 2) - 5).toString());
                     leftText.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
                     leftText.setAttribute("text-anchor", "end");
@@ -112,7 +112,7 @@ class AttitudeIndicator extends HTMLElement {
                     leftText.setAttribute("fill", "white");
                     this.attitude_pitch.appendChild(leftText);
                     let rightText = document.createElementNS(Avionics.SVG.NS, "text");
-                    rightText.textContent = Math.abs(angle).toString();
+                    rightText.textContentCached = Math.abs(angle).toString();
                     rightText.setAttribute("x", ((width / 2) + 5).toString());
                     rightText.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
                     rightText.setAttribute("text-anchor", "start");

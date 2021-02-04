@@ -211,7 +211,7 @@ class SvgRangeCompassElement extends SvgMapElement {
             let pos = SvgRangeCompassElement.getRadialOffsetPos(this.centerPos, this.radius - this.bearingTickMajorLength - offset, Math.PI * (currentBearing + map.rotation - magDev) / 180);
             this.bearingLabels[i].setAttribute("x", pos.x);
             this.bearingLabels[i].setAttribute("y", pos.y);
-            this.bearingLabels[i].textContent = fastToFixed(currentBearing % 360, 0);
+            this.bearingLabels[i].textContentCached = fastToFixed(currentBearing % 360, 0);
             this.bearingLabels[i].setAttribute("display", "inherit");
             currentBearing += this.bearingLabelInterval;
             i++;

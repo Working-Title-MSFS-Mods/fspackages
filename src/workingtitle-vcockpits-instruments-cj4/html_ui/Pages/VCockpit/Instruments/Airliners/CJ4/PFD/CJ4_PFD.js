@@ -130,14 +130,14 @@ class CJ4_PFD extends BaseAirliners {
             // let vnavAltEl = document.getElementById("VnavAlt");
             // vnavAltEl.style.display = isAltConstraint ? "" : "none";
             // if (isAltConstraint) {
-            //     vnavAltEl.textContent = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number").toFixed(0);
+            //     vnavAltEl.textContentCached = SimVar.GetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number").toFixed(0);
             // }
 
             const isAltConstraint = localStorage.getItem("WT_CJ4_CONSTRAINT");
             const vnavAltEl = document.getElementById("VnavAlt");
             vnavAltEl.style.display = isAltConstraint ? "" : "none";
             if (isAltConstraint) {
-                vnavAltEl.textContent = localStorage.getItem("WT_CJ4_CONSTRAINT");
+                vnavAltEl.textContentCached = localStorage.getItem("WT_CJ4_CONSTRAINT");
             }
 
             this.map.setMode(this.mapDisplayMode);

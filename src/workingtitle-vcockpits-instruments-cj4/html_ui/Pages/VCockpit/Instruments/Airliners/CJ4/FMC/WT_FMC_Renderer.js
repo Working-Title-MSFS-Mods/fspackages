@@ -134,7 +134,7 @@ class WT_FMC_Renderer {
                 row.childNodes[ci].childNodes[0].className = "";
                 row.childNodes[ci].childNodes[0].classList.add("letter");
                 row.childNodes[ci].childNodes[0].classList.add(...x.classList);
-                row.childNodes[ci].childNodes[0].textContent = c;
+                row.childNodes[ci].childNodes[0].textContentCached = c;
                 ci++;
             });
         });
@@ -180,7 +180,7 @@ class WT_FMC_Renderer {
 
         // clear everything (TODO: could be better)
         row.childNodes.forEach(n => {
-            n.childNodes[0].textContent = "";
+            n.childNodes[0].textContentCached = "";
         });
 
         if (this._fmc.isDisplayingErrorMessage) {
@@ -193,9 +193,9 @@ class WT_FMC_Renderer {
 
         // render hacky brackets
         row.childNodes[0].childNodes[0].classList.add("blue");
-        row.childNodes[0].childNodes[0].textContent = "[";
+        row.childNodes[0].childNodes[0].textContentCached = "[";
         row.childNodes[23].childNodes[0].classList.add("blue");
-        row.childNodes[23].childNodes[0].textContent = "]";
+        row.childNodes[23].childNodes[0].textContentCached = "]";
     }
 
     renderMsgLineRaw(row) {
@@ -205,7 +205,7 @@ class WT_FMC_Renderer {
 
         // clear everything (TODO: could be better)
         row.childNodes.forEach(n => {
-            n.childNodes[0].textContent = "";
+            n.childNodes[0].textContentCached = "";
         });
 
         // render
@@ -375,7 +375,7 @@ class WT_FMC_Renderer {
         // if (col === -1) {
         //     for (let i = 0; i < this._lineElements[row].length; i++) {
         //         this._lines[row][i] = "";
-        //         this._lineElements[row][i].textContent = "";
+        //         this._lineElements[row][i].textContentCached = "";
         //     }
         //     col = 0;
         // }
@@ -406,7 +406,7 @@ class WT_FMC_Renderer {
         // }
 
         // // clear it (fastest)
-        // this._lineElements[row][col].textContent = "";
+        // this._lineElements[row][col].textContentCached = "";
         // resultElems.forEach(el => { this._lineElements[row][col].appendChild(el) });
         // this._lines[row][col] = this._lineElements[row][col].textContent;
     }
@@ -424,7 +424,7 @@ class WT_FMC_Renderer {
         // if (col === -1) {
         //     for (let i = 0; i < this._labelElements[row].length; i++) {
         //         this._labels[row][i] = "";
-        //         this._labelElements[row][i].textContent = "";
+        //         this._labelElements[row][i].textContentCached = "";
         //     }
         //     col = 0;
         // }
@@ -455,7 +455,7 @@ class WT_FMC_Renderer {
         // }
 
         // // clear it (fastest)
-        // this._labelElements[row][col].textContent = "";
+        // this._labelElements[row][col].textContentCached = "";
         // resultElems.forEach(el => { this._labelElements[row][col].appendChild(el) });
         // this._labels[row][col] = this._labelElements[row][col].textContent;
     }
@@ -484,7 +484,7 @@ class WT_FMC_Renderer {
         // }
 
         // // clear it (fastest)
-        // this._titleElement[col].textContent = "";
+        // this._titleElement[col].textContentCached = "";
         // resultElems.forEach(el => { this._titleElement[col].appendChild(el) });
     }
 
@@ -502,7 +502,7 @@ class WT_FMC_Renderer {
         // this._title = content.split("[color]")[0];
         // this._titleElement[2].classList.remove("white", "blue", "yellow", "green", "red");
         // this._titleElement[2].classList.add(color);
-        // this._titleElement[2].textContent = this._title;;
+        // this._titleElement[2].textContentCached = this._title;;
     }
 
     renderExec() {
@@ -536,7 +536,7 @@ class WT_FMC_Renderer {
             while (match != null) {
                 const el = document.createElement("span");
 
-                el.textContent = match[1].replace("__LSB", "[").replace("__RSB", "]");
+                el.textContentCached = match[1].replace("__LSB", "[").replace("__RSB", "]");
 
                 if (match[2]) {
                     // eslint-disable-next-line no-useless-escape

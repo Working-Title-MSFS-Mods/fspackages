@@ -606,7 +606,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             return;
 
         Utils.RemoveAllChildren(this.root.querySelector(".SystemBody"));
-        this.root.querySelector(".SystemHeader").textContent = "SYSTEMS 1/2";
+        this.root.querySelector(".SystemHeader").textContentCached = "SYSTEMS 1/2";
 
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         rootSVG.setAttribute("id", "Standard");
@@ -619,7 +619,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var startPosX = 155;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "DC ELEC";
+            titleText.textContentCached = "DC ELEC";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -649,7 +649,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "AMP";
+            titleText.textContentCached = "AMP";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -659,7 +659,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             this.DCAmpValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
-            this.DCAmpValueLeft.textContent = "0";
+            this.DCAmpValueLeft.textContentCached = "0";
             this.DCAmpValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.3).toString());
             this.DCAmpValueLeft.setAttribute("y", startPosY.toString());
             this.DCAmpValueLeft.setAttribute("fill", "#11d011");
@@ -669,7 +669,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.DCAmpValueLeft.setAttribute("alignment-baseline", "central");
             dcGroup.appendChild(this.DCAmpValueLeft);
             this.DCAmpValueRight = document.createElementNS(Avionics.SVG.NS, "text");
-            this.DCAmpValueRight.textContent = "0";
+            this.DCAmpValueRight.textContentCached = "0";
             this.DCAmpValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.DCAmpValueRight.setAttribute("y", startPosY.toString());
             this.DCAmpValueRight.setAttribute("fill", "#11d011");
@@ -680,7 +680,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             dcGroup.appendChild(this.DCAmpValueRight);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "VOLT";
+            titleText.textContentCached = "VOLT";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -690,7 +690,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             dcGroup.appendChild(titleText);
             this.DCVoltValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
-            this.DCVoltValueLeft.textContent = "0";
+            this.DCVoltValueLeft.textContentCached = "0";
             this.DCVoltValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.3).toString());
             this.DCVoltValueLeft.setAttribute("y", startPosY.toString());
             this.DCVoltValueLeft.setAttribute("fill", "#11d011");
@@ -700,7 +700,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.DCVoltValueLeft.setAttribute("alignment-baseline", "central");
             dcGroup.appendChild(this.DCVoltValueLeft);
             this.DCVoltValueRight = document.createElementNS(Avionics.SVG.NS, "text");
-            this.DCVoltValueRight.textContent = "0";
+            this.DCVoltValueRight.textContentCached = "0";
             this.DCVoltValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.DCVoltValueRight.setAttribute("y", startPosY.toString());
             this.DCVoltValueRight.setAttribute("fill", "#11d011");
@@ -717,7 +717,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var startPosX = 400;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "BATT";
+            titleText.textContentCached = "BATT";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -748,7 +748,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             startPosX -= 35;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "AMP";
+            titleText.textContentCached = "AMP";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -758,7 +758,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             this.BATAmpValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.BATAmpValue.textContent = "-7";
+            this.BATAmpValue.textContentCached = "-7";
             this.BATAmpValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATAmpValue.setAttribute("y", startPosY.toString());
             this.BATAmpValue.setAttribute("fill", "#11d011");
@@ -769,7 +769,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             batteryGroup.appendChild(this.BATAmpValue);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "VOLT";
+            titleText.textContentCached = "VOLT";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -779,7 +779,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             this.BATVoltValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.BATVoltValue.textContent = "24";
+            this.BATVoltValue.textContentCached = "24";
             this.BATVoltValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATVoltValue.setAttribute("y", startPosY.toString());
             this.BATVoltValue.setAttribute("fill", "#11d011");
@@ -790,7 +790,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             batteryGroup.appendChild(this.BATVoltValue);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "TEMP °C";
+            titleText.textContentCached = "TEMP °C";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -800,7 +800,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             batteryGroup.appendChild(titleText);
             this.BATTempValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.BATTempValue.textContent = "0";
+            this.BATTempValue.textContentCached = "0";
             this.BATTempValue.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.BATTempValue.setAttribute("y", startPosY.toString());
             this.BATTempValue.setAttribute("fill", "#11d011");
@@ -817,7 +817,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var startPosX = 620;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "OXY PSI";
+            titleText.textContentCached = "OXY PSI";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -877,7 +877,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 line.setAttribute("stroke-width", "2");
                 oxyGroup.appendChild(line);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = gradTexts[i];
+                text.textContentCached = gradTexts[i];
                 text.setAttribute("x", (gaugeStartX - gradLength[i] - 10).toString());
                 text.setAttribute("y", (gaugeStartY + gaugeHeight * gradPercents[i]).toString());
                 text.setAttribute("fill", "#cccac8");
@@ -900,7 +900,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var startPosX = 840;
             var startPosY = 30;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "HYD";
+            titleText.textContentCached = "HYD";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -930,7 +930,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "PSI";
+            titleText.textContentCached = "PSI";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -940,7 +940,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             hydroGroup.appendChild(titleText);
             this.HYDPSIValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
-            this.HYDPSIValueLeft.textContent = "0";
+            this.HYDPSIValueLeft.textContentCached = "0";
             this.HYDPSIValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.HYDPSIValueLeft.setAttribute("y", startPosY.toString());
             this.HYDPSIValueLeft.setAttribute("fill", "#11d011");
@@ -950,7 +950,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.HYDPSIValueLeft.setAttribute("alignment-baseline", "central");
             hydroGroup.appendChild(this.HYDPSIValueLeft);
             this.HYDPSIValueRight = document.createElementNS(Avionics.SVG.NS, "text");
-            this.HYDPSIValueRight.textContent = "0";
+            this.HYDPSIValueRight.textContentCached = "0";
             this.HYDPSIValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.HYDPSIValueRight.setAttribute("y", startPosY.toString());
             this.HYDPSIValueRight.setAttribute("fill", "#11d011");
@@ -967,7 +967,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var startPosX = 840;
             var startPosY = 110;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "FUEL";
+            titleText.textContentCached = "FUEL";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -997,7 +997,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var rectHeight = 30;
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
+            titleText.textContentCached = WT_ConvertUnit.isMetric() ? "KG/H" : "PPH";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -1007,7 +1007,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(titleText);
             this.FUELPPHValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
-            this.FUELPPHValueLeft.textContent = "0";
+            this.FUELPPHValueLeft.textContentCached = "0";
             this.FUELPPHValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FUELPPHValueLeft.setAttribute("y", startPosY.toString());
             this.FUELPPHValueLeft.setAttribute("fill", "#11d011");
@@ -1017,7 +1017,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.FUELPPHValueLeft.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(this.FUELPPHValueLeft);
             this.FUELPPHValueRight = document.createElementNS(Avionics.SVG.NS, "text");
-            this.FUELPPHValueRight.textContent = "0";
+            this.FUELPPHValueRight.textContentCached = "0";
             this.FUELPPHValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.FUELPPHValueRight.setAttribute("y", startPosY.toString());
             this.FUELPPHValueRight.setAttribute("fill", "#11d011");
@@ -1028,7 +1028,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             fuelGroup.appendChild(this.FUELPPHValueRight);
             startPosY += rectHeight;
             var titleText = document.createElementNS(Avionics.SVG.NS, "text");
-            titleText.textContent = "°C";
+            titleText.textContentCached = "°C";
             titleText.setAttribute("x", startPosX.toString());
             titleText.setAttribute("y", startPosY.toString());
             titleText.setAttribute("fill", "#cccac8");
@@ -1038,7 +1038,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             titleText.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(titleText);
             this.FUELTempValueLeft = document.createElementNS(Avionics.SVG.NS, "text");
-            this.FUELTempValueLeft.textContent = "15";
+            this.FUELTempValueLeft.textContentCached = "15";
             this.FUELTempValueLeft.setAttribute("x", (startPosX - rectMarginX - rectWidth * 0.05).toString());
             this.FUELTempValueLeft.setAttribute("y", startPosY.toString());
             this.FUELTempValueLeft.setAttribute("fill", "#11d011");
@@ -1048,7 +1048,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             this.FUELTempValueLeft.setAttribute("alignment-baseline", "central");
             fuelGroup.appendChild(this.FUELTempValueLeft);
             this.FUELTempValueRight = document.createElementNS(Avionics.SVG.NS, "text");
-            this.FUELTempValueRight.textContent = "15";
+            this.FUELTempValueRight.textContentCached = "15";
             this.FUELTempValueRight.setAttribute("x", (startPosX + rectMarginX + rectWidth * 0.95).toString());
             this.FUELTempValueRight.setAttribute("y", startPosY.toString());
             this.FUELTempValueRight.setAttribute("fill", "#11d011");
@@ -1063,7 +1063,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         if (!this.root)
             return;
         Utils.RemoveAllChildren(this.root.querySelector(".SystemBody"));
-        this.root.querySelector(".SystemHeader").textContent = "SYSTEMS 2/2";
+        this.root.querySelector(".SystemHeader").textContentCached = "SYSTEMS 2/2";
 
         var rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         rootSVG.setAttribute("id", "Minimized");
@@ -1097,7 +1097,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             var textStartY = blockPosY + lineSize + 15;
             var textSpacingY = 18;
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "T";
+            text.textContentCached = "T";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 0).toString());
             text.setAttribute("fill", "#cccac8");
@@ -1107,7 +1107,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             text.setAttribute("alignment-baseline", "central");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "R";
+            text.textContentCached = "R";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 1).toString());
             text.setAttribute("fill", "#cccac8");
@@ -1117,7 +1117,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             text.setAttribute("alignment-baseline", "central");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "I";
+            text.textContentCached = "I";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 2).toString());
             text.setAttribute("fill", "#cccac8");
@@ -1127,7 +1127,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
             text.setAttribute("alignment-baseline", "central");
             trimGroup.appendChild(text);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = "M";
+            text.textContentCached = "M";
             text.setAttribute("x", blockPosX.toString());
             text.setAttribute("y", (textStartY + textSpacingY * 3).toString());
             text.setAttribute("fill", "#cccac8");
@@ -1158,7 +1158,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 blockPosX = startPosX + 160;
                 blockPosY = startPosY + 25;
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "AIL";
+                text.textContentCached = "AIL";
                 text.setAttribute("x", blockPosX.toString());
                 text.setAttribute("y", blockPosY.toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1180,7 +1180,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(rect);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "L";
+                text.textContentCached = "L";
                 text.setAttribute("x", (blockPosX - gaugeWidth * 0.5 - 10).toString());
                 text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1190,7 +1190,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 text.setAttribute("alignment-baseline", "central");
                 trimGroup.appendChild(text);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "R";
+                text.textContentCached = "R";
                 text.setAttribute("x", (blockPosX + gaugeWidth * 0.5 + 10).toString());
                 text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1239,7 +1239,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 rect.setAttribute("stroke-width", "2");
                 trimGroup.appendChild(rect);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "L";
+                text.textContentCached = "L";
                 text.setAttribute("x", (blockPosX - gaugeWidth * 0.5 - 10).toString());
                 text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1249,7 +1249,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 text.setAttribute("alignment-baseline", "central");
                 trimGroup.appendChild(text);
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "R";
+                text.textContentCached = "R";
                 text.setAttribute("x", (blockPosX + gaugeWidth * 0.5 + 10).toString());
                 text.setAttribute("y", (blockPosY + gaugeHeight * 0.5).toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1282,7 +1282,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.RudderCursor);
                 blockPosY += 30 + gaugeHeight;
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "RUD";
+                text.textContentCached = "RUD";
                 text.setAttribute("x", blockPosX.toString());
                 text.setAttribute("y", blockPosY + 2);
                 text.setAttribute("fill", "#cccac8");
@@ -1297,7 +1297,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 blockPosX = startPosX + 280 + 110 + 180 + 120;
                 blockPosY = startPosY + 10;
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "ELEV";
+                text.textContentCached = "ELEV";
                 text.setAttribute("x", (blockPosX - 80).toString());
                 text.setAttribute("y", blockPosY.toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1308,7 +1308,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(text);
 
                 this.AileronRadians = document.createElementNS(Avionics.SVG.NS, "text");
-                this.AileronRadians.textContent = "2.6";
+                this.AileronRadians.textContentCached = "2.6";
                 this.AileronRadians.setAttribute("x", (blockPosX + 80).toString());
                 this.AileronRadians.setAttribute("y", blockPosY.toString());
                 this.AileronRadians.setAttribute("fill", "white");
@@ -1319,7 +1319,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.AileronRadians);
 
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "ND";
+                text.textContentCached = "ND";
                 text.setAttribute("x", (blockPosX + 6).toString());
                 text.setAttribute("y", blockPosY.toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1363,7 +1363,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.ElevatorCursorR);
 
                 this.ElevatorTextR = document.createElementNS(Avionics.SVG.NS, "text");
-                this.ElevatorTextR.textContent = "R";
+                this.ElevatorTextR.textContentCached = "R";
                 this.ElevatorTextR.setAttribute("x", (this.ElevatorCursorRX + 25).toString());
                 this.ElevatorTextR.setAttribute("y", (this.ElevatorCursorRY2 + ((this.ElevatorCursorRY1 - this.ElevatorCursorRY2) * 0.50)).toString());
                 this.ElevatorTextR.setAttribute("fill", "#cccac8");
@@ -1383,7 +1383,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.ElevatorCursorL);
 
                 this.ElevatorTextL = document.createElementNS(Avionics.SVG.NS, "text");
-                this.ElevatorTextL.textContent = "L";
+                this.ElevatorTextL.textContentCached = "L";
                 this.ElevatorTextL.setAttribute("x", (this.ElevatorCursorLX - 25).toString());
                 this.ElevatorTextL.setAttribute("y", (this.ElevatorCursorRY2 + ((this.ElevatorCursorRY1 - this.ElevatorCursorRY2) * 0.50)).toString());
                 this.ElevatorTextL.setAttribute("fill", "#cccac8");
@@ -1394,7 +1394,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 trimGroup.appendChild(this.ElevatorTextL);
 
                 var text = document.createElementNS(Avionics.SVG.NS, "text");
-                text.textContent = "NU";
+                text.textContentCached = "NU";
                 text.setAttribute("x", (blockPosX + 18).toString());
                 text.setAttribute("y", (gaugeStartY + gaugeHeight + 28).toString());
                 text.setAttribute("fill", "#cccac8");
@@ -1415,35 +1415,35 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
         if (this.isVisible) {
             if (this.currentPage == 1) {
                 let GenAmp1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:1", "amperes");
-                this.DCAmpValueLeft.textContent = Math.round(GenAmp1).toString();
+                this.DCAmpValueLeft.textContentCached = Math.round(GenAmp1).toString();
                 let GenAmp2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS AMPS:2", "amperes");
-                this.DCAmpValueRight.textContent = Math.round(GenAmp2).toString();
+                this.DCAmpValueRight.textContentCached = Math.round(GenAmp2).toString();
                 let GenVolt1 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:1", "volts");
-                this.DCVoltValueLeft.textContent = Math.round(GenVolt1).toString();
+                this.DCVoltValueLeft.textContentCached = Math.round(GenVolt1).toString();
                 let GenVolt2 = SimVar.GetSimVarValue("ELECTRICAL GENALT BUS VOLTAGE:2", "volts");
-                this.DCVoltValueRight.textContent = Math.round(GenVolt2).toString();
+                this.DCVoltValueRight.textContentCached = Math.round(GenVolt2).toString();
                 let BatVolt = SimVar.GetSimVarValue("ELECTRICAL BATTERY VOLTAGE:1", "volts");
-                this.BATVoltValue.textContent = Math.round(BatVolt).toString();
+                this.BATVoltValue.textContentCached = Math.round(BatVolt).toString();
                 let BatAmp = SimVar.GetSimVarValue("ELECTRICAL BATTERY LOAD:1", "amperes");
                 BatAmp = BatAmp / BatVolt;
-                this.BATAmpValue.textContent = Math.round(BatAmp).toString();
-                this.BATTempValue.textContent = "26";
+                this.BATAmpValue.textContentCached = Math.round(BatAmp).toString();
+                this.BATTempValue.textContentCached = "26";
 
                 let N2Eng1 = SimVar.GetSimVarValue("ENG N2 RPM:1", "percent");
                 let HydPSI1 = N2Eng1 >= 20 ? 3000 : N2Eng1 * 150;
-                this.HYDPSIValueLeft.textContent = Math.round(HydPSI1).toString();
+                this.HYDPSIValueLeft.textContentCached = Math.round(HydPSI1).toString();
 
                 let N2Eng2 = SimVar.GetSimVarValue("ENG N2 RPM:2", "percent");
                 let HydPSI2 = N2Eng2 >= 20 ? 3000 : N2Eng2 * 150;
-                this.HYDPSIValueRight.textContent = Math.round(HydPSI2).toString();
+                this.HYDPSIValueRight.textContentCached = Math.round(HydPSI2).toString();
 
                 let PPHEng1 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:1", "Pounds per hour");
-                this.FUELPPHValueLeft.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng1).Value);
+                this.FUELPPHValueLeft.textContentCached = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng1).Value);
                 let PPHEng2 = SimVar.GetSimVarValue("L:CJ4 FUEL FLOW:2", "Pounds per hour");
-                this.FUELPPHValueRight.textContent = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng2).Value);
+                this.FUELPPHValueRight.textContentCached = Math.round(WT_ConvertUnit.getFuelFlow(PPHEng2).Value);
 
-                this.FUELTempValueLeft.textContent = "--";
-                this.FUELTempValueRight.textContent = "--";
+                this.FUELTempValueLeft.textContentCached = "--";
+                this.FUELTempValueRight.textContentCached = "--";
             }
             else if (this.currentPage == 2) {
                 let AilPct = (SimVar.GetSimVarValue("AILERON TRIM PCT", "percent over 100") + 1.0) * 0.5;
@@ -1457,7 +1457,7 @@ class CJ4_SystemOverlayContainer extends NavSystemElementContainer {
                 this.ElevatorCursorR.setAttribute("transform", "translate (" + this.ElevatorCursorRX + " " + elev_y + ")");
                 this.ElevatorCursorL.setAttribute("transform", "translate (" + this.ElevatorCursorLX + " " + elev_y + ")");
                 let ailRadians = (SimVar.GetSimVarValue("ELEVATOR TRIM POSITION", "radian"));
-                this.AileronRadians.textContent = (ailRadians * 180 / Math.PI).toFixed(1).toString();
+                this.AileronRadians.textContentCached = (ailRadians * 180 / Math.PI).toFixed(1).toString();
             }
         }
     }

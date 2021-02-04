@@ -126,22 +126,22 @@ class Jet_MFD_NDInfo extends HTMLElement {
             if (this._navMode == Jet_NDCompass_Navigation.NAV) {
                 if (this.waypoint)
                     this.waypoint.style.display = "block";
-                this.waypointName.textContent = this._name;
-                this.waypointTrack.textContent = this._track;
-                this.waypointDistance.textContent = this._distance;
+                this.waypointName.textContentCached = this._name;
+                this.waypointTrack.textContentCached = this._track;
+                this.waypointDistance.textContentCached = this._distance;
                 if (this.approach) {
-                    this.approachType.textContent = "";
-                    this.approachFreq.textContent = "";
-                    this.approachCourse.textContent = "";
-                    this.approachInfo.textContent = "";
+                    this.approachType.textContentCached = "";
+                    this.approachFreq.textContentCached = "";
+                    this.approachCourse.textContentCached = "";
+                    this.approachInfo.textContentCached = "";
                     this.approach.style.display = "none";
                 }
             }
             else if (this._navMode == Jet_NDCompass_Navigation.ILS || this._navMode == Jet_NDCompass_Navigation.VOR) {
                 if (this.waypoint) {
-                    this.waypointName.textContent = "";
-                    this.waypointTrack.textContent = "";
-                    this.waypointDistance.textContent = "";
+                    this.waypointName.textContentCached = "";
+                    this.waypointTrack.textContentCached = "";
+                    this.waypointDistance.textContentCached = "";
                     this.waypoint.style.display = "none";
                 }
                 if (this.approach)
@@ -191,7 +191,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         if ((_speed != this.currentGroundSpeed) || _force) {
             this.currentGroundSpeed = _speed;
             if (this.groundSpeed != null) {
-                this.groundSpeed.textContent = this.currentGroundSpeed.toString().padStart(3, "0");
+                this.groundSpeed.textContentCached = this.currentGroundSpeed.toString().padStart(3, "0");
             }
         }
     }
@@ -199,7 +199,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         if ((_speed != this.currentTrueAirSpeed) || _force) {
             this.currentTrueAirSpeed = _speed;
             if (this.trueAirSpeed != null) {
-                this.trueAirSpeed.textContent = this.currentTrueAirSpeed.toString().padStart(3, "0");
+                this.trueAirSpeed.textContentCached = this.currentTrueAirSpeed.toString().padStart(3, "0");
             }
         }
     }
@@ -230,15 +230,15 @@ class Jet_MFD_NDInfo extends HTMLElement {
             this.currentWindAngle = smoothedAngle % 360;
             if (this.windDirection != null) {
                 if (windStrongEnough)
-                    this.windDirection.textContent = this.currentWindAngle.toFixed(0).padStart(3, "0");
+                    this.windDirection.textContentCached = this.currentWindAngle.toFixed(0).padStart(3, "0");
                 else
-                    this.windDirection.textContent = "---";
+                    this.windDirection.textContentCached = "---";
             }
         }
         if (refreshWindStrength) {
             this.currentWindStrength = _windStrength;
             if (this.windStrength != null) {
-                this.windStrength.textContent = this.currentWindStrength.toString().padStart(2, "0");
+                this.windStrength.textContentCached = this.currentWindStrength.toString().padStart(2, "0");
             }
         }
         if (refreshWindArrow) {
@@ -262,21 +262,21 @@ class Jet_MFD_NDInfo extends HTMLElement {
             if (this._navMode == Jet_NDCompass_Navigation.NAV) {
                 if (_name && _name != "") {
                     if (this.waypointName != null) {
-                        this.waypointName.textContent = _name;
+                        this.waypointName.textContentCached = _name;
                     }
                     if ((_track != this.currentWaypointTrack) || _force) {
                         this.currentWaypointTrack = _track;
                         if (this.waypointTrack) {
-                            this.waypointTrack.textContent = this.currentWaypointTrack.toString().padStart(3, "0");
+                            this.waypointTrack.textContentCached = this.currentWaypointTrack.toString().padStart(3, "0");
                         }
                     }
                     if ((_distance != this.currentWaypointDistance) || _force) {
                         this.currentWaypointDistance = _distance;
                         if (this.waypointDistance != null) {
                             if (this.currentWaypointDistance < 100)
-                                this.waypointDistance.textContent = this.currentWaypointDistance.toFixed(1);
+                                this.waypointDistance.textContentCached = this.currentWaypointDistance.toFixed(1);
                             else
-                                this.waypointDistance.textContent = this.currentWaypointDistance.toFixed(0);
+                                this.waypointDistance.textContentCached = this.currentWaypointDistance.toFixed(0);
                         }
                     }
                     if ((_eta != this.currentWaypointEta) || _force) {
@@ -285,29 +285,29 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             if (Simplane.getGroundSpeed() >= 50) {
                                 const overHour = (_eta >= 3600);
                                 if (overHour) {
-                                    this.waypointTtg.textContent = new Date(_eta * 1000).toISOString().substr(11, 5);
+                                    this.waypointTtg.textContentCached = new Date(_eta * 1000).toISOString().substr(11, 5);
                                 } else {
-                                    this.waypointTtg.textContent = new Date(_eta * 1000).toISOString().substr(13, 3);
+                                    this.waypointTtg.textContentCached = new Date(_eta * 1000).toISOString().substr(13, 3);
                                 }
                             }
                             else {
-                                this.waypointTtg.textContent = "--:--";
+                                this.waypointTtg.textContentCached = "--:--";
                             }
                         }
                     }
                 }
                 else {
                     if (this.waypointName != null) {
-                        this.waypointName.textContent = "";
+                        this.waypointName.textContentCached = "";
                     }
                     if (this.waypointTrack != null) {
-                        this.waypointTrack.textContent = "---";
+                        this.waypointTrack.textContentCached = "---";
                     }
                     if (this.waypointDistance != null) {
-                        this.waypointDistance.textContent = "-.-";
+                        this.waypointDistance.textContentCached = "-.-";
                     }
                     if (this.waypointTtg != null) {
-                        this.waypointTtg.textContent = "--:--";
+                        this.waypointTtg.textContentCached = "--:--";
                     }
                 }
             }
@@ -322,30 +322,30 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         if (this._showILS)
                             ilsText = this.getILSIdent();
                         if (ilsText) {
-                            this.topTitle.textContent = ilsText;
+                            this.topTitle.textContentCached = ilsText;
                             this.topTitle.setAttribute("state", "ils");
                         }
                         else {
-                            this.topTitle.textContent = "";
+                            this.topTitle.textContentCached = "";
                             this.topTitle.removeAttribute("state");
                         }
                         break;
                     }
                 case Jet_NDCompass_Navigation.VOR:
                     {
-                        this.topTitle.textContent = "VOR";
+                        this.topTitle.textContentCached = "VOR";
                         this.topTitle.removeAttribute("state");
                         break;
                     }
                 case Jet_NDCompass_Navigation.ILS:
                     {
-                        this.topTitle.textContent = "ILS";
+                        this.topTitle.textContentCached = "ILS";
                         this.topTitle.removeAttribute("state");
                         break;
                     }
                 default:
                     {
-                        this.topTitle.textContent = "";
+                        this.topTitle.textContentCached = "";
                         break;
                     }
             }
@@ -421,11 +421,11 @@ class Jet_MFD_NDInfo extends HTMLElement {
                                 distance = vor.distance;
                             }
                         }
-                        this.approachType.textContent = type + suffix;
-                        this.approachFreq.textContent = freq;
-                        this.approachCourse.textContent = course;
-                        this.approachInfo.textContent = ident;
-                        this.approachDistance.textContent = distance;
+                        this.approachType.textContentCached = type + suffix;
+                        this.approachFreq.textContentCached = freq;
+                        this.approachCourse.textContentCached = course;
+                        this.approachInfo.textContentCached = ident;
+                        this.approachDistance.textContentCached = distance;
 
                         if (this.aircraft != Aircraft.CJ4) {
                             this.approachFreq.setAttribute("class", "ValueVor");
@@ -477,11 +477,11 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             }
                         }
 
-                        this.approachType.textContent = type + suffix;
-                        this.approachFreq.textContent = freq;
-                        this.approachCourse.textContent = course;
-                        this.approachInfo.textContent = ident;
-                        this.approachDistance.textContent = distance;
+                        this.approachType.textContentCached = type + suffix;
+                        this.approachFreq.textContentCached = freq;
+                        this.approachCourse.textContentCached = course;
+                        this.approachInfo.textContentCached = ident;
+                        this.approachDistance.textContentCached = distance;
 
                         if (this.aircraft != Aircraft.CJ4) {
                             this.approachFreq.setAttribute("class", "ValueIls");
@@ -521,7 +521,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         val += "0";
                     val += seconds;
                 }
-                this.elapsedTimeValue.textContent = val;
+                this.elapsedTimeValue.textContentCached = val;
                 this.elapsedTime.style.display = "block";
             }
             else {
@@ -532,7 +532,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
     updateMinimums() {
         if (this.minimums) {
             let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
-            this.minimums.textContent = baroSet;
+            this.minimums.textContentCached = baroSet;
             this.minimums.parentElement.style.display = (baroSet == 0) ? 'none' : '';
         }
     }
@@ -681,19 +681,19 @@ class VORDMENavAid {
             this.pointerNeedle.style = `transform: rotate(${rotation}deg);`;
             this.setIDValue(ident);
 
-            if (hasLocalizer && this.navTypeText.textContent !== 'LOC') {
-                this.navTypeText.textContent = 'LOC';
+            if (hasLocalizer && this.navTypeText.textContentCached !== 'LOC') {
+                this.navTypeText.textContentCached = 'LOC';
             }
-            else if (!hasLocalizer && this.navTypeText.textContent !== 'VOR') {
-                this.navTypeText.textContent = 'VOR';
+            else if (!hasLocalizer && this.navTypeText.textContentCached !== 'VOR') {
+                this.navTypeText.textContentCached = 'VOR';
             }
         }
         else {
             this.setDistanceValue(0);
             this.setIDValue(0);
 
-            if (this.navTypeText.textContent !== 'VOR') {
-                this.navTypeText.textContent = 'VOR';
+            if (this.navTypeText.textContentCached !== 'VOR') {
+                this.navTypeText.textContentCached = 'VOR';
             }
         }
     }
@@ -830,7 +830,7 @@ class VORDMENavAid {
             }
 
             if (this.navTypeText != null && type !== "") {
-                this.navTypeText.textContent = type;
+                this.navTypeText.textContentCached = type;
             }
         }
     }
@@ -842,9 +842,9 @@ class VORDMENavAid {
 
             if (this.idText != null) {
                 if (this.idValue == 0)
-                    this.idText.textContent = "---";
+                    this.idText.textContentCached = "---";
                 else
-                    this.idText.textContent = this.idValue;
+                    this.idText.textContentCached = this.idValue;
             }
         }
     }
@@ -858,7 +858,7 @@ class VORDMENavAid {
             if (this.distanceText != null) {
                 if (showDistance) {
                     this.distanceText.style = '';
-                    this.distanceText.textContent = this.distanceValue.toFixed(this.distanceValue < 100 ? 1 : 0);
+                    this.distanceText.textContentCached = this.distanceValue.toFixed(this.distanceValue < 100 ? 1 : 0);
                 }
                 else {
                     this.distanceText.style = 'visibility: hidden;';

@@ -298,7 +298,7 @@ class SvgFuelTimeLabelElement {
             minutesText = "0" + minutesText;
         }
 
-        this.displayValueText.textContent = hoursText + "h " + minutesText + "m";
+        this.displayValueText.textContentCached = hoursText + "h " + minutesText + "m";
     }
 
     formatDisplay() {

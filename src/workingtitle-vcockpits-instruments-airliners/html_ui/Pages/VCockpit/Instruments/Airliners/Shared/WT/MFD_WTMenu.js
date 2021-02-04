@@ -174,7 +174,7 @@ var WTMenu;
             bg.setAttribute("height", this.lineHeight.toString());
             this.sectionRoot.appendChild(bg);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
+            text.textContentCached = _text;
             if(_alignment == "left"){
                 text.setAttribute("x", (this.columnLeft1).toString());
                 text.setAttribute("text-anchor", "left");
@@ -193,7 +193,7 @@ var WTMenu;
 
             if(_pageNumber && _totalPages && _totalPages > 1){
                 let pageNumber = document.createElementNS(Avionics.SVG.NS, "text");
-                pageNumber.textContent = "PG " + _pageNumber.toString() + "/" + _totalPages.toString();
+                pageNumber.textContentCached = "PG " + _pageNumber.toString() + "/" + _totalPages.toString();
                 pageNumber.setAttribute("x", "305");
                 pageNumber.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
                 pageNumber.setAttribute("fill", "white");
@@ -224,7 +224,7 @@ var WTMenu;
             this.sectionRoot.appendChild(tick);
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _checklistItem.name;
+            text.textContentCached = _checklistItem.name;
             text.setAttribute("x", (this.columnLeft2 - 7).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
@@ -234,7 +234,7 @@ var WTMenu;
             this.sectionRoot.appendChild(text);
 
             let value = document.createElementNS(Avionics.SVG.NS, "text");
-            value.textContent = _checklistItem.value;
+            value.textContentCached = _checklistItem.value;
             value.setAttribute("x", (350 - this.textMarginX).toString());
             value.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             value.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
@@ -256,7 +256,7 @@ var WTMenu;
         addSubMenu(_text, _textSize, _callback, _textColour = "white") {
             let enabled = (_callback != null) ? true : false;
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
+            text.textContentCached = _text;
             text.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? _textColour : this.disabledColor);
@@ -525,7 +525,7 @@ var WTMenu;
             bg.setAttribute("height", this.lineHeight.toString());
             this.sectionRoot.appendChild(bg);
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _text;
+            text.textContentCached = _text;
             text.setAttribute("x", "175");
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", "white");
@@ -543,7 +543,7 @@ var WTMenu;
             let enabled = true;
 
             let tick = document.createElementNS(Avionics.SVG.NS, "text");
-            tick.textContent = "-";
+            tick.textContentCached = "-";
             tick.setAttribute("x", (this.columnLeft1 + this.textMarginX).toString());
             tick.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             tick.setAttribute("fill", "white");
@@ -554,7 +554,7 @@ var WTMenu;
             this.sectionRoot.appendChild(tick);
 
             let text = document.createElementNS(Avionics.SVG.NS, "text");
-            text.textContent = _title;
+            text.textContentCached = _title;
             text.setAttribute("x", (this.columnLeft2 - 7).toString());
             text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
             text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);

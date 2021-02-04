@@ -221,10 +221,10 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             let text = document.createElementNS(Avionics.SVG.NS, "text");
                             if (Math.round(degrees) % 90 == 0) {
                                 let id = Math.round(degrees) / 90;
-                                text.textContent = texts[id];
+                                text.textContentCached = texts[id];
                             }
                             else
-                                text.textContent = fastToFixed(degrees / 10, 0);
+                                text.textContentCached = fastToFixed(degrees / 10, 0);
                             text.setAttribute("x", "50");
                             text.setAttribute("y", (-(circleRadius - 50 + length + 10)).toString());
                             text.setAttribute("fill", "white");
@@ -444,7 +444,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             {
                 this.noFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 let noFpln = document.createElementNS(Avionics.SVG.NS, "text");
-                noFpln.textContent = "NO FLIGHT PLAN";
+                noFpln.textContentCached = "NO FLIGHT PLAN";
                 noFpln.setAttribute("x", "50");
                 noFpln.setAttribute("y", "75");
                 noFpln.setAttribute("fill", "white");
@@ -459,7 +459,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             {
                 this.discoFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 let discoFpln = document.createElementNS(Avionics.SVG.NS, "text");
-                discoFpln.textContent = "DISCONTINUITY";
+                discoFpln.textContentCached = "DISCONTINUITY";
                 discoFpln.setAttribute("x", "50");
                 discoFpln.setAttribute("y", "55");
                 discoFpln.setAttribute("fill", "white");
@@ -501,7 +501,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 path.setAttribute("stroke-width", "2");
                 this.currentRefGroup.appendChild(path);
                 this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-                this.currentRefValue.textContent = "";
+                this.currentRefValue.textContentCached = "";
                 this.currentRefValue.setAttribute("x", centerX.toString());
                 this.currentRefValue.setAttribute("y", centerY.toString());
                 this.currentRefValue.setAttribute("fill", "green");
@@ -519,7 +519,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 let centerY = -340;
                 let spaceX = 5;
                 this.selectedRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-                this.selectedRefMode.textContent = "HDG";
+                this.selectedRefMode.textContentCached = "HDG";
                 this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
                 this.selectedRefMode.setAttribute("y", centerY.toString());
                 this.selectedRefMode.setAttribute("fill", "#00F2FF");
@@ -529,7 +529,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefMode.setAttribute("alignment-baseline", "central");
                 this.selectedRefGroup.appendChild(this.selectedRefMode);
                 this.selectedRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-                this.selectedRefValue.textContent = "";
+                this.selectedRefValue.textContentCached = "";
                 this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
                 this.selectedRefValue.setAttribute("y", centerY.toString());
                 this.selectedRefValue.setAttribute("fill", "#00F2FF");
@@ -635,7 +635,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         line.setAttribute("stroke-width", "3");
                         if (bIsBig) {
                             let text = document.createElementNS(Avionics.SVG.NS, "text");
-                            text.textContent = fastToFixed(degrees / 10, 0);
+                            text.textContentCached = fastToFixed(degrees / 10, 0);
                             text.setAttribute("x", "50");
                             text.setAttribute("y", (-(circleRadius - 50 + length + 10)).toString());
                             text.setAttribute("fill", "white");
@@ -799,7 +799,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         line.setAttribute("stroke-width", "3");
                         if (bIsBig) {
                             let text = document.createElementNS(Avionics.SVG.NS, "text");
-                            text.textContent = (i % 3 == 0) ? fastToFixed(degrees / 10, 0) : "";
+                            text.textContentCached = (i % 3 == 0) ? fastToFixed(degrees / 10, 0) : "";
                             text.setAttribute("x", "50");
                             text.setAttribute("y", (-(circleRadius - 50 - length - 18)).toString());
                             text.setAttribute("fill", "white");
@@ -950,7 +950,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     let rectHeight = 40;
                     let textOffset = 5;
                     this.currentRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.currentRefMode.textContent = "HDG";
+                    this.currentRefMode.textContentCached = "HDG";
                     this.currentRefMode.setAttribute("x", (centerX - rectWidth * 0.5 - textOffset).toString());
                     this.currentRefMode.setAttribute("y", centerY.toString());
                     this.currentRefMode.setAttribute("fill", "green");
@@ -973,7 +973,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     path.setAttribute("stroke-width", "1");
                     this.currentRefGroup.appendChild(path);
                     this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.currentRefValue.textContent = "266";
+                    this.currentRefValue.textContentCached = "266";
                     this.currentRefValue.setAttribute("x", centerX.toString());
                     this.currentRefValue.setAttribute("y", centerY.toString());
                     this.currentRefValue.setAttribute("fill", "white");
@@ -983,7 +983,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.currentRefValue.setAttribute("alignment-baseline", "central");
                     this.currentRefGroup.appendChild(this.currentRefValue);
                     this.currentRefType = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.currentRefType.textContent = "MAG";
+                    this.currentRefType.textContentCached = "MAG";
                     this.currentRefType.setAttribute("x", (centerX + rectWidth * 0.5 + textOffset).toString());
                     this.currentRefType.setAttribute("y", centerY.toString());
                     this.currentRefType.setAttribute("fill", "green");
@@ -1010,7 +1010,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     textBg.setAttribute("stroke-width", "1");
                     rangeGroup.appendChild(textBg);
                     let textTitle = document.createElementNS(Avionics.SVG.NS, "text");
-                    textTitle.textContent = "RANGE";
+                    textTitle.textContentCached = "RANGE";
                     textTitle.setAttribute("x", centerX.toString());
                     textTitle.setAttribute("y", (centerY - 15).toString());
                     textTitle.setAttribute("fill", "white");
@@ -1107,7 +1107,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         line.setAttribute("stroke-width", "3");
                         if (bIsBig) {
                             let text = document.createElementNS(Avionics.SVG.NS, "text");
-                            text.textContent = (i % 3 == 0) ? fastToFixed(degrees / 10, 0) : "";
+                            text.textContentCached = (i % 3 == 0) ? fastToFixed(degrees / 10, 0) : "";
                             text.setAttribute("x", "50");
                             text.setAttribute("y", (-(circleRadius - 50 - length - 18)).toString());
                             text.setAttribute("fill", "white");
@@ -1271,7 +1271,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     let rectHeight = 40;
                     let textOffset = 5;
                     this.currentRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.currentRefMode.textContent = "HDG";
+                    this.currentRefMode.textContentCached = "HDG";
                     this.currentRefMode.setAttribute("x", (centerX - rectWidth * 0.5 - textOffset).toString());
                     this.currentRefMode.setAttribute("y", centerY.toString());
                     this.currentRefMode.setAttribute("fill", "green");
@@ -1294,7 +1294,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     path.setAttribute("stroke-width", "1");
                     this.currentRefGroup.appendChild(path);
                     this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.currentRefValue.textContent = "266";
+                    this.currentRefValue.textContentCached = "266";
                     this.currentRefValue.setAttribute("x", centerX.toString());
                     this.currentRefValue.setAttribute("y", centerY.toString());
                     this.currentRefValue.setAttribute("fill", "white");
@@ -1304,7 +1304,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.currentRefValue.setAttribute("alignment-baseline", "central");
                     this.currentRefGroup.appendChild(this.currentRefValue);
                     this.currentRefType = document.createElementNS(Avionics.SVG.NS, "text");
-                    this.currentRefType.textContent = "MAG";
+                    this.currentRefType.textContentCached = "MAG";
                     this.currentRefType.setAttribute("x", (centerX + rectWidth * 0.5 + textOffset).toString());
                     this.currentRefType.setAttribute("y", centerY.toString());
                     this.currentRefType.setAttribute("fill", "green");
@@ -1338,7 +1338,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     textBg.setAttribute("stroke-width", "2");
                     rangeGroup.appendChild(textBg);
                     let textTitle = document.createElementNS(Avionics.SVG.NS, "text");
-                    textTitle.textContent = "RANGE";
+                    textTitle.textContentCached = "RANGE";
                     textTitle.setAttribute("x", centerX.toString());
                     textTitle.setAttribute("y", (centerY - 15).toString());
                     textTitle.setAttribute("fill", "white");
@@ -1381,7 +1381,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     textGroup.setAttribute("transform", "rotate(" + fastToFixed(i * 90, 0) + " 500 500)");
                     {
                         let text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.textContent = texts[i];
+                        text.textContentCached = texts[i];
                         text.setAttribute("x", "500");
                         text.setAttribute("y", "115");
                         text.setAttribute("fill", "white");
@@ -1435,7 +1435,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 textBg.setAttribute("stroke-width", "1");
                 rangeGroup.appendChild(textBg);
                 let textTitle = document.createElementNS(Avionics.SVG.NS, "text");
-                textTitle.textContent = "RANGE";
+                textTitle.textContentCached = "RANGE";
                 textTitle.setAttribute("x", centerX.toString());
                 textTitle.setAttribute("y", (centerY - 15).toString());
                 textTitle.setAttribute("fill", "white");
@@ -1466,7 +1466,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     textGroup.setAttribute("transform", "rotate(" + fastToFixed(i * 90, 0) + " 500 500)");
                     {
                         let text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.textContent = texts[i];
+                        text.textContentCached = texts[i];
                         text.setAttribute("x", "500");
                         text.setAttribute("y", "115");
                         text.setAttribute("fill", "white");
@@ -1526,7 +1526,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 textBg.setAttribute("stroke-width", "2");
                 rangeGroup.appendChild(textBg);
                 let textTitle = document.createElementNS(Avionics.SVG.NS, "text");
-                textTitle.textContent = "RANGE";
+                textTitle.textContentCached = "RANGE";
                 textTitle.setAttribute("x", (centerX - 0.5).toString());
                 textTitle.setAttribute("y", (centerY - 14).toString());
                 textTitle.setAttribute("fill", "white");
@@ -1562,7 +1562,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     textGroup.setAttribute("transform", "rotate(" + fastToFixed(i * 90, 0) + " 500 500)");
                     {
                         let text = document.createElementNS(Avionics.SVG.NS, "text");
-                        text.textContent = texts[i];
+                        text.textContentCached = texts[i];
                         text.setAttribute("x", "500");
                         text.setAttribute("y", "230");
                         text.setAttribute("fill", "white");
@@ -1645,7 +1645,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
 
             {
                 let northLbl = document.createElementNS(Avionics.SVG.NS, "text");
-                northLbl.textContent = "N";
+                northLbl.textContentCached = "N";
                 northLbl.setAttribute("x", "500");
                 northLbl.setAttribute("y", "155");
                 northLbl.setAttribute("fill", "white");
@@ -1686,7 +1686,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 path.setAttribute("stroke-width", "2");
                 this.currentRefGroup.appendChild(path);
                 this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-                this.currentRefValue.textContent = "";
+                this.currentRefValue.textContentCached = "";
                 this.currentRefValue.setAttribute("x", centerX.toString());
                 this.currentRefValue.setAttribute("y", centerY.toString());
                 this.currentRefValue.setAttribute("fill", "green");
@@ -1705,7 +1705,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 let centerY = 62;
                 let spaceX = 5;
                 this.selectedRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-                this.selectedRefMode.textContent = "HDG";
+                this.selectedRefMode.textContentCached = "HDG";
                 this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
                 this.selectedRefMode.setAttribute("y", centerY.toString());
                 this.selectedRefMode.setAttribute("fill", "#00F2FF");
@@ -1715,7 +1715,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.selectedRefMode.setAttribute("alignment-baseline", "central");
                 this.selectedRefGroup.appendChild(this.selectedRefMode);
                 this.selectedRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-                this.selectedRefValue.textContent = "";
+                this.selectedRefValue.textContentCached = "";
                 this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
                 this.selectedRefValue.setAttribute("y", centerY.toString());
                 this.selectedRefValue.setAttribute("fill", "#00F2FF");
@@ -1767,7 +1767,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 }
                 for (let i = 0; i < 36; i += 3) {
                     let text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = fastToFixed(i, 0);
+                    text.textContentCached = fastToFixed(i, 0);
                     text.setAttribute("x", "500");
                     text.setAttribute("y", "115");
                     text.setAttribute("fill", "white");
@@ -2052,7 +2052,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 }
                 for (let i = 0; i < 36; i += 3) {
                     let text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = fastToFixed(i, 0);
+                    text.textContentCached = fastToFixed(i, 0);
                     text.setAttribute("x", "500");
                     text.setAttribute("y", (500 - circleRadius + 52).toString());
                     text.setAttribute("fill", "white");
@@ -2253,7 +2253,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             let rectHeight = 55;
             let textOffset = 10;
             this.currentRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefMode.textContent = "HDG";
+            this.currentRefMode.textContentCached = "HDG";
             this.currentRefMode.setAttribute("x", (centerX - rectWidth * 0.5 - textOffset).toString());
             this.currentRefMode.setAttribute("y", centerY.toString());
             this.currentRefMode.setAttribute("fill", "green");
@@ -2276,7 +2276,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             path.setAttribute("stroke-width", "1");
             this.currentRefGroup.appendChild(path);
             this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefValue.textContent = "266";
+            this.currentRefValue.textContentCached = "266";
             this.currentRefValue.setAttribute("x", centerX.toString());
             this.currentRefValue.setAttribute("y", centerY.toString());
             this.currentRefValue.setAttribute("fill", "white");
@@ -2286,7 +2286,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.currentRefValue.setAttribute("alignment-baseline", "central");
             this.currentRefGroup.appendChild(this.currentRefValue);
             this.currentRefType = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefType.textContent = "MAG";
+            this.currentRefType.textContentCached = "MAG";
             this.currentRefType.setAttribute("x", (centerX + rectWidth * 0.5 + textOffset).toString());
             this.currentRefType.setAttribute("y", centerY.toString());
             this.currentRefType.setAttribute("fill", "green");
@@ -2313,7 +2313,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             textBg.setAttribute("stroke-width", "1");
             rangeGroup.appendChild(textBg);
             let textTitle = document.createElementNS(Avionics.SVG.NS, "text");
-            textTitle.textContent = "RANGE";
+            textTitle.textContentCached = "RANGE";
             textTitle.setAttribute("x", centerX.toString());
             textTitle.setAttribute("y", (centerY - 15).toString());
             textTitle.setAttribute("fill", "white");
@@ -2366,7 +2366,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 }
                 for (let i = 0; i < 36; i += 3) {
                     let text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = fastToFixed(i, 0);
+                    text.textContentCached = fastToFixed(i, 0);
                     text.setAttribute("x", "500");
                     text.setAttribute("y", (500 - circleRadius + 52).toString());
                     text.setAttribute("fill", "white");
@@ -2570,7 +2570,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             let rectHeight = 55;
             let textOffset = 10;
             this.currentRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefMode.textContent = "HDG";
+            this.currentRefMode.textContentCached = "HDG";
             this.currentRefMode.setAttribute("x", (centerX - rectWidth * 0.5 - textOffset).toString());
             this.currentRefMode.setAttribute("y", centerY.toString());
             this.currentRefMode.setAttribute("fill", "green");
@@ -2593,7 +2593,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             path.setAttribute("stroke-width", "1");
             this.currentRefGroup.appendChild(path);
             this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefValue.textContent = "266";
+            this.currentRefValue.textContentCached = "266";
             this.currentRefValue.setAttribute("x", centerX.toString());
             this.currentRefValue.setAttribute("y", centerY.toString());
             this.currentRefValue.setAttribute("fill", "white");
@@ -2603,7 +2603,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.currentRefValue.setAttribute("alignment-baseline", "central");
             this.currentRefGroup.appendChild(this.currentRefValue);
             this.currentRefType = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefType.textContent = "MAG";
+            this.currentRefType.textContentCached = "MAG";
             this.currentRefType.setAttribute("x", (centerX + rectWidth * 0.5 + textOffset).toString());
             this.currentRefType.setAttribute("y", centerY.toString());
             this.currentRefType.setAttribute("fill", "green");
@@ -2636,7 +2636,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             textBg.setAttribute("stroke-width", "2");
             rangeGroup.appendChild(textBg);
             let textTitle = document.createElementNS(Avionics.SVG.NS, "text");
-            textTitle.textContent = "RANGE";
+            textTitle.textContentCached = "RANGE";
             textTitle.setAttribute("x", (centerX - 0.5).toString());
             textTitle.setAttribute("y", (centerY - 14).toString());
             textTitle.setAttribute("fill", "white");
@@ -2682,10 +2682,10 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     let text = document.createElementNS(Avionics.SVG.NS, "text");
                     if (i % 9 == 0) {
                         let id = i / 9;
-                        text.textContent = texts[id];
+                        text.textContentCached = texts[id];
                     }
                     else
-                        text.textContent = fastToFixed(i, 0);
+                        text.textContentCached = fastToFixed(i, 0);
                     text.setAttribute("x", "500");
                     text.setAttribute("y", (500 - circleRadius + 52).toString());
                     text.setAttribute("fill", "white");
@@ -2915,7 +2915,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
 
         this.noFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
         let noFpln = document.createElementNS(Avionics.SVG.NS, "text");
-        noFpln.textContent = "NO FLIGHT PLAN";
+        noFpln.textContentCached = "NO FLIGHT PLAN";
         noFpln.setAttribute("x", "500");
         noFpln.setAttribute("y", "450");
         noFpln.setAttribute("fill", "white");
@@ -2928,7 +2928,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
 
         this.discoFplnGroup = document.createElementNS(Avionics.SVG.NS, "g");
         let discoFpln = document.createElementNS(Avionics.SVG.NS, "text");
-        discoFpln.textContent = "DISCONTINUITY";
+        discoFpln.textContentCached = "DISCONTINUITY";
         discoFpln.setAttribute("x", "500");
         discoFpln.setAttribute("y", "420");
         discoFpln.setAttribute("fill", "white");
@@ -3008,7 +3008,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             path.setAttribute("stroke-width", "2");
             this.currentRefGroup.appendChild(path);
             this.currentRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.currentRefValue.textContent = "";
+            this.currentRefValue.textContentCached = "";
             this.currentRefValue.setAttribute("x", centerX.toString());
             this.currentRefValue.setAttribute("y", centerY.toString());
             this.currentRefValue.setAttribute("fill", "green");
@@ -3027,7 +3027,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             let centerY = 85;
             let spaceX = 5;
             this.selectedRefMode = document.createElementNS(Avionics.SVG.NS, "text");
-            this.selectedRefMode.textContent = "HDG";
+            this.selectedRefMode.textContentCached = "HDG";
             this.selectedRefMode.setAttribute("x", (centerX - spaceX).toString());
             this.selectedRefMode.setAttribute("y", centerY.toString());
             this.selectedRefMode.setAttribute("fill", "#00F2FF");
@@ -3037,7 +3037,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.selectedRefMode.setAttribute("alignment-baseline", "central");
             this.selectedRefGroup.appendChild(this.selectedRefMode);
             this.selectedRefValue = document.createElementNS(Avionics.SVG.NS, "text");
-            this.selectedRefValue.textContent = "";
+            this.selectedRefValue.textContentCached = "";
             this.selectedRefValue.setAttribute("x", (centerX + spaceX).toString());
             this.selectedRefValue.setAttribute("y", centerY.toString());
             this.selectedRefValue.setAttribute("fill", "#00F2FF");

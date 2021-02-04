@@ -87,7 +87,7 @@ class SvgRangeLabelElement {
         this.svgElement.appendChild(this.rangeDisplayBox);
 
         this.rangeDisplayAutoText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.rangeDisplayAutoText.textContent = "AUTO";
+        this.rangeDisplayAutoText.textContentCached = "AUTO";
         this.rangeDisplayAutoText.setAttribute("fill", this.fontColor);
         this.rangeDisplayAutoText.setAttribute("text-anchor", "middle");
         this.rangeDisplayAutoText.setAttribute("font-size", this.autoFontSize);
@@ -102,7 +102,7 @@ class SvgRangeLabelElement {
         this.svgElement.appendChild(this.rangeDisplayValueText);
 
         this.rangeDisplayUnitText = document.createElementNS(Avionics.SVG.NS, "text");
-        this.rangeDisplayUnitText.textContent = "NM";
+        this.rangeDisplayUnitText.textContentCached = "NM";
         this.rangeDisplayUnitText.setAttribute("fill", this.fontColor);
         this.rangeDisplayUnitText.setAttribute("font-size", this.unitFontSize);
         this.rangeDisplayUnitText.setAttribute("font-family", this.font);
@@ -124,11 +124,11 @@ class SvgRangeLabelElement {
     updateRangeText() {
         // switch between NM and feet
         if (this.range <= 1000 / 6076) {
-            this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range * 6076);
-            this.rangeDisplayUnitText.textContent = "FT";
+            this.rangeDisplayValueText.textContentCached = MapInstrument.getFormattedRangeDisplayText(this.range * 6076);
+            this.rangeDisplayUnitText.textContentCached = "FT";
         } else {
-            this.rangeDisplayValueText.textContent = MapInstrument.getFormattedRangeDisplayText(this.range);
-            this.rangeDisplayUnitText.textContent = "NM";
+            this.rangeDisplayValueText.textContentCached = MapInstrument.getFormattedRangeDisplayText(this.range);
+            this.rangeDisplayUnitText.textContentCached = "NM";
         }
     }
 

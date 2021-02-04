@@ -249,9 +249,9 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 this.graduations[i].SVGLine.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                 if (this.graduations[i].SVGText1) {
                     if ((currentVal % 4) == 0)
-                        this.graduations[i].SVGText1.textContent = currentVal.toString();
+                        this.graduations[i].SVGText1.textContentCached = currentVal.toString();
                     else
-                        this.graduations[i].SVGText1.textContent = "";
+                        this.graduations[i].SVGText1.textContentCached = "";
                     this.graduations[i].SVGText1.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                     currentVal = this.graduationScroller.nextValue;
                 }
@@ -494,7 +494,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             baroGroup.appendChild(baroBg);
             if (!this.pressureSVG)
                 this.pressureSVG = document.createElementNS(Avionics.SVG.NS, "text");
-            this.pressureSVG.textContent = "---";
+            this.pressureSVG.textContentCached = "---";
             this.pressureSVG.setAttribute("x", (x + w * 0.5).toString());
             this.pressureSVG.setAttribute("y", (y + h * 0.5).toString());
             this.pressureSVG.setAttribute("fill", "white");
@@ -518,10 +518,10 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             const baroHpa = SimVar.GetSimVarValue("L:XMLVAR_Baro_Selector_HPA_1", "Bool");
             if (baroHpa) {
                 var pressure = SimVar.GetSimVarValue("KOHLSMAN SETTING MB:2", "Millibars");
-                this.pressureSVG.textContent = pressure.toFixed(0) + " mb";
+                this.pressureSVG.textContentCached = pressure.toFixed(0) + " mb";
             } else {
                 var pressure = SimVar.GetSimVarValue("KOHLSMAN SETTING HG:2", "inches of mercury");
-                this.pressureSVG.textContent = pressure.toFixed(2) + " in";
+                this.pressureSVG.textContentCached = pressure.toFixed(2) + " in";
             }
         }
     }
@@ -540,8 +540,8 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
                     roundedVal = Math.floor(Math.abs(currentVal));
                     var integral = Math.floor(roundedVal / 1000);
                     var modulo = Math.floor(roundedVal - (integral * 1000));
-                    this.graduations[i].SVGText1.textContent = integral.toString();
-                    this.graduations[i].SVGText2.textContent = Utils.leadingZeros(modulo, 3);
+                    this.graduations[i].SVGText1.textContentCached = integral.toString();
+                    this.graduations[i].SVGText2.textContentCached = Utils.leadingZeros(modulo, 3);
                     this.graduations[i].SVGText1.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                     if (this.graduations[i].SVGText2)
                         this.graduations[i].SVGText2.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
@@ -747,7 +747,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                             this.attitude_pitch.appendChild(rect);
                             if (text) {
                                 let leftText = document.createElementNS(Avionics.SVG.NS, "text");
-                                leftText.textContent = Math.abs(angle).toString();
+                                leftText.textContentCached = Math.abs(angle).toString();
                                 leftText.setAttribute("x", ((-width / 2) - 5).toString());
                                 leftText.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
                                 leftText.setAttribute("text-anchor", "end");
@@ -756,7 +756,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                                 leftText.setAttribute("fill", "white");
                                 this.attitude_pitch.appendChild(leftText);
                                 let rightText = document.createElementNS(Avionics.SVG.NS, "text");
-                                rightText.textContent = Math.abs(angle).toString();
+                                rightText.textContentCached = Math.abs(angle).toString();
                                 rightText.setAttribute("x", ((width / 2) + 5).toString());
                                 rightText.setAttribute("y", (this.bankSizeRatio * angle - height / 2 + fontSize / 2).toString());
                                 rightText.setAttribute("text-anchor", "start");
@@ -1103,18 +1103,18 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
                     var roundedVal = Math.floor(currentVal / 10);
                     if (roundedVal % 3 == 0) {
                         if (roundedVal == 0)
-                            this.graduations[i].SVGText1.textContent = "N";
+                            this.graduations[i].SVGText1.textContentCached = "N";
                         else if (roundedVal == 9)
-                            this.graduations[i].SVGText1.textContent = "E";
+                            this.graduations[i].SVGText1.textContentCached = "E";
                         else if (roundedVal == 18)
-                            this.graduations[i].SVGText1.textContent = "S";
+                            this.graduations[i].SVGText1.textContentCached = "S";
                         else if (roundedVal == 27)
-                            this.graduations[i].SVGText1.textContent = "W";
+                            this.graduations[i].SVGText1.textContentCached = "W";
                         else
-                            this.graduations[i].SVGText1.textContent = roundedVal.toString();
+                            this.graduations[i].SVGText1.textContentCached = roundedVal.toString();
                     }
                     else {
-                        this.graduations[i].SVGText1.textContent = "";
+                        this.graduations[i].SVGText1.textContentCached = "";
                     }
                     this.graduations[i].SVGText1.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                     currentVal = this.graduationScroller.nextValue;

@@ -168,7 +168,7 @@ class HSIndicator extends HTMLElement {
                 let angle = 0;
                 for (let i = 0; i < texts.length; i++) {
                     let text = document.createElementNS(Avionics.SVG.NS, "text");
-                    text.textContent = texts[i];
+                    text.textContentCached = texts[i];
                     text.setAttribute("x", "50");
                     text.setAttribute("y", (i % 3) == 0 ? "12" : "9");
                     text.setAttribute("fill", "white");
@@ -323,7 +323,7 @@ class HSIndicator extends HTMLElement {
             if (this.displayStyle == HSIndicatorDisplayType.HUD)
                 this.applyHUDStyle(headingRectangle);
             let headingLeftText = document.createElementNS(Avionics.SVG.NS, "text");
-            headingLeftText.textContent = "HDG";
+            headingLeftText.textContentCached = "HDG";
             headingLeftText.setAttribute("fill", "white");
             headingLeftText.setAttribute("x", "-11");
             headingLeftText.setAttribute("y", "-0.6");
@@ -350,7 +350,7 @@ class HSIndicator extends HTMLElement {
             if (this.displayStyle == HSIndicatorDisplayType.HUD)
                 this.applyHUDStyle(courseRectangle);
             let courseLeftText = document.createElementNS(Avionics.SVG.NS, "text");
-            courseLeftText.textContent = "CRS";
+            courseLeftText.textContentCached = "CRS";
             courseLeftText.setAttribute("fill", "white");
             courseLeftText.setAttribute("x", "79");
             courseLeftText.setAttribute("y", "-0.6");
@@ -376,7 +376,7 @@ class HSIndicator extends HTMLElement {
             this.navSourceBg.setAttribute("width", "14");
             this.root.appendChild(this.navSourceBg);
             this.navSource = document.createElementNS(Avionics.SVG.NS, "text");
-            this.navSource.textContent = "GPS";
+            this.navSource.textContentCached = "GPS";
             this.navSource.setAttribute("fill", "#d12bc7");
             this.navSource.setAttribute("x", "35");
             this.navSource.setAttribute("y", "40");
@@ -393,7 +393,7 @@ class HSIndicator extends HTMLElement {
             this.flightPhaseBg.setAttribute("width", "16");
             this.root.appendChild(this.flightPhaseBg);
             let flightPhase = document.createElementNS(Avionics.SVG.NS, "text");
-            flightPhase.textContent = "TERM";
+            flightPhase.textContentCached = "TERM";
             flightPhase.setAttribute("fill", "#d12bc7");
             flightPhase.setAttribute("x", "65");
             flightPhase.setAttribute("y", "40");
@@ -411,7 +411,7 @@ class HSIndicator extends HTMLElement {
             this.crossTrackErrorBg.setAttribute("width", "38");
             this.root.appendChild(this.crossTrackErrorBg);
             let crossTrackError = document.createElementNS(Avionics.SVG.NS, "text");
-            crossTrackError.textContent = "XTK 3.15NM";
+            crossTrackError.textContentCached = "XTK 3.15NM";
             crossTrackError.setAttribute("fill", "#d12bc7");
             crossTrackError.setAttribute("x", "50");
             crossTrackError.setAttribute("y", "66");
@@ -431,7 +431,7 @@ class HSIndicator extends HTMLElement {
                 topLeftZone.setAttribute("fill", "#1a1d21");
                 this.dme.appendChild(topLeftZone);
                 let dme1 = document.createElementNS(Avionics.SVG.NS, "text");
-                dme1.textContent = "DME";
+                dme1.textContentCached = "DME";
                 dme1.setAttribute("fill", "white");
                 dme1.setAttribute("x", "-27");
                 dme1.setAttribute("y", "57");
@@ -440,7 +440,7 @@ class HSIndicator extends HTMLElement {
                 dme1.setAttribute("text-anchor", "start");
                 this.dme.appendChild(dme1);
                 this.dmeSource = document.createElementNS(Avionics.SVG.NS, "text");
-                this.dmeSource.textContent = "NAV1";
+                this.dmeSource.textContentCached = "NAV1";
                 this.dmeSource.setAttribute("fill", "#36c8d2");
                 this.dmeSource.setAttribute("x", "-27");
                 this.dmeSource.setAttribute("y", "64");
@@ -449,7 +449,7 @@ class HSIndicator extends HTMLElement {
                 this.dmeSource.setAttribute("text-anchor", "start");
                 this.dme.appendChild(this.dmeSource);
                 this.dmeIdent = document.createElementNS(Avionics.SVG.NS, "text");
-                this.dmeIdent.textContent = "117.80";
+                this.dmeIdent.textContentCached = "117.80";
                 this.dmeIdent.setAttribute("fill", "#36c8d2");
                 this.dmeIdent.setAttribute("x", "-27");
                 this.dmeIdent.setAttribute("y", "71");
@@ -458,7 +458,7 @@ class HSIndicator extends HTMLElement {
                 this.dmeIdent.setAttribute("text-anchor", "start");
                 this.dme.appendChild(this.dmeIdent);
                 this.dmeDistance = document.createElementNS(Avionics.SVG.NS, "text");
-                this.dmeDistance.textContent = "97.7NM";
+                this.dmeDistance.textContentCached = "97.7NM";
                 this.dmeDistance.setAttribute("fill", "white");
                 this.dmeDistance.setAttribute("x", "-27");
                 this.dmeDistance.setAttribute("y", "78");
@@ -476,7 +476,7 @@ class HSIndicator extends HTMLElement {
                 botLeftZone.setAttribute("fill", "#1a1d21");
                 this.bearing1FixedGroup.appendChild(botLeftZone);
                 this.bearing1Distance = document.createElementNS(Avionics.SVG.NS, "text");
-                this.bearing1Distance.textContent = "16.2 NM";
+                this.bearing1Distance.textContentCached = "16.2 NM";
                 this.bearing1Distance.setAttribute("fill", "white");
                 this.bearing1Distance.setAttribute("x", "-27");
                 this.bearing1Distance.setAttribute("y", "88");
@@ -485,7 +485,7 @@ class HSIndicator extends HTMLElement {
                 this.bearing1Distance.setAttribute("text-anchor", "start");
                 this.bearing1FixedGroup.appendChild(this.bearing1Distance);
                 this.bearing1Ident = document.createElementNS(Avionics.SVG.NS, "text");
-                this.bearing1Ident.textContent = "ATL";
+                this.bearing1Ident.textContentCached = "ATL";
                 this.bearing1Ident.setAttribute("fill", "#36c8d2");
                 this.bearing1Ident.setAttribute("x", "-27");
                 this.bearing1Ident.setAttribute("y", "94");
@@ -494,7 +494,7 @@ class HSIndicator extends HTMLElement {
                 this.bearing1Ident.setAttribute("text-anchor", "start");
                 this.bearing1FixedGroup.appendChild(this.bearing1Ident);
                 this.bearing1Source = document.createElementNS(Avionics.SVG.NS, "text");
-                this.bearing1Source.textContent = "NAV1";
+                this.bearing1Source.textContentCached = "NAV1";
                 this.bearing1Source.setAttribute("fill", "white");
                 this.bearing1Source.setAttribute("x", "-27");
                 this.bearing1Source.setAttribute("y", "100");
@@ -537,7 +537,7 @@ class HSIndicator extends HTMLElement {
                 botRightZone.setAttribute("fill", "#1a1d21");
                 this.bearing2FixedGroup.appendChild(botRightZone);
                 this.bearing2Distance = document.createElementNS(Avionics.SVG.NS, "text");
-                this.bearing2Distance.textContent = "16.2 NM";
+                this.bearing2Distance.textContentCached = "16.2 NM";
                 this.bearing2Distance.setAttribute("fill", "white");
                 this.bearing2Distance.setAttribute("x", "127");
                 this.bearing2Distance.setAttribute("y", "88");
@@ -546,7 +546,7 @@ class HSIndicator extends HTMLElement {
                 this.bearing2Distance.setAttribute("text-anchor", "end");
                 this.bearing2FixedGroup.appendChild(this.bearing2Distance);
                 this.bearing2Ident = document.createElementNS(Avionics.SVG.NS, "text");
-                this.bearing2Ident.textContent = "ATL";
+                this.bearing2Ident.textContentCached = "ATL";
                 this.bearing2Ident.setAttribute("fill", "#36c8d2");
                 this.bearing2Ident.setAttribute("x", "127");
                 this.bearing2Ident.setAttribute("y", "94");
@@ -555,7 +555,7 @@ class HSIndicator extends HTMLElement {
                 this.bearing2Ident.setAttribute("text-anchor", "end");
                 this.bearing2FixedGroup.appendChild(this.bearing2Ident);
                 this.bearing2Source = document.createElementNS(Avionics.SVG.NS, "text");
-                this.bearing2Source.textContent = "NAV1";
+                this.bearing2Source.textContentCached = "NAV1";
                 this.bearing2Source.setAttribute("fill", "white");
                 this.bearing2Source.setAttribute("x", "127");
                 this.bearing2Source.setAttribute("y", "100");
@@ -632,7 +632,7 @@ class HSIndicator extends HTMLElement {
                 if (this.bearingText) {
                     let brg = Math.round(parseFloat(newValue));
                     brg = (brg == 0) ? 360 : brg;
-                    this.bearingText.textContent = "000".slice(brg.toString().length) + brg + "°";
+                    this.bearingText.textContentCached = "000".slice(brg.toString().length) + brg + "°";
                 }
                 break;
             case "heading_bug_rotation":
@@ -643,7 +643,7 @@ class HSIndicator extends HTMLElement {
                         headingValue = 360;
                     }
                     let hdg = fastToFixed(headingValue, 0);
-                    this.headingText.textContent = "000".slice(hdg.length) + hdg + "°";
+                    this.headingText.textContentCached = "000".slice(hdg.length) + hdg + "°";
                 }
                 break;
             case "course":
@@ -651,7 +651,7 @@ class HSIndicator extends HTMLElement {
                     this.course.setAttribute("transform", "rotate(" + (newValue) + ", 50, 50)");
                     if (this.courseText) {
                         let crs = fastToFixed(parseFloat(newValue), 0);
-                        this.courseText.textContent = "000".slice(crs.length) + crs + "°";
+                        this.courseText.textContentCached = "000".slice(crs.length) + crs + "°";
                     }
                 }
                 break;
@@ -667,7 +667,7 @@ class HSIndicator extends HTMLElement {
                         else {
                             this.crossTrackError.setAttribute("visibility", "visible");
                             this.crossTrackErrorBg.setAttribute("visibility", "visible");
-                            this.crossTrackError.textContent = "XTK " + fastToFixed(deviation, 2) + "NM";
+                            this.crossTrackError.textContentCached = "XTK " + fastToFixed(deviation, 2) + "NM";
                             let courseDevRect = this.crossTrackError.getBBox();
                             this.crossTrackErrorBg.setAttribute("width", (courseDevRect.width + 2).toString());
                             this.crossTrackErrorBg.setAttribute("x", (courseDevRect.x - 1).toString());
@@ -724,7 +724,7 @@ class HSIndicator extends HTMLElement {
                 break;
             case "nav_source":
                 if (this.navSource) {
-                    this.navSource.textContent = newValue == "FMS" ? this.fmsAlias : newValue;
+                    this.navSource.textContentCached = newValue == "FMS" ? this.fmsAlias : newValue;
                     let rect = this.navSource.getBBox();
                     this.navSourceBg.setAttribute("width", (rect.width + 2).toString());
                     this.navSourceBg.setAttribute("x", (rect.x - 1).toString());
@@ -788,7 +788,7 @@ class HSIndicator extends HTMLElement {
                 break;
             case "flight_phase":
                 if (this.flightPhase) {
-                    this.flightPhase.textContent = newValue;
+                    this.flightPhase.textContentCached = newValue;
                     let flightPhaseRect = this.flightPhase.getBBox();
                     this.flightPhaseBg.setAttribute("width", (flightPhaseRect.width + 2).toString());
                     this.flightPhaseBg.setAttribute("x", (flightPhaseRect.x - 1).toString());
@@ -848,15 +848,15 @@ class HSIndicator extends HTMLElement {
                 break;
             case "bearing1_source":
                 if (this.bearing1Source)
-                    this.bearing1Source.textContent = newValue;
+                    this.bearing1Source.textContentCached = newValue;
                 break;
             case "bearing1_ident":
                 if (this.bearing1Ident)
-                    this.bearing1Ident.textContent = newValue;
+                    this.bearing1Ident.textContentCached = newValue;
                 break;
             case "bearing1_distance":
                 if (this.bearing1Distance)
-                    this.bearing1Distance.textContent = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
+                    this.bearing1Distance.textContentCached = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
                 break;
             case "bearing1_bearing":
                 if (this.bearing1) {
@@ -871,15 +871,15 @@ class HSIndicator extends HTMLElement {
                 break;
             case "bearing2_source":
                 if (this.bearing2Source)
-                    this.bearing2Source.textContent = newValue;
+                    this.bearing2Source.textContentCached = newValue;
                 break;
             case "bearing2_ident":
                 if (this.bearing2Ident)
-                    this.bearing2Ident.textContent = newValue;
+                    this.bearing2Ident.textContentCached = newValue;
                 break;
             case "bearing2_distance":
                 if (this.bearing2Distance)
-                    this.bearing2Distance.textContent = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
+                    this.bearing2Distance.textContentCached = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
                 break;
             case "bearing2_bearing":
                 if (this.bearing2) {
@@ -894,15 +894,15 @@ class HSIndicator extends HTMLElement {
                 break;
             case "dme_source":
                 if (this.dmeSource)
-                    this.dmeSource.textContent = newValue;
+                    this.dmeSource.textContentCached = newValue;
                 break;
             case "dme_ident":
                 if (this.dmeIdent)
-                    this.dmeIdent.textContent = newValue;
+                    this.dmeIdent.textContentCached = newValue;
                 break;
             case "dme_distance":
                 if (this.dmeDistance)
-                    this.dmeDistance.textContent = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
+                    this.dmeDistance.textContentCached = (newValue == "" ? "" : fastToFixed(parseFloat(newValue), 1) + " NM");
                 break;
             case "to_from":
                 if (this.toIndicator && this.fromIndicator) {
