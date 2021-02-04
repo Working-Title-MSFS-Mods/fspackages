@@ -1076,10 +1076,10 @@ class MapInstrument extends ISvgMapRootElement {
     refreshDisplay() {
         if (this.isDisplayingWeatherRadar() && this.weatherHideGPS) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                this.navMap.svgHtmlElement.show();
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                this.lineCanvas.hide();
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);
@@ -1088,10 +1088,10 @@ class MapInstrument extends ISvgMapRootElement {
         }
         if (this.quality == Quality.ultra || this.quality == Quality.high) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                this.navMap.svgHtmlElement.show();
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "block";
+                this.lineCanvas.show();
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(true);
@@ -1099,10 +1099,10 @@ class MapInstrument extends ISvgMapRootElement {
             this.bingMap.setVisible(this.showBingMap);
         } else if (this.quality == Quality.medium) {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "block";
+                this.navMap.svgHtmlElement.show();
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                this.lineCanvas.hide();
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);
@@ -1110,10 +1110,10 @@ class MapInstrument extends ISvgMapRootElement {
             this.bingMap.setVisible(this.showBingMap);
         } else {
             if (this.navMap && this.navMap.svgHtmlElement) {
-                this.navMap.svgHtmlElement.style.display = "none";
+                this.navMap.svgHtmlElement.hide();
             }
             if (this.lineCanvas) {
-                this.lineCanvas.style.display = "none";
+                this.lineCanvas.hide();
             }
             if (this.roadNetwork) {
                 this.roadNetwork.setVisible(false);

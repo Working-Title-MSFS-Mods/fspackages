@@ -84,7 +84,7 @@ class CJ4_PFD extends BaseAirliners {
             if (this.modeChangeMask && this.modeChangeTimer >= 0) {
                 this.modeChangeTimer -= this.deltaTime / 1000;
                 if (this.modeChangeTimer <= 0) {
-                    this.modeChangeMask.style.display = "none";
+                    this.modeChangeMask.hide();
                     this.modeChangeTimer = -1;
                 }
             }
@@ -431,7 +431,7 @@ class CJ4_PFD extends BaseAirliners {
         SimVar.SetSimVarValue("L:WT_CJ4_LNAV_MODE", "number", this.mapNavigationSource);
         SimVar.SetSimVarValue("L:FMC_UPDATE_CURRENT_PAGE", "number", 1);
         if (this.modeChangeMask) {
-            this.modeChangeMask.style.display = "block";
+            this.modeChangeMask.show();
             this.modeChangeTimer = 0.15;
         }
     }
@@ -896,7 +896,7 @@ class CJ4_APDisplay extends NavSystemElement {
                 //ACTIVE VERTICAL
                 if (verticalMode == "VS" || verticalMode == "VVS") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
-                    this.AP_ModeReference_Icon.style.display = "none";
+                    this.AP_ModeReference_Icon.hide();
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
                 } else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
@@ -909,7 +909,7 @@ class CJ4_APDisplay extends NavSystemElement {
                     }
                 } else {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
-                    this.AP_ModeReference_Icon.style.display = "none";
+                    this.AP_ModeReference_Icon.hide();
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 

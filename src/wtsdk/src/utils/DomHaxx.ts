@@ -34,13 +34,15 @@ Element.prototype.setAttribute = function (orig) {
 }(Element.prototype.setAttribute)
 
 Element.prototype.hide = function() {
-  if(this.style.display !== 'none'){
+  if(this._hidden === undefined || !this._hidden){
+    this._hidden = true;
     this.style.display = 'none';
   }
 };
 
 Element.prototype.show = function(display:string = 'block') {
-  if(this.style.display !== display){
+  if(this._hidden === undefined || this._hidden){
+    this._hidden = false;
     this.style.display = display;
   }
 };
@@ -48,7 +50,12 @@ Element.prototype.show = function(display:string = 'block') {
 // TEXT CONTENT
 Object.defineProperty(Element.prototype, "textContentCached", {
   set: function (value) {
-      if(value !== this.textContent){
+      if(this._text === undefined){
+        this._text = this.textContent;
+      }
+
+      if(value !== this._text){
+        this._text = value;
         this.textContent = value;
       }
 

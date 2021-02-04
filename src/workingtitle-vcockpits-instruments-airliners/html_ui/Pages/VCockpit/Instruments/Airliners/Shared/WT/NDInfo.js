@@ -125,7 +125,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
             this._navSource = _navSource;
             if (this._navMode == Jet_NDCompass_Navigation.NAV) {
                 if (this.waypoint)
-                    this.waypoint.style.display = "block";
+                    this.waypoint.show();
                 this.waypointName.textContentCached = this._name;
                 this.waypointTrack.textContentCached = this._track;
                 this.waypointDistance.textContentCached = this._distance;
@@ -134,7 +134,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     this.approachFreq.textContentCached = "";
                     this.approachCourse.textContentCached = "";
                     this.approachInfo.textContentCached = "";
-                    this.approach.style.display = "none";
+                    this.approach.hide();
                 }
             }
             else if (this._navMode == Jet_NDCompass_Navigation.ILS || this._navMode == Jet_NDCompass_Navigation.VOR) {
@@ -142,10 +142,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     this.waypointName.textContentCached = "";
                     this.waypointTrack.textContentCached = "";
                     this.waypointDistance.textContentCached = "";
-                    this.waypoint.style.display = "none";
+                    this.waypoint.hide();
                 }
                 if (this.approach)
-                    this.approach.style.display = "block";
+                    this.approach.show();
             }
         }
     }
@@ -205,8 +205,13 @@ class Jet_MFD_NDInfo extends HTMLElement {
     }
     setWind(_windAngle, _windStrength, _planeAngle, _force = false) {
         if (this.windArrow && this.windStrength) {
-            this.windStrength.style.display = (this.jetdisplay == Jet_NDCompass_Display.PLAN) ? 'none' : '';
-            this.windArrow.style.display = (this.jetdisplay == Jet_NDCompass_Display.PLAN) ? 'none' : '';
+            if (this.jetdisplay == Jet_NDCompass_Display.PLAN) {
+                this.windStrength.hide();
+                this.windArrow.hide();
+            } else {
+                this.windStrength.show('');
+                this.windArrow.show('');
+            }
             if (this.jetdisplay == Jet_NDCompass_Display.PLAN) {
                 return;
             }
@@ -252,7 +257,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     if ((split != null) && (split.length > 0)) {
                         this.windArrow.setAttribute("transform", split[0] + " rotate(" + arrowAngle + ")");
                     }
-                    this.windArrow.style.display = "block";
+                    this.windArrow.show();
                 }
             }
         }
@@ -522,10 +527,10 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     val += seconds;
                 }
                 this.elapsedTimeValue.textContentCached = val;
-                this.elapsedTime.style.display = "block";
+                this.elapsedTime.show();
             }
             else {
-                this.elapsedTime.style.display = "none";
+                this.elapsedTime.hide();
             }
         }
     }
@@ -782,7 +787,7 @@ class VORDMENavAid {
                         clipSection.setAttribute('clip-path', 'url(#arc)');
                         this.pointer.className = 'bearing-pointer arc';
                     }
-                    this.pointer.style.display = '';
+                    this.pointer.show('');
                     break;
                 }
                 case Jet_NDCompass_Display.ROSE: {
@@ -791,11 +796,11 @@ class VORDMENavAid {
                         clipSection.setAttribute('clip-path', 'url(#rose)');
                         this.pointer.className = 'bearing-pointer rose';
                     }
-                    this.pointer.style.display = '';
+                    this.pointer.show('');
                     break;
                 }
                 default:
-                    this.pointer.style.display = 'none';
+                    this.pointer.hide();
                     break;
             }
         }

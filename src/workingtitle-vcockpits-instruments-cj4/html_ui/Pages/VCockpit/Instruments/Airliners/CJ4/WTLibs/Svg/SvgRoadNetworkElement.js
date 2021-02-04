@@ -224,9 +224,9 @@ class SvgRoadNetworkElement extends SvgMapElement {
             this.visible = _visible;
             if (this._visibleCanvas) {
                 if (this.visible)
-                    this._visibleCanvas.canvas.style.display = "block";
+                    this._visibleCanvas.canvas.show();
                 else
-                    this._visibleCanvas.canvas.style.display = "none";
+                    this._visibleCanvas.canvas.hide();
             }
         }
     }
@@ -238,9 +238,9 @@ class SvgRoadNetworkElement extends SvgMapElement {
             }
             this._visibleCanvas = new RoadCanvas(canvasImage);
             if (this.visible)
-                this._visibleCanvas.canvas.style.display = "block";
+                this._visibleCanvas.canvas.show();
             else
-                this._visibleCanvas.canvas.style.display = "none";
+                this._visibleCanvas.canvas.hide();
         }
         
         let mapRange = map.htmlRoot.getDisplayRange();

@@ -3107,7 +3107,11 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     setWxRadarBug() {
         let radarbug = document.querySelector("#weather_radar_bug");
         if (radarbug) {
-            radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+            if (this.isWeatherVisible) {
+                radarbug.show('');
+            } else {
+                radarbug.hide();
+            }
         }
     }
 
@@ -3355,10 +3359,10 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
                     val += seconds;
                 }
                 this.elapsedTimeValue.textContentCached = val;
-                this.elapsedTime.style.display = "block";
+                this.elapsedTime.show();
             }
             else {
-                this.elapsedTime.style.display = "none";
+                this.elapsedTime.hide();
                 this._timeCounterStarted = 0;
             }
         }
@@ -3439,14 +3443,14 @@ class CJ4_MapInfo extends NavSystemElement {
             if (_show) {
                 this.wxIndicator.classList.add('active');
 
-                this.wxLine1.style.display = 'block';
-                this.wxLine2.style.display = 'block';
+                this.wxLine1.show();
+                this.wxLine2.show();
             }
             else {
                 this.wxIndicator.classList.remove('active');
 
-                this.wxLine1.style.display = 'none';
-                this.wxLine2.style.display = 'none';
+                this.wxLine1.hide();
+                this.wxLine2.hide();
             }
         }
     }

@@ -1636,7 +1636,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.targetAltitudeText.textContentCached = textContent;
                     this.targetAltitudeText.style.top = "720px";
                     this.targetAltitudeText.style.left = "115px";
-                    this.targetAltitudeText.style.display = "block";
+                    this.targetAltitudeText.show();
                     this.targetAltitudeText.style.color = (APMode == AutopilotMode.SELECTED) ? "cyan" : "magenta";
                     this.targetAltitudeIndicatorSVG.setAttribute("visibility", "hidden");
                 }
@@ -1644,12 +1644,12 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.targetAltitudeText.textContentCached = textContent;
                     this.targetAltitudeText.style.top = "-20px";
                     this.targetAltitudeText.style.left = "115px";
-                    this.targetAltitudeText.style.display = "block";
+                    this.targetAltitudeText.show();
                     this.targetAltitudeText.style.color = (APMode == AutopilotMode.SELECTED) ? "cyan" : "magenta";
                     this.targetAltitudeIndicatorSVG.setAttribute("visibility", "hidden");
                 }
                 else {
-                    this.targetAltitudeText.style.display = "none";
+                    this.targetAltitudeText.hide();
                     var offsetY = this.valueToSvg(currentAltitude, targetAltitude);
                     offsetY -= 51;
                     this.targetAltitudeIndicatorSVG.setAttribute("y", offsetY.toString());
