@@ -29,3 +29,4 @@ export * from "./cj4/fmc/navradio/CJ4_NavRadioSystem";
 export * from "./cj4/CJ4_MapSymbols";
 
 export * from "./utils/SimVarCache";
+export * from "./utils/DomHaxx";
