@@ -214,3 +214,9 @@ declare class FMCMainDisplay {
 declare class RadioNav {
   static isHz50Compliant(_MHz: number);
 }
+
+// NATIVE
+declare interface Element {
+  hide():void;
+  show(display?:string):void;
+}
