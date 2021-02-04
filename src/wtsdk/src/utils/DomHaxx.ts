@@ -6,7 +6,8 @@ let callidx = 0;
 Element.prototype.setAttribute = function (orig) {
   return function (name, value) {
     try {
-      if (name === "needDeletion" || (name === "state" && value === "off")) return;
+      // if ((name === "state" && value === "off")) return;
+      // if (name === "needDeletion" || (name === "state" && value === "off")) return;
 
       // if (this.id === "") {
       //   this.id = "custom" + callidx++;
