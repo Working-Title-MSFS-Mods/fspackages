@@ -503,14 +503,15 @@ class CJ4_PFD extends BaseAirliners {
         const baroUnit = _dict.get(CJ4_PopupMenu_Key.BARO_STD);
         if (baroUnit == "STD") {
             SimVar.SetSimVarValue("L:XMLVAR_Baro1_ForcedToSTD", "Bool", true);
+            const baroSetting = 1013.25 * 16;
+            SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting);
         } else {
             SimVar.SetSimVarValue("L:XMLVAR_Baro1_ForcedToSTD", "Bool", false);
-            if (baroUnits == "HPA") {
-                const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET) * 16;
-                SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting);
+            const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET);
+            if (_dict.get(CJ4_PopupMenu_Key.BARO_SET) < 500) {
+                SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting * 33.864 * 16);
             } else {
-                const baroSetting = _dict.get(CJ4_PopupMenu_Key.BARO_SET) * 33.864 * 16;
-                SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting);
+                SimVar.SetSimVarValue("K:KOHLSMAN_SET", "number", baroSetting * 16);
             }
         }
 
