@@ -32,6 +32,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
          */
         this._bufferedContexts = [];
         this._lastLiveRender = [];
+        this._toEnqueue = [];
         for (let type = 0; type < this._roadLayers.length; type++) {
             let layer = this._roadLayers[type];
             let renderQueue = new WT_MapViewRenderQueue();
@@ -45,6 +46,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
             });
             let bufferedPathContext = new WT_CanvasBufferedLinePathContext(layer.buffer.canvas, layer.buffer.context);
             this._bufferedContexts.push(new WT_MapViewBufferedCanvasContext(bufferedPathContext, renderQueue));
+            this._toEnqueue.push({id: 0, buffer: null, head: 0});
         }
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRoadLayer.OPTIONS_DEF);
@@ -99,17 +101,53 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         return 0;
     }
 
+    _enqueueFeaturesLoop(id, type, resolve, reject) {
+        let toEnqueue = this._toEnqueue[type];
+        if (toEnqueue.id !== id) {
+            reject();
+        }
+        let layer = this._roadLayers[type];
+        let bufferedContext = this._bufferedContexts[type];
+        let t0 = performance.now();
+        while (toEnqueue.head < toEnqueue.buffer.length) {
+            if (toEnqueue.head % 5 === 0 && performance.now() - t0 >= WT_MapViewRoadLayer.ENQUEUE_TIME_BUDGET) {
+                break;
+            }
+            layer.buffer.projectionRenderer.renderCanvas(toEnqueue.buffer[toEnqueue.head], bufferedContext);
+            toEnqueue.head++;
+        }
+        if (toEnqueue.head >= toEnqueue.buffer.length) {
+            resolve();
+        } else {
+            requestAnimationFrame(this._enqueueFeaturesLoop.bind(this, id, type, resolve, reject));
+        }
+    }
+
     /**
      *
      * @param {WT_MapViewState} state
-     * @param {WT_MapViewPersistentCanvas} layer
-     * @param {WT_CanvasBufferedLinePathContext} bufferedContext
+     * @param {WT_MapViewRoadData.Type} type
      * @param {WT_MapViewRoadFeature[]} features
+     * @returns {Promise<void>}
      */
-    _enqueueFeaturesToDraw(state, layer, bufferedContext, features) {
-        for (let feature of features) {
-            layer.buffer.projectionRenderer.renderCanvas(feature, bufferedContext);
+    async _enqueueFeaturesToDraw(state, type, features) {
+        try {
+            this._renderQueues[type].abort();
+            let toEnqueue = this._toEnqueue[type];
+            let id = ++toEnqueue.id;
+            await new Promise((resolve, reject) => {
+                toEnqueue.buffer = features;
+                toEnqueue.head = 0;
+                this._enqueueFeaturesLoop(id, type, resolve, reject);
+            });
+            if (id === toEnqueue.id) {
+                toEnqueue.buffer = null;
+                toEnqueue.head = 0;
+                return true;
+            }
+        } catch (e) {
         }
+        return false;
     }
 
     _canContinueRender(current, renderCount, renderTime) {
@@ -125,24 +163,32 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      * @param {WT_MapViewRoadData.Type} type
      */
-    _startRenderRoads(state, type) {
+    async _startRenderRoads(state, type) {
         let layer = this._roadLayers[type];
         let renderQueue = this._renderQueues[type];
         let bufferedContext = this._bufferedContexts[type];
         let renderer = this._renderers[type];
+        let toEnqueue = this._toEnqueue[type];
 
         layer.syncBuffer(state);
 
         let lod = this._selectLOD(state.projection.viewResolution);
         let searchRadius = this._tempNM1.set(state.projection.range).scale(WT_MapViewRoadLayer.OVERDRAW_FACTOR / 2, true);
         let minLength = this._tempNM2.set(state.projection.viewResolution).scale(1);
-        renderQueue.clear();
-        this._enqueueFeaturesToDraw(state, layer, bufferedContext, this._roadData.searchFeatures(type, lod, state.projection.center, searchRadius, minLength));
-
-        this._lastLiveRender[type] = state.currentTime / 1000;
-
-        bufferedContext.context.beginPath();
-        renderQueue.start(renderer, state);
+        let t0 = performance.now();
+        let features = this._roadData.searchFeatures(type, lod, state.projection.center, searchRadius, minLength);
+        console.log("search time: " + (performance.now() - t0) + " ms");
+        try {
+            let id = toEnqueue.id + 1;
+            let enqueued = await this._enqueueFeaturesToDraw(state, type, features);
+            if (enqueued && id === toEnqueue.id) {
+                this._lastLiveRender[type] = state.currentTime / 1000;
+                bufferedContext.context.beginPath();
+                renderQueue.start(renderer, state);
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     /**
@@ -240,7 +286,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
                 }
             }
 
-            if (shouldInvalidate || (shouldPredraw && !this._renderQueues[type].isBusy)) {
+            if (shouldInvalidate || (shouldPredraw && !this._renderQueues[type].isBusy && this._toEnqueue[type].buffer === null)) {
                 this._startRenderRoads(state, type);
             } else if (this._renderQueues[type].isBusy) {
                 this._continueRenderRoads(state, type);
@@ -275,6 +321,7 @@ WT_MapViewRoadLayer.CLASS_DEFAULT = "roadLayer";
 WT_MapViewRoadLayer.CONFIG_NAME_DEFAULT = "roads";
 WT_MapViewRoadLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewRoadLayer.REDRAW_DELAY = 500; // ms
+WT_MapViewRoadLayer.ENQUEUE_TIME_BUDGET = 1; // ms
 WT_MapViewRoadLayer.DRAW_TIME_BUDGET = 0.5; // ms
 WT_MapViewRoadLayer.OPTIONS_DEF = {
     liveRender: {default: true, auto: true},
