@@ -256,18 +256,18 @@ class WT_MapViewRoadData {
      * @param {WT_MapViewRoadFeature[]} features
      * @param {WT_GeoPoint} center
      * @param {WT_GVector3} centerCartesian
-     * @param {Number} radius
+     * @param {Number} radiusCartesian
      * @param {WT_NumberUnit} minLength
      * @param {WT_MapViewRoadFeature[]} results
      * @param {WT_MapViewRoadDataBVHNode} node
      */
-    _searchBVHHelper(rawData, features, center, centerCartesian, radius, minLength, results, node) {
-        if (this._doesIntersect(centerCartesian, radius, node.bbox)) {
+    _searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, node) {
+        if (this._doesIntersect(centerCartesian, radiusCartesian, node.bbox)) {
             if (node.featureIndex !== undefined) {
                 this._searchLeaf(node, rawData, features, center, minLength, results);
             } else {
-                this._searchBVHHelper(rawData, features, center, centerCartesian, radius, minLength, results, node.left);
-                this._searchBVHHelper(rawData, features, center, centerCartesian, radius, minLength, results, node.right);
+                this._searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, node.left);
+                this._searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, node.right);
             }
         }
     }
@@ -283,9 +283,11 @@ class WT_MapViewRoadData {
      */
     _searchBVH(region, type, lod, center, radius, minLength, results) {
         let centerCartesian = center.cartesian(this._tempVector);
+        let radiusCartesian = Math.sqrt(2 * (1 - Math.cos(radius.asUnit(WT_Unit.GA_RADIAN))));
+
         let rawData = this._rawData[region][type][lod];
         let features = this._features[region][type][lod];
-        this._searchBVHHelper(rawData, features, center, centerCartesian, radius.asUnit(WT_Unit.GA_RADIAN), minLength, results, this._bvh[region][type][lod]);
+        this._searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, this._bvh[region][type][lod]);
     }
 
     /**
@@ -374,6 +376,6 @@ WT_MapViewRoadData.DATA_FILE_TYPE_STRING = [
 /**
  * @typedef WT_MapViewRoadFeature
  * @property {String} type
- * @property {{type:WT_MapViewRoadData.Type, country:Number, surface:Number, centroid:Number[], length:Number}} properties
+ * @property {{centroid:Number[], length:Number}} properties
  * @property {{type:String, coordinates:Number[][][]}} geometry
  */
