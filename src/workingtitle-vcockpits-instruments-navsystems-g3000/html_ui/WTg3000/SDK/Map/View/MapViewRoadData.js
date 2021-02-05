@@ -27,6 +27,7 @@ class WT_MapViewRoadData {
             for (let type of this._types) {
                 this._rawData[region][type] = [];
                 this._features[region][type] = [];
+                this._bvh[region][type] = [];
             }
         }
     }
@@ -40,8 +41,8 @@ class WT_MapViewRoadData {
     }
 
     _checkReady() {
-        let total = this._regions.length * this._types.length;
-        if (this._bvhLoadCount === total && this._lodDataLoadCount === total * WT_MapViewRoadData.LOD_COUNT) {
+        let total = this._regions.length * this._types.length * WT_MapViewRoadData.LOD_COUNT;
+        if (this._bvhLoadCount === total && this._lodDataLoadCount === total) {
             this._isReady = true;
         }
     }
@@ -53,8 +54,8 @@ class WT_MapViewRoadData {
         this._checkReady();
     }
 
-    _loadBVHData(region, type, data) {
-        this._bvh[region][type] = JSON.parse(data);
+    _loadBVHData(region, type, lod, data) {
+        this._bvh[region][type][lod] = JSON.parse(data);
         this._bvhLoadCount++;
         this._checkReady();
     }
@@ -125,9 +126,8 @@ class WT_MapViewRoadData {
 
         for (let i = 0; i < WT_MapViewRoadData.LOD_COUNT; i++) {
             await this._openFile(`${dir}/${file}_lod${i}.json`, this._loadLODData.bind(this, region, type, i));
+            await this._openFile(`${dir}/${file}_lod${i}_bvh.json`, this._loadBVHData.bind(this, region, type, i));
         }
-
-        this._openFile(`${dir}/${file}_${WT_MapViewRoadData.DATA_FILE_BVH_STRING}.json`, this._loadBVHData.bind(this, region, type));
     }
 
     async _openFilesForRegion(region) {
@@ -189,6 +189,13 @@ class WT_MapViewRoadData {
         return feature;
     }
 
+    /**
+     *
+     * @param {WT_GVector3} center
+     * @param {Number} radius
+     * @param {Number[][]} bbox
+     * @returns {Boolean}
+     */
     _doesIntersect(center, radius, bbox) {
         let x = Math.max(bbox[0][0], Math.min(center.x, bbox[1][0]));
         let y = Math.max(bbox[0][1], Math.min(center.y, bbox[1][1]));
@@ -229,6 +236,22 @@ class WT_MapViewRoadData {
 
     /**
      *
+     * @param {WT_MapViewRoadDataBVHNode} leaf
+     * @param {String[]} rawData
+     * @param {WT_MapViewRoadFeature[]} features
+     * @param {WT_GeoPoint} center
+     * @param {WT_NumberUnit} minLength
+     * @param {WT_MapViewRoadFeature[]} results
+     */
+    _searchLeaf(leaf, rawData, features, center, minLength, results) {
+        let feature = this._getFeature(rawData, features, leaf.featureIndex);
+        if (minLength.compare(feature.properties.length) <= 0) {
+            this._insertInOrder(results, feature, center);
+        }
+    }
+
+    /**
+     *
      * @param {String[]} rawData
      * @param {WT_MapViewRoadFeature[]} features
      * @param {WT_GeoPoint} center
@@ -236,15 +259,12 @@ class WT_MapViewRoadData {
      * @param {Number} radius
      * @param {WT_NumberUnit} minLength
      * @param {WT_MapViewRoadFeature[]} results
-     * @param {Object} node
+     * @param {WT_MapViewRoadDataBVHNode} node
      */
     _searchBVHHelper(rawData, features, center, centerCartesian, radius, minLength, results, node) {
         if (this._doesIntersect(centerCartesian, radius, node.bbox)) {
             if (node.featureIndex !== undefined) {
-                let feature = this._getFeature(rawData, features, node.featureIndex);
-                if (minLength.compare(feature.properties.length) <= 0) {
-                    this._insertInOrder(results, feature, center);
-                }
+                this._searchLeaf(node, rawData, features, center, minLength, results);
             } else {
                 this._searchBVHHelper(rawData, features, center, centerCartesian, radius, minLength, results, node.left);
                 this._searchBVHHelper(rawData, features, center, centerCartesian, radius, minLength, results, node.right);
@@ -265,7 +285,7 @@ class WT_MapViewRoadData {
         let centerCartesian = center.cartesian(this._tempVector);
         let rawData = this._rawData[region][type][lod];
         let features = this._features[region][type][lod];
-        this._searchBVHHelper(rawData, features, center, centerCartesian, radius.asUnit(WT_Unit.GA_RADIAN), minLength, results, this._bvh[region][type]);
+        this._searchBVHHelper(rawData, features, center, centerCartesian, radius.asUnit(WT_Unit.GA_RADIAN), minLength, results, this._bvh[region][type][lod]);
     }
 
     /**
@@ -333,6 +353,7 @@ WT_MapViewRoadData.DATA_FILE_REGION_STRING = [
     "EC",
     "EE",
     "AF",
+    "ME",
     "AC",
     "AE",
     "OC"
@@ -341,7 +362,14 @@ WT_MapViewRoadData.DATA_FILE_TYPE_STRING = [
     "highway",
     "primary"
 ];
-WT_MapViewRoadData.DATA_FILE_BVH_STRING = "bvh";
+
+/**
+ * @typedef WT_MapViewRoadDataBVHNode
+ * @property {Number[][]} bbox
+ * @property {Number[]} [featureIndexes]
+ * @property {WT_MapViewRoadDataBVHNode} [left]
+ * @property {WT_MapViewRoadDataBVHNode} [right]
+ */
 
 /**
  * @typedef WT_MapViewRoadFeature
