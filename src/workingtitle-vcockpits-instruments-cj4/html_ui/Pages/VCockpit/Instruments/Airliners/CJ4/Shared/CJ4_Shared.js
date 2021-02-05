@@ -3737,6 +3737,7 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_FLAP_OVRD"] = 45] = "TAWS_FLAP_OVRD";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_TERR_INHIB"] = 46] = "TAWS_TERR_INHIB";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_STEEP_APPR"] = 47] = "TAWS_STEEP_APPR";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_MAP_OVERLAY"] = 48] = "MFD_MAP_OVERLAY";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Item {
     constructor(_type, _section, _y, _height) {
@@ -4598,7 +4599,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
                 this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
-                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("OVERLAYS", this.textSize, this.showOverlaysPage.bind(this));
                 this.addSubMenu("MAP SYMBOLS", this.textSize, this.showMapSymbolsPage.bind(this));
                 this.addSubMenu("TFR TEST", this.textSize, null);
                 this.addSubMenu("SYS TEST", this.textSize, this.showSystemTestPage.bind(this));
@@ -4643,6 +4644,45 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
                 this.addCheckbox("NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
                 this.addCheckbox("AIRPORTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS]);
                 this.addCheckbox("INTERSECTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showOverlaysPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("OVERLAYS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TERR/WX", this.textSize, 0.37);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_OVERLAY]);
+                this.addRadio("TERR", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_OVERLAY]);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_OVERLAY]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TFC", this.textSize, 0.18);
+                this.addRadio("OFF", this.textSize, null);
+                this.addRadio("ON", this.textSize, null);
             }
             this.endSection();
         }

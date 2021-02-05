@@ -497,6 +497,19 @@ class CJ4_MFD extends BaseAirliners {
                 modeChanged = true;
             }
         }
+
+        const overlay = _dict.get(CJ4_PopupMenu_Key.MFD_MAP_OVERLAY);
+        if (overlay == "TERR") {
+            this.showTerrain = true;
+            this.showWeather = false;
+        } else if (overlay == "WX") {
+            this.showTerrain = false;
+            this.showWeather = true;
+        } else {
+            this.showTerrain = false;
+            this.showWeather = false;
+        }
+
         this.map.setSymbol(CJ4_MapSymbol.AIRPORTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.CONSTRAINTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.INTERSECTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS) == "ON") ? true : false);
@@ -550,6 +563,15 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "VOR2");
         else if (this.mapNavigationMode == Jet_NDCompass_Navigation.NAV)
             _dict.set(CJ4_PopupMenu_Key.NAV_SRC, "FMS1");
+
+        if (this.showTerrain) {
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_OVERLAY, "TERR");
+        } else if (this.showWeather) {
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_OVERLAY, "WX");
+        } else {
+            _dict.set(CJ4_PopupMenu_Key.MFD_MAP_OVERLAY, "OFF");
+        }
+
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS, (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.AIRPORTS)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS, (this.map.hasSymbol(CJ4_MapSymbol.CONSTRAINTS)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS, (this.map.hasSymbol(CJ4_MapSymbol.INTERSECTS)) ? "ON" : "OFF");
