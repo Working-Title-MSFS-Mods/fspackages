@@ -3728,6 +3728,15 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VT_ON"] = 36] = "VSPEED_VT_ON";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VRF_ON"] = 37] = "VSPEED_VRF_ON";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VAP_ON"] = 38] = "VSPEED_VAP_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_CONTROL"] = 39] = "RADAR_CONTROL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_MODE"] = 40] = "RADAR_MODE";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_GCS"] = 41] = "RADAR_GCS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_TILT"] = 42] = "RADAR_TILT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_GAIN"] = 43] = "RADAR_GAIN";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_GS_CANCEL"] = 44] = "TAWS_GS_CANCEL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_FLAP_OVRD"] = 45] = "TAWS_FLAP_OVRD";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_TERR_INHIB"] = 46] = "TAWS_TERR_INHIB";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_STEEP_APPR"] = 47] = "TAWS_STEEP_APPR";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Item {
     constructor(_type, _section, _y, _height) {
@@ -4109,8 +4118,12 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
                 this.addSubMenu("OVERLAYS", this.textSize, this.showOverlaysPage.bind(this));
                 this.addSubMenu("RADAR", this.textSize, null);
+                // TODO Hook up RADAR page
+                // this.addSubMenu("RADAR", this.textSize, this.showRadarPage.bind(this));
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
                 this.addSubMenu("TAWS", this.textSize, null);
+                // TODO Hook up TAWS page
+                // this.addSubMenu("TAWS", this.textSize, this.showTAWSPage.bind(this));
                 this.addSubMenu("BARO SET", this.textSize, this.showBaroSetPage.bind(this));
             }
             this.endSection();
@@ -4236,6 +4249,98 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
     }
+    showRadarPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("RADAR", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("CONTROL", this.textSize, 0.35);
+                this.addRadio("STANDBY", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+                this.addRadio("AUTOMATIC", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+                this.addRadio("MANUAL", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+                this.addRadio("TEST", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("MODE", this.textSize, 0.22);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+                this.addRadio("WX+TURB", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+                this.addRadio("TURB", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+                this.addRadio("MAP", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("FUNCTION", this.textSize, this.showRadarFunctionPage.bind(this));
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showRadarFunctionPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("RADAR", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("FUNCTION", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("GCS", this.textSize, [CJ4_PopupMenu_Key.RADAR_GCS]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addRange("TILT", this.textSize, -5, 5, 0.1, [CJ4_PopupMenu_Key.RADAR_TILT]);
+                this.addList("GAIN", this.textSize, ["-3", "-2", "-1", "NORM", "+1", "+2", "+3"], [CJ4_PopupMenu_Key.RADAR_GAIN]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("FUNCTION", this.textSize, this.showRadarFunctionPage.bind(this));
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showRadarPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
     showRefPage() {
         this._isOnMainPage = false;
         let page = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -4274,6 +4379,38 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MIN_ALT_SRC]);
                 this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO]);
                 this.addRadioRange("RA", this.textSize, 0, 2500, 1, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showTAWSPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TAWS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("G/S CANCEL", this.textSize, [CJ4_PopupMenu_Key.TAWS_GS_CANCEL]);
+                this.addCheckbox("FLAP OVRD", this.textSize, [CJ4_PopupMenu_Key.TAWS_FLAP_OVRD]);
+                this.addCheckbox("TERR INHIB", this.textSize, [CJ4_PopupMenu_Key.TAWS_TERR_INHIB]);
+                this.addCheckbox("STEEP APPR", this.textSize, [CJ4_PopupMenu_Key.TAWS_STEEP_APPR]);
             }
             this.endSection();
         }
