@@ -3,24 +3,31 @@
  */
 class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     /**
-     * @param {WT_MapViewRoadData} roadData - the object from which to retrieve border data.
-     * @param {WT_NumberUnit[]} lodResolutionThresholds - the map view window resolution thresholds to use when selecting a border LOD
+     * @param {WT_MapViewRoadFeatureCollection} roadFeatureData - the object from which to retrieve road feature data.
+     * @param {WT_MapViewRoadLabelCollection[]} roadLabelData - objects from which to retrieve road label data.
+     * @param {WT_NumberUnit[]} lodResolutionThresholds - the map view window resolution thresholds to use when selecting a LOD
      *                                                    level.
+     * @param {WT_MapViewTextLabelManager} labelManager - the label manager to use for labels.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(roadData, lodResolutionThresholds, className = WT_MapViewRoadLayer.CLASS_DEFAULT, configName = WT_MapViewRoadLayer.CONFIG_NAME_DEFAULT) {
+    constructor(roadFeatureData, roadLabelData, lodResolutionThresholds, className = WT_MapViewRoadLayer.CLASS_DEFAULT, configName = WT_MapViewRoadLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
-        this._roadData = roadData;
+        this._roadFeatureData = roadFeatureData;
+        this._roadLabelData = roadLabelData;
         this._lodResolutionThresholds = lodResolutionThresholds;
 
         this._roadLayers = [
             new WT_MapViewPersistentCanvas(WT_MapViewRoadLayer.OVERDRAW_FACTOR),
             new WT_MapViewPersistentCanvas(WT_MapViewRoadLayer.OVERDRAW_FACTOR),
         ];
+        this._labelLayer = new WT_MapViewCanvas(true, true);
         this.addSubLayer(this._roadLayers[1]);
         this.addSubLayer(this._roadLayers[0]);
+        this.addSubLayer(this._labelLayer);
+
+        this._labelManager = new WT_MapViewRoadLabelManager(this._labelLayer);
 
         /**
          * @type {WT_MapViewRenderQueue[]}
@@ -33,6 +40,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         this._bufferedContexts = [];
         this._lastLiveRender = [];
         this._toEnqueue = [];
+        this._isValidated = [];
         for (let type = 0; type < this._roadLayers.length; type++) {
             let layer = this._roadLayers[type];
             let renderQueue = new WT_MapViewRenderQueue();
@@ -47,7 +55,11 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
             let bufferedPathContext = new WT_CanvasBufferedLinePathContext(layer.buffer.canvas, layer.buffer.context);
             this._bufferedContexts.push(new WT_MapViewBufferedCanvasContext(bufferedPathContext, renderQueue));
             this._toEnqueue.push({id: 0, buffer: null, head: 0});
+            this._isValidated.push(true);
         }
+
+        this._needUpdateLabels = false;
+        this._labelSearchID = [];
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRoadLayer.OPTIONS_DEF);
 
@@ -58,13 +70,8 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
 
         this._tempNM1 = new WT_NumberUnit(0, WT_Unit.NMILE);
         this._tempNM2 = new WT_NumberUnit(0, WT_Unit.NMILE);
-    }
-
-    /**
-     * @param {WT_MapViewState} state
-     */
-    isVisible(state) {
-        return state.model.roads.show;
+        this._tempNM3 = new WT_NumberUnit(0, WT_Unit.NMILE);
+        this._tempNM4 = new WT_NumberUnit(0, WT_Unit.NMILE);
     }
 
     /**
@@ -105,6 +112,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         let toEnqueue = this._toEnqueue[type];
         if (toEnqueue.id !== id) {
             reject();
+            return;
         }
         let layer = this._roadLayers[type];
         let bufferedContext = this._bufferedContexts[type];
@@ -126,12 +134,13 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     /**
      *
      * @param {WT_MapViewState} state
-     * @param {WT_MapViewRoadData.Type} type
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      * @param {WT_MapViewRoadFeature[]} features
      * @returns {Promise<void>}
      */
     async _enqueueFeaturesToDraw(state, type, features) {
         try {
+            this._renderQueues[type].clear();
             this._renderQueues[type].abort();
             let toEnqueue = this._toEnqueue[type];
             let id = ++toEnqueue.id;
@@ -161,7 +170,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     /**
      *
      * @param {WT_MapViewState} state
-     * @param {WT_MapViewRoadData.Type} type
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      */
     async _startRenderRoads(state, type) {
         let layer = this._roadLayers[type];
@@ -175,9 +184,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         let lod = this._selectLOD(state.projection.viewResolution);
         let searchRadius = this._tempNM1.set(state.projection.range).scale(WT_MapViewRoadLayer.OVERDRAW_FACTOR / 2, true);
         let minLength = this._tempNM2.set(state.projection.viewResolution).scale(1);
-        let t0 = performance.now();
-        let features = this._roadData.searchFeatures(type, lod, state.projection.center, searchRadius, minLength);
-        console.log("search time: " + (performance.now() - t0) + " ms");
+        let features = this._roadFeatureData.search(type, lod, state.projection.center, searchRadius, minLength);
         try {
             let id = toEnqueue.id + 1;
             let enqueued = await this._enqueueFeaturesToDraw(state, type, features);
@@ -193,7 +200,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
 
     /**
      * @param {WT_MapViewState} state
-     * @param {WT_MapViewRoadData.Type} type
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      */
     _continueRenderRoads(state, type) {
         this._renderQueues[type].resume(state);
@@ -206,7 +213,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * @param {WT_MapViewRoadData.Type} type
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      * @param {WT_MapViewState} state
      */
     _drawRoadsToDisplay(type, state) {
@@ -223,7 +230,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * @param {WT_MapViewRoadData.Type} type
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      * @param {WT_MapViewState} state
      */
     _updateRenderRoads(type, state) {
@@ -234,22 +241,86 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * @param {WT_MapViewRoadData.Type} type
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      * @param {WT_MapViewState} state
      */
     _finishRenderRoads(type, state) {
         this._drawRoadsToDisplay(type, state);
         this._roadLayers[type].resetBuffer();
         this._shouldDrawUnfinished[type] = false;
+        this._validate(type);
     }
 
     _abortRenderRoads() {
+
+    }
+
+    _clearLabels() {
+        this._labelManager.clear();
+    }
+
+    _cancelLabelSearches() {
+        for (let i = 0; i < this._roadLabelData; i++) {
+            let searchID = this._labelSearchID[i];
+            if (searchID !== null) {
+                this._roadLabelData[i].cancelSearch(searchID);
+            }
+        }
+    }
+
+    async _searchLabels(labelDataIndex, center, radius, types, restrictionDistance, labelDistance, repeatDistance) {
+        let labelData = this._roadLabelData[labelDataIndex];
+        let search = labelData.search(center, radius, types, restrictionDistance, labelDistance, repeatDistance);
+        this._labelSearchID[labelDataIndex] = search.id;
+        let labels = await search.execute();
+
+        if (this._labelSearchID[labelDataIndex] !== search.id) {
+            return;
+        }
+
+        for (let label of labels) {
+            this._labelManager.register(label);
+        }
+        this._labelSearchID[labelDataIndex] = null;
     }
 
     /**
      *
      * @param {WT_MapViewState} state
-     * @param {WT_MapViewRoadData.Type} type
+     */
+    async _updateLabels(state, show) {
+        this._needUpdateLabels = false;
+        this._clearLabels();
+        this._cancelLabelSearches();
+
+        let types = [];
+        for (let i = 0; i < show.length; i++) {
+            if (show[i]) {
+                types.push(i);
+            }
+        }
+        if (types.length === 0) {
+            return;
+        }
+
+        let searchRadius = this._tempNM1.set(state.projection.range).scale(WT_MapViewRoadLayer.OVERDRAW_FACTOR / 2, true);
+        let restrictionDistance = this._tempNM2.set(state.projection.viewResolution).scale(this.labelRestrictionDistance, true);
+        let labelDistance = this._tempNM3.set(state.projection.viewResolution).scale(this.labelSeparationDistance, true);
+        let repeatDistance = this._tempNM4.set(state.projection.viewResolution).scale(this.labelRepeatDistance, true);
+
+        try {
+            for (let i = 0; i < this._roadLabelData.length; i++) {
+                await this._searchLabels(i, state.projection.center, searchRadius, types, restrictionDistance, labelDistance, repeatDistance);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewRoadFeatureCollection.Type} type
      * @param {Boolean} show
      */
     _updateLayer(state, type, show) {
@@ -261,7 +332,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         let offsetYAbs = Math.abs(transform.offset.y);
 
         let isDisplayInvalid = layer.display.isInvalid;
-        let showChanged = show != this._lastShow[type];
+        let showChanged = show !== this._lastShow[type];
         let shouldInvalidate = isDisplayInvalid ||
                                showChanged;
 
@@ -269,7 +340,9 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
 
         if (shouldInvalidate) {
             layer.syncDisplay(state, false);
-            this._shouldDrawUnfinished[type] = this.liveRender;
+            if (show || showChanged) {
+                this._invalidate(type);
+            }
         }
         if (show) {
             if (isDisplayInvalid) {
@@ -287,11 +360,34 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
             }
 
             if (shouldInvalidate || (shouldPredraw && !this._renderQueues[type].isBusy && this._toEnqueue[type].buffer === null)) {
+                this._shouldDrawUnfinished[type] = shouldInvalidate && this.liveRender;
                 this._startRenderRoads(state, type);
             } else if (this._renderQueues[type].isBusy) {
                 this._continueRenderRoads(state, type);
             }
+        } else if (showChanged) {
+            this._validate(type);
         }
+    }
+
+    _isAllValidated() {
+        for (let i = 0; i < this._isValidated.length; i++) {
+            if (!this._isValidated[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    _invalidate(type) {
+        this._isValidated[type] = false;
+        this._clearLabels();
+        this._needUpdateLabels = false;
+    }
+
+    _validate(type) {
+        this._isValidated[type] = true;
+        this._needUpdateLabels = this._isAllValidated();
     }
 
     /**
@@ -300,7 +396,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (!this._roadData.isReady()) {
+        if (!this._roadFeatureData.isReady()) {
             return;
         }
 
@@ -312,6 +408,11 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
         for (let type = show.length - 1; type >= 0; type--) {
             this._updateLayer(state, type, show[type]);
         }
+
+        if (this._needUpdateLabels) {
+            this._updateLabels(state, show);
+        }
+        this._labelManager.update(state);
 
         this._lastShow = show;
         this._lastTime = state.currentTime;
@@ -325,7 +426,11 @@ WT_MapViewRoadLayer.ENQUEUE_TIME_BUDGET = 1; // ms
 WT_MapViewRoadLayer.DRAW_TIME_BUDGET = 0.5; // ms
 WT_MapViewRoadLayer.OPTIONS_DEF = {
     liveRender: {default: true, auto: true},
-    liveRenderInterval: {default: 1, auto: true},
+    liveRenderInterval: {default: 1, auto: true}, // seconds
+    labelRestrictionDistance: {default: 30, auto: true}, // pixels
+    labelSeparationDistance: {default: 50, auto: true}, // pixels
+    labelRepeatDistance: {default: 300, auto: true}, // pixels
+
     strokeWidth: {default: 2, auto: true},
     strokeColor: {default: "#878787", auto: true},
     outlineWidth: {default: 0, auto: true},
@@ -333,8 +438,76 @@ WT_MapViewRoadLayer.OPTIONS_DEF = {
 };
 WT_MapViewRoadLayer.CONFIG_PROPERTIES = [
     "liveRender",
+    "liveRenderInterval",
+    "labelRestrictionDistance",
+    "labelSeparationDistance",
+    "labelRepeatDistance",
     "strokeWidth",
     "strokeColor",
     "outlineWidth",
     "outlineColor"
 ];
+
+/**
+ * A manager for map road labels which keeps track of a list of labels and renders them to a
+ * canvas. The rendering order of labels is based on their priority; labels with higher priority
+ * values will always be rendered above labels with lower priority values.
+ */
+class WT_MapViewRoadLabelManager {
+    /**
+     * @param {WT_MapViewCanvas} layer - the canvas sublayer to which to draw labels.
+     */
+    constructor(layer) {
+        this._layer = layer;
+
+        /**
+         * @type {WT_SortedArray<WT_MapViewRoadLabel>}
+         */
+        this._registered = new WT_SortedArray((a, b) => a.priority - b.priority);
+    }
+
+    /**
+     * Deregisters all labels from this manager.
+     */
+    clear() {
+        this._registered.clear();
+    }
+
+    /**
+     * Registers a label with this manager. Registered labels are rendered on every update.
+     * @param {WT_MapViewCanvas} label - the label to register.
+     */
+    register(label) {
+        this._registered.insert(label);
+    }
+
+    /**
+     * Deregisters a label with this manager. Once a label is deregistered, it will no longer
+     * be rendered.
+     * @param {WT_MapViewCanvas} label - the label to deregister.
+     */
+    deregister(label) {
+        this._registered.remove(label);
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewRoadLabel} label
+     */
+    _renderLabel(state, label) {
+        label.draw(state, this._layer.buffer.context);
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
+    update(state) {
+        this._layer.buffer.clear();
+        this._registered.array.forEach(this._renderLabel.bind(this, state));
+        this._layer.display.clear();
+        this._layer.copyBufferToCanvas();
+        this._layer.resetBuffer();
+    }
+}

@@ -180,11 +180,15 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         this._instrumentID = instrumentID;
         this._isEnabled = false;
 
-        let roadData = new WT_MapViewRoadData(
-            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA, WT_MapViewRoadData.Region.EI, WT_MapViewRoadData.Region.AF, WT_MapViewRoadData.Region.OC],
-            [WT_MapViewRoadData.Type.HIGHWAY, WT_MapViewRoadData.Type.PRIMARY]
+        let roadFeatureData = new WT_MapViewRoadFeatureCollection(
+            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
+            [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY]
         );
-        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), roadData, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        let roadLabelData = [
+            new WT_MapViewUSInterstateRouteCollection()
+        ];
+
+        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), roadFeatureData, roadLabelData, AS3000_PFD_InnerMap.LAYER_OPTIONS);
 
         this._initController();
 

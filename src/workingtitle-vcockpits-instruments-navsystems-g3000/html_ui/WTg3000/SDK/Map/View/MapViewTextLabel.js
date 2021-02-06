@@ -639,7 +639,8 @@ class WT_MapViewManagedTextLabel {
     doesCollide(other) {
         let thisBounds = this.label.bounds;
         let otherBounds = other.label.bounds;
-        return thisBounds.left < otherBounds.right &&
+        return thisBounds && otherBounds &&
+               thisBounds.left < otherBounds.right &&
                thisBounds.right > otherBounds.left &&
                thisBounds.top < otherBounds.bottom &&
                thisBounds.bottom > otherBounds.top;

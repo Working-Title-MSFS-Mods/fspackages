@@ -226,7 +226,7 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(sys.argv[1:], "i:c:l:t:s", ["collapseLimit=", "minlength=", "threads=", "stats"])
     except getopt.GetoptError:
-        print("buildroadbvh.py -i <input> [options]")
+        print("buildroadcollapsedbvh.py -i <input> [options]")
         sys.exit(2)
     for opt, arg in opts:
         if opt == "-i":

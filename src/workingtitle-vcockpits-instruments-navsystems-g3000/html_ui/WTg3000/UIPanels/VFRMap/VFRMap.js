@@ -367,14 +367,17 @@ class WT_VFRMapWT extends WT_VFRMap {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = new WT_MapViewBorderData();
-        let roadData = new WT_MapViewRoadData(
-            [WT_MapViewRoadData.Region.NA, WT_MapViewRoadData.Region.SA, WT_MapViewRoadData.Region.EI, WT_MapViewRoadData.Region.AF, WT_MapViewRoadData.Region.OC],
-            [WT_MapViewRoadData.Type.HIGHWAY, WT_MapViewRoadData.Type.PRIMARY]
+        let roadFeatureData = new WT_MapViewRoadFeatureCollection(
+            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
+            [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY]
         );
+        let roadLabelData = [
+            new WT_MapViewUSInterstateRouteCollection()
+        ];
 
         this.view.addLayer(new WT_MapViewBingLayer("VFRMap"));
         this.view.addLayer(new WT_MapViewBorderLayer(borderData, WT_VFRMapWT.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
-        this.view.addLayer(new WT_MapViewRoadLayer(roadData, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        this.view.addLayer(new WT_MapViewRoadLayer(roadFeatureData, roadLabelData, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
@@ -576,7 +579,7 @@ WT_VFRMapWT.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
 
 WT_VFRMapWT.STATE_BORDER_RANGE = WT_Unit.NMILE.createNumber(750);
 
-WT_VFRMapWT.AIRPORT_LARGE_RANGE = WT_Unit.NMILE.createNumber(1000);
+WT_VFRMapWT.AIRPORT_LARGE_RANGE = WT_Unit.NMILE.createNumber(500);
 WT_VFRMapWT.AIRPORT_MEDIUM_RANGE = WT_Unit.NMILE.createNumber(100);
 WT_VFRMapWT.AIRPORT_SMALL_RANGE = WT_Unit.NMILE.createNumber(25);
 

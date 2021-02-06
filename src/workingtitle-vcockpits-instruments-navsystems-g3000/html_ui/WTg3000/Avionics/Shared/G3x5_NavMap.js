@@ -1,5 +1,5 @@
 class WT_G3x5_NavMap {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, borderData, roadData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._layerOptions = layerOptions;
@@ -8,7 +8,8 @@ class WT_G3x5_NavMap {
         this._fpm = flightPlanManager;
         this._citySearcher = citySearcher;
         this._borderData = borderData;
-        this._roadData = roadData;
+        this._roadFeatureData = roadFeatureData;
+        this._roadLabelData = roadLabelData;
     }
 
     /**
@@ -110,7 +111,7 @@ class WT_G3x5_NavMap {
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
-        this.view.addLayer(new WT_MapViewRoadLayer(this._roadData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
