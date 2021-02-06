@@ -73,6 +73,7 @@ def buildCandidateList(geojson):
 
 def createRestriction(feature):
     restriction = {}
+    restriction["roadTypeBit"] = feature["properties"]["roadTypeBit"]
     restriction["location"] = feature["geometry"]["coordinates"]
     return restriction
 

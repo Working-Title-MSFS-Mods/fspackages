@@ -528,8 +528,18 @@ class WT_MapViewRoadLabelCollection {
 WT_MapViewRoadLabelCollection.PRUNE_TIME_BUDGET = 0.5; // ms
 
 class WT_MapViewRoadLabelRestrictionSearchHandler extends WT_GeoKDTreeSearchHandler {
+    constructor(typeBit) {
+        super();
+
+        this._typeBit = typeBit;
+    }
+
     onResultFound(object, center, radius, results) {
-        return WT_GeoKDTree.ResultResponse.INCLUDE_AND_STOP;
+        if (this._typeBit & object.roadTypeBit === object.roadTypeBit) {
+            return WT_GeoKDTree.ResultResponse.INCLUDE_AND_STOP;
+        } else {
+            return WT_GeoKDTree.ResultResponse.EXCLUDE;
+        }
     }
 }
 
@@ -543,6 +553,7 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
         this._restrictionsTree = restrictionsTree;
         this._typeBit = typeBit;
         this._restrictionDistance = restrictionDistance;
+        this._restrictionSearchHandler = new WT_MapViewRoadLabelRestrictionSearchHandler(typeBit);
         this._tempArray = [];
     }
 
@@ -556,7 +567,7 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
     onResultFound(object, center, radius, results) {
         let response = WT_GeoKDTree.ResultResponse.EXCLUDE;
         if (((1 << object.roadType) & this._typeBit) !== 0) {
-            let result = this._restrictionsTree.search(object.location, this._restrictionDistance, WT_MapViewRoadLabelCandidateSearchHandler._RESTRICTION_HANDLER, true, this._tempArray);
+            let result = this._restrictionsTree.search(object.location, this._restrictionDistance, this._restrictionSearchHandler, true, this._tempArray);
             let collision = result.length > 0;
             if (collision) {
                 result.pop();
@@ -577,7 +588,6 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
         return object.location.distance(center);
     }
 }
-WT_MapViewRoadLabelCandidateSearchHandler._RESTRICTION_HANDLER = new WT_MapViewRoadLabelRestrictionSearchHandler();
 
 class WT_MapViewRoadLabelCandidatePruneHandler extends WT_GeoKDTreeSearchHandler {
     constructor() {
