@@ -59,6 +59,10 @@ class WT_GeoKDTree {
     _searchHelper(center, radius, radiusGAR, centerCartesian, radiusCartesian, searchHandler, index, results) {
         let node = this._nodes[index];
 
+        if ((centerCartesian[node.axis] + radiusCartesian < node.least) || (centerCartesian[node.axis] - radiusCartesian > node.greatest)) {
+            return true;
+        }
+
         let distance = center.distance(node.location[1], node.location[0]);
         if (distance <= radiusGAR) {
             if (!node.object) {
@@ -83,13 +87,13 @@ class WT_GeoKDTree {
             }
         }
 
-        if ((node.lesser >= 0) && (centerCartesian[node.axis] + radiusCartesian >= node.least) && (centerCartesian[node.axis] - radiusCartesian <= node[node.axis])) {
+        if (node.lesser >= 0) {
             let continueSearch = this._searchHelper(center, radius, radiusGAR, centerCartesian, radiusCartesian, searchHandler, node.lesser, results);
             if (!continueSearch) {
                 return false;
             }
         }
-        if ((node.greater >= 0) && (centerCartesian[node.axis] + radiusCartesian >= node[node.axis]) && (centerCartesian[node.axis] - radiusCartesian <= node.greatest)) {
+        if (node.greater >= 0) {
             let continueSearch = this._searchHelper(center, radius, radiusGAR, centerCartesian, radiusCartesian, searchHandler, node.greater, results);
             if (!continueSearch) {
                 return false;
