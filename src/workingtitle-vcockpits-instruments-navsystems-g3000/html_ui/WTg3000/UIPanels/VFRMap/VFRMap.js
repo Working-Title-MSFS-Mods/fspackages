@@ -102,6 +102,7 @@ class VFRMapPanel extends HTMLElement {
             g_modDebugMgr.AddConsole(null);
         });
 
+        this._panel = document.querySelector(`#${VFRMapPanel.FRAME_ID}`);
         this._waitForSimVar().then(this._doInit.bind(this));
     }
 
@@ -158,25 +159,31 @@ class VFRMapPanel extends HTMLElement {
         }
     }
 
-    _updateLoop() {
-        if (window["IsDestroying"] === true) {
-            return;
-        }
-
-        let currentTime = Date.now();
-        let deltaTime = currentTime - this._lastTime;
-        this._lastTime = currentTime;
-
+    onUpdate(deltaTime) {
         try {
             this._updateMap(deltaTime);
             this._updateFollowPlane();
         } catch (e) {
             console.log(e);
         }
+    }
+
+    _updateLoop() {
+        if (window["IsDestroying"] === true) {
+            return;
+        }
+
+        if (!this._panel.classList.contains("panelInvisible")) {
+            let currentTime = Date.now();
+            let deltaTime = currentTime - this._lastTime;
+            this._lastTime = currentTime;
+            this.onUpdate(deltaTime);
+        }
 
         requestAnimationFrame(this._updateLoop.bind(this));
     }
 }
+VFRMapPanel.FRAME_ID = "VFRMap_Frame";
 
 class WT_VFRMap {
     constructor(htmlElement) {
