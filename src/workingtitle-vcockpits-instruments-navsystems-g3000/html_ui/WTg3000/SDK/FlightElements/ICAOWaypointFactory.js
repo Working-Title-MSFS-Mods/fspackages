@@ -144,6 +144,9 @@ class WT_ICAOWaypointFactory {
         if (!entry) {
             entry = {isReady: false};
             this._waypointCache.set(data.icaoTrimmed, entry);
+            if (this._waypointCache.size > this._cacheSize) {
+                this._waypointCache.delete(this._waypointCache.keys().next().value);
+            }
         } else if (entry.isReady) {
             return;
         }
@@ -153,10 +156,6 @@ class WT_ICAOWaypointFactory {
         }
         if (data.icao[0] === type) {
             this._addWaypointToCache(data, entry);
-        }
-
-        if (this._waypointCache.size > this._cacheSize) {
-            this._waypointCache.delete(this._waypointCache.keys().next().value);
         }
     }
 
