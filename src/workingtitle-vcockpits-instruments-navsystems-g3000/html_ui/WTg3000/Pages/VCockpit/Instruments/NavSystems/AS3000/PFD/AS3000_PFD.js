@@ -178,9 +178,12 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
         super();
 
         this._instrumentID = instrumentID;
-        this._isEnabled = false;
+        this._icaoWaypointFactory = icaoWaypointFactory;
+        this._icaoSearchers = icaoSearchers;
+        this._fpm = flightPlanManager;
+        this._citySearcher = citySearcher;
 
-        this._navMap = new WT_G3x5_NavMap(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, new WT_MapViewBorderData(), null, null, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        this._isEnabled = false;
 
         this._initController();
 
@@ -228,6 +231,7 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
     }
 
     _initNavMap(root) {
+        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this._icaoWaypointFactory, this._icaoSearchers, this._fpm, this._citySearcher, new WT_MapViewBorderData(), null, null, AS3000_PFD_InnerMap.LAYER_OPTIONS);
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 

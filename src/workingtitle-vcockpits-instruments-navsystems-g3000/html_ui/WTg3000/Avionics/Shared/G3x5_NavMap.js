@@ -107,17 +107,6 @@ class WT_G3x5_NavMap {
         }
     }
 
-    _loadRoadData() {
-        if (window.parent.document.body.getAttribute("gamestate") !== GameState.mainmenu && !this._roadFeatureData.hasLoadStarted()) {
-            this._roadFeatureData.startLoad();
-        }
-        for (let labelData of this._roadLabelData) {
-            if (!labelData.hasLoadStarted()) {
-                labelData.startLoad();
-            }
-        }
-    }
-
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
@@ -125,7 +114,6 @@ class WT_G3x5_NavMap {
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
         if (this._layerOptions.roads) {
-            this._loadRoadData();
             this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));

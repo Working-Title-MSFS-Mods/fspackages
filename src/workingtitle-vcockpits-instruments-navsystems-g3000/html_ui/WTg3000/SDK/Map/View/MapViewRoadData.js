@@ -2,11 +2,13 @@
  * A collection of road feature data.
  */
 class WT_MapViewRoadFeatureCollection {
-    constructor(regions, types) {
+    constructor(regions, types, maxQualityLOD) {
         this._regions = regions;
         this._types = types;
+        this._maxQualityLOD = Math.max(0, Math.min(WT_MapViewRoadFeatureCollection.LOD_COUNT - 1, maxQualityLOD));
         this._features = [];
         this._bvh = [];
+        this._loadCountTotal = this._regions.length * this._types.length * (WT_MapViewRoadFeatureCollection.LOD_COUNT - this._maxQualityLOD);
         this._bvhLoadCount = 0;
         this._lodDataLoadCount = 0;
         this._loadStarted = false;
@@ -46,21 +48,30 @@ class WT_MapViewRoadFeatureCollection {
     }
 
     _checkReady() {
-        let total = this._regions.length * this._types.length * WT_MapViewRoadFeatureCollection.LOD_COUNT;
-        if (this._bvhLoadCount === total && this._lodDataLoadCount === total) {
+        if (this._bvhLoadCount === this._loadCountTotal && this._lodDataLoadCount === this._loadCountTotal) {
             this._isReady = true;
         }
     }
 
-    _loadLODData(region, type, lod, data) {
+    _setLOD(lodArray, lod, data) {
+        lodArray[lod] = data;
+        if (lod === this._maxQualityLOD) {
+            for (let i = lod - 1; i >= 0; i--) {
+                lodArray[i] = data;
+            }
+        }
+    }
+
+    _loadFeatureData(region, type, lod, data) {
         let json = JSON.parse(data);
-        this._features[region][type][lod] = json.features;
+        this._setLOD(this._features[region][type], lod, json.features);
         this._lodDataLoadCount++;
         this._checkReady();
     }
 
     _loadBVHData(region, type, lod, data) {
-        this._bvh[region][type][lod] = JSON.parse(data);
+        let bvh = JSON.parse(data);
+        this._setLOD(this._bvh[region][type], lod, bvh);
         this._bvhLoadCount++;
         this._checkReady();
     }
@@ -72,7 +83,7 @@ class WT_MapViewRoadFeatureCollection {
             let fileName = `${fileRoot}_lod${i}.json`;
             let entry = entries.find(e => e.filename === fileName);
             let data = await entry.getData(new zip.TextWriter());
-            this._loadLODData(region, type, i, data);
+            this._loadFeatureData(region, type, i, data);
         }
 
         let fileName = `${fileRoot}_bvh.json`;
@@ -129,8 +140,8 @@ class WT_MapViewRoadFeatureCollection {
     async _openFilesForType(dir, region, type) {
         let file = `${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}`;
 
-        for (let i = 0; i < WT_MapViewRoadFeatureCollection.LOD_COUNT; i++) {
-            await this._openFile(`${dir}/${file}_lod${i}.geojson`, this._loadLODData.bind(this, region, type, i));
+        for (let i = this._maxQualityLOD; i < WT_MapViewRoadFeatureCollection.LOD_COUNT; i++) {
+            await this._openFile(`${dir}/${file}_lod${i}.geojson`, this._loadFeatureData.bind(this, region, type, i));
             await this._openFile(`${dir}/${file}_lod${i}_bvh.json`, this._loadBVHData.bind(this, region, type, i));
         }
     }

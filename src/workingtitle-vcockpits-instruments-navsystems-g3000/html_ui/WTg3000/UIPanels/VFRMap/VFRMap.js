@@ -15,11 +15,18 @@ document.addEventListener('beforeunload', function () {
     GameVFRMapisLoaded = false;
 }, false);
 
-class VFRMapPanel extends HTMLElement {
+class WT_VFRMapPanel extends HTMLElement {
     constructor() {
         super();
 
+        this._modConfigLoaded = false;
+
         this._lastTime = 0;
+    }
+
+    async _loadModConfig() {
+        await WT_g3000_ModConfig.initialize();
+        this._modConfigLoaded = true;
     }
 
     _initVFRMapListener() {
@@ -75,17 +82,17 @@ class VFRMapPanel extends HTMLElement {
         this._updateLoop();
     }
 
-    _waitForSimVarLoop(resolve) {
-        if (window["simvar"]) {
+    _waitUntilReadyLoop(resolve) {
+        if (window["simvar"] && this._modConfigLoaded) {
             resolve();
         } else {
-            requestAnimationFrame(this._waitForSimVarLoop.bind(this, resolve));
+            requestAnimationFrame(this._waitUntilReadyLoop.bind(this, resolve));
         }
     }
 
-    _waitForSimVar() {
+    _waitUntilReady() {
         return new Promise(resolve => {
-            this._waitForSimVarLoop(resolve);
+            this._waitUntilReadyLoop(resolve);
         });
     }
 
@@ -102,8 +109,9 @@ class VFRMapPanel extends HTMLElement {
             g_modDebugMgr.AddConsole(null);
         });
 
-        this._panel = document.querySelector(`#${VFRMapPanel.FRAME_ID}`);
-        this._waitForSimVar().then(this._doInit.bind(this));
+        this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
+        this._loadModConfig();
+        this._waitUntilReady().then(this._doInit.bind(this));
     }
 
     _onVFRMapRegistered() {
@@ -183,7 +191,7 @@ class VFRMapPanel extends HTMLElement {
         requestAnimationFrame(this._updateLoop.bind(this));
     }
 }
-VFRMapPanel.FRAME_ID = "VFRMap_Frame";
+WT_VFRMapPanel.FRAME_ID = "VFRMap_Frame";
 
 class WT_VFRMap {
     constructor(htmlElement) {
@@ -370,6 +378,35 @@ class WT_VFRMapWT extends WT_VFRMap {
         this.model.roads.primaryRange = WT_VFRMapWT.ROAD_PRIMARY_RANGE;
     }
 
+    _getRoadRegionsFromConfig(modConfig) {
+        let regions = [];
+        for (let regionName in WT_MapViewRoadFeatureCollection.Region) {
+            let configName = `load${regionName}`;
+            if (modConfig.roads[configName]) {
+                regions.push(WT_MapViewRoadFeatureCollection.Region[regionName]);
+            }
+        }
+        return regions;
+    }
+
+    _getRoadMaxQualityLODFromConfig(modConfig) {
+        return 4 - modConfig.roads.quality;
+    }
+
+    _initRoadData() {
+        let modConfig = WT_g3000_ModConfig.INSTANCE;
+        let featureData = new WT_MapViewRoadFeatureCollection(
+            this._getRoadRegionsFromConfig(modConfig),
+            [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY],
+            this._getRoadMaxQualityLODFromConfig(modConfig)
+        );
+        let labelData = [
+            new WT_MapViewUSInterstateRouteCollection()
+        ];
+
+        return {feature: featureData, label: labelData};
+    }
+
     _loadRoadData(roadFeatureData, roadLabelData) {
         roadFeatureData.startLoad();
         for (let data of roadLabelData) {
@@ -381,18 +418,12 @@ class WT_VFRMapWT extends WT_VFRMap {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = new WT_MapViewBorderData();
-        let roadFeatureData = new WT_MapViewRoadFeatureCollection(
-            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.EE, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
-            [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY]
-        );
-        let roadLabelData = [
-            new WT_MapViewUSInterstateRouteCollection()
-        ];
-        this._loadRoadData(roadFeatureData, roadLabelData);
+        let roadData = this._initRoadData();
+        this._loadRoadData(roadData.feature, roadData.label);
 
         this.view.addLayer(new WT_MapViewBingLayer("VFRMap"));
         this.view.addLayer(new WT_MapViewBorderLayer(borderData, WT_VFRMapWT.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
-        this.view.addLayer(new WT_MapViewRoadLayer(roadFeatureData, roadLabelData, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        this.view.addLayer(new WT_MapViewRoadLayer(roadData.feature, roadData.label, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
@@ -605,6 +636,6 @@ WT_VFRMapWT.CITY_SMALL_RANGE = WT_Unit.NMILE.createNumber(25);
 WT_VFRMapWT.ROAD_HIGHWAY_RANGE = WT_Unit.NMILE.createNumber(500);
 WT_VFRMapWT.ROAD_PRIMARY_RANGE = WT_Unit.NMILE.createNumber(150);
 
-window.customElements.define("vfrmap-panel", VFRMapPanel);
+window.customElements.define("vfrmap-panel", WT_VFRMapPanel);
 checkAutoload();
 //# sourceMappingURL=GameVFRMap.js.map

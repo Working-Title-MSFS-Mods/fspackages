@@ -8,13 +8,6 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._flightPlanManager = flightPlanManager;
         this._citySearcher = citySearcher;
         this._borderData = new WT_MapViewBorderData();
-        this._roadFeatureData = new WT_MapViewRoadFeatureCollection(
-            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.EE, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
-            [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY]
-        );
-        this._roadLabelData = [
-            new WT_MapViewUSInterstateRouteCollection()
-        ];
 
         this._mode = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL;
 
@@ -48,29 +41,65 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         return this._controller;
     }
 
+    _getRoadRegionsFromConfig(modConfig) {
+        let regions = [];
+        for (let regionName in WT_MapViewRoadFeatureCollection.Region) {
+            let configName = `load${regionName}`;
+            if (modConfig.roads[configName]) {
+                regions.push(WT_MapViewRoadFeatureCollection.Region[regionName]);
+            }
+        }
+        return regions;
+    }
+
+    _getRoadMaxQualityLODFromConfig(modConfig) {
+        return 4 - modConfig.roads.quality;
+    }
+
+    _initRoadData() {
+        let modConfig = WT_g3000_ModConfig.INSTANCE;
+        this._roadFeatureData = new WT_MapViewRoadFeatureCollection(
+            this._getRoadRegionsFromConfig(modConfig),
+            [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY],
+            this._getRoadMaxQualityLODFromConfig(modConfig)
+        );
+        this._roadLabelData = [
+            new WT_MapViewUSInterstateRouteCollection()
+        ];
+
+        this._roadFeatureData.startLoad();
+        for (let labelData of this._roadLabelData) {
+            if (!labelData.hasLoadStarted()) {
+                labelData.startLoad();
+            }
+        }
+    }
+
+    _initController() {
+        this._controller = new WT_DataStoreController(this.instrumentID, null);
+        this._controller.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._controller));
+        this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
+
+        this._controller.init();
+        this._controller.update();
+    }
+
+    _initHalfPanes() {
+        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+    }
+
     /**
      *
      * @param {HTMLElement} root
      */
     init(root) {
+        console.log(WT_g3000_ModConfig.INSTANCE);
         this._htmlElement = root;
 
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._controller));
-        this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
-
-        /**
-         * @type {WT_G3x5_MFDHalfPane}
-         */
-        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
-
-        /**
-         * @type {WT_G3x5_MFDHalfPane}
-         */
-        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this._icaoWaypointFactory, this._icaoSearchers, this._flightPlanManager, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
-
-        this._controller.init();
-        this._controller.update();
+        this._initRoadData();
+        this._initHalfPanes();
+        this._initController();
     }
 
     _onModeSettingChanged(setting, newValue, oldValue) {
