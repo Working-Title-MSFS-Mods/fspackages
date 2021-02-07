@@ -363,17 +363,25 @@ class WT_VFRMapWT extends WT_VFRMap {
         this.model.roads.primaryRange = WT_VFRMapWT.ROAD_PRIMARY_RANGE;
     }
 
+    _loadRoadData(roadFeatureData, roadLabelData) {
+        roadFeatureData.startLoad();
+        for (let data of roadLabelData) {
+            data.startLoad();
+        }
+    }
+
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = new WT_MapViewBorderData();
         let roadFeatureData = new WT_MapViewRoadFeatureCollection(
-            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
+            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.EE, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
             [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY]
         );
         let roadLabelData = [
             new WT_MapViewUSInterstateRouteCollection()
         ];
+        this._loadRoadData(roadFeatureData, roadLabelData);
 
         this.view.addLayer(new WT_MapViewBingLayer("VFRMap"));
         this.view.addLayer(new WT_MapViewBorderLayer(borderData, WT_VFRMapWT.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));

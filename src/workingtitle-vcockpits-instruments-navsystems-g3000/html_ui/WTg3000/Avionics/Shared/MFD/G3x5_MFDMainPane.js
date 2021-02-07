@@ -9,7 +9,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._citySearcher = citySearcher;
         this._borderData = new WT_MapViewBorderData();
         this._roadFeatureData = new WT_MapViewRoadFeatureCollection(
-            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
+            [WT_MapViewRoadFeatureCollection.Region.NA, WT_MapViewRoadFeatureCollection.Region.SA, WT_MapViewRoadFeatureCollection.Region.EI, WT_MapViewRoadFeatureCollection.Region.EN, WT_MapViewRoadFeatureCollection.Region.EE, WT_MapViewRoadFeatureCollection.Region.AF, WT_MapViewRoadFeatureCollection.Region.ME, WT_MapViewRoadFeatureCollection.Region.OC],
             [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY]
         );
         this._roadLabelData = [

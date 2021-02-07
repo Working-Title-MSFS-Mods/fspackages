@@ -5,14 +5,13 @@ class WT_MapViewRoadFeatureCollection {
     constructor(regions, types) {
         this._regions = regions;
         this._types = types;
-        this._rawData = [];
         this._features = [];
         this._bvh = [];
         this._bvhLoadCount = 0;
         this._lodDataLoadCount = 0;
+        this._loadStarted = false;
         this._isReady = false;
         this._initArrays();
-        this._openFiles();
 
         this._tempBoundingBox = [[0, 0, 0], [0, 0, 0]];
         this._tempVector = new WT_GVector3(0, 0, 0);
@@ -21,15 +20,21 @@ class WT_MapViewRoadFeatureCollection {
 
     _initArrays() {
         for (let region of this._regions) {
-            this._rawData[region] = [];
             this._features[region] = [];
             this._bvh[region] = [];
             for (let type of this._types) {
-                this._rawData[region][type] = [];
                 this._features[region][type] = [];
                 this._bvh[region][type] = [];
             }
         }
+    }
+
+    /**
+     * Checks whether loading of road feature data has started.
+     * @returns {Boolean} whether loading of road feature data has started.
+     */
+    hasLoadStarted() {
+        return this._loadStarted;
     }
 
     /**
@@ -48,8 +53,8 @@ class WT_MapViewRoadFeatureCollection {
     }
 
     _loadLODData(region, type, lod, data) {
-        this._rawData[region][type][lod] = JSON.parse(data);
-        this._features[region][type][lod] = [];
+        let json = JSON.parse(data);
+        this._features[region][type][lod] = json.features;
         this._lodDataLoadCount++;
         this._checkReady();
     }
@@ -125,7 +130,7 @@ class WT_MapViewRoadFeatureCollection {
         let file = `${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}`;
 
         for (let i = 0; i < WT_MapViewRoadFeatureCollection.LOD_COUNT; i++) {
-            await this._openFile(`${dir}/${file}_lod${i}.json`, this._loadLODData.bind(this, region, type, i));
+            await this._openFile(`${dir}/${file}_lod${i}.geojson`, this._loadLODData.bind(this, region, type, i));
             await this._openFile(`${dir}/${file}_lod${i}_bvh.json`, this._loadBVHData.bind(this, region, type, i));
         }
     }
@@ -169,24 +174,21 @@ class WT_MapViewRoadFeatureCollection {
         if (!this.isReady()){
             return undefined;
         }
-        return this._rawData.length;
+        return this._features.length;
     }
 
     /**
-     *
-     * @param {String[]} rawData
-     * @param {WT_MapViewRoadFeature[]} features
-     * @param {Number} index
-     * @returns {WT_MapViewRoadFeature}
+     * Starts the process of loading data. Once all data have been successfully loaded, the isReady() method
+     * will return true and this collection can be searched. If loading has previously been started, calling
+     * this method again has no effect.
      */
-    _getFeature(rawData, features, index) {
-        let feature = features[index];
-        if (!feature) {
-            feature = JSON.parse(rawData.features[index]);
-            features[index] = feature;
-            rawData.features[index] = null;
+    startLoad() {
+        if (this.hasLoadStarted()) {
+            return;
         }
-        return feature;
+
+        this._loadStarted = true;
+        this._openFiles();
     }
 
     /**
@@ -237,14 +239,13 @@ class WT_MapViewRoadFeatureCollection {
     /**
      *
      * @param {WT_MapViewRoadDataBVHNode} leaf
-     * @param {String[]} rawData
      * @param {WT_MapViewRoadFeature[]} features
      * @param {WT_GeoPoint} center
      * @param {WT_NumberUnit} minLength
      * @param {WT_MapViewRoadFeature[]} results
      */
-    _searchLeaf(leaf, rawData, features, center, minLength, results) {
-        let feature = this._getFeature(rawData, features, leaf.featureIndex);
+    _searchLeaf(leaf, features, center, minLength, results) {
+        let feature = features[leaf.featureIndex];
         if (minLength.compare(feature.properties.length) <= 0) {
             this._insertInOrder(results, feature, center);
         }
@@ -252,7 +253,6 @@ class WT_MapViewRoadFeatureCollection {
 
     /**
      *
-     * @param {String[]} rawData
      * @param {WT_MapViewRoadFeature[]} features
      * @param {WT_GeoPoint} center
      * @param {WT_GVector3} centerCartesian
@@ -261,20 +261,19 @@ class WT_MapViewRoadFeatureCollection {
      * @param {WT_MapViewRoadFeature[]} results
      * @param {WT_MapViewRoadDataBVHNode} node
      */
-    _searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, node) {
+    _searchBVHHelper(features, center, centerCartesian, radiusCartesian, minLength, results, node) {
         if (this._doesIntersect(centerCartesian, radiusCartesian, node.bbox)) {
             if (node.featureIndex !== undefined) {
-                this._searchLeaf(node, rawData, features, center, minLength, results);
+                this._searchLeaf(node, features, center, minLength, results);
             } else {
-                this._searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, node.left);
-                this._searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, node.right);
+                this._searchBVHHelper(features, center, centerCartesian, radiusCartesian, minLength, results, node.left);
+                this._searchBVHHelper(features, center, centerCartesian, radiusCartesian, minLength, results, node.right);
             }
         }
     }
 
     /**
      *
-     * @param {String[]} rawData
      * @param {WT_MapViewRoadFeature[]} features
      * @param {WT_GeoPoint} center
      * @param {Number} radius
@@ -285,9 +284,8 @@ class WT_MapViewRoadFeatureCollection {
         let centerCartesian = center.cartesian(this._tempVector);
         let radiusCartesian = Math.sqrt(2 * (1 - Math.cos(radius.asUnit(WT_Unit.GA_RADIAN))));
 
-        let rawData = this._rawData[region][type][lod];
         let features = this._features[region][type][lod];
-        this._searchBVHHelper(rawData, features, center, centerCartesian, radiusCartesian, minLength, results, this._bvh[region][type][lod]);
+        this._searchBVHHelper(features, center, centerCartesian, radiusCartesian, minLength, results, this._bvh[region][type][lod]);
     }
 
     /**
@@ -388,14 +386,15 @@ class WT_MapViewRoadLabelCollection {
      * @param {{createLabel(roadType:Number, routeType:String, location:WT_GeoPointReadOnly, name:String):WT_MapViewRoadLabel}} labelFactory - a factory with which to create WT_MapViewRoadLabel objects from the data in the new collection.
      */
     constructor(path, labelFactory) {
+        this._filePath = path;
         this._labelFactory = labelFactory;
         this._candidatePruneHandler = new WT_MapViewRoadLabelCandidatePruneHandler();
 
         this._nextSearchID = 0;
         this._searchesToCancel = new Set();
 
+        this._loadStarted = false;
         this._isReady = false;
-        this._openFile(path);
 
         this._tempVector = new WT_GVector3(0, 0, 0);
         this._tempNM = new WT_NumberUnit(0, WT_Unit.NMILE);
@@ -431,11 +430,33 @@ class WT_MapViewRoadLabelCollection {
     }
 
     /**
+     * Checks whether loading of road label data has started.
+     * @returns {Boolean} whether loading of road label data has started.
+     */
+    hasLoadStarted() {
+        return this._loadStarted;
+    }
+
+    /**
      * Checks whether all road label data have been loaded and processed.
      * @returns {Boolean} whether road label data have been loaded and processed.
      */
     isReady() {
         return this._isReady;
+    }
+
+    /**
+     * Starts the process of loading data. Once all data have been successfully loaded, the isReady() method
+     * will return true and this collection can be searched. If loading has previously been started, calling
+     * this method again has no effect.
+     */
+    startLoad() {
+        if (this.hasLoadStarted()) {
+            return;
+        }
+
+        this._loadStarted = true;
+        this._openFile(this._filePath);
     }
 
     _pruneCandidatesLoop(id, candidates, head, map, toKeep, searchRadius, labelDistance, repeatDistance, resolve, reject) {
