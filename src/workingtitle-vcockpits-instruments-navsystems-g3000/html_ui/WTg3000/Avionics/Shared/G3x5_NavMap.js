@@ -102,7 +102,9 @@ class WT_G3x5_NavMap {
         this.model.addModule(new WT_MapModelBordersModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
         this.model.addModule(new WT_MapModelCitiesModule());
-        this.model.addModule(new WT_MapModelRoadsModule());
+        if (this._layerOptions.roads) {
+            this.model.addModule(new WT_MapModelRoadsModule());
+        }
     }
 
     _loadRoadData() {
@@ -120,11 +122,12 @@ class WT_G3x5_NavMap {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
-        this._loadRoadData();
-
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
-        this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        if (this._layerOptions.roads) {
+            this._loadRoadData();
+            this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
@@ -230,9 +233,11 @@ class WT_G3x5_NavMap {
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_KEY, "cities", "mediumRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_DEFAULT));
         this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY, "cities", "smallRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_SMALL_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "road", "roads", "show", WT_G3x5_NavMap.ROAD_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY, "roads", "highwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
+        if (this._layerOptions.roads) {
+            this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "road", "roads", "show", WT_G3x5_NavMap.ROAD_SHOW_KEY, this._dcltrSetting));
+            this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY, "roads", "highwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT));
+            this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
+        }
 
         this.controller.init();
         this.controller.update();
@@ -264,7 +269,8 @@ class WT_G3x5_NavMap {
 WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT = {
     miniCompass: true,
     rangeDisplay: false,
-    windData: true
+    windData: true,
+    roads: true
 };
 WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(0),

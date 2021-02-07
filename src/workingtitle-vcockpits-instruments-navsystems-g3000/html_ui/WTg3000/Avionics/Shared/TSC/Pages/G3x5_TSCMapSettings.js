@@ -215,21 +215,6 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     _initLandTab() {
         this._landTab = new WT_G3x5_TSCMapSettingsTab("Land", this.parentPage);
 
-        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Roads",
-            WT_G3x5_NavMap.ROAD_SHOW_KEY, [
-                WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY,
-                WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY,
-            ], [
-                WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_MAX,
-                WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX,
-            ], [
-                "Highway",
-                "Primary Road"
-            ], "Road Settings", [
-                "Map Highway Range",
-                "Map Primary Road Range"
-            ]
-        ));
         this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Cities",
             WT_G3x5_NavMap.CITY_SHOW_KEY, [
                 WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY,
@@ -434,6 +419,48 @@ class WT_G3x5_TSCPFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLEle
 customElements.define("tsc-pfdmapsettings", WT_G3x5_TSCPFDMapSettingsHTMLElement);
 
 class WT_G3x5_TSCMFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLElement {
+    _initLandTab() {
+        this._landTab = new WT_G3x5_TSCMapSettingsTab("Land", this.parentPage);
+
+        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Roads",
+            WT_G3x5_NavMap.ROAD_SHOW_KEY, [
+                WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY,
+                WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY,
+            ], [
+                WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_MAX,
+                WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX,
+            ], [
+                "Highway",
+                "Primary Road"
+            ], "Road Settings", [
+                "Map Highway Range",
+                "Map Primary Road Range"
+            ]
+        ));
+        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsMultiRangeTabRow("Cities",
+            WT_G3x5_NavMap.CITY_SHOW_KEY, [
+                WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY,
+                WT_G3x5_NavMap.CITY_MEDIUM_RANGE_KEY,
+                WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY
+            ], [
+                WT_G3x5_NavMap.CITY_LARGE_RANGE_MAX,
+                WT_G3x5_NavMap.CITY_MEDIUM_RANGE_MAX,
+                WT_G3x5_NavMap.CITY_SMALL_RANGE_MAX
+            ], [
+                "Large City",
+                "Medium City",
+                "Small City"
+            ], "City Settings", [
+                "Map Large City Range",
+                "Map Medium City Range",
+                "Map Small City Range"
+            ]
+        ));
+        this._landTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("States/Provinces", WT_G3x5_NavMap.BORDERS_SHOW_KEY, WT_G3x5_NavMap.BORDERS_RANGE_KEY, WT_G3x5_NavMap.BORDERS_RANGE_MAX, "Map State/Province Range"));
+
+        this._tabbedContent.addTab(this._landTab);
+    }
+
     _initOtherTab() {
         this._otherTab = new WT_G3x5_TSCMapSettingsTab("Other", this.parentPage);
 
