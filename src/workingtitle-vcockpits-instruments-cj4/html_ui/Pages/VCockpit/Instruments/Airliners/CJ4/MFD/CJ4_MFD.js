@@ -516,6 +516,11 @@ class CJ4_MFD extends BaseAirliners {
         this.map.setSymbol(CJ4_MapSymbol.AIRWAYS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.AIRSPACES, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.NAVAIDS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS) == "ON") ? true : false);
+        this.map.setSymbol(CJ4_MapSymbol.TERMWPTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_TERMWPTS) == "ON") ? true : false);
+        this.map.setSymbol(CJ4_MapSymbol.MISSEDAPPR, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_MISSEDAPPR) == "ON") ? true : false);
+        this.map.setSymbol(CJ4_MapSymbol.NDBS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_NDBS) == "ON") ? true : false);
+        WTDataStore.set("WT_CJ4_RANGE_SEL_DISABLED", _dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_RNGSEL) == "ON" ? 0 : 1);
+        
         let sysMode = _dict.get(CJ4_PopupMenu_Key.SYS_SRC);
         if (sysMode == "OFF") {
             this.isExtended = true;
@@ -578,6 +583,11 @@ class CJ4_MFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS, (this.map.hasSymbol(CJ4_MapSymbol.AIRWAYS)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES, (this.map.hasSymbol(CJ4_MapSymbol.AIRSPACES)) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS, (this.map.hasSymbol(CJ4_MapSymbol.NAVAIDS)) ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_TERMWPTS, (this.map.hasSymbol(CJ4_MapSymbol.TERMWPTS)) ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_MISSEDAPPR, (this.map.hasSymbol(CJ4_MapSymbol.MISSEDAPPR)) ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_NDBS, (this.map.hasSymbol(CJ4_MapSymbol.NDBS)) ? "ON" : "OFF");
+        _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_RNGSEL, (WTDataStore.get("WT_CJ4_RANGE_SEL_DISABLED", 0)) ? "OFF" : "ON");
+
         if (this.isExtended)
             _dict.set(CJ4_PopupMenu_Key.SYS_SRC, "OFF");
         else if (this.showChecklist)
