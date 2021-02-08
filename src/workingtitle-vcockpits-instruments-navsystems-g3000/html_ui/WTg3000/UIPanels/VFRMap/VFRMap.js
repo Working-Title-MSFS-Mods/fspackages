@@ -407,7 +407,8 @@ class WT_VFRMapWT extends WT_VFRMap {
             this._getRoadMaxQualityLODFromConfig(modConfig)
         );
         let labelData = [
-            new WT_MapViewUSInterstateRouteCollection()
+            new WT_MapViewUSRouteCollection(),
+            new WT_MapViewCanadaRouteCollection()
         ];
 
         return {feature: featureData, label: labelData};

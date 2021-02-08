@@ -409,19 +409,14 @@ class WT_MapViewRoadLabelCollection {
 
         this._tempVector = new WT_GVector3(0, 0, 0);
         this._tempNM = new WT_NumberUnit(0, WT_Unit.NMILE);
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
     _loadData(data) {
         let json = JSON.parse(data);
         this._candidates = json.candidates;
         this._restrictions = json.restrictions;
-        let labelFactory = this._labelFactory;
-        this._candidatesTree = new WT_GeoKDTree(this._candidates.list, this._candidates.root, {
-            _tempGeoPoint: new WT_GeoPoint(0, 0),
-            create(node) {
-                return labelFactory.createLabel(node.roadType, node.routeType, this._tempGeoPoint.set(node.location[1], node.location[0]).readonly(), node.name);
-            }
-        });
+        this._candidatesTree = new WT_GeoKDTree(this._candidates.list, this._candidates.root);
         this._restrictionsTree = new WT_GeoKDTree(this._restrictions.list, this._restrictions.root);
 
         this._isReady = true;
@@ -479,8 +474,9 @@ class WT_MapViewRoadLabelCollection {
         let t0 = performance.now();
         while (head < candidates.length && performance.now() - t0 < WT_MapViewRoadLabelCollection.PRUNE_TIME_BUDGET) {
             let candidate = candidates[head];
+            let searchCenter = this._tempGeoPoint.set(candidate.location[1], candidate.location[0]);
             this._candidatePruneHandler.setContext(candidate, map, toKeep, labelDistance, repeatDistance);
-            this._candidatesTree.search(candidate.location, searchRadius, this._candidatePruneHandler, false);
+            this._candidatesTree.search(searchCenter, searchRadius, this._candidatePruneHandler, false);
             map.delete(candidate);
             do {
                 head++;
@@ -522,6 +518,10 @@ class WT_MapViewRoadLabelCollection {
     async _doSearch(id, center, radius, typeBit, restrictionDistance, labelDistance, repeatDistance) {
         let candidates = this._candidatesTree.search(center, radius, new WT_MapViewRoadLabelCandidateSearchHandler(this._restrictionsTree, typeBit, restrictionDistance));
         let results = await this._pruneCandidates(id, candidates, labelDistance, repeatDistance);
+        for (let i = 0; i < results.length; i++) {
+            let node = results[i];
+            results[i] = this._labelFactory.createLabel(node.roadType, node.routeType, this._tempGeoPoint.set(node.location[1], node.location[0]).readonly(), node.name);
+        }
         return results;
     }
 
@@ -587,11 +587,12 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
         this._restrictionDistance = restrictionDistance;
         this._restrictionSearchHandler = new WT_MapViewRoadLabelRestrictionSearchHandler(typeBit);
         this._tempArray = [];
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
     /**
      *
-     * @param {WT_MapViewRoadLabel} object
+     * @param {WT_GeoKDTreeNode} object
      * @param {WT_GeoPoint} center
      * @param {WT_NumberUnit} radius
      * @param {WT_MapViewRoadLabel[]} results
@@ -599,7 +600,8 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
     onResultFound(object, center, radius, results) {
         let response = WT_GeoKDTree.ResultResponse.EXCLUDE;
         if (((1 << object.roadType) & this._typeBit) !== 0) {
-            let result = this._restrictionsTree.search(object.location, this._restrictionDistance, this._restrictionSearchHandler, true, this._tempArray);
+            let location = this._tempGeoPoint.set(object.location[1], object.location[0]);
+            let result = this._restrictionsTree.search(location, this._restrictionDistance, this._restrictionSearchHandler, true, this._tempArray);
             let collision = result.length > 0;
             if (collision) {
                 result.pop();
@@ -612,12 +614,12 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
 
     /**
      *
-     * @param {WT_MapViewRoadLabel} object
+     * @param {WT_GeoKDTreeNode} object
      * @param {WT_GeoPoint} center
      * @param {WT_NumberUnit} radius
      */
     sortKey(object, center, radius) {
-        return object.location.distance(center);
+        return center.distance(object.location[1], object.location[0]);
     }
 }
 
@@ -626,25 +628,27 @@ class WT_MapViewRoadLabelCandidatePruneHandler extends WT_GeoKDTreeSearchHandler
         super();
 
         /**
-         * @type {WT_MapViewRoadLabel}
+         * @type {WT_GeoKDTreeNode}
          */
-        this._label = null;
+        this._candidate = null;
         this._array = null;
         this._map = null;
         this._labelDistance = null;
         this._repeatDistance = null;
+
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
     /**
      *
-     * @param {WT_MapViewRoadLabel} label
+     * @param {WT_GeoKDTreeNode} candidate
      * @param {Map<WT_MapViewRoadLabel,Number>} map
      * @param {Set<Number>} toKeep
      * @param {WT_NumberUnit} labelDistance
      * @param {WT_NumberUnit} repeatDistance
      */
-    setContext(label, map, toKeep, labelDistance, repeatDistance) {
-        this._label = label;
+    setContext(candidate, map, toKeep, labelDistance, repeatDistance) {
+        this._candidate = candidate;
         this._map = map;
         this._toKeep = toKeep;
         this._labelDistance = labelDistance;
@@ -653,15 +657,16 @@ class WT_MapViewRoadLabelCandidatePruneHandler extends WT_GeoKDTreeSearchHandler
 
     /**
      *
-     * @param {WT_MapViewRoadLabel} object
+     * @param {WT_GeoKDTreeNode} object
      * @param {WT_GeoPoint} center
      * @param {WT_NumberUnit} radius
      * @param {WT_MapViewRoadLabel[]} results
      */
     onResultFound(object, center, radius, results) {
-        if (object !== this._label) {
-            let distance = object.name === this._label.name ? this._repeatDistance : this._labelDistance;
-            if (distance.compare(object.location.distance(this._label.location), WT_Unit.GA_RADIAN) > 0) {
+        if (object !== this._candidate) {
+            let distance = this._tempGeoPoint.set(object.location[1], object.location[0]).distance(this._candidate.location[1], this._candidate.location[0]);
+            let thresholdDistance = object.name === this._candidate.name ? this._repeatDistance : this._labelDistance;
+            if (thresholdDistance.compare(distance, WT_Unit.GA_RADIAN) > 0) {
                 let index = this._map.get(object);
                 if (index !== undefined && this._toKeep.has(index)) {
                     this._toKeep.delete(index);

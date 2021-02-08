@@ -68,7 +68,8 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
             this._getRoadMaxQualityLODFromConfig(modConfig)
         );
         this._roadLabelData = [
-            new WT_MapViewUSInterstateRouteCollection()
+            new WT_MapViewUSRouteCollection(),
+            new WT_MapViewCanadaRouteCollection()
         ];
 
         this._roadFeatureData.startLoad();
@@ -98,7 +99,6 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
      * @param {HTMLElement} root
      */
     init(root) {
-        console.log(WT_g3000_ModConfig.INSTANCE);
         this._htmlElement = root;
 
         this._initBorderData();
