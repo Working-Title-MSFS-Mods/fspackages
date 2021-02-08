@@ -2,16 +2,17 @@
  * Loads geographic border data with LOD levels and stores the data for future access.
  */
 class WT_MapViewBorderData {
-    /**
-     * @param {Number} admin1ScaleRankThreshold - the scale rank threshold by which to filter admin1 borders. All admin1 borders
-     *                                            with scalerank above this value will be discarded before processing.
-     * @param {Number[]} lodSimplifyThresholds - the geometry simplification thresholds for each LOD level. The length of this array
-     *                                           determines the number of LOD levels. Each element in the array should be the
-     *                                           Visvalingam threshold (in steradians) for the associated LOD level.
-     */
     constructor() {
+        this._loadStarted = false;
         this._isReady = false;
-        this._loadBorderJSON(WT_MapViewBorderData.DATA_FILE_PATH);
+    }
+
+    /**
+     * Checks whether loading of border data has started.
+     * @returns {Boolean} whether loading of border data has started.
+     */
+    hasLoadStarted() {
+        return this._loadStarted;
     }
 
     /**
@@ -22,7 +23,12 @@ class WT_MapViewBorderData {
         return this._isReady;
     }
 
-    _loadBorderJSON(path) {
+    _loadData(data) {
+        this._data = JSON.parse(data);
+        this._isReady = true;
+    }
+
+    _openFile(path) {
         let request = new XMLHttpRequest();
         request.overrideMimeType("application/json");
 
@@ -35,33 +41,18 @@ class WT_MapViewBorderData {
         request.send();
     }
 
-    _loadData(data) {
-        this._data = JSON.parse(data);
-        this._isReady = true;
-    }
-
     /**
-     * Counts the number of LOD levels encoded in these data.
-     * @returns {Number} the number of LOD levels encoded in these data.
+     * Starts the process of loading data. Once all data have been successfully loaded, the isReady() method
+     * will return true and this collection can be searched. If loading has previously been started, calling
+     * this method again has no effect.
      */
-    countLODLevels() {
-        if (!this.isReady()){
-            return undefined;
+    startLoad() {
+        if (this.hasLoadStarted()) {
+            return;
         }
-        return this._data.lodSimplifyThresholds.length;
-    }
 
-    /**
-     * Gets the geometry simplification threshold for an LOD level. Geometry is simplified at each LOD level using
-     * the Visvalingam method.
-     * @param {Number} lod - the LOD level.
-     * @returns {Number} the simplification threshold, in steradians.
-     */
-    getSimplifyThreshold(lod) {
-        if (!this.isReady()){
-            return undefined;
-        }
-        return this._data.lodSimplifyThresholds[lod];
+        this._loadStarted = true;
+        this._openFile(WT_MapViewBorderData.DATA_FILE_PATH);
     }
 
     /**

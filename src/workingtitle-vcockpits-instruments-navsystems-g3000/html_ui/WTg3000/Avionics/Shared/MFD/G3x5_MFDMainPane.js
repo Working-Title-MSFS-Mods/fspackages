@@ -7,7 +7,6 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         this._icaoSearchers = icaoSearchers;
         this._flightPlanManager = flightPlanManager;
         this._citySearcher = citySearcher;
-        this._borderData = new WT_MapViewBorderData();
 
         this._mode = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL;
 
@@ -39,6 +38,11 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
      */
     get controller() {
         return this._controller;
+    }
+
+    _initBorderData() {
+        this._borderData = new WT_MapViewBorderData();
+        this._borderData.startLoad();
     }
 
     _getRoadRegionsFromConfig(modConfig) {
@@ -97,6 +101,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         console.log(WT_g3000_ModConfig.INSTANCE);
         this._htmlElement = root;
 
+        this._initBorderData();
         this._initRoadData();
         this._initHalfPanes();
         this._initController();

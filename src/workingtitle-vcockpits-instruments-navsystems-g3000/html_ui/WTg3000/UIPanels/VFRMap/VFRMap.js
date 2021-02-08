@@ -378,6 +378,12 @@ class WT_VFRMapWT extends WT_VFRMap {
         this.model.roads.primaryRange = WT_VFRMapWT.ROAD_PRIMARY_RANGE;
     }
 
+    _initBorderData() {
+        let borderData = new WT_MapViewBorderData();
+        borderData.startLoad();
+        return borderData;
+    }
+
     _getRoadRegionsFromConfig(modConfig) {
         let regions = [];
         for (let regionName in WT_MapViewRoadFeatureCollection.Region) {
@@ -417,7 +423,7 @@ class WT_VFRMapWT extends WT_VFRMap {
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
-        let borderData = new WT_MapViewBorderData();
+        let borderData = this._initBorderData();
         let roadData = this._initRoadData();
         this._loadRoadData(roadData.feature, roadData.label);
 
