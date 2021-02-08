@@ -181,12 +181,6 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
   width: 10%;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-col-colon {
-  display: inline-block;
-  text-align: left;
-  width: 1%;
-}
-
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-col-right {
   display: inline-block;
   text-align: right;

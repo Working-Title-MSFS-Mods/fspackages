@@ -2632,12 +2632,10 @@ class CJ4_SystemFMS extends NavSystemElement {
                         if (groundSpeed >= 50 && activeWaypointDistance > 0) {
                             activeWaypointETEValue = new Date(this.calcETEseconds(activeWaypointDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
                         }
-
                         let nextWaypointETEValue = "-:--";
                         if (groundSpeed >= 50 && nextWaypointDistance > 0) {
                             nextWaypointETEValue = new Date(this.calcETEseconds(nextWaypointDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
                         }
-
                         let destinationWaypointETEValue = "-:--";
                         if (groundSpeed >= 50 && destinationDistance > 0) {
                             destinationWaypointETEValue = new Date(this.calcETEseconds(destinationDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
@@ -2745,43 +2743,100 @@ class CJ4_SystemFMS extends NavSystemElement {
                         
                         // VNAV WINDOW
                         //
+                       /*  let todDistance = 0;
+                        let timeToTOD = 0;
+                        let descentAngle = 0;
+                        let descentRate = 0;
+                        let constraintName = "";
+                        let fptaConstraint = "";
+                        let fptaDistance = 0;
+                        let fptaTime = 0; */
+                        
+                        const data = JSON.parse(localStorage.getItem("VNAVWINDOWDATA"));
+                        let todDistance = data.toddistance.toFixed(1);
+                        let timeToTOD = new Date(this.calcETEseconds(todDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+                        let descentAngle = data.fpa;
+                        let descentRate = data.descentrate;
+                        let constraintName = data.fptaname;
+                        let fptaConstraint = data.fptaconstraint ? data.fptaconstraint : 0;
+                        let fptaDistance = data.fptaDistance.toFixed(1);
+                        let fptaTime = new Date(this.calcETEseconds(fptaDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+
+                        let todText = "TOD";
+                        let fpmText = "FPM";
+                        let nmText = "NM";
+                        let slashText = "/";
+                        console.log("TOD " + todDistance);
+                        if (todDistance < .1) {
+                            todText = "";
+                            todDistance = "";
+                            timeToTOD = "";
+                            nmText = "";
+                            slashText = "";
+                        } else {
+                            todText = "TOD";
+                            nmText = "NM";
+                            slashText = "/";
+                        }
+
+                        if (descentAngle === 0) {
+                            descentAngle = 0;
+                        } else {
+                            descentAngle = descentAngle.toFixed(1) + String.fromCharCode(176);
+                        }
+
+                        if (descentRate === 0) {
+                            descentRate = "";
+                            fpmText = "";
+                        } else{
+                            fpmText = "FPM";
+                        }
+
+                        if (fptaDistance === 0) {
+                            fptaDistance = 0;
+                            fptaTime = 0;
+                            nmText = "";
+                            slashText = "";
+                        } else {
+                            nmText = "NM";
+                            slashText = "/";
+                        }
 
                         this._previousWaypointContainer // PREVIOUS ETA SHOULD BE  BLANK
                         .querySelector(".cj4x-navigation-data-waypoint-eta")
                         .textContent = "";
                         
                         const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavTODorDirect.textContent = "DIRECT";
-                            vnavTODorDirect.setAttribute("style", "color: green");
+                            vnavTODorDirect.textContent = ""; //DIRECT would go here, do it later
+                            vnavTODorDirect.setAttribute("style", "color: #11d011");
 
                         const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavFix.textContent = "CAKNU";
-                            vnavFix.setAttribute("style", "color: green");
+                            vnavFix.textContent = constraintName;
+                            vnavFix.setAttribute("style", "color: #11d011");
 
                         this._destinationWaypointContainer
                             .querySelector(".cj4x-navigation-data-waypoint-eta")
                             .textContent = "";
 
                         const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
-                            vnavFixETADist.textContent = activeWaypointETEValue + "/" + activeWaypointDistance + "NM";
-                            vnavFixETADist.setAttribute("style", "color: green");
+                            vnavFixETADist.textContent = fptaTime + slashText + fptaDistance + nmText;
+                            vnavFixETADist.setAttribute("style", "color: #11d011");
 
                         const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
-                            vnavFixConstraint.textContent = "12000";
-                            vnavFixConstraint.setAttribute("style", "color: green");
+                            vnavFixConstraint.textContent = fptaConstraint;
+                            vnavFixConstraint.setAttribute("style", "color: #11d011");
 
                         const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
-                            vnavFixAngleRate.textContent = "1.9 2800";
-                            vnavFixAngleRate.setAttribute("style", "color: green");
+                            vnavFixAngleRate.textContent = descentAngle + String.fromCharCode(2) + String.fromCharCode(2) + descentRate + fpmText;
+                            vnavFixAngleRate.setAttribute("style", "color: #11d011");
 
-                        
                         const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                            vnavAdvisoryDescent.textContent = "DES";
-                            vnavAdvisoryDescent.setAttribute("style", "color green");
+                            vnavAdvisoryDescent.textContent = todText;
+                            vnavAdvisoryDescent.setAttribute("style", "color: #11d011");
 
                         const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
-                            vnavAdvisoryDescentTimeDistance.textContent = "00:50/  312NM";
-                            vnavAdvisoryDescentTimeDistance.setAttribute("style", "color green");
+                            vnavAdvisoryDescentTimeDistance.textContent = timeToTOD + slashText + todDistance + nmText;
+                            vnavAdvisoryDescentTimeDistance.setAttribute("style", "color: #11d011");
                         
 
 
