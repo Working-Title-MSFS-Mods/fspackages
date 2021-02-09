@@ -60,17 +60,35 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
         return 4 - modConfig.roads.quality;
     }
 
+    _getRoadLabelDataFromRegions(regions) {
+        let data = [];
+        for (let region of regions) {
+            switch (region) {
+                case WT_MapViewRoadFeatureCollection.Region.NA:
+                    data.push(new WT_MapViewUSRouteCollection());
+                    data.push(new WT_MapViewCanadaRouteCollection());
+                    break;
+                case WT_MapViewRoadFeatureCollection.Region.EI:
+                    data.push(new WT_MapViewIcelandRouteCollection());
+                    data.push(new WT_MapViewUKIrelandRouteCollection());
+                    break;
+                case WT_MapViewRoadFeatureCollection.Region.OC:
+                    data.push(new WT_MapViewAURouteCollection());
+                    break;
+            }
+        }
+        return data;
+    }
+
     _initRoadData() {
         let modConfig = WT_g3000_ModConfig.INSTANCE;
+        let regions = this._getRoadRegionsFromConfig(modConfig);
         this._roadFeatureData = new WT_MapViewRoadFeatureCollection(
-            this._getRoadRegionsFromConfig(modConfig),
+            regions,
             [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY],
             this._getRoadMaxQualityLODFromConfig(modConfig)
         );
-        this._roadLabelData = [
-            new WT_MapViewUSRouteCollection(),
-            new WT_MapViewCanadaRouteCollection()
-        ];
+        this._roadLabelData = this._getRoadLabelDataFromRegions(regions);
 
         this._roadFeatureData.startLoad();
         for (let labelData of this._roadLabelData) {

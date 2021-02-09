@@ -399,17 +399,35 @@ class WT_VFRMapWT extends WT_VFRMap {
         return 4 - modConfig.roads.quality;
     }
 
+    _getRoadLabelDataFromRegions(regions) {
+        let data = [];
+        for (let region of regions) {
+            switch (region) {
+                case WT_MapViewRoadFeatureCollection.Region.NA:
+                    data.push(new WT_MapViewUSRouteCollection());
+                    data.push(new WT_MapViewCanadaRouteCollection());
+                    break;
+                case WT_MapViewRoadFeatureCollection.Region.EI:
+                    data.push(new WT_MapViewIcelandRouteCollection());
+                    data.push(new WT_MapViewUKIrelandRouteCollection());
+                    break;
+                case WT_MapViewRoadFeatureCollection.Region.OC:
+                    data.push(new WT_MapViewAURouteCollection());
+                    break;
+            }
+        }
+        return data;
+    }
+
     _initRoadData() {
         let modConfig = WT_g3000_ModConfig.INSTANCE;
+        let regions = this._getRoadRegionsFromConfig(modConfig);
         let featureData = new WT_MapViewRoadFeatureCollection(
-            this._getRoadRegionsFromConfig(modConfig),
+            regions,
             [WT_MapViewRoadFeatureCollection.Type.HIGHWAY, WT_MapViewRoadFeatureCollection.Type.PRIMARY],
             this._getRoadMaxQualityLODFromConfig(modConfig)
         );
-        let labelData = [
-            new WT_MapViewUSRouteCollection(),
-            new WT_MapViewCanadaRouteCollection()
-        ];
+        let labelData = this._getRoadLabelDataFromRegions(regions);
 
         return {feature: featureData, label: labelData};
     }
