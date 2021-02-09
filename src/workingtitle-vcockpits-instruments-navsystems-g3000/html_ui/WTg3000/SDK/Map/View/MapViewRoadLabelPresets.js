@@ -8,7 +8,9 @@ class WT_MapViewGenericInternationalHighwayLabel extends WT_MapViewRoadImageLabe
 WT_MapViewGenericInternationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_INTERNATIONAL_HIGHWAY.png";
 WT_MapViewGenericInternationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    fontColor: "black",
+    fontOutlineWidth: 0,
+    backgroundSize: 45
 };
 
 class WT_MapViewGenericNationalHighwayLabel extends WT_MapViewRoadImageLabel {
