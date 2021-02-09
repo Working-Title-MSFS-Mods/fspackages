@@ -74,6 +74,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.OC:
                     data.push(new WT_MapViewAURouteCollection());
+                    data.push(new WT_MapViewNZRouteCollection());
                     break;
             }
         }

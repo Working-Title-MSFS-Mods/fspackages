@@ -1,3 +1,5 @@
+// GENERIC LABELS
+
 class WT_MapViewGenericInternationalHighwayLabel extends WT_MapViewRoadImageLabel {
     constructor(roadType, location, name) {
         super(roadType, location, name, WT_MapViewGenericInternationalHighwayLabel.IMAGE_PATH);
@@ -40,6 +42,8 @@ WT_MapViewGenericLocalHighwayLabel.OPTION_DEFAULTS = {
     fontColor: "black",
     fontOutlineWidth: 0
 };
+
+// UNITED STATES
 
 class WT_MapViewUSRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
@@ -93,6 +97,8 @@ WT_MapViewUSRouteLabel.OPTION_DEFAULTS = {
     fontOutlineWidth: 0
 };
 
+// CANADA
+
 class WT_MapViewCanadaRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
         super(WT_MapViewCanadaRouteCollection.DATA_FILE_PATH, {
@@ -120,6 +126,8 @@ WT_MapViewCanadaRouteCollection.RouteType = {
     NATIONAL_HIGHWAY: "nat_highway",
     PROVINCIAL_HIGHWAY: "prov_highway"
 };
+
+// ICELAND
 
 class WT_MapViewIcelandRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
@@ -151,6 +159,8 @@ WT_MapViewIcelandRouteLabel.OPTION_DEFAULTS = {
     fontColor: "black",
     fontOutlineWidth: 0
 };
+
+// UK AND IRELAND
 
 class WT_MapViewUKIrelandRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
@@ -207,6 +217,8 @@ WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     fontOutlineWidth: 0,
     backgroundSize: 45
 };
+
+// AUSTRALIA
 
 class WT_MapViewAURouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
@@ -291,6 +303,38 @@ class WT_MapViewAUStateRouteLabel extends WT_MapViewRoadImageLabel {
 }
 WT_MapViewAUStateRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_AU_STATEROUTE.png";
 WT_MapViewAUStateRouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0
+};
+
+// NEW ZEALAND
+
+class WT_MapViewNZRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewNZRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                return new WT_MapViewNZStateHighwayLabel(roadType, location, name);
+            }
+        });
+    }
+}
+WT_MapViewNZRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/NZ_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewNZRouteCollection.RouteType = {
+    STATE_HIGHWAY: "state_highway",
+};
+
+class WT_MapViewNZStateHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewNZStateHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewNZStateHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewNZStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_NZ_STATEHIGHWAY.png";
+WT_MapViewNZStateHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontOutlineWidth: 0
 };

@@ -413,6 +413,7 @@ class WT_VFRMapWT extends WT_VFRMap {
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.OC:
                     data.push(new WT_MapViewAURouteCollection());
+                    data.push(new WT_MapViewNZRouteCollection());
                     break;
             }
         }
