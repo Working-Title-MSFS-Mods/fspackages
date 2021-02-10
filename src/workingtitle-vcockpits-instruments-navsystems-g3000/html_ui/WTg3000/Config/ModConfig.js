@@ -37,6 +37,7 @@ WT_g3000_ModConfig.SECTIONS = [
         quality: {default: 3, auto: true},
         showInVFRMap: {default: true, auto: true},
         loadNA: {default: true, auto: true},
+        loadCA: {default: true, auto: true},
         loadSA: {default: true, auto: true},
         loadEI: {default: true, auto: true},
         loadEN: {default: true, auto: true},

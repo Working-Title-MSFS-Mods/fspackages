@@ -407,6 +407,9 @@ class WT_VFRMapWT extends WT_VFRMap {
                     data.push(new WT_MapViewUSRouteCollection());
                     data.push(new WT_MapViewCanadaRouteCollection());
                     break;
+                case WT_MapViewRoadFeatureCollection.Region.CA:
+                    data.push(new WT_MapViewMexicoRouteCollection());
+                    break;
                 case WT_MapViewRoadFeatureCollection.Region.EI:
                     data.push(new WT_MapViewIcelandRouteCollection());
                     data.push(new WT_MapViewUKIrelandRouteCollection());

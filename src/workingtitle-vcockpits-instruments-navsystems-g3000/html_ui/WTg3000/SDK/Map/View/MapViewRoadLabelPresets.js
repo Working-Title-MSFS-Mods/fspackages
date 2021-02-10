@@ -127,6 +127,40 @@ WT_MapViewCanadaRouteCollection.RouteType = {
     PROVINCIAL_HIGHWAY: "prov_highway"
 };
 
+// MEXICO
+
+class WT_MapViewMexicoRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewMexicoRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                return new WT_MapViewMexicoFederalHighwayLabel(roadType, location, name);
+            }
+        });
+    }
+}
+WT_MapViewMexicoRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/mexico_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewMexicoRouteCollection.RouteType = {
+    FEDERAL_HIGHWAY: "fed_highway",
+};
+
+class WT_MapViewMexicoFederalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewMexicoFederalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewMexicoFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_MEXICO_FEDERALHIGHWAY.png";
+WT_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    fontOutlineWidth: 0,
+    backgroundSize: 45
+};
+
 // ICELAND
 
 class WT_MapViewIcelandRouteCollection extends WT_MapViewRoadLabelCollection {

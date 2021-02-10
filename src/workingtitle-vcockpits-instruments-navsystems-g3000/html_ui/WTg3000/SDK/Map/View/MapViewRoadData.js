@@ -334,17 +334,18 @@ class WT_MapViewRoadFeatureCollection {
  */
 WT_MapViewRoadFeatureCollection.Region = {
     NA: 0,  // North America
-    SA: 1,  // South America
-    EI: 2,  // European Isles (GB, Ireland, Iceland)
-    EN: 3,  // Northern Europe
-    EW: 4,  // Western Europe
-    EC: 5,  // Central Europe
-    EE: 6,  // Eastern Europe
-    AF: 7,  // Africa
-    ME: 8,  // Middle East
-    AC: 9,  // Central Asia
-    AE: 10,  // East Asia
-    OC: 11  // Oceania
+    CA: 1,  // Mexico and Central America
+    SA: 2,  // South America
+    EI: 3,  // European Isles (GB, Ireland, Iceland)
+    EN: 4,  // Northern Europe
+    EW: 5,  // Western Europe
+    EC: 6,  // Central Europe
+    EE: 7,  // Eastern Europe
+    AF: 8,  // Africa
+    ME: 9,  // Middle East
+    AC: 10, // Central Asia
+    AE: 11, // East Asia
+    OC: 12  // Oceania
 };
 /**
  * @enum {Number}
@@ -357,6 +358,7 @@ WT_MapViewRoadFeatureCollection.LOD_COUNT = 4;
 WT_MapViewRoadFeatureCollection.DATA_FILE_DIR = "/WTg3000/SDK/Assets/Data/Roads/Features";
 WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING = [
     "NA",
+    "CA",
     "SA",
     "EI",
     "EN",
