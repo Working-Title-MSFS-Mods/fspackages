@@ -160,7 +160,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     }
 
     _canContinueRender(current, renderCount, renderTime) {
-        return renderTime < WT_MapViewRoadLayer.DRAW_TIME_BUDGET;
+        return current.name !== "bound moveTo" || renderTime < WT_MapViewRoadLayer.DRAW_TIME_BUDGET;
     }
 
     _resolveDrawCall(type, current, state) {
@@ -216,17 +216,15 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewRoadFeatureCollection.Type} type
      * @param {WT_MapViewState} state
      */
-    _drawRoadsToDisplay(type, state) {
-        let layer = this._roadLayers[type];
+    _drawRoadsToBuffer(type, state) {
         let bufferedPathContext = this._bufferedContexts[type].context;
-        layer.buffer.clear();
 
         if (this.outlineWidth > 0) {
             this._applyStrokeToContext(bufferedPathContext, (this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
         this._applyStrokeToContext(bufferedPathContext, this.strokeWidth * state.dpiScale, this.strokeColor);
 
-        layer.syncDisplay(state);
+        bufferedPathContext.beginPath();
     }
 
     /**
@@ -234,8 +232,9 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateRenderRoads(type, state) {
+        this._drawRoadsToBuffer(type, state);
         if (this._shouldDrawUnfinished[type] && state.currentTime / 1000 - this._lastLiveRender[type] > this.liveRenderInterval) {
-            this._drawRoadsToDisplay(type, state);
+            this._roadLayers[type].syncDisplay(state);
             this._lastLiveRender[type] = state.currentTime / 1000;
         }
     }
@@ -245,7 +244,8 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _finishRenderRoads(type, state) {
-        this._drawRoadsToDisplay(type, state);
+        this._drawRoadsToBuffer(type, state);
+        this._roadLayers[type].syncDisplay(state);
         this._roadLayers[type].resetBuffer();
         this._shouldDrawUnfinished[type] = false;
         this._validate(type);
