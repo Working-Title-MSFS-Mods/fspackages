@@ -59,6 +59,10 @@ class WT_CanvasBufferedLinePathContext {
     _reset() {
         this._pathCommandCount = 0;
         this._bufferIndex = -1;
+        for (let buffer of this._buffers) {
+            buffer.canvas.width = 0;
+            buffer.canvas.height = 0;
+        }
     }
 
     _createBuffer() {
