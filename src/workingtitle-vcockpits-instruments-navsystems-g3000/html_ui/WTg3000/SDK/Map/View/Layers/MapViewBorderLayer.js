@@ -102,7 +102,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _canContinueRender(current, renderCount, renderTime) {
-        return renderTime < WT_MapViewBorderLayer.DRAW_TIME_BUDGET;
+        return current.name !== "bound moveTo" || renderTime < WT_MapViewBorderLayer.DRAW_TIME_BUDGET;
     }
 
     _resolveDrawCall(current, state) {
@@ -147,12 +147,12 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      *
      * @param {WT_MapViewState} state
      */
-    _drawBordersToDisplay(state) {
+    _drawBordersToBuffer(state) {
         if (this.outlineWidth > 0) {
             this._applyStrokeToBuffer((this.strokeWidth + 2 * this.outlineWidth) * state.dpiScale, this.outlineColor);
         }
         this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
-        this._borderLayer.syncDisplay(state);
+        this._bufferedContext.context.beginPath();
     }
 
     /**
@@ -160,8 +160,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateDrawBorders(state) {
+        this._drawBordersToBuffer(state);
         if (this._drawUnfinishedBorders && state.currentTime / 1000 - this._lastLiveRender > this.liveRenderInterval) {
-            this._drawBordersToDisplay(state);
+            this._borderLayer.syncDisplay(state);
             this._lastLiveRender = state.currentTime / 1000;
         }
     }
@@ -171,7 +172,8 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _finishDrawBorders(state) {
-        this._drawBordersToDisplay(state);
+        this._drawBordersToBuffer(state);
+        this._borderLayer.syncDisplay(state);
         this._borderLayer.resetBuffer();
         this._updateLabels(state);
         this._drawUnfinishedBorders = false;
