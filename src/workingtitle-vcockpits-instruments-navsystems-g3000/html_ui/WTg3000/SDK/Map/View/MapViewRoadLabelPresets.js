@@ -252,6 +252,132 @@ WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     backgroundSize: 45
 };
 
+// CHINA
+
+class WT_MapViewChinaRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewChinaRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_MapViewChinaRouteCollection.RouteType.NATIONAL_EXPRESSWAY:
+                        return new WT_MapViewChinaNationalExpresswayLabel(roadType, location, name);
+                    case WT_MapViewChinaRouteCollection.RouteType.PROVINCIAL_EXPRESSWAY:
+                        return new WT_MapViewChinaProvincialExpresswayLabel(roadType, location, name);
+                    case WT_MapViewChinaRouteCollection.RouteType.NATIONAL_HIGHWAY:
+                        return new WT_MapViewChinaNationalHighwayLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_MapViewChinaRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/china_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewChinaRouteCollection.RouteType = {
+    NATIONAL_EXPRESSWAY: "nat_expressway",
+    PROVINCIAL_EXPRESSWAY: "prov_expressway",
+    NATIONAL_HIGHWAY: "nat_highway"
+};
+
+class WT_MapViewChinaNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewChinaNationalExpresswayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewChinaNationalExpresswayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewChinaNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_NATIONALEXPRESSWAY.png";
+WT_MapViewChinaNationalExpresswayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 50
+};
+
+class WT_MapViewChinaProvincialExpresswayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewChinaProvincialExpresswayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewChinaProvincialExpresswayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewChinaProvincialExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_PROVINCIALEXPRESSWAY.png";
+WT_MapViewChinaProvincialExpresswayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 50
+};
+
+class WT_MapViewChinaNationalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewChinaNationalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewChinaNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_NATIONALHIGHWAY.png";
+WT_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 50
+};
+
+// TAIWAN
+
+class WT_MapViewTaiwanRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewTaiwanRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_MapViewTaiwanRouteCollection.RouteType.NATIONAL_HIGHWAY:
+                        return new WT_MapViewTaiwanNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewTaiwanRouteCollection.RouteType.PROVINCIAL_HIGHWAY:
+                        return new WT_MapViewTaiwanProvincialHighwayLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_MapViewTaiwanRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/taiwan_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewTaiwanRouteCollection.RouteType = {
+    NATIONAL_HIGHWAY: "nat_highway",
+    PROVINCIAL_HIGHWAY: "prov_highway",
+};
+
+class WT_MapViewTaiwanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewTaiwanNationalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_TAIWAN_NATIONALHIGHWAY.png";
+WT_MapViewTaiwanNationalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    fontOutlineWidth: 0
+};
+
+class WT_MapViewTaiwanProvincialHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewTaiwanProvincialHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewTaiwanProvincialHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_TAIWAN_PROVINCIALHIGHWAY.png";
+WT_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0
+};
+
 // AUSTRALIA
 
 class WT_MapViewAURouteCollection extends WT_MapViewRoadLabelCollection {

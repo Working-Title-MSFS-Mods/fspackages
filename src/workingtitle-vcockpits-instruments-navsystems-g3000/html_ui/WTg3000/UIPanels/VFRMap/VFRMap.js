@@ -414,6 +414,10 @@ class WT_VFRMapWT extends WT_VFRMap {
                     data.push(new WT_MapViewIcelandRouteCollection());
                     data.push(new WT_MapViewUKIrelandRouteCollection());
                     break;
+                case WT_MapViewRoadFeatureCollection.Region.CH:
+                    data.push(new WT_MapViewChinaRouteCollection());
+                    data.push(new WT_MapViewTaiwanRouteCollection());
+                    break;
                 case WT_MapViewRoadFeatureCollection.Region.OC:
                     data.push(new WT_MapViewAURouteCollection());
                     data.push(new WT_MapViewNZRouteCollection());

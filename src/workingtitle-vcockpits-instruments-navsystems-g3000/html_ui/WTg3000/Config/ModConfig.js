@@ -44,10 +44,13 @@ WT_g3000_ModConfig.SECTIONS = [
         loadEW: {default: true, auto: true},
         loadEC: {default: true, auto: true},
         loadEE: {default: true, auto: true},
-        loadME: {default: true, auto: true},
         loadAF: {default: true, auto: true},
+        loadME: {default: true, auto: true},
+        loadRU: {default: true, auto: true},
         loadAC: {default: true, auto: true},
+        loadCH: {default: true, auto: true},
         loadAE: {default: true, auto: true},
+        loadAS: {default: true, auto: true},
         loadOC: {default: true, auto: true}
     }}
 ];
