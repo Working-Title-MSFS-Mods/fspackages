@@ -427,7 +427,7 @@ WT_MapViewRoadLayer.DRAW_TIME_BUDGET = 0.5; // ms
 WT_MapViewRoadLayer.OPTIONS_DEF = {
     liveRender: {default: true, auto: true},
     liveRenderInterval: {default: 1, auto: true}, // seconds
-    labelRestrictionDistance: {default: 20, auto: true}, // pixels
+    labelRestrictionDistance: {default: 30, auto: true}, // pixels
     labelSeparationDistance: {default: 50, auto: true}, // pixels
     labelRepeatDistance: {default: 300, auto: true}, // pixels
 
