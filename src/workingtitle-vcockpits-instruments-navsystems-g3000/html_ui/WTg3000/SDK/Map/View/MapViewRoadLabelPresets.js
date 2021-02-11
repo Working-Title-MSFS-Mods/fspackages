@@ -378,6 +378,131 @@ WT_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS = {
     fontOutlineWidth: 0
 };
 
+// JAPAN
+
+class WT_MapViewJapanRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewJapanRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_MapViewJapanRouteCollection.RouteType.EXPRESSWAY:
+                        return new WT_MapViewJapanExpresswayLabel(roadType, location, name);
+                    case WT_MapViewJapanRouteCollection.RouteType.NATIONAL_HIGHWAY:
+                        return new WT_MapViewJapanNationalHighwayLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_MapViewJapanRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/japan_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewJapanRouteCollection.RouteType = {
+    EXPRESSWAY: "expressway",
+    NATIONAL_HIGHWAY: "nat_highway"
+};
+
+class WT_MapViewJapanExpresswayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewJapanExpresswayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewJapanExpresswayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewJapanExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_JAPAN_EXPRESSWAY.png";
+WT_MapViewJapanExpresswayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 45
+};
+
+class WT_MapViewJapanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewJapanNationalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewJapanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_JAPAN_NATIONALHIGHWAY.png";
+WT_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0
+};
+
+// SOUTH KOREA
+
+class WT_MapViewSKRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewSKRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_MapViewSKRouteCollection.RouteType.NATIONAL_EXPRESSWAY:
+                        return new WT_MapViewSKNationalExpresswayLabel(roadType, location, name);
+                    case WT_MapViewSKRouteCollection.RouteType.NATIONAL_HIGHWAY:
+                        return new WT_MapViewSKNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewSKRouteCollection.RouteType.LOCAL_HIGHWAY:
+                        return new WT_MapViewSKLocalHighwayLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_MapViewSKRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/SK_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewSKRouteCollection.RouteType = {
+    NATIONAL_EXPRESSWAY: "nat_expressway",
+    NATIONAL_HIGHWAY: "nat_highway",
+    LOCAL_HIGHWAY: "local_highway"
+};
+
+class WT_MapViewSKNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewSKNationalExpresswayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewSKNationalExpresswayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewSKNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_NATIONALEXPRESSWAY.png";
+WT_MapViewSKNationalExpresswayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0
+};
+
+class WT_MapViewSKNationalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewSKNationalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewSKNationalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewSKNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_NATIONALHIGHWAY.png";
+WT_MapViewSKNationalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0
+};
+
+class WT_MapViewSKLocalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewSKLocalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewSKLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_LOCALHIGHWAY.png";
+WT_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "#2f2fbf",
+    fontOutlineWidth: 0,
+    backgroundSize: 45
+};
+
 // AUSTRALIA
 
 class WT_MapViewAURouteCollection extends WT_MapViewRoadLabelCollection {
