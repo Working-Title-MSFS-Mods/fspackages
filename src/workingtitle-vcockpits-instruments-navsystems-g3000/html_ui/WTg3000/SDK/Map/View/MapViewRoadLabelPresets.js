@@ -252,6 +252,39 @@ WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     backgroundSize: 45
 };
 
+// RUSSIA
+
+class WT_MapViewRussiaRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewRussiaRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                return new WT_MapViewRussiaFederalHighwayLabel(roadType, location, name);
+            }
+        });
+    }
+}
+WT_MapViewRussiaRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/RU_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewRussiaRouteCollection.RouteType = {
+    FEDERAL_HIGHWAY: "fed_highway",
+};
+
+class WT_MapViewRussiaFederalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewRussiaFederalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewRussiaFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_RU_FEDERALHIGHWAY.png";
+WT_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 50
+};
+
 // CHINA
 
 class WT_MapViewChinaRouteCollection extends WT_MapViewRoadLabelCollection {
