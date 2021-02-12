@@ -43,6 +43,22 @@ WT_MapViewGenericLocalHighwayLabel.OPTION_DEFAULTS = {
     fontOutlineWidth: 0
 };
 
+// INTERNATIONAL LABELS
+
+class WT_MapViewERoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewERoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewERoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewERoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_EROAD.png";
+WT_MapViewERoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 45
+};
+
 // UNITED STATES
 
 class WT_MapViewUSRouteCollection extends WT_MapViewRoadLabelCollection {
@@ -250,6 +266,67 @@ WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     fontColor: "#ffd200",
     fontOutlineWidth: 0,
     backgroundSize: 45
+};
+
+// FRANCE
+
+class WT_MapViewFranceRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewFranceRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_MapViewFranceRouteCollection.RouteType.E_ROAD:
+                        return new WT_MapViewERoadLabel(roadType, location, name);
+                    case WT_MapViewFranceRouteCollection.RouteType.AUTOROUTE:
+                    case WT_MapViewFranceRouteCollection.RouteType.NATIONAL_ROUTE:
+                        return new WT_MapViewFranceAutorouteLabel(roadType, location, name);
+                    case WT_MapViewFranceRouteCollection.RouteType.DEPARTMENTAL_ROUTE:
+                        return new WT_MapViewFranceDepartmentalRouteLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_MapViewFranceRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/france_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewFranceRouteCollection.RouteType = {
+    E_ROAD: "e-road",
+    AUTOROUTE: "autoroute",
+    NATIONAL_ROUTE: "nat_route",
+    DEPARTMENTAL_ROUTE: "departmental_route"
+};
+
+class WT_MapViewFranceAutorouteLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewFranceAutorouteLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewFranceAutorouteLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewFranceAutorouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_FRANCE_AUTOROUTE.png";
+WT_MapViewFranceAutorouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontOutlineWidth: 0,
+    backgroundSize: 50
+};
+
+class WT_MapViewFranceDepartmentalRouteLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewFranceDepartmentalRouteLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewFranceDepartmentalRouteLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewFranceDepartmentalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_FRANCE_DEPARTMENTALROUTE.png";
+WT_MapViewFranceDepartmentalRouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    fontOutlineWidth: 0,
+    backgroundSize: 50
 };
 
 // RUSSIA
