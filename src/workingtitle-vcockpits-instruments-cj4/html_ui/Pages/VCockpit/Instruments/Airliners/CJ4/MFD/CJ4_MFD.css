@@ -787,7 +787,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MFDTextMask {
   position: absolute;
-  background-color: red;
+  background-color: black;
   top: 18%;
   left: 0%;
   width: 100%;
