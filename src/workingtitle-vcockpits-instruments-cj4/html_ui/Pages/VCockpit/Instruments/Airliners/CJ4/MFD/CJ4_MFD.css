@@ -785,6 +785,15 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
   color: white;
 }
 
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #MFDTextMask {
+  position: absolute;
+  background-color: red;
+  top: 18%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+}
+
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemHeader {
   padding: 5px;
   width: 100%;
