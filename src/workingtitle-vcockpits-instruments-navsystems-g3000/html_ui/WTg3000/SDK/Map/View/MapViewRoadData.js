@@ -574,7 +574,7 @@ class WT_MapViewRoadLabelRestrictionSearchHandler extends WT_GeoKDTreeSearchHand
         this._typeBit = typeBit;
     }
 
-    onResultFound(object, center, radius, results) {
+    onNodeFound(object, center, radius, results) {
         if (this._typeBit & object.roadTypeBit === object.roadTypeBit) {
             return WT_GeoKDTree.ResultResponse.INCLUDE_AND_STOP;
         } else {
@@ -600,15 +600,15 @@ class WT_MapViewRoadLabelCandidateSearchHandler extends WT_GeoKDTreeSearchHandle
 
     /**
      *
-     * @param {WT_GeoKDTreeNode} object
+     * @param {WT_GeoKDTreeNode} node
      * @param {WT_GeoPoint} center
      * @param {WT_NumberUnit} radius
      * @param {WT_MapViewRoadLabel[]} results
      */
-    onResultFound(object, center, radius, results) {
+    onNodeFound(node, center, radius, results) {
         let response = WT_GeoKDTree.ResultResponse.EXCLUDE;
-        if (((1 << object.roadType) & this._typeBit) !== 0) {
-            let location = this._tempGeoPoint.set(object.location[1], object.location[0]);
+        if (((1 << node.roadType) & this._typeBit) !== 0) {
+            let location = this._tempGeoPoint.set(node.location[1], node.location[0]);
             let result = this._restrictionsTree.search(location, this._restrictionDistance, this._restrictionSearchHandler, true, this._tempArray);
             let collision = result.length > 0;
             if (collision) {
@@ -670,7 +670,7 @@ class WT_MapViewRoadLabelCandidatePruneHandler extends WT_GeoKDTreeSearchHandler
      * @param {WT_NumberUnit} radius
      * @param {WT_MapViewRoadLabel[]} results
      */
-    onResultFound(object, center, radius, results) {
+    onNodeFound(object, center, radius, results) {
         if (object !== this._candidate) {
             let distance = this._tempGeoPoint.set(object.location[1], object.location[0]).distance(this._candidate.location[1], this._candidate.location[0]);
             let thresholdDistance = object.name === this._candidate.name ? this._repeatDistance : this._labelDistance;

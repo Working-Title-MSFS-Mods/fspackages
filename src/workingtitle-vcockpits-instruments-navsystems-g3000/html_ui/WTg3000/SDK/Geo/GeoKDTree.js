@@ -8,11 +8,14 @@ class WT_GeoKDTree {
      * @param {{create(node:WT_GeoKDTreeNode):Object}} [objectFactory] - a factory which which to create objects from the new tree's nodes to be returned by tree
      *                                                                   searches. If this argument is not supplied, then tree searches will directly return the
      *                                                                   new tree's nodes.
+     * @param {Boolean} [cacheObjects] - whether to cache objects created by the new tree's object factory within the tree structure.
+     *                                   This argument is ignored if objectFactory is null. False by default.
      */
-    constructor(nodes, root, objectFactory = null) {
+    constructor(nodes, root, objectFactory = null, cacheObjects = false) {
         this._nodes = nodes;
         this._root = root;
         this._objectFactory = objectFactory;
+        this._cacheObjects = cacheObjects;
 
         this._tempVector = new WT_GVector3(0, 0, 0);
     }
@@ -65,17 +68,21 @@ class WT_GeoKDTree {
 
         let distance = center.distance(node.location[1], node.location[0]);
         if (distance <= radiusGAR) {
-            if (!node.object) {
-                node.object = this._objectFactory ? this._objectFactory.create(node) : node;
-            }
-            let response = searchHandler.onResultFound(node.object, center, radius, results);
+            let response = searchHandler.onNodeFound(node, center, radius, results);
             let continueSearch = true;
             switch (response) {
                 case WT_GeoKDTree.ResultResponse.INCLUDE_AND_STOP:
                     continueSearch = false;
                 case WT_GeoKDTree.ResultResponse.INCLUDE:
                     if (results) {
-                        this._insertInOrder(node.object, center, radius, searchHandler, results);
+                        let result = this._objectFactory ? node.object : node;
+                        if (!result) {
+                            result = this._objectFactory.create(node);
+                            if (this._cacheObjects) {
+                                node.object = result;
+                            }
+                        }
+                        this._insertInOrder(result, center, radius, searchHandler, results);
                     }
                     break;
                 case WT_GeoKDTree.ResultResponse.EXCLUDE_AND_STOP:
@@ -152,20 +159,20 @@ WT_GeoKDTree.ResultResponse = {
 
 class WT_GeoKDTreeSearchHandler {
     /**
-     * This method is called when an object within the search area is found and returns a response code
+     * This method is called when a tree node within the search area is found and returns a response code
      * which determines how the search should proceed. Valid responses to a search result are to include the
      * result in the array of search results and continue the search, include the result and terminate the search,
      * exclude the result and continue, or exclude the result and terminate the search. If the search was
      * initiated with getResults = false, then the result will not be included regardless of which response code
      * is returned.
-     * @param {Object} object - a search result.
+     * @param {WT_GeoKDTreeNode} node - a tree node within the search area.
      * @param {WT_GeoPoint} center - the center of the search area.
      * @param {WT_NumberUnit} radius - the radius of the search area.
      * @param {Object[]} results - an array storing all previously included search results, or null if the
      *                             search was initiated with getResults = false.
      * @returns {WT_GeoKDTree.ResultResponse} a response code which determines how the search should proceed.
      */
-    onResultFound(object, center, radius, results) {
+    onNodeFound(node, center, radius, results) {
         return WT_GeoKDTree.ResultResponse.INCLUDE;
     }
 
