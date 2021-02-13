@@ -76,6 +76,7 @@ class WT_G3x5_MFDMainPane extends NavSystemElement {
                     data.push(new WT_MapViewUKIrelandRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EW:
+                    data.push(new WT_MapViewSpainRouteCollection());
                     data.push(new WT_MapViewFranceRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.RU:

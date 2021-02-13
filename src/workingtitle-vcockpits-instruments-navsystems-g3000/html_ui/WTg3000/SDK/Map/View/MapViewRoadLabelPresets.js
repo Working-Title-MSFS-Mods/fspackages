@@ -12,7 +12,7 @@ WT_MapViewGenericInternationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
     fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundSize: 50
 };
 
 class WT_MapViewGenericNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -267,6 +267,19 @@ WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     fontOutlineWidth: 0,
     backgroundSize: 45
 };
+
+// SPAIN
+
+class WT_MapViewSpainRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewSpainRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                return new WT_MapViewGenericInternationalHighwayLabel(roadType, location, name);
+            }
+        });
+    }
+}
+WT_MapViewSpainRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/spain_labels.json";
 
 // FRANCE
 
