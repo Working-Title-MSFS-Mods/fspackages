@@ -12,6 +12,22 @@ class WT_CitySearcher {
         this._loadTreeJSON(WT_CitySearcher.DATA_FILE_PATH);
     }
 
+    _loadData(data) {
+        let json = JSON.parse(data);
+        /**
+         * @type {WT_GeoKDTree[]}
+         */
+        this._trees = [];
+        for (let size = 0; size < json.roots.length; size++) {
+            this._trees.push(new WT_GeoKDTree(json.cities, json.roots[size], {
+                create(node) {
+                    return new WT_City(node.name, new WT_GeoPoint(node.location[1], node.location[0]), node.size);
+                }
+            }));
+        }
+        this._isReady = true;
+    }
+
     _loadTreeJSON(path) {
         let request = new XMLHttpRequest();
         request.overrideMimeType("application/json");
@@ -25,14 +41,6 @@ class WT_CitySearcher {
         request.send();
     }
 
-    _loadData(data) {
-        /**
-         * @type {{cities:WT_CityTreeNode[], roots:Number[]}}
-         */
-        this._tree = JSON.parse(data);
-        this._isReady = true;
-    }
-
     /**
      * @readonly
      * @property {Boolean} isReady
@@ -40,86 +48,6 @@ class WT_CitySearcher {
      */
     get isReady() {
         return this._isReady;
-    }
-
-    /**
-     * Creates a WT_City object from data contained in a tree node.
-     * @param {WT_CityTreeNode} node - the tree node from which to create a city.
-     * @returns {WT_City} a city.
-     */
-    static _createCityFromNode(node) {
-        return new WT_City(node.name, new WT_GeoPoint(node.lat, node.long, 0), node.size);
-    }
-
-    /**
-     * Gets a unique string key from a city.
-     * @param {WT_City} city
-     * @returns {String} a unique string key.
-     */
-    static _keyFromCity(city) {
-        return city.uniqueID;
-    }
-
-    /**
-     * Gets a unique string key from a tree node.
-     * @param {WT_CityTreeNode} node
-     * @returns {String} a unique string key.
-     */
-    static _keyFromNode(node) {
-        return `${node.name}: ${node.lat.toFixed(2)} ${node.long.toFixed(2)}`;
-    }
-
-    /**
-     * @param {WT_City} city
-     * @param {WT_GeoPoint} center
-     * @param {WT_City[]} array
-     */
-    _insertInOrder(city, center, array) {
-        let min = 0;
-        let max = array.length;
-        let index = Math.floor((max + min) / 2);
-        let distance = city.location.distance(center);
-        while (min < max) {
-            let compare = array[index].location.distance(center);
-            if (distance === compare) {
-                break;
-            } else if (distance < compare) {
-                max = index;
-            } else {
-                min = index + 1;
-            }
-            index = Math.floor((max + min) / 2);
-        }
-        array.splice(index, 0, city);
-    }
-
-    /**
-     * @param {Number} nodeIndex
-     * @param {WT_GeoPoint} centerCartesian
-     * @param {WT_NumberUnit} radius
-     * @param {Set<WT_City>} exclude
-     * @param {WT_City[]} cities
-     */
-    _searchHelper(nodeIndex, center, centerCartesian, radius, exclude, cities) {
-        let cityEntry = this._tree.cities[nodeIndex];
-
-        if (!exclude.has(WT_CitySearcher._keyFromNode(cityEntry))) {
-            let cityPos = this._tempGeoPoint2.set(cityEntry.lat, cityEntry.long, 0);
-            let distance = center.distance(cityPos);
-            if (distance <= radius) {
-                if (!cityEntry.object) {
-                    cityEntry.object = WT_CitySearcher._createCityFromNode(cityEntry);
-                }
-                this._insertInOrder(cityEntry.object, center, cities);
-            }
-        }
-
-        if ((cityEntry.lesser >= 0) && (centerCartesian[cityEntry.axis] + radius >= cityEntry.least) && (centerCartesian[cityEntry.axis] - radius <= cityEntry[cityEntry.axis])) {
-            this._searchHelper(cityEntry.lesser, center, centerCartesian, radius, exclude, cities);
-        }
-        if ((cityEntry.greater >= 0) && (centerCartesian[cityEntry.axis] + radius >= cityEntry[cityEntry.axis]) && (centerCartesian[cityEntry.axis] - radius <= cityEntry.greatest)) {
-            this._searchHelper(cityEntry.greater, center, centerCartesian, radius, exclude, cities);
-        }
     }
 
     /**
@@ -137,34 +65,60 @@ class WT_CitySearcher {
             return [];
         }
 
-        let cities = [];
-        let excludeSet = new Set();
-        if (exclude) {
-            for (let city of exclude) {
-                excludeSet.add(WT_CitySearcher._keyFromCity(city));
-            }
-        }
-        center = this._tempGeoPoint1.set(center.lat, center.long, 0);
-        this._searchHelper(this._tree.roots[size], center, center.cartesian(this._tempVector), radius.asUnit(WT_Unit.GA_RADIAN), excludeSet, cities);
-        return cities;
+        return this._trees[size].search(center, radius, new WT_CitySearchHandler(exclude));
     }
 }
 WT_CitySearcher.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Cities/cities.json";
 
-/**
- * @typedef WT_CityTreeNode
- * @property {String} name - the name of this entry's city.
- * @property {Number} lat - the latitude of this entry's city.
- * @property {Number} long - the longitude of this entry's city.
- * @property {Number} size - the size category of this entry's city.
- * @property {Number} x - the x-coordinate of the cartesian representation of the location of this entry's city
- * @property {Number} y - the y-coordinate of the cartesian representation of the location of this entry's city
- * @property {Number} z - the z-coordinate of the cartesian representation of the location of this entry's city
- * @property {String} axis - the axis (x, y, or z) on which this entry was split.
- * @property {Number} lesser - the index of the lesser child of this entry.
- * @property {Number} greater - the index of the greater child of this entry.
- * @property {Number} least - the minimum value of the coordinate on which this entry was split contained within the sub-tree
- *                            that has this entry as its root.
- * @property {Number} greatest - the maximum value of the coordinate on which this entry was split contained within the sub-tree
- *                               that has this entry as its root.
- */
+class WT_CitySearchHandler extends WT_GeoKDTreeSearchHandler {
+    constructor(exclude) {
+        super();
+
+        this._exclude = new Set();
+        if (exclude) {
+            for (let city of exclude) {
+                this._exclude.add(this._keyFromCity(city));
+            }
+        }
+    }
+
+    /**
+     * Gets a unique string key from a city.
+     * @param {WT_City} city
+     * @returns {String} a unique string key.
+     */
+    _keyFromCity(city) {
+        return city.uniqueID;
+    }
+
+    /**
+     * Gets a unique string key from a tree node.
+     * @param {WT_CityTreeNode} node
+     * @returns {String} a unique string key.
+     */
+    _keyFromNode(node) {
+        return `${node.name}: ${node.location[1].toFixed(2)} ${node.location[0].toFixed(2)}`;
+    }
+
+    /**
+     *
+     * @param {WT_GeoKDTreeNode} node
+     * @param {WT_GeoPoint} center
+     * @param {WT_NumberUnit} radius
+     * @param {WT_City[]} results
+     */
+    onNodeFound(node, center, radius, results) {
+        let nodeKey = this._keyFromNode(node);
+        return this._exclude.has(nodeKey) ? WT_GeoKDTree.ResultResponse.EXCLUDE : WT_GeoKDTree.ResultResponse.INCLUDE;
+    }
+
+    /**
+     *
+     * @param {WT_City} object
+     * @param {WT_GeoPoint} center
+     * @param {WT_NumberUnit} radius
+     */
+    sortKey(object, center, radius) {
+        return center.distance(object.location);
+    }
+}
