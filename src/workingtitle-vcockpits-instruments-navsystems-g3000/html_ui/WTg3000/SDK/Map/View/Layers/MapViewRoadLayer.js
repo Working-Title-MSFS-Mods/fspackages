@@ -432,7 +432,7 @@ WT_MapViewRoadLayer.OPTIONS_DEF = {
     labelRepeatDistance: {default: 300, auto: true}, // pixels
 
     strokeWidth: {default: 2, auto: true},
-    strokeColor: {default: "#878787", auto: true},
+    strokeColor: {default: "#474747", auto: true},
     outlineWidth: {default: 0, auto: true},
     outlineColor: {default: "black", auto: true}
 };
