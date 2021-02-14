@@ -777,9 +777,9 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #PassengerBrief[visible=fal
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
   position: absolute;
   bottom: 3.5%;
-  left: 2.5%;
-  width: 95%;
-  height: 18%;
+  left: 5.5%;
+  width: 90%;
+  height: 79%;
   background-color: black;
   border: white 2px solid;
   color: white;
@@ -787,12 +787,73 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemHeader {
   padding: 5px;
+  text-align: left;
   width: 100%;
   height: 30px;
   background-color: dodgerblue;
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemBody {
+  width: 100%;
+  max-height: 100%;
+  position: relative;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay {
+  position: absolute;
+  bottom: 3.5%;
+  left: 5.5%;
+  width: 90%;
+  height: 79%;
+  background-color: black;
+  border: white 2px solid;
+  color: white;
+}
+
+h4 {
+  text-align: left;
+  vertical-align: baseline;
+  padding-left: 6px;
+}
+
+mark {
+  background-color:#045CEB;
+  text-align: left;
+  color: white;
+}
+
+th {
+  text-align: left;
+  vertical-align: middle;
+  padding-left: 18px;
+}
+
+.tableGap {
+  padding-bottom: 10px;
+}
+
+.magenta {
+  color: magenta;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartMask {
+  position: absolute;
+  bottom: 3.5%;
+  left: 0%;
+  width: 100%;
+  height: 79%;
+  background-color: black;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader {
+  padding: 5px;
+  text-align: left;
+  width: 100%;
+  height: 30px;
+  background-color: #045CEB;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartBody {
   width: 100%;
   max-height: 100%;
   position: relative;
