@@ -350,14 +350,13 @@ class WT_VFRMapWT extends WT_VFRMap {
         return this.htmlElement;
     }
 
-    _initModel() {
+    _initModel(modConfig) {
         this.model.addModule(new WT_MapModelUnitsModule());
         this.model.addModule(new WT_MapModelTerrainModule());
         this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelBordersModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
         this.model.addModule(new WT_MapModelCitiesModule());
-        this.model.addModule(new WT_MapModelRoadsModule());
 
         this.model.terrain.mode = WT_MapModelTerrainModule.TerrainMode.ABSOLUTE;
 
@@ -373,9 +372,12 @@ class WT_VFRMapWT extends WT_VFRMap {
         this.model.cities.mediumRange = WT_VFRMapWT.CITY_MEDIUM_RANGE;
         this.model.cities.smallRange = WT_VFRMapWT.CITY_SMALL_RANGE;
 
-        this.model.roads.show = true;
-        this.model.roads.highwayRange = WT_VFRMapWT.ROAD_HIGHWAY_RANGE;
-        this.model.roads.primaryRange = WT_VFRMapWT.ROAD_PRIMARY_RANGE;
+        if (modConfig.roads.showInVFRMap) {
+            this.model.addModule(new WT_MapModelRoadsModule());
+            this.model.roads.show = true;
+            this.model.roads.highwayRange = WT_VFRMapWT.ROAD_HIGHWAY_RANGE;
+            this.model.roads.primaryRange = WT_VFRMapWT.ROAD_PRIMARY_RANGE;
+        }
     }
 
     _initBorderData() {
@@ -438,8 +440,7 @@ class WT_VFRMapWT extends WT_VFRMap {
         return data;
     }
 
-    _initRoadData() {
-        let modConfig = WT_g3000_ModConfig.INSTANCE;
+    _initRoadData(modConfig) {
         let regions = this._getRoadRegionsFromConfig(modConfig);
         let featureData = new WT_MapViewRoadFeatureCollection(
             regions,
@@ -458,16 +459,20 @@ class WT_VFRMapWT extends WT_VFRMap {
         }
     }
 
-    _initView() {
+    _initView(modConfig) {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = this._initBorderData();
-        let roadData = this._initRoadData();
-        this._loadRoadData(roadData.feature, roadData.label);
+        if (modConfig.roads.showInVFRMap) {
+            let roadData = this._initRoadData(modConfig);
+            this._loadRoadData(roadData.feature, roadData.label);
+        }
 
         this.view.addLayer(new WT_MapViewBingLayer("VFRMap"));
         this.view.addLayer(new WT_MapViewBorderLayer(borderData, WT_VFRMapWT.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
-        this.view.addLayer(new WT_MapViewRoadLayer(roadData.feature, roadData.label, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        if (modConfig.roads.showInVFRMap) {
+            this.view.addLayer(new WT_MapViewRoadLayer(roadData.feature, roadData.label, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
+        }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
@@ -484,10 +489,11 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     _init() {
+        let modConfig = WT_g3000_ModConfig.INSTANCE;
         this._model = new WT_MapModel();
         this.view.setModel(this.model);
-        this._initModel();
-        this._initView();
+        this._initModel(modConfig);
+        this._initView(modConfig);
         this._initListeners();
 
         this._isReady = true;
