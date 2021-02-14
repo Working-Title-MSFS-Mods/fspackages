@@ -29,14 +29,12 @@ def updateBounds(bbox, new):
         bbox[1][i] = max(bbox[1][i], new[i])
 
 def calculateBBox(feature):
-    multiline = feature["geometry"]["coordinates"]
+    line = feature["geometry"]["coordinates"]
     bbox = [[2, 2, 2], [-2, -2, -2]]
-    for i in range(len(multiline)):
-        coords = multiline[i]
-        for j in range(len(coords)):
-            coord = coords[j]
-            cartesian = sphericalToCartesian(coord)
-            updateBounds(bbox, cartesian)
+    for i in range(len(line)):
+        coord = line[i]
+        cartesian = sphericalToCartesian(coord)
+        updateBounds(bbox, cartesian)
 
     feature["properties"]["bbox"] = bbox
 
@@ -174,7 +172,7 @@ def combineFeatures(features):
         lengthSum += length
         for i in range(3):
             centroidSum[i] += centroidCartesian[i] * length
-        combined["geometry"]["coordinates"].extend(feature["geometry"]["coordinates"])
+        combined["geometry"]["coordinates"].append(feature["geometry"]["coordinates"])
     for i in range(3):
         centroidSum[i] /= lengthSum
     combinedCentroid = cartesianToSpherical(centroidSum)
@@ -243,8 +241,6 @@ if __name__ == '__main__':
             threads = int(arg)
         elif opt in ("-s", "--stats"):
             printStats = True
-
-    cities = {"cities": []}
 
     with open(inputFile, newline='', encoding="utf-8") as f:
         data = json.load(f)
