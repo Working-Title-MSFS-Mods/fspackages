@@ -177,7 +177,7 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _updateLoop() {
-        if (window["IsDestroying"] === true) {
+        if (window["IsDestroying"] === true || !GameVFRMapisLoaded) {
             return;
         }
 
