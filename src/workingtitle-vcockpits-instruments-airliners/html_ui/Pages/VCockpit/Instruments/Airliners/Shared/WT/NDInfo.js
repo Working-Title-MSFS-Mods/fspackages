@@ -437,7 +437,8 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
                         if (ils.id > 0) {
                             freq = ils.freq.toFixed(2);
-                            course = Utils.leadingZeros(Math.round(ils.course), 3);
+                            let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                            course = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString().padStart(3, "0");
                             ident = ils.ident;
 
                             if (ils.distance) {
