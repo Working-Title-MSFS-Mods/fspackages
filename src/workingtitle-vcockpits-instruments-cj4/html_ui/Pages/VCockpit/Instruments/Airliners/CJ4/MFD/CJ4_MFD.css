@@ -822,8 +822,9 @@ mark {
   color: white;
 }
 
-th {
+td {
   text-align: left;
+  display: table-cell;
   vertical-align: middle;
   padding-left: 18px;
 }
