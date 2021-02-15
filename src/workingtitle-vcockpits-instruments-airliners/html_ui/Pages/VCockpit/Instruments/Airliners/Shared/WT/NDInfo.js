@@ -368,7 +368,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                         let courseNAV = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree");
                         let type = "VOR";
                         let freq = "----";
-                        let course = courseNAV;
+                        let course = courseNAV.toString().padStart(3, "0");
                         let ident = "";
                         let distance = "----";
 
