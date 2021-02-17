@@ -667,8 +667,8 @@ WT_VFRMapWT.BORDER_LOD_RESOLUTION_THRESHOLDS = [
 WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(0),
     WT_Unit.NMILE.createNumber(0.01),
-    WT_Unit.NMILE.createNumber(0.07),
-    WT_Unit.NMILE.createNumber(0.5)
+    WT_Unit.NMILE.createNumber(0.05),
+    WT_Unit.NMILE.createNumber(0.3)
 ];
 WT_VFRMapWT.MAP_RANGE_LEVELS = [0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000, 1250, 1500, 1750, 2000].map(range => new WT_NumberUnit(range, WT_Unit.NMILE));
 WT_VFRMapWT.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);

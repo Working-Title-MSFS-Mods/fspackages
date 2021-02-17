@@ -270,8 +270,8 @@ WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS = [
 WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS = [
     WT_Unit.NMILE.createNumber(0),
     WT_Unit.NMILE.createNumber(0.01),
-    WT_Unit.NMILE.createNumber(0.07),
-    WT_Unit.NMILE.createNumber(0.5)
+    WT_Unit.NMILE.createNumber(0.05),
+    WT_Unit.NMILE.createNumber(0.3)
 ];
 
 WT_G3x5_NavMap.MAP_RANGE_LEVELS =
