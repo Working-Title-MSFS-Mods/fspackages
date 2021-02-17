@@ -34,6 +34,9 @@ class CJ4_MFD extends BaseAirliners {
         this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
 
+        this._chartview = document.querySelector("#chartview");
+        this._chartview.connectedCallback();
+
         this.mem1 = new MemoryState(1);
         this.mem2 = new MemoryState(2);
         this.mem3 = new MemoryState(3);
@@ -89,6 +92,7 @@ class CJ4_MFD extends BaseAirliners {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        this._chartview.update(_deltaTime);
         if (this.allContainersReady()) {
 
             // check for unit system change
@@ -295,6 +299,7 @@ class CJ4_MFD extends BaseAirliners {
     }
     onEvent(_event) {
         //console.log(_event);
+        this._chartview.onEvent(_event);
         switch (_event) {
             case "Lwr_Push_TERR_WX":
                 if (this.showTerrain) {

@@ -1205,13 +1205,13 @@ class MapInstrument extends ISvgMapRootElement {
         if (_event === "RANGE_INC" || _event === "RNG_Dezoom") {
             this.zoomOut();
         }
-        if (_event === "JOYSTICK_PUSH") {
-            if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
-                this.activateCursor();
-            } else if (this.eBingMode === EBingMode.CURSOR) {
-                this.deactivateCursor();
-            }
-        }
+        // if (_event === "JOYSTICK_PUSH") {
+        //     if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
+        //         this.activateCursor();
+        //     } else if (this.eBingMode === EBingMode.CURSOR) {
+        //         this.deactivateCursor();
+        //     }
+        // }
         if (_event === "ActivateMapCursor") {
             if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
                 this.activateCursor();
@@ -1225,44 +1225,44 @@ class MapInstrument extends ISvgMapRootElement {
         if (this.eBingMode === EBingMode.CURSOR) {
             const cursorSpeed = 2;
             const mapSpeed = 4;
-            switch (_event) {
-                case "PanLeft":
-                case "JOYSTICK_LEFT":
-                    if (this.cursorX > 10) {
-                        this.setCursorPos(this.cursorX - cursorSpeed, this.cursorY);
-                    } else {
-                        this.scrollDisp.x += mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-                case "PanRight":
-                case "JOYSTICK_RIGHT":
-                    if (this.cursorX < 90) {
-                        this.setCursorPos(this.cursorX + cursorSpeed, this.cursorY);
-                    } else {
-                        this.scrollDisp.x -= mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-                case "PanUp":
-                case "JOYSTICK_UP":
-                    if (this.cursorY > 10) {
-                        this.setCursorPos(this.cursorX, this.cursorY - cursorSpeed);
-                    } else {
-                        this.scrollDisp.y += mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-                case "PanDown":
-                case "JOYSTICK_DOWN":
-                    if (this.cursorY < 90) {
-                        this.setCursorPos(this.cursorX, this.cursorY + cursorSpeed);
-                    } else {
-                        this.scrollDisp.y -= mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-            }
+            // switch (_event) {
+            //     case "PanLeft":
+            //     case "JOYSTICK_LEFT":
+            //         if (this.cursorX > 10) {
+            //             this.setCursorPos(this.cursorX - cursorSpeed, this.cursorY);
+            //         } else {
+            //             this.scrollDisp.x += mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            //     case "PanRight":
+            //     case "JOYSTICK_RIGHT":
+            //         if (this.cursorX < 90) {
+            //             this.setCursorPos(this.cursorX + cursorSpeed, this.cursorY);
+            //         } else {
+            //             this.scrollDisp.x -= mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            //     case "PanUp":
+            //     case "JOYSTICK_UP":
+            //         if (this.cursorY > 10) {
+            //             this.setCursorPos(this.cursorX, this.cursorY - cursorSpeed);
+            //         } else {
+            //             this.scrollDisp.y += mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            //     case "PanDown":
+            //     case "JOYSTICK_DOWN":
+            //         if (this.cursorY < 90) {
+            //             this.setCursorPos(this.cursorX, this.cursorY + cursorSpeed);
+            //         } else {
+            //             this.scrollDisp.y -= mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            // }
         }
     }
     onBackOnTrack(_lat, _long) {
