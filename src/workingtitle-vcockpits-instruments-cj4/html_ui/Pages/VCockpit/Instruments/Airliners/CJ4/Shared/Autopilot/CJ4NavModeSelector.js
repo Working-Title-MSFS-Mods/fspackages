@@ -497,6 +497,7 @@ class CJ4NavModeSelector {
         Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(mach.toFixed(2)));
       } else {
         const airspeed = Simplane.getIndicatedSpeed();
+        airspeed = Math.round(airspeed);
         Coherent.call("AP_SPD_VAR_SET", 0, airspeed);
       }
     } else {
