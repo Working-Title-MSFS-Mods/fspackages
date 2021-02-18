@@ -11,8 +11,7 @@ WT_MapViewGenericInternationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Ima
 WT_MapViewGenericInternationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewGenericNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -26,7 +25,7 @@ WT_MapViewGenericNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/M
 WT_MapViewGenericNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0
+    textOffset: {x: 0, y: -0.075}
 };
 
 class WT_MapViewGenericLocalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -40,7 +39,7 @@ WT_MapViewGenericLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/
 WT_MapViewGenericLocalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 // INTERNATIONAL LABELS
@@ -55,8 +54,7 @@ class WT_MapViewERoadLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewERoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_EROAD.png";
 WT_MapViewERoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
 };
 
 // UNITED STATES
@@ -96,7 +94,8 @@ class WT_MapViewUSInterstateLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewUSInterstateLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_US_INTERSTATE.png";
 WT_MapViewUSInterstateLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4},
+    minWidthEm: 2.3
 };
 
 class WT_MapViewUSRouteLabel extends WT_MapViewRoadImageLabel {
@@ -109,8 +108,7 @@ class WT_MapViewUSRouteLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewUSRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_US_ROUTE.png";
 WT_MapViewUSRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontColor: "black",
-    fontOutlineWidth: 0
+    fontColor: "black"
 };
 
 // CANADA
@@ -173,8 +171,7 @@ WT_MapViewMexicoFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map
 WT_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.4}
 };
 
 // ICELAND
@@ -207,7 +204,7 @@ WT_MapViewIcelandRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/
 WT_MapViewIcelandRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
 };
 
 // UK AND IRELAND
@@ -249,8 +246,7 @@ class WT_MapViewUKMotorwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewUKMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_UK_MOTORWAY.png";
 WT_MapViewUKMotorwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewUKARoadLabel extends WT_MapViewRoadImageLabel {
@@ -264,8 +260,7 @@ WT_MapViewUKARoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_
 WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffd200",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
 };
 
 // SPAIN
@@ -323,8 +318,7 @@ class WT_MapViewFranceAutorouteLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewFranceAutorouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_FRANCE_AUTOROUTE.png";
 WT_MapViewFranceAutorouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewFranceDepartmentalRouteLabel extends WT_MapViewRoadImageLabel {
@@ -338,8 +332,7 @@ WT_MapViewFranceDepartmentalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/
 WT_MapViewFranceDepartmentalRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 // RUSSIA
@@ -371,8 +364,7 @@ class WT_MapViewRussiaFederalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewRussiaFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_RU_FEDERALHIGHWAY.png";
 WT_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 // CHINA
@@ -415,8 +407,7 @@ class WT_MapViewChinaNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewChinaNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_NATIONALEXPRESSWAY.png";
 WT_MapViewChinaNationalExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.25, top: 0.5, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewChinaProvincialExpresswayLabel extends WT_MapViewRoadImageLabel {
@@ -429,8 +420,7 @@ class WT_MapViewChinaProvincialExpresswayLabel extends WT_MapViewRoadImageLabel 
 WT_MapViewChinaProvincialExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_PROVINCIALEXPRESSWAY.png";
 WT_MapViewChinaProvincialExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.25, top: 0.5, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewChinaNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -443,8 +433,7 @@ class WT_MapViewChinaNationalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewChinaNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_NATIONALHIGHWAY.png";
 WT_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 50
+    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
 };
 
 // TAIWAN
@@ -485,7 +474,8 @@ WT_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Ma
 WT_MapViewTaiwanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.5, right: 0.4, bottom: 0.3},
+    minWidthEm: 2.3
 };
 
 class WT_MapViewTaiwanProvincialHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -498,7 +488,8 @@ class WT_MapViewTaiwanProvincialHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewTaiwanProvincialHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_TAIWAN_PROVINCIALHIGHWAY.png";
 WT_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    minWidthEm: 2.3
 };
 
 // JAPAN
@@ -538,8 +529,7 @@ class WT_MapViewJapanExpresswayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewJapanExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_JAPAN_EXPRESSWAY.png";
 WT_MapViewJapanExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewJapanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -552,7 +542,8 @@ class WT_MapViewJapanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewJapanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_JAPAN_NATIONALHIGHWAY.png";
 WT_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    minWidthEm: 2.3
 };
 
 // SOUTH KOREA
@@ -595,7 +586,8 @@ class WT_MapViewSKNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewSKNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_NATIONALEXPRESSWAY.png";
 WT_MapViewSKNationalExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.5, right: 0.4, bottom: 0.3},
+    minWidthEm: 2.3
 };
 
 class WT_MapViewSKNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -608,7 +600,8 @@ class WT_MapViewSKNationalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewSKNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_NATIONALHIGHWAY.png";
 WT_MapViewSKNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1},
+    minWidthEm: 2.4
 };
 
 class WT_MapViewSKLocalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -622,8 +615,7 @@ WT_MapViewSKLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmi
 WT_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#2f2fbf",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1},
 };
 
 // AUSTRALIA
@@ -670,8 +662,7 @@ WT_MapViewAUAlphaNumLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/IC
 WT_MapViewAUAlphaNumLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffa709",
-    fontOutlineWidth: 0,
-    backgroundSize: 45
+    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
 };
 
 class WT_MapViewAUNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -685,7 +676,7 @@ WT_MapViewAUNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Ga
 WT_MapViewAUNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffa709",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5}
 };
 
 class WT_MapViewAUNationalRouteLabel extends WT_MapViewRoadImageLabel {
@@ -699,7 +690,7 @@ WT_MapViewAUNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garm
 WT_MapViewAUNationalRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5}
 };
 
 class WT_MapViewAUStateRouteLabel extends WT_MapViewRoadImageLabel {
@@ -712,7 +703,8 @@ class WT_MapViewAUStateRouteLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewAUStateRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_AU_STATEROUTE.png";
 WT_MapViewAUStateRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    minWidthEm: 2.3
 };
 
 // NEW ZEALAND
@@ -731,7 +723,7 @@ WT_MapViewNZRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Lab
  * @enum {String}
  */
 WT_MapViewNZRouteCollection.RouteType = {
-    STATE_HIGHWAY: "state_highway",
+    STATE_HIGHWAY: "state_highway"
 };
 
 class WT_MapViewNZStateHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -744,5 +736,6 @@ class WT_MapViewNZStateHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewNZStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_NZ_STATEHIGHWAY.png";
 WT_MapViewNZStateHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontOutlineWidth: 0
+    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    minWidthEm: 2.3
 };
