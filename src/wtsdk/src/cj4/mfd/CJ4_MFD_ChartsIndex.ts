@@ -24,11 +24,13 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   // TODO i dont really want to have this in here hmmm
   private _fpm: FlightPlanManager;
   private _selectIndex: number = 0;
+  private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
 
-  public connectedCallback(): void {
+  public connectedCallback(chartSelectCallback: (url: string, chart: NG_Chart) => void): void {
     this._tableContainer = this.querySelector("#ChartsTable");
     this._api = new NavigraphApi();
     this._fpm = FlightPlanManager.DEBUG_INSTANCE;
+    this._chartSelectCallback = chartSelectCallback;
   }
 
   public async updateData(): Promise<void> {
@@ -39,7 +41,6 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
         const icaoDest = this._fpm.getDestination() === undefined ? "" : this._fpm.getDestination().ident;
 
         if (icaoOrig !== "") {
-
           const origCharts = await this._api.getChartsList(icaoOrig);
           this.chartsindex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
           this.chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code[0] === this._fpm.getDeparture().name, origCharts);
@@ -58,6 +59,16 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     return chart;
   }
 
+  show() {
+    this.style.display = "";
+    this._isDirty = true;
+    this.updateData();
+  }
+
+  hide() {
+    this.style.display = "none";
+  }
+
   onEvent(event: string): boolean {
     if (this.style.display === "none") {
       return false;
@@ -73,8 +84,10 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
       case "Lwr_MENU_ADV_INC":
         this.menuScroll(true);
         break;
+      case "Lwr_DATA_PUSH":
+        this.selectChart();
+        break;
       default:
-        this._isDirty = false;
         handled = false;
         break;
     }
@@ -85,6 +98,15 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     return handled;
   }
 
+  private async selectChart() {
+    const chart = this.getFlatChartIndex()[this._selectIndex];
+    if (chart !== undefined) {
+      const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${chart.file_day}`;
+      const signedpngurl = await this._api.sendRequest(url, "get", null, true);
+      this._chartSelectCallback(signedpngurl.data, chart);
+    }
+  }
+
   private renderselect() {
     const rows = this._tableContainer.querySelectorAll("tr");
     rows.forEach(r => {
@@ -93,13 +115,18 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     rows[this._selectIndex].className = "selected";
   }
 
+  private getFlatChartIndex(): Array<NG_Chart> {
+    const returnArr: Array<NG_Chart> = [];
+    Object.values(this.chartsindex).forEach(lvl => {
+      returnArr.push(...Object.values<NG_Chart>(lvl));
+    });
+    return returnArr;
+  }
+
   private menuScroll(isForward: boolean): void {
     this._selectIndex = isForward ? this._selectIndex + 1 : this._selectIndex - 1;
 
-    let itemCount = 0;
-    Object.values(this.chartsindex).forEach(lvl => {
-      itemCount += Object.keys(lvl).length;
-    });
+    const itemCount = this.getFlatChartIndex().length
 
     if (this._selectIndex < 0) {
       this._selectIndex = itemCount - 1;
@@ -140,7 +167,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
       cell1.textContent = v[0];
       const cell2 = row.insertCell();
       const chart = v[1];
-      cell2.textContent = (chart === undefined) ? '[ ]' : `[${chart.procedure_identifier}]`;
+      cell2.innerHTML = (chart === undefined) ? '[ ]' : `[<span class="magenta">${chart.procedure_identifier}</span>]`;
     })
     container.appendChild(table);
 

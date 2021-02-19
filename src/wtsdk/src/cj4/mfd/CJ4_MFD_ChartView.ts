@@ -1,3 +1,5 @@
+import { NG_Chart } from "../../types/navigraph";
+
 // TODO: split the actual viewer stuff from this class into a more generic viewer component for later reuse
 export class CJ4_MFD_ChartView extends HTMLElement {
 
@@ -9,19 +11,29 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private _isDirty: boolean = true;
 
   private readonly STEP_RATE = 40;
-  private _chartindexnumber: any;
-  private _chartprocidentifier: any;
+  private _chartindexnumber: HTMLElement;
+  private _chartprocidentifier: HTMLElement;
 
   connectedCallback(): void {
     this._chartindexnumber = this.querySelector("#chartinfo_indexnumber");
     this._chartprocidentifier = this.querySelector("#chartinfo_procidentifier");
     this._canvas = this.querySelector("#chartcanvas");
     this._image.src = "#";
+    this._image.onload = this.onImageLoaded.bind(this);
   }
 
-  loadChart(url: string = "#") {
-    this._image.src = url; //"/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/sample.png?cb=2";
+  onImageLoaded(): void {
     this._isDirty = true;
+  }
+
+  loadChart(url: string = "", chart: NG_Chart = undefined): void {
+    if (url !== "") {
+      this._image.src = url; //"/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/sample.png?cb=2";
+    }
+    if (chart !== undefined) {
+      this._chartindexnumber.textContent = `${chart.icao_airport_identifier} ${chart.index_number}`;
+      this._chartprocidentifier.textContent = chart.procedure_identifier;
+    }
   }
 
   update(dTime: number): void {
@@ -31,7 +43,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       const ctx = this._canvas.getContext("2d");
       ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);
-      if (this._image.src.indexOf("#") === -1) {
+      if (this._image.src !== "" && this._image.src.indexOf("#") === -1) {
         CJ4_MFD_ChartView.scaleImgToFit(this._canvas, ctx, this._image);
       } else {
         ctx.fillStyle = "#cccac8";
@@ -51,7 +63,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     switch (event) {
       case "Lwr_Push_ZOOM_INC":
       case "Lwr_Push_ZOOM_DEC":
-        this._zoom = this._zoom === 1 ? 1.5 : 1;
+        this._zoom = this._zoom === 1 ? 2.3 : 1;
         if (this._zoom === 1) {
           this._xOffset = 0;
           this._yOffset = 0;
@@ -79,10 +91,22 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   static scaleImgToFit(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, img: HTMLImageElement): void {
-    const scale = (canvas.width / img.width);
-    img.width *= scale;
-    img.height *= scale;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
+    if (img.width > 0) {
+      const ratio = img.width / img.height;
+      let newW = canvas.width;
+      let newH = newW / ratio;
+      if (img.width > img.height) {
+        newH = canvas.height;
+        newW = newW * ratio;
+      }
+
+
+      // const scale = isLandscape ? (canvas.height / img.height) : (canvas.width / img.width);
+
+      // img.width *= scale;
+      // img.height *= scale;
+      ctx.drawImage(img, 0, 0, newW, newH);
+    }
   }
 
   static fitCanvasToContainer(canvas: HTMLCanvasElement): void {
