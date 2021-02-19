@@ -254,16 +254,19 @@
                     <div class="SystemHeader">SYSTEMS 1/2</div>
                     <div class="SystemBody"></div>
                 </div>
+               
+                <cj4-mfd-chartview id="chartview" style="position:absolute; width:100%;height:79%; bottom:3.9%;left:0; background-color:black;">
+                    <div id="chartinfo" style="font-size: 23px; color:#cccac8"><div id="chartinfo_indexnumber" style="float:left;margin-left:18px;"></div><div id="chartinfo_procidentifier"></div></div>
+                    <canvas id="chartcanvas" style="width:100%;height:100%;display: block;"></canvas>
+                </cj4-mfd-chartview>
 
-                <div id="ChartMask">
-                </div>
-
-                <div id="ChartOverlay">
+                <cj4-mfd-chartsindex id="ChartOverlay">
                     <div class="ChartHeader">CHART MAIN INDEX</div>
                     <div class="ChartBody"></div>
                     <h4 style="text-align:right;color:#FF00FF">FMS1</h4>
                     <hr style="width:95%;text-align:center;">
-                    <h4 class="tableGap"><mark>ORIGIN - KORD</mark></h4>
+                    <div id="ChartsTable"></div>
+                    <!-- <h4 class="tableGap"><mark>ORIGIN - KORD</mark></h4>
                     <table style="width:100%">
                         <tr style="outline: 2px solid cyan;outline-offset:-2px">
                           <td>AIRPORT</td>
@@ -351,13 +354,8 @@
                             <td>ALL</td>
                         </tr>
                       </table>
-                      <hr style="width:95%;text-align:center;">
-                </div>
-
-                <!-- <cj4-mfd-chartview id="chartview" style="position:absolute; width:100%;height:79%; bottom:3.9%;left:0; background-color:black">
-                    <div id="chartinfo" style="font-size: 23px; color:#cccac8"><div style="float:left;margin-left:18px;">KRYY 60-9</div><div>AIRPORT, AIRPORT INFO, TAKE-OFF MNMS</div></div>
-                    <canvas id="chartcanvas" style="width:100%;height:100%;display: block;"></canvas>
-                </cj4-mfd-chartview> -->
+                      <hr style="width:95%;text-align:center;"> -->
+                </cj4-mfd-chartsindex>
 
                 <div id="NavBar">
                     <div id="Coms">

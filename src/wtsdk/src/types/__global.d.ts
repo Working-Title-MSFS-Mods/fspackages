@@ -89,8 +89,8 @@ declare class WayPointInfo {
   instrument: BaseInstrument;
   magneticVariation?: number;
   _svgElements: any;
-  UpdateInfos(_CallBack?: any, loadFacilitiesTransitively?: boolean) : void;
-  CopyBaseInfosFrom(_WP: WayPoint) : void;
+  UpdateInfos(_CallBack?: any, loadFacilitiesTransitively?: boolean): void;
+  CopyBaseInfosFrom(_WP: WayPoint): void;
 }
 
 declare class AirportInfo extends WayPointInfo {
@@ -145,9 +145,9 @@ declare class Utils {
   computeGreatCircleDistance(coords1: LatLongAlt, coords2: LatLongAlt): number;
   bearingDistanceToCoordinates(bearing: number, distanceInNM: number, lat: number, long: number): LatLongAlt;
   fmod(value: number, moduloBy: number): number;
-  computeDistance(coords1: LatLongAlt, coords2: LatLongAlt) : number;
-  angleDiff(degrees1: number, degrees2: number) : number;
-  lerpAngle(from: number, to: number, d: number) : number;
+  computeDistance(coords1: LatLongAlt, coords2: LatLongAlt): number;
+  angleDiff(degrees1: number, degrees2: number): number;
+  lerpAngle(from: number, to: number, d: number): number;
   DEG2RAD: number;
   RAD2DEG: number;
 }
@@ -199,6 +199,7 @@ declare class Coherent {
 }
 
 declare function RegisterViewListener(handler: string): void
+declare function OpenBrowser(url: string): void;
 
 declare class FMCMainDisplay {
   lastPos: string;

@@ -7,14 +7,15 @@ class CJ4_FMC_ModSettingsPageOne {
         this._pilotDefault = "--------";
         this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
-        let potValue = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:28", "number");
+        this._ngDefault = "NOT LINKED[disabled]";
+        this._ngStatus = !ngApi.isAccountLinked ? this._ngDefault : "LINKED[green]";
+
+        const potValue = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:28", "number");
         if (potValue == 1) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON;
-        }
-        else if (potValue == 0.05) {
+        } else if (potValue == 0.05) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM;
-        }
-        else {
+        } else {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF;
         }
 
@@ -33,7 +34,9 @@ class CJ4_FMC_ModSettingsPageOne {
 
     }
 
-    get lightMode() { return this._lightMode; }
+    get lightMode() {
+        return this._lightMode;
+    }
     set lightMode(value) {
         if (value == 3) value = 0;
         this._lightMode = value;
@@ -45,7 +48,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get pilotId() { return this._pilotId; }
+    get pilotId() {
+        return this._pilotId;
+    }
     set pilotId(value) {
         this._pilotId = value;
 
@@ -55,7 +60,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get cj4Units() { return this._cj4Units; }
+    get cj4Units() {
+        return this._cj4Units;
+    }
     set cj4Units(value) {
         if (value == 2) value = 0;
         this._cj4Units = value;
@@ -66,7 +73,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get gpuSetting() { return this._gpuSetting; }
+    get gpuSetting() {
+        return this._gpuSetting;
+    }
     set gpuSetting(value) {
         if (value == 2) value = 0;
         this._gpuSetting = value;
@@ -77,7 +86,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get yokeHide() { return this._yokeHide; }
+    get yokeHide() {
+        return this._yokeHide;
+    }
     set yokeHide(value) {
         if (value == 2) value = 0;
         this._yokeHide = value;
@@ -92,7 +103,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get fpSync() { return this._fpSync; }
+    get fpSync() {
+        return this._fpSync;
+    }
     set fpSync(value) {
         if (value == 2) value = 0;
         this._fpSync = value;
@@ -104,12 +117,12 @@ class CJ4_FMC_ModSettingsPageOne {
     }
 
     render() {
-        let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
-        let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
-        let unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
+        const lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
+        const pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
+        const unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
-        let yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
-        let fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
+        const yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
+        const fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
 
         if (!this._gpuAvailable) {
             gpuSettingSwitch = "NO EXT PWR[disabled]";
@@ -125,25 +138,43 @@ class CJ4_FMC_ModSettingsPageOne {
             [unitsSwitch],
             [" GROUND POWER UNIT[blue]"],
             [gpuSettingSwitch],
-            [" HIDE YOKE[blue]"],
-            [yokeHideSwitch, ""],
+            [" HIDE YOKE[blue]", "NG LINK"],
+            [yokeHideSwitch, this._ngStatus],
             [""],
             ["< BACK", ""]
         ]);
     }
 
     bindEvents() {
-        this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
-        this._fmc.onRightInput[0] = () => { this.fpSync = this.fpSync + 1; };
+        this._fmc.onLeftInput[0] = () => {
+            this.lightMode = this.lightMode + 1;
+        };
+        this._fmc.onRightInput[0] = () => {
+            this.fpSync = this.fpSync + 1;
+        };
         this._fmc.onLeftInput[1] = () => {
-            let idValue = this._fmc.inOut;
+            const idValue = this._fmc.inOut;
             this.pilotId = idValue == FMCMainDisplay.clrValue ? "" : idValue;
             this._fmc.clearUserInput();
         };
-        this._fmc.onLeftInput[2] = () => { this.cj4Units = this.cj4Units + 1; };
-        this._fmc.onLeftInput[3] = () => { if (this._gpuAvailable) this.gpuSetting = this.gpuSetting + 1; };
-        this._fmc.onLeftInput[4] = () => { this.yokeHide = this.yokeHide + 1; };
-        this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
+        this._fmc.onLeftInput[2] = () => {
+            this.cj4Units = this.cj4Units + 1;
+        };
+        this._fmc.onLeftInput[3] = () => {
+            if (this._gpuAvailable) this.gpuSetting = this.gpuSetting + 1;
+        };
+        this._fmc.onLeftInput[4] = () => {
+            this.yokeHide = this.yokeHide + 1;
+        };
+        this._fmc.onRightInput[4] = async () => {
+            this._fmc.setMsg("LINKING NAVIGRAPH...[yellow]");
+            await ngApi.linkAccount();
+            this._fmc.setMsg("NAVIGRAPH LINKED[green]");
+            this.invalidate();
+        };
+        this._fmc.onLeftInput[5] = () => {
+            CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc);
+        };
     }
 
     invalidate() {
@@ -156,8 +187,11 @@ class CJ4_FMC_ModSettingsPageOne {
 class CJ4_FMC_ModSettingsPage {
     static setPassCabinLights(value) {
         let potValue = 100;
-        if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF) potValue = 0;
-        else if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM) potValue = 5;
+        if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF) {
+            potValue = 0;
+        } else if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM) {
+            potValue = 5;
+        }
 
         SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number", potValue);
     }

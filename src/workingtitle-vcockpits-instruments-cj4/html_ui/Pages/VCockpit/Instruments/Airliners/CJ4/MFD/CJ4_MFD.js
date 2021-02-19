@@ -35,7 +35,12 @@ class CJ4_MFD extends BaseAirliners {
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
 
         this._chartview = document.querySelector("#chartview");
+        this._chartview.style.display = "none";
         this._chartview.connectedCallback();
+
+        this._chartIndex = document.querySelector("#ChartOverlay");
+        this._chartIndex.style.display = "none";
+        this._chartIndex.connectedCallback();
 
         this.mem1 = new MemoryState(1);
         this.mem2 = new MemoryState(2);
@@ -93,6 +98,7 @@ class CJ4_MFD extends BaseAirliners {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         this._chartview.update(_deltaTime);
+        this._chartIndex.updateData("KBOS", "KPHL");
         if (this.allContainersReady()) {
 
             // check for unit system change
@@ -299,8 +305,21 @@ class CJ4_MFD extends BaseAirliners {
     }
     onEvent(_event) {
         //console.log(_event);
-        this._chartview.onEvent(_event);
+        if (this._chartview.onEvent(_event)) {
+            return;
+        }
+        if (this._chartIndex.onEvent(_event)) {
+            return;
+        }
         switch (_event) {
+            case "Lwr_Push_Chart_1":
+                if (this._chartview.style.display === "") {
+                    this._chartview.style.display = "none";
+                } else {
+                    this._chartview.loadChart();
+                    this._chartview.style.display = "";
+                }
+                break;
             case "Lwr_Push_TERR_WX":
                 if (this.showTerrain) {
                     this.showTerrain = false;
@@ -341,15 +360,19 @@ class CJ4_MFD extends BaseAirliners {
                 }
                 break;
             case "Lwr_Push_LWR_MENU":
-                this.fillDictionary(this.popup.dictionary);
-                this.popup.setMode(CJ4_PopupMenu.LOWER);
-                if (this.popup.mode == CJ4_PopupMenu.LOWER) {
-                    this.checklist.otherMenusOpen = true;
-                    this.passengerBrief.otherMenusOpen = true;
-                }
-                else {
-                    this.checklist.otherMenusOpen = false;
-                    this.passengerBrief.otherMenusOpen = false;
+                if (this._chartview.style.display !== "none") {
+                    this._chartIndex.style.display = "";
+                } else {
+                    this.fillDictionary(this.popup.dictionary);
+                    this.popup.setMode(CJ4_PopupMenu.LOWER);
+                    if (this.popup.mode == CJ4_PopupMenu.LOWER) {
+                        this.checklist.otherMenusOpen = true;
+                        this.passengerBrief.otherMenusOpen = true;
+                    }
+                    else {
+                        this.checklist.otherMenusOpen = false;
+                        this.passengerBrief.otherMenusOpen = false;
+                    }
                 }
                 break;
             case "Lwr_Push_CKLST_1":
@@ -384,6 +407,9 @@ class CJ4_MFD extends BaseAirliners {
                 this.activeMemoryFunction(3);
                 break;
             case "Lwr_Push_ESC":
+                if (this._chartview.style.display === "") {
+                    this._chartIndex.style.display = "none";
+                }
                 this.checklist.otherMenusOpen = false;
                 this.passengerBrief.otherMenusOpen = false;
                 break;

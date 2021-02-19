@@ -4203,7 +4203,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
     }
     onEvent(_event) {
         super.onEvent(_event);
-        if (this.handler && this.handler.reactsOnEvent(_event)) {
+        if (this.isVisible && this.handler && this.handler.reactsOnEvent(_event)) {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
@@ -4484,7 +4484,7 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
     }
     onEvent(_event) {
         super.onEvent(_event);
-        if (this.handler && this.handler.reactsOnEvent(_event)) {
+        if (this.isVisible && this.handler && this.handler.reactsOnEvent(_event)) {
             switch (_event) {
                 case "Lwr_DATA_PUSH":
                     if (!this.otherMenusOpen) {
