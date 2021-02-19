@@ -22,6 +22,7 @@ class CJ4_MFD extends BaseAirliners {
     get IsGlassCockpit() { return true; }
     connectedCallback() {
         super.connectedCallback();
+        document.documentElement.classList.add("animationsEnabled");
         this.radioNav.init(NavMode.TWO_SLOTS);
         this.systems1 = new CJ4_SystemContainer("System1", "SystemInfos1");
         this.systems2 = new CJ4_SystemContainer("System2", "SystemInfos2");
@@ -50,6 +51,10 @@ class CJ4_MFD extends BaseAirliners {
         this.addIndependentElementContainer(this.popup);
         this.modeChangeMask = this.getChildById("ModeChangeMask");
         this.maxUpdateBudget = 12;
+
+        if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
+            document.querySelector("#liverywarning").style.display = "";
+        }
     }
     disconnectedCallback() {
     }
