@@ -810,26 +810,31 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay {
   color: white;
 }
 
-h4 {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay h4 {
   text-align: left;
   vertical-align: baseline;
   padding-left: 6px;
 }
 
-mark {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay mark {
   background-color:#045CEB;
   text-align: left;
   color: white;
 }
 
-td {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay td {
   text-align: left;
   display: table-cell;
   vertical-align: middle;
   padding-left: 18px;
 }
 
-.tableGap {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay tr.selected {
+  outline: 2px solid cyan;
+  outline-offset: -2px;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay.tableGap {
   padding-bottom: 10px;
 }
 

@@ -88,7 +88,7 @@ export async function request(method: 'get' | 'post',
     }
 
     if (ignoreCache) {
-      xhr.setRequestHeader('Cache-Control', 'no-cache');
+      // xhr.setRequestHeader('Cache-Control', 'no-cache');
     }
 
     // xhr.timeout = timeout;

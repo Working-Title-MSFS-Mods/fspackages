@@ -98,7 +98,7 @@ class CJ4_MFD extends BaseAirliners {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         this._chartview.update(_deltaTime);
-        this._chartIndex.updateData("KBOS", "KPHL");
+        this._chartIndex.updateData();
         if (this.allContainersReady()) {
 
             // check for unit system change

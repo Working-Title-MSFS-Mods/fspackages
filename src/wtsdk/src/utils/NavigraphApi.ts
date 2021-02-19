@@ -104,7 +104,15 @@ export class NavigraphApi {
       })
     }
 
-    const options = DEFAULT_REQUEST_OPTIONS;
+    const options = {
+      ignoreCache: false,
+      headers: {
+        Accept: 'application/json, text/javascript, text/plain',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      // default max duration for a request
+      timeout: 10000,
+    };
 
     if (auth) {
       options.headers["Authorization"] = "Bearer " + this._accessToken;

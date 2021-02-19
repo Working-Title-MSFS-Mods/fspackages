@@ -23,6 +23,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
 
   // TODO i dont really want to have this in here hmmm
   private _fpm: FlightPlanManager;
+  private _selectIndex: number = 0;
 
   public connectedCallback(): void {
     this._tableContainer = this.querySelector("#ChartsTable");
@@ -30,20 +31,25 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     this._fpm = FlightPlanManager.DEBUG_INSTANCE;
   }
 
-  public async updateData(icaoOrig: string, icaoDest: string): Promise<void> {
+  public async updateData(): Promise<void> {
     if (this._api.isAccountLinked && this._isDirty) {
       this._isDirty = false;
       try {
+        const icaoOrig = this._fpm.getOrigin() === undefined ? "" : this._fpm.getOrigin().ident;
+        const icaoDest = this._fpm.getDestination() === undefined ? "" : this._fpm.getDestination().ident;
+
         if (icaoOrig !== "") {
+
           const origCharts = await this._api.getChartsList(icaoOrig);
           this.chartsindex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
-          this.chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "AP", origCharts);
+          this.chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code[0] === this._fpm.getDeparture().name, origCharts);
         }
       } catch (err) {
         // noop
       }
 
       this.render();
+      this.renderselect();
     }
   }
 
@@ -56,25 +62,57 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     if (this.style.display === "none") {
       return false;
     }
-    this._isDirty = true;
     let handled = true;
     switch (event) {
       case "Lwr_Push_Chart_1":
-        this.updateData("KBOS", "KPHL");
+        // this.updateData();
+        break;
+      case "Lwr_MENU_ADV_DEC":
+        this.menuScroll(false);
+        break;
+      case "Lwr_MENU_ADV_INC":
+        this.menuScroll(true);
         break;
       default:
         this._isDirty = false;
         handled = false;
         break;
     }
+
+    // some stupid selection logic
+    this.renderselect();
+
     return handled;
+  }
+
+  private renderselect() {
+    const rows = this._tableContainer.querySelectorAll("tr");
+    rows.forEach(r => {
+      r.className = "";
+    });
+    rows[this._selectIndex].className = "selected";
+  }
+
+  private menuScroll(isForward: boolean): void {
+    this._selectIndex = isForward ? this._selectIndex + 1 : this._selectIndex - 1;
+
+    let itemCount = 0;
+    Object.values(this.chartsindex).forEach(lvl => {
+      itemCount += Object.keys(lvl).length;
+    });
+
+    if (this._selectIndex < 0) {
+      this._selectIndex = itemCount - 1;
+    } else if (this._selectIndex >= itemCount) {
+      this._selectIndex = 0;
+    }
   }
 
   private render(): void {
     this._tableContainer.innerHTML = '';
 
-    const origin = this._fpm.getOrigin() === undefined ? "----" : this._fpm.getOrigin();
-    const destination = this._fpm.getDestination() === undefined ? "----" : this._fpm.getDestination();
+    const origin = this._fpm.getOrigin() === undefined ? "----" : this._fpm.getOrigin().ident;
+    const destination = this._fpm.getDestination() === undefined ? "----" : this._fpm.getDestination().ident;
 
     // render origin
     const origSection = this.renderSection(`ORIGIN - ${origin}`, this.chartsindex.Origin);
