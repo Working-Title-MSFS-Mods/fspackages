@@ -40,7 +40,8 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.VORRight = new VORDMENavAid(this.querySelector("#VORDMENavaid_Right"), 2);
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
-        this.minimums = this.querySelector("#MinimumsValue");
+        this.minimumsValue = this.querySelector("#MinimumsValue");
+        this.minimumsUnit = this.querySelector("#MinimumsUnit");
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -533,10 +534,25 @@ class Jet_MFD_NDInfo extends HTMLElement {
         }
     }
     updateMinimums() {
-        if (this.minimums) {
-            let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
-            this.minimums.textContent = baroSet;
-            this.minimums.parentElement.style.display = (baroSet == 0) ? 'none' : '';
+        if (this.minimumsValue) {
+            let minMode = SimVar.GetSimVarValue("L:WT_CJ4_MIN_SRC", "Number");
+            switch (minMode) {
+                case 1:
+                    let baroMins = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+                    this.minimumsValue.textContent = baroMins;
+                    this.minimumsUnit.textContent = "BARO";
+                    this.minimumsValue.parentElement.style.display = (baroMins == 0) ? 'none' : 'block';
+                    break;
+                case 2:
+                    let radioMins = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
+                    this.minimumsValue.textContent = radioMins
+                    this.minimumsUnit.textContent = "RA";
+                    this.minimumsValue.parentElement.style.display = (radioMins == 0) ? 'none' : 'block';
+                    break;
+                default:
+                    this.minimumsValue.parentElement.style.display = "none";
+                    break;
+            }
         }
     }
     getILSIdent() {

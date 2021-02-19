@@ -470,18 +470,23 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
             let currentPlaneBank = Simplane.getBank();
             let fdBank = this.cj4_FlightDirectorBank;
             let bankConversion = (currentPlaneBank - fdBank) * 2;
+            
+            if (this.cj4_FlightDirectorStyle == 0) {
+                this.vBarAircraftSymbol.setAttribute("display", "");
+                this.crossPointersGroup.setAttribute("display", "none");
+            } else if (this.cj4_FlightDirectorStyle == 1) {
+                this.vBarAircraftSymbol.setAttribute("display", "none");
+                this.crossPointersGroup.setAttribute("display", "");
+            }
+
             if (this.cj4_FlightDirectorActive) {
                 if (this.cj4_FlightDirectorStyle == 0) {
-                    this.crossPointersGroup.setAttribute("display", "none");
                     this.crossPointersPitch.setAttribute("display", "none");
                     this.crossPointersBank.setAttribute("display", "none");
-                    this.vBarAircraftSymbol.setAttribute("display", "");
                     this.cj4_FlightDirector.setAttribute("transform", "rotate(" + (-this.cj4_FlightDirectorBank) + ") translate(0 " + ((this.pitchAngle - this.cj4_FlightDirectorPitch) * this.pitchAngleFactor) + ")");
                     this.cj4_FlightDirector.setAttribute("display", "");
                 } else if (this.cj4_FlightDirectorStyle == 1) {
                     this.cj4_FlightDirector.setAttribute("display", "none");
-                    this.vBarAircraftSymbol.setAttribute("display", "none");
-                    this.crossPointersGroup.setAttribute("display", "");
                     this.crossPointersPitch.setAttribute("display", "");
                     this.crossPointersBank.setAttribute("display", "");
                     this.crossPointersPitch.setAttribute("transform", "translate(0 " + ((this.pitchAngle - this.cj4_FlightDirectorPitch) * this.pitchAngleFactor) + ")");

@@ -3678,6 +3678,20 @@ class CJ4_PopupMenuContainer extends NavSystemElementContainer {
         }
     }
 }
+
+let PopupMenu_ItemType;
+(function (PopupMenu_ItemType) {
+    PopupMenu_ItemType[PopupMenu_ItemType["TITLE"] = 0] = "TITLE";
+    PopupMenu_ItemType[PopupMenu_ItemType["LIST"] = 1] = "LIST";
+    PopupMenu_ItemType[PopupMenu_ItemType["RANGE"] = 2] = "RANGE";
+    PopupMenu_ItemType[PopupMenu_ItemType["RADIO"] = 3] = "RADIO";
+    PopupMenu_ItemType[PopupMenu_ItemType["RADIO_LIST"] = 4] = "RADIO_LIST";
+    PopupMenu_ItemType[PopupMenu_ItemType["RADIO_RANGE"] = 5] = "RADIO_RANGE";
+    PopupMenu_ItemType[PopupMenu_ItemType["SUBMENU"] = 6] = "SUBMENU";
+    PopupMenu_ItemType[PopupMenu_ItemType["CHECKBOX"] = 7] = "CHECKBOX";
+    PopupMenu_ItemType[PopupMenu_ItemType["CHECKBOX_RANGE"] = 8] = "CHECKBOX_RANGE";
+})(PopupMenu_ItemType || (PopupMenu_ItemType = {}));
+
 var CJ4_PopupMenu_Key;
 (function (CJ4_PopupMenu_Key) {
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_FORMAT"] = 0] = "MAP_FORMAT";
@@ -3705,12 +3719,65 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VRF"] = 22] = "VSPEED_VRF";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VAP"] = 23] = "VSPEED_VAP";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_SRC"] = 24] = "MIN_ALT_SRC";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_BARO_VAL"] = 25] = "MIN_ALT_BARO_VAL";
-    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO_VAL"] = 26] = "MIN_ALT_RADIO_VAL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_BARO"] = 25] = "MIN_ALT_BARO";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MIN_ALT_RADIO"] = 26] = "MIN_ALT_RADIO";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["SYS_SRC"] = 27] = "SYS_SRC";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["AOA"] = 28] = "AOA";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["FLT_DIR"] = 29] = "FLT_DIR";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_MAP_OVERLAY"] = 30] = "PFD_MAP_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_STD"] = 31] = "BARO_STD";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["BARO_SET"] = 32] = "BARO_SET";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V1_ON"] = 33] = "VSPEED_V1_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VR_ON"] = 34] = "VSPEED_VR_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_V2_ON"] = 35] = "VSPEED_V2_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VT_ON"] = 36] = "VSPEED_VT_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VRF_ON"] = 37] = "VSPEED_VRF_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["VSPEED_VAP_ON"] = 38] = "VSPEED_VAP_ON";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_CONTROL"] = 39] = "RADAR_CONTROL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_MODE"] = 40] = "RADAR_MODE";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_GCS"] = 41] = "RADAR_GCS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_TILT"] = 42] = "RADAR_TILT";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["RADAR_GAIN"] = 43] = "RADAR_GAIN";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_GS_CANCEL"] = 44] = "TAWS_GS_CANCEL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_FLAP_OVRD"] = 45] = "TAWS_FLAP_OVRD";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_TERR_INHIB"] = 46] = "TAWS_TERR_INHIB";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["TAWS_STEEP_APPR"] = 47] = "TAWS_STEEP_APPR";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_MAP_OVERLAY"] = 48] = "MFD_MAP_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_TERMWPTS"] = 49] = "MAP_SYMBOL_TERMWPTS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_MISSEDAPPR"] = 50] = "MAP_SYMBOL_MISSEDAPPR";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_NDBS"] = 51] = "MAP_SYMBOL_NDBS";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_RNGSEL"] = 52] = "MAP_SYMBOL_RNGSEL";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
+class CJ4_PopupMenu_Item {
+    constructor(_type, _section, _y, _height) {
+        this.y = 0;
+        this.height = 0;
+        this.listVal = 0;
+        this.rangeMin = 0;
+        this.rangeMax = 0;
+        this.rangeStep = 0;
+        this.rangeDecimals = 0;
+        this.rangeVal = 0;
+        this.radioVal = false;
+        this.checkboxVal = false;
+        this.autodeselect = false;
+        this.type = _type;
+        this.section = _section;
+        this.y = _y;
+        this.height = _height;
+    }
+    get interactive() {
+        if (this.type != PopupMenu_ItemType.TITLE)
+            return true;
+        return false;
+    }
+    get enabled() {
+        if (this.dictKeys != null || this.subMenu)
+            return true;
+        return false;
+    }
+}
+
 class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     constructor() {
         super(...arguments);
@@ -3719,6 +3786,7 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
     get isOnMainPage() {
         return this._isOnMainPage;
     }
+
     reactsOnEvent(_event) {
         switch (_event) {
             case "Upr_DATA_PUSH":
@@ -3737,6 +3805,272 @@ class CJ4_PopupMenu_Handler extends Airliners.PopupMenu_Handler {
                 return true;
         }
         return false;
+    }
+    endSection() {
+        let stroke = document.createElementNS(Avionics.SVG.NS, "rect");
+        stroke.setAttribute("x", "0");
+        stroke.setAttribute("y", this.section.startY.toString());
+        stroke.setAttribute("width", this.menuWidth.toString());
+        stroke.setAttribute("height", (this.section.endY - this.section.startY).toString());
+        stroke.setAttribute("fill", "none");
+        stroke.setAttribute("stroke", "white");
+        stroke.setAttribute("stroke-width", this.sectionBorderSize.toString());
+        this.sectionRoot.appendChild(stroke);
+        let defaultRadio = null;
+        for (let i = 0; i < this.section.items.length; i++) {
+            let item = this.section.items[i];
+            if (item.radioElem) {
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[0])) {
+                    if (this.dictionary.get(item.dictKeys[0]) == item.radioName) {
+                        defaultRadio = item;
+                        break;
+                    }
+                }
+                else if (!defaultRadio && this.section.defaultRadio) {
+                    defaultRadio = item;
+                }
+            }
+        }
+        for (let i = 0; i < this.section.items.length; i++) {
+            let item = this.section.items[i];
+            let dictIndex = 0;
+            let changed = false;
+            if (item.radioElem) {
+                if (item == defaultRadio) {
+                    this.activateItem(item, true);
+                    changed = true;
+                }
+            }
+            if (item.listElem) {
+                item.listVal = 0;
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    let value = this.dictionary.get(item.dictKeys[dictIndex]);
+                    for (let j = 0; j < item.listValues.length; j++) {
+                        if (item.listValues[j] == value) {
+                            item.listVal = j;
+                            break;
+                        }
+                    }
+                }
+                item.listElem.textContent = item.listValues[item.listVal];
+                changed = true;
+            }
+            if (item.rangeElem) {
+                if (item.checkboxElem || item.radioElem) {
+                    dictIndex++;
+                }
+                item.rangeVal = item.rangeMin;
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    item.rangeVal = parseFloat(this.dictionary.get(item.dictKeys[dictIndex]));
+                    item.rangeVal = Math.max(item.rangeMin, Math.min(item.rangeVal, item.rangeMax));
+                }
+                item.rangeElem.textContent = item.rangeVal.toFixed(item.rangeDecimals);
+                changed = true;
+            }
+            if (item.checkboxElem) {
+                if (this.dictionary && item.dictKeys && this.dictionary.exists(item.dictKeys[dictIndex])) {
+                    if (this.dictionary.get(item.dictKeys[0]) == "ON") {
+                        this.activateItem(item, true);
+                        changed = true;
+                    }
+                }
+            }
+            if (changed)
+                this.onChanged(item);
+        }
+        this.allSections.push(this.section);
+        this.section = null;
+    }
+    onChanged(_item) {
+        if (this.dictionary && _item.enabled) {
+            switch (_item.type) {
+                case PopupMenu_ItemType.RADIO:
+                case PopupMenu_ItemType.RADIO_LIST:
+                case PopupMenu_ItemType.RADIO_RANGE:
+                    if (_item.radioVal) {
+                        this.dictionary.set(_item.dictKeys[0], _item.radioName);
+                    }
+                    break;
+                case PopupMenu_ItemType.LIST:
+                    this.dictionary.set(_item.dictKeys[0], _item.listValues[_item.listVal]);
+                    break;
+                case PopupMenu_ItemType.RANGE:
+                    this.dictionary.set(_item.dictKeys[0], _item.rangeVal.toString());
+                    break;
+                case PopupMenu_ItemType.CHECKBOX:
+                    this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
+                    break;
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    this.dictionary.set(_item.dictKeys[0], (_item.checkboxVal) ? "ON" : "OFF");
+                    break;
+            }
+            switch (_item.type) {
+                case PopupMenu_ItemType.RADIO_LIST:
+                    this.dictionary.set(_item.dictKeys[1], _item.listValues[_item.listVal]);
+                    break;
+                case PopupMenu_ItemType.RADIO_RANGE:
+                    this.dictionary.set(_item.dictKeys[1], _item.rangeVal.toString());
+                    break;
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    this.dictionary.set(_item.dictKeys[1], _item.rangeVal.toString());
+                    break;
+            }
+        }
+    }
+    onActivate() {
+        super.onActivate();
+        if (this.highlightItem && this.highlightItem.enabled) {
+            switch (this.highlightItem.type) {
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    if (!this.highlightItem.checkboxVal) {
+                        this.activateItem(this.highlightItem, true);
+                    }
+                    else {
+                        this.activateItem(this.highlightItem, false);
+                        this.highlightItem.checkboxVal = false;
+                    }
+                    this.onChanged(this.highlightItem);
+                    break;
+            }
+        }
+    }
+    activateItem(_item, _val) {
+        super.activateItem(_item, _val);
+        if (!_item.enabled)
+            return;
+        switch (_item.type) {
+            case PopupMenu_ItemType.CHECKBOX_RANGE:
+                if (_val) {
+                    _item.checkboxVal = true;
+                    _item.checkboxTickElem.setAttribute("visibility", "visible");
+                }
+                else {
+                    _item.checkboxVal = false;
+                    _item.checkboxTickElem.setAttribute("visibility", "hidden");
+                }
+                break;
+        }
+    }
+
+    onDataDec() {
+        super.onDataDec();
+        if (this.highlightItem && this.highlightItem.enabled) {
+            switch (this.highlightItem.type) {
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    if (this.highlightItem.rangeVal > this.highlightItem.rangeMin) {
+                        this.highlightItem.rangeVal -= this.highlightItem.rangeStep * this.getSpeedAccel();
+                        this.highlightItem.rangeVal = Math.max(this.highlightItem.rangeVal, this.highlightItem.rangeMin);
+                        this.highlightItem.rangeElem.textContent = this.highlightItem.rangeVal.toFixed(this.highlightItem.rangeDecimals);
+                        if (this.highlightItem.autodeselect) {
+                            this.activateItem(this.highlightItem, false);
+                        }
+                        this.onChanged(this.highlightItem);
+                        this.speedInc += this.speedInc_UpFactor;
+                    }
+                    break;
+            }
+        }
+    }
+    onDataInc() {
+        super.onDataInc();
+        if (this.highlightItem && this.highlightItem.enabled) {
+            switch (this.highlightItem.type) {
+                case PopupMenu_ItemType.CHECKBOX_RANGE:
+                    if (this.highlightItem.rangeVal < this.highlightItem.rangeMax) {
+                        this.highlightItem.rangeVal += this.highlightItem.rangeStep * this.getSpeedAccel();
+                        this.highlightItem.rangeVal = Math.min(this.highlightItem.rangeVal, this.highlightItem.rangeMax);
+                        this.highlightItem.rangeElem.textContent = this.highlightItem.rangeVal.toFixed(this.highlightItem.rangeDecimals);
+                        if (this.highlightItem.autodeselect) {
+                            this.activateItem(this.highlightItem, false);
+                        }
+                        this.onChanged(this.highlightItem);
+                        this.speedInc += this.speedInc_UpFactor;
+                    }
+                    break;
+            }
+        }
+    }
+    addCheckboxRange(_text, _textSize, _autodeselect, _min, _max, _step, _dictKeys) {
+        let enabled = (_dictKeys != null) ? true : false;
+        let size = Math.min(this.lineHeight, this.columnLeft2) * 0.66;
+        let cx = this.columnLeft1 + (this.columnLeft2 - this.columnLeft1) * 0.5;
+        let cy = this.section.endY + this.lineHeight * 0.5;
+        let shape;
+        if (this.shape3D && enabled) {
+            let b = this.shape3DBorderSize;
+            let topLeftBorder = document.createElementNS(Avionics.SVG.NS, "path");
+            topLeftBorder.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy - size * 0.5) + " l" + (size) + " 0 l" + (-b) + " " + (b) + " l" + (-(size - b * 2)) + " 0 l0 " + (size - b * 2) + " l" + (-b) + " " + (b) + " Z");
+            topLeftBorder.setAttribute("fill", this.shape3DBorderLeft);
+            this.sectionRoot.appendChild(topLeftBorder);
+            let bottomRightBorder = document.createElementNS(Avionics.SVG.NS, "path");
+            bottomRightBorder.setAttribute("d", "M" + (cx + size * 0.5) + " " + (cy + size * 0.5) + " l" + (-size) + " 0 l" + (b) + " " + (-b) + " l" + (size - b * 2) + " 0 l0 " + (-(size - b * 2)) + " l" + (b) + " " + (-b) + " Z");
+            bottomRightBorder.setAttribute("fill", this.shape3DBorderRight);
+            this.sectionRoot.appendChild(bottomRightBorder);
+            shape = document.createElementNS(Avionics.SVG.NS, "rect");
+            shape.setAttribute("x", (cx - size * 0.5 + b).toString());
+            shape.setAttribute("y", (cy - size * 0.5 + b).toString());
+            shape.setAttribute("width", (size - b * 2).toString());
+            shape.setAttribute("height", (size - b * 2).toString());
+            shape.setAttribute("fill", this.shapeFillColor);
+            this.sectionRoot.appendChild(shape);
+        }
+        else {
+            shape = document.createElementNS(Avionics.SVG.NS, "rect");
+            shape.setAttribute("x", (cx - size * 0.5).toString());
+            shape.setAttribute("y", (cy - size * 0.5).toString());
+            shape.setAttribute("width", size.toString());
+            shape.setAttribute("height", size.toString());
+            shape.setAttribute("fill", (enabled) ? this.shapeFillColor : ((this.shapeFillIfDisabled) ? this.disabledColor : "none"));
+            shape.setAttribute("stroke", (enabled) ? "white" : this.disabledColor);
+            shape.setAttribute("stroke-width", "1");
+            this.sectionRoot.appendChild(shape);
+        }
+        let tick = document.createElementNS(Avionics.SVG.NS, "path");
+        tick.setAttribute("d", "M" + (cx - size * 0.5) + " " + (cy) + " l" + (size * 0.4) + " " + (size * 0.5) + " l" + (size * 0.6) + " " + (-size));
+        tick.setAttribute("fill", "none");
+        tick.setAttribute("stroke", this.interactionColor);
+        tick.setAttribute("stroke-width", "4");
+        tick.setAttribute("visibility", "hidden");
+        this.sectionRoot.appendChild(tick);
+        let text = document.createElementNS(Avionics.SVG.NS, "text");
+        text.textContent = _text;
+        text.setAttribute("x", (this.columnLeft2 + this.textMarginX).toString());
+        text.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+        text.setAttribute("fill", (enabled) ? "white" : this.disabledColor);
+        text.setAttribute("font-size", _textSize.toString());
+        text.setAttribute("font-family", this.textStyle);
+        text.setAttribute("alignment-baseline", "central");
+        this.sectionRoot.appendChild(text); let hl = document.createElementNS(Avionics.SVG.NS, "rect");
+        hl.setAttribute("x", (this.columnLeft3 - 2).toString());
+        hl.setAttribute("y", (this.section.endY + 2).toString());
+        hl.setAttribute("width", (this.menuWidth - 2 - (this.columnLeft3 - 2)).toString());
+        hl.setAttribute("height", ((this.section.endY + this.lineHeight - 2) - (this.section.endY + 2)).toString());
+        hl.setAttribute("fill", this.interactionColor);
+        hl.setAttribute("visibility", "hidden");
+        this.sectionRoot.appendChild(hl);
+        let range = document.createElementNS(Avionics.SVG.NS, "text");
+        range.setAttribute("x", this.columnLeft3.toString());
+        range.setAttribute("y", (this.section.endY + this.lineHeight * 0.5).toString());
+        range.setAttribute("fill", (enabled) ? this.interactionColor : this.disabledColor);
+        range.setAttribute("font-size", _textSize.toString());
+        range.setAttribute("font-family", this.textStyle);
+        range.setAttribute("alignment-baseline", "central");
+        this.sectionRoot.appendChild(range);
+        let item = new CJ4_PopupMenu_Item(PopupMenu_ItemType.CHECKBOX_RANGE, this.section, this.section.endY, this.lineHeight);
+        item.autodeselect = _autodeselect;
+        item.dictKeys = _dictKeys;
+        item.checkboxElem = shape;
+        item.checkboxTickElem = tick;
+        item.rangeElem = range;
+        item.rangeHLElem = hl;
+        item.rangeMin = _min;
+        item.rangeMax = _max;
+        item.rangeVal = _min;
+        item.rangeStep = _step;
+        item.rangeDecimals = Utils.countDecimals(_step);
+        this.section.items.push(item);
+        super.registerWithMouse(item);
+        this.section.endY += this.lineHeight;
     }
 }
 class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
@@ -3768,7 +4102,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("FORMAT", this.textSize, 0.4);
+                this.addTitle("FORMAT", this.textSize, 0.31);
                 this.addRadio("ROSE", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
                 this.addRadio("ARC", this.textSize, [CJ4_PopupMenu_Key.MAP_FORMAT]);
 
@@ -3783,7 +4117,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("CONTROLS", this.textSize, 0.5);
+                this.addTitle("CONTROLS", this.textSize, 0.41);
                 this.addList("NAV-SRC", this.textSize, ["FMS1", "VOR1", "VOR2"], [CJ4_PopupMenu_Key.NAV_SRC]);
                 this.addList("RANGE", this.textSize, ["5", "10", "25", "50", "100", "200", "300"], [CJ4_PopupMenu_Key.MAP_RANGE]);
             }
@@ -3792,11 +4126,15 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             {
                 this.addSubMenu("BRG SRC", this.textSize, this.showNavPage.bind(this));
                 this.addSubMenu("CONFIG", this.textSize, this.showConfigPage.bind(this));
-                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("OVERLAYS", this.textSize, this.showOverlaysPage.bind(this));
                 this.addSubMenu("RADAR", this.textSize, null);
+                // TODO Hook up RADAR page
+                // this.addSubMenu("RADAR", this.textSize, this.showRadarPage.bind(this));
                 this.addSubMenu("REFS", this.textSize, this.showRefPage.bind(this));
                 this.addSubMenu("TAWS", this.textSize, null);
-                this.addSubMenu("BARO SET", this.textSize, null);
+                // TODO Hook up TAWS page
+                // this.addSubMenu("TAWS", this.textSize, this.showTAWSPage.bind(this));
+                this.addSubMenu("BARO SET", this.textSize, this.showBaroSetPage.bind(this));
             }
             this.endSection();
         }
@@ -3825,7 +4163,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("BRG PTR 1", this.textSize, 0.5);
+                this.addTitle("BRG PTR 1", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("FMS1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
                 this.addRadio("VOR1", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR1_SRC]);
@@ -3834,7 +4172,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("BRG PTR 2", this.textSize, 0.5);
+                this.addTitle("BRG PTR 2", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
@@ -3867,19 +4205,148 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 //this.addTitle("UNITS", this.textSize, 0.3);
-                this.addList("PRESS", this.textSize, ["IN", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
-                this.addList("MTR ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
+                this.addList("PRESSURE", this.textSize, ["IN", "HPA"], [CJ4_PopupMenu_Key.UNITS_PRESS]);
                 this.addList("FLT DIR", this.textSize, ["V-BAR", "X-PTR"], [CJ4_PopupMenu_Key.FLT_DIR]);
-            }
-            this.endSection();
-            this.beginSection();
-            {
+                this.addList("MTRS ALT", this.textSize, ["OFF", "ON"], [CJ4_PopupMenu_Key.UNITS_MTR_ALT]);
+                this.addList("FL ALERT", this.textSize, ["ON", "OFF"], null);
+                // this.addList("FL ALERT", this.textSize, ["ON", "OFF"], [CJ4_PopupMenu_Key.FL_ALERT]); //TODO Hook up Altitude Alerting
                 this.addList("AOA DISP", this.textSize, ["AUTO", "ON", "OFF"], [CJ4_PopupMenu_Key.AOA]);
             }
             this.endSection();
         }
         this.closeMenu();
         this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showOverlaysPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("OVERLAYS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TERR/WX", this.textSize, 0.37);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_OVERLAY]);
+                this.addRadio("TERR", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_OVERLAY]);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.PFD_MAP_OVERLAY]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TFC", this.textSize, 0.18);
+                this.addRadio("OFF", this.textSize, null);
+                this.addRadio("ON", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showRadarPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("RADAR", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("CONTROL", this.textSize, 0.35);
+                this.addRadio("STANDBY", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+                this.addRadio("AUTOMATIC", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+                this.addRadio("MANUAL", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+                this.addRadio("TEST", this.textSize, [CJ4_PopupMenu_Key.RADAR_CONTROL]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("MODE", this.textSize, 0.22);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+                this.addRadio("WX+TURB", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+                this.addRadio("TURB", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+                this.addRadio("MAP", this.textSize, [CJ4_PopupMenu_Key.RADAR_MODE]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("FUNCTION", this.textSize, this.showRadarFunctionPage.bind(this));
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showRadarFunctionPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("RADAR", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("FUNCTION", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("GCS", this.textSize, [CJ4_PopupMenu_Key.RADAR_GCS]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addRange("TILT", this.textSize, -5, 5, 0.1, [CJ4_PopupMenu_Key.RADAR_TILT]);
+                this.addList("GAIN", this.textSize, ["-3", "-2", "-1", "NORM", "+1", "+2", "+3"], [CJ4_PopupMenu_Key.RADAR_GAIN]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addSubMenu("FUNCTION", this.textSize, this.showRadarFunctionPage.bind(this));
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showRadarPage.bind(this, 8);
         page.appendChild(sectionRoot);
         Utils.RemoveAllChildren(this.root);
         this.root.appendChild(page);
@@ -3903,20 +4370,91 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("V SPEEDS", this.textSize, 0.45);
-                this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
-                this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
-                this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
-                this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
-                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addTitle("SPEEDS", this.textSize, 0.32);
+                this.addCheckboxRange("V1", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addCheckboxRange("VR", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addCheckboxRange("V2", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addCheckboxRange("VT", this.textSize, true, 50, 260, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("RA/BARO MIN", this.textSize, 0.6);
-                this.addRadioRange("RA", this.textSize, 0, 2500, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addCheckboxRange("VRF", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addCheckboxRange("VAP", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("MINIMUMS", this.textSize, 0.4);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MIN_ALT_SRC]);
+                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO]);
+                this.addRadioRange("RA", this.textSize, 0, 2500, 1, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showTAWSPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TAWS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addCheckbox("G/S CANCEL", this.textSize, [CJ4_PopupMenu_Key.TAWS_GS_CANCEL]);
+                this.addCheckbox("FLAP OVRD", this.textSize, [CJ4_PopupMenu_Key.TAWS_FLAP_OVRD]);
+                this.addCheckbox("TERR INHIB", this.textSize, [CJ4_PopupMenu_Key.TAWS_TERR_INHIB]);
+                this.addCheckbox("STEEP APPR", this.textSize, [CJ4_PopupMenu_Key.TAWS_STEEP_APPR]);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 8);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showBaroSetPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("PFD MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("BARO SET", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                if (WTDataStore.get("CJ4_BARO_MODE", false)) {
+                    this.addRadioRange("HPA", this.textSize, 980, 1050, 1, [CJ4_PopupMenu_Key.BARO_STD, CJ4_PopupMenu_Key.BARO_SET]);
+                } else {
+                    this.addRadioRange("IN", this.textSize, 27.00, 32.00, 0.01, [CJ4_PopupMenu_Key.BARO_STD, CJ4_PopupMenu_Key.BARO_SET]);
+                }
+                this.addRadio("STD", this.textSize, [CJ4_PopupMenu_Key.BARO_STD]);
             }
             this.endSection();
         }
@@ -3956,24 +4494,25 @@ class CJ4_PopupMenu_REF extends CJ4_PopupMenu_Handler {
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("V SPEEDS", this.textSize, 0.45);
-                this.addRange("V1", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V1]);
-                this.addRange("VR", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VR]);
-                this.addRange("V2", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_V2]);
-                this.addRange("VT", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VT]);
+                this.addTitle("SPEEDS", this.textSize, 0.32);
+                this.addCheckboxRange("V1", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V1_ON, CJ4_PopupMenu_Key.VSPEED_V1]);
+                this.addCheckboxRange("VR", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VR_ON, CJ4_PopupMenu_Key.VSPEED_VR]);
+                this.addCheckboxRange("V2", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_V2_ON, CJ4_PopupMenu_Key.VSPEED_V2]);
+                this.addCheckboxRange("VT", this.textSize, true, 50, 260, 1, [CJ4_PopupMenu_Key.VSPEED_VT_ON, CJ4_PopupMenu_Key.VSPEED_VT]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addRange("VRF", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VRF]);
-                this.addRange("VAP", this.textSize, 10, 250, 1, [CJ4_PopupMenu_Key.VSPEED_VAP]);
+                this.addCheckboxRange("VRF", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VRF_ON, CJ4_PopupMenu_Key.VSPEED_VRF]);
+                this.addCheckboxRange("VAP", this.textSize, true, 50, 160, 1, [CJ4_PopupMenu_Key.VSPEED_VAP_ON, CJ4_PopupMenu_Key.VSPEED_VAP]);
             }
             this.endSection();
             this.beginSection();
             {
-                this.addTitle("RA/BARO MIN", this.textSize, 0.6);
-                this.addRadioRange("RA", this.textSize, 0, 2500, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO_VAL]);
-                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO_VAL]);
+                this.addTitle("MINIMUMS", this.textSize, 0.4);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MIN_ALT_SRC]);
+                this.addRadioRange("BARO", this.textSize, 0, 14000, 10, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_BARO]);
+                this.addRadioRange("RA", this.textSize, 0, 2500, 1, [CJ4_PopupMenu_Key.MIN_ALT_SRC, CJ4_PopupMenu_Key.MIN_ALT_RADIO]);
             }
             this.endSection();
         }
@@ -4034,7 +4573,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
         this.textSize = 13;
         this.root = _root;
         this.menuLeft = 5;
-        this.menuTop = 245;
+        this.menuTop = 215;
         this.menuWidth = 145;
         this.dictionary = _dictionary;
         this.showMainPage();
@@ -4069,7 +4608,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             {
                 this.addTitle("CONTROLS", this.textSize, 0.5);
                 this.addList("MAP-SRC", this.textSize, ["FMS1"], [CJ4_PopupMenu_Key.MAP_SRC]);
-                this.addSubMenu("OVERLAYS", this.textSize, null);
+                this.addSubMenu("OVERLAYS", this.textSize, this.showOverlaysPage.bind(this));
                 this.addSubMenu("MAP SYMBOLS", this.textSize, this.showMapSymbolsPage.bind(this));
                 this.addSubMenu("TFR TEST", this.textSize, null);
                 this.addSubMenu("SYS TEST", this.textSize, this.showSystemTestPage.bind(this));
@@ -4098,7 +4637,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LWR MENU", this.titleSize, 1.0, "blue");
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "grey");
             }
             this.endSection();
             this.beginSection();
@@ -4109,11 +4648,62 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 //this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
-                this.addCheckbox("AIRSPACES", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
+                this.addCheckbox("GEO-POL", this.textSize, null);
+                this.addCheckbox("AIRSPACE", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
                 this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);
-                this.addCheckbox("NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
-                this.addCheckbox("AIRPORTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS]);
-                this.addCheckbox("INTERSECTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS]);
+                this.addCheckbox("NEAREST APTS", this.textSize, null);
+                this.addCheckbox("HI NAVAIDS", this.textSize, null);
+                this.addCheckbox("LO NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
+                this.addCheckbox("INTERS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS]);
+                this.addCheckbox("TERM WPTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_TERMWPTS]);
+                this.addCheckbox("APTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS]);
+                this.addCheckbox("NDBS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NDBS]);
+                this.addCheckbox("ETA", this.textSize, null);
+                this.addCheckbox("SPEED", this.textSize, null);
+                this.addCheckbox("ALTITUDE", this.textSize, null);
+                this.addCheckbox("MISS APPR", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_MISSEDAPPR]);
+                this.addCheckbox("ALTN FPLN", this.textSize, null);
+                this.addCheckbox("RNG: ALT SEL", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_RNGSEL]);
+                this.addCheckbox("LRN POS", this.textSize, null);
+            }
+            this.endSection();
+        }
+        this.closeMenu();
+        this.escapeCbk = this.showMainPage.bind(this, 7);
+        page.appendChild(sectionRoot);
+        Utils.RemoveAllChildren(this.root);
+        this.root.appendChild(page);
+    }
+    showOverlaysPage() {
+        this._isOnMainPage = false;
+        let page = document.createElementNS(Avionics.SVG.NS, "svg");
+        page.setAttribute("id", "ViewBox");
+        page.setAttribute("viewBox", "0 0 500 500");
+        let sectionRoot = this.openMenu();
+        {
+            this.beginSection();
+            {
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "grey");
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("OVERLAYS", this.titleSize, 1.0, "blue", true);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TERR/WX", this.textSize, 0.37);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_OVERLAY]);
+                this.addRadio("TERR", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_OVERLAY]);
+                this.addRadio("WX", this.textSize, [CJ4_PopupMenu_Key.MFD_MAP_OVERLAY]);
+            }
+            this.endSection();
+            this.beginSection();
+            {
+                this.addTitle("TFC", this.textSize, 0.18);
+                this.addRadio("OFF", this.textSize, null);
+                this.addRadio("ON", this.textSize, null);
             }
             this.endSection();
         }
@@ -4132,7 +4722,7 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
         {
             this.beginSection();
             {
-                this.addTitle("LWR MENU", this.titleSize, 1.0, "blue");
+                this.addTitle("LWR MENU", this.titleSize, 1.0, "grey");
             }
             this.endSection();
             this.beginSection();

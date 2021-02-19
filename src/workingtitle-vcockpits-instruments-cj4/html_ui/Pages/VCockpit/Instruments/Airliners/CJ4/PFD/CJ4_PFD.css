@@ -630,12 +630,20 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo[masks=off] #RightMask {
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Minimums {
     top: 3%;
-    right: 2%;
+    left: 76.2%;
     width: 22%;
     height: 8%;
     font-size: 25px;
     color: cyan;
     position: absolute;
+}
+
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Minimums #MinimumsPrefix{
+    margin-right: 6%;
+}
+
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Minimums #MinimumsValue{
+    margin-right: 5%;
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox {
@@ -1065,6 +1073,10 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 #Airspeed #CursorGroup path {
     transform: translateY(-1px)
+}
+
+#Altimeter #MeterUnit{
+    fill: #adadad !important;
 }
 
 #Altimeter #CenterGroup #graduationGroup>text[font-size="25"] {
