@@ -394,9 +394,11 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             else
                                 suffix = " R";
                         }
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number"); //Set so you can see the course the needle is pointing to while NAVAID is inactive
+                        let courseNAV = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree");
                         let type = "VOR";
                         let freq = "----";
-                        let course = "---";
+                        let course = courseNAV.toString().padStart(3, "0");
                         let ident = "";
                         let distance = "----";
 
@@ -465,7 +467,8 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
                         if (ils.id > 0) {
                             freq = ils.freq.toFixed(2);
-                            course = Utils.leadingZeros(Math.round(ils.course), 3);
+                            let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                            course = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString().padStart(3, "0");
                             ident = ils.ident;
 
                             if (ils.distance) {
