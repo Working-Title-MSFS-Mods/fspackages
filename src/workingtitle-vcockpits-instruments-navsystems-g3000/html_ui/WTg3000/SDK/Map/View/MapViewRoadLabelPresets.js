@@ -55,17 +55,23 @@ WT_MapViewERoadLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
-// UNITED STATES
+// NA
 
-class WT_MapViewUSRouteCollection extends WT_MapViewRoadLabelCollection {
+class WT_MapViewNARouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
-        super(WT_MapViewUSRouteCollection.DATA_FILE_PATH, {
+        super(WT_MapViewNARouteCollection.DATA_FILE_PATH, {
             createLabel(roadType, routeType, location, name) {
                 switch (routeType) {
-                    case WT_MapViewUSRouteCollection.RouteType.INTERSTATE:
+                    case WT_MapViewNARouteCollection.RouteType.US_INTERSTATE:
                         return new WT_MapViewUSInterstateLabel(roadType, location, name);
-                    case WT_MapViewUSRouteCollection.RouteType.US_ROUTE:
+                    case WT_MapViewNARouteCollection.RouteType.US_US_ROUTE:
                         return new WT_MapViewUSRouteLabel(roadType, location, name);
+                    case WT_MapViewNARouteCollection.RouteType.CANADA_TRANS_CANADA:
+                        return new WT_MapViewGenericInternationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewNARouteCollection.RouteType.CANADA_NATIONAL_HIGHWAY:
+                        return new WT_MapViewGenericNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewNARouteCollection.RouteType.CANADA_PROVINCIAL_HIGHWAY:
+                        return new WT_MapViewGenericLocalHighwayLabel(roadType, location, name);
                     default:
                         return null;
                 }
@@ -73,13 +79,16 @@ class WT_MapViewUSRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewUSRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/US_interstate_usroute_labels.json";
+WT_MapViewNARouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/NA_labels.json";
 /**
  * @enum {String}
  */
-WT_MapViewUSRouteCollection.RouteType = {
-    INTERSTATE: "us_interstate",
-    US_ROUTE: "us_route"
+WT_MapViewNARouteCollection.RouteType = {
+    US_INTERSTATE: "US_interstate",
+    US_US_ROUTE: "US_usroute",
+    CANADA_TRANS_CANADA: "canada_trans_canada",
+    CANADA_NATIONAL_HIGHWAY: "canada_nat_highway",
+    CANADA_PROVINCIAL_HIGHWAY: "canada_prov_highway"
 };
 
 class WT_MapViewUSInterstateLabel extends WT_MapViewRoadImageLabel {
@@ -107,36 +116,6 @@ WT_MapViewUSRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_
 WT_MapViewUSRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black"
-};
-
-// CANADA
-
-class WT_MapViewCanadaRouteCollection extends WT_MapViewRoadLabelCollection {
-    constructor() {
-        super(WT_MapViewCanadaRouteCollection.DATA_FILE_PATH, {
-            createLabel(roadType, routeType, location, name) {
-                switch (routeType) {
-                    case WT_MapViewCanadaRouteCollection.RouteType.TRANS_CANADA:
-                        return new WT_MapViewGenericInternationalHighwayLabel(roadType, location, name);
-                    case WT_MapViewCanadaRouteCollection.RouteType.NATIONAL_HIGHWAY:
-                        return new WT_MapViewGenericNationalHighwayLabel(roadType, location, name);
-                    case WT_MapViewCanadaRouteCollection.RouteType.PROVINCIAL_HIGHWAY:
-                        return new WT_MapViewGenericLocalHighwayLabel(roadType, location, name);
-                    default:
-                        return null;
-                }
-            }
-        });
-    }
-}
-WT_MapViewCanadaRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/canada_labels.json";
-/**
- * @enum {String}
- */
-WT_MapViewCanadaRouteCollection.RouteType = {
-    TRANS_CANADA: "trans_canada",
-    NATIONAL_HIGHWAY: "nat_highway",
-    PROVINCIAL_HIGHWAY: "prov_highway"
 };
 
 // MEXICO
@@ -172,23 +151,36 @@ WT_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.55}
 };
 
-// ICELAND
+// EI
 
-class WT_MapViewIcelandRouteCollection extends WT_MapViewRoadLabelCollection {
+class WT_MapViewEIRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
-        super(WT_MapViewIcelandRouteCollection.DATA_FILE_PATH, {
+        super(WT_MapViewEIRouteCollection.DATA_FILE_PATH, {
             createLabel(roadType, routeType, location, name) {
-                return new WT_MapViewIcelandRouteLabel(roadType, location, name);
+                switch (routeType) {
+                    case WT_MapViewEIRouteCollection.RouteType.ICELAND_NATIONAL_ROAD:
+                        return new WT_MapViewIcelandRouteLabel(roadType, location, name);
+                    case WT_MapViewEIRouteCollection.RouteType.UK_IRELAND_MOTORWAY:
+                        return new WT_MapViewUKMotorwayLabel(roadType, location, name);
+                    case WT_MapViewEIRouteCollection.RouteType.UK_IRELAND_A_ROAD:
+                    case WT_MapViewEIRouteCollection.RouteType.UK_IRELAND_N_ROAD:
+                        return new WT_MapViewUKARoadLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
             }
         });
     }
 }
-WT_MapViewIcelandRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/iceland_labels.json";
+WT_MapViewEIRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/EI_labels.json";
 /**
  * @enum {String}
  */
-WT_MapViewIcelandRouteCollection.RouteType = {
-    NATIONAL_ROAD: "nat_road",
+WT_MapViewEIRouteCollection.RouteType = {
+    ICELAND_NATIONAL_ROAD: "iceland_nat_road",
+    UK_IRELAND_MOTORWAY: "UK_ireland_motorway",
+    UK_IRELAND_A_ROAD: "UK_ireland_a_road",
+    UK_IRELAND_N_ROAD: "UK_ireland_n_road"
 };
 
 class WT_MapViewIcelandRouteLabel extends WT_MapViewRoadImageLabel {
@@ -203,35 +195,6 @@ WT_MapViewIcelandRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
-};
-
-// UK AND IRELAND
-
-class WT_MapViewUKIrelandRouteCollection extends WT_MapViewRoadLabelCollection {
-    constructor() {
-        super(WT_MapViewUKIrelandRouteCollection.DATA_FILE_PATH, {
-            createLabel(roadType, routeType, location, name) {
-                switch (routeType) {
-                    case WT_MapViewUKIrelandRouteCollection.RouteType.MOTORWAY:
-                        return new WT_MapViewUKMotorwayLabel(roadType, location, name);
-                    case WT_MapViewUKIrelandRouteCollection.RouteType.A_ROAD:
-                    case WT_MapViewUKIrelandRouteCollection.RouteType.N_ROAD:
-                        return new WT_MapViewUKARoadLabel(roadType, location, name);
-                    default:
-                        return null;
-                }
-            }
-        });
-    }
-}
-WT_MapViewUKIrelandRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/UK_ireland_labels.json";
-/**
- * @enum {String}
- */
-WT_MapViewUKIrelandRouteCollection.RouteType = {
-    MOTORWAY: "motorway",
-    A_ROAD: "a_road",
-    N_ROAD: "n_road"
 };
 
 class WT_MapViewUKMotorwayLabel extends WT_MapViewRoadImageLabel {
@@ -260,33 +223,22 @@ WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
-// SPAIN
+// EW
 
-class WT_MapViewSpainRouteCollection extends WT_MapViewRoadLabelCollection {
+class WT_MapViewEWRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
-        super(WT_MapViewSpainRouteCollection.DATA_FILE_PATH, {
-            createLabel(roadType, routeType, location, name) {
-                return new WT_MapViewGenericInternationalHighwayLabel(roadType, location, name);
-            }
-        });
-    }
-}
-WT_MapViewSpainRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/spain_labels.json";
-
-// FRANCE
-
-class WT_MapViewFranceRouteCollection extends WT_MapViewRoadLabelCollection {
-    constructor() {
-        super(WT_MapViewFranceRouteCollection.DATA_FILE_PATH, {
+        super(WT_MapViewEWRouteCollection.DATA_FILE_PATH, {
             createLabel(roadType, routeType, location, name) {
                 switch (routeType) {
-                    case WT_MapViewFranceRouteCollection.RouteType.E_ROAD:
+                    case WT_MapViewEWRouteCollection.RouteType.E_ROAD:
                         return new WT_MapViewERoadLabel(roadType, location, name);
-                    case WT_MapViewFranceRouteCollection.RouteType.AUTOROUTE:
-                    case WT_MapViewFranceRouteCollection.RouteType.NATIONAL_ROUTE:
+                    case WT_MapViewEWRouteCollection.RouteType.FRANCE_AUTOROUTE:
+                    case WT_MapViewEWRouteCollection.RouteType.FRANCE_NATIONAL_ROUTE:
                         return new WT_MapViewFranceAutorouteLabel(roadType, location, name);
-                    case WT_MapViewFranceRouteCollection.RouteType.DEPARTMENTAL_ROUTE:
+                    case WT_MapViewEWRouteCollection.RouteType.FRANCE_DEPARTMENTAL_ROUTE:
                         return new WT_MapViewFranceDepartmentalRouteLabel(roadType, location, name);
+                    case WT_MapViewEWRouteCollection.RouteType.SPAIN_UNKNOWN:
+                        return new WT_MapViewGenericInternationalHighwayLabel(roadType, location, name);
                     default:
                         return null;
                 }
@@ -294,15 +246,16 @@ class WT_MapViewFranceRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewFranceRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/france_labels.json";
+WT_MapViewEWRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/EW_labels.json";
 /**
  * @enum {String}
  */
-WT_MapViewFranceRouteCollection.RouteType = {
+WT_MapViewEWRouteCollection.RouteType = {
     E_ROAD: "e-road",
-    AUTOROUTE: "autoroute",
-    NATIONAL_ROUTE: "nat_route",
-    DEPARTMENTAL_ROUTE: "departmental_route"
+    FRANCE_AUTOROUTE: "france_autoroute",
+    FRANCE_NATIONAL_ROUTE: "france_nat_route",
+    FRANCE_DEPARTMENTAL_ROUTE: "france_departmental_route",
+    SPAIN_UNKNOWN: "spain_unknown"
 };
 
 class WT_MapViewFranceAutorouteLabel extends WT_MapViewRoadImageLabel {
@@ -556,19 +509,23 @@ WT_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold"
 };
 
-// CHINA
+// CH
 
-class WT_MapViewChinaRouteCollection extends WT_MapViewRoadLabelCollection {
+class WT_MapViewCHRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
-        super(WT_MapViewChinaRouteCollection.DATA_FILE_PATH, {
+        super(WT_MapViewCHRouteCollection.DATA_FILE_PATH, {
             createLabel(roadType, routeType, location, name) {
                 switch (routeType) {
-                    case WT_MapViewChinaRouteCollection.RouteType.NATIONAL_EXPRESSWAY:
+                    case WT_MapViewCHRouteCollection.RouteType.CHINA_NATIONAL_EXPRESSWAY:
                         return new WT_MapViewChinaNationalExpresswayLabel(roadType, location, name);
-                    case WT_MapViewChinaRouteCollection.RouteType.PROVINCIAL_EXPRESSWAY:
+                    case WT_MapViewCHRouteCollection.RouteType.CHINA_PROVINCIAL_EXPRESSWAY:
                         return new WT_MapViewChinaProvincialExpresswayLabel(roadType, location, name);
-                    case WT_MapViewChinaRouteCollection.RouteType.NATIONAL_HIGHWAY:
+                    case WT_MapViewCHRouteCollection.RouteType.CHINA_NATIONAL_HIGHWAY:
                         return new WT_MapViewChinaNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewCHRouteCollection.RouteType.TAIWAN_NATIONAL_HIGHWAY:
+                        return new WT_MapViewTaiwanNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewCHRouteCollection.RouteType.TAIWAN_PROVINCIAL_HIGHWAY:
+                        return new WT_MapViewTaiwanProvincialHighwayLabel(roadType, location, name);
                     default:
                         return null;
                 }
@@ -576,14 +533,16 @@ class WT_MapViewChinaRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewChinaRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/china_labels.json";
+WT_MapViewCHRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/CH_labels.json";
 /**
  * @enum {String}
  */
-WT_MapViewChinaRouteCollection.RouteType = {
-    NATIONAL_EXPRESSWAY: "nat_expressway",
-    PROVINCIAL_EXPRESSWAY: "prov_expressway",
-    NATIONAL_HIGHWAY: "nat_highway"
+WT_MapViewCHRouteCollection.RouteType = {
+    CHINA_NATIONAL_EXPRESSWAY: "china_nat_expressway",
+    CHINA_PROVINCIAL_EXPRESSWAY: "china_prov_expressway",
+    CHINA_NATIONAL_HIGHWAY: "china_nat_highway",
+    TAIWAN_NATIONAL_HIGHWAY: "taiwan_nat_highway",
+    TAIWAN_PROVINCIAL_HIGHWAY: "taiwan_prov_highway",
 };
 
 class WT_MapViewChinaNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
@@ -625,33 +584,6 @@ WT_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
-// TAIWAN
-
-class WT_MapViewTaiwanRouteCollection extends WT_MapViewRoadLabelCollection {
-    constructor() {
-        super(WT_MapViewTaiwanRouteCollection.DATA_FILE_PATH, {
-            createLabel(roadType, routeType, location, name) {
-                switch (routeType) {
-                    case WT_MapViewTaiwanRouteCollection.RouteType.NATIONAL_HIGHWAY:
-                        return new WT_MapViewTaiwanNationalHighwayLabel(roadType, location, name);
-                    case WT_MapViewTaiwanRouteCollection.RouteType.PROVINCIAL_HIGHWAY:
-                        return new WT_MapViewTaiwanProvincialHighwayLabel(roadType, location, name);
-                    default:
-                        return null;
-                }
-            }
-        });
-    }
-}
-WT_MapViewTaiwanRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/taiwan_labels.json";
-/**
- * @enum {String}
- */
-WT_MapViewTaiwanRouteCollection.RouteType = {
-    NATIONAL_HIGHWAY: "nat_highway",
-    PROVINCIAL_HIGHWAY: "prov_highway",
-};
-
 class WT_MapViewTaiwanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
     constructor(roadType, location, name) {
         super(roadType, location, name, WT_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH);
@@ -681,17 +613,23 @@ WT_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS = {
     minWidthEm: 2.3
 };
 
-// JAPAN
+// AE
 
-class WT_MapViewJapanRouteCollection extends WT_MapViewRoadLabelCollection {
+class WT_MapViewAERouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
-        super(WT_MapViewJapanRouteCollection.DATA_FILE_PATH, {
+        super(WT_MapViewAERouteCollection.DATA_FILE_PATH, {
             createLabel(roadType, routeType, location, name) {
                 switch (routeType) {
-                    case WT_MapViewJapanRouteCollection.RouteType.EXPRESSWAY:
+                    case WT_MapViewAERouteCollection.RouteType.JAPAN_EXPRESSWAY:
                         return new WT_MapViewJapanExpresswayLabel(roadType, location, name);
-                    case WT_MapViewJapanRouteCollection.RouteType.NATIONAL_HIGHWAY:
+                    case WT_MapViewAERouteCollection.RouteType.JAPAN_NATIONAL_HIGHWAY:
                         return new WT_MapViewJapanNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewAERouteCollection.RouteType.SK_NATIONAL_EXPRESSWAY:
+                        return new WT_MapViewSKNationalExpresswayLabel(roadType, location, name);
+                    case WT_MapViewAERouteCollection.RouteType.SK_NATIONAL_HIGHWAY:
+                        return new WT_MapViewSKNationalHighwayLabel(roadType, location, name);
+                    case WT_MapViewAERouteCollection.RouteType.SK_LOCAL_HIGHWAY:
+                        return new WT_MapViewSKLocalHighwayLabel(roadType, location, name);
                     default:
                         return null;
                 }
@@ -699,13 +637,16 @@ class WT_MapViewJapanRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewJapanRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/japan_labels.json";
+WT_MapViewAERouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/AE_labels.json";
 /**
  * @enum {String}
  */
-WT_MapViewJapanRouteCollection.RouteType = {
-    EXPRESSWAY: "expressway",
-    NATIONAL_HIGHWAY: "nat_highway"
+WT_MapViewAERouteCollection.RouteType = {
+    JAPAN_EXPRESSWAY: "japan_expressway",
+    JAPAN_NATIONAL_HIGHWAY: "japan_nat_highway",
+    SK_NATIONAL_EXPRESSWAY: "SK_nat_expressway",
+    SK_NATIONAL_HIGHWAY: "SK_nat_highway",
+    SK_LOCAL_HIGHWAY: "SK_local_highway"
 };
 
 class WT_MapViewJapanExpresswayLabel extends WT_MapViewRoadImageLabel {
@@ -732,36 +673,6 @@ WT_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
     minWidthEm: 2.3
-};
-
-// SOUTH KOREA
-
-class WT_MapViewSKRouteCollection extends WT_MapViewRoadLabelCollection {
-    constructor() {
-        super(WT_MapViewSKRouteCollection.DATA_FILE_PATH, {
-            createLabel(roadType, routeType, location, name) {
-                switch (routeType) {
-                    case WT_MapViewSKRouteCollection.RouteType.NATIONAL_EXPRESSWAY:
-                        return new WT_MapViewSKNationalExpresswayLabel(roadType, location, name);
-                    case WT_MapViewSKRouteCollection.RouteType.NATIONAL_HIGHWAY:
-                        return new WT_MapViewSKNationalHighwayLabel(roadType, location, name);
-                    case WT_MapViewSKRouteCollection.RouteType.LOCAL_HIGHWAY:
-                        return new WT_MapViewSKLocalHighwayLabel(roadType, location, name);
-                    default:
-                        return null;
-                }
-            }
-        });
-    }
-}
-WT_MapViewSKRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/SK_labels.json";
-/**
- * @enum {String}
- */
-WT_MapViewSKRouteCollection.RouteType = {
-    NATIONAL_EXPRESSWAY: "nat_expressway",
-    NATIONAL_HIGHWAY: "nat_highway",
-    LOCAL_HIGHWAY: "local_highway"
 };
 
 class WT_MapViewSKNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
@@ -805,21 +716,23 @@ WT_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25},
 };
 
-// AUSTRALIA
+// OC
 
-class WT_MapViewAURouteCollection extends WT_MapViewRoadLabelCollection {
+class WT_MapViewOCRouteCollection extends WT_MapViewRoadLabelCollection {
     constructor() {
-        super(WT_MapViewAURouteCollection.DATA_FILE_PATH, {
+        super(WT_MapViewOCRouteCollection.DATA_FILE_PATH, {
             createLabel(roadType, routeType, location, name) {
                 switch (routeType) {
-                    case WT_MapViewAURouteCollection.RouteType.ALPHANUMERIC:
+                    case WT_MapViewOCRouteCollection.RouteType.AUSTRALIA_ALPHANUMERIC:
                         return new WT_MapViewAUAlphaNumLabel(roadType, location, name);
-                    case WT_MapViewAURouteCollection.RouteType.NATIONAL_HIGHWAY:
+                    case WT_MapViewOCRouteCollection.RouteType.AUSTRALIA_NATIONAL_HIGHWAY:
                         return new WT_MapViewAUNationalHighwayLabel(roadType, location, name);
-                    case WT_MapViewAURouteCollection.RouteType.NATIONAL_ROUTE:
+                    case WT_MapViewOCRouteCollection.RouteType.AUSTRALIA_NATIONAL_ROUTE:
                         return new WT_MapViewAUNationalRouteLabel(roadType, location, name);
-                    case WT_MapViewAURouteCollection.RouteType.STATE_ROUTE:
+                    case WT_MapViewOCRouteCollection.RouteType.AUSTRALIA_STATE_ROUTE:
                         return new WT_MapViewAUStateRouteLabel(roadType, location, name);
+                    case WT_MapViewOCRouteCollection.RouteType.NZ_STATE_HIGHWAY:
+                        return new WT_MapViewNZStateHighwayLabel(roadType, location, name);
                     default:
                         return null;
                 }
@@ -827,15 +740,16 @@ class WT_MapViewAURouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewAURouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/AU_labels.json";
+WT_MapViewOCRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/OC_labels.json";
 /**
  * @enum {String}
  */
-WT_MapViewAURouteCollection.RouteType = {
-    ALPHANUMERIC: "alphanum_route",
-    NATIONAL_HIGHWAY: "nat_highway",
-    NATIONAL_ROUTE: "nat_route",
-    STATE_ROUTE: "state_route"
+WT_MapViewOCRouteCollection.RouteType = {
+    AUSTRALIA_ALPHANUMERIC: "australia_alphanum_route",
+    AUSTRALIA_NATIONAL_HIGHWAY: "australia_nat_highway",
+    AUSTRALIA_NATIONAL_ROUTE: "australia_nat_route",
+    AUSTRALIA_STATE_ROUTE: "australia_state_route",
+    NZ_STATE_HIGHWAY: "NZ_state_highway"
 };
 
 class WT_MapViewAUAlphaNumLabel extends WT_MapViewRoadImageLabel {
@@ -891,25 +805,6 @@ WT_MapViewAUStateRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
     minWidthEm: 2.3
-};
-
-// NEW ZEALAND
-
-class WT_MapViewNZRouteCollection extends WT_MapViewRoadLabelCollection {
-    constructor() {
-        super(WT_MapViewNZRouteCollection.DATA_FILE_PATH, {
-            createLabel(roadType, routeType, location, name) {
-                return new WT_MapViewNZStateHighwayLabel(roadType, location, name);
-            }
-        });
-    }
-}
-WT_MapViewNZRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/NZ_labels.json";
-/**
- * @enum {String}
- */
-WT_MapViewNZRouteCollection.RouteType = {
-    STATE_HIGHWAY: "state_highway"
 };
 
 class WT_MapViewNZStateHighwayLabel extends WT_MapViewRoadImageLabel {

@@ -406,19 +406,16 @@ class WT_VFRMapWT extends WT_VFRMap {
         for (let region of regions) {
             switch (region) {
                 case WT_MapViewRoadFeatureCollection.Region.NA:
-                    data.push(new WT_MapViewUSRouteCollection());
-                    data.push(new WT_MapViewCanadaRouteCollection());
+                    data.push(new WT_MapViewNARouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.CA:
                     data.push(new WT_MapViewMexicoRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EI:
-                    data.push(new WT_MapViewIcelandRouteCollection());
-                    data.push(new WT_MapViewUKIrelandRouteCollection());
+                    data.push(new WT_MapViewEIRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EW:
-                    data.push(new WT_MapViewSpainRouteCollection());
-                    data.push(new WT_MapViewFranceRouteCollection());
+                    data.push(new WT_MapViewEWRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EC:
                     data.push(new WT_MapViewECRouteCollection());
@@ -427,16 +424,13 @@ class WT_VFRMapWT extends WT_VFRMap {
                     data.push(new WT_MapViewRussiaRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.CH:
-                    data.push(new WT_MapViewChinaRouteCollection());
-                    data.push(new WT_MapViewTaiwanRouteCollection());
+                    data.push(new WT_MapViewCHRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.AE:
-                    data.push(new WT_MapViewJapanRouteCollection());
-                    data.push(new WT_MapViewSKRouteCollection());
+                    data.push(new WT_MapViewAERouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.OC:
-                    data.push(new WT_MapViewAURouteCollection());
-                    data.push(new WT_MapViewNZRouteCollection());
+                    data.push(new WT_MapViewOCRouteCollection());
                     break;
             }
         }
