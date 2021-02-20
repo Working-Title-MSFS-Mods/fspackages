@@ -39,6 +39,7 @@ class Jet_NDCompass extends HTMLElement {
         this._referenceMode = Jet_NDCompass_Reference.NONE;
         this._aircraft = Aircraft.A320_NEO;
         this._mapRange = 0;
+        this._itIsAlreadyTuned = 0;
     }
     static get dynamicAttributes() {
         return [
@@ -518,7 +519,18 @@ class Jet_NDCompass extends HTMLElement {
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
-                        this.setAttribute("course", beacon.course.toString());
+
+                        let didFreqJustTune = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                        let courseKnob = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString();
+                        if (didFreqJustTune === 2) {
+                            if (courseKnob != beacon.course && this._itIsAlreadyTuned == 0) {
+                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course);
+                            this.setAttribute("course", beacon.course.toString());
+                            this._itIsAlreadyTuned = 1;
+                            }
+                        }
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         this.setAttribute("course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
                             displayVerticalDeviation = true;
@@ -526,7 +538,9 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                     else {
-                        this.setAttribute("course", compass.toString());
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        //this.setAttribute("course", compass.toString());
                         this.setAttribute("course_deviation", "0");
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");

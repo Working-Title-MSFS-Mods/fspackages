@@ -14,6 +14,18 @@
   }
 }
 
+@keyframes blink {
+  50% {
+      opacity: 0.0;
+  }
+}
+
+@-webkit-keyframes blink {
+  50% {
+      opacity: 0.0;
+  }
+}
+
 html {
   height: 100%;
   width: 100%;
@@ -73,6 +85,11 @@ html body {
   src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-LightCondensed.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+}
+
+.blinking {
+  animation: blink 1.0s step-start 0s infinite;
+  -webkit-animation: blink 1.0s step-start 0s infinite;
 }
 
 svg text {
