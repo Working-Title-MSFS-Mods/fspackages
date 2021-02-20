@@ -18,7 +18,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Added TTG to the FMS info on the MFD
 - Checklist on the MFD should not react to the PFD knob anymore
 - Workaround for doubled flaps lift since the UK update (by metzgerva)
-- Added a prominent warning to the MFD when a incompatible livery
+- Added a prominent warning to the MFD when a incompatible livery is used
 - Fixed typos on the TUN and DEP/ARR index page (by slip)
 - Adjust colors for the terrain map (by slip)
 - Added Datalink section with ability to request METAR/TAF/ATIS (thanks to Syntax for the code and FBW for allowing usage of their API)
