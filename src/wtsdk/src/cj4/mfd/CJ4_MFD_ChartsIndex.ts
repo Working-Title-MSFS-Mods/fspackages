@@ -26,6 +26,10 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   private _selectIndex: number = 0;
   private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
 
+  public get isVisible(): boolean {
+    return this.style.visibility === "visible";
+  }
+
   public connectedCallback(chartSelectCallback: (url: string, chart: NG_Chart) => void): void {
     this._tableContainer = this.querySelector("#ChartsTable");
     this._api = new NavigraphApi();
@@ -60,17 +64,17 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   }
 
   show() {
-    this.style.display = "";
     this._isDirty = true;
     this.updateData();
+    this.style.visibility = "visible";
   }
 
   hide() {
-    this.style.display = "none";
+    this.style.visibility = "hidden";
   }
 
   onEvent(event: string): boolean {
-    if (this.style.display === "none") {
+    if (!this.isVisible) {
       return false;
     }
     let handled = true;

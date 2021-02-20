@@ -3,7 +3,8 @@ import { NG_Chart } from "../../types/navigraph";
 // TODO: split the actual viewer stuff from this class into a more generic viewer component for later reuse
 export class CJ4_MFD_ChartView extends HTMLElement {
 
-  private _image = new Image;
+  private _srcImage = new Image;
+  private _chart: NG_Chart = undefined;
   private _canvas: HTMLCanvasElement;
   private _zoom: number = 1;
   private _yOffset: number = 0;
@@ -13,24 +14,34 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private readonly STEP_RATE = 40;
   private _chartindexnumber: HTMLElement;
   private _chartprocidentifier: HTMLElement;
+  private _chartWidth: number;
+  private _chartHeight: number;
+  public get isVisible(): boolean {
+    return this.style.visibility === "visible";
+  }
 
   connectedCallback(): void {
     this._chartindexnumber = this.querySelector("#chartinfo_indexnumber");
     this._chartprocidentifier = this.querySelector("#chartinfo_procidentifier");
     this._canvas = this.querySelector("#chartcanvas");
-    this._image.src = "#";
-    this._image.onload = this.onImageLoaded.bind(this);
+    this._srcImage.src = "#";
+    this._srcImage.onload = this.onSrcImageLoaded.bind(this);
   }
 
-  onImageLoaded(): void {
+  onSrcImageLoaded(): void {
+    this._xOffset = 0;
+    this._yOffset = 0;
+    this._zoom = 1;
     this._isDirty = true;
   }
 
   loadChart(url: string = "", chart: NG_Chart = undefined): void {
     if (url !== "") {
-      this._image.src = url; //"/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/sample.png?cb=2";
+      // this._srcImage.setAttribute('crossOrigin','anonymous');
+      this._srcImage.src = url; //"/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/sample.png?cb=2";
     }
     if (chart !== undefined) {
+      this._chart = chart;
       this._chartindexnumber.textContent = `${chart.icao_airport_identifier} ${chart.index_number}`;
       this._chartprocidentifier.textContent = chart.procedure_identifier;
     }
@@ -38,13 +49,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
 
   update(dTime: number): void {
     if (this._isDirty) {
+      this.fitCanvasToContainer(this._canvas);
       this._isDirty = false;
-      CJ4_MFD_ChartView.fitCanvasToContainer(this._canvas);
       const ctx = this._canvas.getContext("2d");
       ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);
-      if (this._image.src !== "" && this._image.src.indexOf("#") === -1) {
-        CJ4_MFD_ChartView.scaleImgToFit(this._canvas, ctx, this._image);
+      if (this._srcImage.src !== "" && this._srcImage.src.indexOf("#") === -1) {
+        this.scaleImgToFit(this._canvas, ctx, this._srcImage);
       } else {
         ctx.fillStyle = "#cccac8";
         ctx.textAlign = "center";
@@ -55,7 +66,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   onEvent(event: string): boolean {
-    if (this.style.display === "none") {
+    if (!this.isVisible) {
       return false;
     }
     this._isDirty = true;
@@ -74,13 +85,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         break;
       case "Lwr_JOYSTICK_DOWN":
         // -27 from height for the chart info container
-        this._yOffset = Math.max(-((this._image.height * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
+        this._yOffset = Math.max(-((this._chartHeight * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
         break;
       case "Lwr_JOYSTICK_LEFT":
         this._xOffset = Math.min(0, this._xOffset + this.STEP_RATE);
         break;
       case "Lwr_JOYSTICK_RIGHT":
-        this._xOffset = Math.max(-((this._image.width * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
+        this._xOffset = Math.max(-((this._chartWidth * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
         break;
       default:
         this._isDirty = false;
@@ -90,26 +101,37 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     return handled;
   }
 
-  static scaleImgToFit(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, img: HTMLImageElement): void {
+  show(): void {
+    this._isDirty = true;
+    this.style.visibility = "visible";
+  }
+
+  hide(): void {
+    this.style.visibility = "hidden";
+  }
+
+  private scaleImgToFit(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, img: HTMLImageElement): void {
     if (img.width > 0) {
+      // get bbox measures
+      const bboxX = this._chart.planview.bbox_local[0];
+      const bboxY = this._chart.planview.bbox_local[3];
+      const bboxWidth = this._chart.planview.bbox_local[2] - bboxX;
+      const bboxHeight = this._chart.planview.bbox_local[1] - bboxY;
+
+      // img fitting
       const ratio = img.width / img.height;
-      let newW = canvas.width;
-      let newH = newW / ratio;
+      this._chartWidth = canvas.width;
+      this._chartHeight = this._chartWidth / ratio;
       if (img.width > img.height) {
-        newH = canvas.height;
-        newW = newW * ratio;
+        this._chartHeight = canvas.height;
+        this._chartWidth = this._chartWidth * ratio;
       }
 
-
-      // const scale = isLandscape ? (canvas.height / img.height) : (canvas.width / img.width);
-
-      // img.width *= scale;
-      // img.height *= scale;
-      ctx.drawImage(img, 0, 0, newW, newH);
+      ctx.drawImage(img, bboxX, bboxY, bboxWidth, bboxHeight, 0, 0, this._chartWidth, this._chartHeight,);
     }
   }
 
-  static fitCanvasToContainer(canvas: HTMLCanvasElement): void {
+  private fitCanvasToContainer(canvas: HTMLCanvasElement): void {
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.width = canvas.offsetWidth;

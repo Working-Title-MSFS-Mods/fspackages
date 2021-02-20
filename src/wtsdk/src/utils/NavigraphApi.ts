@@ -1,5 +1,5 @@
 import * as NgApi from '../types/navigraph';
-import { DEFAULT_REQUEST_OPTIONS, request, RequestResult } from './WebRequest';
+import { request, RequestResult } from './WebRequest';
 
 export class NavigraphApi {
   public readonly RFRSH_TOKEN_KEY = "WT_NG_REFRESH_TOKEN"
@@ -66,7 +66,7 @@ export class NavigraphApi {
     return chartsListResp.json<NgApi.NG_Charts>();
   }
 
-  async linkAccount(): Promise<void> {
+  async linkAccount(): Promise<boolean> {
     // send auth request
     const authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post");
     if (authResp.ok) {
@@ -80,7 +80,7 @@ export class NavigraphApi {
       ]);
 
       while (!this.isAccountLinked) {
-        await this.delay(5000);
+        await this.delay(4000);
         const pollResp = await this.sendRequest("https://identity.api.navigraph.com/connect/token", "post", pollForm);
         if (pollResp.ok) {
           this.refreshToken = pollResp.json<any>().refresh_token;
@@ -88,7 +88,7 @@ export class NavigraphApi {
         }
       }
 
-      return;
+      return true;
     } else {
       throw ("Auth failed");
     }

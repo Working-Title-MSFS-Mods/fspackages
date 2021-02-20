@@ -166,11 +166,12 @@ class CJ4_FMC_ModSettingsPageOne {
         this._fmc.onLeftInput[4] = () => {
             this.yokeHide = this.yokeHide + 1;
         };
-        this._fmc.onRightInput[4] = async () => {
+        this._fmc.onRightInput[4] = () => {
             this._fmc.setMsg("LINKING NAVIGRAPH...[yellow]");
-            await ngApi.linkAccount();
-            this._fmc.setMsg("NAVIGRAPH LINKED[green]");
-            this.invalidate();
+            ngApi.linkAccount().then((s) => {
+                this._fmc.setMsg("NAVIGRAPH LINKED[green]");
+                this.invalidate();
+            });
         };
         this._fmc.onLeftInput[5] = () => {
             CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc);
