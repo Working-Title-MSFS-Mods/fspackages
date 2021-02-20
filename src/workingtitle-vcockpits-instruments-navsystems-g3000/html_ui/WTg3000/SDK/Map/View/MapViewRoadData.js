@@ -755,6 +755,7 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
         this._text = this._initText();
         this._backgroundImage = WT_MapViewRoadImageLabel._getImage(imagePath);
         this._viewPos = new WT_GVector2(0, 0);
+        this._bounds = {left: 0, top: 0, right: 0, bottom: 0};
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRoadImageLabel.OPTIONS_DEF);
     }
@@ -775,6 +776,7 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
      *
      * @param {WT_MapViewState} state
      * @param {CanvasRenderingContext2D} context
+     * @param {String[]} text
      */
     _getWidth(state, context, text) {
         let width = 0;
@@ -791,6 +793,7 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
      *
      * @param {WT_MapViewState} state
      * @param {CanvasRenderingContext2D} context
+     * @param {String[]} text
      */
     _getHeight(state, context, text) {
         return state.dpiScale * this.fontSize * (this.lineHeightEm * text.length + this.backgroundPaddingEm.top + this.backgroundPaddingEm.bottom);
@@ -799,15 +802,35 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
     /**
      *
      * @param {WT_MapViewState} state
-     * @param {WT_GVector2} viewPos
+     * @param {CanvasRenderingContext2D} context
+     * @param {WT_GVector2} center
+     * @param {String[]} text
      */
-    _isInBounds(state, viewPos, width, height) {
-        let halfWidth = width / 2;
-        let halfHeight = height / 2;
-        return viewPos.x - halfWidth >= 0 &&
-               viewPos.y - halfHeight >= 0 &&
-               viewPos.x + halfWidth <= state.projection.viewWidth &&
-               viewPos.y + halfHeight <= state.projection.viewHeight;
+    _updateBounds(state, context, center, text) {
+        let width = this._getWidth(state, context, text);
+        let height = this._getHeight(state, context, text);
+        let leftPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.left;
+        let rightPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.right;
+        let topPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.top;
+        let bottomPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.bottom;
+        let left = center.x - (width - rightPadding + leftPadding) / 2;
+        let top = center.y - (height - bottomPadding + topPadding) / 2;
+        this._bounds.left = left;
+        this._bounds.top = top;
+        this._bounds.right = left + width;
+        this._bounds.bottom = top + height;
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
+     */
+    _isInBounds(state, bounds) {
+        return bounds.left >= 0 &&
+               bounds.top >= 0 &&
+               bounds.right <= state.projection.viewWidth &&
+               bounds.bottom <= state.projection.viewHeight;
     }
 
     /**
@@ -831,17 +854,17 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
      * @param {WT_MapViewState} state
      * @param {CanvasRenderingContext2D} context
      * @param {WT_GVector2} center
-     * @param {Number} width
-     * @param {Number} height
+     * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
      */
-    _drawBackground(state, context, center, width, height) {
-        let leftPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.left;
-        let rightPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.right;
-        let topPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.top;
-        let bottomPadding = state.dpiScale * this.fontSize * this.backgroundPaddingEm.bottom;
-        let left = center.x - (width - rightPadding + leftPadding) / 2;
-        let top = center.y - (height - bottomPadding + topPadding) / 2;
-        context.drawImage(this._backgroundImage, left, top, width, height);
+    _drawBackground(state, context, center, bounds) {
+        let width = bounds.right - bounds.left;
+        let height = bounds.bottom - bounds.top;
+        try {
+            context.drawImage(this._backgroundImage, bounds.left, bounds.top, width, height);
+        } catch (e) {
+            console.log(e);
+            console.log(`${bounds.left}, ${bounds.top}, ${bounds.right}, ${bounds.bottom}`);
+        }
     }
 
     _drawTextLine(context, text, centerX, centerY) {
@@ -856,11 +879,11 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
      * @param {WT_MapViewState} state
      * @param {CanvasRenderingContext2D} context
      * @param {WT_GVector2} center
-     * @param {Number} width
-     * @param {Number} height
-     * @param {String[]} text
+     * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
      */
-    _drawText(state, context, center, width, height, text) {
+    _drawText(state, context, center, bounds, text) {
+        let width = bounds.right - bounds.left;
+        let height = bounds.bottom - bounds.top;
         let textCenterX = center.x + this.textOffset.x * width;
         let textCenterY = center.y + this.textOffset.y * height;
 
@@ -883,11 +906,10 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
         state.projection.project(this.location, this._viewPos);
         this._prepareContext(state, context);
         let text = this._getText();
-        let width = this._getWidth(state, context, text);
-        let height = this._getHeight(state, context, text);
-        if (this._isInBounds(state, this._viewPos, width, height)) {
-            this._drawBackground(state, context, this._viewPos, width, height);
-            this._drawText(state, context, this._viewPos, width, height, text);
+        this._updateBounds(state, context, this._viewPos, text);
+        if (this._isInBounds(state, this._bounds)) {
+            this._drawBackground(state, context, this._viewPos, this._bounds);
+            this._drawText(state, context, this._viewPos, this._bounds, text);
         }
     }
 
@@ -909,7 +931,7 @@ WT_MapViewRoadImageLabel.OPTIONS_DEF = {
     fontColor: {default: "white", auto: true},
     fontOutlineWidth: {default: 0, auto: true},
     fontOutlineColor: {default: "black", auto: true},
-    lineHeightEm: {default: 1.5, auto: true},
+    lineHeightEm: {default: 1.2, auto: true},
     textOffset: {default: {x: 0, y: 0}, auto: true},
     backgroundPaddingEm: {default: {left: 0.25, top: 0.25, right: 0.25, bottom: 0.25}, auto: true},
     minWidthEm: {default: 2, auto: true}

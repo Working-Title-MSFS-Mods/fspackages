@@ -10,8 +10,7 @@ class WT_MapViewGenericInternationalHighwayLabel extends WT_MapViewRoadImageLabe
 WT_MapViewGenericInternationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_INTERNATIONAL_HIGHWAY.png";
 WT_MapViewGenericInternationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontColor: "black",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontColor: "black"
 };
 
 class WT_MapViewGenericNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -38,8 +37,7 @@ class WT_MapViewGenericLocalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewGenericLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_LOCAL_HIGHWAY.png";
 WT_MapViewGenericLocalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontColor: "black",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontColor: "black"
 };
 
 // INTERNATIONAL LABELS
@@ -54,7 +52,7 @@ class WT_MapViewERoadLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewERoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_EROAD.png";
 WT_MapViewERoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
 // UNITED STATES
@@ -94,7 +92,7 @@ class WT_MapViewUSInterstateLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewUSInterstateLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_US_INTERSTATE.png";
 WT_MapViewUSInterstateLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4},
+    backgroundPaddingEm: {left: 0.4, top: 0.55, right: 0.4, bottom: 0.55},
     minWidthEm: 2.3
 };
 
@@ -171,7 +169,7 @@ WT_MapViewMexicoFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map
 WT_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.4}
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.55}
 };
 
 // ICELAND
@@ -204,7 +202,7 @@ WT_MapViewIcelandRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/
 WT_MapViewIcelandRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
 // UK AND IRELAND
@@ -245,8 +243,7 @@ class WT_MapViewUKMotorwayLabel extends WT_MapViewRoadImageLabel {
 }
 WT_MapViewUKMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_UK_MOTORWAY.png";
 WT_MapViewUKMotorwayLabel.OPTION_DEFAULTS = {
-    fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontWeight: "bold"
 };
 
 class WT_MapViewUKARoadLabel extends WT_MapViewRoadImageLabel {
@@ -260,7 +257,7 @@ WT_MapViewUKARoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_
 WT_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffd200",
-    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
 // SPAIN
@@ -317,8 +314,7 @@ class WT_MapViewFranceAutorouteLabel extends WT_MapViewRoadImageLabel {
 }
 WT_MapViewFranceAutorouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_FRANCE_AUTOROUTE.png";
 WT_MapViewFranceAutorouteLabel.OPTION_DEFAULTS = {
-    fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontWeight: "bold"
 };
 
 class WT_MapViewFranceDepartmentalRouteLabel extends WT_MapViewRoadImageLabel {
@@ -331,8 +327,202 @@ class WT_MapViewFranceDepartmentalRouteLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewFranceDepartmentalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_FRANCE_DEPARTMENTALROUTE.png";
 WT_MapViewFranceDepartmentalRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
+    fontColor: "black"
+};
+
+// EC
+
+class WT_MapViewECRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_MapViewECRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_MapViewECRouteCollection.RouteType.GERMANY_AUTOBAHN:
+                        return new WT_MapViewGermanyAutobahnLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.GERMANY_BUNDESSTRASSE:
+                        return new WT_MapViewGermanyBundesstrasseLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.AUSTRIA_BUNDESSTRASSE_A:
+                    case WT_MapViewECRouteCollection.RouteType.AUSTRIA_BUNDESSTRASSE_S:
+                    case WT_MapViewECRouteCollection.RouteType.AUSTRIA_BUNDESSTRASSE_B:
+                        return new WT_MapViewAustriaBundesstrasseLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.SWITZERLAND_AUTOBAHN:
+                        return new WT_MapViewSwitzerlandAutobahnLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.SWITZERLAND_HAUPTSTRASSE:
+                        return new WT_MapViewSwitzerlandHauptstrasseLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.ITALY_MOTORWAY:
+                        return new WT_MapViewItalyMotorwayLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.ITALY_STATE_HIGHWAY:
+                    case WT_MapViewECRouteCollection.RouteType.ITALY_REGIONAL_ROAD:
+                    case WT_MapViewECRouteCollection.RouteType.ITALY_PROVINCIAL_ROAD:
+                        return new WT_MapViewItalyStateHighwayLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.ITALY_MUNICIPAL_ROAD:
+                        return new WT_MapViewItalyMunicipalRoadLabel(roadType, location, name);
+                    case WT_MapViewECRouteCollection.RouteType.GERMANY_LANDESSTRASSE:
+                    case WT_MapViewECRouteCollection.RouteType.GERMANY_KREISSTRASSE:
+                    case WT_MapViewECRouteCollection.RouteType.AUSTRIA_LANDESSTRASSE:
+                        return new WT_MapViewGenericLocalHighwayLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_MapViewECRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/EC_labels.json";
+/**
+ * @enum {String}
+ */
+WT_MapViewECRouteCollection.RouteType = {
+    GERMANY_AUTOBAHN: "germany_autobahn",
+    GERMANY_BUNDESSTRASSE: "germany_bundesstrasse",
+    GERMANY_LANDESSTRASSE: "germany_landesstrasse",
+    GERMANY_KREISSTRASSE: "germany_kreisstrasse",
+    AUSTRIA_BUNDESSTRASSE_A: "austria_bundesstrasse_A",
+    AUSTRIA_BUNDESSTRASSE_S: "austria_bundesstrasse_S",
+    AUSTRIA_BUNDESSTRASSE_B: "austria_bundesstrasse_B",
+    AUSTRIA_LANDESSTRASSE: "austria_landesstrasse",
+    SWITZERLAND_AUTOBAHN: "switzerland_autobahn",
+    SWITZERLAND_HAUPTSTRASSE: "switzerland_hauptstrasse",
+    ITALY_MOTORWAY: "italy_motorway",
+    ITALY_STATE_HIGHWAY: "italy_state_highway",
+    ITALY_REGIONAL_ROAD: "italy_reg_road",
+    ITALY_PROVINCIAL_ROAD: "italy_prov_road",
+    ITALY_MUNICIPAL_ROAD: "italy_muni_road"
+};
+
+class WT_MapViewGermanyAutobahnLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewGermanyAutobahnLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewGermanyAutobahnLabel.OPTION_DEFAULTS);
+    }
+
+    _initText() {
+        return [this.name.replace(/^[^\d]+/, "")];
+    }
+}
+WT_MapViewGermanyAutobahnLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_GERMANY_AUTOBAHN.png";
+WT_MapViewGermanyAutobahnLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    minWidthEm: 2.5
+};
+
+class WT_MapViewGermanyBundesstrasseLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewGermanyBundesstrasseLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewGermanyBundesstrasseLabel.OPTION_DEFAULTS);
+    }
+
+    _initText() {
+        return [this.name.replace(/^[^\d]+/, "")];
+    }
+}
+WT_MapViewGermanyBundesstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_GERMANY_BUNDESSTRASSE.png";
+WT_MapViewGermanyBundesstrasseLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
     fontColor: "black",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
+};
+
+class WT_MapViewAustriaBundesstrasseLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewAustriaBundesstrasseLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewAustriaBundesstrasseLabel.OPTION_DEFAULTS);
+    }
+
+    _initText() {
+        return [this.name.charAt(0) === "B" ? this.name : this.name.replace(/^[^\d]+/, "")];
+    }
+}
+WT_MapViewAustriaBundesstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_AUSTRIA_BUNDESSTRASSE.png";
+WT_MapViewAustriaBundesstrasseLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold"
+};
+
+class WT_MapViewSwitzerlandAutobahnLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewSwitzerlandAutobahnLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewSwitzerlandAutobahnLabel.OPTION_DEFAULTS);
+    }
+
+    _initText() {
+        return [this.name.replace(/^[^\d]+/, "")];
+    }
+}
+WT_MapViewSwitzerlandAutobahnLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SWITZERLAND_AUTOBAHN.png";
+WT_MapViewSwitzerlandAutobahnLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    minWidthEm: 2.5
+};
+
+class WT_MapViewSwitzerlandHauptstrasseLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewSwitzerlandHauptstrasseLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewSwitzerlandHauptstrasseLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewSwitzerlandHauptstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SWITZERLAND_HAUPTSTRASSE.png";
+WT_MapViewSwitzerlandHauptstrasseLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
+};
+
+class WT_MapViewItalyRoadLabel extends WT_MapViewRoadImageLabel {
+    _initText() {
+        let lines = this.name.split(" ");
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i].length === 1 && lines[i - 1].search(/\d/) === -1) {
+                lines[i - 1] = `${lines[i - 1]} ${lines[i]}`
+                lines.splice(i, 1);
+                i--;
+            }
+        }
+        return lines;
+    }
+}
+
+class WT_MapViewItalyMotorwayLabel extends WT_MapViewItalyRoadLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewItalyMotorwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewItalyMotorwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewItalyMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_ITALY_MOTORWAY.png";
+WT_MapViewItalyMotorwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4},
+};
+
+class WT_MapViewItalyStateHighwayLabel extends WT_MapViewItalyRoadLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewItalyStateHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewItalyStateHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewItalyStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_ITALY_STATEHIGHWAY.png";
+WT_MapViewItalyStateHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.5, top: 0.4, right: 0.5, bottom: 0.4}
+};
+
+class WT_MapViewItalyMunicipalRoadLabel extends WT_MapViewItalyRoadLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_MapViewItalyMunicipalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_MapViewItalyMunicipalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_MapViewItalyMunicipalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_ITALY_MUNICIPALROAD.png";
+WT_MapViewItalyMunicipalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
 // RUSSIA
@@ -363,8 +553,7 @@ class WT_MapViewRussiaFederalHighwayLabel extends WT_MapViewRoadImageLabel {
 }
 WT_MapViewRussiaFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_RU_FEDERALHIGHWAY.png";
 WT_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS = {
-    fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontWeight: "bold"
 };
 
 // CHINA
@@ -407,7 +596,7 @@ class WT_MapViewChinaNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewChinaNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_NATIONALEXPRESSWAY.png";
 WT_MapViewChinaNationalExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.5, right: 0.25, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.25, top: 0.65, right: 0.25, bottom: 0.25}
 };
 
 class WT_MapViewChinaProvincialExpresswayLabel extends WT_MapViewRoadImageLabel {
@@ -420,7 +609,7 @@ class WT_MapViewChinaProvincialExpresswayLabel extends WT_MapViewRoadImageLabel 
 WT_MapViewChinaProvincialExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_PROVINCIALEXPRESSWAY.png";
 WT_MapViewChinaProvincialExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.5, right: 0.25, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.25, top: 0.65, right: 0.25, bottom: 0.25}
 };
 
 class WT_MapViewChinaNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -433,7 +622,7 @@ class WT_MapViewChinaNationalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewChinaNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CHINA_NATIONALHIGHWAY.png";
 WT_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1}
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
 // TAIWAN
@@ -474,7 +663,7 @@ WT_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Ma
 WT_MapViewTaiwanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    backgroundPaddingEm: {left: 0.4, top: 0.5, right: 0.4, bottom: 0.3},
+    backgroundPaddingEm: {left: 0.4, top: 0.65, right: 0.4, bottom: 0.45},
     minWidthEm: 2.3
 };
 
@@ -488,7 +677,7 @@ class WT_MapViewTaiwanProvincialHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewTaiwanProvincialHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_TAIWAN_PROVINCIALHIGHWAY.png";
 WT_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
     minWidthEm: 2.3
 };
 
@@ -528,8 +717,7 @@ class WT_MapViewJapanExpresswayLabel extends WT_MapViewRoadImageLabel {
 }
 WT_MapViewJapanExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_JAPAN_EXPRESSWAY.png";
 WT_MapViewJapanExpresswayLabel.OPTION_DEFAULTS = {
-    fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontWeight: "bold"
 };
 
 class WT_MapViewJapanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -542,7 +730,7 @@ class WT_MapViewJapanNationalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewJapanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_JAPAN_NATIONALHIGHWAY.png";
 WT_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
     minWidthEm: 2.3
 };
 
@@ -586,7 +774,7 @@ class WT_MapViewSKNationalExpresswayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewSKNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_NATIONALEXPRESSWAY.png";
 WT_MapViewSKNationalExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.5, right: 0.4, bottom: 0.3},
+    backgroundPaddingEm: {left: 0.4, top: 0.65, right: 0.4, bottom: 0.45},
     minWidthEm: 2.3
 };
 
@@ -600,7 +788,6 @@ class WT_MapViewSKNationalHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewSKNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_SK_NATIONALHIGHWAY.png";
 WT_MapViewSKNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1},
     minWidthEm: 2.4
 };
 
@@ -615,7 +802,7 @@ WT_MapViewSKLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmi
 WT_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#2f2fbf",
-    backgroundPaddingEm: {left: 0.4, top: 0.1, right: 0.4, bottom: 0.1},
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25},
 };
 
 // AUSTRALIA
@@ -661,8 +848,7 @@ class WT_MapViewAUAlphaNumLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewAUAlphaNumLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_AU_ALPHANUMROUTE.png";
 WT_MapViewAUAlphaNumLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontColor: "#ffa709",
-    backgroundPaddingEm: {left: 0.25, top: 0.1, right: 0.25, bottom: 0.1}
+    fontColor: "#ffa709"
 };
 
 class WT_MapViewAUNationalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -676,7 +862,7 @@ WT_MapViewAUNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Ga
 WT_MapViewAUNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffa709",
-    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5}
+    backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65}
 };
 
 class WT_MapViewAUNationalRouteLabel extends WT_MapViewRoadImageLabel {
@@ -690,7 +876,7 @@ WT_MapViewAUNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garm
 WT_MapViewAUNationalRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5}
+    backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65}
 };
 
 class WT_MapViewAUStateRouteLabel extends WT_MapViewRoadImageLabel {
@@ -703,7 +889,7 @@ class WT_MapViewAUStateRouteLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewAUStateRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_AU_STATEROUTE.png";
 WT_MapViewAUStateRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
     minWidthEm: 2.3
 };
 
@@ -736,6 +922,6 @@ class WT_MapViewNZStateHighwayLabel extends WT_MapViewRoadImageLabel {
 WT_MapViewNZStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_NZ_STATEHIGHWAY.png";
 WT_MapViewNZStateHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    backgroundPaddingEm: {left: 0.4, top: 0.3, right: 0.4, bottom: 0.5},
+    backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
     minWidthEm: 2.3
 };
