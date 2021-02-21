@@ -29,7 +29,7 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Fixed V-Speed deactivation logic on speedtape display
 - Added BARO SET page and functionality to PFD menu
 - Show CRS on data block when no frequency is tuned
-- CRS knob should now work for all situations where it should be
+- CRS knob should change the needle whether or not a VOR/LOC is tuned in within range.
 
 
 # ⚠️ Known Issues
