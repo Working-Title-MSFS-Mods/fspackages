@@ -23,8 +23,8 @@
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
-			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
-			<OutputDir>.\</OutputDir>
+			<AssetDir>src\workingtitle-vcockpits-instruments\html_ui\Pages\VCockpit\Instruments\Shared\Utils</AssetDir>
+			<OutputDir>.\html_ui\Pages\VCockpit\Instruments\Shared\Utils</OutputDir>
 		</AssetGroup>
 		<AssetGroup Name="workingtitle-g3000-docs">
 			<Type>Copy</Type>
