@@ -106,19 +106,24 @@
     },
 
     "waypoints": {
-        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin",
+        "waypointLabelFontSize": 20
     },
 
     "flightPlan": {
-        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin",
+        "waypointLabelFontSize": 20,
+        "activeLabelFontSize": 20
     },
 
     "waypointHighlight": {
-        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin",
+        "activeLabelFontSize": 20
     },
 
     "cities": {
         "iconFillColor": ["#7b8083", "#7b8083", "#7b8083"],
-        "iconOutlineColor": ["#3f3f3f", "#3f3f3f", "#3f3f3f"]
+        "iconOutlineColor": ["#3f3f3f", "#3f3f3f", "#3f3f3f"],
+        "labelFontSize": [20, 20, 20]
     }
 }
