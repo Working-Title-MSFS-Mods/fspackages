@@ -270,6 +270,10 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
 
     async _searchLabels(labelDataIndex, center, radius, types, restrictionDistance, labelDistance, repeatDistance) {
         let labelData = this._roadLabelData[labelDataIndex];
+        if (!labelData.isReady()) {
+            return;
+        }
+
         let search = labelData.search(center, radius, types, restrictionDistance, labelDistance, repeatDistance);
         this._labelSearchID[labelDataIndex] = search.id;
         let labels = await search.execute();

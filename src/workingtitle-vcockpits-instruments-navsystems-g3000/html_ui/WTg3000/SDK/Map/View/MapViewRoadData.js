@@ -122,34 +122,33 @@ class WT_MapViewRoadFeatureCollection {
     }
 
     _openFile(path, loadFunc) {
-        return new Promise(resolve => {
-            let request = new XMLHttpRequest();
-            request.overrideMimeType("application/json");
+        let request = new XMLHttpRequest();
+        request.overrideMimeType("application/json");
 
-            request.addEventListener("load",
-                function() {
+        request.addEventListener("load",
+            function() {
+                if (request.responseText) {
                     loadFunc(request.responseText);
-                    resolve();
                 }
-            );
-            request.open("GET", path);
-            request.send();
-        });
+            }
+        );
+        request.open("GET", path);
+        request.send();
     }
 
-    async _openFilesForType(dir, region, type) {
+    _openFilesForType(dir, region, type) {
         let file = `${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}`;
 
         for (let i = this._maxQualityLOD; i < WT_MapViewRoadFeatureCollection.LOD_COUNT; i++) {
-            await this._openFile(`${dir}/${file}_lod${i}.geojson`, this._loadFeatureData.bind(this, region, type, i));
-            await this._openFile(`${dir}/${file}_lod${i}_bvh.json`, this._loadBVHData.bind(this, region, type, i));
+            this._openFile(`${dir}/${file}_lod${i}.geojson`, this._loadFeatureData.bind(this, region, type, i));
+            this._openFile(`${dir}/${file}_lod${i}_bvh.json`, this._loadBVHData.bind(this, region, type, i));
         }
     }
 
-    async _openFilesForRegion(region) {
+    _openFilesForRegion(region) {
         let dir = `${WT_MapViewRoadFeatureCollection.DATA_FILE_DIR}/${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}`;
         for (let type of this._types) {
-            await this._openFilesForType(dir, region, type);
+            this._openFilesForType(dir, region, type);
         }
     }
 
@@ -436,7 +435,9 @@ class WT_MapViewRoadLabelCollection {
 
         request.addEventListener("load",
             (function() {
-                this._loadData(request.responseText);
+                if (request.responseText) {
+                    this._loadData(request.responseText);
+                }
             }).bind(this)
         );
         request.open("GET", path);
