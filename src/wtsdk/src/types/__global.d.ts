@@ -148,6 +148,7 @@ declare class Utils {
   computeDistance(coords1: LatLongAlt, coords2: LatLongAlt): number;
   angleDiff(degrees1: number, degrees2: number): number;
   lerpAngle(from: number, to: number, d: number): number;
+  formatRunway(rwy: string): string;
   DEG2RAD: number;
   RAD2DEG: number;
 }

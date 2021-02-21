@@ -49,6 +49,27 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
           this.chartsindex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
           this.chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code[0] === this._fpm.getDeparture().name, origCharts);
         }
+
+        if (icaoDest !== "") {
+          const destCharts = await this._api.getChartsList(icaoDest);
+          this.chartsindex.Destination.Airport = this.findChartInArray(c => c.type.code === "AP", destCharts);
+          const arrival = this._fpm.getArrival();
+          if (arrival !== undefined) {
+            this.chartsindex.Destination.Arrival = this.findChartInArray(c => c.type.section === "ARR" && c.procedure_code[0] === arrival.name, destCharts);
+          }
+          const approach = this._fpm.getApproach();
+          if (approach !== undefined) {
+            const appname = this._fpm.getApproach().name[0];
+            const appRwy = Avionics.Utils.formatRunway(this._fpm.getApproach().runway).trim();
+
+            this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.code === "01" && c.type.section === "APP" && c.procedure_code[0] === `${appname}${appRwy}`, destCharts);
+            if(this.chartsindex.Destination.Approach === undefined){
+              // try to find any chart for this procedure
+              this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code[0] === `${appname}${appRwy}`, destCharts);
+            }
+
+          }
+        }
       } catch (err) {
         // noop
       }

@@ -113,10 +113,10 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private scaleImgToFit(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, img: HTMLImageElement): void {
     if (img.width > 0) {
       // get bbox measures
-      const bboxX = this._chart.planview.bbox_local[0];
-      const bboxY = this._chart.planview.bbox_local[3];
-      const bboxWidth = this._chart.planview.bbox_local[2] - bboxX;
-      const bboxHeight = this._chart.planview.bbox_local[1] - bboxY;
+      const bboxX = 54; //;this._chart.planview.bbox_local[0];
+      const bboxY = 54; //this._chart.planview.bbox_local[3];
+      const bboxWidth = img.width - bboxX * 2; //this._chart.planview.bbox_local[2] - bboxX;
+      const bboxHeight = img.height - bboxY * 2; //this._chart.planview.bbox_local[1] - bboxY;
 
       // img fitting
       const ratio = img.width / img.height;
