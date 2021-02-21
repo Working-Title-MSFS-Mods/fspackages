@@ -356,7 +356,7 @@ WT_MapViewRoadFeatureCollection.Type = {
     PRIMARY: 1
 }
 WT_MapViewRoadFeatureCollection.LOD_COUNT = 4;
-WT_MapViewRoadFeatureCollection.DATA_FILE_DIR = "/WTg3000/SDK/Assets/Data/Roads/Features";
+WT_MapViewRoadFeatureCollection.DATA_FILE_DIR = "/Data/Roads/Features";
 WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING = [
     "NA",
     "CA",

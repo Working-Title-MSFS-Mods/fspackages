@@ -1,0 +1,3 @@
+for f in *.geojson; do
+sed -e 's/\"type\"\:\"FeatureCollection\",\"features\"\:\[/\n\"type\"\:\"FeatureCollection\",\n\"features\"\:\[\n/g' "$f" -e 's/\]\]\]}}\]}/\]\]\]}}\n\]\n}/g' -e 's/\]\]\]}},/\]\]\]}},\n/g' -e 's/\"/\\"/g' -e 's/\\"type\\":\\"FeatureCollection\\"/\"type\":\"FeatureCollection\"/g' -e 's/\\"features\\"/\"features\"/g' -Ee 's/(\{\\"type\\":\\"Feature\\")/\"\1/g' -Ee 's/\}\}(,?)/\}\}\"\1/g' > "$(basename "$f" ".geojson").json";
+done

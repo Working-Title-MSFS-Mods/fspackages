@@ -79,7 +79,7 @@ class WT_MapViewNARouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewNARouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/NA_labels.json";
+WT_MapViewNARouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/NA_labels.json";
 /**
  * @enum {String}
  */
@@ -129,7 +129,7 @@ class WT_MapViewMexicoRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewMexicoRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/mexico_labels.json";
+WT_MapViewMexicoRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/mexico_labels.json";
 /**
  * @enum {String}
  */
@@ -172,7 +172,7 @@ class WT_MapViewEIRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewEIRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/EI_labels.json";
+WT_MapViewEIRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/EI_labels.json";
 /**
  * @enum {String}
  */
@@ -246,7 +246,7 @@ class WT_MapViewEWRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewEWRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/EW_labels.json";
+WT_MapViewEWRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/EW_labels.json";
 /**
  * @enum {String}
  */
@@ -321,7 +321,7 @@ class WT_MapViewECRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewECRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/EC_labels.json";
+WT_MapViewECRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/EC_labels.json";
 /**
  * @enum {String}
  */
@@ -489,7 +489,7 @@ class WT_MapViewRussiaRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewRussiaRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/RU_labels.json";
+WT_MapViewRussiaRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/RU_labels.json";
 /**
  * @enum {String}
  */
@@ -533,7 +533,7 @@ class WT_MapViewCHRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewCHRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/CH_labels.json";
+WT_MapViewCHRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/CH_labels.json";
 /**
  * @enum {String}
  */
@@ -637,7 +637,7 @@ class WT_MapViewAERouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewAERouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/AE_labels.json";
+WT_MapViewAERouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/AE_labels.json";
 /**
  * @enum {String}
  */
@@ -740,7 +740,7 @@ class WT_MapViewOCRouteCollection extends WT_MapViewRoadLabelCollection {
         });
     }
 }
-WT_MapViewOCRouteCollection.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Roads/Labels/OC_labels.json";
+WT_MapViewOCRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/OC_labels.json";
 /**
  * @enum {String}
  */
