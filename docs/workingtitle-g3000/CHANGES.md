@@ -1,5 +1,20 @@
 # Changelog
 
+### v0.4.1
+**New Features**
+- \[General\] Added mod .cfg file. It can be found at `workingtitle-g3000\html_ui\WTg3000.cfg`.
+- \[NavMap\] Added support for road display (not available for the PFD Inset Map). Requires the optional `workingtitle-g3000-roaddata` package.
+  - Roads can be toggled on/off by navigating to MFD Home -> Map Settings -> "Land" tab.
+  - Config settings for roads can be found in the WTg3000.cfg file.
+
+**Changed Features**
+- \[NavMap\] Increased city and waypoint label font size in the MFD navigation map.
+- \[VFR Map\] The VFR Map no longer incurs a performance cost when it is minimized/hidden.
+- \[VFR Map\] Changed the VFR Map to more closely resemble the Garmin G3000 navigation map when flying the TBM930 and Longitude.
+
+**Fixes**
+- \[General\] Fixed performance degradation over time.
+
 ### v0.4.0
 **New Features**
 - \[MFD\] Added MFD "HALF" mode, which splits the MFD into left and right panes.

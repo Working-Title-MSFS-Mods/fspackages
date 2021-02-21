@@ -8,39 +8,26 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.4.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.4.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-#### Release Highlights for v0.4.0
+### Configuration File
+Certain mod settings can be customized via a configuration file which is located at `workingtitle-g3000\html_ui\WTg3000.cfg`. Documentation for the various settings can be found in the file itself. If you make changes to the file while the game is running, you must restart the game for the changes to take effect.
 
-- Added MFD "HALF" mode, which splits the MFD into left and right panes.
-- New navigational map features:
-  - Airways.
-  - Country and state/province borders and labels.
-  - Map Pointer Information display.
-- Updated flight plan rendering and waypoint icons to more closely resemble the real-life units.
-- New weather radar displays and settings menu.
-- Support for Airport Info pane.
+#### Release Highlights for v0.4.1
+
+- Added mod configuration file.
+- Added road display for the navigation map (requires the optional `workingtitle-g3000-roaddata` package).
 
 **Fixes**
-- \[PFD\] The inset map no longer bleeds through its borders.
-- \[PFD\] The timer display is now functional.
-- \[Flight Plan\] Fixed a bug where the navigation map and the GTC active flight plan page would display the active leg as being one leg ahead of the true active leg.
-- \[NavMap\] Map symbols (cities, waypoints, etc) are now better aligned with the terrain texture at high latitudes and when zoomed out.
-- \[NavMap\] Flight plan paths that cross the antimeridian (180° E/W) are now drawn correctly.
-- \[NavMap\] Waypoint labels no longer sometimes blink or flash on/off rapidly.
-- \[Weather Radar\] In Vertical Scan mode, the vertical scale is now correctly labeled.
-- \[GTC\] The PFD inset map can now be toggled on/off within the PFD Map Settings page.
-- \[GTC\] The lower knob (G3000) or right knob (G5000) now controls PFD inset map range when the touchscreen controller has the PFD home page or any of its subpages open.
-- \[GTC\] For the G5000, turning the right knob no longer changes map or weather radar range when a frequency select or audio/radio page is open.
-- \[GTC\] In the Timers page, the "Start" button now correctly changes to a "Stop" button when the timer is active.
+- \[General\] Fixed performance degradation over time.
 
 ### Known Issues
 - \[Stability\] The game will CTD when clearing origin and destination from the flight plan and attempting to enter a new origin/destination.
-- \[Compatibility\] Using this mod with Navigraph may result in various bugs with flight planning, including blank legs in the GTC active flight plan page, unexpected behavior when selecting duplicate waypoints, and freezes/CTDs when making changes to the active flight plan.
+- \[Compatibility\] Using this mod with the WorkingTitle GX mod may result in various flight planning bugs, such as blank waypoint entries in the GTC active flight plan page and avionics freeze when initiating a Direct To to an approach waypoint.
 - \[PFD\] (Vanilla issue) Co-pilot PFD softkeys are nonfunctional in the TBM 930.
-- \[NavMap\] Roads and airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
+- \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
 - \[NavMap\] The flight plan renderer currently does not draw turn anticipation arcs or turn to intercept legs. These will be added later.
 - \[NavMap\] All airport waypoints are shown as if they are serviced, regardless of whether they actually are. This is because waypoint data from the game is currently missing this information.
 - \[NavMap\] Airport waypoint symbols will only show around a certain geographic distance from the center of the map (this does not apply to airports that are part of the active flight plan). This is due to the way the game searches for airports (the number of results is limited for performance reasons and there is no option to filter the search e.g. by size to reduce the performance penalty).
