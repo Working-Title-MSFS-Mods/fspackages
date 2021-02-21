@@ -88,7 +88,7 @@ class WT_MapViewBorderData {
         }
     }
 }
-WT_MapViewBorderData.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Borders/borders_processed.json";
+WT_MapViewBorderData.DATA_FILE_PATH = "/Data/Borders/borders_processed.json";
 WT_MapViewBorderData.ADMIN_1_SCALERANK_THRESHOLD_DEFAULT = 2;
 WT_MapViewBorderData.LOD_SIMPLIFY_THRESHOLDS_DEFAULT = [
     Number.MIN_VALUE,

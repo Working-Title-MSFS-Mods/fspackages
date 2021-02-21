@@ -68,7 +68,7 @@ class WT_CitySearcher {
         return this._trees[size].search(center, radius, new WT_CitySearchHandler(exclude));
     }
 }
-WT_CitySearcher.DATA_FILE_PATH = "/WTg3000/SDK/Assets/Data/Cities/cities.json";
+WT_CitySearcher.DATA_FILE_PATH = "/Data/Cities/cities.json";
 
 class WT_CitySearchHandler extends WT_GeoKDTreeSearchHandler {
     constructor(exclude) {
