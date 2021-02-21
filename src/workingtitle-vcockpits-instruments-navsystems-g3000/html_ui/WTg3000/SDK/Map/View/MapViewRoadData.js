@@ -341,13 +341,12 @@ WT_MapViewRoadFeatureCollection.Region = {
     EC: 6,  // Central Europe
     EE: 7,  // Eastern Europe
     AF: 8,  // Africa
-    ME: 9,  // Middle East
-    RU: 10, // Russia
-    AC: 11, // Central Asia
-    CH: 12, // China and Mongolia
-    AE: 13, // East Asia
-    AS: 14, // South Asia
-    OC: 15  // Oceania
+    RU: 9, // Russia
+    AC: 10, // Central Asia
+    CH: 11, // China and Mongolia
+    AE: 12, // East Asia
+    AS: 13, // South Asia
+    OC: 14  // Oceania
 };
 /**
  * @enum {Number}
@@ -368,7 +367,6 @@ WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING = [
     "EC",
     "EE",
     "AF",
-    "ME",
     "RU",
     "AC",
     "CH",
