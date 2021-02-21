@@ -105,10 +105,6 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     connectedCallback() {
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
-
         this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
         this._loadModConfig();
         this._waitUntilReady().then(this._doInit.bind(this));
