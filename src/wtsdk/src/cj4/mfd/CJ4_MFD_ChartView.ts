@@ -50,7 +50,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   update(dTime: number): void {
     if (this._isDirty) {
       this.fitCanvasToContainer(this._canvas);
-      this._isDirty = false;
+      // this._isDirty = false;
       const ctx = this._canvas.getContext("2d");
       ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);
@@ -127,7 +127,33 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         this._chartWidth = this._chartWidth * ratio;
       }
 
-      ctx.drawImage(img, bboxX, bboxY, bboxWidth, bboxHeight, 0, 0, this._chartWidth, this._chartHeight,);
+      const scaleW = this._chartWidth / img.width;
+      const scaleH = this._chartHeight / img.height;
+
+      ctx.drawImage(img, bboxX, bboxY, bboxWidth, bboxHeight, 0, 0, this._chartWidth, this._chartHeight);
+
+      // georef
+      if (this._chart.georef === true) {
+        const planW = this._chart.planview.bbox_local[2] - this._chart.planview.bbox_local[0];
+        const planH = this._chart.planview.bbox_local[1] - this._chart.planview.bbox_local[3];
+        const geoW = this._chart.planview.bbox_geo[2] - this._chart.planview.bbox_geo[0];
+        const geoH = this._chart.planview.bbox_geo[1] - this._chart.planview.bbox_geo[3];
+
+        // planepos
+        const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+        const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+
+        const pxPerLong = planW / (this._chart.planview.bbox_geo[2] - this._chart.planview.bbox_geo[0]);
+        const pxPerLat = planH / (this._chart.planview.bbox_geo[3] - this._chart.planview.bbox_geo[1]);
+        let planeX = (long - this._chart.planview.bbox_geo[0]) * pxPerLong;
+        let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * pxPerLat;
+
+        planeX += (this._chart.planview.bbox_local[0] - 25);
+        planeY += (this._chart.planview.bbox_local[3] - 25);
+
+        ctx.fillStyle = "magenta";
+        ctx.fillRect(Math.abs(planeX) * scaleW, Math.abs(planeY) * scaleH, 20, 20);
+      }
     }
   }
 

@@ -41,6 +41,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     if (this._api.isAccountLinked && this._isDirty) {
       this._isDirty = false;
       try {
+        this.resetChartsIndex();
         const icaoOrig = this._fpm.getOrigin() === undefined ? "" : this._fpm.getOrigin().ident;
         const icaoDest = this._fpm.getDestination() === undefined ? "" : this._fpm.getDestination().ident;
 
@@ -63,7 +64,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
             const appRwy = Avionics.Utils.formatRunway(this._fpm.getApproach().runway).trim();
 
             this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.code === "01" && c.type.section === "APP" && c.procedure_code[0] === `${appname}${appRwy}`, destCharts);
-            if(this.chartsindex.Destination.Approach === undefined){
+            if (this.chartsindex.Destination.Approach === undefined) {
               // try to find any chart for this procedure
               this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code[0] === `${appname}${appRwy}`, destCharts);
             }
@@ -77,6 +78,11 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
       this.render();
       this.renderselect();
     }
+  }
+  resetChartsIndex(): void {
+    this.getFlatChartIndex().forEach((c) => {
+      c = undefined;
+    });
   }
 
   public findChartInArray(predicate: (value: NG_Chart, index: number, obj: NG_Chart[]) => unknown, charts: NG_Charts): NG_Chart {
