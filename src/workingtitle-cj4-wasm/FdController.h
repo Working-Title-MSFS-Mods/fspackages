@@ -186,6 +186,7 @@ public:
         this->updateThrust(deltaTime);
         this->updateVisibleThrottle(0);
         this->updateVisibleThrottle(1);
+        this->simVars->setFadecActiveFlag();
     }
 };
 

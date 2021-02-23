@@ -547,8 +547,9 @@ class CJ4_FMC_RoutePage {
 
                 if (arrival) {
                     const transitionIndex = fpln.procedureDetails.arrivalTransitionIndex;
-                    const arrivalName = transitionIndex !== -1
-                        ? `${arrival.enRouteTransitions[transitionIndex].name}.${arrival.name}`
+                    const transition = arrival.enRouteTransitions[transitionIndex];
+                    const arrivalName = transitionIndex !== -1 && transition
+                        ? `${transition.name}.${arrival.name}`
                         : `${arrival.name}`;
 
                     const finalFix = arrivalSeg.waypoints[arrivalSeg.waypoints.length - 1];

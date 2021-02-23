@@ -33,13 +33,15 @@ class Jet_MFD_NDInfo extends HTMLElement {
         this.approachDistance = this.querySelector("#APP_Distance_Value");
         this.waypoint = this.querySelector("#Waypoint");
         this.waypointName = this.querySelector("#WP_Name");
+        this.waypointTtg = this.querySelector("#WP_Ttg_Value");
         this.waypointTrack = this.querySelector("#WP_Track_Value");
         this.waypointDistance = this.querySelector("#WP_Distance_Value");
         this.VORLeft = new VORDMENavAid(this.querySelector("#VORDMENavaid_Left"), 1);
         this.VORRight = new VORDMENavAid(this.querySelector("#VORDMENavaid_Right"), 2);
         this.elapsedTime = this.querySelector("#ElapsedTime");
         this.elapsedTimeValue = this.querySelector("#ET_Value");
-        this.minimums = this.querySelector("#MinimumsValue");
+        this.minimumsValue = this.querySelector("#MinimumsValue");
+        this.minimumsUnit = this.querySelector("#MinimumsUnit");
         this.setGroundSpeed(0, true);
         this.setTrueAirSpeed(0, true);
         this.setWind(0, 0, 0, true);
@@ -88,8 +90,15 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             if (!isAlertSet) {
                 this._displayWaypointInfo = true;
-                this.waypointName.style.visibility = 'visible';
-                this.waypointDistance.parentElement.style.visibility = 'visible';
+                if (this.waypointName) {
+                    this.waypointName.style.visibility = 'visible';
+                }
+                if (this.waypointDistance) {
+                    this.waypointDistance.parentElement.style.visibility = 'visible';
+                }
+                if (this.waypointTtg) {
+                    this.waypointTtg.parentElement.style.visibility = 'visible';
+                }
             }
         }
 
@@ -102,6 +111,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
             this.waypointName.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
             this.waypointDistance.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
+            if (this.waypointTtg) {
+                this.waypointTtg.parentElement.style.visibility = this._displayWaypointInfo ? 'visible' : 'hidden';
+            }
         }
     }
 
@@ -268,6 +280,22 @@ class Jet_MFD_NDInfo extends HTMLElement {
                                 this.waypointDistance.textContent = this.currentWaypointDistance.toFixed(0);
                         }
                     }
+                    if ((_eta != this.currentWaypointEta) || _force) {
+                        this.currentWaypointEta = _eta;
+                        if (this.waypointTtg != null) {
+                            if (Simplane.getGroundSpeed() >= 50) {
+                                const overHour = (_eta >= 3600);
+                                if (overHour) {
+                                    this.waypointTtg.textContent = new Date(_eta * 1000).toISOString().substr(11, 5);
+                                } else {
+                                    this.waypointTtg.textContent = new Date(_eta * 1000).toISOString().substr(13, 3);
+                                }
+                            }
+                            else {
+                                this.waypointTtg.textContent = "--:--";
+                            }
+                        }
+                    }
                 }
                 else {
                     if (this.waypointName != null) {
@@ -278,6 +306,9 @@ class Jet_MFD_NDInfo extends HTMLElement {
                     }
                     if (this.waypointDistance != null) {
                         this.waypointDistance.textContent = "-.-";
+                    }
+                    if (this.waypointTtg != null) {
+                        this.waypointTtg.textContent = "--:--";
                     }
                 }
             }
@@ -364,9 +395,11 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             else
                                 suffix = " R";
                         }
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number"); //Set so you can see the course the needle is pointing to while NAVAID is inactive
+                        let courseNAV = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree");
                         let type = "VOR";
                         let freq = "----";
-                        let course = "---";
+                        let course = courseNAV.toString().padStart(3, "0");
                         let ident = "";
                         let distance = "----";
 
@@ -375,7 +408,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             if (SimVar.GetSimVarValue("NAV HAS NAV:" + vor.id, "Bool")) {
                                 course = Utils.leadingZeros(Math.round(vor.course), 3);
                             }
-                            
+
                             ident = vor.ident;
                             if (this.aircraft == Aircraft.CJ4) {
                                 let hasLocalizer = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + vor.id, "Bool");
@@ -435,7 +468,8 @@ class Jet_MFD_NDInfo extends HTMLElement {
 
                         if (ils.id > 0) {
                             freq = ils.freq.toFixed(2);
-                            course = Utils.leadingZeros(Math.round(ils.course), 3);
+                            let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                            course = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString().padStart(3, "0");
                             ident = ils.ident;
 
                             if (ils.distance) {
@@ -500,10 +534,25 @@ class Jet_MFD_NDInfo extends HTMLElement {
         }
     }
     updateMinimums() {
-        if (this.minimums) {
-            let baroSet = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
-            this.minimums.textContent = baroSet;
-            this.minimums.parentElement.style.display = (baroSet == 0) ? 'none' : '';
+        if (this.minimumsValue) {
+            let minMode = SimVar.GetSimVarValue("L:WT_CJ4_MIN_SRC", "Number");
+            switch (minMode) {
+                case 1:
+                    let baroMins = SimVar.GetSimVarValue("L:WT_CJ4_BARO_SET", "Number");
+                    this.minimumsValue.textContent = baroMins;
+                    this.minimumsUnit.textContent = "BARO";
+                    this.minimumsValue.parentElement.style.display = (baroMins == 0) ? 'none' : 'block';
+                    break;
+                case 2:
+                    let radioMins = SimVar.GetSimVarValue("L:WT_CJ4_RADIO_SET", "Number");
+                    this.minimumsValue.textContent = radioMins
+                    this.minimumsUnit.textContent = "RA";
+                    this.minimumsValue.parentElement.style.display = (radioMins == 0) ? 'none' : 'block';
+                    break;
+                default:
+                    this.minimumsValue.parentElement.style.display = "none";
+                    break;
+            }
         }
     }
     getILSIdent() {
@@ -615,7 +664,7 @@ class VORDMENavAid {
      */
     handleVORModeUpdate(parentNavMode, parentRadioIndex) {
         const ident = SimVar.GetSimVarValue("NAV IDENT:" + this.index, "string");
-        
+
         const hasRadial = SimVar.GetSimVarValue("NAV HAS NAV:" + this.index, "Bool");
         const hasDME = SimVar.GetSimVarValue("NAV HAS DME:" + this.index, "bool");
         const hasCloseDME = SimVar.GetSimVarValue("NAV HAS CLOSE DME:" + this.index, "bool");
@@ -630,7 +679,7 @@ class VORDMENavAid {
             else {
                 this.pointer.style = 'display: none';
             }
-            
+
             this.hasNav = isTuned;
         }
 
@@ -661,7 +710,7 @@ class VORDMENavAid {
         else {
             this.setDistanceValue(0);
             this.setIDValue(0);
-            
+
             if (this.navTypeText.textContent !== 'VOR') {
                 this.navTypeText.textContent = 'VOR';
             }
