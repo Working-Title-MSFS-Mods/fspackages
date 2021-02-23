@@ -138,6 +138,30 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     }
   }
 
+  public selectPrevChart() {
+    if(this._selectIndex > 0){
+      const chartsIndex = this.getFlatChartIndex();
+      for (let i = this._selectIndex-1; i >= 0; i--) {
+        if (chartsIndex[i] !== undefined) {
+          this._selectIndex = i;
+          this.selectChart();
+          return;
+        }
+      }
+    }
+  }
+
+  public selectNextChart() {
+    const chartsIndex = this.getFlatChartIndex();
+    for (let i = this._selectIndex+1; i < chartsIndex.length; i++) {
+      if (chartsIndex[i] !== undefined) {
+        this._selectIndex = i;
+        this.selectChart();
+        return;
+      }
+    }
+  }
+
   private renderselect() {
     const rows = this._tableContainer.querySelectorAll("tr");
     rows.forEach(r => {
@@ -195,6 +219,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     Object.entries(data).forEach((v: [string, NG_Chart]) => {
       const row = tbody.insertRow();
       const cell1 = row.insertCell();
+      cell1.style.width = "110px";
       cell1.textContent = v[0];
       const cell2 = row.insertCell();
       const chart = v[1];
@@ -203,8 +228,8 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     container.appendChild(table);
 
     const hrdivider = document.createElement("hr");
-    hrdivider.style.width = "95%";
-    hrdivider.style.textAlign = "center";
+    hrdivider.style.width = "99%";
+    hrdivider.style.float = "right";
     container.appendChild(hrdivider);
 
     return container;

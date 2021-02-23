@@ -316,6 +316,16 @@ class CJ4_MFD extends BaseAirliners {
             return;
         }
         switch (_event) {
+            case "Lwr_DATA_DEC":
+                if (this._chartView.isVisible && !this._chartIndex.isVisible) {
+                    this._chartIndex.selectPrevChart();
+                }
+                break;
+            case "Lwr_DATA_INC":
+                if (this._chartView.isVisible && !this._chartIndex.isVisible) {
+                    this._chartIndex.selectNextChart();
+                }
+                break;
             case "Lwr_Push_Chart_1":
                 if (this._chartView.style.visibility === "visible") {
                     this._chartView.hide();

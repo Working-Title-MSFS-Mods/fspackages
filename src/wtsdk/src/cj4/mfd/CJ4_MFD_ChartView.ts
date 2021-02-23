@@ -27,7 +27,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this._canvas = this.querySelector("#chartcanvas");
     this._srcImage.src = "#";
     this._srcImage.onload = this.onSrcImageLoaded.bind(this);
-    this._planeImage.src = "coui://html_UI/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/icon_plane.png?cb=334";
+    this._planeImage.src = "coui://html_UI/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/icon_plane.png?cb=323334";
   }
 
   onSrcImageLoaded(): void {
@@ -149,15 +149,20 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         let planeX = (long - this._chart.planview.bbox_geo[0]) * pxPerLong;
         let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * pxPerLat;
 
-        planeX += (this._chart.planview.bbox_local[0]) +5;
-        planeY += (this._chart.planview.bbox_local[3]) -5;
+        // no idea why we need to offset more
+        planeX += (this._chart.planview.bbox_local[0]) +14;
+        planeY += (this._chart.planview.bbox_local[3]) -7;
 
-        ctx.save();
+        const transX = Math.abs(planeX) * scaleW;
+        const transY = Math.abs(planeY) * scaleH;
         const simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree") - 14;
-        ctx.translate(Math.abs(planeX) * scaleW, Math.abs(planeY) * scaleH);
-        ctx.rotate(Math.round(simTrack) * (Math.PI / 180));
-        ctx.drawImage(this._planeImage, -20, -23, 40, 46);
-        ctx.restore();
+        const rot = Math.round(simTrack) * (Math.PI / 180);
+        ctx.translate(transX, transY);
+        ctx.rotate(rot);
+        const planeScale = this._zoom === 1 ? 1 : 1.5;
+        ctx.drawImage(this._planeImage, -20/planeScale, -23.5/planeScale, 40/planeScale, 47/planeScale);
+        ctx.translate(-transX, -transY);
+        ctx.rotate(-rot);        
         // }
       }
     }

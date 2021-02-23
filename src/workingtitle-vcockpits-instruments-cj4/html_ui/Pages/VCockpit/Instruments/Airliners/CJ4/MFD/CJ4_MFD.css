@@ -827,6 +827,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay td {
   display: table-cell;
   vertical-align: middle;
   padding-left: 18px;
+  padding-top:2px;
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay tr.selected {
