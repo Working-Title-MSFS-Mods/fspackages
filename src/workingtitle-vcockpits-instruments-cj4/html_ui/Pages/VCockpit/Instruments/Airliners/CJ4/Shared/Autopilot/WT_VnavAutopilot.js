@@ -1121,16 +1121,19 @@ class WT_VerticalAutopilot {
 
     monitorValues() {
         //Datastore for VNAV Window in FMS TEXT
-        const vnavWindowData = {
-            toddistance: this.distanceToTod,
-            fpa: this.path.fpa,
-            descentrate: this.donut,
-            fptaname: this._vnav._verticalFlightPlan[this.currentSegment.targetIndex].ident,
-            fptaconstraint: this.path.fpta,
-            fptaDistance: this._vnav.allWaypoints[this.currentSegment.targetIndex].cumulativeDistanceInFP - this._vnav._currentDistanceInFP
-        };
+        let vnavWindowData = {};
+        const vnavstate = this.checkVnavState();
+        if(vnavstate == VnavState.PATH || vnavstate == VnavState.DIRECT) {
+            vnavWindowData = {
+                toddistance: this.distanceToTod,
+                fpa: this.path.fpa,
+                descentrate: this.donut,
+                fptaname: this._vnav._verticalFlightPlan[this.currentSegment.targetIndex].ident,
+                fptaconstraint: this.path.fpta,
+                fptaDistance: this._vnav.allWaypoints[this.currentSegment.targetIndex].cumulativeDistanceInFP - this._vnav._currentDistanceInFP
+            };
+        }
         localStorage.setItem("VNAVWINDOWDATA", JSON.stringify(vnavWindowData));
-        const data = JSON.parse(localStorage.getItem("VNAVWINDOWDATA"));
     }
 }
 
