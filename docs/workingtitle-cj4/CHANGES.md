@@ -14,11 +14,11 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 
 - Improvements to automatic VOR search
 - Fix blacked out FPLN page when arrival was loaded from the world map
-- More realistic gnss pos init procedure
+- More realistic GNSS POS INIT procedure
 - Added TTG to the FMS info on the MFD
 - Checklist on the MFD should not react to the PFD knob anymore
 - Workaround for doubled flaps lift since the UK update (by metzgerva)
-- Added a prominent warning to the MFD when a incompatible livery is used
+- Added a prominent(!) warning to the MFD when a incompatible livery is used
 - Fixed typos on the TUN and DEP/ARR index page (by slip)
 - Adjust colors for the terrain map (by slip)
 - Added Datalink section with ability to request METAR/TAF/ATIS (thanks to Syntax for the code and FBW for allowing usage of their API)
@@ -31,7 +31,6 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 - Show CRS on data block when no frequency is tuned
 - CRS knob should change the needle whether or not a VOR/LOC is tuned in within range.
 
-
 # ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
@@ -41,4 +40,3 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 * Sometimes a heading to altitude instruction on takeoff will display further than the first RNAV fix on an RNAV departure procedure; in these cases the workaround is to cross-check the DP chart and remove the erroneous waypoint either by deleting the heading to altitude fix or dropping the first RNAV fix onto the magenta line in the LEGS page.
 * Due to sim autopilot bank rate limitations, the aircraft may overshoot on certain RNP approaches with tight turns. If you encounter this, we recommend handflying the approach with the given lateral and vertical guidance.
 * If for whatever reason, you find that VNAV is not behaving as expected, try and turn it off and on again.
-
