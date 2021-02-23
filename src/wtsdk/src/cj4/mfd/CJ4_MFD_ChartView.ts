@@ -4,6 +4,7 @@ import { NG_Chart } from "../../types/navigraph";
 export class CJ4_MFD_ChartView extends HTMLElement {
 
   private _srcImage = new Image;
+  private _planeImage = new Image;
   private _chart: NG_Chart = undefined;
   private _canvas: HTMLCanvasElement;
   private _zoom: number = 1;
@@ -26,6 +27,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this._canvas = this.querySelector("#chartcanvas");
     this._srcImage.src = "#";
     this._srcImage.onload = this.onSrcImageLoaded.bind(this);
+    this._planeImage.src = "coui://html_UI/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/icon_plane.png?cb=334";
   }
 
   onSrcImageLoaded(): void {
@@ -48,7 +50,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   update(dTime: number): void {
-    if (this._isDirty) {
+    if (this.isVisible && this._isDirty) {
       this.fitCanvasToContainer(this._canvas);
       // this._isDirty = false;
       const ctx = this._canvas.getContext("2d");
@@ -134,25 +136,29 @@ export class CJ4_MFD_ChartView extends HTMLElement {
 
       // georef
       if (this._chart.georef === true) {
-        const planW = this._chart.planview.bbox_local[2] - this._chart.planview.bbox_local[0];
-        const planH = this._chart.planview.bbox_local[1] - this._chart.planview.bbox_local[3];
-        const geoW = this._chart.planview.bbox_geo[2] - this._chart.planview.bbox_geo[0];
-        const geoH = this._chart.planview.bbox_geo[1] - this._chart.planview.bbox_geo[3];
-
         // planepos
         const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
         const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
 
+        // if (long > this._chart.planview.bbox_local[0] && long < this._chart.planview.bbox_local[2] &&
+        //   lat > this._chart.planview.bbox_local[1] && lat < this._chart.planview.bbox_local[3]) {
+        const planW = this._chart.planview.bbox_local[2] - this._chart.planview.bbox_local[0];
+        const planH = this._chart.planview.bbox_local[1] - this._chart.planview.bbox_local[3];
         const pxPerLong = planW / (this._chart.planview.bbox_geo[2] - this._chart.planview.bbox_geo[0]);
         const pxPerLat = planH / (this._chart.planview.bbox_geo[3] - this._chart.planview.bbox_geo[1]);
         let planeX = (long - this._chart.planview.bbox_geo[0]) * pxPerLong;
         let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * pxPerLat;
 
-        planeX += (this._chart.planview.bbox_local[0] - 25);
-        planeY += (this._chart.planview.bbox_local[3] - 25);
+        planeX += (this._chart.planview.bbox_local[0]) +5;
+        planeY += (this._chart.planview.bbox_local[3]) -5;
 
-        ctx.fillStyle = "magenta";
-        ctx.fillRect(Math.abs(planeX) * scaleW, Math.abs(planeY) * scaleH, 20, 20);
+        ctx.save();
+        const simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree") - 14;
+        ctx.translate(Math.abs(planeX) * scaleW, Math.abs(planeY) * scaleH);
+        ctx.rotate(Math.round(simTrack) * (Math.PI / 180));
+        ctx.drawImage(this._planeImage, -20, -23, 40, 46);
+        ctx.restore();
+        // }
       }
     }
   }
