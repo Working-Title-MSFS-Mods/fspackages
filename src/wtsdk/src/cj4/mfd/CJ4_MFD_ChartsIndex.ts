@@ -63,10 +63,10 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
             const appname = this._fpm.getApproach().name[0];
             const appRwy = Avionics.Utils.formatRunway(this._fpm.getApproach().runway).trim();
 
-            this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.code === "01" && c.type.section === "APP" && c.procedure_code[0] === `${appname}${appRwy}`, destCharts);
+            this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.code === "01" && c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${appname}${appRwy}`) !== -1, destCharts);
             if (this.chartsindex.Destination.Approach === undefined) {
               // try to find any chart for this procedure
-              this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code[0] === `${appname}${appRwy}`, destCharts);
+              this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${appname}${appRwy}`) !== -1, destCharts);
             }
 
           }
