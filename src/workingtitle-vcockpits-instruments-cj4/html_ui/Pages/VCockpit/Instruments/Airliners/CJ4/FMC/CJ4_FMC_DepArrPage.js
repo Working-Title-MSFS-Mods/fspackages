@@ -45,7 +45,7 @@ class CJ4_FMC_DepArrPage {
         let rowDestination = [""];
         let destination = fmc.flightPlanManager.getDestination();
         if (destination) {
-            rowDestination = ["", "<ARR", destination.ident];
+            rowDestination = ["", "ARR>", destination.ident];
             fmc.onRightInput[1] = () => {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             };

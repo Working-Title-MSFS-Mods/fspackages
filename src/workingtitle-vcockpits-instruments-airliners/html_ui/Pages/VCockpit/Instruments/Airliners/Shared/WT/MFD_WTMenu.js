@@ -374,13 +374,6 @@ var WTMenu;
         }
         reactsOnEvent(_event) {
             switch (_event) {
-                case "Upr_DATA_PUSH":
-                case "Upr_DATA_DEC":
-                case "Upr_DATA_INC":
-                case "Upr_MENU_ADV_DEC":
-                case "Upr_MENU_ADV_INC":
-                case "Upr_Push_ESC":
-                    return true;
                 case "Lwr_DATA_PUSH":
                 case "Lwr_DATA_DEC":
                 case "Lwr_DATA_INC":
@@ -674,13 +667,6 @@ var WTMenu;
         }
         reactsOnEvent(_event) {
             switch (_event) {
-                case "Upr_DATA_PUSH":
-                case "Upr_DATA_DEC":
-                case "Upr_DATA_INC":
-                case "Upr_MENU_ADV_DEC":
-                case "Upr_MENU_ADV_INC":
-                case "Upr_Push_ESC":
-                    return true;
                 case "Lwr_DATA_PUSH":
                 case "Lwr_DATA_DEC":
                 case "Lwr_DATA_INC":
