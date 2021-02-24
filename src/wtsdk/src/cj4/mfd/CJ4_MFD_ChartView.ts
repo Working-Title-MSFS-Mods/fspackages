@@ -129,8 +129,8 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         this._chartWidth = this._chartWidth * ratio;
       }
 
-      const scaleW = this._chartWidth / (img.width - bboxX);
-      const scaleH = this._chartHeight / (img.height - bboxY);
+      const scaleW = this._chartWidth / (img.width - (bboxX * 2));
+      const scaleH = this._chartHeight / (img.height - (bboxY * 2));
 
       ctx.drawImage(img, bboxX, bboxY, bboxWidth, bboxHeight, 0, 0, this._chartWidth, this._chartHeight);
 
@@ -150,8 +150,8 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * pxPerLat;
 
         // no idea why we need to offset more
-        planeX += (this._chart.planview.bbox_local[0]);
-        planeY += (this._chart.planview.bbox_local[3]);
+        planeX += (this._chart.planview.bbox_local[0]) - 54;
+        planeY += (this._chart.planview.bbox_local[3]) - 54;
 
         const transX = Math.abs(planeX) * scaleW;
         const transY = Math.abs(planeY) * scaleH;
