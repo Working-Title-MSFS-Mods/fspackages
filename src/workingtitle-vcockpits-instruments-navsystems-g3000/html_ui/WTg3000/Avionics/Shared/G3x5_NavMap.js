@@ -395,6 +395,8 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         controller.view.setTargetOffsetHandler(this);
         controller.view.setRangeInterpreter(this);
 
+        this._isLatitudeCompensationActive = false;
+
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
@@ -453,42 +455,72 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         range.set(model.range).scale(factor, true);
     }
 
-    _getTargetTrackPlane() {
-        return this.model.airplane.position(this._tempGeoPoint);
-    }
-
-    updateRange() {
+    _updateRange() {
         this.model.range = this._rangeSetting.getRange();
     }
 
-    updateTarget() {
-        let target;
-        if (this._pointerSetting.isPointerActive()) {
-            target = this._pointerSetting.getTargetLatLong();
+    /**
+     *
+     * @param {WT_GeoPoint} target
+     */
+    _handleLatitudeCompensation(target) {
+        let longDimensionFactor = Math.max(1, this.view.viewWidth / this.view.viewHeight);
+        let latDelta = this.model.range.asUnit(WT_Unit.GA_RADIAN) * Avionics.Utils.RAD2DEG * longDimensionFactor * 2;
+        let edgeLat = target.lat + (target.lat >= 0 ? 1 : -1) * latDelta;
+        if (Math.abs(edgeLat) > WT_G3000MapRangeTargetRotationController.MAX_LATITUDE) {
+            let compensatedLat = Math.max(0, WT_G3000MapRangeTargetRotationController.MAX_LATITUDE - latDelta) * (target.lat >= 0 ? 1 : -1);
+            target.set(compensatedLat, target.long);
+            this._isLatitudeCompensationActive = true;
             this.model.crosshair.show = true;
         } else {
-            target = this._getTargetTrackPlane();
+            this._isLatitudeCompensationActive = false;
+        }
+    }
+
+    _updateTarget() {
+        let target = this._tempGeoPoint;
+        if (this._pointerSetting.isPointerActive()) {
+            target.set(this._pointerSetting.getTargetLatLong());
+            this.model.crosshair.show = true;
+        } else {
+            this.model.airplane.position(target);
             this.model.crosshair.show = false;
         }
+
+        this._handleLatitudeCompensation(target);
 
         if (target) {
             this.model.target = target;
         }
     }
 
-    updateRotation() {
-        let orientation = this._orientationSetting.getValue();
-
-        // handle Auto North Up
-        if (this._autoNorthUpSetting && this._autoNorthUpSetting.isActive()) {
-            if (this.model.range.compare(this._autoNorthUpSetting.getRange()) >= 0) {
-                orientation = WT_G3x5_NavMap.Orientation.NORTH;
-            }
+    _forceNorthUp() {
+        // handle latitude compensation
+        if (this._isLatitudeCompensationActive) {
+            return true;
         }
 
         // handle cursor
         if (this._pointerSetting.isPointerActive()) {
+            return true;
+        }
+
+        // handle Auto North Up
+        if (this._autoNorthUpSetting && this._autoNorthUpSetting.isActive()) {
+            if (this.model.range.compare(this._autoNorthUpSetting.getRange()) >= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    _updateRotation() {
+        let orientation;
+        if (this._forceNorthUp()) {
             orientation = WT_G3x5_NavMap.Orientation.NORTH;
+        } else {
+            orientation = this._orientationSetting.getValue();
         }
 
         let rotation;
@@ -517,8 +549,9 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
 
     update() {
         this._pointerSetting.update();
-        this.updateRange();
-        this.updateTarget();
-        this.updateRotation();
+        this._updateRange();
+        this._updateTarget();
+        this._updateRotation();
     }
 }
+WT_G3000MapRangeTargetRotationController.MAX_LATITUDE = 85;
