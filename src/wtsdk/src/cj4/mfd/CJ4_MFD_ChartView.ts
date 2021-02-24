@@ -79,6 +79,8 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);
       if (this._srcImage.src !== "" && this._srcImage.src.indexOf("#") === -1) {
         this.drawImage(ctx);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.drawRect(ctx);
       } else {
         ctx.fillStyle = "#cccac8";
         ctx.textAlign = "center";
@@ -88,50 +90,18 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     }
   }
 
-  onEvent(event: string): boolean {
-    if (!this.isVisible) {
-      return false;
-    }
-    this._isDirty = true;
-    let handled = true;
-    switch (event) {
-      case "Lwr_Push_ZOOM_INC":
-      case "Lwr_Push_ZOOM_DEC":
-        this._zoom = this._zoom === 1 ? 2.3 : 1;
-        if (this._zoom === 1) {
-          this._xOffset = 0;
-          this._yOffset = 0;
-        }
-        break;
-      case "Lwr_JOYSTICK_UP":
-        this._yOffset = Math.min(0, this._yOffset + this.STEP_RATE);
-        break;
-      case "Lwr_JOYSTICK_DOWN":
-        // -27 from height for the chart info container
-        this._yOffset = Math.max(-((this._dimensions.chartH * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
-        break;
-      case "Lwr_JOYSTICK_LEFT":
-        this._xOffset = Math.min(0, this._xOffset + this.STEP_RATE);
-        break;
-      case "Lwr_JOYSTICK_RIGHT":
-        this._xOffset = Math.max(-((this._dimensions.chartW * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
-        break;
-      default:
-        this._isDirty = false;
-        handled = false;
-        break;
-    }
-    return handled;
-  }
-
-  show(): void {
-    this.fitCanvasToContainer(this._canvas);
-    this._isDirty = true;
-    this.style.visibility = "visible";
-  }
-
-  hide(): void {
-    this.style.visibility = "hidden";
+  drawRect(ctx: CanvasRenderingContext2D) {
+    ctx.strokeStyle = "green";
+    ctx.lineWidth = 4;
+    const scrollGapX = this._dimensions.chartW - this._canvas.width;
+    const scrollGapY = this._dimensions.chartH - this._canvas.height;
+    const scrollPercX = scrollGapX === 0 ? 0 : Math.abs(((scrollGapX - (scrollGapX - this._xOffset)) / scrollGapX));
+    const scrollPercY = scrollGapY === 0 ? 0 : Math.abs(((scrollGapY - (scrollGapY - this._yOffset)) / scrollGapY));
+    const rectW = this._canvas.width * 0.6;
+    const rectH = this._canvas.height * 0.6;
+    const rectScrollGapX = this._canvas.width - rectW;
+    const rectScrollGapY = this._canvas.height - rectH;
+    ctx.strokeRect(rectScrollGapX * (scrollPercX) + 2, rectScrollGapY * (scrollPercY) + 2, rectW, rectH);
   }
 
   private scaleImgToFit(): void {
@@ -187,6 +157,52 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       ctx.translate(-transX, -transY);
       ctx.rotate(-rot);
     }
+  }
+
+  onEvent(event: string): boolean {
+    if (!this.isVisible) {
+      return false;
+    }
+    this._isDirty = true;
+    let handled = true;
+    switch (event) {
+      case "Lwr_Push_ZOOM_INC":
+      case "Lwr_Push_ZOOM_DEC":
+        this._zoom = this._zoom === 1 ? 2.3 : 1;
+        if (this._zoom === 1) {
+          this._xOffset = 0;
+          this._yOffset = 0;
+        }
+        break;
+      case "Lwr_JOYSTICK_UP":
+        this._yOffset = Math.min(0, this._yOffset + this.STEP_RATE);
+        break;
+      case "Lwr_JOYSTICK_DOWN":
+        // -27 from height for the chart info container
+        this._yOffset = Math.max(-((this._dimensions.chartH * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
+        break;
+      case "Lwr_JOYSTICK_LEFT":
+        this._xOffset = Math.min(0, this._xOffset + this.STEP_RATE);
+        break;
+      case "Lwr_JOYSTICK_RIGHT":
+        this._xOffset = Math.max(-((this._dimensions.chartW * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
+        break;
+      default:
+        this._isDirty = false;
+        handled = false;
+        break;
+    }
+    return handled;
+  }
+
+  show(): void {
+    this.fitCanvasToContainer(this._canvas);
+    this._isDirty = true;
+    this.style.visibility = "visible";
+  }
+
+  hide(): void {
+    this.style.visibility = "hidden";
   }
 
   private fitCanvasToContainer(canvas: HTMLCanvasElement): void {
