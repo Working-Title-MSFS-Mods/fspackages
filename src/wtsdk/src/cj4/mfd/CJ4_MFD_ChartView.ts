@@ -84,7 +84,9 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       if (this._srcImage.src !== "" && this._srcImage.src.indexOf("#") === -1) {
         this.drawImage(ctx);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this.drawRect(ctx);
+        if (this._zoom === 1) {
+          this.drawRect(ctx);
+        }
       } else {
         ctx.fillStyle = "#cccac8";
         ctx.textAlign = "center";
@@ -99,12 +101,12 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     ctx.lineWidth = 4;
     const scrollGapX = this._dimensions.chartW - this._canvas.width;
     const scrollGapY = this._dimensions.chartH - this._canvas.height;
-    const scrollPercX = scrollGapX === 0 ? 0 : Math.abs(((scrollGapX - (scrollGapX - this._xOffset)) / scrollGapX));
-    const scrollPercY = scrollGapY === 0 ? 0 : Math.abs(((scrollGapY - (scrollGapY - this._yOffset)) / scrollGapY));
+    const scrollPercX = scrollGapX === 0 ? 0 : Math.min(1, Math.abs(((scrollGapX - (scrollGapX - this._xOffset)) / scrollGapX)));
+    const scrollPercY = scrollGapY === 0 ? 0 : Math.min(1, Math.abs(((scrollGapY - (scrollGapY - this._yOffset)) / scrollGapY)));
     const rectW = this._canvas.width * 0.6;
     const rectH = this._canvas.height * 0.6;
-    const rectScrollGapX = this._canvas.width - rectW;
-    const rectScrollGapY = this._canvas.height - rectH;
+    const rectScrollGapX = this._canvas.width - rectW - 4;
+    const rectScrollGapY = this._canvas.height - rectH - 6;
     ctx.strokeRect(rectScrollGapX * (scrollPercX) + 2, rectScrollGapY * (scrollPercY) + 2, rectW, rectH);
   }
 
@@ -183,13 +185,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         break;
       case "Lwr_JOYSTICK_DOWN":
         // -27 from height for the chart info container
-        this._yOffset = Math.max(-((this._dimensions.chartH * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
+        this._yOffset = Math.max(-(this._dimensions.chartH * this._zoom - this._canvas.height), this._yOffset - this.STEP_RATE);
         break;
       case "Lwr_JOYSTICK_LEFT":
         this._xOffset = Math.min(0, this._xOffset + this.STEP_RATE);
         break;
       case "Lwr_JOYSTICK_RIGHT":
-        this._xOffset = Math.max(-((this._dimensions.chartW * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
+        this._xOffset = Math.max(-(this._dimensions.chartW * this._zoom - this._canvas.width), this._xOffset - this.STEP_RATE);
         break;
       default:
         this._isDirty = false;
