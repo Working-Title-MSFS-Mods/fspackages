@@ -519,16 +519,7 @@ class Jet_NDCompass extends HTMLElement {
                         if (backCourse)
                             deviation = -deviation;
 
-                        let didFreqJustTune = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
-                        console.log("Nav State " + didFreqJustTune);
                         let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
-                        let courseKnob = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString();
-                        if (didFreqJustTune === 3) {
-                            if (courseKnob != beacon.course) {
-                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course);
-                            this.setAttribute("course", beacon.course.toString());
-                            }
-                        }
                         this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         this.setAttribute("course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
@@ -593,9 +584,12 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
                         const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue("K:VOR1_SET", "number", course); //Sets the OBS so the LOC needle gets set to the correct course
+                            
                         if (navToNavTransferState === 3 || navToNavTransferState === 4) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
-
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(true);
                                 this.navPreset.setDisplayed(false);
