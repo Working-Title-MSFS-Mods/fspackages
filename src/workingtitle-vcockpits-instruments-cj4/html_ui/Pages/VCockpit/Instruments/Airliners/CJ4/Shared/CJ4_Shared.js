@@ -24,9 +24,12 @@ class CJ4_SystemContainer extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
-        if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
-            this.annunciations.addMessage(Annunciation_MessageType.WARNING, "INCOMPATIBLE LIVERY", () => true);
-        }
+
+        setTimeout(() => {
+            if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
+                this.annunciations.addMessage(Annunciation_MessageType.WARNING, "INCOMPATIBLE LIVERY", () => true);
+            }
+        }, 10000);
     }
     reboot() {
         if (this.warnings)

@@ -52,9 +52,11 @@ class CJ4_MFD extends BaseAirliners {
         this.modeChangeMask = this.getChildById("ModeChangeMask");
         this.maxUpdateBudget = 12;
 
-        if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
-            document.querySelector("#liverywarning").style.display = "";
-        }
+        setTimeout(() => {
+            if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
+                document.querySelector("#liverywarning").style.display = "";
+            }
+        }, 10000);
     }
     disconnectedCallback() {
     }
