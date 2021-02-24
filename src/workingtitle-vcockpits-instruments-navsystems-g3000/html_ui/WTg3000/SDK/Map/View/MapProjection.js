@@ -130,7 +130,8 @@ class WT_MapProjection {
     }
 
     set _target(target) {
-        this.__target.set(Math.max(-70, Math.min(70, target.lat)), target.long, 0);
+        // Clamp latitude between -89 and 89 to avoid nasty projection errors at latitude +/-90
+        this.__target.set(Math.max(-89, Math.min(89, target.lat)), target.long, 0);
     }
 
     /**

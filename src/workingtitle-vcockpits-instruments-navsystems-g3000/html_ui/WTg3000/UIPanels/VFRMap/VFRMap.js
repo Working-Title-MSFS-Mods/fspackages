@@ -620,12 +620,29 @@ class WT_VFRMapWT extends WT_VFRMap {
         this._scrollDelta.set(0, 0);
     }
 
+    /**
+     *
+     * @param {WT_GeoPoint} target
+     */
+    _handleLatitudeCompensation(target) {
+        let longDimensionFactor = Math.max(1, this.view.viewWidth / this.view.viewHeight);
+        let latDelta = this.model.range.asUnit(WT_Unit.GA_RADIAN) * Avionics.Utils.RAD2DEG * longDimensionFactor * 0.5;
+        let edgeLat = target.lat + (target.lat >= 0 ? 1 : -1) * latDelta;
+        if (Math.abs(edgeLat) > WT_VFRMapWT.MAX_LATITUDE) {
+            let compensatedLat = Math.max(0, WT_VFRMapWT.MAX_LATITUDE - latDelta) * (target.lat >= 0 ? 1 : -1);
+            target.set(compensatedLat, target.long);
+        }
+    }
+
     _updateTarget() {
         if (this.isFollowingAirplane()) {
             this.model.airplane.position(this._target);
         } else {
             this._scroll();
         }
+
+        this._handleLatitudeCompensation(this._target);
+
         this.model.target = this._target;
     }
 
@@ -647,6 +664,7 @@ class WT_VFRMapWT extends WT_VFRMap {
         this._updateView();
     }
 }
+WT_VFRMapWT.MAX_LATITUDE = 85;
 WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL = 3; // seconds
 WT_VFRMapWT.HOTKEY_SCROLL_STEP = 10;
 
