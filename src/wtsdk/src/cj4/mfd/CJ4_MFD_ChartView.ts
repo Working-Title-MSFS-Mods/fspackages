@@ -3,8 +3,8 @@ import { NG_Chart } from "../../types/navigraph";
 // TODO: split the actual viewer stuff from this class into a more generic viewer component for later reuse
 export class CJ4_MFD_ChartView extends HTMLElement {
 
-  private readonly _renderCd: number = 100;
-  private _renderTmr: number = 100;
+  private readonly _renderCd: number = 50;
+  private _renderTmr: number = 50;
 
   private _srcImage = new Image;
   private _planeImage = new Image;
@@ -18,10 +18,24 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private readonly STEP_RATE = 40;
   private _chartindexnumber: HTMLElement;
   private _chartprocidentifier: HTMLElement;
-  private _chartWidth: number;
-  private _chartHeight: number;
   public get isVisible(): boolean {
     return this.style.visibility === "visible";
+  }
+
+  private readonly _dimensions = {
+    chartid: "",
+    bboxBorder: 54,
+    bboxW: 0,
+    bboxH: 0,
+    imgRatio: 0,
+    chartW: 0,
+    chartH: 0,
+    scaleW: 0,
+    scaleH: 0,
+    planW: 0,
+    planH: 0,
+    pxPerLong: 0,
+    pxPerLat: 0,
   }
 
   connectedCallback(): void {
@@ -37,6 +51,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this._xOffset = 0;
     this._yOffset = 0;
     this._zoom = 1;
+    this.scaleImgToFit();
     this._isDirty = true;
   }
 
@@ -58,14 +73,12 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         return;
       }
       this._renderTmr = this._renderCd;
-
-      this.fitCanvasToContainer(this._canvas);
       this._isDirty = false;
       const ctx = this._canvas.getContext("2d");
       ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);
       if (this._srcImage.src !== "" && this._srcImage.src.indexOf("#") === -1) {
-        this.scaleImgToFit(this._canvas, ctx, this._srcImage);
+        this.drawImage(ctx);
       } else {
         ctx.fillStyle = "#cccac8";
         ctx.textAlign = "center";
@@ -95,13 +108,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         break;
       case "Lwr_JOYSTICK_DOWN":
         // -27 from height for the chart info container
-        this._yOffset = Math.max(-((this._chartHeight * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
+        this._yOffset = Math.max(-((this._dimensions.chartH * this._zoom) - (this._canvas.height - 27)), this._yOffset - this.STEP_RATE);
         break;
       case "Lwr_JOYSTICK_LEFT":
         this._xOffset = Math.min(0, this._xOffset + this.STEP_RATE);
         break;
       case "Lwr_JOYSTICK_RIGHT":
-        this._xOffset = Math.max(-((this._chartWidth * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
+        this._xOffset = Math.max(-((this._dimensions.chartW * this._zoom) - (this._canvas.width)), this._xOffset - this.STEP_RATE);
         break;
       default:
         this._isDirty = false;
@@ -112,6 +125,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   show(): void {
+    this.fitCanvasToContainer(this._canvas);
     this._isDirty = true;
     this.style.visibility = "visible";
   }
@@ -120,59 +134,58 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this.style.visibility = "hidden";
   }
 
-  private scaleImgToFit(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, img: HTMLImageElement): void {
-    if (img.width > 0) {
+  private scaleImgToFit(): void {
+    if (this._srcImage.width > 0) {
       // get bbox measures
-      const bboxX = 54; //;this._chart.planview.bbox_local[0];
-      const bboxY = 54; //this._chart.planview.bbox_local[3];
-      const bboxWidth = img.width - bboxX * 2; //this._chart.planview.bbox_local[2] - bboxX;
-      const bboxHeight = img.height - bboxY * 2; //this._chart.planview.bbox_local[1] - bboxY;
+      this._dimensions.bboxW = this._srcImage.width - (this._dimensions.bboxBorder * 2);
+      this._dimensions.bboxH = this._srcImage.height - (this._dimensions.bboxBorder * 2);
 
       // img fitting
-      const ratio = img.width / img.height;
-      this._chartWidth = canvas.width;
-      this._chartHeight = this._chartWidth / ratio;
-      if (img.width > img.height) {
-        this._chartHeight = canvas.height;
-        this._chartWidth = this._chartWidth * ratio;
+      const ratio = this._srcImage.width / this._srcImage.height;
+      this._dimensions.chartW = this._canvas.width;
+      this._dimensions.chartH = this._dimensions.chartW / ratio;
+      if (this._srcImage.width > this._srcImage.height) {
+        this._dimensions.chartH = this._canvas.height;
+        this._dimensions.chartW = this._dimensions.chartW * ratio;
       }
 
-      const scaleW = this._chartWidth / (img.width - (bboxX * 2));
-      const scaleH = this._chartHeight / (img.height - (bboxY * 2));
+      this._dimensions.scaleW = this._dimensions.chartW / (this._srcImage.width - (this._dimensions.bboxBorder * 2));
+      this._dimensions.scaleH = this._dimensions.chartH / (this._srcImage.height - (this._dimensions.bboxBorder * 2));
 
-      ctx.drawImage(img, bboxX, bboxY, bboxWidth, bboxHeight, 0, 0, this._chartWidth, this._chartHeight);
-
-      // georef
+      // georef measures
       if (this._chart.georef === true) {
-        // planepos
-        const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-        const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-
-        // if (long > this._chart.planview.bbox_local[0] && long < this._chart.planview.bbox_local[2] &&
-        //   lat > this._chart.planview.bbox_local[1] && lat < this._chart.planview.bbox_local[3]) {
-        const planW = this._chart.planview.bbox_local[2] - this._chart.planview.bbox_local[0];
-        const planH = this._chart.planview.bbox_local[1] - this._chart.planview.bbox_local[3];
-        const pxPerLong = planW / (this._chart.planview.bbox_geo[2] - this._chart.planview.bbox_geo[0]);
-        const pxPerLat = planH / (this._chart.planview.bbox_geo[3] - this._chart.planview.bbox_geo[1]);
-        let planeX = (long - this._chart.planview.bbox_geo[0]) * pxPerLong;
-        let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * pxPerLat;
-
-        // no idea why we need to offset more
-        planeX += (this._chart.planview.bbox_local[0]) - 54;
-        planeY += (this._chart.planview.bbox_local[3]) - 54;
-
-        const transX = Math.abs(planeX) * scaleW;
-        const transY = Math.abs(planeY) * scaleH;
-        const simTrack = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
-        const rot = Math.round(simTrack) * (Math.PI / 180);
-        ctx.translate(transX, transY);
-        ctx.rotate(rot);
-        const planeScale = this._zoom === 1 ? 1 : 1.5;
-        ctx.drawImage(this._planeImage, -20 / planeScale, -23.5 / planeScale, 40 / planeScale, 47 / planeScale);
-        ctx.translate(-transX, -transY);
-        ctx.rotate(-rot);
-        // }
+        this._dimensions.planW = this._chart.planview.bbox_local[2] - this._chart.planview.bbox_local[0];
+        this._dimensions.planH = this._chart.planview.bbox_local[1] - this._chart.planview.bbox_local[3];
+        this._dimensions.pxPerLong = this._dimensions.planW / (this._chart.planview.bbox_geo[2] - this._chart.planview.bbox_geo[0]);
+        this._dimensions.pxPerLat = this._dimensions.planH / (this._chart.planview.bbox_geo[3] - this._chart.planview.bbox_geo[1]);
       }
+    }
+  }
+
+  private drawImage(ctx: CanvasRenderingContext2D): void {
+    ctx.drawImage(this._srcImage, this._dimensions.bboxBorder, this._dimensions.bboxBorder, this._dimensions.bboxW, this._dimensions.bboxH, 0, 0, this._dimensions.chartW, this._dimensions.chartH);
+
+    if (this._chart.georef === true) {
+      // planepos
+      const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
+      const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
+      let planeX = (long - this._chart.planview.bbox_geo[0]) * this._dimensions.pxPerLong;
+      let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * this._dimensions.pxPerLat;
+
+      // no idea why we need to offset more
+      planeX += (this._chart.planview.bbox_local[0]) - this._dimensions.bboxBorder;
+      planeY += (this._chart.planview.bbox_local[3]) - this._dimensions.bboxBorder;
+
+      const transX = Math.abs(planeX) * this._dimensions.scaleW;
+      const transY = Math.abs(planeY) * this._dimensions.scaleH;
+      const simTrack = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+      const rot = Math.round(simTrack) * (Math.PI / 180);
+      ctx.translate(transX, transY);
+      ctx.rotate(rot);
+      const planeScale = this._zoom === 1 ? 1 : 1.5;
+      ctx.drawImage(this._planeImage, -20 / planeScale, -23.5 / planeScale, 40 / planeScale, 47 / planeScale);
+      ctx.translate(-transX, -transY);
+      ctx.rotate(-rot);
     }
   }
 
