@@ -22,6 +22,10 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     return this.style.visibility === "visible";
   }
 
+  public get isPortrait(): boolean {
+    return this._srcImage.height > this._srcImage.width;
+  }
+
   private readonly _dimensions = {
     chartid: "",
     bboxBorder: 54,
@@ -114,9 +118,9 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       const ratio = this._srcImage.width / this._srcImage.height;
       this._dimensions.chartW = this._canvas.width;
       this._dimensions.chartH = this._dimensions.chartW / ratio;
-      if (this._srcImage.width > this._srcImage.height) {
-        this._dimensions.chartH = this._canvas.height;
-        this._dimensions.chartW = this._dimensions.chartW * ratio;
+      if (!this.isPortrait) {
+        this._dimensions.chartH = this._canvas.height * 1.2;
+        this._dimensions.chartW = this._dimensions.chartW * ratio * 1.2;
       }
 
       this._dimensions.scaleW = this._dimensions.chartW / (this._srcImage.width - (this._dimensions.bboxBorder * 2));
@@ -168,7 +172,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     switch (event) {
       case "Lwr_Push_ZOOM_INC":
       case "Lwr_Push_ZOOM_DEC":
-        this._zoom = this._zoom === 1 ? 2.3 : 1;
+        this._zoom = this._zoom === 1 ? (this.isPortrait ? 2.0 : 1.6) : 1;
         if (this._zoom === 1) {
           this._xOffset = 0;
           this._yOffset = 0;
