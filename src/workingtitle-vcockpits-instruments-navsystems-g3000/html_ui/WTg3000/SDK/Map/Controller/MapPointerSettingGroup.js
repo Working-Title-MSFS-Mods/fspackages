@@ -19,7 +19,7 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
         this.addSetting(this._deltaXSetting);
         this.addSetting(this._deltaYSetting);
 
-        this._targetLatLong;
+        this._targetLatLong = new WT_GeoPoint(0, 0);
 
         this._lastTime = Date.now() / 1000;
         this._lastShow = false;
@@ -33,7 +33,7 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
     }
 
     getTargetLatLong() {
-        return this._targetLatLong;
+        return this._targetLatLong.readonly();
     }
 
     update() {
@@ -68,9 +68,9 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
                 this._deltaXSetting.setValue(0);
                 this._deltaYSetting.setValue(0);
 
-                this._targetLatLong = this.view.projection.invert(translate.add(this.view.projection.viewTarget));
+                this.view.projection.invert(translate.add(this.view.projection.viewTarget), this._targetLatLong);
             } else {
-                this._targetLatLong = this.view.projection.target;
+                this._targetLatLong.set(this.view.projection.target);
             }
         }
 
