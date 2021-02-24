@@ -39,7 +39,6 @@ class Jet_NDCompass extends HTMLElement {
         this._referenceMode = Jet_NDCompass_Reference.NONE;
         this._aircraft = Aircraft.A320_NEO;
         this._mapRange = 0;
-        this._itIsAlreadyTuned = 0;
     }
     static get dynamicAttributes() {
         return [
@@ -521,13 +520,13 @@ class Jet_NDCompass extends HTMLElement {
                             deviation = -deviation;
 
                         let didFreqJustTune = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        console.log("Nav State " + didFreqJustTune);
                         let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                         let courseKnob = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString();
-                        if (didFreqJustTune === 2) {
-                            if (courseKnob != beacon.course && this._itIsAlreadyTuned == 0) {
+                        if (didFreqJustTune === 3) {
+                            if (courseKnob != beacon.course) {
                             SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course);
                             this.setAttribute("course", beacon.course.toString());
-                            this._itIsAlreadyTuned = 1;
                             }
                         }
                         this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
