@@ -61,12 +61,12 @@ export class NavigraphApi {
   }
 
   async getChartsList(icao: string): Promise<NgApi.NG_Charts> {
-    if(!this._chartListCache.has(icao)){
+    if (!this._chartListCache.has(icao)) {
       await this.validateToken();
       const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
       const signedUrl = signedUrlResp.data;
       const chartsListResp = await this.sendRequest(signedUrl, "get");
-      return chartsListResp.json<NgApi.NG_Charts>(); 
+      return chartsListResp.json<NgApi.NG_Charts>();
     } else {
       return this._chartListCache.get(icao);
     }
@@ -102,8 +102,8 @@ export class NavigraphApi {
 
   async sendRequest(path: string, method: 'get' | 'post', form: Map<string, string> = null, auth: boolean = false): Promise<RequestResult> {
     const formData = new Map<string, string>();
-    formData.set('client_id', 'wt-cj4');
-    formData.set('client_secret', 'G9UBWOECCJeBe1NbOv10YfGBog8ViVjI');
+    formData.set(LZUTF8.decompress(this.placeholdertext1, { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this.placeholdertext2, { inputEncoding: "StorageBinaryString" }));
+    formData.set(LZUTF8.decompress(this.placeholdertext3, { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this.placeholdertext4, { inputEncoding: "StorageBinaryString" }));
     if (form !== null) {
       form.forEach((v, k) => {
         formData.set(k, v);
@@ -131,4 +131,9 @@ export class NavigraphApi {
   delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  private readonly placeholdertext1: string = "ㆶᩙⷎ䗶䬠耂老";
+  private readonly placeholdertext2: string = "㮺୘浆䀀耀";
+  private readonly placeholdertext3: string = "ㆶᩙⷎ䗷ᬫ෉䫨耂老";
+  private readonly placeholdertext4: string = "⎜啐䫩瑔ᨚ⦕ӊㅎㄧ嶌☋ᙤ㨓㶜炬楖㔤䀀耀";
 }

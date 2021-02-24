@@ -3,6 +3,9 @@ import { NG_Chart } from "../../types/navigraph";
 // TODO: split the actual viewer stuff from this class into a more generic viewer component for later reuse
 export class CJ4_MFD_ChartView extends HTMLElement {
 
+  private readonly _renderCd: number = 100;
+  private _renderTmr: number = 100;
+
   private _srcImage = new Image;
   private _planeImage = new Image;
   private _chart: NG_Chart = undefined;
@@ -39,8 +42,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
 
   loadChart(url: string = "", chart: NG_Chart = undefined): void {
     if (url !== "") {
-      // this._srcImage.setAttribute('crossOrigin','anonymous');
-      this._srcImage.src = url; //"/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/sample.png?cb=2";
+      this._srcImage.src = url;
     }
     if (chart !== undefined) {
       this._chart = chart;
@@ -50,9 +52,15 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   update(dTime: number): void {
-    if (this.isVisible && this._isDirty) {
+    if (this.isVisible) {
+      this._renderTmr -= dTime;
+      if (this._renderTmr > 0 && this._isDirty === false) {
+        return;
+      }
+      this._renderTmr = this._renderCd;
+
       this.fitCanvasToContainer(this._canvas);
-      // this._isDirty = false;
+      this._isDirty = false;
       const ctx = this._canvas.getContext("2d");
       ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);
@@ -160,9 +168,9 @@ export class CJ4_MFD_ChartView extends HTMLElement {
         ctx.translate(transX, transY);
         ctx.rotate(rot);
         const planeScale = this._zoom === 1 ? 1 : 1.5;
-        ctx.drawImage(this._planeImage, -20/planeScale, -23.5/planeScale, 40/planeScale, 47/planeScale);
+        ctx.drawImage(this._planeImage, -20 / planeScale, -23.5 / planeScale, 40 / planeScale, 47 / planeScale);
         ctx.translate(-transX, -transY);
-        ctx.rotate(-rot);        
+        ctx.rotate(-rot);
         // }
       }
     }

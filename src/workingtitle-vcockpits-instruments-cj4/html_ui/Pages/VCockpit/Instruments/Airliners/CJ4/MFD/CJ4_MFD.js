@@ -101,7 +101,7 @@ class CJ4_MFD extends BaseAirliners {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        this._chartView.update();
+        this._chartView.update(_deltaTime);
         this._chartIndex.updateData();
         if (this.allContainersReady()) {
 
