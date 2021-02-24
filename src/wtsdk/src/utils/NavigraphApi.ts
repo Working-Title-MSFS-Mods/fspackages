@@ -8,6 +8,8 @@ export class NavigraphApi {
   private _accessToken: string = "";
   private _accessTokenTimestamp: number = 0;
 
+  private _chartListCache: Map<string, NgApi.NG_Charts> = new Map();
+
   public get isAccountLinked(): boolean {
     this._refreshToken = WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
     return this._refreshToken !== "";
@@ -59,11 +61,15 @@ export class NavigraphApi {
   }
 
   async getChartsList(icao: string): Promise<NgApi.NG_Charts> {
-    await this.validateToken();
-    const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
-    const signedUrl = signedUrlResp.data;
-    const chartsListResp = await this.sendRequest(signedUrl, "get");
-    return chartsListResp.json<NgApi.NG_Charts>();
+    if(!this._chartListCache.has(icao)){
+      await this.validateToken();
+      const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
+      const signedUrl = signedUrlResp.data;
+      const chartsListResp = await this.sendRequest(signedUrl, "get");
+      return chartsListResp.json<NgApi.NG_Charts>(); 
+    } else {
+      return this._chartListCache.get(icao);
+    }
   }
 
   async linkAccount(): Promise<boolean> {
