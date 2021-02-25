@@ -523,7 +523,7 @@ class Jet_NDCompass extends HTMLElement {
                         let didFreqJustTune = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
                         let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                         let courseKnob = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString();
-                        if (didFreqJustTune === 4) {
+                        if (didFreqJustTune === 2) {
                             if (courseKnob != beacon.course && this._itIsAlreadyTuned == 0) {
                             SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course);
                             this.setAttribute("course", beacon.course.toString());
