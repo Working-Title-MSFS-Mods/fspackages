@@ -118,7 +118,7 @@ class WT_G3x5_NavMap {
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
