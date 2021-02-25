@@ -148,7 +148,6 @@ class WT_MapViewFlightPlanCanvasRenderer {
             type: "LineString",
             coordinates: [[start.long, start.lat], [end.long, end.lat]]
         };
-        context.beginPath();
         projectionRenderer.renderCanvas(geoJSON, context);
     }
 
@@ -162,9 +161,35 @@ class WT_MapViewFlightPlanCanvasRenderer {
     _pathRhumb(projectionRenderer, context, start, end) {
         let projectedStart = projectionRenderer.project(start, this._tempVector1);
         let projectedEnd = projectionRenderer.project(end, this._tempVector2);
+        context.moveTo(projectedStart.x, projectedStart.y);
+        context.lineTo(projectedEnd.x, projectedEnd.y);
+    }
+
+    /**
+     *
+     * @param {WT_MapProjectionRenderer} projectionRenderer
+     * @param {CanvasRenderingContext2D} context
+     * @param {WT_FlightPlanLeg} leg
+     * @param {WT_GeoPoint} previousEndpoint
+     */
+    _loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint) {
         context.beginPath();
-        context.moveTo(projectedStart);
-        context.lineTo(projectedEnd);
+        let step = leg.firstStep();
+        let from = previousEndpoint;
+        while (step) {
+            let to = step.endpoint;
+            switch (step.type) {
+                case WT_FlightPlanLegStep.Type.INITIAL:
+                case WT_FlightPlanLegStep.Type.DIRECT:
+                    this._pathGreatCircle(projectionRenderer, context, from, to);
+                    break;
+                case WT_FlightPlanLegStep.Type.HEADING:
+                    this._pathRhumb(projectionRenderer, context, from, to);
+                    break;
+            }
+            step = step.next();
+            from = to;
+        }
     }
 
     /**
@@ -172,17 +197,12 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
-     * @param {Boolean} useRhumb
-     * @param {WT_GeoPoint} endpoint
+     * @param {WT_FlightPlanLeg} leg
      * @param {WT_GeoPoint} previousEndpoint
      * @param {Boolean} isActive
      */
-    _renderLineStandard(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
-        if (useRhumb) {
-            this._pathRhumb(projectionRenderer, context, previousEndpoint, endpoint);
-        } else {
-            this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
-        }
+    _renderLineStandard(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
+        this._loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint);
 
         if (this.standardOutlineWidth > 0) {
             this._strokePath(context, (2 * this.standardOutlineWidth + this.standardStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor);
@@ -195,21 +215,12 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
-     * @param {Boolean} useRhumb
-     * @param {WT_GeoPoint} endpoint
+     * @param {WT_FlightPlanLeg} leg
      * @param {WT_GeoPoint} previousEndpoint
      * @param {Boolean} isActive
      */
-    _renderLineThin(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
-        if (useRhumb) {
-            this._pathRhumb(projectionRenderer, context, previousEndpoint, endpoint);
-        } else {
-            this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
-        }
-
-        if (this.thinOutlineWidth > 0) {
-
-        }
+    _renderLineThin(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
+        this._loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint);
 
         if (this.thinOutlineWidth > 0) {
             this._strokePath(context, (2 * this.thinOutlineWidth + this.thinStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor);
@@ -222,17 +233,12 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
-     * @param {Boolean} useRhumb
-     * @param {WT_GeoPoint} endpoint
+     * @param {WT_FlightPlanLeg} leg
      * @param {WT_GeoPoint} previousEndpoint
      * @param {Boolean} isActive
      */
-    _renderLineDotted(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
-        if (useRhumb) {
-            this._pathRhumb(projectionRenderer, context, previousEndpoint, endpoint);
-        } else {
-            this._pathGreatCircle(projectionRenderer, context, previousEndpoint, endpoint);
-        }
+    _renderLineDotted(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
+        this._loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint);
 
         let lineDash = this.dottedLineDash.map(e => state.dpiScale * e);
         if (this.dottedOutlineWidth > 0) {
@@ -271,17 +277,36 @@ class WT_MapViewFlightPlanCanvasRenderer {
         context.resetTransform();
     }
 
+    _drawArrowsFromLeg(projectionRenderer, context, leg, previousEndpoint, arrowWidth, arrowHeight, arrowSpacing) {
+        let step = leg.firstStep();
+        let from = previousEndpoint;
+        while (step) {
+            let to = step.endpoint;
+            switch (step.type) {
+                case WT_FlightPlanLegStep.Type.INITIAL:
+                case WT_FlightPlanLegStep.Type.DIRECT:
+                    // TODO: implement drawing arrows along great circle
+                    this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, from, to);
+                    break;
+                case WT_FlightPlanLegStep.Type.HEADING:
+                    this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, from, to);
+                    break;
+            }
+            step = step.next();
+            from = to;
+        }
+    }
+
     /**
      *
      * @param {WT_MapViewState} state
      * @param {WT_MapProjectionRenderer} projectionRenderer
      * @param {CanvasRenderingContext2D} context
-     * @param {Boolean} useRhumb
-     * @param {WT_GeoPoint} endpoint
+     * @param {WT_FlightPlanLeg} leg
      * @param {WT_GeoPoint} previousEndpoint
      * @param {Boolean} isActive
      */
-    _renderArrowsStandard(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
+    _renderArrowsStandard(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
         context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
         if (this.standardArrowOutlineWidth > 0) {
             context.lineWidth = this.standardArrowOutlineWidth * 2 * state.dpiScale;
@@ -292,12 +317,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
         let arrowHeight = this.standardArrowHeight * state.dpiScale;
         let arrowSpacing = this.standardArrowSpacing * state.dpiScale;
 
-        if (useRhumb) {
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, previousEndpoint, endpoint);
-        } else {
-            // TODO: implement drawing arrows along great circle
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, previousEndpoint, endpoint);
-        }
+        this._drawArrowsFromLeg(projectionRenderer, context, leg, previousEndpoint, arrowWidth, arrowHeight, arrowSpacing);
     }
 
     /**
@@ -321,12 +341,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
         let arrowHeight = this.altArrowHeight * state.dpiScale;
         let arrowSpacing = this.altArrowSpacing * state.dpiScale;
 
-        if (useRhumb) {
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.altArrowOutlineWidth > 0, previousEndpoint, endpoint);
-        } else {
-            // TODO: implement drawing arrows along great circle
-            this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.altArrowOutlineWidth > 0, previousEndpoint, endpoint);
-        }
+        this._drawArrowsFromLeg(projectionRenderer, context, leg, previousEndpoint, arrowWidth, arrowHeight, arrowSpacing);
     }
 
     _renderNone(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
@@ -354,25 +369,12 @@ class WT_MapViewFlightPlanCanvasRenderer {
         }
 
         let isActive = leg === this.getActiveLeg();
-        let useRhumb = false;
-        if (leg instanceof WT_FlightPlanProcedureLeg) {
-            switch (leg.procedureLeg.type) {
-                case WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE:
-                case WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING:
-                case WT_ProcedureLeg.Type.FLY_HEADING_TO_INTERCEPT:
-                case WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE:
-                    useRhumb = true;
-                    break;
-            }
-        }
-
         let style = this._legStyleChooser.chooseStyle(leg, this.getActiveLeg(), discontinuity);
         let renderFunc = this._legRenderFuncs[style];
-        if (renderFunc) {
-            renderFunc(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
-        } else {
-            this._renderLineStandard(state, projectionRenderer, context, useRhumb, leg.endpoint, previousEndpoint, isActive);
+        if (!renderFunc) {
+            renderFunc = this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_STANDARD];
         }
+        renderFunc(state, projectionRenderer, context, leg, previousEndpoint, isActive);
     }
 
     /**

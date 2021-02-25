@@ -31,7 +31,7 @@ class WT_GeoPoint {
 
     static _parseArgs(_1, _2) {
         let returnValue = undefined;
-        if (_1 !== undefined && typeof _1.lat === "number" && typeof _1.long === "number") {
+        if (_1 !== undefined && _1 !== null && typeof _1.lat === "number" && typeof _1.long === "number") {
             WT_GeoPoint._tempValue.lat = _1.lat;
             WT_GeoPoint._tempValue.long = _1.long;
             returnValue = WT_GeoPoint._tempValue;

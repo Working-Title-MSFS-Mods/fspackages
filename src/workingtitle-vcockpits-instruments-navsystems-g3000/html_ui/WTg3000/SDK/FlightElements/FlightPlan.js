@@ -1,6 +1,7 @@
 class WT_FlightPlan {
     constructor(icaoWaypointFactory) {
         this._icaoWaypointFactory = icaoWaypointFactory;
+        this._procedureLegFactory = new WT_FlightPlanProcedureLegFactory(icaoWaypointFactory);
 
         this._origin = new WT_FlightPlanOrigin();
         this._origin._setFlightPlan(this);
@@ -383,13 +384,13 @@ class WT_FlightPlan {
     async _buildLegsFromProcedure(procedureLegs, legs) {
         for (let i = 0; i < procedureLegs.count(); i++) {
             let previous = legs[legs.length - 1];
-            let previousFix = previous ? previous.fix : undefined;
+            let previousEndpoint = previous ? previous.endpoint : null;
             let currentProcLeg = procedureLegs.getByIndex(i);
             let nextProcLeg = procedureLegs.getByIndex(i + 1);
             try {
-                let fix = await currentProcLeg.waypointFix(this._icaoWaypointFactory, previousFix, nextProcLeg);
-                if (fix && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && fix.equals(previousFix))) {
-                    legs.push(new WT_FlightPlanProcedureLeg(currentProcLeg, fix));
+                let leg = await this._procedureLegFactory.create(currentProcLeg, previousEndpoint, nextProcLeg);
+                if (leg && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && leg.endpoint.equals(previousEndpoint))) {
+                    legs.push(leg);
                 }
             } catch (e) {}
         }
@@ -408,7 +409,7 @@ class WT_FlightPlan {
         let legs = [];
         if (runwayTransition) {
             let runway = runwayTransition.runway;
-            legs.push(new WT_FlightPlanWaypointFixLeg(new WT_CustomWaypoint(runway.designation, runway.end))); // runway fix
+            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_CustomWaypoint(runway.designation, runway.end))); // runway fix
             await this._buildLegsFromProcedure(runwayTransition.legs, legs);
         }
         await this._buildLegsFromProcedure(departure.commonLegs, legs);
@@ -562,7 +563,7 @@ class WT_FlightPlan {
             await this._buildLegsFromProcedure(transition.legs, legs);
         }
         await this._buildLegsFromProcedure(approach.finalLegs, legs);
-        legs.push(new WT_FlightPlanWaypointFixLeg(new WT_RunwayWaypoint(runway))); // runway fix
+        legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway))); // runway fix
         let eventData = {types: 0};
         this._changeApproach(new WT_FlightPlanApproach(approach, transitionIndex, legs), eventData);
         if (this.hasArrival()) {
@@ -769,7 +770,7 @@ class WT_FlightPlan {
                     throw new Error("Invalid enter and/or exit points.");
                 }
 
-                let element = new WT_FlightPlanAirwaySequence(airway, waypoints.slice(enterIndex, exitIndex + 1).map(waypoint => new WT_FlightPlanWaypointFixLeg(waypoint)));
+                let element = new WT_FlightPlanAirwaySequence(airway, waypoints.slice(enterIndex, exitIndex + 1).map(waypoint => new WT_FlightPlanDirectToWaypointLeg(waypoint)));
 
                 let eventData = {types: 0};
                 this._insertToSegment(segmentElement, [element], index, eventData);
@@ -795,7 +796,7 @@ class WT_FlightPlan {
                 if (index === undefined) {
                     index = segmentElement.length();
                 }
-                let elements = waypoints.map(waypoint => new WT_FlightPlanWaypointFixLeg(waypoint));
+                let elements = waypoints.map(waypoint => new WT_FlightPlanDirectToWaypointLeg(waypoint));
                 let eventData = {types: 0};
                 this._insertToSegment(segmentElement, elements, index, eventData);
                 this._updateFromSegment(segment);
@@ -1042,7 +1043,7 @@ WT_FlightPlanEvent.Type = {
 class WT_FlightPlanElement {
     /**
      * @param {WT_FlightPlanElement} [parent]
-     * @param {Number} [segment]
+     * @param {WT_FlightPlan.Segment} [segment]
      */
     constructor(parent, segment) {
         this._parent = null;
@@ -1118,9 +1119,13 @@ class WT_FlightPlanElement {
     _updateDistance() {
     }
 
+    _updateCumulativeDistance() {
+        this._cumulativeDistance.set(this.distance.asUnit(WT_Unit.GA_RADIAN) + (this._prev ? this._prev.cumulativeDistance.asUnit(WT_Unit.GA_RADIAN) : 0));
+    }
+
     _update() {
         this._updateDistance();
-        this._cumulativeDistance.set(this.distance.asUnit(WT_Unit.GA_RADIAN) + (this._prev ? this._prev.cumulativeDistance.asUnit(WT_Unit.GA_RADIAN) : 0));
+        this._updateCumulativeDistance();
     }
 
     /**
@@ -1158,9 +1163,20 @@ class WT_FlightPlanElement {
 }
 
 class WT_FlightPlanLeg extends WT_FlightPlanElement {
-    constructor(parent, segment, altitudeConstraint) {
+    /**
+     * @param {WT_FlightPlanLegStep} firstStep
+     * @param {WT_FlightPlanElement} [parent]
+     * @param {WT_FlightPlan.Segment} [segment]
+     * @param {WT_AltitudeConstraint} [altitudeConstraint]
+     */
+    constructor(firstStep, parent, segment, altitudeConstraint) {
         super(parent, segment);
 
+        /**
+         * @type {WT_FlightPlanLegStep}
+         */
+        this._firstStep = firstStep;
+        this._firstStep._setLeg(this);
         this._altitudeConstraint = altitudeConstraint ? altitudeConstraint : WT_AltitudeConstraint.NO_CONSTRAINT;
         this._desiredTrack;
         this._index = -1;
@@ -1232,17 +1248,230 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
         }
     }
 
+    _updateSteps() {
+        let currentStep = this.firstStep();
+        let prevStep = null;
+        while (currentStep) {
+            currentStep.update(prevStep ? prevStep.endpoint : (this._prev ? this._prev.endpoint : null));
+            if (currentStep.isLoop) {
+                break;
+            }
+            prevStep = currentStep;
+            currentStep = currentStep.next();
+        }
+    }
+
+    _updateDistance() {
+        this._distance.set(0);
+        let currentStep = this.firstStep();
+        while (currentStep) {
+            this._distance.add(currentStep.distance);
+            if (currentStep.isLoop) {
+                break;
+            }
+            currentStep = currentStep.next();
+        }
+    }
+
     _updateDTK() {
-        this._desiredTrack = (this._prev && this._prev.endpoint) ? this._prev.endpoint.bearingTo(this.endpoint) : undefined;
+        //this._desiredTrack = (this._prev && this._prev.endpoint) ? this._prev.endpoint.bearingTo(this.endpoint) : undefined;
     }
 
     _update() {
+        this._updateSteps();
         super._update();
         this._updateDTK();
     }
 
+    /**
+     *
+     * @returns {WT_FlightPlanLegStep}
+     */
+    firstStep() {
+        return this._firstStep;
+    }
+
     legs() {
         return [this];
+    }
+
+    equals(other) {
+        return (other instanceof WT_FlightPlanLeg) && this.firstStep().equals(other.firstStep());
+    }
+}
+
+class WT_FlightPlanLegStep {
+    constructor(type) {
+        this._leg = null;
+        this._type = type;
+        this._next = null;
+        this._isLoop = false;
+
+        this._distance = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_FlightPlanLeg} leg - the flight plan leg of which this step is a part.
+     * @type {WT_FlightPlanLeg}
+     */
+    get leg() {
+        return this._leg;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_FlightPlanLegStep.Type} type - the type of this leg step.
+     * @type {WT_FlightPlanLegStep.Type}
+     */
+    get type() {
+        return this._type;
+    }
+
+    /**
+     * @readonly
+     * @property {Boolean} isLoop - whether this leg step loops back to itself or a previous leg step.
+     * @type {Boolean}
+     */
+    get isLoop() {
+        return this._isLoop;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GeoPointReadOnly} endpoint
+     * @type {WT_GeoPointReadOnly}
+     */
+    get endpoint() {
+        return undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} distance
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get distance() {
+        return this._distance.readonly();
+    }
+
+    /**
+     *
+     * @returns {WT_FlightPlanLegStep}
+     */
+    next() {
+        return this._next;
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    _setLeg(leg) {
+        this._leg = leg;
+        if (this.next()) {
+            this.next()._setLeg(leg);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLegStep} step
+     * @param {Boolean} isLoop
+     */
+    _setNext(step, isLoop) {
+        this._next = step;
+        this._isLoop = isLoop;
+    }
+
+    /**
+     *
+     * @param {WT_GeoPoint} prevEndpoint
+     */
+    update(prevEndpoint) {
+    }
+
+    equals(other) {
+        return (other instanceof WT_FlightPlanLegStep) && this.type === other.type && (this.next() ? this.next().equals(other.next()) : !other.next());
+    }
+
+    copy() {
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_FlightPlanLegStep.Type = {
+    INITIAL: 0,
+    DIRECT: 1,
+    HEADING: 2,
+    TURN: 3
+};
+
+class WT_FlightPlanLegSimpleStep extends WT_FlightPlanLegStep {
+    constructor(endpoint, type) {
+        super(type);
+
+        this._endpoint = new WT_GeoPoint(endpoint.lat, endpoint.long);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_GeoPointReadOnly} endpoint
+     * @type {WT_GeoPointReadOnly}
+     */
+    get endpoint() {
+        return this._endpoint.readonly();
+    }
+
+    /**
+     *
+     * @param {WT_GeoPoint} prevEndpoint
+     */
+    update(prevEndpoint) {
+        this._distance.set(prevEndpoint ? prevEndpoint.distance(this.endpoint) : 0);
+    }
+
+    equals(other) {
+        return super.equals(other) && this.endpoint.equals(other.endpoint);
+    }
+}
+
+class WT_FlightPlanLegInitialStep extends WT_FlightPlanLegSimpleStep {
+    constructor(location) {
+        super(location, WT_FlightPlanLegStep.Type.INITIAL);
+    }
+
+    copy() {
+        return new WT_FlightPlanLegInitialStep(this.endpoint);
+    }
+}
+
+class WT_FlightPlanLegDirectStep extends WT_FlightPlanLegSimpleStep {
+    constructor(endpoint) {
+        super(endpoint, WT_FlightPlanLegStep.Type.DIRECT);
+    }
+
+    copy() {
+        return new WT_FlightPlanLegDirectStep(this.endpoint);
+    }
+}
+
+class WT_FlightPlanLegHeadingStep extends WT_FlightPlanLegSimpleStep {
+    constructor(endpoint) {
+        super(endpoint, WT_FlightPlanLegStep.Type.HEADING);
+    }
+
+    /**
+     *
+     * @param {WT_GeoPoint} prevEndpoint
+     */
+    update(prevEndpoint) {
+        this._distance.set(prevEndpoint ? prevEndpoint.distanceRhumb(this.endpoint) : 0);
+    }
+
+    copy() {
+        return new WT_FlightPlanLegHeadingStep(this.endpoint);
     }
 }
 
@@ -1250,9 +1479,12 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
     /**
      *
      * @param {WT_Waypoint} fix
+     * @param {WT_FlightPlanLeg} firstStep
+     * @param {WT_FlightPlanElement} [parent]
+     * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(fix, parent, segment) {
-        super(parent, segment);
+    constructor(fix, firstStep, parent, segment) {
+        super(firstStep, parent, segment);
         this._fix = fix;
     }
 
@@ -1264,17 +1496,45 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
     get fix() {
         return this._fix;
     }
+}
 
-    _updateDistance() {
-        this._distance.set((this._prev && this._prev.endpoint) ? this.endpoint.distance(this._prev.endpoint) : 0);
+class WT_FlightPlanInitialWaypointLeg extends WT_FlightPlanWaypointFixLeg {
+    /**
+     *
+     * @param {WT_Waypoint} fix
+     * @param {WT_FlightPlanElement} [parent]
+     * @param {WT_FlightPlan.Segment} [segment]
+     */
+    constructor(fix, parent, segment) {
+        super(fix, new WT_FlightPlanLegInitialStep(fix.location), parent, segment);
     }
 
     copy() {
-        return new WT_FlightPlanWaypointFixLeg(this.fix, null, this._segment);
+        return new WT_FlightPlanInitialWaypointLeg(this.fix, null, this._segment);
     }
 
     equals(other) {
-        return (other instanceof WT_FlightPlanWaypointFixLeg) && this.fix.uniqueID === other.fix.uniqueID;
+        return (other instanceof WT_FlightPlanInitialWaypointLeg) && this.fix.uniqueID === other.fix.uniqueID;
+    }
+}
+
+class WT_FlightPlanDirectToWaypointLeg extends WT_FlightPlanWaypointFixLeg {
+    /**
+     *
+     * @param {WT_Waypoint} fix
+     * @param {WT_FlightPlanElement} [parent]
+     * @param {WT_FlightPlan.Segment} [segment]
+     */
+    constructor(fix, parent, segment) {
+        super(fix, new WT_FlightPlanLegDirectStep(fix.location), parent, segment);
+    }
+
+    copy() {
+        return new WT_FlightPlanDirectToWaypointLeg(this.fix, null, this._segment);
+    }
+
+    equals(other) {
+        return (other instanceof WT_FlightPlanDirectToWaypointLeg) && this.fix.uniqueID === other.fix.uniqueID;
     }
 }
 
@@ -1282,11 +1542,13 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
     /**
      * @param {WT_ProcedureLeg} procedureLeg
      * @param {WT_Waypoint} fix
+     * @param {WT_FlightPlanLegStep} firstStep
+     * @param {WT_FlightPlanElement} [parent]
+     * @param {WT_FlightPlan.Segment} [segment]
      */
-    constructor(procedureLeg, fix, parent, segment) {
-        super(fix, parent, segment);
+    constructor(procedureLeg, fix, firstStep, parent, segment) {
+        super(fix, firstStep, parent, segment);
         this._procedureLeg = procedureLeg;
-
         this.setAltitudeConstraint(procedureLeg.altitudeConstraint);
     }
 
@@ -1309,11 +1571,11 @@ class WT_FlightPlanProcedureLeg extends WT_FlightPlanWaypointFixLeg {
     }
 
     copy() {
-        return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.fix, null, this._segment);
+        return new WT_FlightPlanProcedureLeg(this.procedureLeg, this.fix, this.firstStep().copy(), null, this._segment);
     }
 
     equals(other) {
-        return super.equals(other) && (other instanceof WT_FlightPlanProcedureLeg);
+        return (other instanceof WT_FlightPlanProcedureLeg) && super.equals(other);
     }
 }
 
@@ -1492,18 +1754,18 @@ class WT_FlightPlanOriginDest extends WT_FlightPlanSegment {
     leg() {
         return this._elements.length > 0 ? this._elements[0] : null;
     }
-
-    _setWaypoint(waypoint) {
-        this._clear();
-        if (waypoint) {
-            this._insert(new WT_FlightPlanWaypointFixLeg(waypoint, this), 0);
-        }
-    }
 }
 
 class WT_FlightPlanOrigin extends WT_FlightPlanOriginDest {
     constructor(waypoint) {
         super(waypoint, WT_FlightPlan.Segment.ORIGIN);
+    }
+
+    _setWaypoint(waypoint) {
+        this._clear();
+        if (waypoint) {
+            this._insert(new WT_FlightPlanInitialWaypointLeg(waypoint, this), 0);
+        }
     }
 
     copy() {
@@ -1519,6 +1781,13 @@ class WT_FlightPlanOrigin extends WT_FlightPlanOriginDest {
 class WT_FlightPlanDestination extends WT_FlightPlanOriginDest {
     constructor(waypoint) {
         super(waypoint, WT_FlightPlan.Segment.DESTINATION);
+    }
+
+    _setWaypoint(waypoint) {
+        this._clear();
+        if (waypoint) {
+            this._insert(new WT_FlightPlanDirectToWaypointLeg(waypoint, this), 0);
+        }
     }
 
     copy() {
@@ -1644,5 +1913,343 @@ class WT_FlightPlanApproach extends WT_FlightPlanProcedureSegment {
                this.procedure.name === other.procedure.name &&
                this.transitionIndex === other.transitionIndex &&
                super.equals(other);
+    }
+}
+
+class WT_FlightPlanProcedureLegFactory {
+    /**
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     */
+    constructor(icaoWaypointFactory) {
+        this._icaoWaypointFactory = icaoWaypointFactory;
+        this._initLegMakers();
+    }
+
+    _initLegMakers() {
+        this._legMakers = [];
+        this._legMakers[WT_ProcedureLeg.Type.INITIAL_FIX] = new WT_FlightPlanInitialFixMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FIX] = new WT_FlightPlanFlyToFixMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_DISTANCE_FROM_REFERENCE] = new WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_REFERENCE_RADIAL_FOR_DISTANCE] = new WT_FlightPlanFlyReferenceRadialForDistanceMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_HEADING_TO_INTERCEPT] = new WT_FlightPlanFlyHeadingToInterceptMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING] = new WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_TO_BEARING_DISTANCE_FROM_REFERENCE] = new WT_FlightPlanFlyToBearingDistanceFromReferenceMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE] = new WT_FlightPlanFlyHeadingToAltitudeMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.FLY_VECTORS] = new WT_FlightPlanFlyVectorsMaker(this._icaoWaypointFactory);
+    }
+
+    /**
+     *
+     * @param {WT_ProcedureLeg} procedureLeg
+     * @returns {Promise<WT_FlightPlanProcedureLeg>}
+     */
+    async create(procedureLeg, previousEndpoint, nextLeg, parent, segment) {
+        return this._legMakers[procedureLeg.type].create(procedureLeg, previousEndpoint, nextLeg, parent, segment);
+    }
+}
+
+class WT_FlightPlanProcedureLegMaker {
+    /**
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     */
+    constructor(icaoWaypointFactory) {
+        this._icaoWaypointFactory = icaoWaypointFactory;
+    }
+
+    /**
+     * Parses a procedure leg definition to generate a terminator fix and a flight plan leg step sequence.
+     * @param {WT_ProcedureLeg} procedureLeg - a procedure leg definition.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan, if any.
+     * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan, if any.
+     * @returns {Promise<{fix: WT_Waypoint, firstStep: WT_FlightPlanLegStep}>}
+     */
+    async _parse(procedureLeg, previousEndpoint, nextLeg) {
+        return await Promise.resolve(undefined);
+    }
+
+    async create(procedureLeg, previousEndpoint, nextLeg, parent, segment) {
+        let results = await this._parse(procedureLeg, previousEndpoint, nextLeg);
+        return new WT_FlightPlanProcedureLeg(procedureLeg, results.fix, results.firstStep, parent, segment);
+    }
+}
+
+class WT_FlightPlanInitialFixMaker extends WT_FlightPlanProcedureLegMaker {
+    /**
+     * Parses a procedure leg definition to generate a terminator fix and a flight plan leg step sequence.
+     * @param {WT_InitialFix} procedureLeg - a procedure leg definition.
+     * @returns {Promise<{fix: WT_Waypoint, firstStep: WT_FlightPlanLegStep}>}
+     */
+    async _parse(procedureLeg) {
+        let fix = await this._icaoWaypointFactory.getWaypoint(procedureLeg.fixICAO);
+        let firstStep = new WT_FlightPlanLegInitialStep(fix.location);
+        return {fix: fix, firstStep: firstStep};
+    }
+}
+
+class WT_FlightPlanProcedureLegDirectToFixMaker extends WT_FlightPlanProcedureLegMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_ProcedureLeg} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan, if any.
+     * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan, if any.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint, nextLeg) {
+    }
+
+    /**
+     * Parses a procedure leg definition to generate a terminator fix and a flight plan leg step sequence.
+     * @param {WT_ProcedureLeg} procedureLeg - a procedure leg definition.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan, if any.
+     * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan, if any.
+     * @returns {Promise<{fix: WT_Waypoint, firstStep: WT_FlightPlanLegStep}>}
+     */
+    async _parse(procedureLeg, previousEndpoint, nextLeg) {
+        let fix = await this._calculateFix(procedureLeg, previousEndpoint, nextLeg);
+        let firstStep = new WT_FlightPlanLegDirectStep(fix.location);
+        return {fix: fix, firstStep: firstStep};
+    }
+}
+
+class WT_FlightPlanProcedureLegHeadingToFixMaker extends WT_FlightPlanProcedureLegMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_ProcedureLeg} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan, if any.
+     * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan, if any.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint, nextLeg) {
+    }
+
+    /**
+     * Parses a procedure leg definition to generate a terminator fix and a flight plan leg step sequence.
+     * @param {WT_ProcedureLeg} procedureLeg - a procedure leg definition.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan, if any.
+     * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan, if any.
+     * @returns {Promise<{fix: WT_Waypoint, firstStep: WT_FlightPlanLegStep}>}
+     */
+    async _parse(procedureLeg, previousEndpoint, nextLeg) {
+        let fix = await this._calculateFix(procedureLeg, previousEndpoint, nextLeg);
+        let firstStep = new WT_FlightPlanLegHeadingStep(fix.location);
+        return {fix: fix, firstStep: firstStep};
+    }
+}
+
+class WT_FlightPlanFlyToFixMaker extends WT_FlightPlanProcedureLegDirectToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyToFix} procedureLeg - a procedure leg.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg) {
+        return await this._icaoWaypointFactory.getWaypoint(procedureLeg.fixICAO);
+    }
+}
+
+class WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyHeadingUntilDistanceFromReference} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint) {
+        let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
+        let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+
+        // because I'm not smart enough to derive the closed-form solution, we will approximate using small circle intersection,
+        // then iterate to find the solution numerically
+        let solutions = [new WT_GVector3(0, 0, 0), new WT_GVector3(0, 0, 0)];
+        let path = WT_GreatCircle.createFromPointBearing(previousEndpoint, courseTrue);
+        let circle = WT_SmallCircle.createFromPoint(reference.location, targetDistance);
+        path.intersection(circle, solutions);
+        if (solutions[0].length === 0) {
+            throw new Error("Invalid procedure leg definition.");
+        }
+
+        let solution = WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker._tempGeoPoint1.setFromCartesian(solutions[0]);
+        if (solutions[1].length > 0) {
+            let alternate = WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker._tempGeoPoint2.setFromCartesian(solutions[1]);
+            let headingTo1 = previousEndpoint.bearingTo(solution);
+            let headingTo2 = previousEndpoint.bearingTo(alternate);
+            let delta1 = Math.abs(headingTo1 - courseTrue);
+            let delta2 = Math.abs(headingTo2 - courseTrue);
+            delta1 = Math.min(delta1, 360 - delta1);
+            delta2 = Math.min(delta2, 360 - delta2);
+            if (delta2 < delta1) {
+                solution = alternate;
+            }
+        }
+
+        let a = previousEndpoint.distance(reference.location);
+        let aSquared = a * a;
+        solution = solution.set(previousEndpoint).offsetRhumb(courseTrue, b, true);
+        let c = reference.location.distance(solution);
+        let previousFixBearingFromOrigin = previousEndpoint.bearingFrom(reference.location);
+        let theta = Math.abs(180 - (courseTrue - previousFixBearingFromOrigin)) * Avionics.Utils.DEG2RAD;
+        let cosTheta = Math.cos(theta);
+        while (Math.abs(c - targetDistance) > WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker.FIX_TOLERANCE) {
+            let b = previousEndpoint.distance(solution);
+            let bSquared = b * b;
+
+            let targetFactor = targetDistance / c;
+            let term1 = a * b * cosTheta;
+            let term2 = Math.sqrt(bSquared * (aSquared * cosTheta * cosTheta - aSquared + targetFactor * targetFactor * c * c));
+            let bFactor1 = (term1 + term2) / bSquared;
+            let bFactor2 = (term1 - term2) / bSquared;
+            let bFactorSolution;
+            if (bFactor1 > 0) {
+                bFactorSolution = bFactor1;
+            } else if (bFactor2 > 0) {
+                bFactorSolution = bFactor2;
+            } else {
+                break;
+            }
+            solution = solution.set(previousEndpoint).offsetRhumb(courseTrue, b * bFactorSolution, true);
+            c = reference.location.distance(solution);
+        }
+
+        return new WT_CustomWaypoint(procedureLeg.procedure.name, solution);
+    }
+}
+WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker._tempGeoPoint1 = new WT_GeoPoint(0, 0);
+WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker._tempGeoPoint2 = new WT_GeoPoint(0, 0);
+WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker.FIX_TOLERANCE = WT_Unit.METER.convert(100, WT_Unit.GA_RADIAN);
+
+class WT_FlightPlanFlyReferenceRadialForDistanceMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyReferenceRadialForDistance} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint) {
+        if (procedureLeg.fixICAO) {
+            try {
+                let fix = await this._icaoWaypointFactory.getWaypoint(procedureLeg.fixICAO);
+                return fix;
+            } catch (e) {}
+        }
+
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+
+        let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
+        let fix = WT_FlightPlanFlyReferenceRadialForDistanceMaker._tempGeoPoint.set(previousEndpoint).offsetRhumb(courseTrue, targetDistance);
+
+        return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
+    }
+}
+WT_FlightPlanFlyReferenceRadialForDistanceMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
+
+class WT_FlightPlanFlyHeadingToInterceptMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyHeadingToIntercept} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
+     * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint, nextLeg) {
+        let reference;
+        switch (nextLeg.type) {
+            case WT_ProcedureLeg.Type.INITIAL_FIX:
+            case WT_ProcedureLeg.Type.FLY_REFERENCE_RADIAL_FOR_DISTANCE:
+                if (!nextLeg.fixICAO) {
+                    break;
+                }
+            case WT_ProcedureLeg.Type.FIX:
+                reference = await this._icaoWaypointFactory.getWaypoint(nextLeg.fixICAO);
+                break;
+        }
+
+        if (!reference) {
+            throw new Error("Invalid procedure leg definition.");
+        }
+
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let nextLegCourseTrue = GeoMagnetic.INSTANCE.magneticToTrue(nextLeg.course, reference.location);
+
+        let path = WT_RhumbLine.createFromPointBearing(previousEndpoint, courseTrue);
+        let courseToIntercept = WT_RhumbLine.createFromPointBearing(reference.location, nextLegCourseTrue);
+
+        let intersection = path.intersectionGeoPoint(courseToIntercept, WT_FlightPlanFlyHeadingToInterceptMaker._tempGeoPoint);
+        if (!intersection) {
+            throw new Error("Invalid procedure leg definition.");
+        }
+
+        return new WT_CustomWaypoint(procedureLeg.procedure.name, intersection);
+    }
+}
+WT_FlightPlanFlyHeadingToInterceptMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
+
+class WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyHeadingUntilReferenceRadialCrossing} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint) {
+        let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let radialTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.radial, reference.location);
+
+        let path = WT_RhumbLine.createFromPointBearing(previousEndpoint, courseTrue);
+        let radial = WT_RhumbLine.createFromPointBearing(reference.location, radialTrue);
+
+        let intersection = path.intersectionGeoPoint(radial, WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker._tempGeoPoint);
+        if (!intersection) {
+            throw new Error("Invalid procedure leg definition.");
+        }
+
+        return new WT_CustomWaypoint(procedureLeg.procedure.name, intersection);
+    }
+}
+WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
+
+class WT_FlightPlanFlyToBearingDistanceFromReferenceMaker extends WT_FlightPlanProcedureLegDirectToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyToBearingDistanceFromReference} procedureLeg - a procedure leg.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg) {
+        let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, reference.location);
+
+        let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
+        let fix = WT_FlightPlanFlyToBearingDistanceFromReferenceMaker._tempGeoPoint.set(reference.location).offset(courseTrue, targetDistance);
+
+        return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
+    }
+}
+WT_FlightPlanFlyToBearingDistanceFromReferenceMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
+
+class WT_FlightPlanFlyHeadingToAltitudeMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyHeadingToAltitude} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint) {
+        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let targetDistance = procedureLeg.altitudeConstraint.floor.asUnit(WT_Unit.FOOT) / 500;
+        let fix = previousEndpoint.offsetRhumb(courseTrue, WT_Unit.NMILE.convert(targetDistance, WT_Unit.GA_RADIAN));
+        return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
+    }
+}
+
+class WT_FlightPlanFlyVectorsMaker extends WT_FlightPlanProcedureLegDirectToFixMaker {
+    /**
+     * Calculates a terminator fix for a procedure leg.
+     * @param {WT_FlyVectors} procedureLeg - a procedure leg.
+     * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
+     * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
+     */
+    async _calculateFix(procedureLeg, previousEndpoint) {
+        return new WT_CustomWaypoint("VECTORS", previousEndpoint);
     }
 }
