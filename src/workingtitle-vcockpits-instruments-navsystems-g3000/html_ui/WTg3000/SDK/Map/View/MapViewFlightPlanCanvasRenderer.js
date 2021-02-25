@@ -148,7 +148,22 @@ class WT_MapViewFlightPlanCanvasRenderer {
             type: "LineString",
             coordinates: [[start.long, start.lat], [end.long, end.lat]]
         };
-        projectionRenderer.renderCanvas(geoJSON, context);
+        let path = projectionRenderer.renderSVG(geoJSON, context);
+        if (!path) {
+            return;
+        }
+        path = path.replace(/^M/,"L");
+        let pattern = /([LM])(-?\d+(\.\d*)?(e-?\d+)?),(-?\d+(\.\d*)?(e-?\d+)?)/g;
+        let result;
+        while ((result = pattern.exec(path)) !== null) {
+            let x = parseFloat(result[2]);
+            let y = parseFloat(result[5]);
+            if (result[1] === "M") {
+                context.moveTo(x, y);
+            } else {
+                context.lineTo(x, y);
+            }
+        }
     }
 
     /**
@@ -159,10 +174,8 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_GeoPoint} end
      */
     _pathRhumb(projectionRenderer, context, start, end) {
-        let projectedStart = projectionRenderer.project(start, this._tempVector1);
-        let projectedEnd = projectionRenderer.project(end, this._tempVector2);
-        context.moveTo(projectedStart.x, projectedStart.y);
-        context.lineTo(projectedEnd.x, projectedEnd.y);
+        let projected = projectionRenderer.project(end, this._tempVector1);
+        context.lineTo(projected.x, projected.y);
     }
 
     /**
@@ -178,14 +191,22 @@ class WT_MapViewFlightPlanCanvasRenderer {
         let from = previousEndpoint;
         while (step) {
             let to = step.endpoint;
-            switch (step.type) {
-                case WT_FlightPlanLegStep.Type.INITIAL:
-                case WT_FlightPlanLegStep.Type.DIRECT:
-                    this._pathGreatCircle(projectionRenderer, context, from, to);
-                    break;
-                case WT_FlightPlanLegStep.Type.HEADING:
-                    this._pathRhumb(projectionRenderer, context, from, to);
-                    break;
+            if (from) {
+                switch (step.type) {
+                    case WT_FlightPlanLegStep.Type.INITIAL:
+                    case WT_FlightPlanLegStep.Type.DIRECT:
+                        this._pathGreatCircle(projectionRenderer, context, from, to);
+                        break;
+                    case WT_FlightPlanLegStep.Type.HEADING:
+                        this._pathRhumb(projectionRenderer, context, from, to);
+                        break;
+                }
+            } else {
+                let projectedStart = projectionRenderer.project(to, this._tempVector1);
+                context.moveTo(projectedStart.x, projectedStart.y);
+            }
+            if (step.isLoop) {
+                break;
             }
             step = step.next();
             from = to;
@@ -291,6 +312,9 @@ class WT_MapViewFlightPlanCanvasRenderer {
                 case WT_FlightPlanLegStep.Type.HEADING:
                     this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, from, to);
                     break;
+            }
+            if (step.isLoop) {
+                break;
             }
             step = step.next();
             from = to;
