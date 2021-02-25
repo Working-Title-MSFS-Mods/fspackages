@@ -2,8 +2,12 @@
  * A renderer that draws a flight plan to an HTML canvas.
  */
 class WT_MapViewFlightPlanCanvasRenderer {
-    constructor(legStyleChooser) {
-        this._legStyleChooser = legStyleChooser;
+    /**
+     * @param {WT_MapViewFlightPlanLegCanvasStyler} legStyler - the leg styler to use for determining how to render
+     *                                                          the paths for individual flight plan legs.
+     */
+    constructor(legStyler) {
+        this._legStyler = legStyler;
 
         this._flightPlan = null;
         this._activeLeg = null;
@@ -17,22 +21,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
 
         this._needsRedraw = false;
 
-        this._legRenderFuncs = [];
-        this._initRenderFuncs();
-
         this._optsManager = new WT_OptionsManager(this, WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF);
-
-        this._tempVector1 = new WT_GVector2(0, 0);
-        this._tempVector2 = new WT_GVector2(0, 0);
-    }
-
-    _initRenderFuncs() {
-        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.NONE] = this._renderNone.bind(this);
-        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_STANDARD] = this._renderLineStandard.bind(this);
-        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_THIN] = this._renderLineThin.bind(this);
-        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_DOTTED] = this._renderLineDotted.bind(this);
-        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.ARROW_STANDARD] = this._renderArrowsStandard.bind(this);
-        this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.ARROW_ALT] = this._renderArrowsAlt.bind(this);
     }
 
     /**
@@ -42,6 +31,15 @@ class WT_MapViewFlightPlanCanvasRenderer {
      */
     get flightPlan() {
         return this._flightPlan;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapViewFlightPlanLegCanvasStyler} legStyler - this renderer's flight plan leg styler.
+     * @type {WT_MapViewFlightPlanLegCanvasStyler}
+     */
+    get legStyler() {
+        return this._legStyler;
     }
 
     /**
@@ -85,8 +83,8 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._needsRedraw = true;
     }
 
-    setOptions(options) {
-        this._optsManager.setOptions(options);
+    setOptions(opts) {
+        this._optsManager.setOptions(opts);
     }
 
     /**
@@ -125,6 +123,137 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._needsRedraw = true;
     }
 
+    /**
+     * Renders a single flight plan leg.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project and render
+     *                                                        the flight plan.
+     * @param {CanvasRenderingContext2D} context - the 2D rendering context of the canvas to which to render.
+     * @param {WT_GVector2[]} bounds - the boundaries of the canvas, represented as an array containing the coordinates
+     *                                 of the top-left corner at index 0 and the bottom-right corner at index 1.
+     * @param {WT_FlightPlanLeg} leg - the leg to render.
+     * @param {WT_GeoPoint} previousEndpoint - the terminator fix of the previous leg.
+     * @param {Boolean} discontinuity - whether the previous leg ended in a discontinuity.
+     */
+    _renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity) {
+        if (projectionRenderer.isInViewBounds(leg.fix.location, bounds, 0.05)) {
+            this._waypointsRendered.add(leg.fix);
+        }
+
+        if (!previousEndpoint) {
+            return;
+        }
+
+        let legRenderer = this._legStyler.chooseRenderer(leg, this.getActiveLeg(), discontinuity);
+        if (legRenderer) {
+            legRenderer.render(state, projectionRenderer, context, leg, previousEndpoint);
+        }
+    }
+
+    /**
+     * Renders the flight plan assigned to this renderer to an HTML canvas.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project and render
+     *                                                        the flight plan.
+     * @param {CanvasRenderingContext2D} context - the 2D rendering context of the canvas to which to render.
+     */
+    render(state, projectionRenderer, context) {
+        this._needsRedraw = false;
+
+        this._waypointsRendered.clear();
+
+        if (!this.flightPlan) {
+            return;
+        }
+
+        let bounds = projectionRenderer.viewClipExtent;
+        let origin = this.flightPlan.getOrigin().waypoint;
+        let destination = this.flightPlan.getDestination().waypoint;
+        if (origin && projectionRenderer.isInViewBounds(origin.location, bounds, 0.05)) {
+            this._waypointsRendered.add(origin);
+        }
+        if (destination && projectionRenderer.isInViewBounds(destination.location, bounds, 0.05)) {
+            this._waypointsRendered.add(destination);
+        }
+
+        let start = (this.getActiveLeg() && !this.drawPreviousLegs) ? this.getActiveLeg().index : 0;
+        let startPrevious = this._legs[start - 1];
+        let previousEndpoint = startPrevious ? startPrevious.endpoint : null;
+        let discontinuity = startPrevious ? startPrevious.discontinuity : false;
+        for (let i = start; i < this._legs.length; i++) {
+            let leg = this._legs[i];
+            this._renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity);
+            previousEndpoint = leg.endpoint;
+            discontinuity = leg.discontinuity;
+        }
+    }
+}
+WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
+    drawPreviousLegs: {default: true, auto: true}
+};
+
+/**
+ * Determines the style of flight plan legs by selecting an appropriate renderer for each leg.
+ * @abstract
+ */
+class WT_MapViewFlightPlanLegCanvasStyler {
+    constructor() {
+        this._optsManager = new WT_OptionsManager(this, {});
+    }
+
+    setOptions(opts) {
+        this._optsManager.setOptions(opts);
+    }
+
+    /**
+     * Selects an appropriate leg renderer to render a flight plan leg.
+     * @param {WT_FlightPlanLeg} leg - the flight plan leg to render.
+     * @param {WT_FlightPlanLeg} activeLeg - the active leg in the flight plan, or null if there is no active leg.
+     * @param {Boolean} discontinuity - whether the previous flight plan leg ended in a discontinuity.
+     * @returns {WT_MapViewFlightPlanLegCanvasRenderer} a leg renderer, or null if the leg should not be rendered.
+     */
+    chooseRenderer(leg, activeLeg, discontinuity) {
+    }
+}
+
+/**
+ * Renders flight plan legs to HTML canvas.
+ * @abstract
+ */
+class WT_MapViewFlightPlanLegCanvasRenderer {
+    /**
+     * Renders a flight plan leg.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project the flight plan
+     *                                                        leg path.
+     * @param {CanvasRenderingContext2D} context - the canvas context to which to render.
+     * @param {WT_FlightPlanLeg} leg - the flight plan leg to render.
+     * @param {WT_GeoPoint} previousEndpoint - the location at which the previous flight plan leg ended.
+     */
+    render(state, projectionRenderer, context, leg, previousEndpoint) {
+    }
+}
+
+/**
+ * Renders flight plan legs to HTML canvas as a simple line. The line's color, width, outline, and dash can
+ * be customized.
+ */
+class WT_MapViewFlightPlanLegCanvasLineRenderer extends WT_MapViewFlightPlanLegCanvasRenderer {
+    constructor() {
+        super();
+
+        this._optsManager = new WT_OptionsManager(this, WT_MapViewFlightPlanLegCanvasLineRenderer.OPTIONS_DEF);
+
+        this._tempVector1 = new WT_GVector2(0, 0);
+    }
+
+    /**
+     *
+     * @param {CanvasRenderingContext2D} context
+     * @param {Number} lineWidth
+     * @param {String|CanvasGradient|CanvasPattern} strokeStyle
+     * @param {Number[]} [lineDash]
+     */
     _strokePath(context, lineWidth, strokeStyle, lineDash) {
         context.lineWidth = lineWidth;
         context.strokeStyle = strokeStyle;
@@ -185,7 +314,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
      * @param {WT_FlightPlanLeg} leg
      * @param {WT_GeoPoint} previousEndpoint
      */
-    _loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint) {
+    _loadPath(projectionRenderer, context, leg, previousEndpoint) {
         context.beginPath();
         let step = leg.firstStep();
         let from = previousEndpoint;
@@ -214,58 +343,43 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
-     * @param {WT_FlightPlanLeg} leg
-     * @param {WT_GeoPoint} previousEndpoint
-     * @param {Boolean} isActive
+     * Renders a flight plan leg.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project the flight plan
+     *                                                        leg path.
+     * @param {CanvasRenderingContext2D} context - the canvas context to which to render.
+     * @param {WT_FlightPlanLeg} leg - the flight plan leg to render.
+     * @param {WT_GeoPoint} previousEndpoint - the location at which the previous flight plan leg ended.
      */
-    _renderLineStandard(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
-        this._loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint);
+    render(state, projectionRenderer, context, leg, previousEndpoint) {
+        this._loadPath(projectionRenderer, context, leg, previousEndpoint);
 
-        if (this.standardOutlineWidth > 0) {
-            this._strokePath(context, (2 * this.standardOutlineWidth + this.standardStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor);
+        if (this.outlineWidth > 0) {
+            this._strokePath(context, (2 * this.outlineWidth + this.strokeWidth) * state.dpiScale, this.outlineColor, this.dash);
         }
-        this._strokePath(context, this.standardStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor);
+        this._strokePath(context, this.strokeWidth * state.dpiScale, this.strokeColor, this.dash);
     }
+}
+WT_MapViewFlightPlanLegCanvasLineRenderer.OPTIONS_DEF = {
+    strokeWidth: {default: 6, auto: true},
+    strokeColor: {default: "white", auto: true},
+    outlineWidth: {default: 1, auto: true},
+    outlineColor: {default: "black", auto: true},
+    dash: {default: [], auto: true}
+};
 
-    /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
-     * @param {WT_FlightPlanLeg} leg
-     * @param {WT_GeoPoint} previousEndpoint
-     * @param {Boolean} isActive
-     */
-    _renderLineThin(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
-        this._loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint);
+/**
+ * Renders flight plan legs to HTML canvas as a series of arrows. The arrows' width, height, spacing, color, and
+ * outline can be customized.
+ */
+class WT_MapViewFlightPlanLegCanvasArrowRenderer extends WT_MapViewFlightPlanLegCanvasRenderer {
+    constructor() {
+        super();
 
-        if (this.thinOutlineWidth > 0) {
-            this._strokePath(context, (2 * this.thinOutlineWidth + this.thinStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor);
-        }
-        this._strokePath(context, this.thinStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor);
-    }
+        this._optsManager = new WT_OptionsManager(this, WT_MapViewFlightPlanLegCanvasArrowRenderer.OPTIONS_DEF);
 
-    /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
-     * @param {WT_FlightPlanLeg} leg
-     * @param {WT_GeoPoint} previousEndpoint
-     * @param {Boolean} isActive
-     */
-    _renderLineDotted(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
-        this._loadLinePathFromLeg(projectionRenderer, context, leg, previousEndpoint);
-
-        let lineDash = this.dottedLineDash.map(e => state.dpiScale * e);
-        if (this.dottedOutlineWidth > 0) {
-            this._strokePath(context, (2 * this.dottedOutlineWidth + this.dottedStrokeWidth) * state.dpiScale, isActive ? this.activeOutlineColor : this.inactiveOutlineColor, lineDash);
-        }
-        this._strokePath(context, this.dottedStrokeWidth * state.dpiScale, isActive ? this.activeColor : this.inactiveColor, lineDash);
+        this._tempVector1 = new WT_GVector2(0, 0);
+        this._tempVector2 = new WT_GVector2(0, 0);
     }
 
     _drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, useStroke, start, end) {
@@ -307,10 +421,10 @@ class WT_MapViewFlightPlanCanvasRenderer {
                 case WT_FlightPlanLegStep.Type.INITIAL:
                 case WT_FlightPlanLegStep.Type.DIRECT:
                     // TODO: implement drawing arrows along great circle
-                    this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, from, to);
+                    this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.outlineWidth > 0, from, to);
                     break;
                 case WT_FlightPlanLegStep.Type.HEADING:
-                    this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.standardArrowOutlineWidth > 0, from, to);
+                    this._drawArrowsRhumb(projectionRenderer, context, arrowWidth, arrowHeight, arrowSpacing, this.outlineWidth > 0, from, to);
                     break;
             }
             if (step.isLoop) {
@@ -322,157 +436,33 @@ class WT_MapViewFlightPlanCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
-     * @param {WT_FlightPlanLeg} leg
-     * @param {WT_GeoPoint} previousEndpoint
-     * @param {Boolean} isActive
+     * Renders a flight plan leg.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project the flight plan
+     *                                                        leg path.
+     * @param {CanvasRenderingContext2D} context - the canvas context to which to render.
+     * @param {WT_FlightPlanLeg} leg - the flight plan leg to render.
+     * @param {WT_GeoPoint} previousEndpoint - the location at which the previous flight plan leg ended.
      */
-    _renderArrowsStandard(state, projectionRenderer, context, leg, previousEndpoint, isActive) {
-        context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
-        if (this.standardArrowOutlineWidth > 0) {
-            context.lineWidth = this.standardArrowOutlineWidth * 2 * state.dpiScale;
-            context.strokeStyle = isActive ? this.activeOutlineColor: this.inactiveOutlineColor;
+    render(state, projectionRenderer, context, leg, previousEndpoint) {
+        context.fillStyle = this.fillColor;
+        if (this.outlineWidth > 0) {
+            context.lineWidth = this.outlineWidth * 2 * state.dpiScale;
+            context.strokeStyle = this.outlineColor;
         }
 
-        let arrowWidth = this.standardArrowWidth * state.dpiScale;
-        let arrowHeight = this.standardArrowHeight * state.dpiScale;
-        let arrowSpacing = this.standardArrowSpacing * state.dpiScale;
+        let arrowWidth = this.width * state.dpiScale;
+        let arrowHeight = this.height * state.dpiScale;
+        let arrowSpacing = this.spacing * state.dpiScale;
 
         this._drawArrowsFromLeg(projectionRenderer, context, leg, previousEndpoint, arrowWidth, arrowHeight, arrowSpacing);
-    }
-
-    /**
-     *
-     * @param {WT_MapViewState} state
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {CanvasRenderingContext2D} context
-     * @param {Boolean} useRhumb
-     * @param {WT_GeoPoint} endpoint
-     * @param {WT_GeoPoint} previousEndpoint
-     * @param {Boolean} isActive
-     */
-    _renderArrowsAlt(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
-        context.fillStyle = isActive ? this.activeColor : this.inactiveColor;
-        if (this.altArrowOutlineWidth > 0) {
-            context.lineWidth = this.altArrowOutlineWidth * 2 * state.dpiScale;
-            context.strokeStyle = isActive ? this.activeOutlineColor: this.inactiveOutlineColor;
-        }
-
-        let arrowWidth = this.altArrowWidth * state.dpiScale;
-        let arrowHeight = this.altArrowHeight * state.dpiScale;
-        let arrowSpacing = this.altArrowSpacing * state.dpiScale;
-
-        this._drawArrowsFromLeg(projectionRenderer, context, leg, previousEndpoint, arrowWidth, arrowHeight, arrowSpacing);
-    }
-
-    _renderNone(state, projectionRenderer, context, useRhumb, endpoint, previousEndpoint, isActive) {
-    }
-
-    /**
-     * Renders a single flight plan leg.
-     * @param {WT_MapViewState} state - the current map view state.
-     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project and render
-     *                                                        the flight plan.
-     * @param {CanvasRenderingContext2D} context - the 2D rendering context of the canvas to which to render.
-     * @param {WT_GVector2[]} bounds - the boundaries of the canvas, represented as an array containing the coordinates
-     *                                 of the top-left corner at index 0 and the bottom-right corner at index 1.
-     * @param {WT_FlightPlanLeg} leg - the leg to render.
-     * @param {WT_GeoPoint} previousEndpoint - the terminator fix of the previous leg.
-     * @param {Boolean} discontinuity - whether the previous leg ended in a discontinuity.
-     */
-    _renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity) {
-        if (projectionRenderer.isInViewBounds(leg.fix.location, bounds, 0.05)) {
-            this._waypointsRendered.add(leg.fix);
-        }
-
-        if (!previousEndpoint) {
-            return;
-        }
-
-        let isActive = leg === this.getActiveLeg();
-        let style = this._legStyleChooser.chooseStyle(leg, this.getActiveLeg(), discontinuity);
-        let renderFunc = this._legRenderFuncs[style];
-        if (!renderFunc) {
-            renderFunc = this._legRenderFuncs[WT_MapViewFlightPlanCanvasRenderer.LegStyle.LINE_STANDARD];
-        }
-        renderFunc(state, projectionRenderer, context, leg, previousEndpoint, isActive);
-    }
-
-    /**
-     * Renders the flight plan assigned to this renderer to an HTML canvas.
-     * @param {WT_MapViewState} state - the current map view state.
-     * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to project and render
-     *                                                        the flight plan.
-     * @param {CanvasRenderingContext2D} context - the 2D rendering context of the canvas to which to render.
-     */
-    render(state, projectionRenderer, context) {
-        this._needsRedraw = false;
-
-        this._waypointsRendered.clear();
-
-        if (!this.flightPlan) {
-            return;
-        }
-
-        let bounds = projectionRenderer.viewClipExtent;
-        let origin = this.flightPlan.getOrigin().waypoint;
-        let destination = this.flightPlan.getDestination().waypoint;
-        if (origin && projectionRenderer.isInViewBounds(origin.location, bounds, 0.05)) {
-            this._waypointsRendered.add(origin);
-        }
-        if (destination && projectionRenderer.isInViewBounds(destination.location, bounds, 0.05)) {
-            this._waypointsRendered.add(destination);
-        }
-
-        let start = (this.getActiveLeg() && !this.drawPreviousLegs) ? this.getActiveLeg().index : 0;
-        let startPrevious = this._legs[start - 1];
-        let previousEndpoint = startPrevious ? startPrevious.endpoint : null;
-        let discontinuity = startPrevious ? startPrevious.discontinuity : false;
-        for (let i = start; i < this._legs.length; i++) {
-            let leg = this._legs[i];
-            this._renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity);
-            previousEndpoint = leg.endpoint;
-            discontinuity = leg.discontinuity;
-        }
     }
 }
-/**
- * @enum {Number}
- */
-WT_MapViewFlightPlanCanvasRenderer.LegStyle = {
-    NONE: 0,
-    LINE_STANDARD: 1,
-    LINE_THIN: 2,
-    LINE_DOTTED: 3,
-    ARROW_STANDARD: 4,
-    ARROW_ALT: 5,
-};
-WT_MapViewFlightPlanCanvasRenderer.OPTIONS_DEF = {
-    drawPreviousLegs: {default: true, auto: true},
-
-    standardStrokeWidth: {default: 6, auto: true},
-    standardOutlineWidth: {default: 1, auto: true},
-    thinStrokeWidth: {default: 4, auto: true},
-    thinOutlineWidth: {default: 1, auto: true},
-    dottedStrokeWidth: {default: 4, auto: true},
-    dottedOutlineWidth: {default: 1, auto: true},
-    dottedLineDash: {default: [4, 4], auto: true},
-
-    standardArrowWidth: {default: 8, auto: true},
-    standardArrowHeight: {default: 12, auto: true},
-    standardArrowSpacing: {default: 12, auto: true},
-    standardArrowOutlineWidth: {default: 1, auto: true},
-
-    altArrowWidth: {default: 8, auto: true},
-    altArrowHeight: {default: 12, auto: true},
-    altArrowSpacing: {default: 4, auto: true},
-    altArrowOutlineWidth: {default: 1, auto: true},
-
-    inactiveColor: {default: "white", auto: true},
-    inactiveOutlineColor: {default: "#454545", auto: true},
-    activeColor: {default: "#9c70b1", auto: true},
-    activeOutlineColor: {default: "#652f70", auto: true},
+WT_MapViewFlightPlanLegCanvasArrowRenderer.OPTIONS_DEF = {
+    fillColor: {default: "white", auto: true},
+    outlineWidth: {default: 1, auto: true},
+    outlineColor: {default: "black", auto: true},
+    width: {default: 8, auto: true},
+    height: {default: 12, auto: true},
+    spacing: {default: 12, auto: true}
 };
