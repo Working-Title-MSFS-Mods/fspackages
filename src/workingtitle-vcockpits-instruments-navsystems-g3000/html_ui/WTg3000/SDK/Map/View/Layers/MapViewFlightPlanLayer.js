@@ -8,16 +8,17 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - a factory to create waypoint objects from ICAO strings.
      * @param {WT_MapViewWaypointCanvasRenderer} waypointRenderer - the renderer to use for drawing waypoints.
      * @param {WT_MapViewTextLabelManager} labelManager - the text label manager to use for managing waypoint labels.
+     * @param {WT_MapViewFlightPlanLegCanvasStyler} legStyler - the leg styler to use for determining how to render the paths for individual flight plan legs.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(flightPlanManager, icaoWaypointFactory, waypointRenderer, labelManager, legStyleChooser, className = WT_MapViewFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewFlightPlanLayer.CONFIG_NAME_DEFAULT) {
+    constructor(flightPlanManager, icaoWaypointFactory, waypointRenderer, labelManager, legStyler, className = WT_MapViewFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewFlightPlanLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._fpm = flightPlanManager;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._labelManager = labelManager;
-        this._fpRenderer = new WT_MapViewFlightPlanCanvasRenderer(legStyleChooser);
+        this._fpRenderer = new WT_MapViewFlightPlanCanvasRenderer(legStyler);
         this._fpRenderer.setFlightPlan(this._fpm.activePlan);
         this._drctRenderer = new WT_MapViewDirectToCanvasRenderer();
         this._drctRenderer.setDirectTo(this._fpm.directTo);
@@ -42,6 +43,10 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
 
     _setFlightPlanRendererOpts(options) {
         this._fpRenderer.setOptions(options);
+    }
+
+    _setFlightPlanLegStylerOpts(options) {
+        this._fpRenderer.legStyler.setOptions(options);
     }
 
     /**
@@ -366,7 +371,8 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         for (let property of WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
-        this._setFlightPlanRendererOpts(this.flightPlanOptions);
+        this._setFlightPlanRendererOpts(this.flightPlanRendererOptions);
+        this._setFlightPlanLegStylerOpts(this.flightPlanLegStylerOptions);
         this._setWaypointRendererFactories();
         this._setWaypointRendererStyleHandlers();
     }
@@ -476,7 +482,8 @@ WT_MapViewFlightPlanLayer.WAYPOINT_ICON_CACHE_SIZE = 100;
 WT_MapViewFlightPlanLayer.WAYPOINT_LABEL_CACHE_SIZE = 100;
 WT_MapViewFlightPlanLayer.OVERDRAW_FACTOR = 1.91421356237;
 WT_MapViewFlightPlanLayer.OPTIONS_DEF = {
-    flightPlanOptions: {default: {}, auto: true},
+    flightPlanRendererOptions: {default: {}, auto: true},
+    flightPlanLegStylerOptions: {default: {}, auto: true},
 
     iconDirectory: {default: "", auto: true},
 
