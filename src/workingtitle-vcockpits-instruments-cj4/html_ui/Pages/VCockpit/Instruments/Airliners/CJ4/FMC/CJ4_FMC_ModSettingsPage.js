@@ -71,7 +71,7 @@ class CJ4_FMC_ModSettingsPageOne {
 
     get atisSrc() { return this._atisSrc; }
     set atisSrc(value) {
-        if (value == 2) value = 0;
+        if (value == 3) value = 0;
         this._atisSrc = value;
 
         // set datastore
@@ -124,7 +124,7 @@ class CJ4_FMC_ModSettingsPageOne {
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
         let yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
         let fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
-        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM"], this.atisSrc);
+        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
 
         if (!this._gpuAvailable) {
             gpuSettingSwitch = "NO EXT PWR[disabled]";
@@ -205,7 +205,7 @@ class CJ4_FMC_ModSettingsPageTwo {
 
     render() {
 
-        let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["MSFS", "VATSIM"], this.metarSrc);
+        let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["VATSIM", "MSFS"], this.metarSrc);
         let dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
 
         this._fmc._templateRenderer.setTemplateRaw([
