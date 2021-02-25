@@ -1,5 +1,60 @@
 # Changelog
 
+### v0.4.1
+**New Features**
+- \[General\] Added mod .cfg file. It can be found at `workingtitle-g3000\html_ui\WTg3000.cfg`.
+- \[NavMap\] Added support for road display (not available for the PFD Inset Map). Requires the optional `workingtitle-g3000-roaddata` package.
+  - Roads can be toggled on/off by navigating to MFD Home -> Map Settings -> "Land" tab.
+  - Config settings for roads can be found in the WTg3000.cfg file.
+
+**Changed Features**
+- \[NavMap\] Increased city and waypoint label font size in the MFD navigation map.
+- \[VFR Map\] The VFR Map no longer incurs a performance cost when it is minimized/hidden.
+- \[VFR Map\] Changed the VFR Map to more closely resemble the Garmin G3000 navigation map when flying the TBM930 and Longitude.
+
+**Fixes**
+- \[General\] Fixed performance degradation over time.
+
+### v0.4.0
+**New Features**
+- \[MFD\] Added MFD "HALF" mode, which splits the MFD into left and right panes.
+  - To toggle between FULL and HALF modes, navigate to MFD Home using the touchscreen controllers and press the "FULL" or "HALF" button in the navigation bar.
+  - In FULL mode, both touchscreen controllers control the only pane that is displayed.
+  - In HALF mode, each touchscreen controller controls one pane at a time. For each touchscreen controller, the pane that is currently selected can be visualized in the label bar next to the upper knob (in the upper-right corner of the screen). Two boxes represent the left and right panes. The currently selected pane is highlighted in either cyan (GTC1) or purple (GTC2). The pane that is not selected appears black.
+  - To switch the pane selected by a touchscreen controller, turn the inner upper knob.
+  - In the MFD display, the border of each half pane changes color depending on which touchscreen controller has selected it. The border will be black if it is selected by neither controller, cyan if selected by GTC1, purple if selected by GTC2, and blue if selected by both.
+  - To improve performance, in HALF mode each pane is updated at half refresh rate.
+- \[MFD\] Added support for the Airport Info pane.
+  - The currently selected MFD pane will automatically switch to the Airport Info pane when the GTC enters the Airport Info page. The MFD pane will switch back to the previous active pane when exiting the Airport Info page.
+  - The Airport Info pane automatically adjusts centering and zoom to show the currently selected airport in the Airport Info page. If no airport is selected, the pane will default to coordinates <0 N, 0 E>. Runways for the selected airport are drawn and labeled in the Airport Info Pane.
+- \[NavMap\] Added ability to show airways.
+  - Airways can be toggled on/off by navigating to PFD Home -> PFD Map Settings -> "Aviation" tab, or MFD Home -> Map Settings -> "Aviation" tab.
+- \[NavMap\] Added ability to show country and state/province borders and labels.
+  - Country borders/labels are always visible. State/province borders/labels can be toggled on/off by navigating to PFD Home -> PFD Map Settings -> "Land" tab, or MFD Home -> Map Settings -> "Land" tab.
+- \[NavMap\] Added the Map Pointer Information display for when the map pointer is active. The display shows the distance and bearing from the aircraft's current position to the pointer's position, and the lat/long coordinates of the pointer's position.
+- \[NavMap\] Added the mini compass heading indicator (top-left corner).
+
+**Changed Features**
+- \[NavMap\] Updated flight plan path rendering to more closely match the real-life Garmin units.
+- \[NavMap\] Updated waypoint icons to more closely match those found in the real-life Garmin units.
+- \[NavMap\] Changed the controls for NEXRAD overlay. These can now be found in the appropriate Map Settings menu, under the "Sensor" tab.
+- \[NavMap\] Tweaked absolute terrain colors.
+- \[Weather Radar\] Changed the controls for the weather radar (WX radar). Navigating to MFD Home -> Weather Selection -> WX Radar will now open a new settings page.
+- \[GTC\] Minor overhaul to the Airport Info page. The Runways tab now shows more accurate runway surface information (where data are available).
+
+**Fixes**
+- \[PFD\] The inset map no longer bleeds through its borders.
+- \[PFD\] The timer display is now functional.
+- \[Flight Plan\] Fixed a bug where the navigation map and the GTC active flight plan page would display the active leg as being one leg ahead of the true active leg.
+- \[NavMap\] Map symbols (cities, waypoints, etc) are now better aligned with the terrain texture at high latitudes and when zoomed out.
+- \[NavMap\] Flight plan paths that cross the antimeridian (180° E/W) are now drawn correctly.
+- \[NavMap\] Waypoint labels no longer sometimes blink or flash on/off rapidly.
+- \[Weather Radar\] In Vertical Scan mode, the vertical scale is now correctly labeled.
+- \[GTC\] The PFD inset map can now be toggled on/off within the PFD Map Settings page.
+- \[GTC\] The lower knob (G3000) or right knob (G5000) now controls PFD inset map range when the touchscreen controller has the PFD home page or any of its subpages open.
+- \[GTC\] For the G5000, turning the right knob no longer changes map or weather radar range when a frequency select or audio/radio page is open.
+- \[GTC\] In the Timers page, the "Start" button now correctly changes to a "Stop" button when the timer is active.
+
 ### v0.3.4
 **Fixes**
 - \[NavMap\] The map now correctly draws approach waypoints and paths.
