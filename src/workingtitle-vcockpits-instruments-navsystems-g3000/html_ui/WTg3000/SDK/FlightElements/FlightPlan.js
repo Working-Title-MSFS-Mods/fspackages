@@ -736,11 +736,11 @@ class WT_FlightPlan {
     /**
      *
      * @param {Number} segment
-     * @param {WT_Waypoint} waypoint
+     * @param {WT_FlightPlanWaypointEntry} waypointEntry
      * @param {Number} [index]
      */
-    async insertWaypoint(segment, waypoint, index) {
-        await this.insertWaypoints([waypoint], segment, index);
+    async insertWaypoint(segment, waypointEntry, index) {
+        await this.insertWaypoints(segment, [waypointEntry], index);
     }
 
     /**
@@ -782,11 +782,26 @@ class WT_FlightPlan {
 
     /**
      *
+     * @param {WT_Waypoint} fix
+     * @param {WT_GeoPoint[]} points
+     */
+    _createLegSteps(fix, points) {
+        let next = new WT_FlightPlanLegDirectStep(fix.location);
+        for (let i = points.length - 1; i >= 0 ; i--) {
+            let step = new WT_FlightPlanLegDirectStep(points[i]);
+            step._setNext(next, false);
+            next = step;
+        }
+        return next;
+    }
+
+    /**
+     *
      * @param {Number} segment
-     * @param {WT_Waypoint[]} waypoints
+     * @param {WT_FlightPlanWaypointEntry[]} waypointEntries
      * @param {Number} index
      */
-    async insertWaypoints(segment, waypoints, index) {
+    async insertWaypoints(segment, waypointEntries, index) {
         switch (segment) {
             case WT_FlightPlan.Segment.DEPARTURE:
             case WT_FlightPlan.Segment.ENROUTE:
@@ -796,7 +811,13 @@ class WT_FlightPlan {
                 if (index === undefined) {
                     index = segmentElement.length();
                 }
-                let elements = waypoints.map(waypoint => new WT_FlightPlanDirectToWaypointLeg(waypoint));
+                let elements = waypointEntries.map(entry => {
+                    if (entry.steps && entry.steps.length > 0) {
+                        return new WT_FlightPlanWaypointFixLeg(entry.waypoint, this._createLegSteps(entry.waypoint, entry.steps));
+                    } else {
+                        return new WT_FlightPlanDirectToWaypointLeg(entry.waypoint);
+                    }
+                });
                 let eventData = {types: 0};
                 this._insertToSegment(segmentElement, elements, index, eventData);
                 this._updateFromSegment(segment);
@@ -941,6 +962,13 @@ WT_FlightPlan.Segment = {
     APPROACH: 4,
     DESTINATION: 5
 };
+
+/**
+ * @typedef {Object} WT_FlightPlanWaypointEntry
+ * @property {WT_Waypoint} waypoint
+ * @property {WT_GeoPoint[]} steps
+ * @property {Boolean} flyOver
+ */
 
 class WT_FlightPlanEvent {
     constructor(data) {
@@ -1395,7 +1423,14 @@ class WT_FlightPlanLegStep {
         return (other instanceof WT_FlightPlanLegStep) && this.type === other.type && (this.next() ? this.next().equals(other.next()) : !other.next());
     }
 
+    _copySelf() {
+    }
+
     copy() {
+        let copy = this._copySelf();
+        let next = this.next();
+        copy._setNext(next ? (this.isLoop ? next : next.copy()) : null, this.isLoop);
+        return copy;
     }
 }
 /**
@@ -1442,7 +1477,7 @@ class WT_FlightPlanLegInitialStep extends WT_FlightPlanLegSimpleStep {
         super(location, WT_FlightPlanLegStep.Type.INITIAL);
     }
 
-    copy() {
+    _copySelf() {
         return new WT_FlightPlanLegInitialStep(this.endpoint);
     }
 }
@@ -1452,7 +1487,7 @@ class WT_FlightPlanLegDirectStep extends WT_FlightPlanLegSimpleStep {
         super(endpoint, WT_FlightPlanLegStep.Type.DIRECT);
     }
 
-    copy() {
+    _copySelf() {
         return new WT_FlightPlanLegDirectStep(this.endpoint);
     }
 }
@@ -1470,7 +1505,7 @@ class WT_FlightPlanLegHeadingStep extends WT_FlightPlanLegSimpleStep {
         this._distance.set(prevEndpoint ? prevEndpoint.distanceRhumb(this.endpoint) : 0);
     }
 
-    copy() {
+    _copySelf() {
         return new WT_FlightPlanLegHeadingStep(this.endpoint);
     }
 }
@@ -1495,6 +1530,10 @@ class WT_FlightPlanWaypointFixLeg extends WT_FlightPlanLeg {
      */
     get fix() {
         return this._fix;
+    }
+
+    copy() {
+        return new WT_FlightPlanWaypointFixLeg(this.fix, this.firstStep().copy(), null, this._segment);
     }
 }
 
