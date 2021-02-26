@@ -197,15 +197,15 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     switch (event) {
       case "Lwr_Push_ZOOM_INC":
       case "Lwr_Push_ZOOM_DEC":
+        const chartCtrX = ((this._canvas.width / 2)) + Math.abs(this._xOffset);
+        const chartCtrY = ((this._canvas.height / 2)) + Math.abs(this._yOffset);
         this._zoom = this._zoom === 1 ? (this.isPortrait ? 2.0 : 1.6) : 1;
         if (this._zoom === 1) {
-          this.xOffset /= (this.isPortrait ? 2.0 : 1.6);
-          this.yOffset /= (this.isPortrait ? 2.0 : 1.6);
+          this.xOffset = -(chartCtrX / (this.isPortrait ? 2.0 : 1.6)) + (this._canvas.width / 2);
+          this.yOffset = -(chartCtrY / (this.isPortrait ? 2.0 : 1.6)) + (this._canvas.height / 2);
         } else {
-          this.xOffset -= (this._canvas.width / 2) / this._zoom;
-          this.yOffset -= (this._canvas.height / 2) / this._zoom;
-          this.xOffset *= this._zoom;
-          this.yOffset *= this._zoom;
+          this.xOffset = -(chartCtrX * this._zoom) + (this._canvas.width / 2);
+          this.yOffset = -(chartCtrY * this._zoom) + (this._canvas.height / 2);
         }
         break;
       case "Lwr_JOYSTICK_UP":
