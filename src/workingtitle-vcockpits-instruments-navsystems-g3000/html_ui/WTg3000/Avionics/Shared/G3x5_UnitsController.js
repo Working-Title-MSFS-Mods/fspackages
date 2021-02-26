@@ -30,18 +30,49 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
 }
 
 class WT_G3x5_UnitsSetting extends WT_DataStoreSetting {
+    /**
+     * @param {WT_G3x5_UnitsController} controller
+     * @param {String} key
+     * @param {Number} defaultValue
+     */
     constructor(controller, key, defaultValue) {
         super(controller, key, defaultValue, false, true);
+    }
+
+    _getAllUnitsHelper(valueEnum, categories) {
+        let result = [];
+        for (let valueName in valueEnum) {
+            let index = valueEnum[valueName];
+            result[index] = categories.map(category => category[index]);
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @returns {WT_Unit[][]}
+     */
+    getAllUnits() {
     }
 }
 
 class WT_G3x5_NavAngleUnitsSetting extends WT_G3x5_UnitsSetting {
     constructor(controller, defaultValue = WT_G3x5_NavAngleUnitsSetting.DEFAULT, key = WT_G3x5_NavAngleUnitsSetting.KEY) {
         super(controller, key, defaultValue);
+
+        this._allUnits = this._getAllUnitsHelper(WT_G3x5_NavAngleUnitsSetting.Value, [WT_G3x5_NavAngleUnitsSetting.UNITS.navAngle]);
     }
 
     getNavAngleUnit() {
         return WT_G3x5_NavAngleUnitsSetting.UNITS.navAngle[this.getValue()];
+    }
+
+    /**
+     *
+     * @returns {WT_Unit[][]}
+     */
+    getAllUnits() {
+        return this._allUnits;
     }
 }
 /**
@@ -60,6 +91,8 @@ WT_G3x5_NavAngleUnitsSetting.DEFAULT = WT_G3x5_NavAngleUnitsSetting.Value.MAGNET
 class WT_G3x5_DistanceSpeedUnitsSetting extends WT_G3x5_UnitsSetting {
     constructor(controller, defaultOption = WT_G3x5_DistanceSpeedUnitsSetting.DEFAULT, key = WT_G3x5_DistanceSpeedUnitsSetting.KEY) {
         super(controller, key, defaultOption);
+
+        this._allUnits = this._getAllUnitsHelper(WT_G3x5_DistanceSpeedUnitsSetting.Value, [WT_G3x5_DistanceSpeedUnitsSetting.UNITS.distance, WT_G3x5_DistanceSpeedUnitsSetting.UNITS.speed]);
     }
 
     getDistanceUnit() {
@@ -68,6 +101,14 @@ class WT_G3x5_DistanceSpeedUnitsSetting extends WT_G3x5_UnitsSetting {
 
     getSpeedUnit() {
         return WT_G3x5_DistanceSpeedUnitsSetting.UNITS.speed[this.getValue()];
+    }
+
+    /**
+     *
+     * @returns {WT_Unit[][]}
+     */
+    getAllUnits() {
+        return this._allUnits;
     }
 }
 /**
