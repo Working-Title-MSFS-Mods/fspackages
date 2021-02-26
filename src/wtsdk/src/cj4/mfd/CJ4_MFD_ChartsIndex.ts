@@ -25,6 +25,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   private _fpm: FlightPlanManager;
   private _selectIndex: number = 0;
   private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
+  private _fpChecksum: number = -1;
 
   public get isVisible(): boolean {
     return this.style.visibility === "visible";
@@ -38,6 +39,11 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   }
 
   public async updateData(): Promise<void> {
+    if (this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
+      this._isDirty = true;
+      this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
+    }
+
     if (this._api.isAccountLinked && this._isDirty) {
       this._isDirty = false;
       try {
@@ -139,9 +145,9 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   }
 
   public selectPrevChart() {
-    if(this._selectIndex > 0){
+    if (this._selectIndex > 0) {
       const chartsIndex = this.getFlatChartIndex();
-      for (let i = this._selectIndex-1; i >= 0; i--) {
+      for (let i = this._selectIndex - 1; i >= 0; i--) {
         if (chartsIndex[i] !== undefined) {
           this._selectIndex = i;
           this.selectChart();
@@ -153,7 +159,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
 
   public selectNextChart() {
     const chartsIndex = this.getFlatChartIndex();
-    for (let i = this._selectIndex+1; i < chartsIndex.length; i++) {
+    for (let i = this._selectIndex + 1; i < chartsIndex.length; i++) {
       if (chartsIndex[i] !== undefined) {
         this._selectIndex = i;
         this.selectChart();
