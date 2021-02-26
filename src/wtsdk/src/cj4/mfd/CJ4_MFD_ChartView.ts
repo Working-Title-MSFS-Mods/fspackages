@@ -18,6 +18,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private readonly STEP_RATE = 40;
   private _chartindexnumber: HTMLElement;
   private _chartprocidentifier: HTMLElement;
+  private _chartinfonogeoref: HTMLElement;
   public get isVisible(): boolean {
     return this.style.visibility === "visible";
   }
@@ -66,6 +67,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   connectedCallback(): void {
     this._chartindexnumber = this.querySelector("#chartinfo_indexnumber");
     this._chartprocidentifier = this.querySelector("#chartinfo_procidentifier");
+    this._chartinfonogeoref = this.querySelector("#chartinfo_nogeoref");
     this._canvas = this.querySelector("#chartcanvas");
     this._srcImage.src = "#";
     this._srcImage.onload = this.onSrcImageLoaded.bind(this);
@@ -88,6 +90,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       this._chart = chart;
       this._chartindexnumber.textContent = `${chart.icao_airport_identifier} ${chart.index_number}`;
       this._chartprocidentifier.textContent = chart.procedure_identifier;
+      this._chartinfonogeoref.style.display = (this._chart.georef) ? "none" : "";
     }
   }
 
