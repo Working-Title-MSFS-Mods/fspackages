@@ -329,18 +329,22 @@ class CJ4_FMC_TakeoffRefPage {
                     //added custom LVARS for all v speeds and FMC Set
                     SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots", Math.round(v1));
                     SimVar.SetSimVarValue("L:WT_CJ4_V1_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", true);
                 }, 500);
                 setTimeout(() => {
                     SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "Knots", Math.round(vR));
                     SimVar.SetSimVarValue("L:WT_CJ4_VR_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VR_ON", "Bool", true);
                 }, 1000);
                 setTimeout(() => {
                     SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "Knots", Math.round(v2));
                     SimVar.SetSimVarValue("L:WT_CJ4_V2_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_V2_ON", "Bool", true);
                 }, 1500);
                 setTimeout(() => {
                     SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "Knots", 140);
                     SimVar.SetSimVarValue("L:WT_CJ4_VT_FMCSET", "Bool", true);
+                    SimVar.SetSimVarValue("L:WT_CJ4_VT_ON", "Bool", true);
                     fmc.toVSpeedStatus = CJ4_FMC.VSPEED_STATUS.SENT;
                     CJ4_FMC_TakeoffRefPage.ShowPage2(fmc);
                 }, 2000);

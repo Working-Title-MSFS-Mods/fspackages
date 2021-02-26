@@ -1,12 +1,31 @@
 class CJ4_FMC_InitRefIndexPage {
     static ShowPage1(fmc) {
+        
+        console.log("Request is running.");
+        let request = new XMLHttpRequest();
+        request.overrideMimeType("application/json");
+        request.onreadystatechange = () => {
+            console.log("Ready state changed.")
+            if (request.readyState === 4) {
+                console.log("Ready state is 4.")
+                console.log(request.status);
+                console.log(request.response);
+                if (request.status === 200) {
+                   let data = JSON.parse(request.response);
+                    WTDataStore.set("WT_CJ4_HoppieLogon", data.logon);
+                }
+            }
+        };
+        request.open("GET", "/Pages/VCockpit/Instruments/Shared/Utils/acars.json");
+        request.send();
+
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue] ", "INDEX[blue]"],  //Page 1 ---- 2
             [""],
             ["<MCDU MENU", "GNSS1 POS>"], //Page 3, 4 ---- 9
             [""],
-            ["<DATALINK[disabled]", "FREQUENCY>"], //Page XXX ---- CJ4_FMC_FrequencyPage
+            ["<DATALINK", "FREQUENCY>"], //Page XXX ---- CJ4_FMC_FrequencyPage
             [""],
             ["<STATUS", "FIX>[disabled]"], //Page 2 ---- 11
             [""],
@@ -1248,7 +1267,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.10.2[s-text white]"],
+            ["0.10.3[s-text white]"],
             [""],
             [""],
             [""],
@@ -1276,14 +1295,18 @@ class CJ4_FMC_InitRefIndexPage {
                 [""],
                 ["<SEND MSGS[disabled]", "DEPART CLX>[disabled]"],
                 [""],
-                ["<WEATHER[disabled]", "OCEANIC CLX>[disabled]"],
+                ["<WEATHER", "OCEANIC CLX>[disabled]"],
                 [""],
                 ["<TWIP[disabled]"],
                 [""],
-                ["<ATIS[disabled]"],
-                ["        NO COMM[green s-text]"],
+                ["<ATIS"],
+                [""],
                 ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]"]
             ]);
+            fmc.onLeftInput[0] = () => { CJ4_FMC_DatalinkMain.ShowPage2(fmc); };
+            /*fmc.onRightInput[1] = () => { CJ4_FMC_DatalinkMain.ShowPage7(fmc); };*/
+            fmc.onLeftInput[2] = () => {CJ4_FMC_DatalinkMain.ShowPage3(fmc); };
+            fmc.onLeftInput[4] = () => { CJ4_FMC_DatalinkMain.ShowPage1(fmc); };
             fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
             fmc.updateSideButtonActiveStatus();
         }, 1000, true);

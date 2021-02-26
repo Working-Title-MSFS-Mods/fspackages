@@ -131,6 +131,8 @@ public:
 
     ENUM SimOnGround = get_aircraft_var_enum("SIM ON GROUND");
 
+    ID FadecActive;
+
     /// <summary>
     /// The local variable for the current throttle mode to be ready by MFD.
     /// </summary>
@@ -149,6 +151,7 @@ public:
     }
 
     void initializeVars() {
+        FadecActive = register_named_variable("FADEC_ACTIVE");
         Throttle1Mode = register_named_variable("THROTTLE1_MODE");
         Throttle2Mode = register_named_variable("THROTTLE2_MODE");
         this->setThrottle1Mode(0);
@@ -156,6 +159,10 @@ public:
         ThrottlePos1 = register_named_variable("Throttle1_Pos");
         ThrottlePos2 = register_named_variable("Throttle2_Pos");
         m_Units = new Units();
+    }
+
+    void setFadecActiveFlag() {
+      set_named_variable_value(FadecActive, 1);
     }
 
     void setThrottle1Mode(FLOAT64 value) {

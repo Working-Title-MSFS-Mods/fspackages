@@ -1,4 +1,5 @@
 let ModSettingsPage1Instance = undefined;
+let ModSettingsPage2Instance = undefined;
 
 class CJ4_FMC_ModSettingsPageOne {
     constructor(fmc) {
@@ -129,7 +130,7 @@ class CJ4_FMC_ModSettingsPageOne {
         }
 
         this._fmc._templateRenderer.setTemplateRaw([
-            ["", "1/1[blue] ", "WT MOD SETTINGS[yellow]"],
+            ["", "1/2[blue] ", "WT MOD SETTINGS[yellow]"],
             [" CABIN LIGHTS[blue]", "FP SYNC[blue]"],
             [lightSwitch, fpSyncSwitch],
             [" SIMBRIEF PILOT ID[blue]"],
@@ -185,6 +186,87 @@ class CJ4_FMC_ModSettingsPageOne {
     }
 }
 
+class CJ4_FMC_ModSettingsPageTwo {
+    constructor(fmc) {
+        this._fmc = fmc;
+        this._metarSrc = WTDataStore.get("WT_CJ4_METAR_Source", 0);
+        this._dlProcTime = WTDataStore.get("WT_CJ4_DL_Time", 0);
+        this._hoppieLogon = WTDataStore.get("WT_CJ4_HoppieLogon", "REFER TO MANUAL");
+        this._fmc.onRightInput[4] = () => { this.atisSrc = this.atisSrc + 1; };
+        this._atisSrc = WTDataStore.get('WT_ATIS_Source', 0);
+    }
+    
+    get atisSrc() { return this._atisSrc; }
+    set atisSrc(value) {
+        if (value == 2) value = 0;
+        this._atisSrc = value;
+
+        // set datastore
+        WTDataStore.set('WT_ATIS_Source', value);
+
+        this.invalidate();
+    }
+
+    get metarSrc() { return this._metarSrc; }
+    set metarSrc(value) {
+        if (value == 2) value = 0;
+        this._metarSrc = value;
+
+        // set datastore
+        WTDataStore.set('WT_CJ4_METAR_Source', value);
+
+        this.invalidate();
+    }
+
+
+    get dlProcTime() { return this._dlProcTime; }
+    set dlProcTime(value) {
+        if (value == 2) value = 0;
+        this._dlProcTime = value;
+
+        // set datastore
+        WTDataStore.set('WT_CJ4_DL_Time', value);
+
+        this.invalidate();
+    }
+
+    render() {
+
+        let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["MSFS", "VATSIM"], this.metarSrc);
+        let dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
+        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM"], this.atisSrc);
+
+        this._fmc._templateRenderer.setTemplateRaw([
+            ["", "2/2[blue] ", "WT MOD SETTINGS[yellow]"],
+            ["METAR SOURCE[blue]", "ATIS SOURCE[blue]"],
+            [metarSrcSwitch],
+            ["DATALINK PROCESSING TIME[blue]"],
+            [dlProcSwitch],
+            ["HOPPIE LOGON CODE[blue]"],
+            [this._hoppieLogon],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""],
+            [""]
+        ]);
+    }
+
+    bindEvents() {
+        this._fmc.onLeftInput[0] = () => { this.metarSrc = this.metarSrc + 1; };
+        this._fmc.onLeftInput[1] = () => { this.dlProcTime = this.dlProcTime + 1; };
+        this._fmc.onPrevPage = () => { CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc); };
+    }
+
+    invalidate() {
+        this._fmc.clearDisplay();
+        this.render();
+        this.bindEvents();
+    }
+}
+
+
 class CJ4_FMC_ModSettingsPage {
     static setPassCabinLights(value) {
         let potValue = 100;
@@ -203,6 +285,13 @@ class CJ4_FMC_ModSettingsPage {
         // create page instance and init 
         ModSettingsPage1Instance = new CJ4_FMC_ModSettingsPageOne(fmc);
         ModSettingsPage1Instance.invalidate();
+    }
+
+    static ShowPage2(fmc) {
+        fmc.clearDisplay();
+
+        ModSettingsPage2Instance = new CJ4_FMC_ModSettingsPageTwo(fmc);
+        ModSettingsPage2Instance.invalidate();
     }
 }
 
