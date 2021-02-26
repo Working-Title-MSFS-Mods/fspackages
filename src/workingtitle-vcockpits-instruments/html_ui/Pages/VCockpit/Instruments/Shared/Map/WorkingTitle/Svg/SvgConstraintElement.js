@@ -26,14 +26,7 @@ class SvgConstraintElement extends SvgMapElement {
         this._coordinates = v;
     }
     id(map) {
-        if (this.source.ident.indexOf(" ") != -1) {
-            return "constraint-" + this._id + "-map-" + map.index;
-            ;
-        }
-        else {
-            return "constraint-" + this.source.ident + "-map-" + map.index;
-            ;
-        }
+        return "constraint-" + this.source.icaoNoSpace + "-map-" + map.index;
     }
     imageFileName() {
         return "ICON_CSTR_MAGENTA.svg";

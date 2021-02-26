@@ -1,0 +1,283 @@
+﻿:root {
+  --bodyHeightScale: 1; }
+
+@keyframes TemporaryShow {
+  0%, 100% {
+    visibility: visible; } }
+
+@keyframes TemporaryHide {
+  0%, 100% {
+    visibility: hidden; } }
+
+#highlight {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10; }
+
+#Electricity {
+  width: 100%;
+  height: 100%; }
+  #Electricity[state=off] {
+    display: none; }
+
+@font-face {
+    font-family: "Roboto-Mono";
+    src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+
+#Mainframe {
+  --refWidth: 1024;
+  --refHeight: 768; }
+
+as3000-mfd-element {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  font-family: "Roboto-Mono";
+  overflow: hidden; }
+  as3000-mfd-element #Console {
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    color: white;
+    font-size: 4vh;
+    z-index: 1000; }
+  as3000-mfd-element #Splash {
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 1000; }
+  as3000-mfd-element #Validate {
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 999; }
+  as3000-mfd-element #Electricity {
+    width: 100%;
+    height: 100%; }
+    as3000-mfd-element #Electricity[state=off] {
+      display: none; }
+    as3000-mfd-element #Electricity[state=init] #Console {
+      animation: TemporaryShow 3.5s 1; }
+    as3000-mfd-element #Electricity[state=init] #Splash {
+      animation: TemporaryShow 3.5s 1;
+      animation-delay: 2.5s; }
+    as3000-mfd-element #Electricity[state=init] #Validate {
+      animation: TemporaryHide 5.5s 1;
+      visibility: visible; }
+    as3000-mfd-element #Electricity[state=initWaitingValidation] #Validate {
+      visibility: visible; }
+  as3000-mfd-element #highlight {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 10; }
+  as3000-mfd-element .PopupWindow {
+    visibility: hidden; }
+    as3000-mfd-element .PopupWindow[state=Active] {
+      visibility: inherit; }
+  as3000-mfd-element #Mainframe {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative; }
+    as3000-mfd-element #Mainframe #Electricity {
+      position: relative; }
+      as3000-mfd-element #Mainframe #Electricity #CenterDisplay {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0%;
+        font-size: calc( 2 * 1vh * var(--bodyHeightScale));
+        text-align: center; }
+        as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq {
+          position: absolute;
+          left: 0%;
+          top: 0%;
+          width: 20%;
+          height: 8%;
+          background-color: #1a1d21; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq .Active {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            top: 0%;
+            left: 0%; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq .Stby {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            bottom: 0%;
+            left: 0%; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq .Title {
+            position: absolute;
+            height: 100%;
+            width: 40%;
+            left: 0%;
+            top: 0%;
+            font-size: 2vh;
+            line-height: 3vh; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq .Value {
+            position: absolute;
+            height: 100%;
+            width: 60%;
+            right: 0%;
+            top: 0%;
+            font-size: 2.3vh;
+            line-height: 3vh; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq #COM1 {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            left: 0%;
+            top: 0%; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq #COM1 #Com1_Active {
+              color: green; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #ComFreq #COM2 {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            right: 0%;
+            top: 0%; }
+        as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos {
+          transform: rotateX(0);
+          left: 0%;
+          top: 8%;
+          width: 20%;
+          height: 92%;
+          background-color: #1a1d21;
+          position: absolute; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos #ED {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: block; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=piston] #TurboEngine {
+            display: none; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=piston] #XMLEngineDisplay {
+            display: none; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=turbo] {
+            width: 35%; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=turbo] #PistonEngine {
+              display: none; }
+            as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=turbo] #XMLEngineDisplay {
+              display: none; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=XML] #TurboEngine {
+            display: none; }
+          as3000-mfd-element #Mainframe #Electricity #CenterDisplay #LeftInfos[state=XML] #PistonEngine {
+            display: none; }
+        as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos {
+          transform: rotateX(0);
+          height: 100%;
+          width: 80%;
+          right: 0%;
+          position: absolute; }
+
+as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar {
+    position: absolute;
+    top: 0%;
+    width: 100%;
+    height: 4%;
+    background-color: #1a1d21;
+    padding: 0 1vw 0.25vh;
+    font-family: "Roboto-Regular";
+    font-weight: bold;
+    font-size: 2.5vh;
+    line-height: 4.2vh;
+}
+
+as3000-mfd-element #Electricity #MainPane {
+    display: block;
+    position: absolute;
+    height: 96%;
+    width: 100%;
+    bottom: 0%;
+    left: 0%;
+    font-family: "Roboto-Regular";
+}
+
+as3000-mfd-element #Electricity map-view {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+    as3000-mfd-element #Electricity map-view map-view-orientationdisplay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 1px;
+    }
+    as3000-mfd-element #Electricity map-view map-view-minicompass {
+        position: absolute;
+        top: 3vh;
+        left: 1.25vh;
+    }
+    as3000-mfd-element #Electricity map-view map-view-winddatadisplay {
+        position: absolute;
+        top: 0;
+        right: 15vh;
+        width: 12vh;
+        height: 4vh;
+        margin: 1px;
+    }
+    as3000-mfd-element #Electricity map-view map-view-pointerinfo {
+        position: absolute;
+        top: 0;
+        left: 10vh;
+        margin: 1px;
+    }
+
+as3000-mfd-element #Electricity .weatherRadar {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+}
+    as3000-mfd-element #Electricity weatherradar-view {
+        position: absolute;
+        left: 0%;
+        bottom: 35%;
+        width: 100%;
+        height: 50%;
+        display: block;
+    }
+    as3000-mfd-element #Electricity weatherradar-view-scale {
+        display: block;
+        position: absolute;
+        left: 2%;
+        bottom: 2%;
+        width: 15vh;
+        height: 30%;
+    }
+    as3000-mfd-element #Electricity weatherradar-view-settings {
+        display: block;
+        position: absolute;
+        right: 2%;
+        bottom: 2%;
+        width: 20vh;
+        height: 20%;
+    }

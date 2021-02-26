@@ -72,16 +72,10 @@ class FacilityLoader {
                 this.addFacility(data);
             });
             Coherent.on("SendIntersection", (data) => {
-                if (!this._loadedIcaos[data.icao]) {
-                    this._loadedIcaos[data.icao] = true;
-                    this.addFacility(data);
-                }
+                this.addFacility(data);
             });
             Coherent.on("SendVor", (data) => {
-                if (!this._loadedIcaos[data.icao]) {
-                    this._loadedIcaos[data.icao] = true;
-                    this.addFacility(data);
-                }
+                this.addFacility(data);
             });
             Coherent.on("SendNdb", (data) => {
                 this.addFacility(data);
