@@ -1,9 +1,9 @@
 /**
  * Model for a navigational map. The base model defines only the basic parameters of a map, which are its nominal range, target position, and rotation.
  * The model can be expanded with more parameters through the addition of optional modules. By default, three modules are automatically included:
- * * .airplane - contains parameters related to the status of the player aircraft.
  * * .weather - contains parameters related to the weather and outside environment.
  * * .autopilot - contains parameters related to the player aircraft's autopilot.
+ * * .units - contains parameters related to the display of measurement units.
  * @property {LatLong} target - the target position (lat/long) of the map.
  * @property {Number} rotation - the rotation of the map in degrees. A value of 0 indicates North up, with increasing values proceeding clockwise.
  */
@@ -16,6 +16,7 @@ class WT_MapModel {
 
         this.addModule(new WT_MapModelWeatherModule());
         this.addModule(new WT_MapModelAutopilotModule());
+        this.addModule(new WT_MapModelUnitsModule());
     }
 
     /**

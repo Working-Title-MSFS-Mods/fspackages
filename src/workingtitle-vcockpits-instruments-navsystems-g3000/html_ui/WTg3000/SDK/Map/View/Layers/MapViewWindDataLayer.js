@@ -150,10 +150,11 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
 
     /**
      *
+     * @param {WT_MapViewState} state
      * @param {WT_NumberUnit} windSpeed
      */
-    _setSpeedText(windSpeed) {
-        this._windSpeedText.innerHTML = this._formatter.getFormattedHTML(windSpeed);
+    _setSpeedText(state, windSpeed) {
+        this._windSpeedText.innerHTML = this._formatter.getFormattedHTML(windSpeed, state.model.units.speed);
     }
 
     /**
@@ -171,7 +172,7 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
                 this._showArrow(true);
                 this._rotateArrow(state, state.model.weather.windDirection);
             }
-            this._setSpeedText(windSpeed);
+            this._setSpeedText(state, windSpeed);
         }
     }
 }
