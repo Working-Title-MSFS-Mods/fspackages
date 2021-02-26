@@ -1,4 +1,4 @@
-class GeoMagnetic {
+class WT_GeoMagnetic {
     constructor(model) {
         this._model = model;
     }
@@ -34,4 +34,4 @@ class GeoMagnetic {
         return this._model.declination(0, point.lat, point.long, 2020);
     }
 }
-GeoMagnetic.INSTANCE = new GeoMagnetic(new WorldMagneticModel());
+WT_GeoMagnetic.INSTANCE = new WT_GeoMagnetic(new WorldMagneticModel());

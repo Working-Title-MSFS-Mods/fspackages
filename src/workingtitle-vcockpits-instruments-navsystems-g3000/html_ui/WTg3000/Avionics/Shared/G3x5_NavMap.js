@@ -1,11 +1,24 @@
 class WT_G3x5_NavMap {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    /**
+     * @param {String} instrumentID
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     * @param {{{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}} icaoSearchers
+     * @param {WT_FlightPlanManager} flightPlanManager
+     * @param {WT_G3x5_UnitsController} unitsController
+     * @param {WT_CitySearchHandler} citySearcher
+     * @param {WT_MapViewBorderData} borderData
+     * @param {WT_MapViewRoadFeatureCollection} roadFeatureData
+     * @param {WT_MapViewRoadLabelCollection} roadLabelData
+     * @param {*} layerOptions
+     */
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._layerOptions = layerOptions;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
+        this._unitsController = unitsController;
         this._citySearcher = citySearcher;
         this._borderData = borderData;
         this._roadFeatureData = roadFeatureData;
@@ -84,8 +97,12 @@ class WT_G3x5_NavMap {
         return this._nexradShowSetting;
     }
 
+    _initUnitsModule() {
+        this._unitsAdapter = new WT_G3x5_UnitsControllerMapModelAdapter(this._unitsController, this.model);
+    }
+
     _initModel() {
-        this.model.addModule(new WT_MapModelUnitsModule());
+        this._initUnitsModule();
         this.model.addModule(new WT_MapModelCrosshairModule());
         this.model.addModule(new WT_MapModelTerrainModule());
         this.model.addModule(new WT_MapModelWeatherDisplayModule());

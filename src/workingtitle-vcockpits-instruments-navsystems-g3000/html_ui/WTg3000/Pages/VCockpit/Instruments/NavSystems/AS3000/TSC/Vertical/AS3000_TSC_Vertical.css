@@ -1778,17 +1778,19 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
       top: 30%; }
 
     as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow .content {
-      width: 60%;
-      left: 20%;
-      height: 80%;
-      bottom: 5%; }
-        as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow .content .gradientButton .value {
-          font-size: 3vh; }
+        width: 60%;
+        left: 20%;
+        height: 80%;
+        bottom: 5%;
+    }
+        as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindowButton {
+            height: 14vh;
+            font-size: 3vh;
+        }
 
-      as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .shortName {
-        font-size: 4vh; }
-      as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .longName {
-        font-size: 3vh; }
+    as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .dynamicSelectionListWindowButton {
+        font-size: 4vh;
+    }
 
     as3000-tsc-vertical-element #Electricity .MapDetailSelect .Container {
       bottom: 5%;
