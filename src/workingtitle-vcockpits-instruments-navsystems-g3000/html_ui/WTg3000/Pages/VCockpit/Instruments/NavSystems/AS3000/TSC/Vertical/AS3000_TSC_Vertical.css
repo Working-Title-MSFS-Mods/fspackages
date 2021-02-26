@@ -975,6 +975,11 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings .tab {
     width: 100%;
     height: 100%;
 }
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsbuttonrow,
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsdisplayrow {
+        height: 14vh;
+        margin: 0.25vh 0.5vh;
+    }
     as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-mfdnavdatafieldrow {
         height: 14vh;
         margin: 0.25vh 0.5vh;
@@ -1785,11 +1790,14 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
     }
         as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindowButton {
             height: 14vh;
-            font-size: 3vh;
+            font-size: 3.5vh;
         }
 
-    as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .dynamicSelectionListWindowButton {
+    as3000-tsc-vertical-element #Electricity .unitsDynamicSelectionListWindow .dynamicSelectionListWindowButton {
         font-size: 4vh;
+    }
+    as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .dynamicSelectionListWindowButton {
+        font-size: 3vh;
     }
 
     as3000-tsc-vertical-element #Electricity .MapDetailSelect .Container {
