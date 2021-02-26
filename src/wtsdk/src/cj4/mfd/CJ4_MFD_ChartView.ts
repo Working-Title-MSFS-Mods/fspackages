@@ -26,6 +26,23 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     return this._srcImage.height > this._srcImage.width;
   }
 
+  private set xOffset(value: number) {
+    this._xOffset = Math.min(0, Math.max(-(this._dimensions.chartW * this._zoom - this._canvas.width), value));
+  }
+
+  private get xOffset(): number {
+    return this._xOffset;
+  }
+
+  private set yOffset(value: number) {
+    this._yOffset = Math.min(0, Math.max(-(this._dimensions.chartH * this._zoom - this._canvas.height) - 20, value));
+  }
+
+  private get yOffset(): number {
+    return this._yOffset;
+  }
+
+
   private readonly _dimensions = {
     chartid: "",
     bboxBorder: 54,
@@ -40,6 +57,10 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     planH: 0,
     pxPerLong: 0,
     pxPerLat: 0,
+    boxW: 0,
+    boxH: 0,
+    boxPosX: 0,
+    boxPosY: 0,
   }
 
   connectedCallback(): void {
@@ -84,9 +105,9 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       if (this._srcImage.src !== "" && this._srcImage.src.indexOf("#") === -1) {
         this.drawImage(ctx);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        if (this._zoom === 1) {
-          this.drawRect(ctx);
-        }
+        // if (this._zoom === 1) {
+        //   this.drawRect(ctx);
+        // }
       } else {
         ctx.fillStyle = "#cccac8";
         ctx.textAlign = "center";
@@ -103,11 +124,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     const scrollGapY = this._dimensions.chartH - this._canvas.height;
     const scrollPercX = scrollGapX === 0 ? 0 : Math.min(1, Math.abs(((scrollGapX - (scrollGapX - this._xOffset)) / scrollGapX)));
     const scrollPercY = scrollGapY === 0 ? 0 : Math.min(1, Math.abs(((scrollGapY - (scrollGapY - this._yOffset)) / scrollGapY)));
-    const rectW = this._canvas.width * 0.6;
-    const rectH = this._canvas.height * 0.6;
-    const rectScrollGapX = this._canvas.width - rectW - 4;
-    const rectScrollGapY = this._canvas.height - rectH - 6;
-    ctx.strokeRect(rectScrollGapX * (scrollPercX) + 2, rectScrollGapY * (scrollPercY) + 2, rectW, rectH);
+    this._dimensions.boxW = this._canvas.width * 0.6;
+    this._dimensions.boxH = this._canvas.height * 0.6;
+    const rectScrollGapX = this._canvas.width - this._dimensions.boxW - 4;
+    const rectScrollGapY = this._canvas.height - this._dimensions.boxH - 24;
+    this._dimensions.boxPosX = rectScrollGapX * (scrollPercX) + 2;
+    this._dimensions.boxPosY = rectScrollGapY * (scrollPercY) + 2;
+    ctx.strokeRect(this._dimensions.boxPosX, this._dimensions.boxPosY, this._dimensions.boxW, this._dimensions.boxH);
   }
 
   private scaleImgToFit(): void {
@@ -176,22 +199,26 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       case "Lwr_Push_ZOOM_DEC":
         this._zoom = this._zoom === 1 ? (this.isPortrait ? 2.0 : 1.6) : 1;
         if (this._zoom === 1) {
-          this._xOffset = 0;
-          this._yOffset = 0;
+          this.xOffset /= (this.isPortrait ? 2.0 : 1.6);
+          this.yOffset /= (this.isPortrait ? 2.0 : 1.6);
+        } else {
+          this.xOffset -= (this._canvas.width / 2) / this._zoom;
+          this.yOffset -= (this._canvas.height / 2) / this._zoom;
+          this.xOffset *= this._zoom;
+          this.yOffset *= this._zoom;
         }
         break;
       case "Lwr_JOYSTICK_UP":
-        this._yOffset = Math.min(0, this._yOffset + this.STEP_RATE);
+        this.yOffset += this.STEP_RATE;
         break;
       case "Lwr_JOYSTICK_DOWN":
-        // -27 from height for the chart info container
-        this._yOffset = Math.max(-(this._dimensions.chartH * this._zoom - this._canvas.height), this._yOffset - this.STEP_RATE);
+        this.yOffset -= this.STEP_RATE;
         break;
       case "Lwr_JOYSTICK_LEFT":
-        this._xOffset = Math.min(0, this._xOffset + this.STEP_RATE);
+        this.xOffset += this.STEP_RATE;
         break;
       case "Lwr_JOYSTICK_RIGHT":
-        this._xOffset = Math.max(-(this._dimensions.chartW * this._zoom - this._canvas.width), this._xOffset - this.STEP_RATE);
+        this.xOffset -= this.STEP_RATE;
         break;
       default:
         this._isDirty = false;
