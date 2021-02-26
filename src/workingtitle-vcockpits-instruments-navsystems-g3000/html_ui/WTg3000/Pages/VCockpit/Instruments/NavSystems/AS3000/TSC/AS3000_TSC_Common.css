@@ -22,13 +22,13 @@
     display: none; }
 
 @font-face {
-  font-family: "Roboto";
-  src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular.ttf") format("truetype");
+  font-family: "Roboto-Regular";
+  src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular-Mod.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
 @font-face {
-  font-family: "Roboto";
-  src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Bold.ttf") format("truetype");
+  font-family: "Roboto-Regular";
+  src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Bold-Mod.ttf") format("truetype");
   font-weight: bold;
   font-style: normal; }
 

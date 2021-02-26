@@ -184,7 +184,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
 
     _initRows() {
         this._navAngleRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], [["°"], ["°<sup>T</sup>"]]);
+        this._initRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], [["°"], ["°ᵀ"]]);
 
         this._distanceSpeedRow = new WT_G3x5_TSCUnitsButtonRow();
         this._initRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], [["NM", "KT"], ["KM", "KPH"]]);
