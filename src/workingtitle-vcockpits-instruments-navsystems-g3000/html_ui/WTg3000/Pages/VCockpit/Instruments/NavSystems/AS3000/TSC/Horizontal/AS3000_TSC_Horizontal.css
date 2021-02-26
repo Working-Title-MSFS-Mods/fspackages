@@ -507,7 +507,8 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tab 
     width: 100%;
     height: 100%;
 }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsbuttonrow {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsbuttonrow,
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsdisplayrow {
       height: 18vh;
       margin: 0.25vh 0.5vh;
     }
