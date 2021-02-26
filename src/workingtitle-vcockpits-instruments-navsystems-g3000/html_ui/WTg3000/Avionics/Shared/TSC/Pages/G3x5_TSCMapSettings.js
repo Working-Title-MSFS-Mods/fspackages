@@ -1016,21 +1016,14 @@ class WT_G3x5_TSCRangeTypeSelectionElementHandler {
         }
 
         let elem = {
-            button: document.createElement("div"),
-            title: document.createElement("div"),
-            value: document.createElement("div")
+            button: new WT_TSCValueButton(),
         };
-        elem.button.classList.add("gradientButton", "statusTextButton");
-        elem.title.classList.add("mainText");
-        elem.value.classList.add("statusText");
-        elem.title.innerHTML = this._typeNames[index];
-        elem.button.appendChild(elem.title);
-        elem.button.appendChild(elem.value);
+        elem.button.labelText = this._typeNames[index];
         return elem;
     }
 
     update(index, elem) {
-        Avionics.Utils.diffAndSet(elem.value, WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])]));
+        elem.button.valueText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])]);
     }
 }
 

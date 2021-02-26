@@ -2,20 +2,14 @@ class WT_MapModelUnitsModule extends WT_MapModelModule {
     constructor(name = WT_MapModelUnitsModule.NAME_DEFAULT) {
         super(name);
 
-        this._optsManager.addOptions({
-            distance: {default: 0, auto: true},
-            bearing: {default: 0, auto: true}
-        });
+        this._optsManager.addOptions(WT_MapModelUnitsModule.OPTIONS_DEF);
     }
 }
 WT_MapModelUnitsModule.NAME_DEFAULT = "units";
-
-WT_MapModelUnitsModule.Bearing = {
-    MAGNETIC: 0,
-    TRUE: 1
-}
-
-WT_MapModelUnitsModule.Distance = {
-    NM: 0,
-    KM: 1
-}
+WT_MapModelUnitsModule.OPTIONS_DEF = {
+    bearing: {default: new WT_NavAngleUnit(true), auto: true},
+    distance: {default: WT_Unit.NMILE, auto: true},
+    speed: {default: WT_Unit.KNOT, auto: true},
+    verticalSpeed: {default: WT_Unit.FPM, auto: true},
+    altitude: {default: WT_Unit.FOOT, auto: true}
+};

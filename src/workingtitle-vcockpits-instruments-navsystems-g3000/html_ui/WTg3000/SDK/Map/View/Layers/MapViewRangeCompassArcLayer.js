@@ -277,6 +277,10 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
                 this._needRotateForwardTick = true;
                 break;
 
+            case "isMagnetic":
+                this._needRotateBearingTicks = true;
+                break;
+
             case "arcStrokeWidth":
             case "arcStrokeColor":
             case "arcOutlineWidth":
@@ -498,7 +502,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {Number} fontSizePx - the font size of the label.
      */
     _drawBearingLabelToBuffer(angle, tickLengthPx, offsetPx, fontSizePx) {
-        let text = angle.toString().padStart(3, "0");
+        let text = angle.toString().padStart(3, "0") + (this.isMagnetic ? "" : "ᵀ");
         let position = this._calculateBearingLabelPosition(angle, text, tickLengthPx, offsetPx, fontSizePx);
 
         if (this.bearingLabelFontOutlineWidth > 0) {
@@ -726,8 +730,9 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this.center = state.projection.viewTarget;
         this.radius = state.model.range.ratio(state.projection.range) * state.projection.viewHeight;
         this.facing = this.facingAngleGetter.getFacingAngle(state);
+        this.isMagnetic = state.model.units.bearing.isMagnetic;
 
-        let magVar = state.model.units.bearing === WT_MapModelUnitsModule.Bearing.MAGNETIC ? state.model.airplane.magVar() : 0;
+        let magVar = this.isMagnetic ? state.model.airplane.magVar() : 0;
         this.rotation = state.projection.rotation + magVar;
 
         this.forwardTickAngle = this.forwardTickBearingGetter.getForwardTickBearing(state) + state.projection.rotation;
@@ -747,6 +752,7 @@ WT_MapViewRangeCompassArcLayer.OPTIONS_DEF = {
     facing: {default: 0, auto: true, observed: true},
     rotation: {default: 0, auto: true, observed: true},
     forwardTickAngle: {default: 0, auto: true, observed: true},
+    isMagnetic: {default: true, auto: true, observed: true},
 
     arcStrokeWidth: {default: 2, auto: true, observed: true},
     arcStrokeColor: {default: "#ffffff", auto: true, observed: true},
