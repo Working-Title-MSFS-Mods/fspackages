@@ -184,10 +184,10 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
 
     _initRows() {
         this._navAngleRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], [["°"], ["°ᵀ"]]);
+        this._initRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], this._controller.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._distanceSpeedRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], [["NM", "KT"], ["KM", "KPH"]]);
+        this._initRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], this._controller.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
     }
 
     onAttached() {
