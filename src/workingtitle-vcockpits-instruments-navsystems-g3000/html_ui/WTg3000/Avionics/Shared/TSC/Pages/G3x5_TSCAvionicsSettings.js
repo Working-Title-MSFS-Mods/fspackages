@@ -168,7 +168,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
         this._controller.init();
     }
 
-    _initRow(row, title, setting, valueTexts, unitSymbols) {
+    _initButtonRow(row, title, setting, valueTexts, unitSymbols) {
         row.setContext({
             instrument: this.parentPage.instrument,
             title: title,
@@ -182,12 +182,32 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
         this.htmlElement.appendChild(row);
     }
 
+    _initDisplayRow(row, title, getDisplayText) {
+        row.setContext({
+            title: title,
+            getDisplayText: getDisplayText
+        });
+        row.slot = "content";
+        this.htmlElement.appendChild(row);
+    }
+
     _initRows() {
         this._navAngleRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], this._controller.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], this._controller.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+
+        this._magVarRow = new WT_G3x5_TSCUnitsDisplayRow();
+        this._initDisplayRow(this._magVarRow, "Magnetic Variance", function() {
+            let magVar = Math.round(WT_PlayerAirplane.INSTANCE.magVar());
+            let direction = "E";
+            if (magVar < 0) {
+                magVar = -magVar;
+                direction = "W";
+            }
+            return `${magVar}°${direction}`;
+        });
 
         this._distanceSpeedRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], this._controller.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], this._controller.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
     }
 
     onAttached() {
@@ -195,6 +215,10 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
 
         this._initController();
         this._initRows();
+    }
+
+    update() {
+        this._magVarRow.update();
     }
 }
 WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE = "Units";
@@ -421,6 +445,108 @@ class WT_G3x5_TSCUnitsSelectionElementHandler {
         return this._setting.getValue();
     }
 }
+
+class WT_G3x5_TSCUnitsDisplayRow extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(WT_G3x5_TSCUnitsDisplayRow.TEMPLATE.content.cloneNode(true));
+
+        this._context = null;
+
+        this._isInit = false;
+        this._lastContext = null;
+
+        this._displayText = "";
+    }
+
+    _defineChildren() {
+        this._title = this.shadowRoot.querySelector(`#title`);
+        this._display = this.shadowRoot.querySelector(`#display`);
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+
+        if (this._context) {
+            this._setupContext();
+        }
+    }
+
+    _updateTitle() {
+        this._title.innerHTML = this._context ? this._context.title : "";
+    }
+
+    _setupContext() {
+        if (this._lastContext) {
+            this._lastContext.setting.removeListener(this._settingListener);
+        }
+
+        this._updateTitle();
+    }
+
+    setContext(context) {
+        if (context === this._context) {
+            return;
+        }
+
+        this._context = context;
+        if (this._isInit) {
+            this._setupContext();
+        }
+    }
+
+    setDisplayText(text) {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._display.innerHTML = text;
+    }
+
+    update() {
+        if (this._context) {
+            this.setDisplayText(this._context.getDisplayText());
+        }
+    }
+}
+WT_G3x5_TSCUnitsDisplayRow.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCUnitsDisplayRow.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            width: 100%;
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 5px;
+        }
+
+        #wrapper {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: var(--unitsrow-left-width, 50%) var(--unitsrow-right-width, 50%);
+        }
+            #title {
+                text-align: center;
+                align-self: center;
+            }
+            #display {
+                text-align: center;
+                align-self: center;
+                font-size: 1.33em;
+            }
+    </style>
+    <div id="wrapper">
+        <div id="title"></div>
+        <div id="display"></div>
+    </div>
+`;
+
+customElements.define("tsc-avionicssettings-unitsdisplayrow", WT_G3x5_TSCUnitsDisplayRow);
 
 class WT_G3x5_TSCAvionicsSettingsAlertsTab extends WT_G3x5_TSCAvionicsSettingsTab {
     constructor() {
