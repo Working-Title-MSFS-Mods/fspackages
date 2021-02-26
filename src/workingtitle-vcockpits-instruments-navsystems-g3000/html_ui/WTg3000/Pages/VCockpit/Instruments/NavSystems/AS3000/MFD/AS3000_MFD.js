@@ -16,6 +16,8 @@ class AS3000_MFD extends NavSystem {
         this._lastFPMSyncTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
+
+        this._unitsController = new WT_G3x5_UnitsController();
     }
 
     get IsGlassCockpit() { return true; }
@@ -62,6 +64,15 @@ class AS3000_MFD extends NavSystem {
         return this._citySearcher;
     }
 
+    /**
+     * @readonly
+     * @property {WT_G3x5_UnitsController} unitsController
+     * @type {WT_G3x5_UnitsController}
+     */
+    get unitsController() {
+        return this._unitsController;
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -69,10 +80,10 @@ class AS3000_MFD extends NavSystem {
         this.engines = new AS3000_Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engines);
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManager)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManager, this.unitsController)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
-                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager, this.citySearcher))
+                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager, this.unitsController, this.citySearcher))
             ]),
         ];
     }

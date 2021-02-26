@@ -15,6 +15,8 @@ class AS3000_PFD extends NavSystem {
         this._lastFPMSyncTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
+
+        this._unitsController = new WT_G3x5_UnitsController();
     }
 
     get IsGlassCockpit() { return true; }
@@ -61,6 +63,15 @@ class AS3000_PFD extends NavSystem {
         return this._citySearcher;
     }
 
+    /**
+     * @readonly
+     * @property {WT_G3x5_UnitsController} unitsController
+     * @type {WT_G3x5_UnitsController}
+     */
+    get unitsController() {
+        return this._unitsController;
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.mainPage = new AS3000_PFD_MainPage();
@@ -70,7 +81,7 @@ class AS3000_PFD extends NavSystem {
             ]),
         ];
         this.warnings = new PFD_Warnings();
-        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT, this.citySearcher)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InnerMap", "InnerMap", new AS3000_PFD_InnerMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT, this.unitsController, this.citySearcher)));
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new AS3000_PFD_WindData("PFD")));
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this.warnings));
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(AS3000_PFD_SoftKeyHtmlElement)));
@@ -174,13 +185,14 @@ class AS3000_PFD_SoftKeyHtmlElement extends SoftKeyHtmlElement {
 }
 
 class AS3000_PFD_InnerMap extends NavSystemElement {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, citySearcher) {
+    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher) {
         super();
 
         this._instrumentID = instrumentID;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
+        this._unitsController = unitsController;
         this._citySearcher = citySearcher;
 
         this._isEnabled = false;
@@ -231,7 +243,7 @@ class AS3000_PFD_InnerMap extends NavSystemElement {
     }
 
     _initNavMap(root) {
-        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this._icaoWaypointFactory, this._icaoSearchers, this._fpm, this._citySearcher, new WT_MapViewBorderData(), null, null, AS3000_PFD_InnerMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this._icaoWaypointFactory, this._icaoSearchers, this._fpm, this._unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, AS3000_PFD_InnerMap.LAYER_OPTIONS);
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 

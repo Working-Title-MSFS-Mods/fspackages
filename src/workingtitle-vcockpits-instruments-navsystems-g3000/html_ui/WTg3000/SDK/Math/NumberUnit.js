@@ -389,6 +389,16 @@ class WT_Unit {
     createNumber(value) {
         return new WT_NumberUnit(value, this);
     }
+
+    /**
+     * Checks whether this unit is equal to an argument. Returns true if and only if the argument is an instance of
+     * WT_Unit, belongs to the same family, and has the same full name as this unit.
+     * @param {*} other - the comparison.
+     * @returns {Boolean} whether this unit is equal to the comparison.
+     */
+    equals(other) {
+        return (other instanceof WT_Unit) && this.family === other.family && this.fullNameSingular === other.fullNameSingular;
+    }
 }
 
 /**
@@ -405,6 +415,7 @@ class WT_SimpleUnit extends WT_Unit {
      */
     constructor(family, scaleFactor, fullNameSingular, fullNameMultiple, abbrevName) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
+
         this._family = family;
         this._scaleFactor = scaleFactor;
     }
@@ -435,7 +446,8 @@ class WT_TempUnit extends WT_Unit {
      */
     constructor(fullNameSingular, fullNameMultiple, abbrevName, zeroOffset, scaleFactor) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
-        this._family = WT_Unit.TEMP;
+
+        this._family = WT_Unit.Family.TEMP;
         this._zeroOffset = zeroOffset;
         this._scaleFactor = scaleFactor;
     }
@@ -599,6 +611,7 @@ WT_Unit.FAHRENHEIT = new WT_TempUnit("° Fahrenheit", "° Fahrenheit", "°F", 45
 
 WT_Unit.KNOT = new WT_CompoundUnit([WT_Unit.NMILE], [WT_Unit.HOUR], "knot", "knots", "kt");
 WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kph");
+WT_Unit.MPM = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.MINUTE], null, null, "mpm");
 WT_Unit.MPS = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.SECOND]);
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");
 WT_Unit.FPS = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.SECOND]);

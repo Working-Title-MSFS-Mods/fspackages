@@ -16,9 +16,9 @@ class WT_TSCButton extends HTMLElement {
 
         this._listeners = [];
 
-        this._enabled = true;
-        this._primed = false;
-        this.setAttribute("enabled", "true");
+        this.enabled = "true";
+        this._setPrimed(false);
+        this.highlight = "false";
     }
 
     _initHostStyle() {
@@ -33,6 +33,13 @@ class WT_TSCButton extends HTMLElement {
                 text-align: center;
                 color: white;
                 overflow: hidden;
+            }
+            :host([highlight=true]) {
+                background: linear-gradient(#7dddff 0.4vh, #008cb4 2vh);
+                border-color: #7dddff;
+            }
+            :host([highlight=true][primed=false]) {
+                color: black;
             }
             :host([enabled=true][primed=true]) {
                 background: linear-gradient(#62f0f5, #0eb8d4 8%, #018cb5 30%, #0285ac 90%);
@@ -79,6 +86,14 @@ class WT_TSCButton extends HTMLElement {
 
     set enabled(value) {
         this.setAttribute("enabled", value);
+    }
+
+    get highlight() {
+        return this.getAttribute("highlight");
+    }
+
+    set highlight(value) {
+        this.setAttribute("highlight", value);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

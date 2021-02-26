@@ -308,14 +308,9 @@
     background: none; }
   .dynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
     background: white; }
-  .dynamicSelectionListWindow .content .gradientButton {
-    width: 100%;
-    margin-bottom: 5%; }
-    .dynamicSelectionListWindow .content .gradientButton .value {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 100%; }
+    .dynamicSelectionListWindowButton {
+      width: 100%;
+      margin-bottom: 5%; }
 
 tsc-mapsettings-tabrow {
     display: block;

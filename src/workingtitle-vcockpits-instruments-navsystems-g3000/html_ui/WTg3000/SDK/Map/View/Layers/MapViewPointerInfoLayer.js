@@ -146,6 +146,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
         this._tempGeoPoint2 = new WT_GeoPoint(0, 0);
         this._tempDistance = WT_Unit.NMILE.createNumber(0);
         this._tempAngle = new WT_NumberUnit(0, WT_Unit.DEGREE);
+        this._tempNavAngle = new WT_NumberUnit(0, new WT_NavAngleUnit(false));
     }
 
     connectedCallback() {
@@ -162,7 +163,7 @@ class WT_MapViewPointerInfo extends HTMLElement {
      */
     _updateDistance(state, reference, pointer) {
         let distance = state.projection.distance(reference, pointer, this._tempDistance);
-        this._distanceValue.innerHTML = this._distanceFormatter.getFormattedHTML(distance);
+        this._distanceValue.innerHTML = this._distanceFormatter.getFormattedHTML(distance, state.model.units.distance);
     }
 
     /**
@@ -171,8 +172,9 @@ class WT_MapViewPointerInfo extends HTMLElement {
      * @param {WT_GeoPoint} pointer
      */
     _updateBearing(state, reference, pointer) {
-        let bearing = this._tempAngle.set(state.projection.bearing(reference, pointer));
-        this._bearingValue.innerHTML = this._bearingFormatter.getFormattedString(bearing);
+        let bearing = this._tempNavAngle.set(state.projection.bearing(reference, pointer));
+        bearing.unit.setLocation(reference);
+        this._bearingValue.innerHTML = this._bearingFormatter.getFormattedString(bearing, state.model.units.bearing);
     }
 
     /**

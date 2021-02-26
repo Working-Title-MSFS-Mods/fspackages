@@ -2096,7 +2096,7 @@ class WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker extends WT_FlightPl
     async _calculateFix(procedureLeg, previousEndpoint) {
         let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
         let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
-        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
 
         // because I'm not smart enough to derive the closed-form solution, we will approximate using small circle intersection,
         // then iterate to find the solution numerically
@@ -2172,7 +2172,7 @@ class WT_FlightPlanFlyReferenceRadialForDistanceMaker extends WT_FlightPlanProce
             } catch (e) {}
         }
 
-        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
 
         let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
         let fix = WT_FlightPlanFlyReferenceRadialForDistanceMaker._tempGeoPoint.set(previousEndpoint).offsetRhumb(courseTrue, targetDistance);
@@ -2207,8 +2207,8 @@ class WT_FlightPlanFlyHeadingToInterceptMaker extends WT_FlightPlanProcedureLegH
             throw new Error("Invalid procedure leg definition.");
         }
 
-        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
-        let nextLegCourseTrue = GeoMagnetic.INSTANCE.magneticToTrue(nextLeg.course, reference.location);
+        let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let nextLegCourseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(nextLeg.course, reference.location);
 
         let path = WT_RhumbLine.createFromPointBearing(previousEndpoint, courseTrue);
         let courseToIntercept = WT_RhumbLine.createFromPointBearing(reference.location, nextLegCourseTrue);
@@ -2232,8 +2232,8 @@ class WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker extends WT_Flight
      */
     async _calculateFix(procedureLeg, previousEndpoint) {
         let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
-        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
-        let radialTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.radial, reference.location);
+        let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let radialTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.radial, reference.location);
 
         let path = WT_RhumbLine.createFromPointBearing(previousEndpoint, courseTrue);
         let radial = WT_RhumbLine.createFromPointBearing(reference.location, radialTrue);
@@ -2256,7 +2256,7 @@ class WT_FlightPlanFlyToBearingDistanceFromReferenceMaker extends WT_FlightPlanP
      */
     async _calculateFix(procedureLeg) {
         let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
-        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, reference.location);
+        let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, reference.location);
 
         let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
         let fix = WT_FlightPlanFlyToBearingDistanceFromReferenceMaker._tempGeoPoint.set(reference.location).offset(courseTrue, targetDistance);
@@ -2274,7 +2274,7 @@ class WT_FlightPlanFlyHeadingToAltitudeMaker extends WT_FlightPlanProcedureLegHe
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
     async _calculateFix(procedureLeg, previousEndpoint) {
-        let courseTrue = GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
+        let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
         let targetDistance = procedureLeg.altitudeConstraint.floor.asUnit(WT_Unit.FOOT) / 500;
         let fix = previousEndpoint.offsetRhumb(courseTrue, WT_Unit.NMILE.convert(targetDistance, WT_Unit.GA_RADIAN));
         return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
