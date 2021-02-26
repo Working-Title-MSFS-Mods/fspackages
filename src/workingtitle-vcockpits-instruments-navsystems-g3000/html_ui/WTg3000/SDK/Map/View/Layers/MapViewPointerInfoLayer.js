@@ -150,10 +150,10 @@ class WT_MapViewPointerInfo extends HTMLElement {
     }
 
     connectedCallback() {
-        this._distanceValue = this.shadowRoot.querySelector(`#distance .value`);
-        this._bearingValue = this.shadowRoot.querySelector(`#bearing .value`);
-        this._latCell = this.shadowRoot.querySelector(`#lat`);
-        this._longCell = this.shadowRoot.querySelector(`#long`);
+        this._distanceValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#distance .value`));
+        this._bearingValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#bearing .value`));
+        this._latCell = new WT_CachedHTML(this.shadowRoot.querySelector(`#lat`));
+        this._longCell = new WT_CachedHTML(this.shadowRoot.querySelector(`#long`));
     }
 
     /**
