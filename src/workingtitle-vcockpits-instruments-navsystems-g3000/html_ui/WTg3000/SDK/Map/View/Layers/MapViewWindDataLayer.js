@@ -119,7 +119,7 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
         this._data = this.shadowRoot.querySelector(`#data`);
         this._arrowbox = this.shadowRoot.querySelector(`#arrowbox`);
         this._arrow = this.shadowRoot.querySelector(`#arrow`);
-        this._windSpeedText = this.shadowRoot.querySelector(`#windspeed`);
+        this._windSpeedText = new WT_CachedHTML(this.shadowRoot.querySelector(`#windspeed`));
         this._noData = this.shadowRoot.querySelector(`#nodata`);
     }
 

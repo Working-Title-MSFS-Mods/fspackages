@@ -52,14 +52,11 @@ class WT_MapViewRangeDisplay extends HTMLElement {
             }
         };
         this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
-
-        this._lastRange = new WT_NumberUnit(0, WT_Unit.NMILE);
-        this._lastDistanceUnit = null;
     }
 
     connectedCallback() {
         this._autoElement = this.shadowRoot.querySelector(`#auto`);
-        this._rangeElement = this.shadowRoot.querySelector(`#range`);
+        this._rangeElement = new WT_CachedHTML(this.shadowRoot.querySelector(`#range`));
     }
 
     _updateAutoElement(state) {
@@ -83,14 +80,8 @@ class WT_MapViewRangeDisplay extends HTMLElement {
         let range = state.model.range;
         let distanceUnit = state.model.units.distance;
 
-        if (range.compare(this._lastRange) === 0 && distanceUnit.equals(this._lastDistanceUnit)) {
-            return;
-        }
-
         let displayUnit = this._selectDisplayUnit(range, distanceUnit);
         this._rangeElement.innerHTML = this._formatter.getFormattedHTML(range, displayUnit);
-        this._lastRange.set(range);
-        this._lastDistanceUnit = distanceUnit;
     }
 
     /**
