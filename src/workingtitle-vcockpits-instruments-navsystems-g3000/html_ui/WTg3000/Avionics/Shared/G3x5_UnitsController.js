@@ -8,6 +8,7 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
     _initSettings() {
         this.addSetting(this._navAngleSetting = new WT_G3x5_NavAngleUnitsSetting(this));
         this.addSetting(this._distanceSpeedSetting = new WT_G3x5_DistanceSpeedUnitsSetting(this));
+        this.addSetting(this._extTemperatureSetting = new WT_G3x5_ExtTemperatureUnitsSetting(this));
     }
 
     /**
@@ -21,11 +22,20 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
 
     /**
      * @readonly
-     * @property {WT_G3x5_DistanceSpeedUnitsSettingGroup} distanceSpeedSetting
+     * @property {WT_G3x5_DistanceSpeedUnitsSetting} distanceSpeedSetting
      * @type {WT_G3x5_DistanceSpeedUnitsSetting}
      */
     get distanceSpeedSetting() {
         return this._distanceSpeedSetting;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_ExtTemperatureUnitsSetting} extTemperatureSetting
+     * @type {WT_G3x5_ExtTemperatureUnitsSetting}
+     */
+    get extTemperatureSetting() {
+        return this._extTemperatureSetting;
     }
 }
 
@@ -124,6 +134,38 @@ WT_G3x5_DistanceSpeedUnitsSetting.UNITS = {
 };
 WT_G3x5_DistanceSpeedUnitsSetting.KEY = "WT_Units_DistanceSpeed";
 WT_G3x5_DistanceSpeedUnitsSetting.DEFAULT = WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL;
+
+class WT_G3x5_ExtTemperatureUnitsSetting extends WT_G3x5_UnitsSetting {
+    constructor(controller, defaultValue = WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT, key = WT_G3x5_ExtTemperatureUnitsSetting.KEY) {
+        super(controller, key, defaultValue);
+
+        this._allUnits = this._getAllUnitsHelper(WT_G3x5_ExtTemperatureUnitsSetting.Value, [WT_G3x5_ExtTemperatureUnitsSetting.UNITS.temperature]);
+    }
+
+    getTemperatureUnit() {
+        return WT_G3x5_ExtTemperatureUnitsSetting.UNITS.temperature[this.getValue()];
+    }
+
+    /**
+     *
+     * @returns {WT_Unit[][]}
+     */
+    getAllUnits() {
+        return this._allUnits;
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_G3x5_ExtTemperatureUnitsSetting.Value = {
+    CELSIUS: 0,
+    FAHRENHEIT: 1
+};
+WT_G3x5_ExtTemperatureUnitsSetting.UNITS = {
+    temperature: [WT_Unit.CELSIUS, WT_Unit.FAHRENHEIT]
+};
+WT_G3x5_ExtTemperatureUnitsSetting.KEY = "WT_Units_ExtTemperature";
+WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT = WT_G3x5_ExtTemperatureUnitsSetting.Value.CELSIUS;
 
 /**
  * @abstract
