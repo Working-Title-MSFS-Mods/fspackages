@@ -208,6 +208,9 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
 
         this._distanceSpeedRow = new WT_G3x5_TSCUnitsButtonRow();
         this._initButtonRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], this._controller.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+
+        this._extTemperatureRow = new WT_G3x5_TSCUnitsButtonRow();
+        this._initButtonRow(this._extTemperatureRow, "External Temperature", this._controller.extTemperatureSetting, ["Celsius", "Fahrenheit"], this._controller.extTemperatureSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
     }
 
     onAttached() {
