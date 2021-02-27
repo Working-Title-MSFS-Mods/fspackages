@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="/WTg3000/Avionics/G5000/PFD/Main/G5000_PFD.css"/>
+
+<script type="text/html" id="AS3000_PFD">
+  <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
+  <div id="Mainframe">
+      <div id="Electricity" state="off">
+          <div id="Console">Initializing System...</div>
+          <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
+          <div id="HorizonContainer">
+              <map-instrument id="SyntheticVision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/WTg3000/Avionics/Shared/PFD/MapConfig/"></map-instrument>
+              <glasscockpit-attitude-indicator id="Horizon" background="false"></glasscockpit-attitude-indicator>
+          </div>
+
+          <div id="InstrumentsContainer">
+
+              <div id="InsetMap">
+                  <map-view dpi-scale="0.5" class="insetMap" config-path="/WTg3000/Avionics/Shared/PFD/MapConfig/insetmapconfig.json"></map-view>
+              </div>
+
+              <!-- <glasscockpit-vertical-speed-indicator id="VSpeed"></glasscockpit-vertical-speed-indicator> -->
+              <glasscockpit-altimeter id="Altimeter"></glasscockpit-altimeter>
+              <glasscockpit-airspeed-indicator id="Airspeed"></glasscockpit-airspeed-indicator>
+
+              <glasscockpit-hsi id="Compass"></glasscockpit-hsi>
+
+              <glasscockpit-aoa-indicator id="AoA" displayed="true"></glasscockpit-aoa-indicator>
+
+              <!--<iframe id="Map" src="/Pages/Minimap/Minimap.html"></iframe>-->
+
+              <div id="MarkerBeacon">M</div>
+
+              <div id="Warnings" state="Hidden">
+                  <span id="WarningsContent">PULL UP</span>
+              </div>
+
+              <div id="Annunciations" state="Hidden">
+                  <div id="newAnnunciations"></div>
+                  <div id="acknowledged"></div>
+              </div>
+
+              <div id="AutopilotInfos">
+                  <div class="Left">
+                      <div id="AP_LateralActive">ROL</div>
+                      <div id="AP_LateralArmed">FMS</div>
+                  </div>
+                  <div class="Center">
+                      <div id="AP_Status">AP</div>
+                      <div id="AP_YDStatus">YD</div>
+                      <div id="AP_FDIndicatorArrow">
+                          <svg id="arrow" width="100%" viewBox="0 0 50 20">
+                              <polygon points="0,10 10,0 10,12 50,12 50,8 10,8 10,20" fill="green"></polygon>
+                          </svg>
+                      </div>
+                  </div>
+                  <div class="Right">
+                      <div id="AP_VerticalActive">V VS</div>
+                      <div id="AP_ModeReference">-200FPM</div>
+                      <div id="AP_Armed">ALTS</div>
+                      <div id="AP_ArmedReference">PATH</div>
+                  </div>
+              </div>
+
+              <div id="ComInfos">
+                  <div id="ActiveCom">COM1</div>
+                  <div id="ActiveComFreq"></div>
+                  <div id="ActiveComName"></div>
+              </div>
+
+              <div id="NavFreqInfos">
+                  <div id="ActiveNav">NAV1</div>
+                  <div id="ActiveNavName"></div>
+                  <div id="ActiveNavFreq"></div>
+              </div>
+
+              <div id="NavInfos">
+                  <div id="FromWP"></div>
+                  <div id="LegSymbol"></div>
+                  <div id="ToWP"></div>
+                  <div id="BottomInfos">
+                      <div class="title">DIS</div>
+                      <div class="value" id="DisValue"></div>
+                      <div class="title">BRG</div>
+                      <div class="value" id="BrgValue"></div>
+                  </div>
+              </div>
+
+              <div id="Minimums" state="Inactive">
+                  <div id="Minimums_Source">
+                      BARO<br />MIN
+                  </div>
+                  <div id="Minimums_Value">
+                      1280<span class="unit">FT</span>
+                  </div>
+              </div>
+
+              <div id="RadarAltitude" state="Inactive">
+                  <div id="RA_Title">
+                      RA
+                  </div>
+                  <div id="RA_Value">
+                      1080
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/Main/G5000_PFD.js"></script>

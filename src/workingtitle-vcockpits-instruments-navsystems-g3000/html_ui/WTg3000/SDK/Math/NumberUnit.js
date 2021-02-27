@@ -464,9 +464,6 @@ class WT_TempUnit extends WT_Unit {
      */
     convert(value, otherUnit) {
         if (this.family === otherUnit.family) {
-            if (this.id === otherUnit.id) {
-                return value;
-            }
             return (value + this._zeroOffset) * (this._scaleFactor / otherUnit._scaleFactor) - otherUnit._zeroOffset;
         }
         return NaN;
@@ -610,7 +607,7 @@ WT_Unit.CELSIUS = new WT_TempUnit("° Celsius", "° Celsius", "°C", 273.15, 1);
 WT_Unit.FAHRENHEIT = new WT_TempUnit("° Fahrenheit", "° Fahrenheit", "°F", 459.67, 5/9);
 
 WT_Unit.KNOT = new WT_CompoundUnit([WT_Unit.NMILE], [WT_Unit.HOUR], "knot", "knots", "kt");
-WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kph");
+WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kh");
 WT_Unit.MPM = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.MINUTE], null, null, "mpm");
 WT_Unit.MPS = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.SECOND]);
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");

@@ -1,136 +1,3 @@
-﻿:root {
-  --bodyHeightScale: 1; }
-
-@keyframes TemporaryShow {
-  0%, 100% {
-    visibility: visible; } }
-
-@keyframes TemporaryHide {
-  0%, 100% {
-    visibility: hidden; } }
-
-#highlight {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  z-index: 10; }
-
-#Electricity {
-  width: 100%;
-  height: 100%; }
-  #Electricity[state=off] {
-    display: none; }
-
-@font-face {
-  font-family: "Roboto";
-  src: url("/Fonts/RobotoMono-Medium.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: "Roboto-Light";
-  src: url("/Fonts/RobotoMono-Light.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: "Roboto-Bold";
-  src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-#Mainframe {
-  --refWidth: 1024;
-  --refHeight: 768; }
-
-@keyframes FlashYellow {
-  5%, 45% {
-    color: yellow;
-    background-color: #1a1d21; }
-  55%, 95% {
-    color: #1a1d21;
-    background-color: yellow; } }
-@keyframes FlashRed {
-  0%, 45% {
-    color: red;
-    background-color: #1a1d21; }
-  55%, 100% {
-    color: white;
-    background-color: red; } }
-
-as3000-pfd-element {
-  width: 100%;
-  height: 100%;
-  background-color: black;
-  font-family: Roboto-Bold;
-  position: relative;
-  overflow: hidden;
-  z-index: -10; }
-  as3000-pfd-element #Console {
-    position: absolute;
-    visibility: hidden;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    color: white;
-    font-size: 4vh;
-    z-index: 1000; }
-  as3000-pfd-element #Splash {
-    position: absolute;
-    visibility: hidden;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    z-index: 1000; }
-  as3000-pfd-element #Electricity {
-    width: 100%;
-    height: 100%; }
-    as3000-pfd-element #Electricity[state=off] {
-      display: none; }
-    as3000-pfd-element #Electricity[state=init] {
-      /*
-            // Animation sequence which look alike the real instrument. Removing this for now
-            #VSpeed,
-            #Compass,
-            #Airspeed,
-            #Altimeter,
-            #SoftKeys,
-            #AutopilotInfos,
-            #ComInfos,
-            #BottomBar,
-            #WindData {
-                animation: TemporaryHide 6s 1;
-            }
-
-            #XPDRTimeBox,
-            #AoA,
-            #LeftGroup {
-                animation: TemporaryHide 6.3s 1;
-            }
-
-            #HorizonContainer {
-                animation: TemporaryHide 6.5s 1;
-            }
-            */ }
-      as3000-pfd-element #Electricity[state=init] #Console {
-        animation: TemporaryShow 3.5s 1; }
-      as3000-pfd-element #Electricity[state=init] #Splash {
-        animation: TemporaryShow 3.5s 1;
-        animation-delay: 2.5s; }
-      as3000-pfd-element #Electricity[state=init] #NavBox {
-        animation: TemporaryHide 5.5s 1; }
-    as3000-pfd-element #Electricity[displaystyle=NoSoftkeys] #InstrumentsContainer #SoftKeys {
-      display: none; }
-    as3000-pfd-element #Electricity[displaystyle=NoSoftkeys] #InstrumentsContainer #Compass {
-      bottom: 1.85%; }
-    as3000-pfd-element #Electricity[displaystyle=NoSoftkeys] #InstrumentsContainer #BottomBar {
-      bottom: 0%; }
-    as3000-pfd-element #Electricity[displaystyle=NoSoftkeys] #InstrumentsContainer #WindData {
-      top: 64.15%; }
-  as3000-pfd-element .PopupWindow {
-    visibility: hidden; }
-    as3000-pfd-element .PopupWindow[state=Active] {
-      visibility: inherit; }
   as3000-pfd-element #Mainframe {
     width: 100%;
     height: 100%;
@@ -174,7 +41,7 @@ as3000-pfd-element {
       width: 100%;
       height: 100%;
       z-index: 0; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #InnerMap {
+      as3000-pfd-element #Mainframe #InstrumentsContainer #InsetMap {
         transform: rotateX(0);
         position: absolute;
         left: 1vh;
@@ -196,14 +63,21 @@ as3000-pfd-element {
         bottom: 36%;
         width: 12.5%;
         right: 70%; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
-        transform: rotateX(0);
-        position: absolute;
-        border: none;
-        left: 32%;
-        right: 32%;
-        bottom: 9%;
-        z-index: 1; }
+
+as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
+    transform: rotateX(0);
+    position: absolute;
+    border: none;
+    left: 32%;
+    right: 32%;
+    bottom: 11%;
+    z-index: 1;
+    font-weight: normal;
+}
+    as3000-pfd-element #Mainframe #InstrumentsContainer #Compass .fontBold {
+        font-weight: bold;
+    }
+
       as3000-pfd-element #Mainframe #InstrumentsContainer #WindData {
         position: absolute;
         top: 57%;
@@ -720,85 +594,36 @@ as3000-pfd-element {
           line-height: 5vh; }
         as3000-pfd-element #Mainframe #InstrumentsContainer #RadarAltitude[state=Inactive] {
           display: none; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar {
+
+as3000-pfd-element wt-pfd-bottominfo {
+    position: absolute;
+    left: 0%;
+    bottom: 7.5%;
+    height: 7.5%;
+    width: 100%;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+    font-size: 2.5vh;
+    -webkit-clip-path: url(#bottomInfoClip);
+}
+    as3000-pfd-element wt-pfd-bottominfo .pfdBottomInfoCell {
         position: absolute;
-        bottom: 7.15%;
-        height: 10%;
-        width: 101%;
-        left: -0.5%;
-        line-height: 5vh; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar #Background {
-          position: absolute;
-          width: 100%;
-          height: 100%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup {
-          position: absolute;
-          height: 100%;
-          left: 0.5%;
-          width: 21%;
-          z-index: 1; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup .left {
-            position: absolute;
-            width: 24%;
-            left: 6%;
-            font-size: 2.5vh; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup .right {
-            position: absolute;
-            right: 6%;
-            text-align: right;
-            width: 64%;
-            font-size: 3vh; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup #TAS {
-            position: absolute;
-            height: 50%;
-            width: 50%;
-            left: 0%;
-            top: 0%; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup #OAT {
-            position: absolute;
-            height: 50%;
-            width: 50%;
-            right: 0%;
-            top: 0%;
-            border-left: 0.4vh solid white; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup #GS {
-            position: absolute;
-            height: 50%;
-            width: 50%;
-            left: 0%;
-            bottom: 0%; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .LeftGroup #ISA {
-            position: absolute;
-            height: 50%;
-            width: 50%;
-            right: 0%;
-            bottom: 0%;
-            border-left: 0.4vh solid white; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .RightGroup {
-          position: absolute;
-          height: 100%;
-          left: 70%;
-          width: 17%;
-          z-index: 1; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .RightGroup .left {
-            position: absolute;
-            width: 20%;
-            font-size: 2.5vh; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .RightGroup .right {
-            position: absolute;
-            text-align: right;
-            width: 80%;
-            font-size: 3vh; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .RightGroup #TMR {
-            position: absolute;
-            height: 50%;
-            width: 100%;
-            top: 0%; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #BottomBar .RightGroup #UTC {
-            position: absolute;
-            height: 50%;
-            width: 100%;
-            bottom: 0%; }
+        top: 0%;
+        height: 100%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-airspeedcell {
+        left: 0.5%;
+        width: 7%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-temperaturecell {
+        left: 8.5%;
+        width: 7%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-timecell {
+        left: 66%;
+        width: 9%;
+    }
+
       as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys {
         position: absolute;
         background-color: #1a1d21;
