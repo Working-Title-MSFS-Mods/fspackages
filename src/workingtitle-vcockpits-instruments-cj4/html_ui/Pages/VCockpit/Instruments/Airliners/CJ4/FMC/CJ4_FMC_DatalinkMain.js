@@ -130,7 +130,7 @@ class CJ4_FMC_DatalinkMain {
                         _reqStatus = "RCVD[blue]";
 
                         WTDataStore.set("WT_ATIS_Time", hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]");
-                        WTDataStore.set("WT_ATIS_Message", `${json.combined}`);
+                        if(!json.combined) WTDataStore.set("WT_ATIS_Message", json.arr + " " + json.dep); else WTDataStore.set("WT_ATIS_Message", `${json.combined}`);
 
                         if (isOnSpecialPage === "Page1") {
                             return CJ4_FMC_DatalinkMain.ShowPage1(fmc)
