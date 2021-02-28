@@ -27,6 +27,9 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
   private _fpChecksum: number = -1;
 
+  /**
+   * Gets a boolean indicating if the view is visible
+   */
   public get isVisible(): boolean {
     return this.style.visibility === "visible";
   }
@@ -38,7 +41,11 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     this._chartSelectCallback = chartSelectCallback;
   }
 
+  /**
+   * Retrieves and updates the chart index
+   */
   public async updateData(): Promise<void> {
+    // check if flight plan has changed
     if (this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
       this._isDirty = true;
       this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
@@ -51,12 +58,14 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
         const icaoOrig = this._fpm.getOrigin() === undefined ? "" : this._fpm.getOrigin().ident;
         const icaoDest = this._fpm.getDestination() === undefined ? "" : this._fpm.getDestination().ident;
 
+        // get charts for origin
         if (icaoOrig !== "") {
           const origCharts = await this._api.getChartsList(icaoOrig);
           this.chartsindex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
           this.chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code[0] === this._fpm.getDeparture().name, origCharts);
         }
 
+        // get charts for destination
         if (icaoDest !== "") {
           const destCharts = await this._api.getChartsList(icaoDest);
           this.chartsindex.Destination.Airport = this.findChartInArray(c => c.type.code === "AP", destCharts);
@@ -66,6 +75,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
           }
           const approach = this._fpm.getApproach();
           if (approach !== undefined) {
+            // build identifiers for runway procedure
             const appname = this._fpm.getApproach().name[0];
             const appRwy = Avionics.Utils.formatRunway(this._fpm.getApproach().runway).trim();
 
@@ -85,28 +95,39 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
       this.renderselect();
     }
   }
+
+  /**
+   * Resets the charts in the index
+   */
   resetChartsIndex(): void {
     this.getFlatChartIndex().forEach((c) => {
       c = undefined;
     });
   }
 
+  /**
+   * Finds a chart in the array using the predicate.
+   * @param predicate A predicate used to find a chart
+   * @param charts The array of charts to search in
+   */
   public findChartInArray(predicate: (value: NG_Chart, index: number, obj: NG_Chart[]) => unknown, charts: NG_Charts): NG_Chart {
     const chart = charts.charts.find(predicate)
     return chart;
   }
 
-  show() {
+  /** Show the view */
+  public show(): void {
     this._isDirty = true;
     this.updateData();
     this.style.visibility = "visible";
   }
 
-  hide() {
+  /** Hide the view */
+  public hide(): void {
     this.style.visibility = "hidden";
   }
 
-  onEvent(event: string): boolean {
+  public onEvent(event: string): boolean {
     if (!this.isVisible) {
       return false;
     }
@@ -135,6 +156,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     return handled;
   }
 
+  /** Sends the currently selected chart back to the callback delegates. */
   private async selectChart() {
     const chart = this.getFlatChartIndex()[this._selectIndex];
     if (chart !== undefined) {
@@ -144,7 +166,8 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     }
   }
 
-  public selectPrevChart() {
+  /** Scroll to previous charts in the list and select it */
+  public selectPrevChart(): void {
     if (this._selectIndex > 0) {
       const chartsIndex = this.getFlatChartIndex();
       for (let i = this._selectIndex - 1; i >= 0; i--) {
@@ -157,7 +180,8 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     }
   }
 
-  public selectNextChart() {
+  /** Scroll to next chart in the list and select it */
+  public selectNextChart(): void {
     const chartsIndex = this.getFlatChartIndex();
     for (let i = this._selectIndex + 1; i < chartsIndex.length; i++) {
       if (chartsIndex[i] !== undefined) {
@@ -168,7 +192,8 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     }
   }
 
-  private renderselect() {
+  /** Sets the style on the selected row */
+  private renderselect():void {
     const rows = this._tableContainer.querySelectorAll("tr");
     rows.forEach(r => {
       r.className = "";
@@ -176,6 +201,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     rows[this._selectIndex].className = "selected";
   }
 
+  /** Flattens the chart index to an array */
   private getFlatChartIndex(): Array<NG_Chart> {
     const returnArr: Array<NG_Chart> = [];
     Object.values(this.chartsindex).forEach(lvl => {
@@ -184,6 +210,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     return returnArr;
   }
 
+  /** Handling to scroll through the menu */
   private menuScroll(isForward: boolean): void {
     this._selectIndex = isForward ? this._selectIndex + 1 : this._selectIndex - 1;
 
@@ -196,6 +223,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     }
   }
 
+  /** Renders the chart index */
   private render(): void {
     this._tableContainer.innerHTML = '';
 
@@ -212,6 +240,11 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     this._tableContainer.appendChild(destSection);
   }
 
+  /**
+   * Renders a section of the chart index
+   * @param caption The caption of the index section
+   * @param data An object containing the charts.
+   */
   private renderSection(caption: string, data: any): HTMLDivElement {
     const container = document.createElement("div");
     const heading = document.createElement("h4");

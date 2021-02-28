@@ -10,20 +10,24 @@ export class NavigraphApi {
 
   private _chartListCache: Map<string, NgApi.NG_Charts> = new Map();
 
+  /** Gets a boolean indicating if the navigraph account is linked */
   public get isAccountLinked(): boolean {
     this._refreshToken = WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
     return this._refreshToken !== "";
   }
 
+  /** Sets the refresh token */
   public set refreshToken(val: string) {
     this._refreshToken = val;
     WTDataStore.set(this.RFRSH_TOKEN_KEY, val);
   }
 
+  /** Returns a boolean indicating if a access token is known */
   public get hasAccessToken(): boolean {
     return this._accessToken !== "";
   }
 
+  /** Sets the access token */
   public set accessToken(val: string) {
     this._accessToken = val;
     this._accessTokenTimestamp = Date.now();
@@ -36,6 +40,9 @@ export class NavigraphApi {
     this._refreshToken = WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
   }
 
+  /**
+   * Checks if the access token is still good or starts the link account process
+   */
   async validateToken(): Promise<void> {
     if (this.isAccountLinked) {
       if (!this.hasAccessToken ||
@@ -47,6 +54,9 @@ export class NavigraphApi {
     }
   }
 
+  /**
+   * Refreshes the access token using the refresh token
+   */
   async refreshAccessToken(): Promise<void> {
     const refreshForm: Map<string, string> = new Map([
       ["grant_type", "refresh_token"],
@@ -60,6 +70,10 @@ export class NavigraphApi {
     return;
   }
 
+  /**
+   * Gets a list of charts for the given ICAO
+   * @param icao The ICAO of the airport to get the charts from
+   */
   async getChartsList(icao: string): Promise<NgApi.NG_Charts> {
     if (!this._chartListCache.has(icao)) {
       await this.validateToken();
@@ -72,6 +86,9 @@ export class NavigraphApi {
     }
   }
 
+  /**
+   * Executes the navigraph account linking process
+   */
   async linkAccount(): Promise<boolean> {
     // send auth request
     const authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post");
@@ -100,6 +117,13 @@ export class NavigraphApi {
     }
   }
 
+  /**
+   * Used to encapsulate requests to navigraph
+   * @param path The url the request points to
+   * @param method "GET" or "POST"
+   * @param form A map of data to send in the request body
+   * @param auth A boolean indicating if the auth token should be used for this request
+   */
   async sendRequest(path: string, method: 'get' | 'post', form: Map<string, string> = null, auth: boolean = false): Promise<RequestResult> {
     const formData = new Map<string, string>();
     formData.set(LZUTF8.decompress(this.placeholdertext1, { inputEncoding: "StorageBinaryString" }), LZUTF8.decompress(this.placeholdertext2, { inputEncoding: "StorageBinaryString" }));
@@ -128,6 +152,10 @@ export class NavigraphApi {
     return response;
   }
 
+  /**
+   * Artificial delay
+   * @param ms Time to delay
+   */
   delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }

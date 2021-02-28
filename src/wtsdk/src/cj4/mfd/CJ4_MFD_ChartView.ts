@@ -19,31 +19,38 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private _chartindexnumber: HTMLElement;
   private _chartprocidentifier: HTMLElement;
   private _chartinfonogeoref: HTMLElement;
+
+  /** Gets a boolean indicating if the view is visible */
   public get isVisible(): boolean {
     return this.style.visibility === "visible";
   }
 
+  /** Gets a boolean indicating if the chart is in portrait format */
   public get isPortrait(): boolean {
     return this._srcImage.height > this._srcImage.width;
   }
 
+  /** Sets the x offset of the chart view */
   private set xOffset(value: number) {
     this._xOffset = Math.min(0, Math.max(-(this._dimensions.chartW * this._zoom - this._canvas.width), value));
   }
 
+  /** Gets the x offset of the chart view */
   private get xOffset(): number {
     return this._xOffset;
   }
 
+  /** Sets the y offset of the chart view */
   private set yOffset(value: number) {
     this._yOffset = Math.min(0, Math.max(-(this._dimensions.chartH * this._zoom - this._canvas.height) - 20, value));
   }
 
+  /** Gets the y offset of the chart view */
   private get yOffset(): number {
     return this._yOffset;
   }
 
-
+  /** A struct containing different dimension values of the view and chart */
   private readonly _dimensions = {
     chartid: "",
     bboxBorder: 54,
@@ -74,6 +81,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this._planeImage.src = "coui://html_UI/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/icon_plane.png?cb=323334";
   }
 
+  /** Event thrown when chart image is loaded */
   onSrcImageLoaded(): void {
     this._xOffset = 0;
     this._yOffset = 0;
@@ -82,6 +90,11 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this._isDirty = true;
   }
 
+  /**
+   * Loads a chart into the view
+   * @param url The url for the chart to load
+   * @param chart The chart object
+   */
   loadChart(url: string = "", chart: NG_Chart = undefined): void {
     if (url !== "") {
       this._srcImage.src = url;
@@ -120,7 +133,8 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     }
   }
 
-  drawRect(ctx: CanvasRenderingContext2D) {
+  /** Draws the green box for panning and zooming */
+  private drawRect(ctx: CanvasRenderingContext2D): void {
     ctx.strokeStyle = "green";
     ctx.lineWidth = 4;
     const scrollGapX = this._dimensions.chartW - this._canvas.width;
@@ -136,6 +150,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     ctx.strokeRect(this._dimensions.boxPosX, this._dimensions.boxPosY, this._dimensions.boxW, this._dimensions.boxH);
   }
 
+  /** Fits the chart to the canvas size and sets dimension values */
   private scaleImgToFit(): void {
     if (this._srcImage.width > 0) {
       // get bbox measures
@@ -164,6 +179,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     }
   }
 
+  /** Draws the chart */
   private drawImage(ctx: CanvasRenderingContext2D): void {
     ctx.drawImage(this._srcImage, this._dimensions.bboxBorder, this._dimensions.bboxBorder, this._dimensions.bboxW, this._dimensions.bboxH, 0, 0, this._dimensions.chartW, this._dimensions.chartH);
 
@@ -231,13 +247,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     return handled;
   }
 
-  show(): void {
+  public show(): void {
     this.fitCanvasToContainer(this._canvas);
     this._isDirty = true;
     this.style.visibility = "visible";
   }
 
-  hide(): void {
+  public hide(): void {
     this.style.visibility = "hidden";
   }
 
