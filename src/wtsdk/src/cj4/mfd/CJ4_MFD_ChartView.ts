@@ -187,24 +187,42 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       // planepos
       const lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
       const long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-      let planeX = (long - this._chart.planview.bbox_geo[0]) * this._dimensions.pxPerLong;
-      let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * this._dimensions.pxPerLat;
 
-      // no idea why we need to offset more
-      planeX += (this._chart.planview.bbox_local[0]) - this._dimensions.bboxBorder;
-      planeY += (this._chart.planview.bbox_local[3]) - this._dimensions.bboxBorder;
+      if (this.isInsideGeoCoords(lat, long, this._chart.planview.bbox_geo)) {
+        let planeX = (long - this._chart.planview.bbox_geo[0]) * this._dimensions.pxPerLong;
+        let planeY = Math.abs(lat - this._chart.planview.bbox_geo[3]) * this._dimensions.pxPerLat;
+        // no idea why we need to offset more
+        planeX += (this._chart.planview.bbox_local[0]) - this._dimensions.bboxBorder;
+        planeY += (this._chart.planview.bbox_local[3]) - this._dimensions.bboxBorder;
 
-      const transX = Math.abs(planeX) * this._dimensions.scaleW;
-      const transY = Math.abs(planeY) * this._dimensions.scaleH;
-      const simTrack = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
-      const rot = Math.round(simTrack) * (Math.PI / 180);
-      ctx.translate(transX, transY);
-      ctx.rotate(rot);
-      const planeScale = this._zoom === 1 ? 1 : 1.5;
-      ctx.drawImage(this._planeImage, -20 / planeScale, -23.5 / planeScale, 40 / planeScale, 47 / planeScale);
-      ctx.translate(-transX, -transY);
-      ctx.rotate(-rot);
+        // check if plane is under an inset
+        for (let i = 0; i < this._chart.insets.length; i++) {
+          const inset = this._chart.insets[i].bbox_local;
+          if (this.isInsidePxCoords(planeX, planeY, inset)) {
+            return;
+          }
+        }
+
+        const transX = Math.abs(planeX) * this._dimensions.scaleW;
+        const transY = Math.abs(planeY) * this._dimensions.scaleH;
+        const simTrack = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+        const rot = Math.round(simTrack) * (Math.PI / 180);
+        ctx.translate(transX, transY);
+        ctx.rotate(rot);
+        const planeScale = this._zoom === 1 ? 1 : 1.5;
+        ctx.drawImage(this._planeImage, -20 / planeScale, -23.5 / planeScale, 40 / planeScale, 47 / planeScale);
+        ctx.translate(-transX, -transY);
+        ctx.rotate(-rot);
+      }
     }
+  }
+
+  private isInsideGeoCoords(lat: number, long: number, bb: number[]): boolean {
+    return (bb[0] <= long && long <= bb[2] && bb[1] <= lat && lat <= bb[3]);
+  }
+
+  private isInsidePxCoords(x: number, y: number, bb: number[]): boolean {
+    return (bb[0] <= x && x <= bb[2] && bb[3] <= y && y <= bb[1]);
   }
 
   onEvent(event: string): boolean {
