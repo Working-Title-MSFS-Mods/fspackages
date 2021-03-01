@@ -34,6 +34,7 @@ class WT_G3x5_PFDBottomInfo extends NavSystemElement {
      */
     addCell(cell) {
         this._cells.push(cell);
+        cell.htmlElement.classList.add(WT_G3x5_PFDBottomInfo.CELL_CLASS);
         this.htmlElement.appendChild(cell.htmlElement);
     }
 
@@ -57,6 +58,7 @@ class WT_G3x5_PFDBottomInfo extends NavSystemElement {
     onEvent(event) {
     }
 }
+WT_G3x5_PFDBottomInfo.CELL_CLASS = "pfdBottomInfoCell";
 
 class WT_G3x5_PFDBottomInfoHTMLElement extends HTMLElement {
 }
@@ -73,7 +75,6 @@ customElements.define(WT_G3x5_PFDBottomInfoHTMLElement.NAME, WT_G3x5_PFDBottomIn
 class WT_G3x5_PFDBottomInfoCell {
     constructor() {
         this._htmlElement = this._createHTMLElement();
-        this.htmlElement.classList.add(WT_G3x5_PFDBottomInfoCell.CLASS);
     }
 
     _createHTMLElement() {
@@ -91,7 +92,6 @@ class WT_G3x5_PFDBottomInfoCell {
     update() {
     }
 }
-WT_G3x5_PFDBottomInfoCell.CLASS = "pfdBottomInfoCell";
 
 class WT_G3x5_PFDBottomInfoAirspeedCell extends WT_G3x5_PFDBottomInfoCell {
     /**
