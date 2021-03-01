@@ -21,6 +21,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this._lastAltitudeAlertSet = false;
         this.ALTALERTANIMTIME = 4000;
         this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
+        this._baroPresetChanged = 0;
     }
     static get observedAttributes() {
         return ["hud"];
@@ -1548,24 +1549,34 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
     }
     updateBaroPressure(_mode) {
+        let baroPreset = ((SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number") + 2)) / 16;
+        let baroStore = SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number");
+        console.log("Baro Store " + baroStore);
+        
         if (this.pressureSVG) {
             var units = Simplane.getPressureSelectedUnits();
             var pressure = Simplane.getPressureValue(units);
+            console.log("Baro Pressure " + pressure);
+            console.log("Preset Pressure " + baroPreset);
             if (_mode == "STD") {
-                this.pressureBoxGroup.setAttribute("visibility", "visible");
-                this.pressureSVG.removeAttribute("stroke", "black");
-                this.pressureSVG.removeAttribute("stroke-width", "7px");
-                this.pressureSVGUnits.removeAttribute("stroke", "black");
-                this.pressureSVGUnits.removeAttribute("stroke-width", "7px");
+                if (this._baroPresetChanged != baroPreset) {
+                    this.pressureBoxGroup.setAttribute("visibility", "visible");
+                    this.pressureSVG.removeAttribute("stroke", "black");
+                    this.pressureSVG.removeAttribute("stroke-width", "7px");
+                    this.pressureSVGUnits.removeAttribute("stroke", "black");
+                    this.pressureSVGUnits.removeAttribute("stroke-width", "7px");
+                    this._baroPresetChanged = baroPreset;
+                }
                 if (units == "millibar") {
                     this.pressureSVG.textContent = "1013";
                     this.pressureSVGUnits.textContent = "STD";
-                    this.pressurePreset.textContent = pressure.toFixed(0);
+                    this.pressurePreset.textContent = baroPreset.toFixed(0);
                 }
                 else {
+                    baroPreset = baroPreset / 33.86;
                     this.pressureSVG.textContent = "29.92";
                     this.pressureSVGUnits.textContent = "STD";
-                    this.pressurePreset.textContent = pressure.toFixed(2);
+                    this.pressurePreset.textContent = baroPreset.toFixed(2);
                 }
             }
             else {
