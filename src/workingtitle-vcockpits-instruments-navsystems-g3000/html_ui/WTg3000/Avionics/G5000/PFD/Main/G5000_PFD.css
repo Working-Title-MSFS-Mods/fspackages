@@ -618,8 +618,13 @@ as3000-pfd-element wt-pfd-bottominfo {
       left: 8.5%;
       width: 7%;
   }
+  as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-bearingcellcontainer {
+      left: 63%;
+      width: 19%;
+      --bearingcell-bottom-font-family: "Roboto-Condensed";
+  }
   as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-timecell {
-      left: 66%;
+      left: 83%;
       width: 9%;
   }
 
