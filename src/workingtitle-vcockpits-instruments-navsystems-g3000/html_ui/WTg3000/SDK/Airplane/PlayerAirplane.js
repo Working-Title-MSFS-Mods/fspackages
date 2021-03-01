@@ -2,7 +2,7 @@ class WT_PlayerAirplane {
     constructor() {
         this._type = this._getAircraftType();
         this._navigation = this._createNavigation();
-        this._gps = this._createGPS();
+        this._fms = this._createFMS();
         this._navCom = this._createNavCom();
     }
 
@@ -21,8 +21,8 @@ class WT_PlayerAirplane {
         return new WT_AirplaneNavigation(this);
     }
 
-    _createGPS() {
-        return new WT_AirplaneGPS(this);
+    _createFMS() {
+        return new WT_AirplaneFMS(this);
     }
 
     _createNavCom() {
@@ -49,11 +49,11 @@ class WT_PlayerAirplane {
 
     /**
      * @readonly
-     * @property {WT_AirplaneGPS} gps - the GPS component of this airplane.
-     * @type {WT_AirplaneGPS}
+     * @property {WT_AirplaneFMS} gps - the GPS component of this airplane.
+     * @type {WT_AirplaneFMS}
      */
-    get gps() {
-        return this._gps;
+    get fms() {
+        return this._fms;
     }
 
     /**
@@ -375,28 +375,28 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
 WT_AirplaneNavigation._tempGeoPoint = new WT_GeoPoint(0, 0);
 WT_AirplaneNavigation._tempNavAngleUnit = new WT_NavAngleUnit(true);
 
-class WT_AirplaneGPS extends WT_AirplaneComponent {
+class WT_AirplaneFMS extends WT_AirplaneComponent {
     /**
-     * Checks whether this GPS is tracking a target.
-     * @returns {Boolean} whether this GPS is tracking a target.
+     * Checks whether this FMS is tracking a target.
+     * @returns {Boolean} whether this FMS is tracking a target.
      */
     hasTarget() {
         return SimVar.GetSimVarValue("GPS IS ACTIVE WAY POINT", "Bool") === 1;
     }
 
     /**
-     * Gets the ident string of this GPS's tracked target.
-     * @returns {String} the ident string of this GPS's tracked target, or null if this GPS is not tracking a target.
+     * Gets the ident string of this FMS's tracked target.
+     * @returns {String} the ident string of this FMS's tracked target, or null if this FMS is not tracking a target.
      */
     targetIdent() {
         return this.hasTarget() ? SimVar.GetSimVarValue("GPS WP NEXT ID", "string") : null;
     }
 
     /**
-     * Gets the distance to this GPS's tracked target.
+     * Gets the distance to this FMS's tracked target.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of nautical miles.
-     * @returns {WT_NumberUnit} the distance to this GPS's tracked target, or null if this GPS is not tracking a target.
+     * @returns {WT_NumberUnit} the distance to this FMS's tracked target, or null if this FMS is not tracking a target.
      */
     targetDistance(reference) {
         if (!this.hasTarget()) {
@@ -408,10 +408,10 @@ class WT_AirplaneGPS extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets the initial bearing (forward azimuth) to this GPS's tracked target.
+     * Gets the initial bearing (forward azimuth) to this FMS's tracked target.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of magnetic bearing.
-     * @returns {WT_NumberUnit} the initial bearing to this GPS's tracked target, or null if this GPS is not tracking a target.
+     * @returns {WT_NumberUnit} the initial bearing to this FMS's tracked target, or null if this FMS is not tracking a target.
      */
     targetBearing(reference) {
         if (!this.hasTarget()) {
@@ -419,11 +419,11 @@ class WT_AirplaneGPS extends WT_AirplaneComponent {
         }
 
         let value = SimVar.GetSimVarValue("GPS WP BEARING", "degree");
-        let position = this.airplane.position(WT_AirplaneGPS._tempGeoPoint);
+        let position = this.airplane.position(WT_AirplaneFMS._tempGeoPoint);
         if (reference) {
-            WT_AirplaneGPS._tempNavAngleUnit.setLocation(position);
+            WT_AirplaneFMS._tempNavAngleUnit.setLocation(position);
             reference.unit.setLocation(position);
-            reference.set(value, WT_AirplaneGPS._tempNavAngleUnit);
+            reference.set(value, WT_AirplaneFMS._tempNavAngleUnit);
             return reference;
         } else {
             return new WT_NavAngleUnit(true, position).createNumber(value);
@@ -431,11 +431,11 @@ class WT_AirplaneGPS extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets the estimated time enroute to this GPS's tracked target. The ETE is calculated using the current distance to the target
+     * Gets the estimated time enroute to this FMS's tracked target. The ETE is calculated using the current distance to the target
      * and the current groundspeed of the airplane.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of seconds.
-     * @returns {WT_NumberUnit} the estimated time enroute to this GPS's tracked target, or null if this GPS is not tracking a target.
+     * @returns {WT_NumberUnit} the estimated time enroute to this FMS's tracked target, or null if this FMS is not tracking a target.
      */
     targetETE(reference) {
         if (!this.hasTarget()) {
@@ -446,8 +446,8 @@ class WT_AirplaneGPS extends WT_AirplaneComponent {
         return reference ? reference.set(value, WT_Unit.SECOND) : WT_Unit.SECOND.createNumber(value);
     }
 }
-WT_AirplaneGPS._tempGeoPoint = new WT_GeoPoint(0, 0);
-WT_AirplaneGPS._tempNavAngleUnit = new WT_NavAngleUnit(true);
+WT_AirplaneFMS._tempGeoPoint = new WT_GeoPoint(0, 0);
+WT_AirplaneFMS._tempNavAngleUnit = new WT_NavAngleUnit(true);
 
 class WT_AirplaneNavCom extends WT_AirplaneComponent {
     constructor(airplane, numComSlots, numNavSlots, numADFSlots) {
