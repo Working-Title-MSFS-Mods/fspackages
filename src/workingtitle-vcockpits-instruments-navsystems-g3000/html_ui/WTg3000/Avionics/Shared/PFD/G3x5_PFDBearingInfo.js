@@ -55,7 +55,7 @@ class WT_G3x5_PFDBearingInfoModel {
         this._adapters[WT_G3x5_PFDBearingInfoModel.Source.NONE] = new WT_G3x5_PFDBearingInfoModelNoSourceAdapter(this.airplane);
         this._adapters[WT_G3x5_PFDBearingInfoModel.Source.NAV1] = new WT_G3x5_PFDBearingInfoModelNAVAdapter(this.airplane, 1);
         this._adapters[WT_G3x5_PFDBearingInfoModel.Source.NAV2] = new WT_G3x5_PFDBearingInfoModelNAVAdapter(this.airplane, 2);
-        this._adapters[WT_G3x5_PFDBearingInfoModel.Source.GPS] = new WT_G3x5_PFDBearingInfoModelGPSAdapter(this.airplane);
+        this._adapters[WT_G3x5_PFDBearingInfoModel.Source.FMS] = new WT_G3x5_PFDBearingInfoModelFMSAdapter(this.airplane);
         this._adapters[WT_G3x5_PFDBearingInfoModel.Source.ADF] = new WT_G3x5_PFDBearingInfoModelADFAdapter(this.airplane, 1);
     }
 
@@ -124,7 +124,7 @@ WT_G3x5_PFDBearingInfoModel.Source = {
     NONE: 0,
     NAV1: 1,
     NAV2: 2,
-    GPS: 3,
+    FMS: 3,
     ADF: 4
 }
 
@@ -215,39 +215,39 @@ class WT_G3x5_PFDBearingInfoModelNAVAdapter extends WT_G3x5_PFDBearingInfoModelS
     }
 }
 
-class WT_G3x5_PFDBearingInfoModelGPSAdapter extends WT_G3x5_PFDBearingInfoModelSourceAdapter {
+class WT_G3x5_PFDBearingInfoModelFMSAdapter extends WT_G3x5_PFDBearingInfoModelSourceAdapter {
     /**
      * @param {WT_PlayerAirplane} airplane
      */
     constructor(airplane) {
         super(airplane);
 
-        this._gps = airplane.gps;
+        this._fms = airplane.fms;
     }
 
     hasData() {
-        return this._gps.hasTarget();
+        return this._fms.hasTarget();
     }
 
     getIdent() {
-        return this._gps.targetIdent();
+        return this._fms.targetIdent();
     }
 
     hasDistance() {
-        return this._gps.hasTarget();
+        return this._fms.hasTarget();
     }
 
     updateDistance(value) {
-        if (this._gps.hasTarget()) {
-            this._gps.targetDistance(value);
+        if (this._fms.hasTarget()) {
+            this._fms.targetDistance(value);
         } else {
             value.set(0);
         }
     }
 
     updateBearing(value) {
-        if (this._gps.hasTarget()) {
-            this._gps.targetBearing(value);
+        if (this._fms.hasTarget()) {
+            this._fms.targetBearing(value);
         } else {
             value.set(0);
         }

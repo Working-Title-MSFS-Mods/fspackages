@@ -7,6 +7,12 @@ class WT_G5000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
     }
 }
 
+class WT_G5000_PFDBottomInfoNAVDMECell extends WT_G3x5_PFDBottomInfoCell {
+    constructor() {
+
+    }
+}
+
 class WT_G5000_PFDBottomInfoBearingContainerCell extends WT_G3x5_PFDBottomInfoCell {
     constructor(bearingInfos) {
         super();
