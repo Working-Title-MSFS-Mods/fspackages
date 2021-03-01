@@ -631,7 +631,7 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
     }
 
     isReceiving() {
-        return SimVar.GetSimVarValue(`NAV HAS NAV:${this.index}`, "Bool") === 1;
+        return SimVar.GetSimVarValue(`NAV HAS NAV:${this.index}`, "Bool") !== 0;
     }
 
     ident() {
@@ -663,7 +663,7 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
     }
 
     hasDME() {
-        return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "string");
+        return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "Bool") !== 0;
     }
 
     dme(reference) {
