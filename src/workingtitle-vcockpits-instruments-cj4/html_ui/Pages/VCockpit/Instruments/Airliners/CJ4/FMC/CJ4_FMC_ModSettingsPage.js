@@ -177,6 +177,10 @@ class CJ4_FMC_ModSettingsPageOne {
         this._fmc.onLeftInput[5] = () => {
             CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc);
         };
+
+        this._fmc.onNextPage = () => {
+            CJ4_FMC_ModSettingsPage.ShowPage2(this._fmc);
+        };
     }
 
     invalidate() {
@@ -192,10 +196,9 @@ class CJ4_FMC_ModSettingsPageTwo {
         this._metarSrc = WTDataStore.get("WT_CJ4_METAR_Source", 0);
         this._dlProcTime = WTDataStore.get("WT_CJ4_DL_Time", 0);
         this._hoppieLogon = WTDataStore.get("WT_CJ4_HoppieLogon", "REFER TO MANUAL");
-        this._fmc.onRightInput[4] = () => { this.atisSrc = this.atisSrc + 1; };
         this._atisSrc = WTDataStore.get('WT_ATIS_Source', 0);
     }
-    
+
     get atisSrc() { return this._atisSrc; }
     set atisSrc(value) {
         if (value == 2) value = 0;
@@ -239,7 +242,7 @@ class CJ4_FMC_ModSettingsPageTwo {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "WT MOD SETTINGS[yellow]"],
             ["METAR SOURCE[blue]", "ATIS SOURCE[blue]"],
-            [metarSrcSwitch],
+            [metarSrcSwitch, atisSrcSwitch],
             ["DATALINK PROCESSING TIME[blue]"],
             [dlProcSwitch],
             ["HOPPIE LOGON CODE[blue]"],
@@ -255,6 +258,7 @@ class CJ4_FMC_ModSettingsPageTwo {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => { this.metarSrc = this.metarSrc + 1; };
+        this._fmc.onRightInput[0] = () => { this.atisSrc = this.atisSrc + 1; };
         this._fmc.onLeftInput[1] = () => { this.dlProcTime = this.dlProcTime + 1; };
         this._fmc.onPrevPage = () => { CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc); };
     }
