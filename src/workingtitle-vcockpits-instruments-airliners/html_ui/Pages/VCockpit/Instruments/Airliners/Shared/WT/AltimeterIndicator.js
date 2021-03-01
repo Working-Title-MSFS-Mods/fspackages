@@ -131,12 +131,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureBoxGroup.appendChild(this.pressureArrow);
 
         this.pressurePreset = document.createElementNS(Avionics.SVG.NS, "text");
-        this.pressurePreset.textContent = "30.23";
+        this.pressurePreset.textContent = "29.92";
         this.pressurePreset.setAttribute("id", "PressurePreset");
         this.pressurePreset.setAttribute("x", (posX - 65).toString());
         this.pressurePreset.setAttribute("y", (posY + 65).toString());
         this.pressurePreset.setAttribute("fill", "white");
-        this.pressurePreset.setAttribute("letter-spacing", "-.5");
         this.pressurePreset.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.pressurePreset.setAttribute("font-family", "Roboto-Light");
         this.pressurePreset.setAttribute("text-anchor", "center");
@@ -161,21 +160,22 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVG.setAttribute("x", (posX - 62).toString());
         this.pressureSVG.setAttribute("y", (posY + 25).toString());
         this.pressureSVG.setAttribute("fill", "cyan");
-        //this.pressureSVG.setAttribute("stroke", "black");
-        //this.pressureSVG.setAttribute("stroke-width", "7px");
+        this.pressureSVG.setAttribute("stroke", "black");
+        this.pressureSVG.setAttribute("stroke-width", "7px");
         this.pressureSVG.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.pressureSVG.setAttribute("font-family", "Roboto-Light");
         this.pressureSVG.setAttribute("text-anchor", "center");
+        this.pressureSVG.setAttribute("letter-spacing", "0.0");
         this.rootGroup.appendChild(this.pressureSVG);
 
         this.pressureSVGUnits = document.createElementNS(Avionics.SVG.NS, "text");
         this.pressureSVGUnits.textContent = "";
         this.pressureSVGUnits.setAttribute("id", "PressureSVGUnits");
-        this.pressureSVGUnits.setAttribute("x", (posX + 8).toString());
-        this.pressureSVGUnits.setAttribute("y", (posY + 28).toString());
+        this.pressureSVGUnits.setAttribute("x", (posX + 11).toString());
+        this.pressureSVGUnits.setAttribute("y", (posY + 30).toString());
         this.pressureSVGUnits.setAttribute("fill", "cyan");
-        //this.pressureSVGUnits.setAttribute("stroke", "black");
-        //this.pressureSVGUnits.setAttribute("stroke-width", "7px");
+        this.pressureSVGUnits.setAttribute("stroke", "black");
+        this.pressureSVGUnits.setAttribute("stroke-width", "7px");
         this.pressureSVGUnits.setAttribute("font-size", (this.fontSize * 0.9).toString());
         this.pressureSVGUnits.setAttribute("font-family", "Roboto-Light");
         this.pressureSVGUnits.setAttribute("text-anchor", "center");
@@ -1552,16 +1552,28 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             var units = Simplane.getPressureSelectedUnits();
             var pressure = Simplane.getPressureValue(units);
             if (_mode == "STD") {
+                this.pressureBoxGroup.setAttribute("visibility", "visible");
+                this.pressureSVG.removeAttribute("stroke", "black");
+                this.pressureSVG.removeAttribute("stroke-width", "7px");
+                this.pressureSVGUnits.removeAttribute("stroke", "black");
+                this.pressureSVGUnits.removeAttribute("stroke-width", "7px");
                 if (units == "millibar") {
                     this.pressureSVG.textContent = "1013";
                     this.pressureSVGUnits.textContent = "STD";
+                    this.pressurePreset.textContent = pressure.toFixed(0);
                 }
                 else {
                     this.pressureSVG.textContent = "29.92";
                     this.pressureSVGUnits.textContent = "STD";
+                    this.pressurePreset.textContent = pressure.toFixed(2);
                 }
             }
             else {
+                this.pressureBoxGroup.setAttribute("visibility", "hidden");
+                this.pressureSVG.setAttribute("stroke", "black");
+                this.pressureSVG.setAttribute("stroke-width", "7px");
+                this.pressureSVGUnits.setAttribute("stroke", "black");
+                this.pressureSVGUnits.setAttribute("stroke-width", "7px");
                 if (this.aircraft == Aircraft.A320_NEO) {
                     if (_mode == "QFE") {
                         this.pressureSVG.textContent = "QFE ";
@@ -1586,12 +1598,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 }
                 else {
                     if (units == "millibar") {
-                        this.pressureSVGUnits.textContent = "999"; //TESTING STUFF
-                        this.pressurePresetUnits.textContent = "888";
+                        this.pressureSVG.textContent = pressure.toFixed(0);
+                        this.pressureSVGUnits.textContent = "HPA";
+                        this.pressurePresetUnits.textContent = "HPA";
                     }
                     else {
-                        this.pressureSVGUnits.textContent = "777";
-                        this.pressurePresetUnits.textContent = "666";
+                        this.pressureSVG.textContent = pressure.toFixed(2);
+                        this.pressureSVGUnits.textContent = "IN";
+                        this.pressurePresetUnits.textContent = "IN";
                     }
                 }
             }
