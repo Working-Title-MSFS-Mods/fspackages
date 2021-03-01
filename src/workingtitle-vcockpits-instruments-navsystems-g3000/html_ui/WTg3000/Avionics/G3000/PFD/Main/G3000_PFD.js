@@ -2,7 +2,7 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
     get templateID() { return "AS3000_PFD"; }
 
     _createMainPage() {
-        return new WT_G3000_PFDMainPage(this.unitsController);
+        return new WT_G3000_PFDMainPage(this);
     }
 
     _initWindData() {
@@ -107,7 +107,7 @@ class WT_G3000_PFDWindData extends PFD_WindData {
 
 class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     _createBottomInfo() {
-        return new WT_G3000_PFDBottomInfo(this._unitsController);
+        return new WT_G3000_PFDBottomInfo(this.instrument.unitsController, this.instrument.bearingInfos);
     }
 
     _initSoftkeys() {
