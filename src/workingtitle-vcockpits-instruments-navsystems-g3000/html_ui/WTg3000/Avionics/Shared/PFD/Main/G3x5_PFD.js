@@ -17,6 +17,8 @@ class WT_G3x5_PFD extends NavSystem {
         this._citySearcher = new WT_CitySearcher();
 
         this._unitsController = new WT_G3x5_UnitsController();
+
+        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(WT_PlayerAirplane.INSTANCE, this.unitsController);
     }
 
     get IsGlassCockpit() { return true; }
@@ -68,6 +70,19 @@ class WT_G3x5_PFD extends NavSystem {
      */
     get unitsController() {
         return this._unitsController;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDBearingInfoContainer} bearingInfos
+     * @type {WT_G3x5_PFDBearingInfoContainer}
+     */
+    get bearingInfos() {
+        return this._bearingInfos;
+    }
+
+    getBearingInfo(slot) {
+
     }
 
     _createMainPage() {
@@ -164,7 +179,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     static selectAvionics() {
-        switch (WT_PlayerAirplane.INSTANCE.type()) {
+        switch (WT_PlayerAirplane.INSTANCE.type) {
             case WT_PlayerAirplane.Type.TBM930:
                 WT_G3x5_PFD._loadTemplate("/WTg3000/Avionics/G3000/PFD/Main/G3000_PFD.html");
                 break;
@@ -278,10 +293,11 @@ WT_G3x5_PFDInsetMap.LAYER_OPTIONS = {
 };
 
 class WT_G3x5_PFDMainPage extends NavSystemPage {
-    constructor(unitsController) {
+    constructor(instrument) {
         super("Main", "Mainframe", new AS3000_PFD_MainElement());
 
-        this._unitsController = unitsController;
+        this._instrument = instrument;
+
         this.element = this._createElement();
     }
 
@@ -307,6 +323,15 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             new PFD_RadarAltitude(),
             new PFD_MarkerBeacon()
         ]);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFD} instrument
+     * @type {WT_G3x5_PFD}
+     */
+    get instrument() {
+        return this._instrument;
     }
 
     init() {

@@ -1,8 +1,14 @@
 class WT_G3x5_PFDBottomInfo extends NavSystemElement {
-    constructor(unitsController) {
+    constructor(unitsController, bearingInfos) {
         super();
 
         this._unitsController = unitsController;
+        this._bearingInfos = bearingInfos;
+
+        /**
+         * @type {WT_G3x5_PFDBottomInfoCell[]}
+         */
+        this._cells = [];
     }
 
     /**
@@ -22,6 +28,15 @@ class WT_G3x5_PFDBottomInfo extends NavSystemElement {
     _initInfoCells() {
     }
 
+    /**
+     *
+     * @param {WT_G3x5_PFDBottomInfoCell} cell
+     */
+    addCell(cell) {
+        this._cells.push(cell);
+        this.htmlElement.appendChild(cell.htmlElement);
+    }
+
     init(root) {
         let container = root.querySelector(`#InstrumentsContainer`);
         this._htmlElement = this._createHTMLElement();
@@ -33,7 +48,7 @@ class WT_G3x5_PFDBottomInfo extends NavSystemElement {
     }
 
     onUpdate(deltaTime) {
-        this.htmlElement.update();
+        this._cells.forEach(cell => cell.update());
     }
 
     onExit() {
@@ -44,27 +59,6 @@ class WT_G3x5_PFDBottomInfo extends NavSystemElement {
 }
 
 class WT_G3x5_PFDBottomInfoHTMLElement extends HTMLElement {
-    constructor() {
-        super();
-
-        /**
-         * @type {WT_G3x5_PFDBottomInfoCell[]}
-         */
-        this._cells = [];
-    }
-
-    /**
-     *
-     * @param {WT_G3x5_PFDBottomInfoCell} cell
-     */
-    addCell(cell) {
-        this._cells.push(cell);
-        this.appendChild(cell.htmlElement);
-    }
-
-    update() {
-        this._cells.forEach(cell => cell.update());
-    }
 }
 WT_G3x5_PFDBottomInfoHTMLElement.NAME = "wt-pfd-bottominfo";
 WT_StyleInjector.inject(`
@@ -73,7 +67,6 @@ WT_StyleInjector.inject(`
         background-color: #1a1d21;
     }
 `);
-
 
 customElements.define(WT_G3x5_PFDBottomInfoHTMLElement.NAME, WT_G3x5_PFDBottomInfoHTMLElement);
 
@@ -414,6 +407,171 @@ WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.NAME, WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement);
+
+class WT_G3x5_PFDBottomInfoBearingCell extends WT_G3x5_PFDBottomInfoCell {
+    constructor(bearingInfoModel) {
+        super();
+
+        this._model = bearingInfoModel;
+        this._setHTMLElementContext();
+    }
+
+    _createHTMLElement() {
+    }
+
+    _setHTMLElementContext() {
+        this.htmlElement.setContext({
+            model: this._model
+        });
+    }
+
+    update() {
+        this.htmlElement.update();
+    }
+}
+
+class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._initDistanceFormatter();
+        this._initBearingFormatter();
+
+        this._hasData = false;
+
+        /**
+         * @type {{model:WT_G3x5_PFDBearingInfoModel}}
+         */
+        this._context = null;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+    }
+
+    _initDistanceFormatter() {
+        let formatter = new WT_NumberFormatter({
+            precision: 0.1,
+            maxDigits: 3,
+            unitSpaceBefore: false,
+            unitCaps: true
+        });
+        this._distanceFormatter = new WT_NumberHTMLFormatter(formatter, {
+            classGetter: {
+                getNumberClassList: (numberUnit, forceUnit) => [],
+                getUnitClassList: (numberUnit, forceUnit) => [WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS]
+            },
+            numberUnitDelim: ""
+        });
+    }
+
+    _initBearingFormatter() {
+        this._bearingFormatter = new WT_NumberFormatter({
+            precision: 1,
+            unitSpaceBefore: false
+        });
+    }
+
+    _defineChildren() {
+        this._arrow = this.shadowRoot.querySelector(`#arrow`);
+        this._sourceValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#source`));
+        this._identValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#ident`));
+        this._distanceValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#distance`));
+        this._bearingValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#bearing`));
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+
+        if (this._context) {
+            this._updateFromContext();
+        }
+    }
+
+    _updateArrow() {
+        let slot = this._context ? this._context.model.slot : "none";
+        this._arrow.setAttribute("infoSlot", slot);
+    }
+
+    _updateFromContext() {
+        this._updateArrow();
+    }
+
+    setContext(context) {
+        this._context = context;
+        if (this._isInit) {
+            this._updateFromContext();
+        }
+    }
+
+    _updateSource(source, hasData) {
+        this._sourceValue.innerHTML = WT_G3x5_PFDBottomInfoBearingCellHTMLElement.SOURCE_TEXT[source];
+    }
+
+    _updateIdent(source, hasData) {
+        let text;
+        if (hasData) {
+            text = this._context.model.getIdent();
+        } else {
+            text = "";
+        }
+        this._identValue.innerHTML = text;
+    }
+
+    _updateDistance(source, hasData) {
+        let text;
+        if (hasData && this._context.model.hasDistance()) {
+            let numberModel = this._context.model.getDistance();
+            text = this._distanceFormatter.getFormattedHTML(numberModel.getValue(), numberModel.getUnit());
+        } else {
+            text = "";
+        }
+        this._distanceValue.innerHTML = text;
+    }
+
+    _updateBearing(source, hasData) {
+        let text;
+        if (hasData) {
+            let numberModel = this._context.model.getBearing();
+            text = this._bearingFormatter.getFormattedString(numberModel.getValue(), numberModel.getUnit());
+        } else {
+            text = "NONE";
+        }
+        this._bearingValue.innerHTML = text;
+
+        // hack for formatting
+        this._bearingValue.setAttribute("visible", hasData);
+    }
+
+    _updateDisplay() {
+        let source = this._context.model.getSource();
+        let hasData = this._context.model.hasData();
+        this._updateSource(source, hasData);
+        this._updateIdent(source, hasData);
+        this._updateDistance(source, hasData);
+        this._updateBearing(source, hasData);
+    }
+
+    update() {
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        this._updateDisplay();
+    }
+}
+WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS = "unit";
+WT_G3x5_PFDBottomInfoBearingCellHTMLElement.SOURCE_TEXT = [
+    "OFF",
+    "NAV1",
+    "NAV2",
+    "FMS",
+    "ADF"
+];
 
 class WT_G3x5_PFDBottomInfoTimeCell extends WT_G3x5_PFDBottomInfoCell {
     constructor() {

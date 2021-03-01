@@ -31,7 +31,7 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     _initFrequencies(freqData) {
-        return freqData.map(freq => new WT_AirportFrequency(this, freq.name, WT_Frequency.createFromMHz(freq.freqMHz)));
+        return freqData.map(freq => new WT_AirportFrequency(this, freq.name, WT_Frequency.createFromHz(Math.round(freq.freqMHz * 1000), WT_Frequency.Prefix.KHz)));
     }
 
     _initRunways(runwayData) {

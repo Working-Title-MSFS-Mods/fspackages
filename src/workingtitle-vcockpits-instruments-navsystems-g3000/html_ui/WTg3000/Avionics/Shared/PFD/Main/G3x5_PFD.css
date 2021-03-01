@@ -49,6 +49,20 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: "Roboto-Condensed";
+    src: url("/WTg3000/SDK/Assets/Fonts/RobotoCondensed-Regular-Mod.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Roboto-Condensed";
+    src: url("/WTg3000/SDK/Assets/Fonts/RobotoCondensed-Bold-Mod.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+
 #Mainframe {
   --refWidth: 1024;
   --refHeight: 768; }

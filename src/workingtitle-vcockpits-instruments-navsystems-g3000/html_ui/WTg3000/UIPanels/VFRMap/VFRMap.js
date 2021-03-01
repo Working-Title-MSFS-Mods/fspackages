@@ -43,7 +43,7 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initMap() {
-        switch (WT_PlayerAirplane.INSTANCE.type()) {
+        switch (WT_PlayerAirplane.INSTANCE.type) {
             case WT_PlayerAirplane.Type.TBM930:
             case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
                 this._initWTMap();

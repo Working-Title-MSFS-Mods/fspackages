@@ -844,9 +844,9 @@ class WT_G3x5_TSCAirportFreqLine extends HTMLElement {
         let context = {
             homePageGroup: this.airportInfo.homePageGroup,
             homePageName: this.airportInfo.homePageName,
-            frequencyText: `${this.airportFreq.frequency.toString()} ${this.airportFreq.airport.ident} ${this.airportFreq.name}`,
+            frequencyText: `${this.airportFreq.frequency.toString(WT_Frequency.Prefix.MHz)} ${this.airportFreq.airport.ident} ${this.airportFreq.name}`,
             frequency: this.airportFreq.frequency.bcd16,
-            isNav: this.airportFreq.frequency.MHz < 118
+            isNav: this.airportFreq.frequency.hertz(WT_Frequency.Prefix.MHz) < 118
         }
         instrument.loadFrequencyWindow.element.setContext(context);
         instrument.switchToPopUpPage(instrument.loadFrequencyWindow);
@@ -857,7 +857,7 @@ class WT_G3x5_TSCAirportFreqLine extends HTMLElement {
      * @param {WT_AirportFrequency} airportFreq
      */
     _updateButton(airportFreq) {
-        this._button.labelText = airportFreq.frequency.toString();
+        this._button.labelText = airportFreq.frequency.hertz(WT_Frequency.Prefix.MHz).toFixed(3).replace(/(\.\d\d)0$/, "$1");
     }
 
     /**
