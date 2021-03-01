@@ -619,6 +619,17 @@ as3000-pfd-element wt-pfd-bottominfo {
         left: 8.5%;
         width: 7%;
     }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-bearingcell {
+        width: 14%;
+        --bearingcell-bottom-font-family: "Roboto-Condensed";
+        --bearingcell-top-centermargin: 45%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-bearingcell[orientation=left] {
+        right: 50.5%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-bearingcell[orientation=right] {
+        left: 50.5%;
+    }
     as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-timecell {
         left: 66%;
         width: 9%;
