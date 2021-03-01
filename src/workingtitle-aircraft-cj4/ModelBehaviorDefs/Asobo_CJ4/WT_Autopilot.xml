@@ -534,11 +534,15 @@
 							<ANTICLOCKWISE_CODE>
 							(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! if{
 								#BARO_ID# (&gt;K:KOHLSMAN_DEC)
+							} els{
+								(L:XMLVAR_Baro#BARO_ID#_SavedPressure) 5 - (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
 							}
 							</ANTICLOCKWISE_CODE>
 							<CLOCKWISE_CODE>
 							(L:XMLVAR_Baro#BARO_ID#_ForcedToSTD) ! if{
 								#BARO_ID# (&gt;K:KOHLSMAN_INC)
+							} els{
+								(L:XMLVAR_Baro#BARO_ID#_SavedPressure) 5 + (&gt;L:XMLVAR_Baro#BARO_ID#_SavedPressure)
 							}
 							</CLOCKWISE_CODE>
 							<LEFT_SINGLE_CODE>
