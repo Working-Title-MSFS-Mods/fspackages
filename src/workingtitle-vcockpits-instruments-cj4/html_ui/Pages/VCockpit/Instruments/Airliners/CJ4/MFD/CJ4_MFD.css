@@ -860,6 +860,10 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay.tableGap {
   color: magenta;
 }
 
+.white {
+  color: white;
+}
+
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartMask {
   position: absolute;
   bottom: 3.5%;

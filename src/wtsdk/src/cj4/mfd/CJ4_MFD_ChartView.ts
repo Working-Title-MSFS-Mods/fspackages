@@ -19,6 +19,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private _chartindexnumber: HTMLElement;
   private _chartprocidentifier: HTMLElement;
   private _chartinfonogeoref: HTMLElement;
+  private _isChartLoading: boolean;
 
   /** Gets a boolean indicating if the view is visible */
   public get isVisible(): boolean {
@@ -87,6 +88,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
     this._yOffset = 0;
     this._zoom = 1;
     this.scaleImgToFit();
+    this._isChartLoading = false;
     this._isDirty = true;
   }
 
@@ -97,6 +99,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
    */
   loadChart(url: string = "", chart: NG_Chart = undefined): void {
     if (url !== "") {
+      this._isChartLoading = true;
       this._srcImage.src = url;
     }
     if (chart !== undefined) {
@@ -108,7 +111,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   update(dTime: number): void {
-    if (this.isVisible) {
+    if (this.isVisible && !this._isChartLoading) {
       this._renderTmr -= dTime;
       if (this._renderTmr > 0 && this._isDirty === false) {
         return;

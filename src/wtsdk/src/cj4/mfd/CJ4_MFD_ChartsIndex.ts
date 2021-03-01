@@ -2,21 +2,36 @@ import { FlightPlanManager } from "../../flightplanning/FlightPlanManager";
 import { NG_Chart, NG_Charts } from "../../types/navigraph";
 import { NavigraphApi } from "../../utils/NavigraphApi";
 
+enum CHARTS_MENU_MODE {
+  INDEX,
+  ANYCHART,
+  LIST
+}
+
+interface IChartIndex {
+  Origin: {
+    Airport: NG_Chart,
+    Departure: NG_Chart,
+    Arrival: NG_Chart,
+    Approach: NG_Chart,
+  },
+  Destination: {
+    Arrival: NG_Chart,
+    Approach: NG_Chart,
+    Airport: NG_Chart,
+    Departure: NG_Chart,
+  }
+}
+
+class ChartIndex implements IChartIndex {
+  Origin: { Airport: NG_Chart; Departure: NG_Chart; Arrival: NG_Chart; Approach: NG_Chart; };
+  Destination: { Arrival: NG_Chart; Approach: NG_Chart; Airport: NG_Chart; Departure: NG_Chart; };
+
+}
+
 export class CJ4_MFD_ChartsIndex extends HTMLElement {
-  private chartsindex = {
-    Origin: {
-      Airport: undefined,
-      Departure: undefined,
-      Arrival: undefined,
-      Approach: undefined,
-    },
-    Destination: {
-      Arrival: undefined,
-      Approach: undefined,
-      Airport: undefined,
-      Departure: undefined,
-    }
-  };
+  private _chartsindex: ChartIndex = new ChartIndex();
+
   private _isDirty: boolean = true;
   private _tableContainer: HTMLElement;
   private _api: NavigraphApi;
@@ -61,30 +76,24 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
         // get charts for origin
         if (icaoOrig !== "") {
           const origCharts = await this._api.getChartsList(icaoOrig);
-          this.chartsindex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
-          this.chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code[0] === this._fpm.getDeparture().name, origCharts);
+          this._chartsindex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
+          const departure = this._fpm.getDeparture();
+          if (departure !== undefined) {
+            this._chartsindex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code.findIndex((x) => x === `${departure.name}`) !== -1, origCharts);
+          }
         }
 
         // get charts for destination
         if (icaoDest !== "") {
           const destCharts = await this._api.getChartsList(icaoDest);
-          this.chartsindex.Destination.Airport = this.findChartInArray(c => c.type.code === "AP", destCharts);
+          this._chartsindex.Destination.Airport = this.findChartInArray(c => c.type.code === "AP", destCharts);
           const arrival = this._fpm.getArrival();
           if (arrival !== undefined) {
-            this.chartsindex.Destination.Arrival = this.findChartInArray(c => c.type.section === "ARR" && c.procedure_code[0] === arrival.name, destCharts);
+            this._chartsindex.Destination.Arrival = this.findChartInArray(c => c.type.section === "ARR" && c.procedure_code.findIndex((x) => x === `${arrival.name}`) !== -1, destCharts);
           }
           const approach = this._fpm.getApproach();
           if (approach !== undefined) {
-            // build identifiers for runway procedure
-            const appname = this._fpm.getApproach().name[0];
-            const appRwy = Avionics.Utils.formatRunway(this._fpm.getApproach().runway).trim();
-
-            this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.code === "01" && c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${appname}${appRwy}`) !== -1, destCharts);
-            if (this.chartsindex.Destination.Approach === undefined) {
-              // try to find any chart for this procedure
-              this.chartsindex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${appname}${appRwy}`) !== -1, destCharts);
-            }
-
+            this._chartsindex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${this.formatApproachName(approach.name)}`) !== -1, destCharts);
           }
         }
       } catch (err) {
@@ -96,13 +105,16 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     }
   }
 
+  private formatApproachName(name: string): string {
+    const segments = name.trim().split(' ');
+    return `${segments[0][0]}${Avionics.Utils.formatRunway(segments[1]).trim()}${(segments.length > 2) ? segments[2] : ''}`;
+  }
+
   /**
    * Resets the charts in the index
    */
-  resetChartsIndex(): void {
-    this.getFlatChartIndex().forEach((c) => {
-      c = undefined;
-    });
+  private resetChartsIndex(): void {
+    this._chartsindex = new ChartIndex();
   }
 
   /**
@@ -111,8 +123,18 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
    * @param charts The array of charts to search in
    */
   public findChartInArray(predicate: (value: NG_Chart, index: number, obj: NG_Chart[]) => unknown, charts: NG_Charts): NG_Chart {
-    const chart = charts.charts.find(predicate)
-    return chart;
+    const foundCharts = charts.charts.filter(predicate)
+    if (foundCharts.length > 0) {
+      if (foundCharts.length > 1) {
+        return {
+          procedure_identifier: `${foundCharts.length} FMS Charts`
+        } as NG_Chart;
+      } else {
+        return foundCharts[0];
+      }
+    }
+
+    return undefined;
   }
 
   /** Show the view */
@@ -171,7 +193,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     if (this._selectIndex > 0) {
       const chartsIndex = this.getFlatChartIndex();
       for (let i = this._selectIndex - 1; i >= 0; i--) {
-        if (chartsIndex[i] !== undefined) {
+        if (chartsIndex[i] !== undefined && chartsIndex[i].id !== undefined) {
           this._selectIndex = i;
           this.selectChart();
           return;
@@ -184,7 +206,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   public selectNextChart(): void {
     const chartsIndex = this.getFlatChartIndex();
     for (let i = this._selectIndex + 1; i < chartsIndex.length; i++) {
-      if (chartsIndex[i] !== undefined) {
+      if (chartsIndex[i] !== undefined && chartsIndex[i].id !== undefined) {
         this._selectIndex = i;
         this.selectChart();
         return;
@@ -193,7 +215,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   }
 
   /** Sets the style on the selected row */
-  private renderselect():void {
+  private renderselect(): void {
     const rows = this._tableContainer.querySelectorAll("tr");
     rows.forEach(r => {
       r.className = "";
@@ -204,7 +226,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   /** Flattens the chart index to an array */
   private getFlatChartIndex(): Array<NG_Chart> {
     const returnArr: Array<NG_Chart> = [];
-    Object.values(this.chartsindex).forEach(lvl => {
+    Object.values(this._chartsindex).forEach(lvl => {
       returnArr.push(...Object.values<NG_Chart>(lvl));
     });
     return returnArr;
@@ -231,10 +253,10 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     const destination = this._fpm.getDestination() === undefined ? "----" : this._fpm.getDestination().ident;
 
     // render origin
-    const origSection = this.renderSection(`ORIGIN - ${origin}`, this.chartsindex.Origin);
+    const origSection = this.renderSection(`ORIGIN - ${origin}`, this._chartsindex.Origin);
 
     // render destination
-    const destSection = this.renderSection(`DESTINATION - ${destination}`, this.chartsindex.Destination);
+    const destSection = this.renderSection(`DESTINATION - ${destination}`, this._chartsindex.Destination);
 
     this._tableContainer.appendChild(origSection);
     this._tableContainer.appendChild(destSection);
@@ -250,6 +272,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     const heading = document.createElement("h4");
     heading.innerHTML = `<mark>${caption}</mark>`;
     heading.className = "tableGap";
+    heading.style.verticalAlign = "middle";
     container.appendChild(heading);
 
     const table = document.createElement("table");
@@ -262,13 +285,14 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
       cell1.textContent = v[0];
       const cell2 = row.insertCell();
       const chart = v[1];
-      cell2.innerHTML = (chart === undefined) ? '[ ]' : `[<span class="magenta">${chart.procedure_identifier}</span>]`;
+      cell2.innerHTML = (chart === undefined) ? '[ ]' : `[<span class="${(chart.id === undefined) ? '' : 'magenta'}">${chart.procedure_identifier}</span>]`;
     })
     container.appendChild(table);
 
     const hrdivider = document.createElement("hr");
-    hrdivider.style.width = "99%";
-    hrdivider.style.float = "right";
+    hrdivider.style.width = "97%";
+    hrdivider.style.marginLeft = "1%";
+    hrdivider.style.marginRight = "2%";
     container.appendChild(hrdivider);
 
     return container;
