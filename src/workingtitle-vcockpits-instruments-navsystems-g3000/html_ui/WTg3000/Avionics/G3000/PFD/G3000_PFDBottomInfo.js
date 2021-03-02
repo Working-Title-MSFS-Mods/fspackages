@@ -1,13 +1,13 @@
 class WT_G3000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
     _initInfoCells() {
-        this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this._unitsController));
-        this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this._unitsController));
+        this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsController));
+        this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
 
-        let bearingCellLeft = new WT_G3000_PFDBottomInfoBearingCell(this._bearingInfos.getModel(WT_G3x5_PFDBearingInfoContainer.Slot.ONE));
+        let bearingCellLeft = new WT_G3000_PFDBottomInfoBearingCell(this.instrument.bearingInfos.getModel(WT_G3x5_PFDBearingInfoContainer.Slot.ONE));
         bearingCellLeft.htmlElement.setOrientation(WT_G3000_PFDBottomInfoBearingCellHTMLElement.Orientation.LEFT);
         this.addCell(bearingCellLeft);
 
-        let bearingCellRight = new WT_G3000_PFDBottomInfoBearingCell(this._bearingInfos.getModel(WT_G3x5_PFDBearingInfoContainer.Slot.TWO));
+        let bearingCellRight = new WT_G3000_PFDBottomInfoBearingCell(this.instrument.bearingInfos.getModel(WT_G3x5_PFDBearingInfoContainer.Slot.TWO));
         bearingCellRight.htmlElement.setOrientation(WT_G3000_PFDBottomInfoBearingCellHTMLElement.Orientation.RIGHT);
         this.addCell(bearingCellRight);
 
