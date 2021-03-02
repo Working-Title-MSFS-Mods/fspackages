@@ -480,6 +480,7 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
+        this._wrapper = new WT_CachedHTML(this.shadowRoot.querySelector(`#wrapper`));
         this._arrow = this.shadowRoot.querySelector(`#arrow`);
         this._sourceValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#source`));
         this._identValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#ident`));
@@ -498,7 +499,7 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
 
     _updateArrow() {
         let slot = this._context ? this._context.model.slot : "none";
-        this._arrow.setAttribute("infoSlot", slot);
+        this._arrow.setAttribute("infoSlot", `${slot}`);
     }
 
     _updateFromContext() {
@@ -510,6 +511,14 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
         if (this._isInit) {
             this._updateFromContext();
         }
+    }
+
+    _updateNoSource(source) {
+        this._wrapper.setAttribute("nosource", `${source === WT_G3x5_PFDBearingInfoModel.Source.NONE}`);
+    }
+
+    _updateNoData(source, hasData) {
+        this._wrapper.setAttribute("nodata", `${source !== WT_G3x5_PFDBearingInfoModel.Source.NONE && !hasData}`);
     }
 
     _updateSource(source, hasData) {
@@ -543,17 +552,16 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
             let numberModel = this._context.model.getBearing();
             text = this._bearingFormatter.getFormattedString(numberModel.getValue(), numberModel.getUnit());
         } else {
-            text = "NONE";
+            text = "";
         }
         this._bearingValue.innerHTML = text;
-
-        // hack for formatting
-        this._bearingValue.setAttribute("visible", hasData);
     }
 
     _updateDisplay() {
         let source = this._context.model.getSource();
         let hasData = this._context.model.hasData();
+        this._updateNoSource(source);
+        this._updateNoData(source, hasData);
         this._updateSource(source, hasData);
         this._updateIdent(source, hasData);
         this._updateDistance(source, hasData);
