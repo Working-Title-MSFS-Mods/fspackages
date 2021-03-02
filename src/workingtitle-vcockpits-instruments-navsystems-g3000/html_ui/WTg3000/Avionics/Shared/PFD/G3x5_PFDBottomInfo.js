@@ -1,14 +1,20 @@
 class WT_G3x5_PFDBottomInfo extends NavSystemElement {
-    constructor(unitsController, bearingInfos) {
+    constructor() {
         super();
-
-        this._unitsController = unitsController;
-        this._bearingInfos = bearingInfos;
 
         /**
          * @type {WT_G3x5_PFDBottomInfoCell[]}
          */
         this._cells = [];
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFD} instrument
+     * @type {WT_G3x5_PFD}
+     */
+    get instrument() {
+        return this.gps;
     }
 
     /**
@@ -439,8 +445,6 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
 
         this._initDistanceFormatter();
         this._initBearingFormatter();
-
-        this._hasData = false;
 
         /**
          * @type {{model:WT_G3x5_PFDBearingInfoModel}}
