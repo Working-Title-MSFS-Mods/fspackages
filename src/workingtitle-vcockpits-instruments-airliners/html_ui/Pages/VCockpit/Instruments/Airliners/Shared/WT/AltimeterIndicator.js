@@ -1549,17 +1549,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
     }
     updateBaroPressure(_mode) {
-        let baroPreset = ((SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number") + 2)) / 16;
-        let baroStore = SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number");
-        console.log("Baro Store " + baroStore);
+        let baroPreset = SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number") / 16;
         
         if (this.pressureSVG) {
             var units = Simplane.getPressureSelectedUnits();
             var pressure = Simplane.getPressureValue(units);
-            console.log("Baro Pressure " + pressure);
-            console.log("Preset Pressure " + baroPreset);
+
             if (_mode == "STD") {
-                if (this._baroPresetChanged != baroPreset) {
+                if (this._baroPresetChanged !== baroPreset && this._baroPresetChanged !== 0) {
                     this.pressureBoxGroup.setAttribute("visibility", "visible");
                     this.pressureSVG.removeAttribute("stroke", "black");
                     this.pressureSVG.removeAttribute("stroke-width", "7px");
@@ -1573,10 +1570,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.pressurePreset.textContent = baroPreset.toFixed(0);
                 }
                 else {
-                    baroPreset = baroPreset / 33.86;
+                    let rounded = Math.round((baroPreset / 33.8639) * 1000) / 1000; //Converts baroPreset to inHg then rounds up to hundreths so it matches what the sim will show for pressure.
                     this.pressureSVG.textContent = "29.92";
                     this.pressureSVGUnits.textContent = "STD";
-                    this.pressurePreset.textContent = baroPreset.toFixed(2);
+                    this.pressurePreset.textContent = rounded.toFixed(2);
                 }
             }
             else {
@@ -1620,6 +1617,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     }
                 }
             }
+            this._baroPresetChanged = baroPreset;
         }
     }
     updateGraduationScrolling(_altitude) {
