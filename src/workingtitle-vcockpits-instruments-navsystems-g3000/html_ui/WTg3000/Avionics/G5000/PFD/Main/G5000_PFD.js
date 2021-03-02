@@ -8,7 +8,7 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
 
 class WT_G5000_PFDMainPage extends WT_G3x5_PFDMainPage {
     _createBottomInfo() {
-        return new WT_G5000_PFDBottomInfo(this.instrument.unitsController, this.instrument.bearingInfos);
+        return new WT_G5000_PFDBottomInfo();
     }
 }
 

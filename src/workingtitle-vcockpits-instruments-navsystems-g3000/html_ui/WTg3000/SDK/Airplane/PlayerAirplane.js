@@ -4,6 +4,7 @@ class WT_PlayerAirplane {
         this._navigation = this._createNavigation();
         this._fms = this._createFMS();
         this._navCom = this._createNavCom();
+        this._autopilot = this._createAutopilot();
     }
 
     _getAircraftType() {
@@ -27,6 +28,10 @@ class WT_PlayerAirplane {
 
     _createNavCom() {
         return new WT_AirplaneNavCom(this, 2, 2, 1);
+    }
+
+    _createAutopilot() {
+        return new WT_AirplaneAutopilot();
     }
 
     /**
@@ -63,6 +68,15 @@ class WT_PlayerAirplane {
      */
     get navCom() {
         return this._navCom;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirplaneAutopilot} autopilot - the autopilot component of this airplane.
+     * @type {WT_AirplaneAutopilot}
+     */
+    get autopilot() {
+        return this._autopilot;
     }
 
     /**
@@ -639,10 +653,10 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
     }
 
     /**
-     * Gets the radial of the tuned navigational station on which the aircraft's current position lies.
+     * Gets the radial of the tuned navigation station on which the airplane's current position lies.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of magnetic bearing.
-     * @returns {WT_NumberUnit} the radial of the tuned navigational station on which the aircraft's current position lies, or null if
+     * @returns {WT_NumberUnit} the radial of the tuned navigation station on which the airplane's current position lies, or null if
      *                          this radio is not currently receiving.
      */
     radial(reference) {
@@ -666,6 +680,13 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
         return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "Bool") !== 0;
     }
 
+    /**
+     * Gets the distance from the airplane's current position to the tuned navigation station.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of nautical miles.
+     * @returns {WT_NumberUnit} the distance to the tuned navigation station, or null if this radio is not currently receiving or the
+     *                          tuned navigation station is not equipped with DME.
+     */
     dme(reference) {
         if (!this.isReceiving() || !this.hasDME()) {
             return null;
@@ -726,8 +747,8 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
     }
 
     /**
-     * Gets the bearing of the tuned navigational station relative to the aicraft's current heading.
-     * @returns {Number} the bearing of the tuned navigational station relative to the aircraft's current heading, or null if
+     * Gets the bearing of the tuned navigation station relative to the airplane's current heading.
+     * @returns {Number} the bearing of the tuned navigation station relative to the airplane's current heading, or null if
      *                   this radio is not currently receiving.
      */
     bearing() {
@@ -744,5 +765,20 @@ class WT_AirplaneControls {
 }
 
 class WT_AirplaneAutopilot {
-
+    navigationSource() {
+        if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
+            return WT_AirplaneAutopilot.NavSource.FMS;
+        } else {
+            return SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
+        }
+    }
 }
+/**
+ * @enum {Number}
+ */
+WT_AirplaneAutopilot.NavSource = {
+    FMS: 0,
+    NAV1: 1,
+    NAV2: 2,
+    NAV3: 3
+};

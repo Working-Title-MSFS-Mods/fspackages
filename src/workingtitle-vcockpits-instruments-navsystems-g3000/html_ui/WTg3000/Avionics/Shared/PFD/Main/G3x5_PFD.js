@@ -18,13 +18,22 @@ class WT_G3x5_PFD extends NavSystem {
 
         this._unitsController = new WT_G3x5_UnitsController();
 
-        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(WT_PlayerAirplane.INSTANCE, this.unitsController);
+        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(this.airplane, this.unitsController);
     }
 
     get IsGlassCockpit() { return true; }
 
     get facilityLoader() {
         return undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_PlayerAirplane} airplane
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return WT_PlayerAirplane.INSTANCE;
     }
 
     /**
@@ -298,14 +307,14 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
 
         this._instrument = instrument;
 
-        this.element = this._createElement();
+        this.element = new NavSystemElementGroup(this._createElements());
     }
 
     _createBottomInfo() {
     }
 
-    _createElement() {
-        return new NavSystemElementGroup([
+    _createElements() {
+        return [
             this._attitude = new AS3000_PFD_Attitude("PFD"),
             new PFD_Airspeed(),
             this._altimeter = new AS3000_PFD_Altimeter("PFD"),
@@ -314,7 +323,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             new PFD_NavStatus(),
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
-            new AS3000_PFD_ActiveNav(),
             new AS3000_PFD_NavStatus(),
             this._aoaIndicator = new AS3000_PFD_AngleOfAttackIndicator("PFD"),
             this._mapInstrument = new MapInstrumentElement(),
@@ -322,7 +330,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             new PFD_Minimums(),
             new PFD_RadarAltitude(),
             new PFD_MarkerBeacon()
-        ]);
+        ];
     }
 
     /**
@@ -574,32 +582,7 @@ class AS3000_PFD_ActiveCom extends NavSystemElement {
     onEvent(_event) {
     }
 }
-class AS3000_PFD_ActiveNav extends NavSystemElement {
-    init(root) {
-        this.NavInfos = this.gps.getChildById("NavFreqInfos");
-        this.ActiveNav = this.gps.getChildById("ActiveNav");
-        this.ActiveNavFreq = this.gps.getChildById("ActiveNavFreq");
-        this.ActiveNavName = this.gps.getChildById("ActiveNavName");
-    }
-    onEnter() {
-    }
-    onUpdate(_deltaTime) {
-        if (!SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-            Avionics.Utils.diffAndSetAttribute(this.NavInfos, "state", "Visible");
-            let index = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
-            Avionics.Utils.diffAndSet(this.ActiveNav, "NAV" + index);
-            Avionics.Utils.diffAndSet(this.ActiveNavFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:" + index, "MHz"), 2));
-            Avionics.Utils.diffAndSet(this.ActiveNavName, SimVar.GetSimVarValue("NAV SIGNAL:" + index, "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:" + index, "string") : "");
-        }
-        else {
-            Avionics.Utils.diffAndSetAttribute(this.NavInfos, "state", "Inactive");
-        }
-    }
-    onExit() {
-    }
-    onEvent(_event) {
-    }
-}
+
 class AS3000_PFD_NavStatus extends PFD_NavStatus {
     init(root) {
         this.currentLegFrom = this.gps.getChildById("FromWP");
