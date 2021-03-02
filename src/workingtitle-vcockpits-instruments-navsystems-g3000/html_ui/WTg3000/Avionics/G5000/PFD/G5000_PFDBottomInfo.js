@@ -122,7 +122,7 @@ class WT_G5000_PFDBottomInfoNAVDMECellHTMLElement extends HTMLElement {
      * @param {WT_AirplaneNavSlot} nav
      */
     _updateDMETitle(nav, hasDME) {
-        this._dmeTitle.innerHTML = hasDME ? `DME${nav.index}` : "";
+        this._dmeTitle.innerHTML = `DME${nav.index}`;
     }
 
     /**
@@ -131,7 +131,13 @@ class WT_G5000_PFDBottomInfoNAVDMECellHTMLElement extends HTMLElement {
      */
     _updateDME(nav, hasDME) {
         let dme = nav.dme(this._tempNM);
-        this._dme.innerHTML = dme ? this._distanceFormatter.getFormattedHTML(dme, this._context.unitsController.distanceSpeedSetting.getDistanceUnit()) : "";
+        let text;
+        if (dme) {
+            text = this._distanceFormatter.getFormattedHTML(dme, this._context.unitsController.distanceSpeedSetting.getDistanceUnit());
+        } else {
+            text = `___${this._distanceFormatter.getFormattedUnitHTML(this._tempNM, this._context.unitsController.distanceSpeedSetting.getDistanceUnit())}`;
+        }
+        this._dme.innerHTML = text;
     }
 
     _updateDisplay() {
@@ -362,8 +368,33 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                     width: 17%;
                     color: white;
                 }
-                #bearing[visible="false"] {
+                #nosource {
+                    width: 79%;
+                    display: none;
                     color: transparent;
+                }
+                #nodata {
+                    width: 79%;
+                    display: none;
+                    color: white;
+                }
+                #wrapper[nodata="true"] #ident,
+                #wrapper[nosource="true"] #ident {
+                    display: none;
+                }
+                #wrapper[nodata="true"] #distance,
+                #wrapper[nosource="true"] #distance {
+                    display: none;
+                }
+                #wrapper[nodata="true"] #bearing,
+                #wrapper[nosource="true"] #bearing {
+                    display: none;
+                }
+                #wrapper[nosource="true"] #nosource {
+                    display: block;
+                }
+                #wrapper[nodata="true"] #nodata {
+                    display: block;
                 }
 
             .${WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS} {
@@ -384,6 +415,8 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
             <div id="ident"></div>
             <div id="distance"></div>
             <div id="bearing"></div>
+            <div id="nosource">NO SOURCE</div>
+            <div id="nodata">– – –</div>
         </div>
     </div>
 `;

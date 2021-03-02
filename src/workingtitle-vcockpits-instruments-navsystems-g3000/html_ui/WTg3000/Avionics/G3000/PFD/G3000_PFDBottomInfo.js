@@ -133,9 +133,6 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                         width: 31.5%;
                         color: #9e6daf;
                     }
-                    #bearing[visible="false"] {
-                        color: transparent;
-                    }
                     #ident {
                         width: 42.5%;
                         color: white;
@@ -144,6 +141,30 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                         width: 26%;
                         color: #67e8ef;
                         font-size: var(--bearingcell-source-font-size, 0.9em);
+                    }
+                    #nodata {
+                        width: 74%;
+                        display: none;
+                        color: white;
+                    }
+                    #nosource {
+                        width: 74%;
+                        display: none;
+                        color: transparent;
+                    }
+                    #wrapper[nodata="true"] #bearing,
+                    #wrapper[nosource="true"] #bearing {
+                        display: none;
+                    }
+                    #wrapper[nodata="true"] #ident,
+                    #wrapper[nosource="true"] #ident {
+                        display: none;
+                    }
+                    #wrapper[nodata="true"] #nodata {
+                        display: block;
+                    }
+                    #wrapper[nosource="true"] #nosource {
+                        display: block;
                     }
                 #arrow {
                     position: relative;
@@ -180,6 +201,8 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
             <div id="bottomText">
                 <div id="bearing"></div>
                 <div id="ident"></div>
+                <div id="nodata">NO DATA</div>
+                <div id="nosource">NO SOURCE</div>
                 <div id="source"></div>
             </div>
             <div id="arrow">
