@@ -1,6 +1,6 @@
 # Working Title CJ4 v0.10.4
 
-Welcome to the Working Title CJ4 v0.10.4.  This patch removes the temporary flaps lift workaround as well as a few other critical issues.
+Welcome to the Working Title CJ4 v0.10.4.  This patch removes the temporary flaps lift workaround as well as addresses a couple other critical issues.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
