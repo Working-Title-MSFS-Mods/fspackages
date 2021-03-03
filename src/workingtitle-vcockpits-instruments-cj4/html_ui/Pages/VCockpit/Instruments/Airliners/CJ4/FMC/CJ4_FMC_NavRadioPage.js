@@ -117,7 +117,7 @@ class CJ4_FMC_NavRadioPageOne {
             ["HOLD[s-text]", "HOLD[s-text]"],
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
-            [" ADF", "REL [blue]"],
+            [" ADF", "REL  [blue]"],
             [this._freqMap.adf1.toFixed(1) + "[green]", "TCAS>[disabled]"],
         ]);
     }
@@ -653,7 +653,7 @@ class CJ4_FMC_NavRadioDispatch {
             ["HOLD[s-text]"],
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
-            [" ADF", "REL [blue]"],
+            [" ADF", "REL  [blue]"],
             [this._freqMap.adf1.toFixed(1) + "[green]", "TCAS>[disabled]"],
         ]);
     }
