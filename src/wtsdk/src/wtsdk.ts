@@ -25,7 +25,7 @@ export * from "./cj4/pfd/CJ4_PFD_Message";
 export * from "./cj4/pfd/CJ4_PFD_MessagePacket";
 export * from "./cj4/pfd/CJ4_FGSDisplaySlot";
 export * from "./cj4/mfd/CJ4_MFD_ChartView";
-export * from "./cj4/mfd/CJ4_MFD_ChartsIndex";
+export * from "./cj4/mfd/CJ4_MFD_ChartsPopup";
 
 export * from "./cj4/fmc/navradio/CJ4_NavRadioSystem";
 export * from "./cj4/CJ4_MapSymbols";

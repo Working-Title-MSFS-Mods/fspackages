@@ -1,67 +1,32 @@
 import { NG_Chart } from "../../types/navigraph";
-import { CJ4_MFD_ChartsModel } from "./CJ4_MFD_ChartsModel";
+import { CHART_TYPE } from "../../utils/NavigraphChartFilter";
+import { CJ4_MFD_ChartsIndexModel } from "./CJ4_MFD_ChartsIndexModel";
+import { ICJ4_MFD_ChartsPopupPage } from "./ICJ4_MFD_ChartsPopupPage";
 
-enum CHARTS_MENU_MODE {
-  INDEX,
-  ANYCHART,
-  LIST
-}
-export class CJ4_MFD_ChartsIndex extends HTMLElement {
-  private _model: CJ4_MFD_ChartsModel;
+export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
+  private _model: CJ4_MFD_ChartsIndexModel;
+  private _selectedIndex: number = 0;
 
-  private _isDirty: boolean = true;
-  private _tableContainer: HTMLElement;
-  private _selectIndex: number = 0;
-  private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
-
-  /**
-   * Gets a boolean indicating if the view is visible
-   */
-  public get isVisible(): boolean {
-    return this.style.visibility === "visible";
-  }
-
-  public connectedCallback(chartSelectCallback: (url: string, chart: NG_Chart) => void): void {
-    this._tableContainer = this.querySelector("#ChartsTable");
-    this._chartSelectCallback = chartSelectCallback;
-    this._model = new CJ4_MFD_ChartsModel();
+  public constructor(private _container: HTMLElement, private _chartSelectCallback: (url: string, chart: NG_Chart) => void, private _multiChartCallback: (icao: string, type: CHART_TYPE) => void) {
+    this._model = new CJ4_MFD_ChartsIndexModel();
+    this.update();
   }
 
   /**
    * Retrieves and updates the chart index
    */
-  public async updateData(): Promise<void> {
-    if (this.isVisible) {
-      const isDataChanged = await this._model.updateData();
+  public async update(force = false): Promise<void> {
+    const isDataChanged = await this._model.updateData();
 
-      if (isDataChanged) {
-        this.render();
-      }
-      this.renderselect();
+    if (isDataChanged || force) {
+      this.render();
     }
-  }
-
-  /** Show the view */
-  public show(): void {
-    this._isDirty = true;
-    this.updateData();
-    this.style.visibility = "visible";
-  }
-
-  /** Hide the view */
-  public hide(): void {
-    this.style.visibility = "hidden";
+    this.renderselect();
   }
 
   public onEvent(event: string): boolean {
-    if (!this.isVisible) {
-      return false;
-    }
     let handled = true;
     switch (event) {
-      case "Lwr_Push_Chart_1":
-        // this.updateData();
-        break;
       case "Lwr_MENU_ADV_DEC":
         this.menuScroll(false);
         break;
@@ -70,6 +35,9 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
         break;
       case "Lwr_DATA_PUSH":
         this.selectChart();
+        break;
+      case "Lwr_DATA_PUSH_LONG":
+        this.callChartMenu();
         break;
       default:
         handled = false;
@@ -82,24 +50,41 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     return handled;
   }
 
-  /** Sends the currently selected chart back to the callback delegates. */
-  private async selectChart() {
-    const chart = this._model.getChartAtIndex(this._selectIndex);
+  public setChart(chart: NG_Chart): void {
+    this._model.setChartAtIndex(chart, this._selectedIndex);
+    this.render();
+  }
+
+  private callChartMenu(): void {
+    const chart = this._model.getChartAtIndex(this._selectedIndex);
     if (chart !== undefined) {
-      const url = await this._model.getChartPngUrl(chart);
-      if (url !== "") {
-        this._chartSelectCallback(url, chart);
+      this._multiChartCallback(chart.icao_airport_identifier, CHART_TYPE[chart.type.category]);
+    }
+  }
+
+  /** Sends the currently selected chart back to the callback delegates. */
+  public async selectChart() {
+    const chart = this._model.getChartAtIndex(this._selectedIndex);
+    if (chart !== undefined) {
+      if (chart.id !== undefined) {
+        const url = await this._model.getChartPngUrl(chart);
+        if (url !== "") {
+          this._chartSelectCallback(url, chart);
+        }
+      } else {
+        // multiple charts, go to selection
+        this._multiChartCallback(chart.icao_airport_identifier, CHART_TYPE[chart.type.category]);
       }
     }
   }
 
   /** Scroll to previous charts in the list and select it */
   public selectPrevChart(): void {
-    if (this._selectIndex > 0) {
+    if (this._selectedIndex > 0) {
       const chartsIndex = this._model.getFlatChartIndex();
-      for (let i = this._selectIndex - 1; i >= 0; i--) {
+      for (let i = this._selectedIndex - 1; i >= 0; i--) {
         if (chartsIndex[i] !== undefined && chartsIndex[i].id !== undefined) {
-          this._selectIndex = i;
+          this._selectedIndex = i;
           this.selectChart();
           return;
         }
@@ -110,9 +95,9 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
   /** Scroll to next chart in the list and select it */
   public selectNextChart(): void {
     const chartsIndex = this._model.getFlatChartIndex();
-    for (let i = this._selectIndex + 1; i < chartsIndex.length; i++) {
+    for (let i = this._selectedIndex + 1; i < chartsIndex.length; i++) {
       if (chartsIndex[i] !== undefined && chartsIndex[i].id !== undefined) {
-        this._selectIndex = i;
+        this._selectedIndex = i;
         this.selectChart();
         return;
       }
@@ -121,33 +106,35 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
 
   /** Sets the style on the selected row */
   private renderselect(): void {
-    const rows = this._tableContainer.querySelectorAll("tr");
+    const rows = this._container.querySelectorAll("tr");
     rows.forEach(r => {
       r.className = "";
     });
-    rows[this._selectIndex].className = "selected";
+    if (this._selectedIndex < rows.length - 1) {
+      rows[this._selectedIndex].className = "selected";
+    }
   }
 
   /** Handling to scroll through the menu */
   private menuScroll(isForward: boolean): void {
-    this._selectIndex = isForward ? this._selectIndex + 1 : this._selectIndex - 1;
+    this._selectedIndex = isForward ? this._selectedIndex + 1 : this._selectedIndex - 1;
     const itemCount = this._model.getFlatChartIndex().length
-    if (this._selectIndex < 0) {
-      this._selectIndex = itemCount - 1;
-    } else if (this._selectIndex >= itemCount) {
-      this._selectIndex = 0;
+    if (this._selectedIndex < 0) {
+      this._selectedIndex = itemCount - 1;
+    } else if (this._selectedIndex >= itemCount) {
+      this._selectedIndex = 0;
     }
   }
 
   /** Renders the chart index */
   private render(): void {
-    this._tableContainer.innerHTML = '';
+    this._container.innerHTML = '';
     // render origin
     const origSection = this.renderIndexSection(`ORIGIN - ${this._model.origin}`, this._model.chartsIndex.Origin);
     // render destination
     const destSection = this.renderIndexSection(`DESTINATION - ${this._model.destination}`, this._model.chartsIndex.Destination);
-    this._tableContainer.appendChild(origSection);
-    this._tableContainer.appendChild(destSection);
+    this._container.appendChild(origSection);
+    this._container.appendChild(destSection);
   }
 
   /**
@@ -173,7 +160,7 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
       cell1.textContent = v[0];
       const cell2 = row.insertCell();
       const chart = v[1];
-      cell2.innerHTML = (chart === undefined) ? '[ ]' : `[<span class="${(chart.id === undefined) ? '' : 'magenta'}">${chart.procedure_identifier}</span>]`;
+      cell2.innerHTML = (chart === undefined) ? '[ ]' : `[<span class="${(chart.id === undefined) ? '' : (chart.source === "FMS") ? 'magenta' : 'cyan'}">${chart.procedure_identifier}</span>]`;
     })
     container.appendChild(table);
 
@@ -186,7 +173,3 @@ export class CJ4_MFD_ChartsIndex extends HTMLElement {
     return container;
   }
 }
-
-
-
-customElements.define("cj4-mfd-chartsindex", CJ4_MFD_ChartsIndex);

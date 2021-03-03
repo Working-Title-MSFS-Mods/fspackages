@@ -44,6 +44,7 @@ export interface NG_Chart {
   cao_visibility: boolean;
   vfr_visibility: boolean;
   visibility: number;
+  source:string;
 }
 
 export interface NG_Charts {

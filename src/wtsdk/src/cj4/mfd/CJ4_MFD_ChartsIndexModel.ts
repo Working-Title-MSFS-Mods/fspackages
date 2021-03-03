@@ -21,8 +21,7 @@ class ChartIndex implements IChartIndex {
   Origin = { Airport: undefined, Departure: undefined, Arrival: undefined, Approach: undefined };
   Destination = { Arrival: undefined, Approach: undefined, Airport: undefined, Departure: undefined };
 }
-
-export class CJ4_MFD_ChartsModel {
+export class CJ4_MFD_ChartsIndexModel {
   private _api: NavigraphApi;
   private _fpm: FlightPlanManager;
   private _fpChecksum: number = -1;
@@ -112,6 +111,18 @@ export class CJ4_MFD_ChartsModel {
     return this.getFlatChartIndex()[index];
   }
 
+  public setChartAtIndex(chart: NG_Chart, _selectedIndex: number): void {
+    let iterator = 0;
+    Object.values(this._chartsIndex).forEach(lvl => {
+      Object.keys(lvl).forEach(k => {
+        if (iterator === _selectedIndex) {
+          lvl[k] = chart;
+        }
+        iterator++;
+      });
+    });
+  }
+
   /** Flattens the chart index to an array */
   public getFlatChartIndex(): Array<NG_Chart> {
     const returnArr: Array<NG_Chart> = [];
@@ -121,9 +132,18 @@ export class CJ4_MFD_ChartsModel {
     return returnArr;
   }
 
+  /** Flattens the chart index keys to an array */
+  public getFlatChartKeys(): Array<string> {
+    const returnArr: Array<string> = [];
+    Object.values(this._chartsIndex).forEach(lvl => {
+      returnArr.push(...Object.keys(lvl));
+    });
+    return returnArr;
+  }
+
   /**
- * Resets the charts in the index
- */
+   * Resets the charts in the index
+   */
   private resetChartsIndex(): void {
     this._chartsIndex = new ChartIndex();
   }
@@ -138,23 +158,27 @@ export class CJ4_MFD_ChartsModel {
   }
 
   /**
-   * Finds a chart in the array using the predicate.
-   * @param predicate A predicate used to find a chart
-   * @param charts The array of charts to search in
-   */
+  * Finds a chart in the array using the predicate.
+  * @param predicate A predicate used to find a chart
+  * @param charts The array of charts to search in
+  */
   private findChartInArray(predicate: (value: NG_Chart, index: number, obj: NG_Chart[]) => unknown, charts: NG_Charts): NG_Chart {
     const foundCharts = charts.charts.filter(predicate)
     if (foundCharts.length > 0) {
       if (foundCharts.length > 1) {
         return {
-          procedure_identifier: `${foundCharts.length} FMS Charts`
+          // mock up a chart with basic info we need
+          procedure_identifier: `${foundCharts.length} FMS Charts`,
+          icao_airport_identifier: foundCharts[0].icao_airport_identifier,
+          type: { category: foundCharts[0].type.category }
+
         } as NG_Chart;
       } else {
+        foundCharts[0].source = "FMS";
         return foundCharts[0];
       }
     }
 
     return undefined;
   }
-
 }
