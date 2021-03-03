@@ -148,3 +148,10 @@ as3000-pfd-element {
     visibility: hidden; }
     as3000-pfd-element .PopupWindow[state=Active] {
       visibility: inherit; }
+
+as3000-pfd-element map-view-rangedisplay {
+    color: var(--wt-g3x5-lightblue);
+}
+as3000-pfd-element map-view-orientationdisplay {
+  color: var(--wt-g3x5-lightblue);
+}

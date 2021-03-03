@@ -196,7 +196,7 @@ as3000-mfd-element {
           right: 0%;
           position: absolute; }
 
-as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBar {
+as3000-mfd-element #Mainframe #Electricity #NavDataBar {
     position: absolute;
     top: 0%;
     width: 100%;
@@ -207,6 +207,7 @@ as3000-mfd-element #Mainframe #Electricity #CenterDisplay #RightInfos #NavDataBa
     font-weight: bold;
     font-size: 2.5vh;
     line-height: 4.2vh;
+    --navdatafield-value-color: var(--wt-g3x5-purple);
 }
 
 as3000-mfd-element #Electricity #MainPane {
@@ -225,11 +226,15 @@ as3000-mfd-element #Electricity map-view {
     width: 100%;
     display: block;
 }
+    as3000-mfd-element #Electricity map-view map-view-rangedisplay {
+        color: var(--wt-g3x5-lightblue);
+    }
     as3000-mfd-element #Electricity map-view map-view-orientationdisplay {
         position: absolute;
         top: 0;
         left: 0;
         margin: 1px;
+        color: var(--wt-g3x5-lightblue);
     }
     as3000-mfd-element #Electricity map-view map-view-minicompass {
         position: absolute;
