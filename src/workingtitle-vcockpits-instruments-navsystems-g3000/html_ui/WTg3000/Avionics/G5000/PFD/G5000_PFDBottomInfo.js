@@ -192,17 +192,17 @@ WT_G5000_PFDBottomInfoNAVDMECellHTMLElement.TEMPLATE.innerHTML = `
                 }
                 #ident {
                     width: 40%;
-                    color: green;
+                    color: var(--wt-g3x5-green);
                     text-align: right;
                 }
                 #frequency {
                     width: 35%;
-                    color: green;
+                    color: var(--wt-g3x5-green);
                     text-align: right;
                 }
                 #dme {
                     width: 40%;
-                    color: green;
+                    color: var(--wt-g3x5-green);
                     text-align: right;
                 }
 
@@ -327,7 +327,7 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                     top: 50%;
                     transform: translateY(-50%);
                     fill: transparent;
-                    stroke: #67e8ef;
+                    stroke: var(--wt-g3x5-lightblue);
                     stroke-width: 5;
                 }
                 #arrow[infoSlot="${WT_G3x5_PFDBearingInfoContainer.Slot.ONE}"] #arrowSVG1 {
@@ -349,7 +349,7 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
             }
                 #source {
                     width: 20%;
-                    color: #67e8ef;
+                    color: var(--wt-g3x5-lightblue);
                     font-size: var(--bearingcell-source-font-size, 0.9em);
                     margin-right: 1%;
                 }
@@ -360,7 +360,7 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                 }
                 #distance {
                     width: 33%;
-                    color: #9e6daf;
+                    color: var(--wt-g3x5-purple);
                     text-align: right;
                     margin-right: 1%;
                 }

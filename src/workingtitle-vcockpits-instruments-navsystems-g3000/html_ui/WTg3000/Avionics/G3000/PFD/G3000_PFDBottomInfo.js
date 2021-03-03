@@ -84,7 +84,7 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                     width: auto;
                     top: 50%;
                     transform: translateY(-50%);
-                    color: #9e6daf;
+                    color: var(--wt-g3x5-purple);
                 }
                 :host([orientation=left]) #distance {
                     text-align: right;
@@ -131,7 +131,7 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                 }
                     #bearing {
                         width: 31.5%;
-                        color: #9e6daf;
+                        color: var(--wt-g3x5-purple);
                     }
                     #ident {
                         width: 42.5%;
@@ -139,7 +139,7 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                     }
                     #source {
                         width: 26%;
-                        color: #67e8ef;
+                        color: var(--wt-g3x5-lightblue);
                         font-size: var(--bearingcell-source-font-size, 0.9em);
                     }
                     #nodata {
@@ -179,7 +179,7 @@ WT_G3000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
                         top: 50%;
                         transform: translateY(-50%);
                         fill: transparent;
-                        stroke: #67e8ef;
+                        stroke: var(--wt-g3x5-lightblue);
                         stroke-width: 5;
                     }
                     #arrow[infoSlot="${WT_G3x5_PFDBearingInfoContainer.Slot.ONE}"] #arrowSVG1 {
