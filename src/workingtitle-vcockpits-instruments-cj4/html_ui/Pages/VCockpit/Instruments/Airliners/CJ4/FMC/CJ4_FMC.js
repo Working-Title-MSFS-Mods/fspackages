@@ -166,8 +166,13 @@ class CJ4_FMC extends FMCMainDisplay {
             CJ4_FMC_MfdAdvPage.ShowPage1(this);
         };
         this.onTun = () => {
-            CJ4_FMC_NavRadioPage.ShowPage1(this);
-        };
+ 			      const AvionicsOn = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+			      if (AvionicsOn == 0) {
+			      CJ4_FMC_NavRadioPage.ShowPage1(this);		
+			      } else {
+			      CJ4_FMC_NavRadioDispatch.Dispatch(this);
+			      };			
+		    }
         this.onExec = () => {
             if (this.onExecPage) {
                 console.log("if this.onExecPage");
