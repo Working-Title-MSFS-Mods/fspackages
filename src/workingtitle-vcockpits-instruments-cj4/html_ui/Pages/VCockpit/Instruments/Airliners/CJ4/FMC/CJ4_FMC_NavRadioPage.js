@@ -217,8 +217,8 @@ class CJ4_FMC_NavRadioPageOne {
                 SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
                     this._fmc.requestCall(() => {
                         this.update();
-					});
-                });
+					       });
+        });
 				} else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
 				}	
@@ -278,9 +278,9 @@ class CJ4_FMC_NavRadioPage {
             [""],
             [" HF1[disabled]"],
             ["10.0000[d-text disabled]   UV[s-text disabled]"],
-			[""],
+			      [""],
             ["↑"],
-			["HF1 SQ[disabled]3[d-text disabled]"],
+			      ["HF1 SQ[disabled]3[d-text disabled]"],
             ["↓"],
             [""]
         ]);
@@ -445,16 +445,16 @@ class CJ4_FMC_AtcControlPage {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
             ["ATC1","ALT REPORT "],
-			[this._freqMap.atc1 + "[green]","ON[blue]/OFF[s-text disabled]"],
+			      [this._freqMap.atc1 + "[green]","ON[blue]/OFF[s-text disabled]"],
             ["",""," ALT[white]" + this._pressalt + "FT[green]"],
-			["IDENT[s-text disabled]","TEST[s-text disabled]","ADC2     [blue s-text]"],
+			      ["IDENT[s-text disabled]","TEST[s-text disabled]","ADC2     [blue s-text]"],
             [""],
             [""],
             [" SELECT"],
             ["ATC1[blue]/[white]ATC2[s-text disabled]"],
-		    ["MODE"],
+		        ["MODE"],
             [ModeSwitch],
-			[""],
+			      [""],
             [""],
             [""]
         ]);
@@ -532,9 +532,9 @@ class CJ4_FMC_NavRadioDispatch {
             [""],
             [" HF1[disabled]"],
             ["10.0000[d-text disabled]   UV[s-text disabled]"],
-			[""],
+			      [""],
             ["↑"],
-			["HF1 SQ[disabled]3[d-text disabled]"],
+			      ["HF1 SQ[disabled]3[d-text disabled]"],
             ["↓"],
             [""]
         ]);
