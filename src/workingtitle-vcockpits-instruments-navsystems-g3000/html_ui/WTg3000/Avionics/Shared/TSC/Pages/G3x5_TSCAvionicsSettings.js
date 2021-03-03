@@ -163,9 +163,13 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
         return new WT_TSCScrollList();
     }
 
-    _initController() {
-        this._controller = new WT_G3x5_UnitsController();
-        this._controller.init();
+    /**
+     * @readonly
+     * @property {WT_G3x5_UnitsController} unitsController
+     * @type {WT_G3x5_UnitsController}
+     */
+    get unitsController() {
+        return this.parentPage.instrument.unitsController;
     }
 
     _initButtonRow(row, title, setting, valueTexts, unitSymbols) {
@@ -193,7 +197,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
 
     _initRows() {
         this._navAngleRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._navAngleRow, "Nav Angle", this._controller.navAngleSetting, ["Magnetic", "True"], this._controller.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._navAngleRow, "Nav Angle", this.unitsController.navAngleSetting, ["Magnetic", "True"], this.unitsController.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._magVarRow = new WT_G3x5_TSCUnitsDisplayRow();
         this._initDisplayRow(this._magVarRow, "Magnetic Variance", function() {
@@ -207,16 +211,15 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
         });
 
         this._distanceSpeedRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._distanceSpeedRow, "Distance/Speed", this._controller.distanceSpeedSetting, ["Nautical", "Metric"], this._controller.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._distanceSpeedRow, "Distance/Speed", this.unitsController.distanceSpeedSetting, ["Nautical", "Metric"], this.unitsController.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._extTemperatureRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._extTemperatureRow, "External Temperature", this._controller.extTemperatureSetting, ["Celsius", "Fahrenheit"], this._controller.extTemperatureSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._extTemperatureRow, "External Temperature", this.unitsController.extTemperatureSetting, ["Celsius", "Fahrenheit"], this.unitsController.extTemperatureSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
     }
 
     onAttached() {
         super.onAttached();
 
-        this._initController();
         this._initRows();
     }
 
