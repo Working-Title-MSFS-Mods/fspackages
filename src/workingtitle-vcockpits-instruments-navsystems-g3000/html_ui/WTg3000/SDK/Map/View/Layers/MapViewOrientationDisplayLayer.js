@@ -39,7 +39,7 @@ class WT_MapViewOrientationDisplay extends HTMLElement {
                     font-weight: bold;
                     font-size: 1.75vh;
                     line-height: 2vh;
-                    color: #67e8ef;
+                    color: white;
                 }
                 #text {
                     margin: 0 0.5vh;

@@ -588,7 +588,7 @@ WT_NavDataFieldView.TEMPLATE.innerHTML = `
                 color: var(--navdatafield-title-color, white);
             }
             #value {
-                color: var(--navdatafield-value-color, #d12bc7);
+                color: var(--navdatafield-value-color, white);
             }
                 .${WT_NavDataFieldView.UNIT_CLASS} {
                     font-size: var(--navdatafield-unit-font-size, 0.75em);

@@ -16,7 +16,7 @@ class WT_MapViewRangeDisplay extends HTMLElement {
                     text-align: center;
                     font-size: 2.5vh;
                     line-height: 2vh;
-                    color: #67e8ef;
+                    color: white;
                 }
                     div {
                         margin: 0 0.5vh;
