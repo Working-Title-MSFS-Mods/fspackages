@@ -804,6 +804,11 @@ class WT_G3x5_TSCMapSettingsTabRow {
         return document.createElement("div");
     }
 
+    /**
+     * @readonly
+     * @property {{instrument:AS3000_TSC, getControllerID:Function, homePageGroup:String, homePageName:String}} context
+     * @type {{instrument:AS3000_TSC, getControllerID:Function, homePageGroup:String, homePageName:String}}
+     */
     get context() {
         return this._context;
     }
@@ -863,13 +868,13 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _initRight() {
-        this._rangeButton = new WT_TSCLabeledButton();
+        this._rangeButton = new WT_G3x5_TSCRangeDisplayButton();
         this._rangeButton.addButtonListener(this._onRangeButtonPressed.bind(this));
         return this._rangeButton;
     }
 
     _initWindowContext() {
-        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesDisplayToMax(this._rangeMax));
+        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesToMax(this._rangeMax), this.context.instrument.unitsController);
         this._rangeWindowContext = {
             title: this._rangeWindowTitleText,
             subclass: "standardDynamicSelectionListWindow",
@@ -898,7 +903,10 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _updateRangeButton() {
-        this._rangeButton.labelText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.getControllerID(), this._rangeKey)]);
+        let range = WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.getControllerID(), this._rangeKey)];
+        let unit = this.context.instrument.unitsController.distanceSpeedSetting.getDistanceUnit();
+        this._rangeButton.setRange(range);
+        this._rangeButton.setUnit(unit);
     }
 
     onUpdate() {
@@ -906,20 +914,8 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
         this._updateRangeButton();
     }
 
-    static getRangeValueText(range) {
-        if (range.compare(WT_Unit.FOOT.createNumber(1000)) <= 0) {
-            return range.asUnit(WT_Unit.FOOT).toFixed(0) + "FT";
-        } else {
-            return range.asUnit(WT_Unit.NMILE) + "NM";
-        }
-    }
-
-    static getRangeValuesDisplayToMax(max) {
-        let values = [];
-        for (let i = 0; i < WT_G3x5_NavMap.MAP_RANGE_LEVELS.length && WT_G3x5_NavMap.MAP_RANGE_LEVELS[i].compare(max) <= 0; i++) {
-            values.push(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[i]));
-        }
-        return values;
+    static getRangeValuesToMax(max) {
+        return WT_G3x5_NavMap.MAP_RANGE_LEVELS.filter(range => range.compare(max) <= 0);
     }
 }
 
@@ -950,7 +946,14 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     }
 
     _initTypeWindowContext() {
-        let elementHandler = new WT_G3x5_TSCRangeTypeSelectionElementHandler(this.context.getControllerID, this._rangeTypeNames, this._rangeKeys);
+        let rangeGetter = {
+            _getControllerID: this.context.getControllerID,
+            _rangeKeys: this._rangeKeys,
+            getRange(index) {
+                return WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])];
+            }
+        }
+        let elementHandler = new WT_G3x5_TSCRangeTypeSelectionElementHandler(this._rangeTypeNames, rangeGetter, this.context.instrument.unitsController);
         this._typeWindowContext = {
             title: this._typeWindowTitleText,
             subclass: "standardDynamicSelectionListWindow",
@@ -967,7 +970,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     _initRangeWindowContexts() {
         this._rangeWindowContexts = [];
         for (let i = 0; i < this._rangeKeys.length; i++) {
-            let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesDisplayToMax(this._rangesMax[i]));
+            let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesToMax(this._rangesMax[i]), this.context.instrument.unitsController);
             this._rangeWindowContexts[i] = {
                 title: this._rangeWindowTitleTexts[i],
                 subclass: "standardDynamicSelectionListWindow",
@@ -1000,30 +1003,6 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
         super.onAttached(context);
         this._initTypeWindowContext();
         this._initRangeWindowContexts();
-    }
-}
-
-class WT_G3x5_TSCRangeTypeSelectionElementHandler {
-    constructor(getControllerID, typeNames, rangeKeys) {
-        this._getControllerID = getControllerID;
-        this._typeNames = Array.from(typeNames);
-        this._rangeKeys = Array.from(rangeKeys);
-    }
-
-    nextElement(index) {
-        if (index >= this._typeNames.length) {
-            return null;
-        }
-
-        let elem = {
-            button: new WT_TSCValueButton(),
-        };
-        elem.button.labelText = this._typeNames[index];
-        return elem;
-    }
-
-    update(index, elem) {
-        elem.button.valueText = WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValueText(WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])]);
     }
 }
 
