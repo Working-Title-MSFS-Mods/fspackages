@@ -34,11 +34,15 @@
 
 @keyframes SelectedCharBlinkFreqEdit {
   0%, 40% {
-    background-color: #67e8ef;
+    background-color: var(--wt-g3x5-lightblue);
     color: black; }
   60%, 100% {
     background-color: none;
-    color: #67e8ef; } }
+    color: var(--wt-g3x5-lightblue); } }
+
+tsc-button-value {
+    --value-color: var(--wt-g3x5-lightblue);
+}
 
 .line {
     width: 100%;
@@ -90,7 +94,7 @@
   .gradientButton .centerImg {
     display: inline-block; }
   .gradientButton .lowerValue {
-    color: #67e8ef; }
+    color: var(--wt-g3x5-lightblue); }
   .gradientButton .label {
     width: 100%;
     transform: translateY(50%);
@@ -120,7 +124,7 @@
     transform: translateY(-50%);
     width: 100%; }
   .gradientButton .statusText {
-    color: #67e8ef;
+    color: var(--wt-g3x5-lightblue);
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -137,7 +141,7 @@
 .gradientButton[state=Active] .statusBar {
   background-color: lawngreen; }
 .gradientButton[state=Selected] .mainNumber {
-  color: #67e8ef; }
+  color: var(--wt-g3x5-lightblue); }
   .gradientButton[state=Selected] .mainNumber .Writing {
     color: dimgray;
     display: inline-block; }
@@ -320,7 +324,7 @@ tsc-mapsettings-tabrow > * {
     margin: 0.25vh;
 }
 tsc-mapsettings-tabrow .mapSettingsTabRowRight {
-    color: #67e8ef;
+    color: var(--wt-g3x5-lightblue);
 }
 
 .MapDetailSelect .Container {
@@ -384,7 +388,7 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
         left: 2%;
         top: 0%;
         text-align: left;
-        color: #67e8ef; }
+        color: var(--wt-g3x5-lightblue); }
       #DirectTo #Waypoint #SelectedWaypoint .title {
         position: absolute;
         left: 2%;
@@ -414,7 +418,7 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
           right: 1%; }
         #DirectTo #Waypoint #TopLine .mainValue,
         #DirectTo #Waypoint #MiddleLine .mainValue {
-          color: #67e8ef; }
+          color: var(--wt-g3x5-lightblue); }
       #Waypoint #bottomLine {
         width: 100%; }
         #DirectTo #Waypoint #bottomLine .gradientButton {
@@ -476,9 +480,9 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
         width: 100%;
         top: 50%;
         transform: translateY(-50%);
-        color: #67e8ef; }
+        color: var(--wt-g3x5-lightblue); }
         #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Manual] {
-          color: #67e8ef; }
+          color: var(--wt-g3x5-lightblue); }
         #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .gradientButton .mainValue[altitudeMode=Subdued] {
           color: darkcyan;
           -webkit-mask: url(/Pages/VCockpit/Instruments/NavSystems/Shared/Images/SubduedMask.png);
@@ -488,7 +492,7 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
           #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable .phaseHeader[state=SelectedWP] .gradientButton .mainValue {
             color: black; }
         #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .Waypoint .mainValue {
-          color: #67e8ef; }
+          color: var(--wt-g3x5-lightblue); }
       #ActiveFlightPlan #flightPlan #AFPL_WayPointsTable tbody .DTK {
         color: white;
         text-align: right; }
@@ -521,13 +525,13 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
 
 #Procedures .gradientButton .value {
         width: 100%;
-        color: #67e8ef; }
+        color: var(--wt-g3x5-lightblue); }
   .ProcSelection .gradientButton .value {
-    color: #67e8ef;
+    color: var(--wt-g3x5-lightblue);
     width: 100%;
     text-align: center; }
   .ProcSelection .ProcAirport .ident {
-    color: #67e8ef;
+    color: var(--wt-g3x5-lightblue);
     width: 100%;
     text-align: center; }
   .ProcSelection .ProcAirport .name {
@@ -542,7 +546,7 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
   text-align: center;
   color: white; }
   #LightingConfig #LightingValueDisplay .value {
-    color: #67e8ef; }
+    color: var(--wt-g3x5-lightblue); }
 #LightingConfig #LightingControls {
   display: flex;
   flex-flow: row nowrap;
@@ -720,16 +724,16 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
           border-right: 5px solid rgba(0, 0, 0, 0);
           border-radius: 0 4px 4px 0; }
         #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td {
-          border-top: 5px solid #67e8ef;
-          border-bottom: 5px solid #67e8ef; }
+          border-top: 5px solid var(--wt-g3x5-lightblue);
+          border-bottom: 5px solid var(--wt-g3x5-lightblue); }
         #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:first-child {
-          border-left: 5px solid #67e8ef; }
+          border-left: 5px solid var(--wt-g3x5-lightblue); }
         #AudioRadiosWindow .tabContentContainer table tbody tr[state="Selected"] td:last-child {
-          border-right: 5px solid #67e8ef; }
+          border-right: 5px solid var(--wt-g3x5-lightblue); }
           #AudioRadiosWindow .tabContentContainer .gradientButton .mainNumber {
             text-align: left; }
           #AudioRadiosWindow .tabContentContainer .gradientButton .standbyFreq {
-            color: #67e8ef; }
+            color: var(--wt-g3x5-lightblue); }
           #AudioRadiosWindow .tabContentContainer .gradientButton .activeNavID {
             color: white;
             text-align: right; }
@@ -748,11 +752,11 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
     background-color: grey;
     text-align: center; }
     #frequencyKeyboard #topLine #FK_FreqDisplay .StbyFreq {
-      background-color: #67e8ef;
+      background-color: var(--wt-g3x5-lightblue);
       color: black; }
     #frequencyKeyboard #topLine #FK_FreqDisplay .Writed {
       background-color: none;
-      color: #67e8ef; }
+      color: var(--wt-g3x5-lightblue); }
     #frequencyKeyboard #topLine #FK_FreqDisplay .ToWrite {
       background-color: none;
       color: dimgray; }
@@ -760,7 +764,7 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
       animation: SelectedCharBlinkFreqEdit 1s infinite;
       display: inline-block; }
     #frequencyKeyboard #topLine #FK_FreqDisplay .Fixed {
-      background-color: #67e8ef; }
+      background-color: var(--wt-g3x5-lightblue); }
 
 #TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
   color: white; }
@@ -772,12 +776,12 @@ tsc-mapsettings-tabrow .mapSettingsTabRowRight {
     #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writed,
     #TransponderWindow #transponder_CodeDisplay #transponder_Code .ToWrite {
       background-color: none;
-      color: #67e8ef; }
+      color: var(--wt-g3x5-lightblue); }
     #TransponderWindow #transponder_CodeDisplay #transponder_Code .Writing {
       animation: SelectedCharBlinkFreqEdit 1s infinite;
       display: inline-block; }
     #TransponderWindow #transponder_CodeDisplay #transponder_Code .Fixed {
-      background-color: #67e8ef; }
+      background-color: var(--wt-g3x5-lightblue); }
 #TransponderWindow #transponder_NumberKeyboard {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
