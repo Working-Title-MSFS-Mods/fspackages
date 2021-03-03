@@ -355,7 +355,7 @@ class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTit
 
     _initRight() {
         let button = new WT_TSCLabeledButton();
-        button.style.color = "#67e8ef";
+        button.style.color = "var(--wt-g3x5-lightblue)";
         button.style.position = "absolute";
         button.style.top = "2%";
         button.style.left = "2%";

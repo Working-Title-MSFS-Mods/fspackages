@@ -96,7 +96,7 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton .active, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton .active {
         display: none; }
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"], as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] {
-        border: 0.4vh solid #67e8ef; }
+        border: 0.4vh solid var(--wt-g3x5-lightblue); }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"] .img, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] .img {
           display: none; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"] .active, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] .active {
@@ -121,7 +121,7 @@ as3000-tsc-horizontal-element {
             top: 50%;
             transform: translateY(-50%);
             width: 100%;
-            color: #67e8ef;
+            color: var(--wt-g3x5-lightblue);
             font-size: 5vh; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue .unitSpan {
             font-size: 4vh; }
@@ -221,11 +221,11 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers .timerStartStop
           font-size: 6vh;
           text-align: center; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_Display .Initial {
-            background-color: #67e8ef;
+            background-color: var(--wt-g3x5-lightblue);
             color: black; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_Display .Writed {
             background-color: none;
-            color: #67e8ef; }
+            color: var(--wt-g3x5-lightblue); }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #Minimums #min_keyboard #min_Display .ToWrite {
             background-color: none;
             color: black; }
@@ -1096,14 +1096,14 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-airpor
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Active] .statusBar {
             background-color: lawngreen; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Selected] .mainNumber {
-            color: #67e8ef; }
+            color: var(--wt-g3x5-lightblue); }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Selected] .mainNumber .Writing {
               color: dimgray;
               min-width: 5px;
               min-height: 7vh;
               display: inline-block; }
               as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Selected] .mainNumber .Writing[state=Blink] {
-                background-color: #67e8ef; }
+                background-color: var(--wt-g3x5-lightblue); }
             as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Selected] .mainNumber .ToWrite {
               color: dimgray; }
           as3000-tsc-horizontal-element #Electricity #PagesDisplay #NavComHome .gradient[state=Greyed] {
@@ -1323,11 +1323,11 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
           text-align: center;
           font-size: 6vh; }
           as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .StbyFreq {
-            background-color: #67e8ef;
+            background-color: var(--wt-g3x5-lightblue);
             color: black; }
           as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .Writed {
             background-color: none;
-            color: #67e8ef; }
+            color: var(--wt-g3x5-lightblue); }
           as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .ToWrite {
             background-color: none;
             color: dimgray; }
@@ -1337,7 +1337,7 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
             min-height: 6vh;
             display: inline-block; }
           as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #topLine #FK_FreqDisplay .Fixed {
-            background-color: #67e8ef; }
+            background-color: var(--wt-g3x5-lightblue); }
       as3000-tsc-horizontal-element #Electricity #frequencyKeyboard #KeyBoard {
         position: absolute;
         top: 25%;
@@ -1366,7 +1366,7 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         font-size: 7vh; }
         as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Writed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Writed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Writed {
           background-color: none;
-          color: #67e8ef; }
+          color: var(--wt-g3x5-lightblue); }
         as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .ToWrite, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .ToWrite, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .ToWrite {
           background-color: none;
           color: dimgray; }
@@ -1376,7 +1376,7 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
           min-height: 6vh;
           display: inline-block; }
         as3000-tsc-horizontal-element #Electricity #timeKeyboard #TK_TimeDisplay .Fixed, as3000-tsc-horizontal-element #Electricity #speedKeyboard #SK_Display .Fixed, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #AK_Display .Fixed {
-          background-color: #67e8ef; }
+          background-color: var(--wt-g3x5-lightblue); }
       as3000-tsc-horizontal-element #Electricity #timeKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #speedKeyboard #KeyBoard, as3000-tsc-horizontal-element #Electricity #altitudeKeyboard #KeyBoard {
         position: absolute;
         top: 25%;
@@ -1406,10 +1406,10 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         padding-left: 2%;
         color: black; }
         as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .NoEdit {
-          background-color: #67e8ef; }
+          background-color: var(--wt-g3x5-lightblue); }
         as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .Writed {
           background-color: none;
-          color: #67e8ef; }
+          color: var(--wt-g3x5-lightblue); }
         as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .ToWrite {
           background-color: none;
           color: dimgray; }
@@ -1901,7 +1901,7 @@ as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .conten
       as3000-tsc-horizontal-element .statusTextButton .mainText {
         top: 30%; }
     as3000-tsc-horizontal-element .gradientButton .statusText {
-      color: #67e8ef;
+      color: var(--wt-g3x5-lightblue);
       font-size: 5vh;
       position: absolute;
       top: 50%;

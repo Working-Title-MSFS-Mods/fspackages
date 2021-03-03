@@ -362,7 +362,7 @@ WT_G3x5_TSCUnitsButtonRow.TEMPLATE.innerHTML = `
             #button {
                 position: relative;
                 margin: 0.5vh;
-                color: #67e8ef;
+                color: var(--wt-g3x5-lightblue);
                 font-size: 1.33em;
             }
     </style>
@@ -750,7 +750,7 @@ WT_G3x5_TSCNavDataFieldRow.TEMPLATE.innerHTML = `
             #button {
                 position: relative;
                 margin: 0.5vh;
-                color: #67e8ef;
+                color: var(--wt-g3x5-lightblue);
             }
     </style>
     <div id="wrapper">
