@@ -348,7 +348,7 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
                 width: 100%;
                 top: 50%;
                 transform: translateY(-50%);
-                color: var(--value-color, #67e8ef);
+                color: var(--value-color, white);
                 font-size: var(--value-font-size, 1em);
             }
         `;
