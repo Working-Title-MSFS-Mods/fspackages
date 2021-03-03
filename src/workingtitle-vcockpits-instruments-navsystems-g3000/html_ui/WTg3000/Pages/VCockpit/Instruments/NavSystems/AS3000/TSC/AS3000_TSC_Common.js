@@ -63,6 +63,8 @@ class AS3000_TSC extends NavSystemTouch {
             int: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.INT)
         };
 
+        this._initUnitsController();
+
         this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
         this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
         this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
@@ -81,6 +83,11 @@ class AS3000_TSC extends NavSystemTouch {
 
         this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
         this._mfdPaneControlID;
+    }
+
+    _initUnitsController() {
+        this._unitsController = new WT_G3x5_UnitsController();
+        this._unitsController.init();
     }
 
     _initHalfPaneController(paneSettings) {
@@ -113,6 +120,15 @@ class AS3000_TSC extends NavSystemTouch {
      */
     get icaoSearchers() {
         return this._icaoSearchers;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_UnitsController} unitsController
+     * @type {WT_G3x5_UnitsController}
+     */
+    get unitsController() {
+        return this._unitsController;
     }
 
     get mfdPaneControlID() {

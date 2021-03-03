@@ -466,6 +466,9 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapse
             as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mapsettings-tabrow {
                 height: 12vh;
             }
+            as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .mapSettingsTabRowRight {
+                font-size: 3vh;
+            }
 
 as3000-tsc-vertical-element #Electricity .mapPointerControl tsc-mappointercontrol {
     position: absolute;
@@ -1790,12 +1793,9 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
     }
         as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindowButton {
             height: 14vh;
-            font-size: 3.5vh;
+            font-size: 4vh;
         }
 
-    as3000-tsc-vertical-element #Electricity .unitsDynamicSelectionListWindow .dynamicSelectionListWindowButton {
-        font-size: 4vh;
-    }
     as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .dynamicSelectionListWindowButton {
         font-size: 3vh;
     }
