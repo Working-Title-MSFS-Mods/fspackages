@@ -170,8 +170,10 @@ class CJ4_FMC_ModSettingsPageOne {
         this._fmc.onRightInput[4] = () => {
             this._fmc.setMsg("LINKING NAVIGRAPH...[yellow]");
             ngApi.linkAccount().then((s) => {
-                this._fmc.setMsg("NAVIGRAPH LINKED[green]");
-                this.invalidate();
+                if (s) {
+                    this._fmc.setMsg("NAVIGRAPH LINKED[green]");
+                    this.invalidate();
+                }
             });
         };
         this._fmc.onLeftInput[5] = () => {

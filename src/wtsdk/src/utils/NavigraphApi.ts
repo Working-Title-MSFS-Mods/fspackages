@@ -22,6 +22,10 @@ export class NavigraphApi {
     WTDataStore.set(this.RFRSH_TOKEN_KEY, val);
   }
 
+  public get refreshToken(): string {
+    return WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
+  }
+
   /** Returns a boolean indicating if a access token is known */
   public get hasAccessToken(): boolean {
     return this._accessToken !== "";
@@ -31,13 +35,6 @@ export class NavigraphApi {
   public set accessToken(val: string) {
     this._accessToken = val;
     this._accessTokenTimestamp = Date.now();
-  }
-
-  /**
-   *
-   */
-  constructor() {
-    this._refreshToken = WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
   }
 
   /**
@@ -60,7 +57,7 @@ export class NavigraphApi {
   async refreshAccessToken(): Promise<void> {
     const refreshForm: Map<string, string> = new Map([
       ["grant_type", "refresh_token"],
-      ["refresh_token", this._refreshToken],
+      ["refresh_token", this.refreshToken],
     ]);
     const refreshResp = await this.sendRequest("https://identity.api.navigraph.com/connect/token", "post", refreshForm);
     if (refreshResp.ok) {
@@ -90,6 +87,9 @@ export class NavigraphApi {
    * Executes the navigraph account linking process
    */
   async linkAccount(): Promise<boolean> {
+    this.refreshToken = "";
+    this.accessToken = "";
+    
     // send auth request
     const authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post");
     if (authResp.ok) {
