@@ -90,10 +90,6 @@ class WT_G3x5_PFD extends NavSystem {
         return this._bearingInfos;
     }
 
-    getBearingInfo(slot) {
-
-    }
-
     _createMainPage() {
     }
 
@@ -320,7 +316,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._altimeter = new AS3000_PFD_Altimeter("PFD"),
             this._annunciations = new PFD_Annunciations(),
             this._compass = new WT_G3x5_PFDCompass(),
-            new PFD_NavStatus(),
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
             new AS3000_PFD_NavStatus(),
