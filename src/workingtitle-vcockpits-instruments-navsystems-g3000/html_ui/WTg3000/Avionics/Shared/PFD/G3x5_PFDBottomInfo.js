@@ -1,4 +1,4 @@
-class WT_G3x5_PFDBottomInfo extends NavSystemElement {
+class WT_G3x5_PFDBottomInfo extends WT_G3x5_PFDElement {
     constructor() {
         super();
 
@@ -6,15 +6,6 @@ class WT_G3x5_PFDBottomInfo extends NavSystemElement {
          * @type {WT_G3x5_PFDBottomInfoCell[]}
          */
         this._cells = [];
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_PFD} instrument
-     * @type {WT_G3x5_PFD}
-     */
-    get instrument() {
-        return this.gps;
     }
 
     /**
@@ -72,7 +63,7 @@ WT_G3x5_PFDBottomInfoHTMLElement.NAME = "wt-pfd-bottominfo";
 WT_StyleInjector.inject(`
     ${WT_G3x5_PFDBottomInfoHTMLElement.NAME} {
         display: block;
-        background-color: #1a1d21;
+        background-color: var(--wt-g3x5-bggray);
     }
 `);
 

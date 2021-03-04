@@ -503,39 +503,7 @@ as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
           text-align: center;
           margin-left: 2%;
           margin-right: 2%; }
-    as3000-pfd-element #Mainframe #InstrumentsContainer #NavFreqInfos {
-      position: absolute;
-      left: 69%;
-      bottom: 21%;
-      width: 17%;
-      height: 4%;
-      background-color: #1a1d21;
-      font-size: 2.5vh; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #NavFreqInfos[state="Inactive"] {
-        display: none; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #NavFreqInfos #ActiveNav {
-        position: absolute;
-        height: 50%;
-        width: 35%;
-        top: 0%;
-        left: 5%;
-        text-align: left; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #NavFreqInfos #ActiveNavFreq {
-        color: green;
-        position: absolute;
-        height: 50%;
-        width: 35%;
-        top: 0%;
-        right: 5%;
-        text-align: right; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #NavFreqInfos #ActiveNavName {
-        color: green;
-        position: absolute;
-        height: 50%;
-        width: 30%;
-        top: 0%;
-        left: 35%;
-        text-align: center; }
+
     as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums {
       position: absolute;
       left: 61%;
