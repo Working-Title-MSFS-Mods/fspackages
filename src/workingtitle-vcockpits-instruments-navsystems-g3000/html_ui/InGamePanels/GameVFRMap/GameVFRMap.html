@@ -1,0 +1,132 @@
+﻿<html>
+    <head>
+        <title></title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="/SCSS/common.css" />
+        <link rel="stylesheet" href="/WTg3000/UIPanels/VFRMap/VFRMap.css" />
+    </head>
+
+    <body id="VFRMapPanel" class="border-box">
+        <vfrmap-panel>
+            <ingame-ui id="VFRMap_Frame" panel-id="PANEL_VFR_MAP" class="ingameUiFrame panelInvisible" title="VFRMap" content-fit="true" min-width="33" min-height="35">
+                <section id="MainDisplay">
+                    <map-instrument class="vfrMap" bing-mode="vfr" bing-id="VFRMap" show-airplane="false" show-overlay="false" active="false"></map-instrument>
+                    <map-view class="vfrMap" dpi-scale="1.2" config-path="/WTg3000/UIPanels/VFRMap/mapConfig.json" active="false"></map-view>
+                </section>
+
+                <section id="Footer">
+                    <toggle-button id="ToggleIsolines" title="TT:MENU.SHOW_ISOLINES"></toggle-button>
+                    <toggle-button id="FollowPlane" title="TT:MENU.VFRMAP.GPSTRACKING"></toggle-button>
+                    <new-push-button id="BackOnTrack" class="hide small" title="TT:MENU.VFR_MAP.BACK_ON_TRACK"> </new-push-button>
+                </section>
+            </ingame-ui>
+        </vfrmap-panel>
+    </body>
+
+    <script type="text/javascript" src="/JS/coherent.js"></script>
+    <script type="text/javascript" src="/JS/common.js"></script>
+    <script type="text/javascript" src="/JS/dataStorage.js"></script>
+    <script type="text/javascript" src="/JS/buttons.js"></script>
+    <script type="text/javascript" src="/JS/simvar.js"></script>
+    <script type="text/javascript" src="/JS/Services/ToolBarPanels.js"></script>
+
+    <script type="text/javascript" src="/JS/Inputs.js"></script>
+    <script type="text/javascript" src="/JS/NetBingMap.js"></script>
+    <script type="text/javascript" src="/JS/avionics.js"></script>
+    <script type="text/javascript" src="/JS/simplane.js"></script>
+
+    <script type="text/javascript" src="/Pages/VCockpit/Instruments/Shared/Utils/DataReadManager.js"></script>
+    <script type="text/javascript" src="/Pages/VCockpit/Instruments/Shared/BaseInstrument.js"></script>
+
+    <link rel="import" href="/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html" />
+
+    <link rel="import" href="/templates/ingameUi/ingameUi.html" />
+    <link rel="import" href="/templates/ingameUiHeader/ingameUiHeader.html" />
+    <link rel="import" href="/templates/checkbox/checkbox.html" />
+    <link rel="import" href="/templates/NewPushButton/NewPushButton.html" />
+    <link rel="import" href="/templates/ToggleButton/ToggleButton.html" />
+
+    <script type="text/javascript" src="/WTg3000/SDK/Libraries/zip-full.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Libraries/d3-array.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Libraries/d3-geo.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Libraries/topojson.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Libraries/WorldMagneticModel.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Utils/SortedArray.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Utils/FileHandler.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Utils/DataStore.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Utils/OptionsManager.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Utils/CanvasBufferedLinePathContext.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Math/NumberUnit.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Math/GVector2.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Math/GVector3.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Geo/GeoPoint.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Geo/SphericalMath.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Geo/GeoMagnetic.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Geo/GeoKDTree.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Utils/PlayerAirplane.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/Frequency.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/AltitudeConstraint.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/Waypoint.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/Airport.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/Procedure.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/VOR.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/NDB.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/Intersection.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/Airway.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/ICAOWaypointFactory.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/ICAOSearcher.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/FlightPlan.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/DirectTo.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/FlightPlanAsoboInterface.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/FlightElements/FlightPlanManager.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Cities/City.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Cities/CitySearcher.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/MapModel.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelUnitsModule.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelTerrainModule.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelWeatherDisplayModule.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelBordersModule.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelRoadsModule.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelCitiesModule.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointsModule.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapProjection.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapView.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewPersistentCanvas.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewRenderQueue.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewBufferedCanvasContext.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewTextLabel.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewBorderData.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewRoadData.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewRoadLabelPresets.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewWaypointIcon.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewWaypointLabel.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewWaypointCanvasRenderer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewAirwaySegmentLabel.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewAirwayCanvasRenderer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewFlightPlanCanvasRenderer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/MapViewDirectToCanvasRenderer.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewBingLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewTextLabelLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewAirplaneLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewBorderLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewRoadLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewCityLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewWaypointLayer.js"></script>
+    <script type="text/javascript" src="/WTg3000/SDK/Map/View/Layers/MapViewFlightPlanLayer.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/Config/ModConfig.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/Avionics/Shared/G3x5_MapViewFlightPlanLegStyleChooser.js"></script>
+
+    <script type="text/javascript" src="/WTg3000/UIPanels/VFRMap/VFRMap.js"></script>
+</html>

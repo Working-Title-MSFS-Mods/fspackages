@@ -1,0 +1,236 @@
+﻿<script type="text/html" id="AS3000_MFD">
+    <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
+    <div id="Mainframe">
+        <div id="Electricity" state="off">
+            <div id="Console">Initializing System...</div>
+            <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
+            <img id="Validate" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/MFD_Startup_G3000.png" />
+            <div id="CenterDisplay">
+                <div id="ComFreq">
+                    <div id="COM1">
+                        <div class="Active">
+                            <div class="Title">COM1</div>
+                            <div class="Value" id="Com1_Active"></div>
+                        </div>
+                        <div class="Stby">
+                            <div class="Title">STBY</div>
+                            <div class="Value" id="Com1_Stby"></div>
+                        </div>
+                    </div>
+                    <div id="COM2">
+                        <div class="Active">
+                            <div class="Title">COM2</div>
+                            <div class="Value" id="Com2_Active"></div>
+                        </div>
+                        <div class="Stby">
+                            <div class="Title">STBY</div>
+                            <div class="Value" id="Com2_Stby"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="LeftInfos">
+                    <as3000-engine-display id="ED"></as3000-engine-display>
+                </div>
+                <div id="RightInfos">
+                    <div id="NavDataBar">
+                    </div>
+                    <mfd-mainpane id="MainPane">
+                        <mfd-halfpane slot="left">
+                            <map-view slot="navMap" class="navMap" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                            <div slot="weatherRadar" class="weatherRadar">
+                                <weatherradar-view></weatherradar-view>
+                                <weatherradar-view-scale></weatherradar-view-scale>
+                                <weatherradar-view-settings></weatherradar-view-settings>
+                            </div>
+                            <map-view slot="waypointInfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                        </mfd-halfpane>
+                        <mfd-halfpane slot="right">
+                            <map-view slot="navMap" class="navMap" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                            <div slot="weatherRadar" class="weatherRadar">
+                                <weatherradar-view></weatherradar-view>
+                                <weatherradar-view-scale></weatherradar-view-scale>
+                                <weatherradar-view-settings></weatherradar-view-settings>
+                            </div>
+                            <map-view slot="waypointInfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/mapConfig.json"></map-view>
+                        </mfd-halfpane>
+                    </mfd-mainpane>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<link rel="stylesheet" href="AS3000_MFD.css" />
+
+<script type="text/html" import-script="/JS/SimPlane.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/zip-full.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/d3-array.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/d3-geo.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/topojson.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/WorldMagneticModel.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Utils/SortedArray.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/FileHandler.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/HTMLElementRecycler.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreController.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/CanvasBufferedLinePathContext.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Math/GVector2.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Math/GVector3.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Geo/GeoPoint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Geo/SphericalMath.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Geo/GeoMagnetic.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Geo/GeoKDTree.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Utils/PlayerAirplane.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/highlight.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/WindDataDisplay/WindDataDisplay.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SearchField.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Frequency.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/AltitudeConstraint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Waypoint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Airport.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Procedure.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/VOR.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/NDB.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Intersection.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/Airway.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/ICAOWaypointFactory.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/ICAOSearcher.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlan.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/DirectTo.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanAsoboInterface.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Cities/City.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Cities/CitySearcher.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/WaypointLoader.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/FlightPlan.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/FlightPlanManager.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/Waypoint.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/NearestWaypoint.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/Approach.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/Runway.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/FlightElements/GeoCalc.js"></script>
+
+<script type="text/html" import-script="/JS/NetBingMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/MapModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelUnitsModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelCrosshairModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelTerrainModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWeatherDisplayModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelOrientationModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWindDataModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelPointerModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelRangeRingModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelRangeCompassModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelTrackVectorModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelFuelRingModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelAltitudeInterceptModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelBordersModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelRoadsModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelCitiesModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointsModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointHighlightModule.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelWaypointInfoModule.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapProjection.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapView.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewPersistentCanvas.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewRenderQueue.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewBufferedCanvasContext.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewRangeDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewTextLabel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewBorderData.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewRoadData.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewRoadLabelPresets.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewWaypointIcon.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewWaypointLabel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewWaypointCanvasRenderer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewAirwaySegmentLabel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewAirwayCanvasRenderer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewFlightPlanCanvasRenderer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewDirectToCanvasRenderer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/MapViewRunwayCanvasRenderer.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewCrosshairLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewRangeDisplayLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewOrientationDisplayLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewWindDataLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewMiniCompassLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewBingLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewTextLabelLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewAirplaneLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewPointerLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewPointerInfoLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewLabeledRingLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewRangeRingLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewRangeCompassArcLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewTrackVectorLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewFuelRingLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewAltitudeInterceptLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewBorderLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewRoadLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewCityLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewWaypointLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewFlightPlanLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewWaypointHighlightLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/View/Layers/MapViewAirportRunwayLayer.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapController.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapPointerSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapTerrainModeSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAutoNorthUpSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapSymbolShowSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapTrackVectorSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapWindDataShowSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapFuelRingSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAltitudeInterceptSetting.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Display/TitledPane.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Display/NavDataBar.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Config/ModConfig.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AbstractGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/CircularGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/HorizontalGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/VerticalGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/FlapsGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/AilTrimGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/ElevTrimGauge.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Gauges/RudderTrimGauge.js"></script>
+
+<script type="text/html" import-template="/Pages/VCockpit/Instruments/NavSystems/AS3000/Templates/EngineDisplay.html"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_BaseInstrument.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/GaugeElement.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_MapViewFlightPlanLegStyleChooser.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WaypointInfo.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDNavDataBar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/MFD/AS3000_MFD.js"></script>
