@@ -2751,98 +2751,155 @@ class CJ4_SystemFMS extends NavSystemElement {
                         let fptaConstraint = "";
                         let fptaDistance = 0;
                         let fptaTime = 0; */
-                        
-                        const data = JSON.parse(localStorage.getItem("VNAVWINDOWDATA"));;
-                        if(data.fptaname && !Simplane.getIsGrounded()){
-                            let todDistance = data.toddistance.toFixed(1);
-                            let timeToTOD = "";
-                            if (groundSpeed > 0) {
-                                let timeToTOD = new Date(this.calcETEseconds(todDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
-                            }
-                            let descentAngle = data.fpa;
-                            let descentRate = data.descentrate;
-                            let constraintName = data.fptaname;
-                            let fptaConstraint = data.fptaconstraint ? data.fptaconstraint : 0;
-                            let fptaDistance = data.fptaDistance.toFixed(1);
-                            let fptaTime = new Date(this.calcETEseconds(fptaDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
 
-                            let todText = "TOD";
-                            let fpmText = "FPM";
-                            let nmText = "NM";
-                            let slashText = "/";
-                            let nmText2 = "NM";
-                            let slashText2 = "/";
-                            if (todDistance < .1) {
-                                console.log("This did run");
-                                todText = "";
-                                todDistance = "";
-                                timeToTOD = "";
-                                nmText = "";
-                                slashText = "";
-                            } else {
-                                todText = "TOD";
-                                nmText = "NM";
-                                slashText = "/";
-                            }
-    
-                            if (descentAngle === 0) {
-                                descentAngle = 0;
-                            } else {
-                                descentAngle = descentAngle.toFixed(1) + String.fromCharCode(176);
-                            }
-    
-                            if (descentRate === 0) {
-                                descentRate = "";
-                                fpmText = "";
-                            } else{
-                                fpmText = "FPM";
-                            }
-    
-                            if (fptaDistance === 0) {
-                                fptaDistance = 0;
-                                fptaTime = 0;
-                                nmText2 = "";
-                                slashText2 = "";
-                            } else {
-                                nmText2 = "NM";
-                                slashText2 = "/";
-                            }
-    
+                        let vnavWindowActive = WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1);
+                        if (vnavWindowActive == 2) {
+
                             this._previousWaypointContainer // PREVIOUS ETA SHOULD BE  BLANK
                             .querySelector(".cj4x-navigation-data-waypoint-eta")
                             .textContent = "";
-                            
+
                             const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                                vnavTODorDirect.textContent = ""; //DIRECT would go here, do it later
-                                vnavTODorDirect.setAttribute("style", "color: #11d011");
-    
+                                vnavTODorDirect.textContent = "";
+
                             const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                                vnavFix.textContent = constraintName;
-                                vnavFix.setAttribute("style", "color: #11d011");
-    
+                            vnavFix.textContent = "";
+
                             this._destinationWaypointContainer
-                                .querySelector(".cj4x-navigation-data-waypoint-eta")
-                                .textContent = "";
-    
+                                    .querySelector(".cj4x-navigation-data-waypoint-eta")
+                                    .textContent = "";
+
                             const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
-                                vnavFixETADist.textContent = fptaTime + slashText2 + fptaDistance + nmText2;
-                                vnavFixETADist.setAttribute("style", "color: #11d011");
-    
+                                vnavFixETADist.textContent = "";
+
                             const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
-                                vnavFixConstraint.textContent = fptaConstraint;
-                                vnavFixConstraint.setAttribute("style", "color: #11d011");
-    
+                                vnavFixConstraint.textContent = "";
+
                             const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
-                                vnavFixAngleRate.textContent = descentAngle + String.fromCharCode(2) + String.fromCharCode(2) + descentRate + fpmText;
-                                vnavFixAngleRate.setAttribute("style", "color: #11d011");
-    
+                                vnavFixAngleRate.textContent = "";
+
                             const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                                vnavAdvisoryDescent.textContent = todText;
-                                vnavAdvisoryDescent.setAttribute("style", "color: #11d011");
-    
+                                vnavAdvisoryDescent.textContent = "";
+
                             const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
-                                vnavAdvisoryDescentTimeDistance.textContent = timeToTOD + slashText + todDistance + nmText;
-                                vnavAdvisoryDescentTimeDistance.setAttribute("style", "color: #11d011");
+                                vnavAdvisoryDescentTimeDistance.textContent = "";
+
+                            const data = JSON.parse(localStorage.getItem("VNAVWINDOWDATA"));
+
+                            if (data.fptaname && !Simplane.getIsGrounded()) {
+
+                                let todDistance = "";
+                                if (data.toddistance)
+                                    todDistance = data.toddistance.toFixed(1);
+                                let timeToTOD = "";
+                                if (groundSpeed > 0) {
+                                    timeToTOD = new Date(this.calcETEseconds(todDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+                                }
+                                let descentAngle = data.fpa;
+                                let descentRate = data.descentrate;
+                                let constraintName = data.fptaname;
+                                let fptaConstraint = data.fptaconstraint ? data.fptaconstraint : 0;
+                                let fptaDistance = data.fptaDistance.toFixed(1);
+                                let fptaTime = new Date(this.calcETEseconds(fptaDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+
+                                let todText = "TOD";
+                                let fpmText = "FPM";
+                                let nmText = "NM";
+                                let slashText = "/";
+                                let nmText2 = "NM";
+                                let slashText2 = "/";
+                                if (todDistance < .1) {
+                                    todText = "";
+                                    todDistance = "";
+                                    timeToTOD = "";
+                                    nmText = "";
+                                    slashText = "";
+                                } else {
+                                    todText = "TOD";
+                                    nmText = "NM";
+                                    slashText = "/";
+                                }
+
+                                if (descentAngle === 0) {
+                                    descentAngle = 0;
+                                } else {
+                                    descentAngle = descentAngle.toFixed(1) + String.fromCharCode(176);
+                                }
+
+                                if (descentRate === 0) {
+                                    descentRate = "";
+                                    fpmText = "";
+                                } else{
+                                    fpmText = "FPM";
+                                }
+
+                                if (fptaDistance === 0) {
+                                    fptaDistance = 0;
+                                    fptaTime = 0;
+                                    nmText2 = "";
+                                    slashText2 = "";
+                                } else {
+                                    nmText2 = "NM";
+                                    slashText2 = "/";
+                                }
+
+                                this._previousWaypointContainer // PREVIOUS ETA SHOULD BE  BLANK
+                                    .querySelector(".cj4x-navigation-data-waypoint-eta")
+                                    .textContent = "";
+
+                                const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                    vnavTODorDirect.textContent = ""; //DIRECT would go here, do it later
+                                    vnavTODorDirect.setAttribute("style", "color: #11d011");
+
+                                const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                    vnavFix.textContent = constraintName;
+                                    vnavFix.setAttribute("style", "color: #11d011");
+
+                                this._destinationWaypointContainer
+                                    .querySelector(".cj4x-navigation-data-waypoint-eta")
+                                    .textContent = "";
+
+                                const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
+                                    vnavFixETADist.textContent = fptaTime + slashText2 + fptaDistance + nmText2;
+                                    vnavFixETADist.setAttribute("style", "color: #11d011");
+
+                                const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
+                                    vnavFixConstraint.textContent = fptaConstraint;
+                                    vnavFixConstraint.setAttribute("style", "color: #11d011");
+
+                                const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
+                                    vnavFixAngleRate.textContent = descentAngle + String.fromCharCode(2) + String.fromCharCode(2) + descentRate + fpmText;
+                                    vnavFixAngleRate.setAttribute("style", "color: #11d011");
+
+                                const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                    vnavAdvisoryDescent.textContent = todText;
+                                    vnavAdvisoryDescent.setAttribute("style", "color: #11d011");
+
+                                const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
+                                    vnavAdvisoryDescentTimeDistance.textContent = timeToTOD + slashText + todDistance + nmText;
+                                    vnavAdvisoryDescentTimeDistance.setAttribute("style", "color: #11d011");
+                            }
+                        } else {
+
+                            const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                    vnavTODorDirect.setAttribute("style", "color: white");
+
+                            const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
+                                vnavFixConstraint.textContent = "";
+
+                            const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
+                                vnavFixAngleRate.textContent = "";
+
+                            const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                vnavAdvisoryDescent.textContent = "";
+
+                            const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
+                                vnavAdvisoryDescentTimeDistance.textContent = "";
+
+                            const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
+                                vnavFixETADist.textContent = "----- LB --.-GW";
+                                vnavFixETADist.setAttribute("style", "color: white");
+
                         }
                     }
                 }
