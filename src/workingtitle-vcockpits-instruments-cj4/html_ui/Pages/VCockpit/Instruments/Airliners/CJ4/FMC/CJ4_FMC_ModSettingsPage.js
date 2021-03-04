@@ -9,7 +9,6 @@ class CJ4_FMC_ModSettingsPageOne {
         this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
         this._ngDefault = "NOT LINKED[disabled]";
-        this._ngStatus = !ngApi.isAccountLinked ? this._ngDefault : "LINKED[green]";
 
         const potValue = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:28", "number");
         if (potValue == 1) {
@@ -124,6 +123,7 @@ class CJ4_FMC_ModSettingsPageOne {
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
         const yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
         const fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
+        this._ngStatus = !ngApi.isAccountLinked ? this._ngDefault : "LINKED[green]";
 
         if (!this._gpuAvailable) {
             gpuSettingSwitch = "NO EXT PWR[disabled]";
