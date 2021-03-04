@@ -75,6 +75,11 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
         // multiple charts, go to selection
         this._multiChartCallback(chart.icao_airport_identifier, CHART_TYPE[chart.type.category]);
       }
+    } else {
+      // dirtiest haxx
+      const type = CHART_TYPE[this._model.getFlatChartKeys()[this._selectedIndex].toUpperCase()];
+      const icao = (this._selectedIndex > 3) ? this._model.destination : this._model.origin;
+      this._multiChartCallback(icao, type);
     }
   }
 

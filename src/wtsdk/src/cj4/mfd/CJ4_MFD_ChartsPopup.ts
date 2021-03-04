@@ -84,6 +84,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
 
   /** Show the view */
   public show(): void {
+    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).update();
     this.style.visibility = "visible";
   }
 
