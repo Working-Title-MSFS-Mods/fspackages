@@ -84,7 +84,11 @@ export class CJ4_MFD_ChartsIndexModel {
           }
           const approach = this._fpm.getApproach();
           if (approach !== undefined) {
-            this._chartsIndex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${this.formatApproachName(approach.name)}`) !== -1, destCharts);
+            // dirty hack PRMs out
+            this._chartsIndex.Destination.Approach = this.findChartInArray(c => c.type.code === "01" && c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${this.formatApproachName(approach.name)}`) !== -1 && c.procedure_identifier.indexOf("PRM") === -1 && c.procedure_identifier.indexOf("SA") === -1, destCharts);
+            if (this._chartsIndex.Destination.Approach === undefined) {
+              this._chartsIndex.Destination.Approach = this.findChartInArray(c => c.type.section === "APP" && c.procedure_code.findIndex((x) => x === `${this.formatApproachName(approach.name)}`) !== -1, destCharts);
+            }
           }
         }
 
@@ -165,18 +169,18 @@ export class CJ4_MFD_ChartsIndexModel {
   private findChartInArray(predicate: (value: NG_Chart, index: number, obj: NG_Chart[]) => unknown, charts: NG_Charts): NG_Chart {
     const foundCharts = charts.charts.filter(predicate)
     if (foundCharts.length > 0) {
-      if (foundCharts.length > 1) {
-        return {
-          // mock up a chart with basic info we need
-          procedure_identifier: `${foundCharts.length} FMS Charts`,
-          icao_airport_identifier: foundCharts[0].icao_airport_identifier,
-          type: { category: foundCharts[0].type.category }
+      // if (foundCharts.length > 1) {
+      //   return {
+      //     // mock up a chart with basic info we need
+      //     procedure_identifier: `${foundCharts.length} FMS Charts`,
+      //     icao_airport_identifier: foundCharts[0].icao_airport_identifier,
+      //     type: { category: foundCharts[0].type.category }
 
-        } as NG_Chart;
-      } else {
+      //   } as NG_Chart;
+      // } else {
         foundCharts[0].source = "FMS";
         return foundCharts[0];
-      }
+      // }
     }
 
     return undefined;

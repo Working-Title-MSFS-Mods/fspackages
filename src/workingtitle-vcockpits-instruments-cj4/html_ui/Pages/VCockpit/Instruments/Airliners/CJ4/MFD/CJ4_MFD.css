@@ -962,6 +962,10 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader 
   background-color: #045CEB;
 }
 
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader.pale {
+  background-color: #699ae9;
+}
+
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartBody {
   width: 100%;
   max-height: 100%;

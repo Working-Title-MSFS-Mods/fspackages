@@ -63,7 +63,7 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
   }
 
   /** Sends the currently selected chart back to the callback delegates. */
-  public async selectChart() {
+  public async selectChart(): Promise<void> {
     const chart = this._model.getChartAtIndex(this._selectedIndex);
     if (chart !== undefined) {
       if (chart.id !== undefined) {
@@ -110,7 +110,7 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
     rows.forEach(r => {
       r.className = "";
     });
-    if (this._selectedIndex < rows.length - 1) {
+    if (this._selectedIndex < rows.length) {
       rows[this._selectedIndex].className = "selected";
     }
   }
@@ -129,12 +129,32 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
   /** Renders the chart index */
   private render(): void {
     this._container.innerHTML = '';
+
+    this.renderFmsHead();
+
     // render origin
     const origSection = this.renderIndexSection(`ORIGIN - ${this._model.origin}`, this._model.chartsIndex.Origin);
     // render destination
     const destSection = this.renderIndexSection(`DESTINATION - ${this._model.destination}`, this._model.chartsIndex.Destination);
+
     this._container.appendChild(origSection);
     this._container.appendChild(destSection);
+  }
+
+  private renderFmsHead() {
+    // render fms head
+    const fmsheading = document.createElement("h4");
+    fmsheading.innerText = "FMS1";
+    fmsheading.style.textAlign = "right";
+    fmsheading.style.marginTop = "1%";
+    fmsheading.style.marginRight = "2%";
+    fmsheading.style.color = "magenta";
+    const tophr = document.createElement("hr");
+    tophr.style.width = "97%";
+    tophr.style.marginRight = "2%";
+    tophr.style.marginLeft = "1%";
+    this._container.appendChild(fmsheading);
+    this._container.appendChild(tophr);
   }
 
   /**

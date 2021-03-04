@@ -8,6 +8,14 @@ export class CJ4_MFD_ChartsMenuModel {
   private _icao: string;
   private _charts: NG_Chart[];
 
+  public get icao(): string {
+    return this._icao;
+  }
+
+  public get type(): CHART_TYPE {
+    return this._type;
+  }
+
   public get charts(): NG_Chart[] {
     return this._charts;
   }

@@ -10,6 +10,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
   private _tableContainer: HTMLElement;
   private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
   private _views: Map<CHARTS_MENU_MODE, ICJ4_MFD_ChartsPopupPage> = new Map();
+  private _overlayHeader: HTMLElement;
 
   /**
    * Gets a boolean indicating if the view is visible
@@ -21,6 +22,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
   public connectedCallback(chartSelectCallback: (url: string, chart: NG_Chart) => void): void {
     this._chartSelectCallback = chartSelectCallback;
     this._tableContainer = this.querySelector("#ChartsTable");
+    this._overlayHeader = this.querySelector("#ChartOverlayHeader");
 
     // set index view
     this._views.set(CHARTS_MENU_MODE.INDEX, new CJ4_MFD_ChartsIndex(this._tableContainer, this._chartSelectCallback, this.openChartMenuCallback.bind(this)));
@@ -29,6 +31,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
   private openChartMenuCallback(icao: string, type: CHART_TYPE): void {
     this._views.set(CHARTS_MENU_MODE.LIST, new CJ4_MFD_ChartsMenu(icao, type, this._tableContainer, this.multiChartSelectCallback.bind(this)))
     this._mode = CHARTS_MENU_MODE.LIST;
+    this._overlayHeader.classList.add("pale");
   }
 
   private multiChartSelectCallback(chart: NG_Chart): void {
@@ -38,6 +41,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
     (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).selectChart();
     this.hide();
     this._mode = CHARTS_MENU_MODE.INDEX;
+    this._overlayHeader.classList.remove("pale");
     this._views.delete(CHARTS_MENU_MODE.LIST);
   }
 
@@ -58,6 +62,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
             this._mode = CHARTS_MENU_MODE.INDEX;
             this._views.delete(CHARTS_MENU_MODE.ANYCHART);
             this._views.delete(CHARTS_MENU_MODE.LIST);
+            this._overlayHeader.classList.remove("pale");
             this._views.get(this._mode).update(true);
           }
           break;
@@ -65,6 +70,16 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
     }
 
     return handled;
+  }
+
+  /** Scroll to previous charts in the list and select it */
+  public selectPrevChart(): void {
+    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).selectPrevChart();
+  }
+
+  /** Scroll to next chart in the list and select it */
+  public selectNextChart(): void {
+    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).selectNextChart();
   }
 
   /** Show the view */

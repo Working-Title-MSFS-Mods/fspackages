@@ -77,7 +77,9 @@ export class NavigraphApi {
       const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
       const signedUrl = signedUrlResp.data;
       const chartsListResp = await this.sendRequest(signedUrl, "get");
-      return chartsListResp.json<NgApi.NG_Charts>();
+      const chartsObj = chartsListResp.json<NgApi.NG_Charts>();
+      this._chartListCache.set(icao, chartsObj);
+      return chartsObj;
     } else {
       return this._chartListCache.get(icao);
     }
@@ -89,7 +91,7 @@ export class NavigraphApi {
   async linkAccount(): Promise<boolean> {
     this.refreshToken = "";
     this.accessToken = "";
-    
+
     // send auth request
     const authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post");
     if (authResp.ok) {
