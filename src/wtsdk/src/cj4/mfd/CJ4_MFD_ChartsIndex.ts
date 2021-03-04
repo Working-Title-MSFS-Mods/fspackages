@@ -50,11 +50,13 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
     return handled;
   }
 
+  /** Set a chart at current selected index in the list of charts */
   public setChart(chart: NG_Chart): void {
     this._model.setChartAtIndex(chart, this._selectedIndex);
     this.render();
   }
 
+  /** Requests to open the chart selection menu */
   private callChartMenu(): void {
     const chart = this._model.getChartAtIndex(this._selectedIndex);
     if (chart !== undefined) {

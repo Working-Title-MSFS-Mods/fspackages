@@ -4,6 +4,7 @@ import { CJ4_MFD_ChartsIndex } from "./CJ4_MFD_ChartsIndex";
 import { CJ4_MFD_ChartsMenu } from "./CJ4_MFD_ChartsMenu";
 import { ICJ4_MFD_ChartsPopupPage } from "./ICJ4_MFD_ChartsPopupPage";
 
+/** Class for managing the view portion of showing the charts pages on the MFD */
 export class CJ4_MFD_ChartsPopup extends HTMLElement {
 
   private _mode: CHARTS_MENU_MODE = CHARTS_MENU_MODE.INDEX;
@@ -28,12 +29,14 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
     this._views.set(CHARTS_MENU_MODE.INDEX, new CJ4_MFD_ChartsIndex(this._tableContainer, this._chartSelectCallback, this.openChartMenuCallback.bind(this)));
   }
 
+  /** Is getting called when the chart menu is to be opened */
   private openChartMenuCallback(icao: string, type: CHART_TYPE): void {
     this._views.set(CHARTS_MENU_MODE.LIST, new CJ4_MFD_ChartsMenu(icao, type, this._tableContainer, this.multiChartSelectCallback.bind(this)))
     this._mode = CHARTS_MENU_MODE.LIST;
     this._overlayHeader.classList.add("pale");
   }
 
+  /** Is getting called when a chart was selected from the chart selection menu */
   private multiChartSelectCallback(chart: NG_Chart): void {
     // put it into index model somehow
     chart.source = "USR";

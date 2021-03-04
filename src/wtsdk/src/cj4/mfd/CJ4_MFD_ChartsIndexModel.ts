@@ -101,6 +101,7 @@ export class CJ4_MFD_ChartsIndexModel {
     return false;
   }
 
+  /** Gets the signed png url of the requested chart */
   public async getChartPngUrl(chart: NG_Chart): Promise<string> {
     if (chart !== undefined) {
       const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${chart.file_day}`;
@@ -111,6 +112,7 @@ export class CJ4_MFD_ChartsIndexModel {
     return "";
   }
 
+  /** Gets a chart object by index */
   public getChartAtIndex(index: number): NG_Chart {
     return this.getFlatChartIndex()[index];
   }
