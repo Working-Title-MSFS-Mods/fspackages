@@ -112,7 +112,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
 
     _createElements() {
         let elements = super._createElements();
-        elements.push(new WT_G3000_PFDActiveNav());
+        elements.push(new WT_G3000_PFDNavDMEInfo());
         return elements;
     }
 
@@ -387,32 +387,5 @@ WT_G3000_PFDMainPage.AOA_MODE_TEXT = [
     "ON",
     "AUTO"
 ];
-
-class WT_G3000_PFDActiveNav extends NavSystemElement {
-    init(root) {
-        this.NavInfos = this.gps.getChildById("NavFreqInfos");
-        this.ActiveNav = this.gps.getChildById("ActiveNav");
-        this.ActiveNavFreq = this.gps.getChildById("ActiveNavFreq");
-        this.ActiveNavName = this.gps.getChildById("ActiveNavName");
-    }
-    onEnter() {
-    }
-    onUpdate(_deltaTime) {
-        if (!SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-            Avionics.Utils.diffAndSetAttribute(this.NavInfos, "state", "Visible");
-            let index = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
-            Avionics.Utils.diffAndSet(this.ActiveNav, "NAV" + index);
-            Avionics.Utils.diffAndSet(this.ActiveNavFreq, this.gps.frequencyFormat(SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:" + index, "MHz"), 2));
-            Avionics.Utils.diffAndSet(this.ActiveNavName, SimVar.GetSimVarValue("NAV SIGNAL:" + index, "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:" + index, "string") : "");
-        }
-        else {
-            Avionics.Utils.diffAndSetAttribute(this.NavInfos, "state", "Inactive");
-        }
-    }
-    onExit() {
-    }
-    onEvent(_event) {
-    }
-}
 
 registerInstrument("as3000-pfd-element", WT_G3000_PFD);
