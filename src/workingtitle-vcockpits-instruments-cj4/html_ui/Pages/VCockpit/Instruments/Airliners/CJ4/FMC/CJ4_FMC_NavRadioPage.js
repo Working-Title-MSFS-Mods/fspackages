@@ -65,17 +65,9 @@ class CJ4_FMC_NavRadioPageOne {
 
     update() {
         // console.log("navradio.update()");
-		
-//		const AvionicsComp = ("L:XMLVAR_AVIONICS_IsComposite", "number");
-//		if (AvionicsComp == 0) {
-//			CJ4_FMC_NavRadioPage.ShowPage1;
-//		} else {
-//			CJ4_FMC_NavRadioDispatch.Dispatch;
-//			this._fmc.requestCall(() => {
-//			this.update();
-//			});	
-//		}
-		
+      
+		    this.updateDispatch();
+      
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -99,6 +91,15 @@ class CJ4_FMC_NavRadioPageOne {
             return true;
         }, 1000, false);
     }
+  
+  //Attempt at page update on LVAR state change
+  
+    updateDispatch() {
+        const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+        if (AvionicsComp == 1) {
+        CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
+        }
+    }
 
     render() {
         // console.log("Render Nav");
@@ -118,7 +119,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", "REL  [blue]"],
-            [this._freqMap.adf1.toFixed(1) + "[green]", "TCAS>[disabled]"],
+            [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>[disabled]"],
         ]);
     }
 
@@ -221,8 +222,8 @@ class CJ4_FMC_NavRadioPageOne {
         });
 				} else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-				}	
-			}
+				        }	
+			  }
         };
 
         this._fmc.onRightInput[4] = () => {
@@ -231,7 +232,7 @@ class CJ4_FMC_NavRadioPageOne {
 
         this._fmc.onRightInput[5] = () => {
             CJ4_FMC_NavRadioPage.ShowPage3(this._fmc);
-		};	
+		    };	
 
         this._fmc.onPrevPage = () => {
             CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
@@ -240,7 +241,7 @@ class CJ4_FMC_NavRadioPageOne {
             CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
         };
         this._fmc.updateSideButtonActiveStatus();
-    }
+        }
 
     invalidate() {
         this._isDirty = true;
@@ -248,7 +249,7 @@ class CJ4_FMC_NavRadioPageOne {
         this.render();
         this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
         this._isDirty = false;
-    }
+        }
 }
 
 //NAV Radio Sub Pages
@@ -601,23 +602,8 @@ class CJ4_FMC_NavRadioDispatch {
 	
     update() {
         // console.log("navradio.update()");
-		
-	//	const AvionicsComp = ("L:XMLVAR_AVIONICS_IsComposite", "number");
-	//	if (AvionicsComp == 1) {
-	//		CJ4_FMC_NavRadioDispatch.Dispatch;
-			// this._fmc.requestCall(() => {
-			// this.update();
-			// });	
-		// } else {
-			// CJ4_FMC_NavRadioPage.ShowPage1;
-			// this._fmc.requestCall(() => {
-			// this.update();
-			// });
-		// }
-		
-	//	}		
-		
-				
+				this.updateDispatch();
+      
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
 
@@ -636,6 +622,14 @@ class CJ4_FMC_NavRadioDispatch {
         }, 1000, false);
     }
 
+ //UPDATE PAGE STATE? 
+    updateDispatch() {
+        const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+        if (AvionicsComp == 0) {
+        CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+        }
+    }
+  
     render() {
         // console.log("Render Nav");
 				
@@ -654,7 +648,7 @@ class CJ4_FMC_NavRadioDispatch {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", "REL  [blue]"],
-            [this._freqMap.adf1.toFixed(1) + "[green]", "TCAS>[disabled]"],
+            [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>[disabled]"],
         ]);
     }
 
