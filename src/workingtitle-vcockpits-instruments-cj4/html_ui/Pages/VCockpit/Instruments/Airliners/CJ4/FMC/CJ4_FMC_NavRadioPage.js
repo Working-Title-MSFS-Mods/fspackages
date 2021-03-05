@@ -66,8 +66,6 @@ class CJ4_FMC_NavRadioPageOne {
     update() {
         // console.log("navradio.update()");
       
-		    this.updateDispatch();
-      
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -92,15 +90,6 @@ class CJ4_FMC_NavRadioPageOne {
         }, 1000, false);
     }
   
-  //Attempt at page update on LVAR state change
-  
-    updateDispatch() {
-        const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
-        if (AvionicsComp == 1) {
-        CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
-        }
-    }
-
     render() {
         // console.log("Render Nav");
 	
@@ -602,7 +591,6 @@ class CJ4_FMC_NavRadioDispatch {
 	
     update() {
         // console.log("navradio.update()");
-				this.updateDispatch();
       
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -620,14 +608,6 @@ class CJ4_FMC_NavRadioDispatch {
             this.update();
             return true;
         }, 1000, false);
-    }
-
- //UPDATE PAGE STATE? 
-    updateDispatch() {
-        const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
-        if (AvionicsComp == 0) {
-        CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
-        }
     }
   
     render() {
