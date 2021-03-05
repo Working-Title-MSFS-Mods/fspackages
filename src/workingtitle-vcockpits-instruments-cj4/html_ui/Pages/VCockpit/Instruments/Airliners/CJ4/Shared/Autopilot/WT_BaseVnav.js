@@ -215,6 +215,13 @@ class WT_BaseVnav {
                 this._fpChecksum = this.flightplan.checksum;
             }
 
+            if (this._vnavState === VnavState.DIRECT) {
+                const directWaypoint = this.currentWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident); });
+                if (!directWaypoint) {
+                    this._vnavState = VnavState.PATH;
+                }
+            }
+
             this.manageConstraints();
             this.calculateTod();
         }

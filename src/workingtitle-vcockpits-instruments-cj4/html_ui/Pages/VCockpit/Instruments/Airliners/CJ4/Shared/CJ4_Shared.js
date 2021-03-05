@@ -2786,7 +2786,7 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                             const data = JSON.parse(localStorage.getItem("VNAVWINDOWDATA"));
 
-                            if (data.fptaname && !Simplane.getIsGrounded()) {
+                            if (data.constraintreal && !Simplane.getIsGrounded()) {
 
                                 let todDistance = "";
                                 if (data.toddistance)
@@ -2797,10 +2797,12 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 }
                                 let descentAngle = data.fpa;
                                 let descentRate = data.descentrate;
-                                let constraintName = data.fptaname;
-                                let fptaConstraint = data.fptaconstraint ? data.fptaconstraint : 0;
+                                let constraintName = data.constraintreal;
+                                let fptaConstraint = data.constraintrealaltitude ? data.constraintrealaltitude : "";
                                 let fptaDistance = data.fptaDistance.toFixed(1);
                                 let fptaTime = new Date(this.calcETEseconds(fptaDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+                                let isDirect = data.isdirect;
+                                let isClimb = data.isclimb;
 
                                 let todText = "TOD";
                                 let fpmText = "FPM";
@@ -2878,17 +2880,41 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
                                     vnavAdvisoryDescentTimeDistance.textContent = timeToTOD + slashText + todDistance + nmText;
                                     vnavAdvisoryDescentTimeDistance.setAttribute("style", "color: #11d011");
+
+                                if (isDirect) {
+                                    const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                        vnavTODorDirect.textContent = "DIRECT";
+                                        vnavTODorDirect.setAttribute("style", "color: #11d011");
+    
+                                    const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                        vnavAdvisoryDescent.textContent = "";
+    
+                                    const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
+                                        vnavAdvisoryDescentTimeDistance.textContent = "";
+                                    } else if (isClimb) {
+                                        const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                        vnavTODorDirect.textContent = "CLIMB";
+                                        vnavTODorDirect.setAttribute("style", "color: #11d011");
+                                    } else {
+                                        const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                        vnavTODorDirect.textContent = "";
+                                    }
                             }
                         } else {
 
+                            const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                vnavFix.setAttribute("style", "color: white");
+
                             const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
-                                    vnavTODorDirect.setAttribute("style", "color: white");
+                                vnavTODorDirect.setAttribute("style", "color: magenta");
 
                             const vnavFixConstraint = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-vnav-constraint");
                                 vnavFixConstraint.textContent = "";
+                                vnavFixConstraint.setAttribute("style", "color: white");
 
                             const vnavFixAngleRate = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-vnav-angle-descent-rate");
                                 vnavFixAngleRate.textContent = "";
+                                vnavFixAngleRate.setAttribute("style", "color: white");
 
                             const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
                                 vnavAdvisoryDescent.textContent = "";
@@ -2897,7 +2923,6 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 vnavAdvisoryDescentTimeDistance.textContent = "";
 
                             const vnavFixETADist = this._destinationWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-expected-fuel");
-                                vnavFixETADist.textContent = "----- LB --.-GW";
                                 vnavFixETADist.setAttribute("style", "color: white");
 
                         }

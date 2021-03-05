@@ -503,8 +503,9 @@ class WT_VerticalAutopilot {
     }
 
     canGlideslopeActivate() {
-        const gs = this.trackGlideslope();
-        if (gs < 100 && gs > -250) {
+        const gsi = SimVar.GetSimVarValue("NAV GSI:" + this.navMode, "number");
+        console.log("GS Dev " + gsi);
+        if (gsi < 50 && gsi > -50) {
             return true;
         }
         return false;
@@ -593,6 +594,7 @@ class WT_VerticalAutopilot {
         if (distance) {
             correctedgsi = gsi * Math.max(Math.min(distance, 10), 1);
         }
+
         return correctedgsi;
     }
 
@@ -1119,18 +1121,40 @@ class WT_VerticalAutopilot {
         return;
     }
 
+    buildConstraintText(waypoint) {
+        let constraintText = undefined;
+        switch (waypoint.legAltitudeDescription) {
+            case 1:
+                constraintText = Math.floor(waypoint.legAltitude1).toFixed(0);
+                break;
+            case 2:
+                constraintText = Math.floor(waypoint.legAltitude1).toFixed(0) + "A";
+                break;
+            case 3:
+                constraintText = Math.floor(waypoint.legAltitude1).toFixed(0) + "B";
+                break;
+            case 4:
+                constraintText = Math.floor(waypoint.legAltitude2).toFixed(0) + "A" + Math.floor(waypoint.legAltitude1).toFixed(0) + "B";
+                break;
+        }
+        return constraintText;
+    }
+
     monitorValues() {
         //Datastore for VNAV Window in FMS TEXT
         let vnavWindowData = {};
         const vnavstate = this.checkVnavState();
-        if(vnavstate == VnavState.PATH || vnavstate == VnavState.DIRECT) {
+        let vnavDirectTo = (vnavstate == VnavState.DIRECT) ? true : false;
+        if (vnavstate == VnavState.PATH || vnavstate == VnavState.DIRECT) {
             vnavWindowData = {
                 toddistance: this.distanceToTod,
                 fpa: this.path.fpa,
                 descentrate: this.donut,
-                fptaname: this._vnav._verticalFlightPlan[this.currentSegment.targetIndex].ident,
-                fptaconstraint: this.path.fpta,
-                fptaDistance: this._vnav.allWaypoints[this.currentSegment.targetIndex].cumulativeDistanceInFP - this._vnav._currentDistanceInFP
+                constraintreal: this._vnav._activeConstraint.index ? this._vnav.allWaypoints[this._vnav._activeConstraint.index].ident : "",
+                constraintrealaltitude: this._vnav._activeConstraint.index ? this.buildConstraintText(this._vnav.allWaypoints[this._vnav._activeConstraint.index]) : "",
+                fptaDistance: this._vnav._activeConstraint.index ? this._vnav.allWaypoints[this._vnav._activeConstraint.index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP : "",
+                isdirect: vnavDirectTo,
+                isclimb: this._vnav._activeConstraint.isClimb
             };
         }
         localStorage.setItem("VNAVWINDOWDATA", JSON.stringify(vnavWindowData));
