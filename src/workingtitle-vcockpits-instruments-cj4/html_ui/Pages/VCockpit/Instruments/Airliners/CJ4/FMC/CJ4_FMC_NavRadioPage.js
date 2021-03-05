@@ -426,16 +426,16 @@ class CJ4_FMC_AtcControlPage {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
             ["ATC1","ALT REPORT "],
-			      [this._freqMap.atc1 + "[green]","ON[blue]/OFF[s-text disabled]"],
+			[this._freqMap.atc1 + "[green]","ON[blue]/OFF[s-text disabled]"],
             ["",""," ALT[white]" + this._pressalt + "FT[green]"],
-			      ["IDENT[s-text disabled]","TEST[s-text disabled]","ADC2     [blue s-text]"],
+			["IDENT[s-text disabled]","TEST[s-text disabled]","ADC2     [blue s-text]"],
             [""],
             [""],
             [" SELECT"],
             ["ATC1[blue]/[white]ATC2[s-text disabled]"],
-            ["MODE"],
+		    ["MODE"],
             [ModeSwitch],
-			      [""],
+			[""],
             [""],
             [""]
         ]);
@@ -451,31 +451,31 @@ class CJ4_FMC_AtcControlPage {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
-				        CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+				CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
             } else {
-				        this._fmc.clearUserInput();
-				        if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
+				this._fmc.clearUserInput();
+				if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 this._fmc.atc1Frequency;
                 SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
                     this._fmc.requestCall(() => {
                         this.update();
-					          });
+					});
                 });
-				        } else {
+				} else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-				        }	
-			      }
+				}	
+			}
         };
 
 		this._fmc.onLeftInput[4] = () => {
 		this.transponderMode = this.transponderMode + 1;
 		this._fmc.requestCall(() => {
            this.update();
-			     });
+			});
 		};	
 
 		this._fmc.updateSideButtonActiveStatus();
-	  }
+	}
 
 		invalidate() {
         this._isDirty = true;
@@ -483,8 +483,8 @@ class CJ4_FMC_AtcControlPage {
 		this.render();
 		this.bindEvents();
         this._isDirty = false;
-	       }
-    }
+	}
+}
 
 // DISPATCH MODE
 
@@ -513,9 +513,9 @@ class CJ4_FMC_NavRadioDispatch {
             [""],
             [" HF1[disabled]"],
             ["10.0000[d-text disabled]   UV[s-text disabled]"],
-			      [""],
+			[""],
             ["↑"],
-			      ["HF1 SQ[disabled]3[d-text disabled]"],
+			["HF1 SQ[disabled]3[d-text disabled]"],
             ["↓"],
             [""]
         ]);
@@ -527,7 +527,8 @@ class CJ4_FMC_NavRadioDispatch {
         };
         fmc.updateSideButtonActiveStatus();
 	}
-
+		
+	
     constructor(fmc) {
         this._fmc = fmc;
         this._isDirty = true;
@@ -558,7 +559,7 @@ class CJ4_FMC_NavRadioDispatch {
                 return true;
             }.bind(this)
         });	
-	  }
+	}
 	
     get transponderMode() {
         return this._transponderMode;
@@ -579,10 +580,11 @@ class CJ4_FMC_NavRadioDispatch {
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", modeValue);
 
         this.invalidate();
-	  }
+	}
 
     update() {
         // console.log("navradio.update()");
+
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -657,7 +659,7 @@ class CJ4_FMC_NavRadioDispatch {
             });
         } else {
             this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-            }
+        }
     }
 
     bindEvents() {
@@ -690,28 +692,28 @@ class CJ4_FMC_NavRadioDispatch {
                 });
             } else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-                }
+            }
         };
 
         this._fmc.onLeftInput[4] = () => {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
-			      this._fmc.clearUserInput();
-			      if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
+			this._fmc.clearUserInput();
+			if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 this._fmc.atc1Frequency;
                 SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
                     this._fmc.requestCall(() => {
                         this.update();
-					              });
+					});
                 });
-			      } else {
+			} else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-			          }		
-		        };
+			}		
+		};
 
         this._fmc.onRightInput[4] = () => {
             this.transponderMode = this.transponderMode + 1;
-            };		
+        };		
 
  //       this._fmc.onRightInput[5] = () => {
  //           CJ4_FMC_NavRadioPage.ShowPage3(this._fmc);
