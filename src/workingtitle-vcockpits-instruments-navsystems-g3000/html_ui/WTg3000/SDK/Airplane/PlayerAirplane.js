@@ -1,6 +1,7 @@
 class WT_PlayerAirplane {
     constructor() {
         this._type = this._getAircraftType();
+        this._dynamics = this._createDynamics();
         this._navigation = this._createNavigation();
         this._fms = this._createFMS();
         this._navCom = this._createNavCom();
@@ -16,6 +17,10 @@ class WT_PlayerAirplane {
             default:
                 return WT_PlayerAirplane.Type.UNKNOWN;
         }
+    }
+
+    _createDynamics() {
+        return new WT_AirplaneDynamics(this);
     }
 
     _createNavigation() {
@@ -41,6 +46,15 @@ class WT_PlayerAirplane {
      */
     get type() {
         return this._type;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirplaneDynamics} dynamics - the dynamics component of this airplane.
+     * @type {WT_AirplaneDynamics}
+     */
+    get dynamics() {
+        return this._dynamics;
     }
 
     /**
@@ -269,6 +283,62 @@ class WT_AirplaneComponent {
     }
 }
 
+class WT_AirplaneDynamics extends WT_AirplaneComponent {
+    /**
+     * Gets the airplane's current indicated airspeed.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} the current indicated airspeed of the airplane.
+     */
+    ias(reference) {
+        let value = SimVar.GetSimVarValue("AIRSPEED INDICATED", "knots");
+        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+    }
+
+    /**
+     * Gets the airplane's current true airspeed.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} the current true airspeed of the airplane.
+     */
+    tas(reference) {
+        let value = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
+        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+    }
+
+    /**
+     * Gets the airplane's current pitch.
+     * @returns {Number} the airplane's current pitch, in degrees.
+     */
+    pitch() {
+        return SimVar.GetSimVarValue("PLANE PITCH DEGREES", "degrees");
+    }
+
+    /**
+     * Gets the airplane's current bank.
+     * @returns {Number} the airplane's current bank, in degrees.
+     */
+    bank() {
+        return SimVar.GetSimVarValue("PLANE BANK DEGREES", "degrees");
+    }
+
+    /**
+     * Gets the airplane's current angle of attack.
+     * @returns {Number} the airplane's current angle of attack, in degrees.
+     */
+    aoa() {
+        return SimVar.GetGameVarValue("AIRCRAFT AOA ANGLE", "angl16");
+    }
+
+    /**
+     * Checks whether the airplane is currently on the ground.
+     * @returns {Boolean} whether the airplane is currently on the ground.
+     */
+    isOnGround() {
+        return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
+    }
+}
+
 class WT_AirplaneNavigation extends WT_AirplaneComponent {
     /**
      * Gets the airplane's current geographic position.
@@ -351,17 +421,6 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
     altitudeIndicated(reference) {
         let alt = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
         return reference ? reference.set(alt, WT_Unit.FOOT) : new WT_NumberUnit(alt, WT_Unit.FOOT);
-    }
-
-    /**
-     * Gets the airplane's current true airspeed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current true airspeed of the airplane. Default unit is knots.
-     */
-    tas(reference) {
-        let tas = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
-        return reference ? reference.set(tas, WT_Unit.KNOT) : new WT_NumberUnit(tas, WT_Unit.KNOT);
     }
 
     /**
