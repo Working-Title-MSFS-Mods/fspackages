@@ -38,11 +38,13 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
 
   /** Is getting called when a chart was selected from the chart selection menu */
   private multiChartSelectCallback(chart: NG_Chart): void {
-    // put it into index model somehow
-    chart.source = "USR";
-    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).setChart(chart);
-    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).selectChart();
-    this.hide();
+    if (chart !== undefined) {
+      // put it into index model somehow
+      chart.source = "USR";
+      (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).setChart(chart);
+      (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).selectChart();
+      this.hide();
+    }
     this._mode = CHARTS_MENU_MODE.INDEX;
     this._overlayHeader.classList.remove("pale");
     this._views.delete(CHARTS_MENU_MODE.LIST);

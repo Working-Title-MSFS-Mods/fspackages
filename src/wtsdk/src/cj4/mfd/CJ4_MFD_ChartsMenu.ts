@@ -17,6 +17,10 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
   }
 
   public async update(): Promise<void> {
+    if (this._model.charts.length === 0) {
+      this.selectChart();
+    }
+
     if (this._lastChartCount !== this._model.charts.length) {
       this._lastChartCount = this._model.charts.length;
       this._totalPages = Math.ceil(this._model.charts.length / this.PAGE_SIZE);
@@ -102,6 +106,11 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
 
   /** Selects a charts and calls back to the view */
   private selectChart() {
+    if (this._model.charts.length === 0) {
+      this._selectCallback(undefined);
+      return;
+    }
+
     if (this._selectedIndex > this.PAGE_SIZE - 1 || (this._currentPage > 0 && this._selectedIndex === 0)) {
       if (this._selectedIndex === 0) {
         this._currentPage--;
