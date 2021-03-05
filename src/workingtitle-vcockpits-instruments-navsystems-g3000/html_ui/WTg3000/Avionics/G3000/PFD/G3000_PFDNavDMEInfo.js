@@ -73,10 +73,10 @@ WT_G3000_PFDNavDMEInfoHTMLElement.TEMPLATE.innerHTML = `
 
         #wrapper {
             position: absolute;
-            left: var(--navdmeinfo-left-margin, 0);
-            top: var(--navdmeinfo-top-margin, 0);
-            width: calc(100% - var(--navdmeinfo-left-margin, 0) - var(--navdmeinfo-right-margin, 0));
-            height: calc(100% - var(--navdmeinfo-top-margin, 0) - var(--navdmeinfo-bottom-margin, 0));
+            left: var(--navdmeinfo-left-margin, 0%);
+            top: var(--navdmeinfo-top-margin, 0%);
+            width: calc(100% - var(--navdmeinfo-left-margin, 0%) - var(--navdmeinfo-right-margin, 0%));
+            height: calc(100% - var(--navdmeinfo-top-margin, 0%) - var(--navdmeinfo-bottom-margin, 0%));
             display: grid;
             grid-template-rows: 50% 50%;
             grid-template-columns: 100%;

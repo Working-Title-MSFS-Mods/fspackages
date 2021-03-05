@@ -106,6 +106,10 @@ class WT_G3000_PFDWindData extends PFD_WindData {
 }
 
 class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
+    _createAoAIndicator() {
+        return this._aoaIndicator = new WT_G3000_PFDAoAIndicator("PFD");
+    }
+
     _createBottomInfo() {
         return new WT_G3000_PFDBottomInfo();
     }
@@ -371,7 +375,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _softkeyAoAStatus() {
-        return WT_G3000_PFDMainPage.AOA_MODE_TEXT[this._aoaIndicator.getMode()];
+        return WT_G3000_PFDMainPage.AOA_MODE_TEXT[this._aoaIndicator.aoaModeSetting.getValue()];
     }
 
     _setBaroUnit(value) {

@@ -84,11 +84,22 @@ as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
         left: 30%;
         height: 6%;
         width: 9%; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #AoA {
-        position: absolute;
-        right: 72.5%;
-        bottom: 19%;
-        width: 10%; }
+
+as3000-pfd-element wt-pfd-aoaindicator {
+    position: absolute;
+    left: 12%;
+    top: 66%;
+    width: 12vh;
+    height: 10.8vh;
+    --aoaindicator-margin-left: 5%;
+    --aoaindicator-margin-right: 5%;
+    --aoaindicator-margin-top: 5%;
+    --aoaindicator-margin-bottom: 5%;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+    font-size: 2.5vh;
+}
+
       as3000-pfd-element #Mainframe #InstrumentsContainer #Map {
         transform: rotateX(0);
         position: absolute;
