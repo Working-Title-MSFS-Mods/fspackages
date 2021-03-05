@@ -3,6 +3,8 @@ let NavRadioPage1Instance = undefined;
 let AtcControlPageInstance = undefined;
 let NavRadioPageDispatchInstance = undefined;
 
+//NAV RADIO MAIN PAGE
+
 class CJ4_FMC_NavRadioPageOne {
     constructor(fmc) {
         this._fmc = fmc;
@@ -426,16 +428,16 @@ class CJ4_FMC_AtcControlPage {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
             ["ATC1","ALT REPORT "],
-			[this._freqMap.atc1 + "[green]","ON[blue]/OFF[s-text disabled]"],
+            [this._freqMap.atc1 + "[green]","ON[blue]/OFF[s-text disabled]"],
             ["",""," ALT[white]" + this._pressalt + "FT[green]"],
-			["IDENT[s-text disabled]","TEST[s-text disabled]","ADC2     [blue s-text]"],
+            ["IDENT[s-text disabled]","TEST[s-text disabled]","ADC2     [blue s-text]"],
             [""],
             [""],
             [" SELECT"],
-            ["ATC1[blue]/[white]ATC2[s-text disabled]"],
-		    ["MODE"],
+            ["ATC1[blue]/[white]ATC2[s-text disabled]"],  
+            ["MODE"],
             [ModeSwitch],
-			[""],
+            [""],
             [""],
             [""]
         ]);
@@ -451,20 +453,20 @@ class CJ4_FMC_AtcControlPage {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
-				CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+				        CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
             } else {
-				this._fmc.clearUserInput();
-				if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
+				        this._fmc.clearUserInput();
+				        if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 this._fmc.atc1Frequency;
                 SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
                     this._fmc.requestCall(() => {
                         this.update();
-					});
+					          });
                 });
-				} else {
+				    } else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-				}	
-			}
+				        }	
+			      }
         };
 
 		this._fmc.onLeftInput[4] = () => {
@@ -483,7 +485,7 @@ class CJ4_FMC_AtcControlPage {
 		this.render();
 		this.bindEvents();
         this._isDirty = false;
-	}
+        }
 }
 
 // DISPATCH MODE
@@ -513,9 +515,9 @@ class CJ4_FMC_NavRadioDispatch {
             [""],
             [" HF1[disabled]"],
             ["10.0000[d-text disabled]   UV[s-text disabled]"],
-			[""],
+            [""],
             ["↑"],
-			["HF1 SQ[disabled]3[d-text disabled]"],
+            ["HF1 SQ[disabled]3[d-text disabled]"],
             ["↓"],
             [""]
         ]);
@@ -559,7 +561,7 @@ class CJ4_FMC_NavRadioDispatch {
                 return true;
             }.bind(this)
         });	
-	}
+	  }
 	
     get transponderMode() {
         return this._transponderMode;
@@ -580,7 +582,7 @@ class CJ4_FMC_NavRadioDispatch {
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", modeValue);
 
         this.invalidate();
-	}
+	  }
 
     update() {
         // console.log("navradio.update()");
@@ -698,18 +700,18 @@ class CJ4_FMC_NavRadioDispatch {
         this._fmc.onLeftInput[4] = () => {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
-			this._fmc.clearUserInput();
-			if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
+            this._fmc.clearUserInput();
+            if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
                 this._fmc.atc1Frequency;
                 SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
                     this._fmc.requestCall(() => {
                         this.update();
-					});
+					          });
                 });
-			} else {
+			      } else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
-			}		
-		};
+			          }		
+		    };
 
         this._fmc.onRightInput[4] = () => {
             this.transponderMode = this.transponderMode + 1;
