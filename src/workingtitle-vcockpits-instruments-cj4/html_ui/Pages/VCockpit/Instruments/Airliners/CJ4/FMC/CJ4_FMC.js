@@ -233,10 +233,17 @@ class CJ4_FMC extends FMCMainDisplay {
         this._pageRefreshTimer = null;
 
         //Hijaack and amend the standard FMC logic to work with the PL21 TUNE page
+        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
         const initRadioNav = super.initRadioNav.bind(this);
         this.initRadioNav = (_boot) => {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
+        const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+			      if (AvionicsComp == 1) {
+            CJ4_FMC_NavRadioDispatch.Dispatch(this);    		
+			      } else {
+            CJ4_FMC_NavRadioPage.ShowPage1(this);
+			      };  
         };
 
         // get HideYoke
