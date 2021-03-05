@@ -166,11 +166,11 @@ class CJ4_FMC extends FMCMainDisplay {
             CJ4_FMC_MfdAdvPage.ShowPage1(this);
         };
         this.onTun = () => {
- 			      const AvionicsOn = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
-			      if (AvionicsOn == 0) {
-			          CJ4_FMC_NavRadioPage.ShowPage1(this);		
+ 			      const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+			      if (AvionicsComp == 1) {
+                CJ4_FMC_NavRadioDispatch.Dispatch(this);	
 			      } else {
-			          CJ4_FMC_NavRadioDispatch.Dispatch(this);
+                CJ4_FMC_NavRadioPage.ShowPage1(this);	
 			      };			
 		    }
         this.onExec = () => {
@@ -240,9 +240,9 @@ class CJ4_FMC extends FMCMainDisplay {
             this.initializeStandbyRadios(_boot);
         const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
 			      if (AvionicsComp == 1) {
-            CJ4_FMC_NavRadioDispatch.Dispatch(this);    		
+                CJ4_FMC_NavRadioDispatch.Dispatch(this);    		
 			      } else {
-            CJ4_FMC_NavRadioPage.ShowPage1(this);
+                CJ4_FMC_NavRadioPage.ShowPage1(this);
 			      };  
         };
 
