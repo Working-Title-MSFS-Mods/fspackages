@@ -306,6 +306,9 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         this.element = new NavSystemElementGroup(this._createElements());
     }
 
+    _createAoAIndicator() {
+    }
+
     _createBottomInfo() {
     }
 
@@ -316,10 +319,10 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._altimeter = new AS3000_PFD_Altimeter("PFD"),
             this._annunciations = new PFD_Annunciations(),
             this._compass = new WT_G3x5_PFDCompass(),
+            this._aoaIndicator = this._createAoAIndicator(),
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
             new AS3000_PFD_NavStatus(),
-            this._aoaIndicator = new AS3000_PFD_AngleOfAttackIndicator("PFD"),
             this._mapInstrument = new MapInstrumentElement(),
             new PFD_AutopilotDisplay(),
             new PFD_Minimums(),
@@ -585,88 +588,6 @@ class AS3000_PFD_NavStatus extends PFD_NavStatus {
         this.currentLegTo = this.gps.getChildById("ToWP");
         this.currentLegDistance = this.gps.getChildById("DisValue");
         this.currentLegBearing = this.gps.getChildById("BrgValue");
-    }
-}
-class AS3000_PFD_AngleOfAttackIndicator extends NavSystemElement {
-    constructor(instrumentID) {
-        super();
-
-        this._instrumentID = instrumentID;
-
-        this._isInit = false;
-
-        this._initController();
-    }
-
-    _initController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this._controller));
-        this.aoaModeSetting.addListener(this._onAoAModeSettingChanged.bind(this));
-
-        this._controller.init();
-        this._mode = this.aoaModeSetting.getValue();
-    }
-
-    /**
-     * @readonly
-     * @property {String} instrumentID
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_PFDAoAModeSetting} aoaModeSetting
-     * @type {WT_G3x5_PFDAoAModeSetting}
-     */
-    get aoaModeSetting() {
-        return this._aoaModeSetting;
-    }
-
-    getMode() {
-        return this._mode;
-    }
-
-    init(root) {
-        this._aoaElement = this.gps.getChildById("AoA");
-
-        this._updateMode();
-        this._isInit = true;
-    }
-
-    _onAoAModeSettingChanged(setting, newValue, oldValue) {
-        this._setAoAMode(newValue);
-    }
-
-    _updateMode() {
-        let shouldShow = this._mode !== WT_G3x5_PFDAoAModeSetting.Mode.OFF;
-        this._aoaElement.style.display = shouldShow ? "block" : "none";
-    }
-
-    _setAoAMode(mode) {
-        if (mode === this._mode) {
-            return;
-        }
-
-        this._mode = mode;
-        if (this._isInit) {
-            this._updateMode();
-        }
-    }
-
-    onEnter() {
-    }
-
-    onUpdate(deltaTime) {
-        this._aoaElement.setAttribute("aoa", Math.min(Math.max(Simplane.getAngleOfAttack(), 0), 16).toString());
-    }
-
-    onExit() {
-    }
-
-    onEvent(event) {
     }
 }
 
