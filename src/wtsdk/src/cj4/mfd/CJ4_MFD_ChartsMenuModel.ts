@@ -28,22 +28,24 @@ export class CJ4_MFD_ChartsMenuModel {
 
   public async init(): Promise<void> {
     const ngCharts = await this._api.getChartsList(this._icao);
-    switch (this._type) {
-      case CHART_TYPE.AIRPORT:
-        this._charts = NavigraphChartFilter.getAirport(ngCharts);
-        break;
-      case CHART_TYPE.DEPARTURE:
-        this._charts = NavigraphChartFilter.getDeparture(ngCharts);
-        break;
-      case CHART_TYPE.ARRIVAL:
-        this._charts = NavigraphChartFilter.getArrival(ngCharts);
-        break;
-      case CHART_TYPE.APPROACH:
-        this._charts = NavigraphChartFilter.getApproach(ngCharts);
-        break;
-      case CHART_TYPE.AIRSPACE:
-        this._charts = NavigraphChartFilter.getAirspace(ngCharts);
-        break;
+    if (ngCharts !== undefined && ngCharts.charts !== undefined) {
+      switch (this._type) {
+        case CHART_TYPE.AIRPORT:
+          this._charts = NavigraphChartFilter.getAirport(ngCharts);
+          break;
+        case CHART_TYPE.DEPARTURE:
+          this._charts = NavigraphChartFilter.getDeparture(ngCharts);
+          break;
+        case CHART_TYPE.ARRIVAL:
+          this._charts = NavigraphChartFilter.getArrival(ngCharts);
+          break;
+        case CHART_TYPE.APPROACH:
+          this._charts = NavigraphChartFilter.getApproach(ngCharts);
+          break;
+        case CHART_TYPE.AIRSPACE:
+          this._charts = NavigraphChartFilter.getAirspace(ngCharts);
+          break;
+      }
     }
   }
 }
