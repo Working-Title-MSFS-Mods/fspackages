@@ -1,4 +1,5 @@
 import * as NgApi from '../types/navigraph';
+import { OAuthPkce } from './OAuthPkce';
 import { request, RequestResult } from './WebRequest';
 
 export class NavigraphApi {
@@ -99,8 +100,14 @@ export class NavigraphApi {
     this.refreshToken = "";
     this.accessToken = "";
 
+    const pkce = OAuthPkce.getChallenge(32);
+    const authForm: Map<string, string> = new Map([
+      ["code_challenge", pkce.code_challenge],
+      ["code_challenge_method", "S256"]
+    ]);
+
     // send auth request
-    const authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post");
+    const authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post", authForm);
     if (authResp.ok) {
       // send user to page
       OpenBrowser(authResp.json<any>().verification_uri_complete);
@@ -108,7 +115,8 @@ export class NavigraphApi {
       const pollForm: Map<string, string> = new Map([
         ["grant_type", "urn:ietf:params:oauth:grant-type:device_code"],
         ["device_code", authResp.json<any>().device_code],
-        ["scope", "openid charts offline_access"]
+        ["scope", "openid charts offline_access"],
+        ["code_verifier", pkce.code_verifier]
       ]);
 
       while (!this.isAccountLinked) {
