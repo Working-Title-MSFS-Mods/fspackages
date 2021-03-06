@@ -65,6 +65,7 @@ class CJ4_FMC_NavRadioPageOne {
 
     update() {
         // console.log("navradio.update()");
+        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
@@ -85,7 +86,12 @@ class CJ4_FMC_NavRadioPageOne {
         }
         // register refresh and bind to update which will only render on changes
         this._fmc.registerPeriodicPageRefresh(() => {
-            this.update();
+            const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+            if (AvionicsComp == 1) {
+                CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);  		
+            } else {
+                this.update();
+            };
             return true;
         }, 1000, false);
     }
@@ -308,8 +314,8 @@ class CJ4_FMC_NavRadioPage {
         fmc.registerPeriodicPageRefresh(() => {
             AtcControlPageInstance.update();
             return true;
-        }, 1000, true);
-    }	
+        }, 2000, true);
+    }
 
     /**
      * Parses a radio input string and returns a float number.
@@ -407,7 +413,7 @@ class CJ4_FMC_AtcControlPage {
 
         if (pressalt !== this._pressalt) {
         this._isDirty = true;
-        this._pressalt = " " + pressalt.toFixed(0);
+        this._pressalt = " " + pressalt.toFixed(0).padStart(4);
         }
 
         if (this._isDirty) {
@@ -497,9 +503,7 @@ class CJ4_FMC_NavRadioDispatch {
         // create page instance and init
         NavRadioPageDispatchInstance = new CJ4_FMC_NavRadioDispatch(fmc);
         NavRadioPageDispatchInstance.update();
-
     }
-
     static ShowPage2(fmc) {
         fmc.clearDisplay();
 
@@ -585,6 +589,7 @@ class CJ4_FMC_NavRadioDispatch {
 
     update() {
         // console.log("navradio.update()");
+        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -595,12 +600,16 @@ class CJ4_FMC_NavRadioDispatch {
         this._freqProxy.adf1 = this._fmc.radioNav.getADFActiveFrequency(1);
 
         if (this._isDirty) {
-            this.invalidate();
-            
+            this.invalidate();          
         }
         // register refresh and bind to update which will only render on changes
         this._fmc.registerPeriodicPageRefresh(() => {
-            this.update();
+            const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+            if (AvionicsComp == 1) {
+                this.update();  		
+            } else {
+                CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+            };
             return true;
         }, 1000, false);
     }
