@@ -63,17 +63,6 @@ class CJ4_FMC_NavRadioPageOne {
         // NOOP
     }
 
-    Init() {
-        super.Init();
-        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
-        const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
-        if (AvionicsComp == 1) {
-        CJ4_FMC_NavRadioDispatch.Dispatch(this);    		
-        } else {
-        CJ4_FMC_NavRadioPage.ShowPage1(this);
-        };
-    }
-
     update() {
         // console.log("navradio.update()");
 
