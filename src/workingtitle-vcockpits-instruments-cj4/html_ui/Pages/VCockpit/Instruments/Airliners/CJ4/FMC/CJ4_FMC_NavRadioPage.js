@@ -38,7 +38,7 @@ class CJ4_FMC_NavRadioPageOne {
             }.bind(this)
         });
     }
-    
+
     get transponderMode() {
         return this._transponderMode;
     }
@@ -93,7 +93,6 @@ class CJ4_FMC_NavRadioPageOne {
 
         if (this._isDirty) {
             this.invalidate();
-
         }
         // register refresh and bind to update which will only render on changes
         this._fmc.registerPeriodicPageRefresh(() => {
@@ -104,7 +103,6 @@ class CJ4_FMC_NavRadioPageOne {
 
     render() {
         // console.log("Render Nav");
-	
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
 
         this._fmc._templateRenderer.setTemplateRaw([
@@ -160,7 +158,6 @@ class CJ4_FMC_NavRadioPageOne {
     }
 
     bindEvents() {
-
         this._fmc.onLeftInput[0] = () => {
             this.enterVhfFreq(this._fmc.inOut, 1);
         };
@@ -222,7 +219,7 @@ class CJ4_FMC_NavRadioPageOne {
                         this.update();
                     });
                 });
-                } else {
+            } else {
                 this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
                 }	
             }
@@ -235,7 +232,6 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc.onRightInput[5] = () => {
             CJ4_FMC_NavRadioPage.ShowPage3(this._fmc);
         };
-
         this._fmc.onPrevPage = () => {
             CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
         };
@@ -263,7 +259,6 @@ class CJ4_FMC_NavRadioPage {
         // create page instance and init
         NavRadioPage1Instance = new CJ4_FMC_NavRadioPageOne(fmc);
         NavRadioPage1Instance.update();
-
     }
 
     static ShowPage2(fmc) {
@@ -314,8 +309,7 @@ class CJ4_FMC_NavRadioPage {
             ["", "BELOW[disabled]"]
         ]);
         fmc.updateSideButtonActiveStatus();
-        }
-
+    }
     static ShowPage4(fmc) {
         fmc.clearDisplay();
 
