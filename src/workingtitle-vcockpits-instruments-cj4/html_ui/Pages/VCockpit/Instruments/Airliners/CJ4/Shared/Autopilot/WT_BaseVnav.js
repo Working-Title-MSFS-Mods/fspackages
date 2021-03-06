@@ -89,7 +89,7 @@ class WT_BaseVnav {
          * The furthest distance away to show a constraint on the PFD.
          * @type {number}
          */
-        this._distanceToShowConstraint = 40;
+        this._distanceToShowConstraint = 80;
 
         /**
          * The vertical direct target waypoint.
