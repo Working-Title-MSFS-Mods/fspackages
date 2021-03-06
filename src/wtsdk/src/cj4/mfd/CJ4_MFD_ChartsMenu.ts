@@ -17,7 +17,7 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
   }
 
   public async update(): Promise<void> {
-    if (this._model.charts.length === 0) {
+    if (this._model.charts === undefined || this._model.charts.length === 0) {
       this.selectChart();
     }
 
@@ -106,7 +106,7 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
 
   /** Selects a charts and calls back to the view */
   private selectChart() {
-    if (this._model.charts.length === 0) {
+    if (this._model.charts === undefined || this._model.charts.length === 0) {
       this._selectCallback(undefined);
       return;
     }
