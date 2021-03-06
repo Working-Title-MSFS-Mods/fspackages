@@ -71,14 +71,21 @@ export class NavigraphApi {
    * Gets a list of charts for the given ICAO
    * @param icao The ICAO of the airport to get the charts from
    */
-  async getChartsList(icao: string): Promise<NgApi.NG_Charts> {
+  async getChartsList(icao: string): Promise<NgApi.NG_Charts | undefined> {
+    let chartsObj: NgApi.NG_Charts;
+    if (icao === "" || icao === "----") {
+      return chartsObj;
+    }
+
     if (!this._chartListCache.has(icao)) {
       await this.validateToken();
       const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
       const signedUrl = signedUrlResp.data;
       const chartsListResp = await this.sendRequest(signedUrl, "get");
-      const chartsObj = chartsListResp.json<NgApi.NG_Charts>();
-      this._chartListCache.set(icao, chartsObj);
+      if (chartsListResp.ok) {
+        chartsObj = chartsListResp.json<NgApi.NG_Charts>();
+        this._chartListCache.set(icao, chartsObj);
+      }
       return chartsObj;
     } else {
       return this._chartListCache.get(icao);

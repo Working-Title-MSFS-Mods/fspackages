@@ -10,13 +10,16 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
   private _lastChartCount: number = 0;
   private _currentPage: number = 0;
   private _totalPages: number = 1;
+  private _chartInitPromise: Promise<void>;
 
   constructor(icao: string, type: CHART_TYPE, private _container: HTMLElement, private _selectCallback: (chart: NG_Chart) => void) {
     this._model = new CJ4_MFD_ChartsMenuModel(icao, type);
-    this._model.init();
+    this._chartInitPromise = this._model.init();
   }
 
   public async update(): Promise<void> {
+    await this._chartInitPromise.catch(console.log);
+
     if (this._model.charts === undefined || this._model.charts.length === 0) {
       this.selectChart();
     }

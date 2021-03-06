@@ -50,8 +50,8 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
     this._views.delete(CHARTS_MENU_MODE.LIST);
   }
 
-  public update(): void {
-    this._views.get(this._mode).update();
+  public async update(): Promise<void> {
+    await this._views.get(this._mode).update();
   }
 
   public onEvent(event: string): boolean {
