@@ -10,7 +10,7 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc = fmc;
         this._isDirty = true;
 
-        this._transponderMode = 1;        
+        this._transponderMode = 1;
         const modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         if (modeValue == 4) {
             this._transponderMode = 0;
@@ -36,7 +36,7 @@ class CJ4_FMC_NavRadioPageOne {
                 }
                 return true;
             }.bind(this)
-        })     
+        });
     }
     
     get transponderMode() {
