@@ -577,7 +577,7 @@ class WT_BaseVnav {
         let isClimb = false;
         if (this._verticalFlightPlan.length > 0 && this._verticalFlightPlan[this.flightplan.activeWaypointIndex].isClimb) {
             isClimb = true;
-            for (let i = this.flightplan.activeWaypointIndex; i < this._firstPossibleDescentIndex - 1; i++) {
+            for (let i = this.flightplan.activeWaypointIndex; i <= this._lastClimbIndex; i++) {
                 if (this._verticalFlightPlan[i].upperConstraintAltitude && this._verticalFlightPlan[i].upperConstraintAltitude < Infinity) {
                     constraint = this._verticalFlightPlan[i].upperConstraintAltitude;
                     index = i;
