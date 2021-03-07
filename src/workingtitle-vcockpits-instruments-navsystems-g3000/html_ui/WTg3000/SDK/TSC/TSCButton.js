@@ -15,10 +15,6 @@ class WT_TSCButton extends HTMLElement {
         this.shadowRoot.appendChild(this._wrapper);
 
         this._listeners = [];
-
-        this.enabled = "true";
-        this._setPrimed(false);
-        this.highlight = "false";
     }
 
     _initHostStyle() {
@@ -109,7 +105,14 @@ class WT_TSCButton extends HTMLElement {
         }
     }
 
+    _initState() {
+        this.enabled = "true";
+        this._setPrimed(false);
+        this.highlight = "false";
+    }
+
     connectedCallback() {
+        this._initState();
         this.shadowRoot.appendChild(this._style);
         this.addEventListener("mousedown", this._mouseDownListener = this._onMouseDown.bind(this));
         this.addEventListener("mouseup", this._mouseUpListener = this._onMouseUp.bind(this));

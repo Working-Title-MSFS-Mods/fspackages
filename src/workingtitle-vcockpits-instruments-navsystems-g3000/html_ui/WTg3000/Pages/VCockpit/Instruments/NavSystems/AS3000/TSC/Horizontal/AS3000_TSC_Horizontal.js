@@ -1,5 +1,6 @@
 class AS3000_TSC_Horizontal extends AS3000_TSC {
     get templateID() { return "AS3000_TSC_Horizontal"; }
+
     connectedCallback() {
         super.connectedCallback();
         this.topKnobText = this.getChildById("SoftKey_1");
@@ -9,6 +10,10 @@ class AS3000_TSC_Horizontal extends AS3000_TSC {
     parseXMLConfig() {
         super.parseXMLConfig();
         this.SwitchToMenuName("PFD");
+    }
+
+    _createSpeedBugsPage() {
+        return new WT_G3000_TSCSpeedBugs("PFD");
     }
 }
 registerInstrument("as3000-tsc-horizontal-element", AS3000_TSC_Horizontal);

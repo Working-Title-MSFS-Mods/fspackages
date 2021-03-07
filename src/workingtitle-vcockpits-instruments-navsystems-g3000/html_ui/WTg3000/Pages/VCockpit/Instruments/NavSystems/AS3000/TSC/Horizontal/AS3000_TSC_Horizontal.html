@@ -68,50 +68,8 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="tscPage" id="SpeedBugs">
-                    <div class="backgroundBox" id="SB_buttons">
-                        <div class="gradientButton" id="SB_AllOn">
-                            <div class="mainText">All On</div>
-                        </div>
-                        <div class="gradientButton" id="SB_AllOff">
-                            <div class="mainText">All Off</div>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VrStatus">
-                            <div class="mainText">Vr</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VrValue">
-                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VxStatus">
-                            <div class="mainText">Vx</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VxValue">
-                            <div class="mainValue"><span class="valueSpan">100</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VyStatus">
-                            <div class="mainText">Vy</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VyValue">
-                            <div class="mainValue"><span class="valueSpan">124</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VappStatus">
-                            <div class="mainText">Vapp</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VappValue">
-                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                    </div>
-                    <div class="gradientButton" id="SB_RestoreDefaults">
-                        <div class="mainText">Restore All Defaults</div>
-                    </div>
                 </div>
 
                 <div class="tscPage" id="Timers">
@@ -2131,6 +2089,7 @@
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Utils/Wait.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/HTMLElementRecycler.js"></script>
@@ -2195,6 +2154,8 @@
 
 <script type="text/html" import-script="/WTg3000/SDK/Display/NavDataBar.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Avionics/SpeedBug.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
 
@@ -2220,10 +2181,13 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCRangeDisplay.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCLoadFrequency.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCWaypointOptions.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTimer.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCPFDSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCSpeedBugs.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapPointerControl.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
@@ -2231,7 +2195,8 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAirportInfo.js"></script>
 
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCSpeedBugs.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCPFDSettings.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js?foo1=bar"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>
