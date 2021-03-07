@@ -285,7 +285,7 @@ class WT_G3x5_TSCTabButton extends WT_TSCLabeledButton {
     }
 }
 
-customElements.define("tsc-button-tab", WT_G3x5_TSCTabButton);
+customElements.define("wt-tsc-button-tab", WT_G3x5_TSCTabButton);
 
 class WT_G3x5_TSCTabContent {
     constructor(title) {

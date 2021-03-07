@@ -178,7 +178,7 @@ class WT_TSCButton extends HTMLElement {
     }
 }
 
-customElements.define("tsc-button", WT_TSCButton);
+customElements.define("wt-tsc-button", WT_TSCButton);
 
 class WT_TSCLabeledButton extends WT_TSCButton {
     _initLabelBoxStyle() {
@@ -253,7 +253,7 @@ class WT_TSCLabeledButton extends WT_TSCButton {
     }
 }
 
-customElements.define("tsc-button-label", WT_TSCLabeledButton);
+customElements.define("wt-tsc-button-label", WT_TSCLabeledButton);
 
 class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
     constructor() {
@@ -316,7 +316,7 @@ class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
     }
 }
 
-customElements.define("tsc-button-statusbar", WT_TSCStatusBarButton);
+customElements.define("wt-tsc-button-statusbar", WT_TSCStatusBarButton);
 
 class WT_TSCValueButton extends WT_TSCLabeledButton {
     _initLabelBoxStyle() {
@@ -407,7 +407,7 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
     }
 }
 
-customElements.define("tsc-button-value", WT_TSCValueButton);
+customElements.define("wt-tsc-button-value", WT_TSCValueButton);
 
 class WT_TSCImageButton extends WT_TSCLabeledButton {
     constructor() {
@@ -461,7 +461,7 @@ class WT_TSCImageButton extends WT_TSCLabeledButton {
     }
 }
 
-customElements.define("tsc-button-img", WT_TSCImageButton);
+customElements.define("wt-tsc-button-img", WT_TSCImageButton);
 
 class WT_TSCContentButton extends WT_TSCButton {
     _appendChildren() {
@@ -475,4 +475,4 @@ class WT_TSCContentButton extends WT_TSCButton {
     }
 }
 
-customElements.define("tsc-button-content", WT_TSCContentButton);
+customElements.define("wt-tsc-button-content", WT_TSCContentButton);

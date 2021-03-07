@@ -1359,7 +1359,7 @@ WT_G3x5_TSCRunwayButton.LIGHTING_TEXT = [
     "PCL"
 ];
 
-customElements.define("tsc-button-runway", WT_G3x5_TSCRunwayButton);
+customElements.define("wt-tsc-button-runway", WT_G3x5_TSCRunwayButton);
 
 class WT_G3x5_TSCRunwayButtonRecycler extends WT_HTMLElementRecycler {
     _createElement() {

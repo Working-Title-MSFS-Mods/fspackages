@@ -571,7 +571,7 @@ WT_G3x5_TSCMapDetailButton.IMAGE_SOURCES = [
     "/WTg3000/SDK/Assets/Images/TSC/ICON_MAPDETAIL_SMALL_1.png"
 ];
 
-customElements.define("tsc-button-mapdetail", WT_G3x5_TSCMapDetailButton);
+customElements.define("wt-tsc-button-mapdetail", WT_G3x5_TSCMapDetailButton);
 
 class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
     init(root) {
