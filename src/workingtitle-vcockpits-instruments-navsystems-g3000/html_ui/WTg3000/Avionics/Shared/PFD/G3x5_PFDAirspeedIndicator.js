@@ -102,6 +102,15 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
 
     /**
      * @readonly
+     * @property {WT_AirplaneAutopilot} autopilot
+     * @type {WT_AirplaneAutopilot}
+     */
+     get autopilot() {
+        return this._airplane.autopilot;
+    }
+
+    /**
+     * @readonly
      * @property {WT_SpeedBugCollection} speedBugCollection
      * @type {WT_SpeedBugCollection}
      */
@@ -520,7 +529,7 @@ class WT_G3x5_PFDAirspeedIndicatorSpeedBug extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
-        this._name = "";
+        this._labelText = "";
         this._show = false;
         this._isInit = false;
     }
@@ -537,12 +546,12 @@ class WT_G3x5_PFDAirspeedIndicatorSpeedBug extends HTMLElement {
     connectedCallback() {
         this._defineChildren();
         this._isInit = true;
-        this._updateName();
+        this._updateLabel();
         this._updateShow();
     }
 
-    _updateName() {
-        this._label.innerHTML = this._name.toUpperCase();
+    _updateLabel() {
+        this._label.innerHTML = this._labelText;
     }
 
     _updateShow() {
@@ -551,16 +560,16 @@ class WT_G3x5_PFDAirspeedIndicatorSpeedBug extends HTMLElement {
 
     /**
      *
-     * @param {String} name
+     * @param {String} text
      */
-    setName(name) {
-        if (name === this._name) {
+    setLabel(text) {
+        if (text === this._labelText) {
             return;
         }
 
-        this._name = name;
+        this._labelText = text;
         if (this._isInit) {
-            this._updateName();
+            this._updateLabel();
         }
     }
 
@@ -621,3 +630,9 @@ WT_G3x5_PFDAirspeedIndicatorSpeedBug.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_PFDAirspeedIndicatorSpeedBug.NAME, WT_G3x5_PFDAirspeedIndicatorSpeedBug);
+
+class WT_G3x5_PFDAirspeedIndicatorSpeedBugRecycler extends WT_HTMLElementRecycler {
+    _createElement() {
+        return new WT_G3x5_PFDAirspeedIndicatorSpeedBug();
+    }
+}
