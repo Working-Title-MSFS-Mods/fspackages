@@ -325,7 +325,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers .timerCountBox {
         font-size: 0.67em;
         margin: 0.5vh 0;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers tsc-button-statusbar {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers wt-tsc-button-statusbar {
         width: 90%;
         height: 12vh;
         margin: 0.5vh 0;
@@ -409,7 +409,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsetti
     width: 100%;
     height: 100%;
 }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-button-label {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings wt-tsc-button-label {
         font-size: 4vh;
     }
 as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsettings-table {
@@ -444,7 +444,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapse
         height: 11vh;
         margin: 0.5vh 0;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-button-mapdetail.leftButton {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings wt-tsc-button-mapdetail.leftButton {
         height: 15vh;
     }
     as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-tabbedview {
@@ -454,7 +454,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapse
         --tab-content-width: 42vh;
         --tab-content-height: 60vh;
     }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-button-tab {
+        as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings wt-tsc-button-tab {
             width: 12vh;
             height: 10vh;
             margin: 1.75vh 0;
@@ -492,13 +492,13 @@ as3000-tsc-vertical-element #Electricity .mapPointerControl tsc-mappointercontro
         background-position: center;
     }
 
-as3000-tsc-vertical-element #Electricity .weatherSelection tsc-button-img {
+as3000-tsc-vertical-element #Electricity .weatherSelection wt-tsc-button-img {
     width: 18vh;
     height: 14vh;
     font-size: 3vh;
 }
 
-as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradarsettings tsc-button-value {
+as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradarsettings wt-tsc-button-value {
     --value-font-size: 3vh;
 }
 
@@ -969,7 +969,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-tab
     --tab-content-width: 60vh;
     --tab-content-height: 59vh;
 }
-as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-button-tab {
+as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings wt-tsc-button-tab {
     width: 14vh;
     height: 10vh;
     margin: 1.7vh 0;
@@ -1025,7 +1025,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         --tab-content-width: 42vh;
         --tab-content-height: 48vh;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-button-tab {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo wt-tsc-button-tab {
         width: 15vh;
         height: 10.5vh;
         margin: 1.5vh 0;

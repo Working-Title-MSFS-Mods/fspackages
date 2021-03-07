@@ -418,7 +418,7 @@ class WT_G3x5_TSCUnitsButton extends WT_TSCButton {
     }
 }
 
-customElements.define("tsc-button-units", WT_G3x5_TSCUnitsButton);
+customElements.define("wt-tsc-button-units", WT_G3x5_TSCUnitsButton);
 
 class WT_G3x5_TSCUnitsSelectionElementHandler {
     /**
@@ -823,7 +823,7 @@ class WT_G3x5_TSCNavDataFieldButton extends WT_TSCButton {
     }
 }
 
-customElements.define("tsc-button-navdatafield", WT_G3x5_TSCNavDataFieldButton);
+customElements.define("wt-tsc-button-navdatafield", WT_G3x5_TSCNavDataFieldButton);
 
 class WT_G3x5_TSCNavDataFieldSelectionElementHandler {
     /**
