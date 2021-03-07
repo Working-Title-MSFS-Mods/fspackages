@@ -138,7 +138,7 @@ class CJ4_FMC_FplnRecallPage {
             //}
             let flightNo = json.general.flight_number;
             if (typeof json.general.icao_airline === "string") {
-                flightNo += json.general.icao_airline;
+                flightNo = `${json.general.icao_airline}${flightNo}`;
             }
             fmc.setMsg("LOAD FPLN...FLIGHTNO[green]" + flightNo);
             fmc.updateFlightNo(flightNo);
