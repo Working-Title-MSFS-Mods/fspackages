@@ -106,6 +106,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._trend = new WT_CachedElement(this.shadowRoot.querySelector(`#trend`));
 
         this._refSpeed = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeed .value`));
+        this._refSpeedBugContainer = this.shadowRoot.querySelector(`#refspeedbugcontainer`);
         this._refSpeedBug = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeedbug`));
 
         this._iasDigits = [];
@@ -114,6 +115,11 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._iasDigits.push(this._createIASDigitEntry(this.shadowRoot.querySelector(`#iasdigitcontainer1`)));
 
         this._mach = new WT_CachedElement(this.shadowRoot.querySelector(`#mach`));
+    }
+
+    _moveTape(tapePos) {
+        let translate = Math.max(0, 100 - tapePos * 100);
+        this._tape.style.transform = `translateY(${translate}%)`;
     }
 
     _updateStrips() {
@@ -125,6 +131,11 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
     _showRefSpeed(value) {
         this._wrapper.setAttribute("show-refspeed", `${value}`);
+    }
+
+    _moveRefSpeedBug(tapePos) {
+        let translate = Math.max(-40, Math.min(50, (tapePos - 0.5) * 100));
+        this._refSpeedBugContainer.setAttribute("style", `transform: translateY(${translate}%);`);
     }
 
     _showMach(value) {
@@ -252,11 +263,26 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             fill: white;
                             text-anchor: end;
                         }
+                #refspeedbugclip {
+                    position: absolute;
+                    top: 0%;
+                    height: 100%;
+                    left: 0%;
+                    width: 100%;
+                    overflow-y: hidden;
+                }
+                    #refspeedbugcontainer {
+                        position: absolute;
+                        right: 0%;
+                        top: 0%;
+                        width: var(--airspeedindicator-minortick-width, 12%);
+                        height: 100%;
+                    }
                         #refspeedbug {
                             position: absolute;
-                            right: 0%;
-                            top: 0%;
-                            width: var(--airspeedindicator-minortick-width, 12%);
+                            left: 0%;
+                            top: 50%;
+                            width: 100%;
                             height: calc(var(--airspeedindicator-ias-font-size, 1.25em) * 0.7);
                             transform: translateY(-50%);
                             fill: var(--wt-g3x5-lightblue);
@@ -437,6 +463,11 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                     <svg id="minorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <svg id="majorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <svg id="labels"></svg>
+
+                </div>
+            </div>
+            <div id="refspeedbugclip">
+                <div id="refspeedbugcontainer">
                     <svg id="refspeedbug" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <path d="M 0 0 h 100 v 100 h -100 v -25 L 66.67 50 L 0 25 Z" />
                     </svg>
