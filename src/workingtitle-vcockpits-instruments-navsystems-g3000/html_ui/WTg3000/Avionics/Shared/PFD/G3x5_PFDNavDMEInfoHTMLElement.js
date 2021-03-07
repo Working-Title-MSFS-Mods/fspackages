@@ -30,11 +30,11 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._navTitle = new WT_CachedHTML(this.shadowRoot.querySelector(`#navtitle`));
-        this._ident = new WT_CachedHTML(this.shadowRoot.querySelector(`#ident`));
-        this._frequency = new WT_CachedHTML(this.shadowRoot.querySelector(`#frequency`));
-        this._dmeTitle = new WT_CachedHTML(this.shadowRoot.querySelector(`#dmetitle`));
-        this._dme = new WT_CachedHTML(this.shadowRoot.querySelector(`#dme`));
+        this._navTitle = new WT_CachedElement(this.shadowRoot.querySelector(`#navtitle`));
+        this._ident = new WT_CachedElement(this.shadowRoot.querySelector(`#ident`));
+        this._frequency = new WT_CachedElement(this.shadowRoot.querySelector(`#frequency`));
+        this._dmeTitle = new WT_CachedElement(this.shadowRoot.querySelector(`#dmetitle`));
+        this._dme = new WT_CachedElement(this.shadowRoot.querySelector(`#dme`));
     }
 
     connectedCallback() {
