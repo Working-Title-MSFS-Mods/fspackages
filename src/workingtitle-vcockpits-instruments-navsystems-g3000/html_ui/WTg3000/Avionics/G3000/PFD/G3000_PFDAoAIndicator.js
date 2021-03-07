@@ -13,7 +13,7 @@ class WT_G3000_PFDAoAIndicator extends WT_G3x5_PFDAoAIndicator {
         htmlElement.setContext({
             tickFraction: 0.6,
             redFraction: 0.9,
-            criticalAngle: 11,
+            criticalAngle: 12,
             airplane: this.instrument.airplane,
             modeSetting: this.aoaModeSetting
         });
@@ -113,7 +113,7 @@ class WT_G3000_PFDAoAIndicatorHTMLElement extends HTMLElement {
 
     _updateNeedle() {
         let aoa = this._context ? this._context.airplane.dynamics.aoa() : 0;
-        let fraction = Math.min(1, this._context ? (aoa / this._context.criticalAngle) : 0);
+        let fraction = Math.max(0, Math.min(1, this._context ? (aoa / this._context.criticalAngle) : 0));
         this._rotateElement(this._needle, fraction);
         if (fraction >= (this._context ? this._context.redFraction : 1)) {
             this._needle.setAttribute("red", "true");
