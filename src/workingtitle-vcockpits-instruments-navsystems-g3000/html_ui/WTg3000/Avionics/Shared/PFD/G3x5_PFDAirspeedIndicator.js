@@ -141,6 +141,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._labels = [];
         this._minorTicks = [];
         this._tapeMin = null;
+        this._tapeTranslate = 0;
     }
 
     connectedCallback() {
@@ -239,8 +240,12 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         }
     }
 
-    _calculateTransform(knots) {
-        return (knots - this._tapeMin) / this._tapeLength;
+    _calculateAbsoluteTapePosition(knots) {
+        return 1 - (knots - this._tapeMin) / this._tapeLength;
+    }
+
+    _calculateTranslatedTapePosition(knots) {
+        return (this._calculateAbsoluteTapePosition(knots) - this._tapeTranslate) * this._tapeLength / this._context.scale.window + 0.5;
     }
 
     _updateTapeLabels() {
@@ -278,9 +283,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._updateStrips();
     }
 
-    _updateTapeTransform(transform) {
-        let yTranslate = Math.max(0, transform * 100);
-        this._tape.style.transform = `translateY(${yTranslate}%)`;
+    _moveTape(tapePos) {
     }
 
     /**
@@ -290,14 +293,15 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     _updateTape(ias) {
         let scale = this._context.scale;
         let knots = ias.asUnit(WT_Unit.KNOT);
-        let translate = this._calculateTransform(knots);
-        if (translate <= 0.25 || translate >= 0.75) {
+        let tapePos = this._calculateAbsoluteTapePosition(knots);
+        if (tapePos <= 0.25 || tapePos >= 0.75) {
             let majorTick = scale.majorTick;
             this._updateTapeMin(Math.max(scale.min, Math.floor((knots - scale.window) / majorTick) * majorTick));
-            translate = this._calculateTransform(knots);
+            tapePos = this._calculateAbsoluteTapePosition(knots);
         }
 
-        this._updateTapeTransform(translate);
+        this._moveTape(tapePos);
+        this._tapeTranslate = tapePos;
     }
 
     _updateIASDigit(index, knots) {
@@ -359,12 +363,19 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     _showRefSpeed(value) {
     }
 
+    _setRefSpeedDisplay(text) {
+        this._refSpeed.innerHTML = text;
+    }
+
+    _moveRefSpeedBug(tapePos) {
+    }
+
     _updateRefSpeed() {
         let refSpeed = this._context.model.refSpeed;
         if (refSpeed) {
             let refSpeedKnots = refSpeed.asUnit(WT_Unit.KNOT);
-            this._refSpeed.innerHTML = refSpeedKnots.toFixed(0);
-            this._refSpeedBug.setAttribute("style", `top: ${100 - (refSpeedKnots - this._tapeMin) / this._tapeLength * 100}%;`);
+            this._setRefSpeedDisplay(refSpeedKnots.toFixed(0));
+            this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
             this._showRefSpeed(true);
         } else {
             this._showRefSpeed(false);
