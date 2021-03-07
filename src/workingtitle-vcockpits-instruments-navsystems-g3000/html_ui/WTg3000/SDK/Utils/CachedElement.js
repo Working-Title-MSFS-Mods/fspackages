@@ -4,7 +4,7 @@
  * values. All changes to innerHTML and attributes must be made through the wrapper in order to guarantee correct
  * behavior.
  */
-class WT_CachedHTML {
+class WT_CachedElement {
     /**
      * @param {Element} element - the DOM element to be wrapped by the new wrapper.
      */
@@ -67,7 +67,7 @@ class WT_CachedHTML {
     }
 }
 
-class WT_CachedSVGTextElement extends WT_CachedHTML {
+class WT_CachedSVGTextElement extends WT_CachedElement {
     /**
      * @param {SVGTextElement} element
      */

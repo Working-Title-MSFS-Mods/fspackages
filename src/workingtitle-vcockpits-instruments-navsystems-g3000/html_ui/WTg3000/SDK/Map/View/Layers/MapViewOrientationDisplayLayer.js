@@ -52,7 +52,7 @@ class WT_MapViewOrientationDisplay extends HTMLElement {
     }
 
     connectedCallback() {
-        this._text = new WT_CachedHTML(this.shadowRoot.querySelector(`#text`));
+        this._text = new WT_CachedElement(this.shadowRoot.querySelector(`#text`));
     }
 
     /**

@@ -531,8 +531,8 @@ class WT_NavDataFieldView extends HTMLElement {
     }
 
     _defineChildren() {
-        this._title = new WT_CachedHTML(this.shadowRoot.querySelector(`#title`));
-        this._value = new WT_CachedHTML(this.shadowRoot.querySelector(`#value`));
+        this._title = new WT_CachedElement(this.shadowRoot.querySelector(`#title`));
+        this._value = new WT_CachedElement(this.shadowRoot.querySelector(`#value`));
     }
 
     connectedCallback() {

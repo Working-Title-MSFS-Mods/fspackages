@@ -167,8 +167,8 @@ class WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._tasValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#tas .value`));
-        this._gsValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#gs .value`));
+        this._tasValue = new WT_CachedElement(this.shadowRoot.querySelector(`#tas .value`));
+        this._gsValue = new WT_CachedElement(this.shadowRoot.querySelector(`#gs .value`));
     }
 
     connectedCallback() {
@@ -324,8 +324,8 @@ class WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._oatValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#oat .value`));
-        this._isaValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#isa .value`));
+        this._oatValue = new WT_CachedElement(this.shadowRoot.querySelector(`#oat .value`));
+        this._isaValue = new WT_CachedElement(this.shadowRoot.querySelector(`#isa .value`));
     }
 
     connectedCallback() {
@@ -471,12 +471,12 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._wrapper = new WT_CachedHTML(this.shadowRoot.querySelector(`#wrapper`));
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
         this._arrow = this.shadowRoot.querySelector(`#arrow`);
-        this._sourceValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#source`));
-        this._identValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#ident`));
-        this._distanceValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#distance`));
-        this._bearingValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#bearing`));
+        this._sourceValue = new WT_CachedElement(this.shadowRoot.querySelector(`#source`));
+        this._identValue = new WT_CachedElement(this.shadowRoot.querySelector(`#ident`));
+        this._distanceValue = new WT_CachedElement(this.shadowRoot.querySelector(`#distance`));
+        this._bearingValue = new WT_CachedElement(this.shadowRoot.querySelector(`#bearing`));
     }
 
     connectedCallback() {
@@ -632,8 +632,8 @@ class WT_G3x5_PFDBottomInfoTimeCellHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._timerValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#timer .value`));
-        this._utcValue = new WT_CachedHTML(this.shadowRoot.querySelector(`#utc .value`));
+        this._timerValue = new WT_CachedElement(this.shadowRoot.querySelector(`#timer .value`));
+        this._utcValue = new WT_CachedElement(this.shadowRoot.querySelector(`#utc .value`));
     }
 
     connectedCallback() {
