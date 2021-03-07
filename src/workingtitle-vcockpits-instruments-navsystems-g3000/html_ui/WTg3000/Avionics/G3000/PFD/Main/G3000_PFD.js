@@ -106,6 +106,10 @@ class WT_G3000_PFDWindData extends PFD_WindData {
 }
 
 class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
+    _createAirspeedIndicator() {
+        return new WT_G3000_PFDAirspeedIndicator();
+    }
+
     _createAoAIndicator() {
         return this._aoaIndicator = new WT_G3000_PFDAoAIndicator("PFD");
     }

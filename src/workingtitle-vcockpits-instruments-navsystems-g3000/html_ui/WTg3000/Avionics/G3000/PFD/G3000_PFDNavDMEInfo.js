@@ -97,17 +97,17 @@ WT_G3000_PFDNavDMEInfoHTMLElement.TEMPLATE.innerHTML = `
                 }
                 #ident {
                     width: 40%;
-                    color: var(--wt-g3x5-green);
+                    color: var(--wt-g3x5-lightgreen);
                     text-align: right;
                 }
                 #frequency {
                     width: 35%;
-                    color: var(--wt-g3x5-green);
+                    color: var(--wt-g3x5-lightgreen);
                     text-align: right;
                 }
                 #dme {
                     width: 40%;
-                    color: var(--wt-g3x5-green);
+                    color: var(--wt-g3x5-lightgreen);
                     text-align: right;
                 }
 

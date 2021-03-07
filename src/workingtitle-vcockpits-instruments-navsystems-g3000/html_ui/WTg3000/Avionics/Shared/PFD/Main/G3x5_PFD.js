@@ -306,6 +306,9 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         this.element = new NavSystemElementGroup(this._createElements());
     }
 
+    _createAirspeedIndicator() {
+    }
+
     _createAoAIndicator() {
     }
 
@@ -315,7 +318,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
     _createElements() {
         return [
             this._attitude = new AS3000_PFD_Attitude("PFD"),
-            new PFD_Airspeed(),
+            this._airspeed = this._createAirspeedIndicator(),
             this._altimeter = new AS3000_PFD_Altimeter("PFD"),
             this._annunciations = new PFD_Annunciations(),
             this._compass = new WT_G3x5_PFDCompass(),
