@@ -49,7 +49,6 @@ class AS3000_TSC extends NavSystemTouch {
     constructor() {
         super();
 
-        this.speedBugs = this.createSpeedBugsPage();
         this.pfdPrefix = "AS3000_PFD_1";
         this._isChangingPages = false;
         this.history = [];
@@ -102,6 +101,15 @@ class AS3000_TSC extends NavSystemTouch {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
         }
+    }
+
+    /**
+     * @readonly
+     * @property {WT_PlayerAirplane} airplane
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return WT_PlayerAirplane.INSTANCE;
     }
 
     /**
@@ -163,8 +171,7 @@ class AS3000_TSC extends NavSystemTouch {
         return AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT.has(SimVar.GetSimVarValue("ATC MODEL", "string"));
     }
 
-    createSpeedBugsPage() {
-        return new AS3000_TSC_SpeedBugs();
+    _createSpeedBugsPage() {
     }
 
     get templateID() { return "AS3000_TSC"; }
@@ -189,10 +196,12 @@ class AS3000_TSC extends NavSystemTouch {
         this._mfdPagesLeft = {};
         this._mfdPagesRight = {};
 
+        this._speedBugs = this._createSpeedBugsPage();
+
         this.pageGroups = [
             new NavSystemPageGroup("PFD", this, [
                 new NavSystemPage("PFD Home", "PFDHome", new AS3000_TSC_PFDHome()),
-                new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
+                new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
                 new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD Home", "PFD", "Generic")),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
                 this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
@@ -221,7 +230,7 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Nearest Intersection", "NearestIntersection", new AS3000_TSC_NRST_Intersection()),
                 new NavSystemPage("Nearest VOR", "NearestVOR", new AS3000_TSC_NRST_VOR()),
                 new NavSystemPage("Nearest NDB", "NearestNDB", new AS3000_TSC_NRST_NDB()),
-                new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
+                new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
                 new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
@@ -3128,10 +3137,9 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
         this.gps.makeButton(this.button_9, this.onDigitPress.bind(this, 9));
         this.gps.makeButton(this.backspaceButton, this.onBackSpacePress.bind(this));
     }
-    setContext(_endCallback, _backPage, _startingValue) {
-        this.endCallback = _endCallback;
-        this.backPage = _backPage;
-        this.currentInput = _startingValue;
+    setContext(context) {
+        this._context = context;
+        this.currentInput = context.initialValue;
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
@@ -3204,12 +3212,13 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
     }
     backHome() {
         this.gps.closePopUpElement();
+        this.gps.SwitchToPageName(this._context.homePageGroup, this._context.homePageName);
     }
     cancelEdit() {
         this.gps.goBack();
     }
     validateEdit() {
-        this.endCallback(this.currentInput);
+        this._context.callback(this.currentInput);
         this.cancelEdit();
     }
 }
@@ -3627,147 +3636,6 @@ class AS3000_TSC_AirspeedReference {
         this.refSpeed = _refSpeed;
         this.displayedSpeed = _refSpeed;
         this.displayName = _displayName;
-    }
-}
-class AS3000_TSC_SpeedBugs extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.references = [];
-    }
-
-    init(root) {
-        let designSpeeds = Simplane.getDesignSpeeds();
-        this.initAirspeedReference(this.gps.getChildById("SB_VrValue"), this.gps.getChildById("SB_VrStatus"), designSpeeds.Vr, "R");
-        this.initAirspeedReference(this.gps.getChildById("SB_VxValue"), this.gps.getChildById("SB_VxStatus"), designSpeeds.Vx, "X");
-        this.initAirspeedReference(this.gps.getChildById("SB_VyValue"), this.gps.getChildById("SB_VyStatus"), designSpeeds.Vy, "Y");
-        this.initAirspeedReference(this.gps.getChildById("SB_VappValue"), this.gps.getChildById("SB_VappStatus"), designSpeeds.Vapp, "AP");
-        this.allOnButton = this.gps.getChildById("SB_AllOn");
-        this.allOffButton = this.gps.getChildById("SB_AllOff");
-        this.resetButton = this.gps.getChildById("SB_RestoreDefaults");
-        this.gps.makeButton(this.allOnButton, this.allOn.bind(this));
-        this.gps.makeButton(this.allOffButton, this.allOff.bind(this));
-        this.gps.makeButton(this.resetButton, this.restoreAll.bind(this));
-        for (let i = 0; i < this.references.length; i++) {
-            this.gps.makeButton(this.references[i].statusElement, this.statusClick.bind(this, i));
-            this.gps.makeButton(this.references[i].valueButton, this.valueClick.bind(this, i));
-        }
-    }
-
-    initAirspeedReference(_valueButton, _statusButton, _refSpeed, _name) {
-        if (_valueButton && _statusButton) {
-            this.references.push(new AS3000_TSC_AirspeedReference(_valueButton, _statusButton, _refSpeed == null ? -1 : _refSpeed, _name));
-        }
-    }
-
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-        for (let i = 0; i < this.references.length; i++) {
-            let isSpeedValid = this.references[i].displayedSpeed > 0;
-            let displaySpeedText = isSpeedValid ? Math.round(this.references[i].displayedSpeed) : "---";
-            let displayUnitText = isSpeedValid ? "KT" : "";
-
-            Avionics.Utils.diffAndSet(this.references[i].valueSpan, displaySpeedText);
-            Avionics.Utils.diffAndSet(this.references[i].unitSpan, displayUnitText);
-
-            if (this.references[i].displayedSpeed == this.references[i].refSpeed) {
-                Avionics.Utils.diffAndSetAttribute(this.references[i].valueButton, "state", "");
-            } else {
-                Avionics.Utils.diffAndSetAttribute(this.references[i].valueButton, "state", "Edited");
-            }
-
-            if (!isSpeedValid) {
-                this.references[i].isDisplayed = false;
-                Avionics.Utils.diffAndSetAttribute(this.references[i].statusElement, "state", "Greyed");
-            } else {
-                Avionics.Utils.diffAndSetAttribute(this.references[i].statusElement, "state", this.references[i].isDisplayed ? "Active" : "");
-            }
-        }
-        this.updateAllOnOffButtons();
-    }
-
-    updateAllOnOffButtons() {
-        let onCount = 0;
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].isDisplayed) {
-                onCount++;
-            }
-        }
-        Avionics.Utils.diffAndSetAttribute(this.allOffButton, "state", onCount == 0 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.allOnButton, "state", onCount == this.references.length ? "Greyed" : "");
-    }
-
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onEvent(_event) {
-    }
-
-    sendToPfd() {
-        let bugs = "";
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].isDisplayed) {
-                if (bugs != "") {
-                    bugs += ";";
-                }
-                bugs += this.references[i].displayName + ":" + this.references[i].displayedSpeed;
-            }
-        }
-        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_ElementSetAttribute", "Airspeed", "reference-bugs", bugs);
-    }
-
-    statusClick(_index) {
-        if (this.references[_index].displayedSpeed > 0) {
-            this.references[_index].isDisplayed = !this.references[_index].isDisplayed;
-            this.sendToPfd();
-        }
-    }
-
-    valueClick(_index) {
-        this.gps.speedKeyboard.getElementOfType(AS3000_TSC_SpeedKeyboard).setContext(this.valueEndEditing.bind(this, _index), this.container, this.references[_index].displayedSpeed);
-        this.gps.switchToPopUpPage(this.gps.speedKeyboard);
-    }
-
-    valueEndEditing(_index, _value) {
-        this.references[_index].displayedSpeed = _value;
-        this.sendToPfd();
-    }
-
-    allOn() {
-        for (let i = 0; i < this.references.length; i++) {
-            this.references[i].isDisplayed = true;
-        }
-        this.sendToPfd();
-    }
-
-    allOff() {
-        for (let i = 0; i < this.references.length; i++) {
-            this.references[i].isDisplayed = false;
-        }
-        this.sendToPfd();
-    }
-
-    restoreAll() {
-        for (let i = 0; i < this.references.length; i++) {
-            this.references[i].isDisplayed = false;
-            this.references[i].displayedSpeed = this.references[i].refSpeed;
-        }
-        this.sendToPfd();
-    }
-
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-
-    backHome() {
-        this.back();
-        return true;
     }
 }
 class AS3000_TSC_ConfirmationWindow extends NavSystemElement {
