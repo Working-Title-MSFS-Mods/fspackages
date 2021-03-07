@@ -56,7 +56,7 @@ class WT_MapViewRangeDisplay extends HTMLElement {
 
     connectedCallback() {
         this._autoElement = this.shadowRoot.querySelector(`#auto`);
-        this._rangeElement = new WT_CachedHTML(this.shadowRoot.querySelector(`#range`));
+        this._rangeElement = new WT_CachedElement(this.shadowRoot.querySelector(`#range`));
     }
 
     _updateAutoElement(state) {

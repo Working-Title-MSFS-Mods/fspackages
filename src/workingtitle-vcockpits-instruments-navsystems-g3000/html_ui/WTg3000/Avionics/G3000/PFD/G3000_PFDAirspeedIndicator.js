@@ -91,7 +91,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
     }
 
     _defineChildren() {
-        this._wrapper = new WT_CachedHTML(this.shadowRoot.querySelector(`#wrapper`));
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
         this._tape = this.shadowRoot.querySelector(`#tape`);
         this._tapeMajorTickLayer = this.shadowRoot.querySelector(`#majorticks`);
@@ -103,17 +103,17 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._whiteStrip = this.shadowRoot.querySelector(`#whitestrip`);
         this._redStrip = this.shadowRoot.querySelector(`#redstrip`);
 
-        this._trend = new WT_CachedHTML(this.shadowRoot.querySelector(`#trend`));
+        this._trend = new WT_CachedElement(this.shadowRoot.querySelector(`#trend`));
 
-        this._refSpeed = new WT_CachedHTML(this.shadowRoot.querySelector(`#refspeed .value`));
-        this._refSpeedBug = new WT_CachedHTML(this.shadowRoot.querySelector(`#refspeedbug`));
+        this._refSpeed = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeed .value`));
+        this._refSpeedBug = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeedbug`));
 
         this._iasDigits = [];
         this._iasDigits.push(this._createIASDigitEntry(this.shadowRoot.querySelector(`#iasdigitcontainer3`)));
         this._iasDigits.push(this._createIASDigitEntry(this.shadowRoot.querySelector(`#iasdigitcontainer2`)));
         this._iasDigits.push(this._createIASDigitEntry(this.shadowRoot.querySelector(`#iasdigitcontainer1`)));
 
-        this._mach = new WT_CachedHTML(this.shadowRoot.querySelector(`#mach`));
+        this._mach = new WT_CachedElement(this.shadowRoot.querySelector(`#mach`));
     }
 
     _updateStrips() {

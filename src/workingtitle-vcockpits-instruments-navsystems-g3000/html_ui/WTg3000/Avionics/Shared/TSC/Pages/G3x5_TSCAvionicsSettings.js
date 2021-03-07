@@ -467,7 +467,7 @@ class WT_G3x5_TSCUnitsDisplayRow extends HTMLElement {
 
     _defineChildren() {
         this._title = this.shadowRoot.querySelector(`#title`);
-        this._display = new WT_CachedHTML(this.shadowRoot.querySelector(`#display`));
+        this._display = new WT_CachedElement(this.shadowRoot.querySelector(`#display`));
     }
 
     connectedCallback() {
