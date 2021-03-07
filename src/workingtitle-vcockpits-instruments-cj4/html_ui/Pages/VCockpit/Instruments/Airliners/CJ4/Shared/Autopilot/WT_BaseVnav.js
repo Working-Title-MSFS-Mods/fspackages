@@ -504,8 +504,8 @@ class WT_BaseVnav {
                 if (segmentBreakIndex != endingIndex && !this._verticalFlightPlan[segmentBreakIndex].waypointFPTA && !isFlatSegment) {
                     const segmentLateralDistance = lateralDistance - this._verticalFlightPlan[segmentBreakIndex].legDistanceTo;
                     const segmentStartFPTA = this._verticalFlightPlan[endingIndex].waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, segmentLateralDistance);
-                    this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = Math.min(segmentStartFPTA, maxAltitude);
-                    segmentStartsLevel = maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
+                    this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = maxAltitude > 0 ? Math.min(segmentStartFPTA, maxAltitude) : segmentStartFPTA;
+                    segmentStartsLevel = maxAltitude > 0 && maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
                     console.log("based on distance: " + segmentLateralDistance + " FPA: " + bestFPA);
                     console.log("setting: " + this._verticalFlightPlan[segmentBreakIndex].ident + " wpt FPTA: " + this._verticalFlightPlan[segmentBreakIndex].waypointFPTA);
                 }
