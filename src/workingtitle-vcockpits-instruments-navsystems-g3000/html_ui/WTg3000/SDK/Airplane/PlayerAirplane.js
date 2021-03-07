@@ -5,7 +5,9 @@ class WT_PlayerAirplane {
         this._navigation = this._createNavigation();
         this._fms = this._createFMS();
         this._navCom = this._createNavCom();
+        this._controls = this._createControls();
         this._autopilot = this._createAutopilot();
+        this._references = this._createReferences();
     }
 
     _getAircraftType() {
@@ -35,8 +37,30 @@ class WT_PlayerAirplane {
         return new WT_AirplaneNavCom(this, 2, 2, 1);
     }
 
+    _createControls() {
+        switch (this.type) {
+            case WT_PlayerAirplane.Type.TBM930:
+                return new WT_TBM930Controls(this);
+            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                return new WT_CitationLongitudeControls(this);
+            default:
+                return null;
+        }
+    }
+
     _createAutopilot() {
         return new WT_AirplaneAutopilot();
+    }
+
+    _createReferences() {
+        switch (this.type) {
+            case WT_PlayerAirplane.Type.TBM930:
+                return new WT_AirplaneReferences(this, WT_AirplaneReferences.TBM930_DATA);
+            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                return new WT_AirplaneReferences(this, WT_AirplaneReferences.CITATION_LONGITUDE_DATA);
+            default:
+                return null;
+        }
     }
 
     /**
@@ -86,11 +110,29 @@ class WT_PlayerAirplane {
 
     /**
      * @readonly
+     * @property {WT_AirplaneControls} controls - the flight controls component of this airplane.
+     * @type {WT_AirplaneControls}
+     */
+     get controls() {
+        return this._controls;
+    }
+
+    /**
+     * @readonly
      * @property {WT_AirplaneAutopilot} autopilot - the autopilot component of this airplane.
      * @type {WT_AirplaneAutopilot}
      */
     get autopilot() {
         return this._autopilot;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirplaneReferences} references - reference values for this airplane.
+     * @type {WT_AirplaneReferences}
+     */
+    get references() {
+        return this._references;
     }
 
     /**
@@ -304,6 +346,14 @@ class WT_AirplaneDynamics extends WT_AirplaneComponent {
     tas(reference) {
         let value = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
         return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+    }
+
+    /**
+     * Gets the airplane's current true airspeed in mach units.
+     * @returns {Number} the airplane's current true airspeed in mach units.
+     */
+    mach() {
+        return SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
     }
 
     /**
@@ -819,17 +869,88 @@ class WT_AirplaneEngine {
 
 }
 
-class WT_AirplaneControls {
+class WT_AirplaneControls extends WT_AirplaneComponent {
+    /**
+     * Gets this airplane's current flaps position.
+     * @returns {Number} this airplane's current flaps position.
+     */
+    flapsPosition() {
+        return SimVar.GetSimVarValue("FLAPS HANDLE INDEX", "Number");
+    }
 
+    /**
+     * Gets this airplane's current gear position.
+     * @returns {WT_AirplaneControls.GearPosition} this airplane's current gear position.
+     */
+    gearPosition() {
+        return SimVar.GetSimVarValue("GEAR POSITION", "Number");
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_AirplaneControls.GearPosition = {
+    UNKNOWN: 0,
+    UP: 1,
+    DOWN: 2
+}
+
+class WT_TBM930Controls extends WT_AirplaneControls {
+}
+/**
+ * @enum {Number}
+ */
+WT_TBM930Controls.FlapsPosition = {
+    UP: 0,
+    TAKEOFF: 1,
+    LANDING: 2
+}
+
+class WT_CitationLongitudeControls extends WT_AirplaneControls {
 }
 
 class WT_AirplaneAutopilot {
+    /**
+     * Checks whether the autopilot is enabled.
+     * @returns {Boolean} whether the autopilot is enabled.
+     */
+    isEnabled() {
+        return SimVar.GetSimVarValue("AUTOPILOT MASTER", "Boolean");
+    }
+
     navigationSource() {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
             return WT_AirplaneAutopilot.NavSource.FMS;
         } else {
             return SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
         }
+    }
+
+    /**
+     * Checks whether Flight Level Change (FLC) mode is enabled.
+     * @returns {Boolean} whether Flight Level Change mode is enabled.
+     */
+    isFLC() {
+        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+    }
+
+    /**
+     * Checks whether Vertical Speed (VS) mode is enabled.
+     * @returns {Boolean} whether Vertical Speed mode is enabled.
+     */
+    isVS() {
+        return SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+    }
+
+    /**
+     * Gets the autopilot's reference airspeed setting.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} - the autopilot's reference airspeed setting.
+     */
+    referenceAirspeed(reference) {
+        let value = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
+        return reference ? reference.set(value, WT_Unit.KNOT) : WT_Unit.KNOT.createNumber(value);
     }
 }
 /**
@@ -840,4 +961,101 @@ WT_AirplaneAutopilot.NavSource = {
     NAV1: 1,
     NAV2: 2,
     NAV3: 3
+};
+
+class WT_AirplaneReferences extends WT_AirplaneComponent {
+    constructor(airplane, data) {
+        super(airplane);
+
+        this._initFromData(data);
+    }
+
+    _initFromData(data) {
+        this._vmo = data.vmo ? WT_Unit.KNOT.createNumber(data.vmo) : undefined;
+        this._vr = data.vr ? WT_Unit.KNOT.createNumber(data.vr) : undefined;
+        this._vy = data.vy ? WT_Unit.KNOT.createNumber(data.vy) : undefined;
+        this._vx = data.vx ? WT_Unit.KNOT.createNumber(data.vx) : undefined;
+        this._vapp = data.vapp ? WT_Unit.KNOT.createNumber(data.vapp) : undefined;
+        this._vref = data.vref ? WT_Unit.KNOT.createNumber(data.vref) : undefined;
+        this._vglide = data.vglide ? WT_Unit.KNOT.createNumber(data.vglide) : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vmo - the airplane's maximum operating speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vmo() {
+        return this._vmo ? this._vmo.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vr - the airplane's rotation speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vr() {
+        return this._vr ? this._vr.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vy - the airplane's best rate of climb speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vy() {
+        return this._vy ? this._vy.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vx - the airplane's best angle of climb speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vx() {
+        return this._vx ? this._vx.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vapp - the airplane's approach speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vapp() {
+        return this._vapp ? this._vapp.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vref - the airplane's approach speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vref() {
+        return this._vref ? this._vref.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vglide - the airplane's best glide speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vglide() {
+        return this._vglide ? this._vglide.readonly() : undefined;
+    }
+}
+
+WT_AirplaneReferences.TBM930_DATA = {
+    vmo: 266,
+    vr: 90,
+    vy: 124,
+    vx: 100,
+    vapp: 85,
+    vglide: 120
+};
+
+WT_AirplaneReferences.CITATION_LONGITUDE_DATA = {
+    vmo: 280,
+    vr: 120,
+    vapp: 149,
+    vref: 149
 };

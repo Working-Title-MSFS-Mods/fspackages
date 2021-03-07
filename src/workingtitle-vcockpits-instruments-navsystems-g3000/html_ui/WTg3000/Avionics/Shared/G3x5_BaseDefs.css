@@ -1,6 +1,8 @@
 :root {
-    --wt-g3x5-green: #4ecc3d;
+    --wt-g3x5-amber: #ffdc24;
+    --wt-g3x5-bggray: #1a1d21;
+    --wt-g3x5-green: #2d812a;
+    --wt-g3x5-lightgreen: #4ecc3d;
     --wt-g3x5-lightblue: #67e8ef;
     --wt-g3x5-purple: #af5acc;
-    --wt-g3x5-bggray: #1a1d21;
 }
