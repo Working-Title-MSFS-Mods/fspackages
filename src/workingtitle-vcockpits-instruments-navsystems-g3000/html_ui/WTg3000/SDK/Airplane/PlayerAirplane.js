@@ -911,11 +911,11 @@ class WT_CitationLongitudeControls extends WT_AirplaneControls {
 
 class WT_AirplaneAutopilot {
     /**
-     * Checks whether the autopilot is enabled.
-     * @returns {Boolean} whether the autopilot is enabled.
+     * Checks whether the autopilot is active.
+     * @returns {Boolean} whether the autopilot is active.
      */
-    isEnabled() {
-        return SimVar.GetSimVarValue("AUTOPILOT MASTER", "Boolean");
+    isActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT MASTER", "Boolean") === 1;
     }
 
     navigationSource() {
@@ -927,11 +927,19 @@ class WT_AirplaneAutopilot {
     }
 
     /**
+     * Checks whether Pitch Hold mode is enabled.
+     * @returns {Boolean} whether Pitch Hold mode is enabled.
+     */
+     isPitchHold() {
+        return SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") === 1;
+    }
+
+    /**
      * Checks whether Flight Level Change (FLC) mode is enabled.
      * @returns {Boolean} whether Flight Level Change mode is enabled.
      */
     isFLC() {
-        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean");
+        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") === 1;
     }
 
     /**
@@ -939,7 +947,7 @@ class WT_AirplaneAutopilot {
      * @returns {Boolean} whether Vertical Speed mode is enabled.
      */
     isVS() {
-        return SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean");
+        return SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") === 1;
     }
 
     /**
@@ -972,7 +980,10 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
 
     _initFromData(data) {
         this._vmo = data.vmo ? WT_Unit.KNOT.createNumber(data.vmo) : undefined;
+        this._v1 = data.v1 ? WT_Unit.KNOT.createNumber(data.v1) : undefined;
         this._vr = data.vr ? WT_Unit.KNOT.createNumber(data.vr) : undefined;
+        this._v2 = data.v2 ? WT_Unit.KNOT.createNumber(data.v2) : undefined;
+        this._vfto = data.vfto ? WT_Unit.KNOT.createNumber(data.vfto) : undefined;
         this._vy = data.vy ? WT_Unit.KNOT.createNumber(data.vy) : undefined;
         this._vx = data.vx ? WT_Unit.KNOT.createNumber(data.vx) : undefined;
         this._vapp = data.vapp ? WT_Unit.KNOT.createNumber(data.vapp) : undefined;
@@ -991,11 +1002,38 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
 
     /**
      * @readonly
+     * @property {WT_NumberUnitReadOnly} V1 - the airplane's decision speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+     get V1() {
+        return this._v1 ? this._v1.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
      * @property {WT_NumberUnitReadOnly} Vr - the airplane's rotation speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vr() {
         return this._vr ? this._vr.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} V2 - the airplane's takeoff safety speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get V2() {
+        return this._v2 ? this._v2.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} Vfto - the airplane's final takeoff speed.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get Vfto() {
+        return this._vfto ? this._vfto.readonly() : undefined;
     }
 
     /**
@@ -1027,7 +1065,7 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vref - the airplane's approach speed.
+     * @property {WT_NumberUnitReadOnly} Vref - the airplane's reference landing speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vref() {
@@ -1055,7 +1093,10 @@ WT_AirplaneReferences.TBM930_DATA = {
 
 WT_AirplaneReferences.CITATION_LONGITUDE_DATA = {
     vmo: 280,
+    v1: 110,
     vr: 120,
-    vapp: 149,
-    vref: 149
+    v2: 137,
+    vfto: 180,
+    vapp: 115,
+    vref: 108
 };

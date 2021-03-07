@@ -5,7 +5,7 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
     }
 
     _createSpeedBugsPage() {
-        return new AS3000_TSC_Vertical_SpeedBugs();
+        return new WT_G5000_TSCSpeedBugs("PFD");
     }
 
     createAudioRadioWindow() {
@@ -137,113 +137,6 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         this.gps.switchToPopUpPage(this.gps.audioRadioWindow);
     }
 }
-
-class AS3000_TSC_Vertical_AirspeedReference extends AS3000_TSC_AirspeedReference {
-    constructor(valueButton, statusElem, refSpeed, displayName, tab) {
-        super(valueButton, statusElem, refSpeed, displayName);
-        this.tab = tab;
-    }
-}
-
-class AS3000_TSC_Vertical_SpeedBugs extends AS3000_TSC_SpeedBugs {
-    constructor() {
-        super(...arguments);
-        this.tabbedContent = new WT_TSCTabbedContent(this);
-    }
-
-    initAirspeedReference(valueButton, statusButton, refSpeed, name, tab) {
-        if (valueButton && statusButton) {
-            this.references.push(new AS3000_TSC_Vertical_AirspeedReference(valueButton, statusButton, refSpeed == null ? -1 : refSpeed, name, tab));
-        }
-    }
-
-    init(root) {
-        let designSpeeds = Simplane.getDesignSpeeds();
-        this.initAirspeedReference(this.gps.getChildById("SB_V1Value"), this.gps.getChildById("SB_V1Status"), designSpeeds.V1, "1", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VrValue"), this.gps.getChildById("SB_VrStatus"), designSpeeds.Vr, "R", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_V2Value"), this.gps.getChildById("SB_V2Status"), designSpeeds.V2, "2", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VftoValue"), this.gps.getChildById("SB_VftoStatus"), designSpeeds.Venr, "FTO", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VrefValue"), this.gps.getChildById("SB_VrefStatus"), designSpeeds.Vapp, "RF", AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
-        this.initAirspeedReference(this.gps.getChildById("SB_VappValue"), this.gps.getChildById("SB_VappStatus"), designSpeeds.Vapp, "AP", AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
-        this.takeoffAllOnButton = this.gps.getChildById("SB_Takeoff_AllOn");
-        this.takeoffAllOffButton = this.gps.getChildById("SB_Takeoff_AllOff");
-        this.landingAllOnButton = this.gps.getChildById("SB_Landing_AllOn");
-        this.landingAllOffButton = this.gps.getChildById("SB_Landing_AllOff");
-        this.resetButton = this.gps.getChildById("SB_RestoreDefaults");
-        this.gps.makeButton(this.takeoffAllOnButton, this.allOn.bind(this));
-        this.gps.makeButton(this.takeoffAllOffButton, this.allOff.bind(this));
-        this.gps.makeButton(this.landingAllOnButton, this.allOn.bind(this));
-        this.gps.makeButton(this.landingAllOffButton, this.allOff.bind(this));
-        this.gps.makeButton(this.resetButton, this.restoreAll.bind(this));
-        for (let i = 0; i < this.references.length; i++) {
-            this.gps.makeButton(this.references[i].statusElement, this.statusClick.bind(this, i));
-            this.gps.makeButton(this.references[i].valueButton, this.valueClick.bind(this, i));
-        }
-        this.tabbedContent.init(root);
-    }
-
-    onEnter() {
-        super.onEnter();
-        let lastPageName = this.gps.history[this.gps.history.length - 1].pageName;
-        if (lastPageName == "PFD Home" || lastPageName == "MFD Home") {
-            if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
-                this.tabbedContent.activateTab(AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-            } else {
-                this.tabbedContent.activateTab(AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
-            }
-        }
-    }
-
-    updateAllOnOffButtons() {
-        let takeoffOnCount = 0;
-        let landingOnCount = 0;
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].isDisplayed) {
-                if (this.references[i].tab == AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF) {
-                    takeoffOnCount++;
-                } else {
-                    landingOnCount++;
-                }
-            }
-        }
-        Avionics.Utils.diffAndSetAttribute(this.takeoffAllOffButton, "state", takeoffOnCount == 0 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.takeoffAllOnButton, "state", takeoffOnCount == 4 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.landingAllOffButton, "state", landingOnCount == 0 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.landingAllOnButton, "state", landingOnCount == 2 ? "Greyed" : "");
-    }
-
-    allOn() {
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].tab == this.tabbedContent.getActiveTab()) {
-                this.references[i].isDisplayed = true;
-            }
-        }
-        this.sendToPfd();
-    }
-
-    allOff() {
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].tab == this.tabbedContent.getActiveTab()) {
-                this.references[i].isDisplayed = false;
-            }
-        }
-        this.sendToPfd();
-    }
-
-    restoreAll() {
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].tab == this.tabbedContent.getActiveTab()) {
-                this.references[i].isDisplayed = false;
-                this.references[i].displayedSpeed = this.references[i].refSpeed;
-            }
-        }
-        this.sendToPfd();
-    }
-}
-AS3000_TSC_Vertical_SpeedBugs.Tab = {
-    TAKEOFF: 0,
-    LANDING: 1
-};
 
 registerInstrument("as3000-tsc-vertical-element", AS3000_TSC_Vertical);
 //# sourceMappingURL=AS3000_TSC_Vertical.js.map

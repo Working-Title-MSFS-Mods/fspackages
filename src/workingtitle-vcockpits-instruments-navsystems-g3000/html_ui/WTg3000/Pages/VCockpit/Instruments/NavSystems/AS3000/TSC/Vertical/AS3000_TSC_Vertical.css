@@ -209,98 +209,39 @@
         as3000-tsc-vertical-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"] .active, as3000-tsc-vertical-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] .active {
           display: inline-block; }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContainer {
-        position: absolute;
-        left: 15%;
-        top: 2%;
-        width: 84%;
-        height: 98%;
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: flex-end;
-        align-items: flex-start; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabSelect {
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: flex-start;
-        height: 100%;
-        margin-right: -1%;
-        padding: 1% 0; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabSelect .tabButton {
-          margin: 1vh 0;
-          height: 10vh; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContentContainer {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        border: 3px solid #d3eaf9;
-        background: #000000;
-        border-radius: 10px; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContentContainer .tabContent {
-          position: absolute;
-          width: 100%;
-          height: 100%; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContentContainer .container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          padding: 0.5vh;
-          display: flex;
-          flex-flow: column nowrap;
-          align-items: center; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SpeedBugsTopLine {
-            width: 100%;
-            height: 16%;
-            padding: 0 1vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr;
-            grid-gap: 0 1vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SpeedBugsTopLine .gradientButton {
-              height: 100%;
-              width: 100%;
-              margin: 0.25vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SpeedBugsDivider {
-            width: 100%;
-            height: 0;
-            margin: 0.5vh 0;
-            border-top: ridge 3px white; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons {
-            position: relative;
-            width: 100%;
-            height: 80%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-auto-rows: 11vh;
-            justify-items: center; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton {
-              width: 98%;
-              height: 10vh;
-              margin: 0.5vh; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 100%;
-                color: var(--wt-g3x5-lightblue);
-                font-size: 3.5vh; }
-                as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue .unitSpan {
-                  font-size: 3vh; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .editIcon {
-                display: none;
-                position: absolute;
-                top: 35%;
-                right: 8%;
-                height: 30%;
-                width: auto; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton[state="Edited"] .editIcon {
-                display: block; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults {
-        position: absolute;
-        left: 1%;
-        bottom: 1%;
+
+as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font-size: 3.5vh;
+}
+
+as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs tsc-tabbedview {
+    position: absolute;
+    top: 0%;
+    height: 98%;
+    left: 10%;
+    width: 90%;
+    --tab-content-width: 50vh;
+    --tab-content-height: 60vh;
+}
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs wt-tsc-button-tab {
+        width: 15vh;
         height: 10vh;
-        width: 25%; }
+        margin: 1vh 0;
+    }
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs wt-tsc-speedbugs-tab {
+        --speedbugs-tab-rowsection-height: 77%;
+        --speedbugs-tab-row-height: 11vh;
+    }
+as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .speedBugsDefaultButton {
+    position: absolute;
+    left: 2.5%;
+    bottom: 5%;
+    height: 10vh;
+    width: 25%;
+}
 
 as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers {
     font-size: 4vh;
