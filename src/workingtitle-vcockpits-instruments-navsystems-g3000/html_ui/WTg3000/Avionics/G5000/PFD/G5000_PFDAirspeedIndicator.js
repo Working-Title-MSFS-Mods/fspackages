@@ -1,59 +1,57 @@
-class WT_G3000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
+class WT_G5000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
     _createSpeedBugCollection() {
         let collection = new WT_SpeedBugCollection("PFD");
+        collection.addBug("1", this.instrument.airplane.references.V1);
         collection.addBug("r", this.instrument.airplane.references.Vr);
-        collection.addBug("x", this.instrument.airplane.references.Vx);
-        collection.addBug("y", this.instrument.airplane.references.Vy);
+        collection.addBug("2", this.instrument.airplane.references.V2);
+        collection.addBug("fto", this.instrument.airplane.references.Vfto);
+        collection.addBug("ref", this.instrument.airplane.references.Vref);
         collection.addBug("app", this.instrument.airplane.references.Vapp);
         return collection;
     }
 
     _createModel() {
-        return new WT_G3000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._createSpeedBugCollection());
+        return new WT_G5000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._createSpeedBugCollection());
     }
 
     _createHTMLElement() {
-        let htmlElement = new WT_G3000_PFDAirspeedIndicatorHTMLElement();
+        let htmlElement = new WT_G5000_PFDAirspeedIndicatorHTMLElement();
         htmlElement.setContext({
             model: this._model,
             scale: {
-                min: WT_G3000_PFDAirspeedIndicator.TAPE_MINIMUM,
-                window: WT_G3000_PFDAirspeedIndicator.TAPE_WINDOW,
-                majorTick: WT_G3000_PFDAirspeedIndicator.TAPE_MAJOR_TICK,
-                minorTickFactor: WT_G3000_PFDAirspeedIndicator.TAPE_MINOR_TICK_FACTOR
+                min: WT_G5000_PFDAirspeedIndicator.TAPE_MINIMUM,
+                window: WT_G5000_PFDAirspeedIndicator.TAPE_WINDOW,
+                majorTick: WT_G5000_PFDAirspeedIndicator.TAPE_MAJOR_TICK,
+                minorTickFactor: WT_G5000_PFDAirspeedIndicator.TAPE_MINOR_TICK_FACTOR
             },
-            trendLookahead: WT_G3000_PFDAirspeedIndicator.TREND_LOOKAHEAD,
-            trendThreshold: WT_G3000_PFDAirspeedIndicator.TREND_THRESHOLD,
-            machDisplayThreshold: WT_G3000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD,
+            trendLookahead: WT_G5000_PFDAirspeedIndicator.TREND_LOOKAHEAD,
+            trendThreshold: WT_G5000_PFDAirspeedIndicator.TREND_THRESHOLD,
+            machDisplayThreshold: WT_G5000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD,
             redStrip: {
-                min: 20,
-                max: 65
+                min: 40,
+                max: 133
             },
-            whiteStrip: {
-                min: 65,
-                max: 122
-            },
-            greenStrip: {
-                min: 122,
-                max: 266
+            yellowStrip: {
+                min: 133,
+                max: 140
             },
             barberStrip: {
-                min: 266,
+                min: 280,
                 max: Infinity
             }
         });
         return htmlElement;
     }
 }
-WT_G3000_PFDAirspeedIndicator.TAPE_MINIMUM = 20;
-WT_G3000_PFDAirspeedIndicator.TAPE_WINDOW = 60;
-WT_G3000_PFDAirspeedIndicator.TAPE_MAJOR_TICK = 10;
-WT_G3000_PFDAirspeedIndicator.TAPE_MINOR_TICK_FACTOR = 2;
-WT_G3000_PFDAirspeedIndicator.TREND_LOOKAHEAD = 6;
-WT_G3000_PFDAirspeedIndicator.TREND_THRESHOLD = 1;
-WT_G3000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD = 0.3;
+WT_G5000_PFDAirspeedIndicator.TAPE_MINIMUM = 40;
+WT_G5000_PFDAirspeedIndicator.TAPE_WINDOW = 80;
+WT_G5000_PFDAirspeedIndicator.TAPE_MAJOR_TICK = 10;
+WT_G5000_PFDAirspeedIndicator.TAPE_MINOR_TICK_FACTOR = 1;
+WT_G5000_PFDAirspeedIndicator.TREND_LOOKAHEAD = 10;
+WT_G5000_PFDAirspeedIndicator.TREND_THRESHOLD = 1;
+WT_G5000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD = 0.4;
 
-class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
+class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
     constructor(airplane, speedBugCollection) {
         super(airplane, speedBugCollection);
 
@@ -70,7 +68,7 @@ class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
     }
 
     _updateMinSpeed() {
-        this._minSpeed.set(WT_G3000_PFDAirspeedIndicatorModel.MIN_SPEED[this._airplane.controls.flapsPosition()]);
+        // TODO: implement minimum speed
     }
 
     update() {
@@ -79,13 +77,8 @@ class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
         this._updateMinSpeed();
     }
 }
-WT_G3000_PFDAirspeedIndicatorModel.MIN_SPEED = [
-    WT_Unit.KNOT.createNumber(88),
-    WT_Unit.KNOT.createNumber(84),
-    WT_Unit.KNOT.createNumber(74)
-];
 
-class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndicatorHTMLElement {
+class WT_G5000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndicatorHTMLElement {
     constructor() {
         super();
 
@@ -93,7 +86,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
     }
 
     _getTemplate() {
-        return WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE;
+        return WT_G5000_PFDAirspeedIndicatorHTMLElement.TEMPLATE;
     }
 
     _createIASDigitEntry(container) {
@@ -121,8 +114,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._tapeMinorTickLayer = this.shadowRoot.querySelector(`#minorticks`);
 
         this._barberStrip = this.shadowRoot.querySelector(`#barberstrip`);
-        this._greenStrip = this.shadowRoot.querySelector(`#greenstrip`);
-        this._whiteStrip = this.shadowRoot.querySelector(`#whitestrip`);
+        this._yellowStrip = this.shadowRoot.querySelector(`#yellowstrip`);
         this._redStrip = this.shadowRoot.querySelector(`#redstrip`);
 
         this._trend = new WT_CachedElement(this.shadowRoot.querySelector(`#trend`));
@@ -148,8 +140,8 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
      * @param {WT_SpeedBug} bug
      * @returns {String}
      */
-    _getSpeedBugLabel(bug) {
-        return WT_G3000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_LABELS[`v${bug.name}`];
+     _getSpeedBugLabel(bug) {
+        return WT_G5000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_LABELS[`v${bug.name}`];
     }
 
     /**
@@ -170,8 +162,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
     _updateStrips() {
         this._updateStrip(this._barberStrip, this._context.barberStrip);
-        this._updateStrip(this._greenStrip, this._context.greenStrip);
-        this._updateStrip(this._whiteStrip, this._context.whiteStrip);
+        this._updateStrip(this._yellowStrip, this._context.yellowStrip);
         this._updateStrip(this._redStrip, this._context.redStrip);
     }
 
@@ -193,12 +184,18 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._wrapper.setAttribute("trend-warning", `${value}`);
     }
 
+    _isAutopilotOverspeedProtectionActive() {
+        let autopilot = this._context.model.autopilot;
+        return autopilot.isActive() && (autopilot.isFLC() || autopilot.isVS() || autopilot.isPitchHold());
+    }
+
     _setVmoWarning(value) {
         this._wrapper.setAttribute("Vmo-warning", `${value}`);
+        this._wrapper.setAttribute("ap-overspeed", `${value && this._isAutopilotOverspeedProtectionActive()}`);
     }
 
     _setMinSpeedWarning(value) {
-        this._wrapper.setAttribute("minspeed-warning", `${value}`);
+        //this._wrapper.setAttribute("minspeed-warning", `${value}`);
     }
 
     /**
@@ -220,16 +217,18 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         entry.htmlElement.setAttribute("style", `transform: translateY(${translate}%);`);
     }
 }
-WT_G3000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_LABELS = {
+WT_G5000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_LABELS = {
+    v1: "1",
     vr: "R",
-    vx: "X",
-    vy: "Y",
+    v2: "2",
+    vfto: "FTO",
+    vref: "RF",
     vapp: "AP"
 };
-WT_G3000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_CLASS = "speedBug";
-WT_G3000_PFDAirspeedIndicatorHTMLElement.NAME = "wt-pfd-airspeedindicator";
-WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE = document.createElement("template");
-WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
+WT_G5000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_CLASS = "speedBug";
+WT_G5000_PFDAirspeedIndicatorHTMLElement.NAME = "wt-pfd-airspeedindicator";
+WT_G5000_PFDAirspeedIndicatorHTMLElement.TEMPLATE = document.createElement("template");
+WT_G5000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
@@ -240,7 +239,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
             width: 100%;
             height: 100%;
         }
-            #minspeedcontainer {
+            #maxspeedcontainer {
                 position: absolute;
                 left: 0%;
                 top: 0%;
@@ -249,17 +248,17 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 background-color: var(--wt-g3x5-amber);
                 display: none;
             }
-            #wrapper[minspeed-warning="true"] #minspeedcontainer {
+            #wrapper[ap-overspeed="true"] #maxspeedcontainer {
                 display: block;
             }
-                #minspeed {
+                #maxspeed {
                     position: absolute;
                     left: 50%;
                     top: 50%;
                     transform: translate(-50%, -50%);
                     color: black;
                     font-weight: bold;
-                    font-size: var(--airspeedindicator-minspeed-font-size, 0.8em);
+                    font-size: var(--airspeedindicator-maxspeed-font-size, 0.8em);
                 }
             #tapecontainer {
                 position: absolute;
@@ -302,11 +301,8 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             #barberstrip {
                                 background: repeating-linear-gradient(135deg, red, red 6px, white 6px, white 12px);
                             }
-                            #greenstrip {
-                                background-color: var(--wt-g3x5-green);
-                            }
-                            #whitestrip {
-                                background-color: white;
+                            #yellowstrip {
+                                background-color: var(--wt-g3x5-amber);
                             }
                             #redstrip {
                                 background-color: red;
@@ -501,6 +497,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                     height: 100%;
                     font-family: "Roboto-Condensed";
                     font-size: var(--airspeedindicator-speedbug-font-size, 0.67em);
+                    color: var(--wt-g3x5-lightblue);
                 }
             #machcontainer {
                 position: absolute;
@@ -536,22 +533,20 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 }
     </style>
     <div id="wrapper">
-        <div id="minspeedcontainer">
-            <div id="minspeed">MINSPD</div>
+        <div id="maxspeedcontainer">
+            <div id="maxspeed">MAXSPD</div>
         </div>
         <div id="tapecontainer">
             <div id="tapeclip">
                 <div id="tape">
                     <div id="strips">
-                        <div id="greenstrip" class="strip"></div>
-                        <div id="whitestrip" class="strip"></div>
+                        <div id="yellowstrip" class="strip"></div>
                         <div id="redstrip" class="strip"></div>
                         <div id="barberstrip" class="strip"></div>
                     </div>
                     <svg id="minorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <svg id="majorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <svg id="labels"></svg>
-
                 </div>
             </div>
             <div id="refspeedbugclip">
@@ -612,4 +607,4 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
     </div>
 `;
 
-customElements.define(WT_G3000_PFDAirspeedIndicatorHTMLElement.NAME, WT_G3000_PFDAirspeedIndicatorHTMLElement);
+customElements.define(WT_G5000_PFDAirspeedIndicatorHTMLElement.NAME, WT_G5000_PFDAirspeedIndicatorHTMLElement);

@@ -8,9 +8,11 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
 
 class WT_G5000_PFDMainPage extends WT_G3x5_PFDMainPage {
     _createAirspeedIndicator() {
+        return new WT_G5000_PFDAirspeedIndicator();
     }
 
     _createAoAIndicator() {
+        return new WT_G5000_PFDAoAIndicator();
     }
 
     _createBottomInfo() {

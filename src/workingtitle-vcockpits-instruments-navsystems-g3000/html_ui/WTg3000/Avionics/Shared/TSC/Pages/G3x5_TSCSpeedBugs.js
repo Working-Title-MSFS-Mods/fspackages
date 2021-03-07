@@ -156,6 +156,10 @@ class WT_G3x5_TSCSpeedBugsHTMLElement extends HTMLElement {
         this._setBugsToDefault(this._tabbedContent.getActiveTab());
     }
 
+    selectTab(index) {
+        this._tabbedContent.setActiveTabIndex(index);
+    }
+
     update() {
         if (!this._isInit) {
             return;
@@ -393,16 +397,22 @@ WT_G3x5_TSCSpeedBugsTabHTMLElement.TEMPLATE.innerHTML = `
                 margin: 0.25em 0;
                 border-top: ridge var(--speedbugs-tab-divider-width, 3px) white;
             }
-            #rows {
+            #rowscontainer {
                 position: relative;
                 width: 95%;
                 height: var(--speedbugs-tab-rowsection-height, 75%);
                 border: solid 3px #404040;
                 border-radius: 5px;
+                overflow: hidden;
             }
-                wt-tsc-speedbugs-row {
-                    height: var(--speedbugs-tab-row-height);
+                #rows {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
                 }
+                    wt-tsc-speedbugs-row {
+                        height: var(--speedbugs-tab-row-height);
+                    }
     </style>
     <div id="wrapper">
         <div id="topline">
@@ -410,8 +420,10 @@ WT_G3x5_TSCSpeedBugsTabHTMLElement.TEMPLATE.innerHTML = `
             <wt-tsc-button-label id="alloff" labeltext="All Off"></wt-tsc-button-label>
         </div>
         <div id="divider"></div>
-        <tsc-scrolllist id="rows">
-        </tsc-scrolllist>
+        <div id="rowscontainer">
+            <tsc-scrolllist id="rows">
+            </tsc-scrolllist>
+        </div>
     </div>
 `;
 

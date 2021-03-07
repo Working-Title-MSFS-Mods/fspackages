@@ -57,12 +57,17 @@ as3000-pfd-element #Mainframe {
       bottom: 36%;
       width: 19%;
       left: 70%; }
-    as3000-pfd-element #Mainframe #InstrumentsContainer #Airspeed {
-      transform: rotateX(0);
-      position: absolute;
-      bottom: 36%;
-      width: 12.5%;
-      right: 70%; }
+
+as3000-pfd-element wt-pfd-airspeedindicator {
+    position: absolute;
+    right: 70%;
+    top: 10%;
+    width: 8%;
+    height: 50%;
+    font-size: 3vh;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+}
 
 as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
   transform: rotateX(0);
@@ -84,11 +89,22 @@ as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
       left: 30%;
       height: 6%;
       width: 9%; }
-    as3000-pfd-element #Mainframe #InstrumentsContainer #AoA {
-      position: absolute;
-      right: 72.5%;
-      bottom: 19%;
-      width: 10%; }
+
+as3000-pfd-element wt-pfd-aoaindicator {
+    position: absolute;
+    left: 22%;
+    top: 62%;
+    width: 10vh;
+    height: 9vh;
+    --aoaindicator-margin-left: 5%;
+    --aoaindicator-margin-right: 5%;
+    --aoaindicator-margin-top: 5%;
+    --aoaindicator-margin-bottom: 5%;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+    font-size: 2vh;
+}
+
     as3000-pfd-element #Mainframe #InstrumentsContainer #Map {
       transform: rotateX(0);
       position: absolute;
