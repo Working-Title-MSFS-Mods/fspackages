@@ -4,7 +4,7 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         this.middleKnobText_Save = "";
     }
 
-    createSpeedBugsPage() {
+    _createSpeedBugsPage() {
         return new AS3000_TSC_Vertical_SpeedBugs();
     }
 

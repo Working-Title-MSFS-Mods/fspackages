@@ -1,6 +1,15 @@
 class WT_G3000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
+    _createSpeedBugCollection() {
+        let collection = new WT_SpeedBugCollection("PFD");
+        collection.addBug("r", this.instrument.airplane.references.Vr);
+        collection.addBug("x", this.instrument.airplane.references.Vx);
+        collection.addBug("y", this.instrument.airplane.references.Vy);
+        collection.addBug("app", this.instrument.airplane.references.Vapp);
+        return collection;
+    }
+
     _createModel() {
-        return new WT_G3000_PFDAirspeedIndicatorModel(this.instrument.airplane);
+        return new WT_G3000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._createSpeedBugCollection());
     }
 
     _createHTMLElement() {
@@ -45,8 +54,8 @@ WT_G3000_PFDAirspeedIndicator.TREND_THRESHOLD = 1;
 WT_G3000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD = 0.3;
 
 class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
-    constructor(airplane) {
-        super(airplane);
+    constructor(airplane, speedBugCollection) {
+        super(airplane, speedBugCollection);
 
         this._minSpeed = WT_Unit.KNOT.createNumber(0);
     }
@@ -77,6 +86,12 @@ WT_G3000_PFDAirspeedIndicatorModel.MIN_SPEED = [
 ];
 
 class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndicatorHTMLElement {
+    constructor() {
+        super();
+
+        this._isRefSpeedVisible = false;
+    }
+
     _getTemplate() {
         return WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE;
     }
@@ -88,6 +103,13 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
             middle: new WT_CachedSVGTextElement(container.querySelector(`.middleDigit`)),
             bottom: new WT_CachedSVGTextElement(container.querySelector(`.bottomDigit`))
         };
+    }
+
+    _initSpeedBugRecycler() {
+        /**
+         * @type {WT_HTMLElementRecycler<WT_G3x5_PFDAirspeedIndicatorSpeedBug>}
+         */
+        this._speedBugRecycler = new WT_G3000_PFDAirspeedIndicatorSpeedBugRecycler(this._speedBugContainer);
     }
 
     _defineChildren() {
@@ -115,6 +137,21 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._iasDigits.push(this._createIASDigitEntry(this.shadowRoot.querySelector(`#iasdigitcontainer1`)));
 
         this._mach = new WT_CachedElement(this.shadowRoot.querySelector(`#mach`));
+
+        this._speedBugContainer = this.shadowRoot.querySelector(`#speedbugcontainer`);
+
+        this._initSpeedBugRecycler();
+    }
+
+    /**
+     *
+     * @param {WT_SpeedBug} bug
+     * @returns {WT_G3x5_PFDAirspeedIndicatorSpeedBug}
+     */
+    _getSpeedBugHTMLElement(bug) {
+        let htmlElement = this._speedBugRecycler.request();
+        htmlElement.setName(bug.name);
+        return htmlElement;
     }
 
     _moveTape(tapePos) {
@@ -131,6 +168,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
     _showRefSpeed(value) {
         this._wrapper.setAttribute("show-refspeed", `${value}`);
+        this._isRefSpeedVisible = value;
     }
 
     _moveRefSpeedBug(tapePos) {
@@ -153,7 +191,27 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
     _setMinSpeedWarning(value) {
         this._wrapper.setAttribute("minspeed-warning", `${value}`);
     }
+
+    /**
+     *
+     * @param {{bug:WT_SpeedBug, htmlElement:WT_G3x5_PFDAirspeedIndicatorSpeedBug}} entry
+     * @param {Boolean} value
+     */
+    _showSpeedBug(entry, value) {
+        entry.htmlElement.show(value);
+    }
+
+    /**
+     *
+     * @param {{bug:WT_SpeedBug, htmlElement:WT_G3x5_PFDAirspeedIndicatorSpeedBug}} entry
+     * @param {Number} tapePos
+     */
+    _moveSpeedBug(entry, tapePos) {
+        let translate = Math.max(this._isRefSpeedVisible ? -40 : -50, Math.min(50, (tapePos - 0.5) * 100));
+        entry.htmlElement.setAttribute("style", `transform: translateY(${translate}%);`);
+    }
 }
+WT_G3000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_CLASS = "speedBug";
 WT_G3000_PFDAirspeedIndicatorHTMLElement.NAME = "wt-pfd-airspeedindicator";
 WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
@@ -413,6 +471,22 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             #wrapper[trend-warning="true"][Vmo-warning="false"] .digit {
                                 fill: black;
                             }
+            #speedbugcontainer {
+                position: absolute;
+                right: 0%;
+                top: 8%;
+                width: 18%;
+                height: 82.8%;
+            }
+                #speedbugcontainer wt-pfd-airspeedindicator-speedbug {
+                    position: absolute;
+                    top: 0%;
+                    left: 0%;
+                    width: 100%;
+                    height: 100%;
+                    font-family: "Roboto-Condensed";
+                    font-size: var(--airspeedindicator-speedbug-font-size, 0.67em);
+                }
             #machcontainer {
                 position: absolute;
                 bottom: 0%;
@@ -445,7 +519,6 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 #wrapper[trend-warning="true"][Vmo-warning="false"] #mach {
                     color: black;
                 }
-
     </style>
     <div id="wrapper">
         <div id="minspeedcontainer">
@@ -515,6 +588,8 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 </div>
             </div>
         </div>
+        <div id="speedbugcontainer">
+            </div>
         <div id="machcontainer">
             <div id="mach">
             </div>
@@ -523,3 +598,9 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3000_PFDAirspeedIndicatorHTMLElement.NAME, WT_G3000_PFDAirspeedIndicatorHTMLElement);
+
+class WT_G3000_PFDAirspeedIndicatorSpeedBugRecycler extends WT_HTMLElementRecycler {
+    _createElement() {
+        return new WT_G3x5_PFDAirspeedIndicatorSpeedBug();
+    }
+}

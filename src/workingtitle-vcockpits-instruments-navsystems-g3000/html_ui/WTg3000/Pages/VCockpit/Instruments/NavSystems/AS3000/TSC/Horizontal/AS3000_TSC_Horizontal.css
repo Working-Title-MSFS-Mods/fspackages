@@ -101,51 +101,39 @@ as3000-tsc-horizontal-element {
           display: none; }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"] .active, as3000-tsc-horizontal-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] .active {
           display: inline-block; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: repeat(5, 1fr);
-        position: absolute;
-        height: 90vh;
-        right: 10%;
-        width: 50%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton {
-          width: auto;
-          height: auto;
-          top: 0.5vh;
-          bottom: 0.5vh;
-          left: 0.5vh;
-          right: 0.5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 100%;
-            color: var(--wt-g3x5-lightblue);
-            font-size: 5vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue .unitSpan {
-            font-size: 4vh; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .editIcon {
-            display: none;
-            position: absolute;
-            top: 35%;
-            right: 8%;
-            height: 30%;
-            width: auto; }
-          as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton[state="Edited"] .editIcon {
-            display: block; }
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults {
-        position: absolute;
-        left: 10%;
-        bottom: 2%;
-        height: 17%;
-        width: 25%; }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults .mainText {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 100%;
-          font-size: 5vh; }
+
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font-size: 5vh;
+}
+
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs tsc-tabbedview {
+    position: absolute;
+    height: 90vh;
+    left: 20%;
+    width: 80%;
+    --tab-content-width: 70vh;
+    --tab-content-height: 90vh;
+}
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs wt-tsc-button-tab {
+        width: 23vh;
+        height: 15vh;
+        margin: 2.5vh 0;
+    }
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs wt-tsc-speedbugs-tab {
+        --speedbugs-tab-rowsection-height: 77%;
+        --speedbugs-tab-row-height: 16vh;
+    }
+
+as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs .speedBugsDefaultButton {
+    position: absolute;
+    left: 10%;
+    bottom: 2%;
+    height: 17%;
+    width: 25%;
+}
 
 as3000-tsc-horizontal-element #Electricity #PagesDisplay #Timers {
     font-size: 6vh;

@@ -8,8 +8,8 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {NavSystemTouch} instrument
-     * @type {NavSystemTouch}
+     * @property {AS3000_TSC} instrument
+     * @type {AS3000_TSC}
      */
     get instrument() {
         return this.gps;

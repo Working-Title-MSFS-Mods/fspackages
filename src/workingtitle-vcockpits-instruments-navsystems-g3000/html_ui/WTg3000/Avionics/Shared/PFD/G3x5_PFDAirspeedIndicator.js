@@ -31,8 +31,9 @@ class WT_G3x5_PFDAirspeedIndicator extends WT_G3x5_PFDElement {
 class WT_G3x5_PFDAirspeedIndicatorModel {
     /**
      * @param {WT_PlayerAirplane} airplane
+     * @param {WT_SpeedBugCollection} speedBugCollection
      */
-    constructor(airplane) {
+    constructor(airplane, speedBugCollection) {
         this._airplane = airplane;
 
         this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR);
@@ -42,6 +43,8 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
         this._ias = WT_Unit.KNOT.createNumber(0);
         this._iasTrend = new WT_CompoundUnit([WT_Unit.KNOT], [WT_Unit.SECOND]).createNumber(0);
         this._refSpeed = WT_Unit.KNOT.createNumber(0);
+
+        this._speedBugCollection = speedBugCollection;
     }
 
     /**
@@ -97,6 +100,15 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
     get minSpeed() {
     }
 
+    /**
+     * @readonly
+     * @property {WT_SpeedBugCollection} speedBugCollection
+     * @type {WT_SpeedBugCollection}
+     */
+    get speedBugCollection() {
+        return this._speedBugCollection;
+    }
+
     _updateIAS() {
         this._airplane.dynamics.ias(this._ias);
     }
@@ -142,6 +154,8 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._minorTicks = [];
         this._tapeMin = null;
         this._tapeTranslate = 0;
+
+        this._speedBugEntries = [];
     }
 
     connectedCallback() {
@@ -217,12 +231,28 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._updateTapeMin(scale.min);
     }
 
+    _getSpeedBugHTMLElement(bug) {
+    }
+
+    _initSpeedBug(bug) {
+        this._speedBugEntries.push({
+            bug: bug,
+            htmlElement: this._getSpeedBugHTMLElement(bug)
+        });
+    }
+
+    _initSpeedBugs() {
+        this._speedBugEntries = [];
+        this._context.model.speedBugCollection.forEachBug(this._initSpeedBug.bind(this));
+    }
+
     _updateFromContext() {
         if (!this._context) {
             return;
         }
 
         this._updateScale();
+        this._initSpeedBugs();
     }
 
     /**
@@ -421,6 +451,29 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._setMinSpeedWarning(trendEnd <= minSpeed || iasKnots < minSpeed);
     }
 
+    _showSpeedBug(entry, value) {
+    }
+
+    _moveSpeedBug(entry, tapePos) {
+    }
+
+    /**
+     *
+     * @param {{bug:WT_SpeedBug, htmlElement:HTMLElement}} entry
+     */
+    _updateSpeedBug(entry) {
+        if (entry.bug.show) {
+            this._moveSpeedBug(entry, this._calculateTranslatedTapePosition(entry.bug.speed.asUnit(WT_Unit.KNOT)));
+            this._showSpeedBug(entry, true);
+        } else {
+            this._showSpeedBug(entry, false);
+        }
+    }
+
+    _updateSpeedBugs() {
+        this._speedBugEntries.forEach(this._updateSpeedBug.bind(this));
+    }
+
     _updateDisplay() {
         let ias = this._context.model.ias;
         let trend = this._context.model.iasTrend.number * this._context.trendLookahead;
@@ -431,6 +484,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._updateMach();
         this._updateVmo(ias);
         this._updateMinSpeed(ias, trend);
+        this._updateSpeedBugs();
     }
 
     update() {
@@ -458,3 +512,112 @@ WT_G3x5_PFDAirspeedIndicatorHTMLElement.TAPE_LABEL_CLASS = "label";
  * @property {{min:Number, max:Number}} [yellowStrip]
  * @property {{min:Number, max:Number}} [redStrip]
  */
+
+class WT_G3x5_PFDAirspeedIndicatorSpeedBug extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._name = "";
+        this._show = false;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_PFDAirspeedIndicatorSpeedBug.TEMPLATE;
+    }
+
+    _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+        this._label = this.shadowRoot.querySelector(`#label`);
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+        this._updateName();
+        this._updateShow();
+    }
+
+    _updateName() {
+        this._label.innerHTML = this._name.toUpperCase();
+    }
+
+    _updateShow() {
+        this._wrapper.setAttribute("show", `${this._show}`);
+    }
+
+    /**
+     *
+     * @param {String} name
+     */
+    setName(name) {
+        if (name === this._name) {
+            return;
+        }
+
+        this._name = name;
+        if (this._isInit) {
+            this._updateName();
+        }
+    }
+
+    show(value) {
+        if (value === this._show) {
+            return;
+        }
+
+        this._show = value;
+        if (this._isInit) {
+            this._updateShow();
+        }
+    }
+}
+WT_G3x5_PFDAirspeedIndicatorSpeedBug.NAME = "wt-pfd-airspeedindicator-speedbug";
+WT_G3x5_PFDAirspeedIndicatorSpeedBug.TEMPLATE = document.createElement("template");
+WT_G3x5_PFDAirspeedIndicatorSpeedBug.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            color: white;
+        }
+
+        #wrapper {
+            position: absolute;
+            left: 0%;
+            top: 50%;
+            width: 100%;
+            height: calc(1em * 1.2);
+            transform: translateY(-50%);
+        }
+        #wrapper[show="false"] {
+            display: none;
+        }
+            #arrow {
+                position: absolute;
+                left: 0%;
+                top: 0%;
+                width: var(--airspeedindicator-speedbug-arrow-width, 0.5em);
+                height: 100%;
+                fill: var(--wt-g3x5-bggray);
+            }
+            #label {
+                position: absolute;
+                top: 0%;
+                left: var(--airspeedindicator-speedbug-arrow-width, 0.5em);
+                height: 100%;
+                padding: 0 0.15em 0 0;
+                background-color: var(--wt-g3x5-bggray);
+            }
+    </style>
+    <div id="wrapper">
+        <svg id="arrow" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 0 50 L 100 0 L 100 100 Z" />
+        </svg>
+        <div id="label"></div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_PFDAirspeedIndicatorSpeedBug.NAME, WT_G3x5_PFDAirspeedIndicatorSpeedBug);
