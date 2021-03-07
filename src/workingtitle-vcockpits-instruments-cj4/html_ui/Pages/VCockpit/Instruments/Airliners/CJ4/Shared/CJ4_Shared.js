@@ -2823,7 +2823,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 }
 
                                 if (descentAngle === 0) {
-                                    descentAngle = 0;
+                                    descentAngle = "";
                                 } else {
                                     descentAngle = descentAngle.toFixed(1) + String.fromCharCode(176);
                                 }

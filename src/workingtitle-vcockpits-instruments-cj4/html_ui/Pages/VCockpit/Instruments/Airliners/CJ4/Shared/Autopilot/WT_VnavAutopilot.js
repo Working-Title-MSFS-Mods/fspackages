@@ -345,7 +345,7 @@ class WT_VerticalAutopilot {
             case GlideslopeStatus.GS_CAN_ARM:
                 if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.ILS) {
                     this._glideslopeStatus = GlideslopeStatus.GS_ARMED;
-                    console.log("GS Armed");
+                    this.navMode = 1;
                 }
                 break;
             case GlideslopeStatus.GS_ARMED:
@@ -504,8 +504,7 @@ class WT_VerticalAutopilot {
 
     canGlideslopeActivate() {
         const gsi = SimVar.GetSimVarValue("NAV GSI:" + this.navMode, "number");
-        console.log("GS Dev " + gsi);
-        if (gsi < 50 && gsi > -50) {
+        if (gsi < 50 && gsi > -50 && gsi != 0) {
             return true;
         }
         return false;
