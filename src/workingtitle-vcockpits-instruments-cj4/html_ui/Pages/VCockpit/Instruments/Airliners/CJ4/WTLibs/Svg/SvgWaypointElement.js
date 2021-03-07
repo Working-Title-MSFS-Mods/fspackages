@@ -129,7 +129,7 @@ class SvgWaypointElement extends SvgMapElement {
             const fpIdx = SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number");
             this.isInFpln = FlightPlanManager.DEBUG_INSTANCE.getAllWaypoints(fpIdx).findIndex(x => x.ident == this.source.ident) > -1;
             this._image.setAttribute("isInFpln", this.isInFpln.toString());
-            if (this.ident === "TOD") {
+            if (this.ident === "TOD" || this.ident === "DES") {
                 this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
             }
             else if (!this.isInFpln) {
@@ -182,7 +182,7 @@ class SvgWaypointElement extends SvgMapElement {
         if (isActiveWaypoint !== this._lastIsActiveWaypoint || this.isInFpln !== this._lastIsInFpln) {
             if (this._image) {
                 if (!isActiveWaypoint) {
-                    if (this.ident === "TOD") {
+                    if (this.ident === "TOD" || this.ident === "DES") {
                         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TOD.svg");
                     }
                     else if (!this.isInFpln) {
@@ -370,7 +370,7 @@ class SvgWaypointTextElement extends SvgMapElement {
             context.fillRect(0, 0, this._textWidth + map.config.waypointLabelBackgroundPaddingLeft + map.config.waypointLabelBackgroundPaddingRight, this._textHeight + map.config.waypointLabelBackgroundPaddingTop + map.config.waypointLabelBackgroundPaddingBottom);
         }
         if (!isActiveWaypoint) {
-            if (this.waypointElement.ident === "TOD") {
+            if (this.waypointElement.ident === "TOD" || this.waypointElement.ident === "DES") {
                 context.fillStyle = "#11d011";
             }
             else if(this.waypointElement.isInFpln === true){
