@@ -126,7 +126,6 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs tsc-tabbedvi
         --speedbugs-tab-rowsection-height: 77%;
         --speedbugs-tab-row-height: 16vh;
     }
-
 as3000-tsc-horizontal-element #Electricity #PagesDisplay #SpeedBugs .speedBugsDefaultButton {
     position: absolute;
     left: 10%;
