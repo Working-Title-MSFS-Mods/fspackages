@@ -10,6 +10,7 @@ export class NavigraphApi {
   private _accessTokenTimestamp: number = 0;
 
   private _chartListCache: Map<string, NgApi.NG_Charts> = new Map();
+  private _chartCacheTimestamp: number = 0;
 
   /** Gets a boolean indicating if the navigraph account is linked */
   public get isAccountLinked(): boolean {
@@ -44,7 +45,7 @@ export class NavigraphApi {
   async validateToken(): Promise<void> {
     if (this.isAccountLinked) {
       if (!this.hasAccessToken ||
-        (this.hasAccessToken && (Date.now() - this._accessTokenTimestamp) > 1.8e+6)) {
+        (this.hasAccessToken && (Date.now() - this._accessTokenTimestamp) > 900000)) {
         await this.refreshAccessToken();
       }
     } else {
@@ -73,6 +74,8 @@ export class NavigraphApi {
    * @param icao The ICAO of the airport to get the charts from
    */
   async getChartsList(icao: string): Promise<NgApi.NG_Charts | undefined> {
+    this.invalidateChartCache();
+
     let chartsObj: NgApi.NG_Charts;
     if (icao === "" || icao === "----") {
       return chartsObj;
@@ -90,6 +93,13 @@ export class NavigraphApi {
       return chartsObj;
     } else {
       return this._chartListCache.get(icao);
+    }
+  }
+
+  private invalidateChartCache() {
+    if (this._chartCacheTimestamp === 0 || ((Date.now() - this._chartCacheTimestamp) > 300000)) {
+      this._chartCacheTimestamp = Date.now();
+      this._chartListCache.clear();
     }
   }
 
