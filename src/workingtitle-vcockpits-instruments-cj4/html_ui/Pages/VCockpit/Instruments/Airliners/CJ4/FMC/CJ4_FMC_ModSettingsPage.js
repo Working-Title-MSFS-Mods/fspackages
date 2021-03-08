@@ -121,6 +121,7 @@ class CJ4_FMC_ModSettingsPageOne {
         const pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
         const unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
+
         const yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
         const fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
         this._ngStatus = !ngApi.isAccountLinked ? this._ngDefault : "LINKED[green]";
@@ -203,7 +204,7 @@ class CJ4_FMC_ModSettingsPageTwo {
 
     get atisSrc() { return this._atisSrc; }
     set atisSrc(value) {
-        if (value == 2) value = 0;
+        if (value == 3) value = 0;
         this._atisSrc = value;
 
         // set datastore
@@ -237,9 +238,9 @@ class CJ4_FMC_ModSettingsPageTwo {
 
     render() {
 
-        let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["MSFS", "VATSIM"], this.metarSrc);
+        let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["VATSIM", "MSFS"], this.metarSrc);
         let dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
-        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM"], this.atisSrc);
+        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "WT MOD SETTINGS[yellow]"],
