@@ -1,4 +1,5 @@
 import { NG_Chart } from "../../types/navigraph";
+import { NavigraphApi } from "../../utils/NavigraphApi";
 import { CHART_TYPE } from "../../utils/NavigraphChartFilter";
 import { CJ4_MFD_ChartsMenuModel } from "./CJ4_MFD_ChartsMenuModel";
 import { ICJ4_MFD_ChartsPopupPage } from "./ICJ4_MFD_ChartsPopupPage";
@@ -12,8 +13,8 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
   private _totalPages: number = 1;
   private _chartInitPromise: Promise<void>;
 
-  constructor(icao: string, type: CHART_TYPE, private _container: HTMLElement, private _selectCallback: (chart: NG_Chart) => void) {
-    this._model = new CJ4_MFD_ChartsMenuModel(icao, type);
+  constructor(icao: string, type: CHART_TYPE, ngApi: NavigraphApi, private _container: HTMLElement, private _selectCallback: (chart: NG_Chart) => void) {
+    this._model = new CJ4_MFD_ChartsMenuModel(icao, type, ngApi);
     this._chartInitPromise = this._model.init();
   }
 

@@ -1,4 +1,5 @@
 import { NG_Chart } from "../../types/navigraph";
+import { NavigraphApi } from "../../utils/NavigraphApi";
 import { CHART_TYPE } from "../../utils/NavigraphChartFilter";
 import { CJ4_MFD_ChartsIndex } from "./CJ4_MFD_ChartsIndex";
 import { CJ4_MFD_ChartsMenu } from "./CJ4_MFD_ChartsMenu";
@@ -12,6 +13,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
   private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
   private _views: Map<CHARTS_MENU_MODE, ICJ4_MFD_ChartsPopupPage> = new Map();
   private _overlayHeader: HTMLElement;
+  private _ngApi: NavigraphApi;
 
   /**
    * Gets a boolean indicating if the view is visible
@@ -25,13 +27,14 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
     this._tableContainer = this.querySelector("#ChartsTable");
     this._overlayHeader = this.querySelector("#ChartOverlayHeader");
 
+    this._ngApi = new NavigraphApi();
     // set index view
-    this._views.set(CHARTS_MENU_MODE.INDEX, new CJ4_MFD_ChartsIndex(this._tableContainer, this._chartSelectCallback, this.openChartMenuCallback.bind(this)));
+    this._views.set(CHARTS_MENU_MODE.INDEX, new CJ4_MFD_ChartsIndex(this._tableContainer, this._ngApi, this._chartSelectCallback, this.openChartMenuCallback.bind(this)));
   }
 
   /** Is getting called when the chart menu is to be opened */
   private openChartMenuCallback(icao: string, type: CHART_TYPE): void {
-    this._views.set(CHARTS_MENU_MODE.LIST, new CJ4_MFD_ChartsMenu(icao, type, this._tableContainer, this.multiChartSelectCallback.bind(this)))
+    this._views.set(CHARTS_MENU_MODE.LIST, new CJ4_MFD_ChartsMenu(icao, type, this._ngApi, this._tableContainer, this.multiChartSelectCallback.bind(this)))
     this._mode = CHARTS_MENU_MODE.LIST;
     this._overlayHeader.classList.add("pale");
   }

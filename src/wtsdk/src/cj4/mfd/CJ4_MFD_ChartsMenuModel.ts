@@ -1,4 +1,4 @@
-import { NG_Chart, NG_Charts } from "../../types/navigraph";
+import { NG_Chart } from "../../types/navigraph";
 import { NavigraphApi } from "../../utils/NavigraphApi";
 import { CHART_TYPE, NavigraphChartFilter } from "../../utils/NavigraphChartFilter";
 
@@ -20,8 +20,8 @@ export class CJ4_MFD_ChartsMenuModel {
     return this._charts;
   }
 
-  constructor(icao: string, type: CHART_TYPE) {
-    this._api = new NavigraphApi();
+  constructor(icao: string, type: CHART_TYPE, ngApi:NavigraphApi) {
+    this._api = ngApi;
     this._icao = icao;
     this._type = type;
   }

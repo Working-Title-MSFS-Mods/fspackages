@@ -1,4 +1,5 @@
 import { NG_Chart } from "../../types/navigraph";
+import { NavigraphApi } from "../../utils/NavigraphApi";
 import { CHART_TYPE } from "../../utils/NavigraphChartFilter";
 import { CJ4_MFD_ChartsIndexModel } from "./CJ4_MFD_ChartsIndexModel";
 import { ICJ4_MFD_ChartsPopupPage } from "./ICJ4_MFD_ChartsPopupPage";
@@ -7,8 +8,8 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
   private _model: CJ4_MFD_ChartsIndexModel;
   private _selectedIndex: number = 0;
 
-  public constructor(private _container: HTMLElement, private _chartSelectCallback: (url: string, chart: NG_Chart) => void, private _multiChartCallback: (icao: string, type: CHART_TYPE) => void) {
-    this._model = new CJ4_MFD_ChartsIndexModel();
+  public constructor(private _container: HTMLElement, ngApi:NavigraphApi, private _chartSelectCallback: (url: string, chart: NG_Chart) => void, private _multiChartCallback: (icao: string, type: CHART_TYPE) => void) {
+    this._model = new CJ4_MFD_ChartsIndexModel(ngApi);
     this.update();
   }
 

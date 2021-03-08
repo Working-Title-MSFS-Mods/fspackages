@@ -41,8 +41,8 @@ export class CJ4_MFD_ChartsIndexModel {
     return this._destination;
   }
 
-  constructor() {
-    this._api = new NavigraphApi();
+  constructor(ngApi:NavigraphApi) {
+    this._api = ngApi;
     this._fpm = FlightPlanManager.DEBUG_INSTANCE;
     this._chartsIndex = new ChartIndex();
   }
@@ -54,7 +54,6 @@ export class CJ4_MFD_ChartsIndexModel {
     // check if flight plan has changed
     let fpChanged = false;
     if (this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
-      this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
       fpChanged = true;
     }
 
@@ -96,6 +95,7 @@ export class CJ4_MFD_ChartsIndexModel {
       } catch (err) {
         console.error("Something went wrong with charts");
       }
+      this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
     }
 
     return false;
@@ -180,8 +180,8 @@ export class CJ4_MFD_ChartsIndexModel {
 
       //   } as NG_Chart;
       // } else {
-        foundCharts[0].source = "FMS";
-        return foundCharts[0];
+      foundCharts[0].source = "FMS";
+      return foundCharts[0];
       // }
     }
 

@@ -7,7 +7,6 @@ export class NavigraphApi {
 
   private _refreshToken: string = "";
   private _accessToken: string = "";
-  private _accessTokenTimestamp: number = 0;
 
   private _chartListCache: Map<string, NgApi.NG_Charts> = new Map();
   private _chartCacheTimestamp: number = 0;
@@ -36,7 +35,11 @@ export class NavigraphApi {
   /** Sets the access token */
   public set accessToken(val: string) {
     this._accessToken = val;
-    this._accessTokenTimestamp = Date.now();
+    SimVar.SetSimVarValue("L:WT_NG_ACCTOKEN_TIMESTAMP", "number", Date.now());
+  }
+
+  public get accessTokenTimestamp():number {
+    return SimVar.GetSimVarValue("L:WT_NG_ACCTOKEN_TIMESTAMP", "number");
   }
 
   /**
@@ -45,7 +48,7 @@ export class NavigraphApi {
   async validateToken(): Promise<void> {
     if (this.isAccountLinked) {
       if (!this.hasAccessToken ||
-        (this.hasAccessToken && (Date.now() - this._accessTokenTimestamp) > 900000)) {
+        (this.hasAccessToken && (Date.now() - this.accessTokenTimestamp) > 900000)) {
         await this.refreshAccessToken();
       }
     } else {
