@@ -21,6 +21,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this._lastAltitudeAlertSet = false;
         this.ALTALERTANIMTIME = 4000;
         this._altAlertAnimationTimer = this.ALTALERTANIMTIME;
+        this._baroPresetChanged = 0;
     }
     static get observedAttributes() {
         return ["hud"];
@@ -82,7 +83,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeChanged = false;
         this.rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         this.rootSVG.setAttribute("id", "ViewBox");
-        this.rootSVG.setAttribute("viewBox", "0 0 250 500");
+        this.rootSVG.setAttribute("viewBox", "0 0 250 550");
         var width = 140;
         var height = 415;
         var posX = width * 0.5;
@@ -108,17 +109,79 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
         if (!this.pressureSVG)
             this.pressureSVG = document.createElementNS(Avionics.SVG.NS, "text");
+
+        this.pressureBoxGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        this.pressureBoxGroup.setAttribute("id", "PressureBoxGroup");
+
+        this.pressureSVGBox = document.createElementNS(Avionics.SVG.NS, "rect");
+        this.pressureSVGBox.setAttribute("id", "PressureBox");
+        this.pressureSVGBox.setAttribute("fill", "black");
+        this.pressureSVGBox.setAttribute("stroke", "white");
+        this.pressureSVGBox.setAttribute("stroke-width", "2");
+        this.pressureSVGBox.setAttribute("x", (posX - 68).toString());
+        this.pressureSVGBox.setAttribute("y", (posY + 2).toString());
+        this.pressureSVGBox.setAttribute("width", "135");
+        this.pressureSVGBox.setAttribute("height", "70");
+        this.pressureBoxGroup.appendChild(this.pressureSVGBox);
+
+        this.pressureArrow = document.createElementNS(Avionics.SVG.NS, "path");
+        this.pressureArrow.setAttribute("fill", "white");
+        this.pressureArrow.setAttribute("d", "M 123 505 l 0 -5.76 l -4.32 0 l 5.76 -7.2 l 5.76 7.2 l -4.32 0 l 0 11.52 l 4.32 0 l -5.76 7.2 l -5.76 -7.2 l 4.32 0 l 0 -5.76 z");
+        this.pressureArrow.setAttribute("stroke", "white");
+        this.pressureArrow.setAttribute("stroke-width", "1.5");
+        this.pressureBoxGroup.appendChild(this.pressureArrow);
+
+        this.pressurePreset = document.createElementNS(Avionics.SVG.NS, "text");
+        this.pressurePreset.textContent = "29.92";
+        this.pressurePreset.setAttribute("id", "PressurePreset");
+        this.pressurePreset.setAttribute("x", (posX - 65).toString());
+        this.pressurePreset.setAttribute("y", (posY + 65).toString());
+        this.pressurePreset.setAttribute("fill", "white");
+        this.pressurePreset.setAttribute("font-size", (this.fontSize * 1.0).toString());
+        this.pressurePreset.setAttribute("font-family", "Roboto-Light");
+        this.pressurePreset.setAttribute("text-anchor", "center");
+        this.pressureBoxGroup.appendChild(this.pressurePreset);
+
+        this.pressurePresetUnits = document.createElementNS(Avionics.SVG.NS, "text");
+        this.pressurePresetUnits.textContent = "";
+        this.pressurePresetUnits.setAttribute("id", "PressurePreset");
+        this.pressurePresetUnits.setAttribute("x", (posX + 11).toString());
+        this.pressurePresetUnits.setAttribute("y", (posY + 65).toString());
+        this.pressurePresetUnits.setAttribute("fill", "white");
+        this.pressurePresetUnits.setAttribute("stroke", "white");
+        this.pressurePresetUnits.setAttribute("font-size", (this.fontSize * 0.9).toString());
+        this.pressurePresetUnits.setAttribute("font-family", "Roboto-Light");
+        this.pressurePresetUnits.setAttribute("text-anchor", "center");
+        this.pressureBoxGroup.appendChild(this.pressurePresetUnits);
+
+        this.rootGroup.appendChild(this.pressureBoxGroup);
+        
         this.pressureSVG.textContent = "";
         this.pressureSVG.setAttribute("id", "Pressure");
         this.pressureSVG.setAttribute("x", (posX - 62).toString());
-        this.pressureSVG.setAttribute("y", (posY + 20).toString());
+        this.pressureSVG.setAttribute("y", (posY + 25).toString());
         this.pressureSVG.setAttribute("fill", "cyan");
         this.pressureSVG.setAttribute("stroke", "black");
         this.pressureSVG.setAttribute("stroke-width", "7px");
-        this.pressureSVG.setAttribute("font-size", (this.fontSize * 1.2).toString());
+        this.pressureSVG.setAttribute("font-size", (this.fontSize * 1.0).toString());
         this.pressureSVG.setAttribute("font-family", "Roboto-Light");
         this.pressureSVG.setAttribute("text-anchor", "center");
+        this.pressureSVG.setAttribute("letter-spacing", "0.0");
         this.rootGroup.appendChild(this.pressureSVG);
+
+        this.pressureSVGUnits = document.createElementNS(Avionics.SVG.NS, "text");
+        this.pressureSVGUnits.textContent = "";
+        this.pressureSVGUnits.setAttribute("id", "PressureSVGUnits");
+        this.pressureSVGUnits.setAttribute("x", (posX + 11).toString());
+        this.pressureSVGUnits.setAttribute("y", (posY + 30).toString());
+        this.pressureSVGUnits.setAttribute("fill", "cyan");
+        this.pressureSVGUnits.setAttribute("stroke", "black");
+        this.pressureSVGUnits.setAttribute("stroke-width", "7px");
+        this.pressureSVGUnits.setAttribute("font-size", (this.fontSize * 0.9).toString());
+        this.pressureSVGUnits.setAttribute("font-family", "Roboto-Light");
+        this.pressureSVGUnits.setAttribute("text-anchor", "center");
+        this.rootGroup.appendChild(this.pressureSVGUnits);
+
         posY -= height;
         if (!this.centerSVG) {
             this.centerSVG = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -1486,18 +1549,39 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
     }
     updateBaroPressure(_mode) {
+        let baroPreset = SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number") / 16;
+        
         if (this.pressureSVG) {
             var units = Simplane.getPressureSelectedUnits();
             var pressure = Simplane.getPressureValue(units);
+
             if (_mode == "STD") {
+                if (this._baroPresetChanged !== baroPreset && this._baroPresetChanged !== 0) {
+                    this.pressureBoxGroup.setAttribute("visibility", "visible");
+                    this.pressureSVG.removeAttribute("stroke", "black");
+                    this.pressureSVG.removeAttribute("stroke-width", "7px");
+                    this.pressureSVGUnits.removeAttribute("stroke", "black");
+                    this.pressureSVGUnits.removeAttribute("stroke-width", "7px");
+                    this._baroPresetChanged = baroPreset;
+                }
                 if (units == "millibar") {
-                    this.pressureSVG.textContent = "1013 STD";
+                    this.pressureSVG.textContent = "1013";
+                    this.pressureSVGUnits.textContent = "STD";
+                    this.pressurePreset.textContent = baroPreset.toFixed(0);
                 }
                 else {
-                    this.pressureSVG.textContent = "29.92 STD";
+                    let rounded = Math.round((baroPreset / 33.8639) * 1000) / 1000; //Converts baroPreset to inHg then rounds up to hundreths so it matches what the sim will show for pressure.
+                    this.pressureSVG.textContent = "29.92";
+                    this.pressureSVGUnits.textContent = "STD";
+                    this.pressurePreset.textContent = rounded.toFixed(2);
                 }
             }
             else {
+                this.pressureBoxGroup.setAttribute("visibility", "hidden");
+                this.pressureSVG.setAttribute("stroke", "black");
+                this.pressureSVG.setAttribute("stroke-width", "7px");
+                this.pressureSVGUnits.setAttribute("stroke", "black");
+                this.pressureSVGUnits.setAttribute("stroke-width", "7px");
                 if (this.aircraft == Aircraft.A320_NEO) {
                     if (_mode == "QFE") {
                         this.pressureSVG.textContent = "QFE ";
@@ -1522,13 +1606,18 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 }
                 else {
                     if (units == "millibar") {
-                        this.pressureSVG.textContent = pressure.toFixed(0) + " Hpa";
+                        this.pressureSVG.textContent = pressure.toFixed(0);
+                        this.pressureSVGUnits.textContent = "HPA";
+                        this.pressurePresetUnits.textContent = "HPA";
                     }
                     else {
-                        this.pressureSVG.textContent = pressure.toFixed(2) + " IN";
+                        this.pressureSVG.textContent = pressure.toFixed(2);
+                        this.pressureSVGUnits.textContent = "IN";
+                        this.pressurePresetUnits.textContent = "IN";
                     }
                 }
             }
+            this._baroPresetChanged = baroPreset;
         }
     }
     updateGraduationScrolling(_altitude) {
