@@ -20,6 +20,7 @@ class WayPoint {
         this.cumulativeEstimatedTimeEnRouteFP = 0;
         this.cumulativeDistanceInFP = 0;
         this.isInFlightPlan = false;
+        this.isInMissedAppr = false;
         this.isActiveInFlightPlan = false;
         this.legAltitudeDescription = 0;
         this.legAltitude1 = 0;

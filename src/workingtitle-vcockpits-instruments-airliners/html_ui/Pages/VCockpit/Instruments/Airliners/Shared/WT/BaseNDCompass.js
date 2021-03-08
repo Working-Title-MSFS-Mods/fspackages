@@ -497,6 +497,7 @@ class Jet_NDCompass extends HTMLElement {
                 let compass = Number(this.getAttribute('rotation'));
                 let displayCourseDeviation = false;
                 let displayVerticalDeviation = false;
+                let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                 if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode === Jet_NDCompass_Navigation.VOR) {
                     let beacon;
                     this.ghostNeedleGroup.setAttribute("visibility", "hidden");
@@ -518,7 +519,12 @@ class Jet_NDCompass extends HTMLElement {
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
-                        this.setAttribute("course", beacon.course.toString());
+
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course); //Sets the OBS so the LOC needle gets set to the correct course
+
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         this.setAttribute("course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
                             displayVerticalDeviation = true;
@@ -526,7 +532,8 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                     else {
-                        this.setAttribute("course", compass.toString());
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        //this.setAttribute("course", compass.toString());
                         this.setAttribute("course_deviation", "0");
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");
@@ -580,9 +587,12 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
                         const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue("K:VOR1_SET", "number", course); //Sets the OBS so the LOC needle gets set to the correct course
+                            
                         if (navToNavTransferState === 3 || navToNavTransferState === 4) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
-
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(true);
                                 this.navPreset.setDisplayed(false);

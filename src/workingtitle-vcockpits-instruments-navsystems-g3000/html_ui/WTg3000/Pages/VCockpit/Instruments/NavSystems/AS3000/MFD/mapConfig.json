@@ -1,0 +1,129 @@
+﻿{
+    "bingMap": {
+        "bingConfigs": [
+            {
+                "waterColor": "#233d89",
+                "elevationColors": [
+                    {
+                        "alt": 0,
+                        "color": "#000000"
+                    },
+                    {
+                        "alt": 9000,
+                        "color": "#000000"
+                    }
+                ]
+            },
+            {
+                "waterColor": "#233d89",
+                "elevationColors": [
+                    {
+                        "alt": 0,
+                        "color": "#427238"
+                    },
+                    {
+                        "alt": 500,
+                        "color": "#456821"
+                    },
+                    {
+                        "alt": 2000,
+                        "color": "#d0aa43"
+                    },
+                    {
+                        "alt": 3000,
+                        "color": "#c58f45"
+                    },
+                    {
+                        "alt": 4000,
+                        "color": "#9d6434"
+                    },
+                    {
+                        "alt": 6000,
+                        "color": "#904f25"
+                    },
+                    {
+                        "alt": 8000,
+                        "color": "#904522"
+                    },
+                    {
+                        "alt": 10500,
+                        "color": "#939393"
+                    },
+                    {
+                        "alt": 27000,
+                        "color": "#c8c8c8"
+                    }
+                ]
+            },
+            {
+                "waterColor": "#233d89",
+                "elevationColors": [
+                    {
+                        "alt": 0,
+                        "color": "#ff0000"
+                    },
+                    {
+                        "alt": 99,
+                        "color": "#ff0000"
+                    },
+                    {
+                        "alt": 100,
+                        "color": "#ffff00"
+                    },
+                    {
+                        "alt": 999,
+                        "color": "#ffff00"
+                    },
+                    {
+                        "alt": 1000,
+                        "color": "#00ff00"
+                    },
+                    {
+                        "alt": 1999,
+                        "color": "#00ff00"
+                    },
+                    {
+                        "alt": 2000,
+                        "color": "#000000"
+                    }
+                ]
+            }
+        ]
+    },
+
+    "miniCompass": {
+        "iconPath": "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_MINI_COMPASS.svg"
+    },
+
+    "airplane": {
+        "iconSize": 60,
+        "imagePath": "/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE.svg"
+    },
+
+    "pointer": {
+        "size": 20,
+        "imagePath": "/WTg3000/SDK/Assets/Images/Map/Garmin/ICON_MAP_CURSOR.svg"
+    },
+
+    "waypoints": {
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin",
+        "waypointLabelFontSize": 20
+    },
+
+    "flightPlan": {
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin",
+        "waypointLabelFontSize": 20,
+        "activeLabelFontSize": 20
+    },
+
+    "waypointHighlight": {
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin",
+        "activeLabelFontSize": 20
+    },
+
+    "cities": {
+        "iconFillColor": ["#7b8083", "#7b8083", "#7b8083"],
+        "iconOutlineColor": ["#3f3f3f", "#3f3f3f", "#3f3f3f"],
+        "labelFontSize": [20, 20, 20]
+    }
+}

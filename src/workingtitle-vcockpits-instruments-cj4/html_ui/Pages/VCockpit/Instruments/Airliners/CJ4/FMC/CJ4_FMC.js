@@ -1,3 +1,6 @@
+// TODO this should be in TS or something, but somehow it doesnt work, so put it here for just now
+const ngApi = new NavigraphApi();
+
 class CJ4_FMC extends FMCMainDisplay {
     constructor() {
         super(...arguments);
@@ -166,8 +169,13 @@ class CJ4_FMC extends FMCMainDisplay {
             CJ4_FMC_MfdAdvPage.ShowPage1(this);
         };
         this.onTun = () => {
-            CJ4_FMC_NavRadioPage.ShowPage1(this);
-        };
+            const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+			      if (AvionicsComp == 1) {
+              CJ4_FMC_NavRadioDispatch.Dispatch(this);    		
+			      } else {
+              CJ4_FMC_NavRadioPage.ShowPage1(this);
+			      };
+        }
         this.onExec = () => {
             if (this.onExecPage) {
                 console.log("if this.onExecPage");

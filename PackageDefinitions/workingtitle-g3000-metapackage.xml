@@ -1,4 +1,4 @@
-<AssetPackage Name="workingtitle-g3000" Version="0.3.4">
+<AssetPackage Name="workingtitle-g3000" Version="0.4.1">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
 		<Title>Working Title G3000</Title>
@@ -10,22 +10,6 @@
 		<CanBeReferenced>false</CanBeReferenced>
 	</Flags>
 	<AssetGroups>
-		<AssetGroup Name="workingtitle-core-library">
-			<Type>Copy</Type>
-			<Flags>
-				<FSXCompatibility>false</FSXCompatibility>
-			</Flags>
-			<AssetDir>src\workingtitle-core-library</AssetDir>
-			<OutputDir>.\</OutputDir>
-		</AssetGroup>
-        <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems">
-			<Type>Copy</Type>
-			<Flags>
-				<FSXCompatibility>false</FSXCompatibility>
-			</Flags>
-			<AssetDir>src\workingtitle-vcockpits-instruments-navsystems</AssetDir>
-			<OutputDir>.\</OutputDir>
-		</AssetGroup>
         <AssetGroup Name="workingtitle-vcockpits-instruments-navsystems-g3000">
 			<Type>Copy</Type>
 			<Flags>
@@ -39,8 +23,8 @@
 			<Flags>
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
-			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
-			<OutputDir>.\</OutputDir>
+			<AssetDir>src\workingtitle-vcockpits-instruments\html_ui\Pages\VCockpit\Instruments\Shared\Utils</AssetDir>
+			<OutputDir>.\html_ui\Pages\VCockpit\Instruments\Shared\Utils</OutputDir>
 		</AssetGroup>
 		<AssetGroup Name="workingtitle-g3000-docs">
 			<Type>Copy</Type>

@@ -319,12 +319,13 @@ class WT_BaseVnav {
                 firstApproachWaypointIndex = undefined;
                 console.log("setting " + vwp.ident + " as first approach waypoint AT constraint " + constraints.lowerConstraint + "FT");
             }
-            if (vwp.isAtConstraint) {
-                vwp.waypointFPTA = vwp.lowerConstraintAltitude;
+            if (vwp.isAtConstraint || (vwp.hasConstraint && vwp.upperConstraintAltitude < Infinity)) {
+                vwp.waypointFPTA = vwp.upperConstraintAltitude;
                 const atConstraint = {
                     index: i,
                     altitude: vwp.waypointFPTA
                 };
+                console.log("at constraint " + atConstraint.index + " " + vwp.ident);
                 this._atConstraints.push(atConstraint);
             }
             if (verticalDirect && i <= vDirectTargetIndex) {
@@ -382,7 +383,7 @@ class WT_BaseVnav {
         let flatPathStartIndex = undefined;
         for (let i = this._atConstraints.length - 1; i >= 0; i--) {
             if (this._atConstraints[i].index < endingIndex && !this._verticalFlightPlan[this._atConstraints[i].index].isClimb &&
-                waypointFPTA == this._atConstraints[i].altitude) {
+                waypointFPTA == this._atConstraints[i].altitude && this._atConstraints[i].index >= this.flightplan.activeWaypointIndex) {
                 flatPathStartIndex = this._atConstraints[i].index;
             }
         }
@@ -416,10 +417,10 @@ class WT_BaseVnav {
             console.log("flat segment detected - segment " + segment + " from " + vwp.ident + " to " + this._verticalFlightPlan[flatPathStartIndex - 1].ident + " at " + maxAltitude + "FT");
         }
         if (!isFlatSegment) {
-            for (let k = endingIndex - 1; k >= 0; k--) {
+            for (let k = endingIndex - 1; k >= this.flightplan.activeWaypointIndex; k--) {
                 const wptToEvaluate = this._verticalFlightPlan[k];
                 for (let m = this._atConstraints.length - 1; m >= 0; m--) {
-                    if (this._atConstraints[m].index <= k && !this._verticalFlightPlan[this._atConstraints[m].index].isClimb) {
+                    if (this._atConstraints[m].index <= k && !this._verticalFlightPlan[this._atConstraints[m].index].isClimb && this._atConstraints[m].index >= this.flightplan.activeWaypointIndex) {
                         maxAltitude = this._atConstraints[m].altitude;
                         console.log("preceding at constraint at index " + this._atConstraints[m].index + "; altitude " + maxAltitude);
                         break;
@@ -724,7 +725,10 @@ class WT_BaseVnav {
         let fpta = undefined;
         let fpa = undefined;
         let todDistanceInFP = undefined;
-        const currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
+        let currentSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
+        if (currentSegment == undefined && this._verticalFlightPlanSegments.length > 0) {
+            currentSegment = this._verticalFlightPlanSegments.length - 1;
+        }
         if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE) {
             todExists = false;
         }
