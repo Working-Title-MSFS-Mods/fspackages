@@ -49,6 +49,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
       this.hide();
     }
     this._mode = CHARTS_MENU_MODE.INDEX;
+    // set the popup header coloring
     this._overlayHeader.classList.remove("pale");
     this._views.delete(CHARTS_MENU_MODE.LIST);
   }

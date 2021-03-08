@@ -57,6 +57,7 @@ export class CJ4_MFD_ChartsIndexModel {
       fpChanged = true;
     }
 
+    // if ng account is linked and flight plan has changed
     if (this._api.isAccountLinked && fpChanged) {
       try {
         this.resetChartsIndex();

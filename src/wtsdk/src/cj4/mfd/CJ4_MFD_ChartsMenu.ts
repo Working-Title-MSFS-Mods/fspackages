@@ -19,12 +19,15 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
   }
 
   public async update(): Promise<void> {
+    // wait for charts to be loaded into model
     await this._chartInitPromise.catch(console.log);
 
+    // immediate callback if no charts available
     if (this._model.charts === undefined || this._model.charts.length === 0) {
       this.selectChart();
     }
 
+    // only update if something in the list changed (unlikely)
     if (this._lastChartCount !== this._model.charts.length) {
       this._lastChartCount = this._model.charts.length;
       this._totalPages = Math.ceil(this._model.charts.length / this.PAGE_SIZE);
@@ -79,6 +82,7 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
     table.style.width = "100%";
     const tbody = table.createTBody();
 
+    // paging line
     if (this._currentPage > 0) {
       const row = tbody.insertRow();
       const cell = row.insertCell();
@@ -96,6 +100,7 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
       cell2.innerHTML = c.procedure_identifier;
     })
 
+    // paging line
     if (chartsToRender.length >= 20) {
       const row = tbody.insertRow();
       const cell = row.insertCell();
@@ -110,11 +115,13 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
 
   /** Selects a charts and calls back to the view */
   private selectChart() {
+    // callback empty when no charts available
     if (this._model.charts === undefined || this._model.charts.length === 0) {
       this._selectCallback(undefined);
       return;
     }
 
+    // check if we selected a paging line
     if (this._selectedIndex > this.PAGE_SIZE - 1 || (this._currentPage > 0 && this._selectedIndex === 0)) {
       if (this._selectedIndex === 0) {
         this._currentPage--;
@@ -124,6 +131,7 @@ export class CJ4_MFD_ChartsMenu implements ICJ4_MFD_ChartsPopupPage {
       this._selectedIndex = 0;
       this.render();
     } else {
+      // decrease index if not on page 1 to accomodate for "prev charts" line
       const idx = (this._currentPage === 0) ? this._selectedIndex : this._selectedIndex - 1;
       this._selectCallback(this._model.charts[idx + (this._currentPage * this.PAGE_SIZE)]);
     }
