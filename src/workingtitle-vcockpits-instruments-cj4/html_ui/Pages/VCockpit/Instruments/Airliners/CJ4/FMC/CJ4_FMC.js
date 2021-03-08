@@ -1,3 +1,6 @@
+// TODO this should be in TS or something, but somehow it doesnt work, so put it here for just now
+const ngApi = new NavigraphApi();
+
 class CJ4_FMC extends FMCMainDisplay {
     constructor() {
         super(...arguments);

@@ -101,6 +101,19 @@
                 </UseTemplate>
             </Component>
         </Condition>
+        <Condition Valid="NODE_ID_CHART">
+            <Component ID="#NODE_ID_CHART#" Node="#NODE_ID_CHART#">
+                <UseTemplate Name = "ASOBO_GT_Push_Button">
+                    <ANIM_NAME>#NODE_ID_CHART#</ANIM_NAME>
+                    <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_Chart_1)</LEFT_SINGLE_CODE>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+                    <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+                    <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+                    <TOOLTIPID>Show Charts</TOOLTIPID>
+                </UseTemplate>
+            </Component>
+        </Condition>
     </Template>
 
     <!-- FMS ########################################### -->
@@ -131,7 +144,7 @@
 
         <UseTemplate Name="ASOBO_FMC_PushButton">
             <HTML_EVENT_ID>CLR</HTML_EVENT_ID>
-		    <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>
+            <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>
             <HAS_LONG_PRESS>True</HAS_LONG_PRESS>
             <NODE_ID>#NODE_ID_CLR#</NODE_ID>
             <ANIM_NAME>#ANIM_NAME_CLR#</ANIM_NAME>
