@@ -776,10 +776,15 @@ class WT_BaseVnav {
                 const altitude = this._fmc.cruiseFlightLevel * 100;
                 const verticalDistance = (altitude - elevation) - 1500;
                 const horizontalDescentDistance = ((verticalDistance / Math.tan(3 * Math.PI / 180)) / 6076.12) + 10;
-                const advDesDisFromCurrPos = this.destination.cumulativeDistanceInFP - horizontalDescentDistance;
-                console.log("Total Dis " + horizontalDescentDistance);
+                const currPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude"));
+                //const advDesDisFromCurrPos = Avionics.Utils.computeDistance(currPos, this.destination.cumulativeDistanceInFP - horizontalDescentDistance);
+                //const advDesDisFromCurrPos = this.destination.cumulativeDistanceInFP - horizontalDescentDistance;
+                let distancetoDest = (this.destination.cumulativeDistanceInFP - horizontalDescentDistance) - this._currentDistanceInFP;
+                console.log("Curr Dis " + this._currentDistanceInFP);
+                console.log("Total FP dist " + this.destination.cumulativeDistanceInFP);
+                console.log("Horiz Dis " + horizontalDescentDistance);
                 SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", horizontalDescentDistance);
-                SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", advDesDisFromCurrPos);
+                SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", distancetoDest);
                 SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 1);
             }          
         } else {
