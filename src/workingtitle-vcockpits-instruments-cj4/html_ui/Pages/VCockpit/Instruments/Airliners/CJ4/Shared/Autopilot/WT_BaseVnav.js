@@ -766,20 +766,19 @@ class WT_BaseVnav {
     }
 
     calculateAdvisoryDescent() { //Creates a point when VNAV is not available to start descent to reach 1500' AGL 10nm from airport
-        if (this.vnavState = VnavState.NONE) {
+        if (this.vnavState == VnavState.NONE) {
             if (this.destination && this._fmc.cruiseFlightLevel && !Simplane.getIsGrounded()) {
                 const elevation = parseFloat(this.destination.infos.oneWayRunways[0].elevation) * 3.28;
                 const altitude = this._fmc.cruiseFlightLevel * 100;
                 const verticalDistance = (altitude - elevation) - 1500;
-                const horizontalDescentDistance = (verticalDistance / Math.tan(3 * Math.PI / 180)) / 6076.12;
+                const horizontalDescentDistance = ((verticalDistance / Math.tan(3 * Math.PI / 180)) / 6076.12) + 10;
                 const advDesDisFromCurrPos = this.destination.cumulativeDistanceInFP - horizontalDescentDistance;
+                console.log("Total Dis " + horizontalDescentDistance);
                 SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", horizontalDescentDistance);
                 SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", advDesDisFromCurrPos);
                 SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 1);
             }          
         } else {
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", 0);
-            SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", 0);
             SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 0);
         }
     }

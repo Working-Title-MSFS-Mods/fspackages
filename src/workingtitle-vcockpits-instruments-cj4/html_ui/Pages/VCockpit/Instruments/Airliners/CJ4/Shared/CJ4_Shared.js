@@ -2752,6 +2752,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                         let fptaDistance = 0;
                         let fptaTime = 0; */
 
+                        let advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number");
                         let vnavWindowActive = WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1);
                         if (vnavWindowActive == 2) {
 
@@ -2899,7 +2900,28 @@ class CJ4_SystemFMS extends NavSystemElement {
                                         const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
                                         vnavTODorDirect.textContent = "";
                                     }
-                            }
+                            } else if (advDesActive) {
+
+                                const vnavAdvisoryDescent = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                vnavAdvisoryDescent.textContent = "DES";
+                                vnavAdvisoryDescent.setAttribute("style", "color: #11d011", "text-align: left");
+                              
+                                const vnavTODorDirect = this._activeWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");
+                                vnavTODorDirect.textContent = "ADVISORY";
+                                vnavTODorDirect.setAttribute("style", "color: #11d011");
+                              
+                                let advDesDis = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
+                                let timeToTOD = "";
+                                if (groundSpeed > 0)
+                                    timeToTOD = new Date(this.calcETEseconds(advDesDis, groundSpeed) * 1000).toISOString().substr(12, 4);
+                                
+                                let todDist = advDesDis > 100 ? advDesDis.toFixed(0) : advDesDis.toFixed(1);
+                              
+                                const vnavAdvisoryDescentTimeDistance = this._previousWaypointContainer.querySelector(".cj4x-navigation-data-vnav-advisory-time-distance");
+                                vnavAdvisoryDescentTimeDistance.textContent = timeToTOD + "/ " + todDist + "NM";
+                                vnavAdvisoryDescentTimeDistance.setAttribute("style", "color: #11d011");
+                              }
+
                         } else {
 
                             const vnavFix = this._nextWaypointContainer.querySelector(".cj4x-navigation-data-waypoint-eta");

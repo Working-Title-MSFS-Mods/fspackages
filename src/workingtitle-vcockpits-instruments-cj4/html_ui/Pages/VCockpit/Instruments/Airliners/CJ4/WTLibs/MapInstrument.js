@@ -964,8 +964,8 @@ class MapInstrument extends ISvgMapRootElement {
         const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
         const apprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") === 1;
         const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-        const advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number");
-        if (!pathActive && !apprActive && todDistanceRemaining > 0.1) {
+        const advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number") === 1;
+        if (!pathActive || !advDesActive && !apprActive && todDistanceRemaining > 0.1) {
             if (this._todWaypoint === undefined) {
                 // create it
                 const waypoint = new WayPoint(this._instrument);
@@ -974,7 +974,7 @@ class MapInstrument extends ISvgMapRootElement {
 
                 waypoint.infos = new WayPointInfo(this._instrument);
 
-                if (advDesActive == 1){
+                if (advDesActive){
                     waypoint.ident = "DES";
                     waypoint.infos.ident = "DES";
                 } else {
