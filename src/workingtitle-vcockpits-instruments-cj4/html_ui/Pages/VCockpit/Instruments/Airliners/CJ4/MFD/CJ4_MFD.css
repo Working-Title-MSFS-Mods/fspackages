@@ -218,7 +218,13 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
   width: 21%;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .cj4x-navigation-data-col-narrow {
+  display: inline-block;
+  text-align: left;
+  width: 2%;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations, 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations {
   top: 5%;
   left: 4%;

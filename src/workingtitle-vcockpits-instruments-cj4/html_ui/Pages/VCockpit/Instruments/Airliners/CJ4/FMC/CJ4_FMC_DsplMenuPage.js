@@ -3,14 +3,15 @@ class CJ4_FMC_DsplMenuPage {
         fmc.clearDisplay();
 
         // get map symbols and render template
-        const loNavaidsActive = fmc._templateRenderer.renderSwitch(["LO NAVAIDS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.NAVAIDS) - 1));
-        const intersectionsActive = fmc._templateRenderer.renderSwitch(["INTERS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.INTERSECTS) - 1));
-        const airportsActive = fmc._templateRenderer.renderSwitch(["APTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.AIRPORTS) - 1));
-        const altitudeActive = fmc._templateRenderer.renderSwitch(["ALTITUDE"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.CONSTRAINTS) - 1));
-        const termWptsActive = fmc._templateRenderer.renderSwitch(["TERM WPTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.TERMWPTS) - 1));
+        let loNavaidsActive = fmc._templateRenderer.renderSwitch(["LO NAVAIDS"], (this.hasSymbol(CJ4_MapSymbol.NAVAIDS) - 1));
+        let intersectionsActive = fmc._templateRenderer.renderSwitch(["INTERS"], (this.hasSymbol(CJ4_MapSymbol.INTERSECTS) - 1));
+        let airportsActive = fmc._templateRenderer.renderSwitch(["APTS"], (this.hasSymbol(CJ4_MapSymbol.AIRPORTS) - 1));
+        let altitudeActive = fmc._templateRenderer.renderSwitch(["ALTITUDE"], (this.hasSymbol(CJ4_MapSymbol.CONSTRAINTS) - 1));
+        let termWptsActive = fmc._templateRenderer.renderSwitch(["TERM WPTS"], (this.hasSymbol(CJ4_MapSymbol.TERMWPTS) - 1));
+        let vnavWindowSwitch = fmc._templateRenderer.renderSwitch(["OFF", "ON", "VNAV"], WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1))
         const missedActive = fmc._templateRenderer.renderSwitch(["MISSEDAPPR"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.MISSEDAPPR) - 1));
 
-        fmc.onLeftInput[2] = () => {
+      fmc.onLeftInput[2] = () => {
             CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.NAVAIDS).then(() => {
                 CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
             });
@@ -47,6 +48,16 @@ class CJ4_FMC_DsplMenuPage {
             });
         };
 
+        fmc.onLeftInput[5] = () => {
+            let currentVal = WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1);
+            currentVal++;
+            if(currentVal === 3){
+                currentVal = 1;
+            } 
+            WTDataStore.set("WT_CJ4_MFD_DATA_WINDOW", currentVal);
+            CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
+        };
+
         fmc._templateRenderer.setTemplateRaw([
             [" LEFT DISPLAY MENU[blue]", "1/2 [blue]"],
             ["", "", "MFD MAP DISPLAY[blue]"],
@@ -60,7 +71,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             [termWptsActive, missedActive],
             ["WINDOW[blue s-text]", "SIDE[blue]"],
-            ["OFF/[s-text]ON[green]/VNAV[s-text]", "L[green]/[white]R[s-text]>"]
+            [vnavWindowSwitch, "L[green]/[white]R[s-text]>"]
         ]);
 
         fmc.onPrevPage = () => {
