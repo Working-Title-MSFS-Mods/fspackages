@@ -973,19 +973,18 @@ class MapInstrument extends ISvgMapRootElement {
                 waypoint.isInFlightPlan = false;
 
                 waypoint.infos = new WayPointInfo(this._instrument);
-
-                if (advDesActive){
-                    waypoint.ident = "DES";
-                    waypoint.infos.ident = "DES";
-                } else {
-                    waypoint.ident = "TOD";
-                    waypoint.infos.ident = "TOD";
-                }
                 waypoint.getSvgElement(this.navMap.index);
                 this._todWaypoint = waypoint;
             }
 
             // update it
+            if (advDesActive){
+                waypoint.ident = "DES";
+                waypoint.infos.ident = "DES";
+            } else {
+                waypoint.ident = "TOD";
+                waypoint.infos.ident = "TOD";
+            }
             const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
             const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
             this._todWaypoint.infos.coordinates = todLLA;
