@@ -8,20 +8,18 @@ class CJ4_FMC_ModSettingsPageOne {
         this._pilotDefault = "--------";
         this._pilotId = WTDataStore.get('simbriefPilotId', this._pilotDefault);
 
-        let potValue = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:28", "number");
+        this._ngDefault = "NOT LINKED[disabled]";
+
+        const potValue = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:28", "number");
         if (potValue == 1) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.ON;
-        }
-        else if (potValue == 0.05) {
+        } else if (potValue == 0.05) {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM;
-        }
-        else {
+        } else {
             this._lightMode = CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF;
         }
 
         this._cj4Units = WTDataStore.get('WT_CJ4_Units', 0);
-
-        this._atisSrc = WTDataStore.get('WT_ATIS_Source', 0);
 
         this._gpuSetting = SimVar.GetSimVarValue("EXTERNAL POWER ON", "number");
 
@@ -36,7 +34,9 @@ class CJ4_FMC_ModSettingsPageOne {
 
     }
 
-    get lightMode() { return this._lightMode; }
+    get lightMode() {
+        return this._lightMode;
+    }
     set lightMode(value) {
         if (value == 3) value = 0;
         this._lightMode = value;
@@ -48,7 +48,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get pilotId() { return this._pilotId; }
+    get pilotId() {
+        return this._pilotId;
+    }
     set pilotId(value) {
         this._pilotId = value;
 
@@ -58,7 +60,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get cj4Units() { return this._cj4Units; }
+    get cj4Units() {
+        return this._cj4Units;
+    }
     set cj4Units(value) {
         if (value == 2) value = 0;
         this._cj4Units = value;
@@ -69,18 +73,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get atisSrc() { return this._atisSrc; }
-    set atisSrc(value) {
-        if (value == 3) value = 0;
-        this._atisSrc = value;
-
-        // set datastore
-        WTDataStore.set('WT_ATIS_Source', value);
-
-        this.invalidate();
+    get gpuSetting() {
+        return this._gpuSetting;
     }
-
-    get gpuSetting() { return this._gpuSetting; }
     set gpuSetting(value) {
         if (value == 2) value = 0;
         this._gpuSetting = value;
@@ -91,7 +86,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get yokeHide() { return this._yokeHide; }
+    get yokeHide() {
+        return this._yokeHide;
+    }
     set yokeHide(value) {
         if (value == 2) value = 0;
         this._yokeHide = value;
@@ -106,7 +103,9 @@ class CJ4_FMC_ModSettingsPageOne {
         this.invalidate();
     }
 
-    get fpSync() { return this._fpSync; }
+    get fpSync() {
+        return this._fpSync;
+    }
     set fpSync(value) {
         if (value == 2) value = 0;
         this._fpSync = value;
@@ -118,13 +117,14 @@ class CJ4_FMC_ModSettingsPageOne {
     }
 
     render() {
-        let lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
-        let pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
-        let unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
+        const lightSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "DIM", "ON"], this.lightMode);
+        const pilotIdDisplay = (this.pilotId !== this._pilotDefault) ? this.pilotId + "[green]" : this._pilotDefault;
+        const unitsSwitch = this._fmc._templateRenderer.renderSwitch(["IMPERIAL", "METRIC"], this.cj4Units);
         let gpuSettingSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.gpuSetting);
-        let yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
-        let fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
-        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
+
+        const yokeHideSwitch = this._fmc._templateRenderer.renderSwitch(["NO", "YES"], this.yokeHide);
+        const fpSyncSwitch = this._fmc._templateRenderer.renderSwitch(["OFF", "ON"], this.fpSync);
+        this._ngStatus = !ngApi.isAccountLinked ? this._ngDefault : "LINKED[green]";
 
         if (!this._gpuAvailable) {
             gpuSettingSwitch = "NO EXT PWR[disabled]";
@@ -140,27 +140,50 @@ class CJ4_FMC_ModSettingsPageOne {
             [unitsSwitch],
             [" GROUND POWER UNIT[blue]"],
             [gpuSettingSwitch],
-            [" HIDE YOKE[blue]","ATIS SOURCE[blue]"],
-            [yokeHideSwitch, atisSrcSwitch],
+            [" HIDE YOKE[blue]", "NG LINK"],
+            [yokeHideSwitch, this._ngStatus],
             [""],
             ["< BACK", ""]
         ]);
     }
 
     bindEvents() {
-        this._fmc.onLeftInput[0] = () => { this.lightMode = this.lightMode + 1; };
-        this._fmc.onRightInput[0] = () => { this.fpSync = this.fpSync + 1; };
+        this._fmc.onLeftInput[0] = () => {
+            this.lightMode = this.lightMode + 1;
+        };
+        this._fmc.onRightInput[0] = () => {
+            this.fpSync = this.fpSync + 1;
+        };
         this._fmc.onLeftInput[1] = () => {
-            let idValue = this._fmc.inOut;
+            const idValue = this._fmc.inOut;
             this.pilotId = idValue == FMCMainDisplay.clrValue ? "" : idValue;
             this._fmc.clearUserInput();
         };
-        this._fmc.onLeftInput[2] = () => { this.cj4Units = this.cj4Units + 1; };
-        this._fmc.onLeftInput[3] = () => { if (this._gpuAvailable) this.gpuSetting = this.gpuSetting + 1; };
-        this._fmc.onLeftInput[4] = () => { this.yokeHide = this.yokeHide + 1; };
-        this._fmc.onRightInput[4] = () => { this.atisSrc = this.atisSrc + 1; };
-        this._fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc); };
-        this._fmc.onNextPage = () =>{CJ4_FMC_ModSettingsPage.ShowPage2(this._fmc); };
+        this._fmc.onLeftInput[2] = () => {
+            this.cj4Units = this.cj4Units + 1;
+        };
+        this._fmc.onLeftInput[3] = () => {
+            if (this._gpuAvailable) this.gpuSetting = this.gpuSetting + 1;
+        };
+        this._fmc.onLeftInput[4] = () => {
+            this.yokeHide = this.yokeHide + 1;
+        };
+        this._fmc.onRightInput[4] = () => {
+            this._fmc.setMsg("LINKING NAVIGRAPH...[yellow]");
+            ngApi.linkAccount().then((s) => {
+                if (s) {
+                    this._fmc.setMsg("NAVIGRAPH LINKED[green]");
+                    this.invalidate();
+                }
+            });
+        };
+        this._fmc.onLeftInput[5] = () => {
+            CJ4_FMC_InitRefIndexPage.ShowPage2(this._fmc);
+        };
+
+        this._fmc.onNextPage = () => {
+            CJ4_FMC_ModSettingsPage.ShowPage2(this._fmc);
+        };
     }
 
     invalidate() {
@@ -176,12 +199,22 @@ class CJ4_FMC_ModSettingsPageTwo {
         this._metarSrc = WTDataStore.get("WT_CJ4_METAR_Source", 0);
         this._dlProcTime = WTDataStore.get("WT_CJ4_DL_Time", 0);
         this._hoppieLogon = WTDataStore.get("WT_CJ4_HoppieLogon", "REFER TO MANUAL");
-
+        this._atisSrc = WTDataStore.get('WT_ATIS_Source', 0);
     }
 
-    
+    get atisSrc() { return this._atisSrc; }
+    set atisSrc(value) {
+        if (value == 3) value = 0;
+        this._atisSrc = value;
+
+        // set datastore
+        WTDataStore.set('WT_ATIS_Source', value);
+
+        this.invalidate();
+    }
+
     get metarSrc() { return this._metarSrc; }
-    set metarSrc(value){
+    set metarSrc(value) {
         if (value == 2) value = 0;
         this._metarSrc = value;
 
@@ -191,9 +224,9 @@ class CJ4_FMC_ModSettingsPageTwo {
         this.invalidate();
     }
 
-    
+
     get dlProcTime() { return this._dlProcTime; }
-    set dlProcTime(value){
+    set dlProcTime(value) {
         if (value == 2) value = 0;
         this._dlProcTime = value;
 
@@ -207,11 +240,12 @@ class CJ4_FMC_ModSettingsPageTwo {
 
         let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["VATSIM", "MSFS"], this.metarSrc);
         let dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
+        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "WT MOD SETTINGS[yellow]"],
-            ["METAR SOURCE[blue]"],
-            [metarSrcSwitch],
+            ["METAR SOURCE[blue]", "ATIS SOURCE[blue]"],
+            [metarSrcSwitch, atisSrcSwitch],
             ["DATALINK PROCESSING TIME[blue]"],
             [dlProcSwitch],
             ["HOPPIE LOGON CODE[blue]"],
@@ -227,8 +261,9 @@ class CJ4_FMC_ModSettingsPageTwo {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => { this.metarSrc = this.metarSrc + 1; };
+        this._fmc.onRightInput[0] = () => { this.atisSrc = this.atisSrc + 1; };
         this._fmc.onLeftInput[1] = () => { this.dlProcTime = this.dlProcTime + 1; };
-        this._fmc.onPrevPage = () =>{CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc); };
+        this._fmc.onPrevPage = () => { CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc); };
     }
 
     invalidate() {
@@ -242,8 +277,11 @@ class CJ4_FMC_ModSettingsPageTwo {
 class CJ4_FMC_ModSettingsPage {
     static setPassCabinLights(value) {
         let potValue = 100;
-        if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF) potValue = 0;
-        else if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM) potValue = 5;
+        if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF) {
+            potValue = 0;
+        } else if (value == CJ4_FMC_ModSettingsPage.LIGHT_MODE.DIM) {
+            potValue = 5;
+        }
 
         SimVar.SetSimVarValue("K:LIGHT_POTENTIOMETER_28_SET", "number", potValue);
     }
@@ -257,7 +295,7 @@ class CJ4_FMC_ModSettingsPage {
     }
 
     static ShowPage2(fmc) {
-        fmc.clearDisplay(); 
+        fmc.clearDisplay();
 
         ModSettingsPage2Instance = new CJ4_FMC_ModSettingsPageTwo(fmc);
         ModSettingsPage2Instance.invalidate();

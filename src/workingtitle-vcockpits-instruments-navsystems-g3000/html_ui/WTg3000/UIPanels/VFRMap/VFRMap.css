@@ -1,0 +1,52 @@
+﻿/** This mixin makes a single line element fit exactly on the Roboto font for easier integration. */
+#VFRMapPanel {
+    --headerSize: calc(var(--screenHeight) * (75px / 2160));
+}
+#VFRMapPanel ingame-ui#VFRMap_Frame {
+    width: 100%;
+    height: 100%;
+}
+    #VFRMapPanel #MainDisplay {
+        display: block;
+        position: relative;
+        width: 100%;
+        height: calc(100% - var(--headerSize)*2);
+        overflow: hidden;
+    }
+
+        #VFRMapPanel .vfrMap {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        #VFRMapPanel .vfrMap[active="true"] {
+            display: block;
+        }
+
+        #VFRMapPanel map-instrument #MapSVG,
+        #VFRMapPanel map-instrument #road-network-canvas,
+        #VFRMapPanel map-instrument bing-map {
+            transform: rotateX(0);
+        }
+
+    #VFRMapPanel ingame-ui#VFRMap_Frame #Footer {
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: row;
+        font-size: var(--fontSizePragraph);
+        text-transform: uppercase;
+        background-color: rgba(0, 0, 0, 0.75);
+        width: 100%;
+        min-height: var(--headerSize);
+        height: var(--headerSize);
+        max-height: var(--headerSize);
+    }
+    #VFRMapPanel ingame-ui#VFRMap_Frame #Footer .text {
+        font-weight: bold;
+    }
+    #VFRMapPanel ingame-ui#VFRMap_Frame #Footer new-push-button {
+        margin-top: 4px;
+        margin-right: 3px;
+        width: auto;
+    }
+

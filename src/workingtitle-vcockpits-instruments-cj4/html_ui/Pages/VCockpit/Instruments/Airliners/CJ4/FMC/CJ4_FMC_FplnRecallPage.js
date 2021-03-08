@@ -1,9 +1,9 @@
 class CJ4_FMC_FplnRecallPage {
     static async GetFplnFromSimBrief(pilotId, fmc) {
-        let url = "https://www.simbrief.com/api/xml.fetcher.php?userid=" + pilotId + "&json=1";
+        const url = "https://www.simbrief.com/api/xml.fetcher.php?userid=" + pilotId + "&json=1";
         let json = "";
 
-        let parseAirport = (icao) => {
+        const parseAirport = (icao) => {
             if ((/K.*\d.*/.test(icao))) {
                 icao = icao.substring(1).padEnd(4, " ");
             }
@@ -12,9 +12,9 @@ class CJ4_FMC_FplnRecallPage {
         };
 
         // HINT: defining these methods here in the order they will be called by the callbacks
-        let updateFrom = () => {
+        const updateFrom = () => {
             console.log("UPDATE FROMTO");
-            let from = json.origin.icao_code;
+            const from = json.origin.icao_code;
             // fmc.tryUpdateFromTo(json.origin.icao_code + "/" + json.destination.icao_code, updateRunways);
             fmc.setMsg("LOAD FPLN...CLEAR FPLN[yellow]");
             fmc.flightPlanManager.setActiveWaypointIndex(0, () => {
@@ -29,26 +29,26 @@ class CJ4_FMC_FplnRecallPage {
             });
         };
 
-        let updateRunways = () => {
+        const updateRunways = () => {
             console.log("UPDATE RUNWAY");
-            let rwy = json.origin.plan_rwy;
+            const rwy = json.origin.plan_rwy;
             fmc.setMsg("LOAD FPLN...RWY [yellow]" + rwy);
             fmc.setOriginRunway(rwy, updateDestination);
         };
 
-        let updateDestination = () => {
+        const updateDestination = () => {
             console.log("UPDATE DESTINATION");
-            let dest = json.destination.icao_code;
+            const dest = json.destination.icao_code;
             fmc.setMsg("LOAD FPLN...DST [yellow]" + dest);
             fmc.updateRouteDestination(parseAirport(dest), updateRoute);
         };
 
-        let updateRoute = () => {
-            let routeArr = json.general.route.split(' ');
+        const updateRoute = () => {
+            const routeArr = json.general.route.split(' ');
             console.log("UPDATE ROUTE");
             let idx = 0; // TODO starting from 1 to skip departure trans for now
 
-            let addWaypoint = async () => {
+            const addWaypoint = async () => {
                 if (idx >= routeArr.length - 1) {
                     // DONE
                     fmc.setMsg("FPLN LOADED[green]");
@@ -71,7 +71,7 @@ class CJ4_FMC_FplnRecallPage {
                 // let isWaypoint = await fmc.dataManager.IsWaypointValid(icao);
                 idx++;
 
-                let wptIndex = fmc.flightPlanManager.getWaypointsCount() - 1;
+                const wptIndex = fmc.flightPlanManager.getWaypointsCount() - 1;
                 console.log("MOD INDEX " + wptIndex);
 
                 if (icao === "DCT") {
@@ -93,13 +93,13 @@ class CJ4_FMC_FplnRecallPage {
                 } else {
                     // probably an airway
                     console.log("adding as airway " + icao);
-                    let exitWpt = routeArr[idx];
+                    const exitWpt = routeArr[idx];
 
                     // try preloading data like tscharlii seems to do
-                    let lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
+                    const lastWaypoint = fmc.flightPlanManager.getWaypoints()[fmc.flightPlanManager.getEnRouteWaypointsLastIndex()];
                     if (lastWaypoint.infos instanceof WayPointInfo) {
                         lastWaypoint.infos.UpdateAirway(icao).then(() => {
-                            let airway = lastWaypoint.infos.airways.find(a => { return a.name === icao; });
+                            const airway = lastWaypoint.infos.airways.find(a => { return a.name === icao; });
                             if (airway) {	                                    // Load the fixes of the selected airway and their infos.airways
                                 // set the outgoing airway of the last enroute or departure waypoint of the flightplan
                                 lastWaypoint.infos.airwayOut = airway.name;
@@ -138,11 +138,11 @@ class CJ4_FMC_FplnRecallPage {
             //}
             let flightNo = json.general.flight_number;
             if (typeof json.general.icao_airline === "string") {
-                flightNo += json.general.icao_airline;
+                flightNo = `${json.general.icao_airline}${flightNo}`;
             }
             fmc.setMsg("LOAD FPLN...FLIGHTNO[green]" + flightNo);
             fmc.updateFlightNo(flightNo);
-            let crz = json.general.initial_altitude;
+            const crz = json.general.initial_altitude;
             fmc.setMsg("LOAD FPLN...CRZ[green]" + crz);
             fmc.setCruiseFlightLevelAndTemperature(crz);
             fmc.flightPlanManager.pauseSync();
@@ -155,7 +155,7 @@ class CJ4_FMC_FplnRecallPage {
     }
 
     static ShowPage1(fmc) {
-        let pilotId = WTDataStore.get('simbriefPilotId', '');
+        const pilotId = WTDataStore.get('simbriefPilotId', '');
         if (pilotId !== '') {
             fmc.setMsg("LOAD FPLN...[yellow]");
             this.GetFplnFromSimBrief(pilotId, fmc);

@@ -3,26 +3,30 @@
 }
 
 @keyframes TemporaryShow {
-  0%, 100% {
+
+  0%,
+  100% {
     visibility: visible;
   }
 }
 
 @keyframes TemporaryHide {
-  0%, 100% {
+
+  0%,
+  100% {
     visibility: hidden;
   }
 }
 
 @keyframes blink {
   50% {
-      opacity: 0.0;
+    opacity: 0.0;
   }
 }
 
 @-webkit-keyframes blink {
   50% {
-      opacity: 0.0;
+    opacity: 0.0;
   }
 }
 
@@ -129,7 +133,7 @@ cj4-mfd-element #Mainframe #Electricity {
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay {
-  font-size: calc( 2 * 1vh * var(--bodyHeightScale));
+  font-size: calc(2 * 1vh * var(--bodyHeightScale));
   text-align: center;
 }
 
@@ -155,19 +159,22 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 {
   background-color: black;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemEngines {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemEngines {
   top: 0%;
   position: relative;
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemElectrics {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemElectrics {
   top: 0%;
   position: relative;
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS {
   position: relative;
   top: 5%;
   left: 0;
@@ -211,7 +218,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemFMS .c
   width: 21%;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations {
   top: 5%;
   left: 4%;
   width: 95%;
@@ -220,32 +228,42 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunc
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations div, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations div {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations div,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations div {
   font-size: 1.8vh;
   text-align: left;
   margin-right: 15px;
   margin-bottom: 1px;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning_Blink, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning_Blink {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Warning_Blink,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Warning_Blink {
   color: red;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution_Blink, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution_Blink {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations .Caution_Blink,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations .Caution_Blink {
   color: yellow;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Warning_Blink, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Warning_Blink {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Warning_Blink,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Warning_Blink {
   color: white;
   background-color: red;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Caution_Blink, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Caution_Blink {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemAnnunciations[state=Blink] .Caution_Blink,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemAnnunciations[state=Blink] .Caution_Blink {
   color: black;
   background-color: yellow;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings {
   position: relative;
   top: 5%;
   left: 37.5%;
@@ -255,99 +273,141 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnin
 }
 
 @keyframes RedWarning {
-  0%, 45% {
+
+  0%,
+  45% {
     background-color: red;
     color: white;
   }
-  55%, 100% {
+
+  55%,
+  100% {
     background-color: white;
     color: red;
   }
 }
 
 @keyframes YellowWarning {
-  0%, 45% {
+
+  0%,
+  45% {
     background-color: yellow;
     color: black;
   }
-  55%, 100% {
+
+  55%,
+  100% {
     background-color: black;
     color: yellow;
   }
 }
 
 @keyframes WhiteWarning {
-  0%, 45% {
+
+  0%,
+  45% {
     background-color: White;
     color: black;
   }
-  55%, 100% {
+
+  55%,
+  100% {
     background-color: black;
     color: white;
   }
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Red], cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Red] {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Red],
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Red] {
   animation: RedWarning 1s 5;
   background-color: red;
   color: white;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Yellow], cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Yellow] {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Yellow],
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Yellow] {
   animation: YellowWarning 1s 5;
   background-color: black;
   color: yellow;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=White], cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=White] {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=White],
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=White] {
   animation: WhiteWarning 1s 5;
   background-color: white;
   color: black;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Hidden], cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Hidden] {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings[state=Hidden],
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings[state=Hidden] {
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings #Content, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings #Content {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1 .SystemWarnings #Content,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2 .SystemWarnings #Content {
   font-size: 2.5vh;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemEngines {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemEngines {
   display: block;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemAnnunciations, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemAnnunciations {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=engines] .SystemAnnunciations,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=engines] .SystemAnnunciations {
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemElectrics {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemElectrics {
   display: block;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemAnnunciations, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemAnnunciations {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=electrics] .SystemAnnunciations,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=electrics] .SystemAnnunciations {
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemFMS {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemFMS {
   display: block;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemAnnunciations, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemAnnunciations {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=fms] .SystemAnnunciations,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=fms] .SystemAnnunciations {
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemAnnunciations, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemAnnunciations {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemAnnunciations,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemAnnunciations {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemFMS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemEngines, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemElectrics, cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemFMS {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[page=annunciations] .SystemFMS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemEngines,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemElectrics,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[page=annunciations] .SystemFMS {
   display: none;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[visible=false], cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[visible=false] {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos1[visible=false],
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemInfos2[visible=false] {
   display: none;
 }
 
@@ -369,7 +429,7 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapOrientation {
   top: 0%;
   right: 0%;
   width: 10%;
-  height: calc( 3 * 1vh * var(--bodyHeightScale));
+  height: calc(3 * 1vh * var(--bodyHeightScale));
   background-color: #1a1d21;
   color: white;
 }
@@ -386,12 +446,13 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapRange {
   bottom: 0%;
   right: 0%;
   width: 7%;
-  height: calc( 3 * 1vh * var(--bodyHeightScale));
+  height: calc(3 * 1vh * var(--bodyHeightScale));
   background-color: #1a1d21;
   color: #36c8d2;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapSVG, cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #road-network-canvas {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #MapSVG,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #Map #road-network-canvas {
   transform: rotateX(0);
   position: absolute;
 }
@@ -456,7 +517,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #RightM
   height: 160%;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo[masks=off] #LeftMask, cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo[masks=off] #RightMask {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo[masks=off] #LeftMask,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo[masks=off] #RightMask {
   display: none;
 }
 
@@ -616,15 +678,26 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa {
   padding-right: 3%;
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #GS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #TAS, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #GS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #TAS,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  font-size: calc( 1.9 * 1vh * var(--bodyHeightScale));
+  font-size: calc(1.9 * 1vh * var(--bodyHeightScale));
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Gs_Value, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Tas_Value, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Value, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Value, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Value, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Unit, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Unit, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Unit {
-  font-size: calc( 2.3 * 1vh * var(--bodyHeightScale));
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Gs_Value,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Tas_Value,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Value,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Value,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Value,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Rat_Unit,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Sat_Unit,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Coms #Isa_Unit {
+  font-size: calc(2.3 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs {
@@ -639,19 +712,21 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Cab {
   margin-right: 10px;
   display: flex;
   justify-content: center;
-  font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+  font-size: calc(1.95 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Elev {
   display: flex;
   justify-content: center;
-  font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+  font-size: calc(1.95 * 1vh * var(--bodyHeightScale));
 }
 
-cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Alt, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Rate, cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Diff {
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Alt,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Rate,
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #NavBar #Cabs #Diff {
   display: flex;
   min-width: 25%;
-  font-size: calc( 1.95 * 1vh * var(--bodyHeightScale));
+  font-size: calc(1.95 * 1vh * var(--bodyHeightScale));
   justify-content: space-around;
 }
 
@@ -705,7 +780,9 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #PopupMenu svg {
   color: magenta;
 }
 
-#Approach, #AutopilotInfos, #Coms div.Modifiable {
+#Approach,
+#AutopilotInfos,
+#Coms div.Modifiable {
   color: #11d011 !important;
 }
 
@@ -794,8 +871,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #PassengerBrief[visible=fal
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
   position: absolute;
   bottom: 3.5%;
-  left: 2.5%;
-  width: 95%;
+  left: 5.5%;
+  width: 90%;
   height: 18%;
   background-color: black;
   border: white 2px solid;
@@ -804,12 +881,92 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay {
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemHeader {
   padding: 5px;
+  text-align: left;
   width: 100%;
   height: 30px;
   background-color: dodgerblue;
 }
 
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay .SystemBody {
+  width: 100%;
+  max-height: 100%;
+  position: relative;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay {
+  position: absolute;
+  bottom: 3.5%;
+  left: 5.5%;
+  width: 90%;
+  height: 79%;
+  background-color: black;
+  border: white 2px solid;
+  color: white;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay h4 {
+  text-align: left;
+  vertical-align: baseline;
+  padding-left: 6px;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay mark {
+  background-color: #045CEB;
+  text-align: left;
+  color: white;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay td {
+  text-align: left;
+  display: table-cell;
+  vertical-align: middle;
+  padding-left: 18px;
+  padding-top: 2px;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay tr.selected {
+  outline: 2px solid cyan;
+  outline-offset: -2px;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay.tableGap {
+  padding-bottom: 10px;
+}
+
+.magenta {
+  color: magenta;
+}
+
+.cyan {
+  color: cyan;
+}
+
+.white {
+  color: white;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartMask {
+  position: absolute;
+  bottom: 3.5%;
+  left: 0%;
+  width: 100%;
+  height: 79%;
+  background-color: black;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader {
+  padding: 5px;
+  text-align: left;
+  width: 100%;
+  height: 30px;
+  background-color: #045CEB;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartHeader.pale {
+  background-color: #699ae9;
+}
+
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #ChartOverlay .ChartBody {
   width: 100%;
   max-height: 100%;
   position: relative;
@@ -855,7 +1012,8 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay[visible=fals
   transition: transform .1s ease-in;
 }
 
-div#VORDMENavaid_Left, div#VORDMENavaid_Right {
+div#VORDMENavaid_Left,
+div#VORDMENavaid_Right {
   text-align: left;
 }
 
@@ -875,7 +1033,8 @@ div#VORDMENavaid_Left, div#VORDMENavaid_Right {
   color: cyan;
 }
 
-#Symbols .overlay-wx-line1, #Symbols .overlay-wx-line2 {
+#Symbols .overlay-wx-line1,
+#Symbols .overlay-wx-line2 {
   color: cyan;
 }
 

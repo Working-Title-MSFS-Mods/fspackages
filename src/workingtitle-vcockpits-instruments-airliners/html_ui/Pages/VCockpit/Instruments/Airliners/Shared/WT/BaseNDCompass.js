@@ -39,7 +39,6 @@ class Jet_NDCompass extends HTMLElement {
         this._referenceMode = Jet_NDCompass_Reference.NONE;
         this._aircraft = Aircraft.A320_NEO;
         this._mapRange = 0;
-        this._itIsAlreadyTuned = 0;
     }
     static get dynamicAttributes() {
         return [
@@ -498,6 +497,7 @@ class Jet_NDCompass extends HTMLElement {
                 let compass = Number(this.getAttribute('rotation'));
                 let displayCourseDeviation = false;
                 let displayVerticalDeviation = false;
+                let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                 if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode === Jet_NDCompass_Navigation.VOR) {
                     let beacon;
                     this.ghostNeedleGroup.setAttribute("visibility", "hidden");
@@ -520,16 +520,10 @@ class Jet_NDCompass extends HTMLElement {
                         if (backCourse)
                             deviation = -deviation;
 
-                        let didFreqJustTune = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
-                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
-                        let courseKnob = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString();
-                        if (didFreqJustTune === 2) {
-                            if (courseKnob != beacon.course && this._itIsAlreadyTuned == 0) {
-                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course);
-                            this.setAttribute("course", beacon.course.toString());
-                            this._itIsAlreadyTuned = 1;
-                            }
-                        }
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course); //Sets the OBS so the LOC needle gets set to the correct course
+
                         this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         this.setAttribute("course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
@@ -538,7 +532,6 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                     else {
-                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                         this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         //this.setAttribute("course", compass.toString());
                         this.setAttribute("course_deviation", "0");
@@ -594,9 +587,12 @@ class Jet_NDCompass extends HTMLElement {
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
                         
                         const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue("K:VOR1_SET", "number", course); //Sets the OBS so the LOC needle gets set to the correct course
+                            
                         if (navToNavTransferState === 3 || navToNavTransferState === 4) {
                             this.ghostNeedleGroup.setAttribute("visibility", "visible");
-
                             if (this.navTransferTuning && this.navPreset) {
                                 this.navTransferTuning.setDisplayed(true);
                                 this.navPreset.setDisplayed(false);

@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.10.3
+# Working Title CJ4 v0.10.4
 
-Welcome to the Working Title CJ4 v0.10.3.  This patch brings some improvements and a hotfix for the flight model since the UK update.
+Welcome to the Working Title CJ4 v0.10.4.  This patch removes the temporary flaps lift workaround as well as addresses a couple other critical issues.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -12,24 +12,9 @@ The alternate default liveries that now ship with MSFS are not compatible with t
 
 # Changes
 
-- Improvements to automatic VOR search
-- Fix blacked out FPLN page when arrival was loaded from the world map
-- More realistic GNSS POS INIT procedure
-- Added TTG to the FMS info on the MFD
-- Checklist on the MFD should not react to the PFD knob anymore
-- Workaround for doubled flaps lift since the UK update (by metzgerva)
-- Added a prominent(!) warning to the MFD when a incompatible livery is used
-- Fixed typos on the TUN and DEP/ARR index page (by slip)
-- Adjust colors for the terrain map (by slip)
-- Added Datalink section with ability to request METAR/TAF/ATIS (thanks to Syntax for the code and FBW for allowing usage of their API)
-- Added target and current altitude display in meters
-- Improved PFD menus (Visuals, Minimums, V-Speeds...)
-- Improvements to RA/BARO minimums in the PFD menu
-- Minimums are now persisted
-- Fixed V-Speed deactivation logic on speedtape display
-- Added BARO SET page and functionality to PFD menu
-- Show CRS on data block when no frequency is tuned
-- CRS knob should change the needle whether or not a VOR/LOC is tuned in within range.
+- Course needle for ILS should now be properly set during nav-to-nav transfers
+- Incompatible livery warning should no longer show improperly with compatible liveries if FADEC load is delayed
+- Flaps lift workaround has been removed
 
 # ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.

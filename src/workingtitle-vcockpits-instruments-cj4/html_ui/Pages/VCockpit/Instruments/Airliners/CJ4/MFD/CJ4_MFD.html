@@ -252,9 +252,20 @@
 
                 </div>
                 <div id="SystemOverlay">
-                    <div class="SystemHeader">Systems 1/2</div>
+                    <div class="SystemHeader">SYSTEMS 1/2</div>
                     <div class="SystemBody"></div>
                 </div>
+               
+                <cj4-mfd-chartview id="chartview" style="position:absolute; width:100%;height:79%; bottom:3.9%;left:0; background-color:black;">
+                    <div id="chartinfo" style="font-size: 21px; color:#cccac8"><div id="chartinfo_indexnumber" style="float:left;margin-left:18px;"></div><span style="float:left;padding-left:70px" id="chartinfo_procidentifier"></span><span style="display:none;float:right;padding-right:10px" id="chartinfo_nogeoref"><img style="height:18px;vertical-align:middle;" src="coui://html_UI/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/icon_nogeoref.png" /></span></div>
+                    <canvas id="chartcanvas" style="width:100%;height:100%;display: block;"></canvas>
+                </cj4-mfd-chartview>
+
+                <cj4-mfd-chartspopup id="ChartOverlay">
+                    <div id="ChartOverlayHeader" class="ChartHeader">CHART MAIN INDEX</div>
+                    <div id="ChartsTable"></div>
+                </cj4-mfd-chartspopup>
+
                 <div id="NavBar">
                     <div id="Coms">
                         <div id="GS">
@@ -328,7 +339,7 @@
     </div>
 </script>
 
-<link rel="stylesheet" href="CJ4_MFD.css" />
+<link rel="stylesheet" href="CJ4_MFD.css?cachebust=434334433" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_SimPlaneMod.js"></script>

@@ -24,9 +24,12 @@ class CJ4_SystemContainer extends NavSystemElementContainer {
         if (!this.root) {
             console.log("Root component expected!");
         }
-        if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
-            this.annunciations.addMessage(Annunciation_MessageType.WARNING, "INCOMPATIBLE LIVERY", () => true);
-        }
+
+        setTimeout(() => {
+            if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
+                this.annunciations.addMessage(Annunciation_MessageType.WARNING, "INCOMPATIBLE LIVERY", () => true);
+            }
+        }, 10000);
     }
     reboot() {
         if (this.warnings)
@@ -4798,7 +4801,7 @@ class CJ4_Checklist_Container extends NavSystemElementContainer {
     }
     onEvent(_event) {
         super.onEvent(_event);
-        if (this.handler && this.handler.reactsOnEvent(_event)) {
+        if (this.isVisible && this.handler && this.handler.reactsOnEvent(_event)) {
             switch (_event) {
                 case "Upr_DATA_PUSH":
                 case "Lwr_DATA_PUSH":
@@ -5079,7 +5082,7 @@ class CJ4_PassengerBrief_Container extends NavSystemElementContainer {
     }
     onEvent(_event) {
         super.onEvent(_event);
-        if (this.handler && this.handler.reactsOnEvent(_event)) {
+        if (this.isVisible && this.handler && this.handler.reactsOnEvent(_event)) {
             switch (_event) {
                 case "Lwr_DATA_PUSH":
                     if (!this.otherMenusOpen) {
