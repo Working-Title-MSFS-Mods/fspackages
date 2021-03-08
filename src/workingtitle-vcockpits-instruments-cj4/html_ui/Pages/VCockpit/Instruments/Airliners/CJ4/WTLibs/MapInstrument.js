@@ -969,12 +969,12 @@ class MapInstrument extends ISvgMapRootElement {
             }
 
             // update it
-            if (advDesActive){
-                waypoint.ident = "DES";
-                waypoint.infos.ident = "DES";
+            if (advDesActive) {
+                this._todWaypoint.ident = "DES";
+                this._todWaypoint.infos.ident = "DES";
             } else {
-                waypoint.ident = "TOD";
-                waypoint.infos.ident = "TOD";
+                this._todWaypoint.ident = "TOD";
+                this._todWaypoint.infos.ident = "TOD";
             }
             const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
             const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
