@@ -1,5 +1,5 @@
 # Working Title CJ4 Mod - Repainting Guide
-Because of certain techniques, not all published CJ4 repaints are compatible with the Working Title CJ4 Mod. This guide gives a short outline of why that is the case and how liveries can be made compatible starting with v0.11.
+Because of certain techniques, not all published CJ4 repaints are compatible with the Working Title CJ4 Mod. This guide gives a short outline of why that is the case and how liveries can be made compatible starting with **v0.11**.
 
 ## CURRENT STATE
 At the moment, the flags `atc_id_enable` or `atc_id_color` are existing in the `aircraft.cfg` but they do **not** have any effect on the display of aircraft registrations on the exterior model. Instead, like registrations on the interior model, placeholders for registrations are included in the exterior model files. The exact positioning, size and color are then controlled by the following line defined in the `panel.cfg`.
