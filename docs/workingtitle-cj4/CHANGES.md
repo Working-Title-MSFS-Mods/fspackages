@@ -1,35 +1,24 @@
-# Working Title CJ4 v0.10.3
+# Working Title CJ4 v0.11.0
 
-Welcome to the Working Title CJ4 v0.10.3.  This patch brings some improvements and a hotfix for the flight model since the UK update.
-
+Welcome to the Working Title CJ4 v0.11.0.
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Default Livery Conflicts
-The alternate default liveries that now ship with MSFS are not compatible with the CJ4 yet at this time. They currently ship with panel.cfg files that do not include our FADEC module. Please use the standard livery or a known compatible 3rd party or community livery.
+## Charts integration hints
+...TODO...
 
 # Changes
 
-- Improvements to automatic VOR search
-- Fix blacked out FPLN page when arrival was loaded from the world map
-- More realistic GNSS POS INIT procedure
-- Added TTG to the FMS info on the MFD
-- Checklist on the MFD should not react to the PFD knob anymore
-- Workaround for doubled flaps lift since the UK update (by metzgerva)
-- Added a prominent(!) warning to the MFD when a incompatible livery is used
-- Fixed typos on the TUN and DEP/ARR index page (by slip)
-- Adjust colors for the terrain map (by slip)
-- Added Datalink section with ability to request METAR/TAF/ATIS (thanks to Syntax for the code and FBW for allowing usage of their API)
-- Added target and current altitude display in meters
-- Improved PFD menus (Visuals, Minimums, V-Speeds...)
-- Improvements to RA/BARO minimums in the PFD menu
-- Minimums are now persisted
-- Fixed V-Speed deactivation logic on speedtape display
-- Added BARO SET page and functionality to PFD menu
-- Show CRS on data block when no frequency is tuned
-- CRS knob should change the needle whether or not a VOR/LOC is tuned in within range.
+- Navigraph MFD Charts implementation
+- PFD Baro preset function added. (After STD is pressed on Baro knob,, a preset value can be selected and swapped with STD press again once passed transition altitude)
+- Added VNAV window to FMS text (Must be selected on DSPL MENU vnav window)
+- Added Advisory Descent (DES instead of TOD) when no arrival or approach is loaded, will give you an advisory point to start descent to reach 1500' AFE 10nm from airport.
+- Added TUNE page functionality - ATC Control page, dispatch function, format changes,
+- Fixed vnav bug where below constraints were not observed in the first segment of the vertical path.
+- Fixed glideslope capture so it will only go active when within 1/4 dot or so (Used to go active at full deflection)
+- Fixed another vnav bug where below constraints on SIDs further than 40nm were not seen.
 
 # ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.

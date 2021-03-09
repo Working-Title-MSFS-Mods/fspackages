@@ -9,7 +9,7 @@ class AutopilotMath {
   */
   static interceptAngle(xtk, navSensitivity, maxAngle = 45) {
     let sensitivityModifier = 1;
-    let minimumInterceptAngle = 2.5;
+    let minimumInterceptAngle = 3.5;
     let minimumXtk = 0.025;
 
     switch (navSensitivity) {

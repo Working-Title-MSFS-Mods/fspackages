@@ -3,5 +3,6 @@
 	<TemporaryOutputDirectory>_PackageInt</TemporaryOutputDirectory>
 	<Packages>
 		<Package>PackageDefinitions\workingtitle-g3000-metapackage.xml</Package>
+        <Package>PackageDefinitions\workingtitle-g3000-roaddata.xml</Package>
 	</Packages>
 </Project>

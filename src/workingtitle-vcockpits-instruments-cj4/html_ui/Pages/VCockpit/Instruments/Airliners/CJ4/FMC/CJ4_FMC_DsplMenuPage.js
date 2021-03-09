@@ -8,6 +8,7 @@ class CJ4_FMC_DsplMenuPage {
         const airportsActive = fmc._templateRenderer.renderSwitch(["APTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.AIRPORTS) - 1));
         const altitudeActive = fmc._templateRenderer.renderSwitch(["ALTITUDE"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.CONSTRAINTS) - 1));
         const termWptsActive = fmc._templateRenderer.renderSwitch(["TERM WPTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.TERMWPTS) - 1));
+        const vnavWindowSwitch = fmc._templateRenderer.renderSwitch(["OFF", "ON", "VNAV"], WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1));
         const missedActive = fmc._templateRenderer.renderSwitch(["MISSEDAPPR"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.MISSEDAPPR) - 1));
 
         fmc.onLeftInput[2] = () => {
@@ -47,6 +48,16 @@ class CJ4_FMC_DsplMenuPage {
             });
         };
 
+        fmc.onLeftInput[5] = () => {
+            let currentVal = WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1);
+            currentVal++;
+            if (currentVal === 3) {
+                currentVal = 1;
+            }
+            WTDataStore.set("WT_CJ4_MFD_DATA_WINDOW", currentVal);
+            CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
+        };
+
         fmc._templateRenderer.setTemplateRaw([
             [" LEFT DISPLAY MENU[blue]", "1/2 [blue]"],
             ["", "", "MFD MAP DISPLAY[blue]"],
@@ -60,7 +71,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             [termWptsActive, missedActive],
             ["WINDOW[blue s-text]", "SIDE[blue]"],
-            ["OFF/[s-text]ON[green]/VNAV[s-text]", "L[green]/[white]R[s-text]>"]
+            [vnavWindowSwitch, "L[green]/[white]R[s-text]>"]
         ]);
 
         fmc.onPrevPage = () => {

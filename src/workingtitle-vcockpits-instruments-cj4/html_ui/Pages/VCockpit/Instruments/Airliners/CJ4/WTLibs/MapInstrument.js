@@ -955,7 +955,8 @@ class MapInstrument extends ISvgMapRootElement {
         const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
         const apprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") === 1;
         const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
-        if (!pathActive && !apprActive && todDistanceRemaining > 0.1) {
+        const advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number") === 1;
+        if (!pathActive && !apprActive && todDistanceRemaining > 0.1 || advDesActive) {
             if (this._todWaypoint === undefined) {
                 // create it
                 const waypoint = new WayPoint(this._instrument);
@@ -963,14 +964,18 @@ class MapInstrument extends ISvgMapRootElement {
                 waypoint.isInFlightPlan = false;
 
                 waypoint.infos = new WayPointInfo(this._instrument);
-
-                waypoint.ident = "TOD";
-                waypoint.infos.ident = "TOD";
                 waypoint.getSvgElement(this.navMap.index);
                 this._todWaypoint = waypoint;
             }
 
             // update it
+            if (advDesActive) {
+                this._todWaypoint.ident = "DES";
+                this._todWaypoint.infos.ident = "DES";
+            } else {
+                this._todWaypoint.ident = "TOD";
+                this._todWaypoint.infos.ident = "TOD";
+            }
             const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
             const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
             this._todWaypoint.infos.coordinates = todLLA;
@@ -1205,13 +1210,13 @@ class MapInstrument extends ISvgMapRootElement {
         if (_event === "RANGE_INC" || _event === "RNG_Dezoom") {
             this.zoomOut();
         }
-        if (_event === "JOYSTICK_PUSH") {
-            if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
-                this.activateCursor();
-            } else if (this.eBingMode === EBingMode.CURSOR) {
-                this.deactivateCursor();
-            }
-        }
+        // if (_event === "JOYSTICK_PUSH") {
+        //     if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
+        //         this.activateCursor();
+        //     } else if (this.eBingMode === EBingMode.CURSOR) {
+        //         this.deactivateCursor();
+        //     }
+        // }
         if (_event === "ActivateMapCursor") {
             if (this.eBingMode === EBingMode.PLANE || this.eBingMode === EBingMode.VFR) {
                 this.activateCursor();
@@ -1225,44 +1230,44 @@ class MapInstrument extends ISvgMapRootElement {
         if (this.eBingMode === EBingMode.CURSOR) {
             const cursorSpeed = 2;
             const mapSpeed = 4;
-            switch (_event) {
-                case "PanLeft":
-                case "JOYSTICK_LEFT":
-                    if (this.cursorX > 10) {
-                        this.setCursorPos(this.cursorX - cursorSpeed, this.cursorY);
-                    } else {
-                        this.scrollDisp.x += mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-                case "PanRight":
-                case "JOYSTICK_RIGHT":
-                    if (this.cursorX < 90) {
-                        this.setCursorPos(this.cursorX + cursorSpeed, this.cursorY);
-                    } else {
-                        this.scrollDisp.x -= mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-                case "PanUp":
-                case "JOYSTICK_UP":
-                    if (this.cursorY > 10) {
-                        this.setCursorPos(this.cursorX, this.cursorY - cursorSpeed);
-                    } else {
-                        this.scrollDisp.y += mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-                case "PanDown":
-                case "JOYSTICK_DOWN":
-                    if (this.cursorY < 90) {
-                        this.setCursorPos(this.cursorX, this.cursorY + cursorSpeed);
-                    } else {
-                        this.scrollDisp.y -= mapSpeed;
-                        this.svgSmooth = this.SVG_SMOOTH_CURSOR;
-                    }
-                    break;
-            }
+            // switch (_event) {
+            //     case "PanLeft":
+            //     case "JOYSTICK_LEFT":
+            //         if (this.cursorX > 10) {
+            //             this.setCursorPos(this.cursorX - cursorSpeed, this.cursorY);
+            //         } else {
+            //             this.scrollDisp.x += mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            //     case "PanRight":
+            //     case "JOYSTICK_RIGHT":
+            //         if (this.cursorX < 90) {
+            //             this.setCursorPos(this.cursorX + cursorSpeed, this.cursorY);
+            //         } else {
+            //             this.scrollDisp.x -= mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            //     case "PanUp":
+            //     case "JOYSTICK_UP":
+            //         if (this.cursorY > 10) {
+            //             this.setCursorPos(this.cursorX, this.cursorY - cursorSpeed);
+            //         } else {
+            //             this.scrollDisp.y += mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            //     case "PanDown":
+            //     case "JOYSTICK_DOWN":
+            //         if (this.cursorY < 90) {
+            //             this.setCursorPos(this.cursorX, this.cursorY + cursorSpeed);
+            //         } else {
+            //             this.scrollDisp.y -= mapSpeed;
+            //             this.svgSmooth = this.SVG_SMOOTH_CURSOR;
+            //         }
+            //         break;
+            // }
         }
     }
     onBackOnTrack(_lat, _long) {
