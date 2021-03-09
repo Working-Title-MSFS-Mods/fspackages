@@ -84,11 +84,13 @@ export class NavigraphApi {
     if (!this._chartListCache.has(icao)) {
       await this.validateToken();
       const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
-      const signedUrl = signedUrlResp.data;
-      const chartsListResp = await this.sendRequest(signedUrl, "get");
-      if (chartsListResp.ok) {
-        chartsObj = chartsListResp.json<NgApi.NG_Charts>();
-        this._chartListCache.set(icao, chartsObj);
+      if(signedUrlResp.ok){
+        const signedUrl = signedUrlResp.data;
+        const chartsListResp = await this.sendRequest(signedUrl, "get");
+        if (chartsListResp.ok) {
+          chartsObj = chartsListResp.json<NgApi.NG_Charts>();
+          this._chartListCache.set(icao, chartsObj);
+        }
       }
       return chartsObj;
     } else {
