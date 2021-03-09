@@ -16,10 +16,10 @@ For any manual changes to this line, you will need to create a custom panel. How
 We have provided three panel variations, that should cover most liveries out there. These panels can be aliased by your custom panels and are updated automatically, so that your integration won't break in the future.
 
 ### BLACK REGISTRATION
-*This is the default. No custom panel will be necessary in your package.*
+This is the default. Make sure no custom panel is present in your package and the `panel=` line of the `aircraft.cfg` looks like this: `panel=""`.
 
 ### WHITE REGISTRATION
-*Users can still change the registration on your paint, but it now appears in white. Use this option if your paint features are dark tailfin.*
+Users can still change the registration on your paint, but it now appears in white. Use this option if your paint features are dark tailfin.
 1. Create a custom panel folder in your package.
 2. Reference this custom panel in the `panel=` line of the `aircraft.cfg` in your package.
 3. In the custom panel folder, create a file called `panel.cfg`.
@@ -30,7 +30,7 @@ alias=Asobo_CJ4\panel.whitereg
 ```
 
 ### NO REGISTRATION
-*Removes the dynamically set registration altogether. Use this option if you want to explicitly paint a registration onto the textures and don't want the default registration displayed.*
+Removes the dynamically set registration altogether. Use this option if you want to explicitly paint a registration onto the textures and don't want the default registration displayed.
 1. Create a custom panel folder in your package.
 2. Reference this custom panel in the `panel=` line of the `aircraft.cfg` in your package.
 3. In the custom panel folder, create a file called `panel.cfg`.
