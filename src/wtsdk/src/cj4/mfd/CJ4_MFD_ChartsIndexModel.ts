@@ -71,7 +71,7 @@ export class CJ4_MFD_ChartsIndexModel {
           this._chartsIndex.Origin.Airport = this.findChartInArray(c => c.type.code === "AP", origCharts);
           const departure = this._fpm.getDeparture();
           if (departure !== undefined) {
-            this._chartsIndex.Origin.Departure = this.findChartInArray(c => c.type.code === "GG" && c.procedure_code.findIndex((x) => x === `${departure.name}`) !== -1, origCharts);
+            this._chartsIndex.Origin.Departure = this.findChartInArray(c => (c.type.code === "GG" || c.type.code === "G") && c.procedure_code.findIndex((x) => x === `${departure.name}`) !== -1, origCharts);
           }
         }
 
