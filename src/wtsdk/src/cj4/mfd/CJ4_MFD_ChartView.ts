@@ -208,7 +208,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
 
         const transX = Math.abs(planeX) * this._dimensions.scaleW;
         const transY = Math.abs(planeY) * this._dimensions.scaleH;
-        const simTrack = SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
+        const simTrack = (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) ? SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree") : SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
         const rot = Math.round(simTrack) * (Math.PI / 180);
         ctx.translate(transX, transY);
         ctx.rotate(rot);
