@@ -1,24 +1,20 @@
-# Working Title CJ4 v0.11.0
+# Working Title CJ4 v0.10.4
 
-Welcome to the Working Title CJ4 v0.11.0.
+Welcome to the Working Title CJ4 v0.10.4.  This patch removes the temporary flaps lift workaround as well as addresses a couple other critical issues.
+
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
-## Charts integration hints
-...TODO...
+## Default Livery Conflicts
+The alternate default liveries that now ship with MSFS are not compatible with the CJ4 yet at this time. They currently ship with panel.cfg files that do not include our FADEC module. Please use the standard livery or a known compatible 3rd party or community livery.
 
 # Changes
 
-- Navigraph MFD Charts implementation
-- PFD Baro preset function added. (After STD is pressed on Baro knob,, a preset value can be selected and swapped with STD press again once passed transition altitude)
-- Added VNAV window to FMS text (Must be selected on DSPL MENU vnav window)
-- Added Advisory Descent (DES instead of TOD) when no arrival or approach is loaded, will give you an advisory point to start descent to reach 1500' AFE 10nm from airport.
-- Added TUNE page functionality - ATC Control page, dispatch function, format changes,
-- Fixed vnav bug where below constraints were not observed in the first segment of the vertical path.
-- Fixed glideslope capture so it will only go active when within 1/4 dot or so (Used to go active at full deflection)
-- Fixed another vnav bug where below constraints on SIDs further than 40nm were not seen.
+- Course needle for ILS should now be properly set during nav-to-nav transfers
+- Incompatible livery warning should no longer show improperly with compatible liveries if FADEC load is delayed
+- Flaps lift workaround has been removed
 
 # ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
