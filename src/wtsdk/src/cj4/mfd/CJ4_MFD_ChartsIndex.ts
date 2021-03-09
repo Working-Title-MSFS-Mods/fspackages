@@ -17,7 +17,7 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
    * Retrieves and updates the chart index
    */
   public async update(force = false): Promise<void> {
-    const isDataChanged = await this._model.updateData();
+    const isDataChanged = await this._model.updateData(force);
 
     if (isDataChanged || force) {
       this.render();

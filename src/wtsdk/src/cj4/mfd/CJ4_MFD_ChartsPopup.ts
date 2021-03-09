@@ -74,6 +74,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
             this._overlayHeader.classList.remove("pale");
             this._views.get(this._mode).update(true);
           }
+          handled = true;
           break;
       }
     }
@@ -93,7 +94,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
 
   /** Show the view */
   public show(): void {
-    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).update();
+    (this._views.get(CHARTS_MENU_MODE.INDEX) as CJ4_MFD_ChartsIndex).update(true);
     this.style.visibility = "visible";
   }
 

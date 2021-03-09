@@ -41,7 +41,7 @@ export class CJ4_MFD_ChartsIndexModel {
     return this._destination;
   }
 
-  constructor(ngApi:NavigraphApi) {
+  constructor(ngApi: NavigraphApi) {
     this._api = ngApi;
     this._fpm = FlightPlanManager.DEBUG_INSTANCE;
     this._chartsIndex = new ChartIndex();
@@ -50,15 +50,16 @@ export class CJ4_MFD_ChartsIndexModel {
   /**
  * Retrieves and updates the chart index
  */
-  public async updateData(): Promise<boolean> {
+  public async updateData(forceUpdate = false): Promise<boolean> {
     // check if flight plan has changed
     let fpChanged = false;
     if (this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
       fpChanged = true;
+      this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
     }
 
     // if ng account is linked and flight plan has changed
-    if (this._api.isAccountLinked && fpChanged) {
+    if (this._api.isAccountLinked && (fpChanged || forceUpdate)) {
       try {
         this.resetChartsIndex();
         this._origin = this._fpm.getOrigin() === undefined ? "----" : this._fpm.getOrigin().ident;
@@ -96,7 +97,6 @@ export class CJ4_MFD_ChartsIndexModel {
       } catch (err) {
         console.error("Something went wrong with charts");
       }
-      this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
     }
 
     return false;
@@ -160,8 +160,13 @@ export class CJ4_MFD_ChartsIndexModel {
    * @param name The msfs name of the approach
    */
   private formatApproachName(name: string): string {
-    const segments = name.trim().split(' ');
-    return `${segments[0][0]}${Avionics.Utils.formatRunway(segments[1]).trim()}${(segments.length > 2) ? segments[2] : ''}`;
+    const segments = name.match(/[^ ]+/g)
+    const rwy = Avionics.Utils.formatRunway(segments[1]).trim();
+    // need to add dash if it is center runway with XYZ :/
+    if (segments.length > 2 && rwy.indexOf("L") === -1 && rwy.indexOf("R") === -1) {
+      segments[2] = `-${segments[2]}`;
+    }
+    return `${segments[0][0]}${rwy}${(segments.length > 2) ? segments[2] : ''}`;
   }
 
   /**
@@ -170,7 +175,7 @@ export class CJ4_MFD_ChartsIndexModel {
   * @param charts The array of charts to search in
   */
   private findChartInArray(predicate: (value: NG_Chart, index: number, obj: NG_Chart[]) => unknown, charts: NG_Charts): NG_Chart {
-    if(charts !== undefined && charts.charts !== undefined){
+    if (charts !== undefined && charts.charts !== undefined) {
       const foundCharts = charts.charts.filter(predicate)
       if (foundCharts.length > 0) {
         // if (foundCharts.length > 1) {
@@ -179,7 +184,7 @@ export class CJ4_MFD_ChartsIndexModel {
         //     procedure_identifier: `${foundCharts.length} FMS Charts`,
         //     icao_airport_identifier: foundCharts[0].icao_airport_identifier,
         //     type: { category: foundCharts[0].type.category }
-  
+
         //   } as NG_Chart;
         // } else {
         foundCharts[0].source = "FMS";
