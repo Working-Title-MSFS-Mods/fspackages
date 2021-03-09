@@ -20,7 +20,7 @@ export class CJ4_MFD_ChartsMenuModel {
     return this._charts;
   }
 
-  constructor(icao: string, type: CHART_TYPE, ngApi:NavigraphApi) {
+  constructor(icao: string, type: CHART_TYPE, ngApi: NavigraphApi) {
     this._api = ngApi;
     this._icao = icao;
     this._type = type;
@@ -45,6 +45,18 @@ export class CJ4_MFD_ChartsMenuModel {
         case CHART_TYPE.AIRSPACE:
           this._charts = NavigraphChartFilter.getAirspace(ngCharts);
           break;
+      }
+      if (this._charts !== undefined && this._charts.length > 1) {
+        // sort
+        this._charts = this._charts.sort((a: NG_Chart, b: NG_Chart) => {
+          const aMatch = a.index_number.match(/(\d*)-(\d*)([A-Z])?/);
+          const bMatch = b.index_number.match(/(\d*)-(\d*)([A-Z])?/);
+          if (aMatch[1] === bMatch[1]) {
+            return parseInt(aMatch[2]) - parseInt(bMatch[2]);
+          } else {
+            return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+          }
+        });
       }
     }
   }
