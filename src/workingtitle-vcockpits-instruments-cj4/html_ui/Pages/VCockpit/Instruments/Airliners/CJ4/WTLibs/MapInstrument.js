@@ -756,8 +756,13 @@ class MapInstrument extends ISvgMapRootElement {
 
                         const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
                         if (todDist > 0) {
+                            this.updateDesWaypoint();
+                            if (this._desWaypoint && SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 0) {
+                                this.navMap.mapElements.push(this._desWaypoint.getSvgElement(this.navMap.index));
+                            }
+
                             this.updateTodWaypoint();
-                            if (this._todWaypoint) {
+                            if (this._todWaypoint && SimVar.GetSimVarValue("L:MAP_SHOW_TEMPORARY_FLIGHT_PLAN", "number") === 0) {
                                 this.navMap.mapElements.push(this._todWaypoint.getSvgElement(this.navMap.index));
                             }
                         }
@@ -951,12 +956,38 @@ class MapInstrument extends ISvgMapRootElement {
             }
         }
     }
+
+    updateDesWaypoint() {
+        const advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number") === 1;
+        if (advDesActive) {
+            if (this._desWaypoint === undefined) {
+                // create it
+                const waypoint = new WayPoint(this._instrument);
+                waypoint.type = 'W';
+                waypoint.isInFlightPlan = false;
+
+                waypoint.infos = new WayPointInfo(this._instrument);
+                waypoint.getSvgElement(this.navMap.index);
+                this._desWaypoint = waypoint;
+                this._desWaypoint.ident = "DES";
+                this._desWaypoint.infos.ident = "DES";
+            }
+
+            const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
+            const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
+            this._desWaypoint.infos.coordinates = todLLA;
+        } else {
+            this._desWaypoint = undefined;
+        }
+
+    }
+
     updateTodWaypoint() {
         const pathActive = SimVar.GetSimVarValue("L:WT_VNAV_PATH_STATUS", "number") === 3;
         const apprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") === 1;
         const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
         const advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number") === 1;
-        if (!pathActive && !apprActive && todDistanceRemaining > 0.1 || advDesActive) {
+        if (!pathActive && !advDesActive && !apprActive && todDistanceRemaining > 0.1) {
             if (this._todWaypoint === undefined) {
                 // create it
                 const waypoint = new WayPoint(this._instrument);
@@ -966,16 +997,10 @@ class MapInstrument extends ISvgMapRootElement {
                 waypoint.infos = new WayPointInfo(this._instrument);
                 waypoint.getSvgElement(this.navMap.index);
                 this._todWaypoint = waypoint;
-            }
-
-            // update it
-            if (advDesActive) {
-                this._todWaypoint.ident = "DES";
-                this._todWaypoint.infos.ident = "DES";
-            } else {
                 this._todWaypoint.ident = "TOD";
                 this._todWaypoint.infos.ident = "TOD";
             }
+
             const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
             const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
             this._todWaypoint.infos.coordinates = todLLA;
