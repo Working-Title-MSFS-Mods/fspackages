@@ -53,7 +53,7 @@ export class CJ4_MFD_ChartsIndexModel {
   public async updateData(forceUpdate = false): Promise<boolean> {
     // check if flight plan has changed
     let fpChanged = false;
-    if (this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
+    if (this._api.isAccountLinked && this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
       fpChanged = true;
       this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
     }
