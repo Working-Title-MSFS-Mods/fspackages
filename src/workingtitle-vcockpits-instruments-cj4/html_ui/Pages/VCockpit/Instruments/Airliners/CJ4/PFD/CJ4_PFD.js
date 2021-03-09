@@ -914,19 +914,21 @@ class CJ4_Attitude extends NavSystemElement {
         this.svg.setAttribute("radio_altitude", Simplane.getAltitudeAboveGround().toString());
         this.svg.setAttribute("flight_director-active", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "true" : "false");
         this.svg.setAttribute("flight_director-pitch", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR PITCH", "degree"));
-        const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
-        if (apMasterActive) {
-            this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
-        } else {
+        // const apMasterActive = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") == 1;
+        this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
 
-            const bank = SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number");
-            let setBank = bank;
-            if (Math.abs(this.wtFlightDirectorBankValue - bank) > 0.5) {
-                setBank = bank < this.wtFlightDirectorBankValue + 0.5 ? this.wtFlightDirectorBankValue - 0.5 : bank > this.wtFlightDirectorBankValue ? this.wtFlightDirectorBankValue + 1 : bank;
-            }
-            this.wtFlightDirectorBankValue = setBank;
-            this.svg.setAttribute("flight_director-bank", (-1 * setBank));
-        }
+        // if (apMasterActive) {
+        //     this.svg.setAttribute("flight_director-bank", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR BANK", "degree"));
+        // } else {
+
+        //     const bank = SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number");
+        //     let setBank = bank;
+        //     if (Math.abs(this.wtFlightDirectorBankValue - bank) > 0.5) {
+        //         setBank = bank < this.wtFlightDirectorBankValue + 0.5 ? this.wtFlightDirectorBankValue - 0.5 : bank > this.wtFlightDirectorBankValue ? this.wtFlightDirectorBankValue + 1 : bank;
+        //     }
+        //     this.wtFlightDirectorBankValue = setBank;
+        //     this.svg.setAttribute("flight_director-bank", (-1 * setBank));
+        // }
         this.svg.setAttribute("half_bank-active", SimVar.GetSimVarValue("AUTOPILOT MAX BANK", "degree").toFixed(0));
         this.svg.setAttribute("flight_director-style", this.gps.fdMode);
 
