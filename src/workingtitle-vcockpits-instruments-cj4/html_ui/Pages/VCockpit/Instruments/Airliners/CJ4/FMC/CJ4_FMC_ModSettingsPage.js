@@ -150,7 +150,7 @@ class CJ4_FMC_ModSettingsPageOne {
             [unitsSwitch],
             [" GROUND POWER UNIT[blue]"],
             [gpuSettingSwitch],
-            [" HIDE YOKE[blue]", "NG LINK"],
+            [" HIDE YOKE[blue]", "NAVIGRAPH[blue]"],
             [yokeHideSwitch, this._ngStatus],
             [""],
             ["< BACK", ""]
