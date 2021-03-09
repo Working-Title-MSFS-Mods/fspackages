@@ -25,22 +25,10 @@ class WT_G3000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
             trendLookahead: WT_G3000_PFDAirspeedIndicator.TREND_LOOKAHEAD,
             trendThreshold: WT_G3000_PFDAirspeedIndicator.TREND_THRESHOLD,
             machDisplayThreshold: WT_G3000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD,
-            redStrip: {
-                min: 20,
-                max: 65
-            },
-            whiteStrip: {
-                min: 65,
-                max: 122
-            },
-            greenStrip: {
-                min: 122,
-                max: 266
-            },
-            barberStrip: {
-                min: 266,
-                max: Infinity
-            }
+            redStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(20, 65),
+            whiteStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(65, 122),
+            greenStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(122, 266),
+            barberStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(266, Infinity)
         });
         return htmlElement;
     }
@@ -67,6 +55,15 @@ class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
      */
     get minSpeed() {
         return this._minSpeed.readonly();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} maxSpeed
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get maxSpeed() {
+        return this.airplane.references.Vmo;
     }
 
     _updateMinSpeed() {
@@ -120,10 +117,10 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._tapeLabelLayer = this.shadowRoot.querySelector(`#labels`);
         this._tapeMinorTickLayer = this.shadowRoot.querySelector(`#minorticks`);
 
-        this._barberStrip = this.shadowRoot.querySelector(`#barberstrip`);
-        this._greenStrip = this.shadowRoot.querySelector(`#greenstrip`);
-        this._whiteStrip = this.shadowRoot.querySelector(`#whitestrip`);
-        this._redStrip = this.shadowRoot.querySelector(`#redstrip`);
+        this._barberStrip = new WT_CachedElement(this.shadowRoot.querySelector(`#barberstrip`));
+        this._greenStrip = new WT_CachedElement(this.shadowRoot.querySelector(`#greenstrip`));
+        this._whiteStrip = new WT_CachedElement(this.shadowRoot.querySelector(`#whitestrip`));
+        this._redStrip = new WT_CachedElement(this.shadowRoot.querySelector(`#redstrip`));
 
         this._trend = new WT_CachedElement(this.shadowRoot.querySelector(`#trend`));
 
@@ -168,6 +165,14 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._tape.style.transform = `translateY(${translate}%)`;
     }
 
+    _showStrip(strip, value) {
+        strip.setAttribute("show", `${value}`);
+    }
+
+    _moveStrip(strip, minPos, maxPos) {
+        strip.setAttribute("style", `top: ${maxPos * 100}%; height: ${(minPos - maxPos) * 100}%;`);
+    }
+
     _updateStrips() {
         this._updateStrip(this._barberStrip, this._context.barberStrip);
         this._updateStrip(this._greenStrip, this._context.greenStrip);
@@ -193,8 +198,8 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._wrapper.setAttribute("trend-warning", `${value}`);
     }
 
-    _setVmoWarning(value) {
-        this._wrapper.setAttribute("Vmo-warning", `${value}`);
+    _setMaxSpeedWarning(value) {
+        this._wrapper.setAttribute("maxspeed-warning", `${value}`);
     }
 
     _setMinSpeedWarning(value) {
@@ -291,13 +296,13 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             height: 100%;
                         }
                             .strip {
-                                display: block;
                                 position: absolute;
                                 left: 0%;
                                 width: 100%;
-                            }
-                            .strip[hide="true"] {
                                 display: none;
+                            }
+                            .strip[show="true"] {
+                                display: block;
                             }
                             #barberstrip {
                                 background: repeating-linear-gradient(135deg, red, red 6px, white 6px, white 12px);
@@ -436,11 +441,11 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                         stroke: white;
                         stroke-width: 1px;
                     }
-                    #wrapper[trend-warning="true"][Vmo-warning="false"] #iasdisplaybg {
+                    #wrapper[trend-warning="true"][maxspeed-warning="false"] #iasdisplaybg {
                         fill: var(--wt-g3x5-amber);
                         stroke-width: 0px;
                     }
-                    #wrapper[Vmo-warning="true"] #iasdisplaybg {
+                    #wrapper[maxspeed-warning="true"] #iasdisplaybg {
                         fill: red;
                         stroke-width: 0px;
                     }
@@ -483,7 +488,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                                 text-anchor: middle;
                                 fill: white;
                             }
-                            #wrapper[trend-warning="true"][Vmo-warning="false"] .digit {
+                            #wrapper[trend-warning="true"][maxspeed-warning="false"] .digit {
                                 fill: black;
                             }
             #speedbugcontainer {
@@ -515,10 +520,10 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
             #wrapper[show-mach="true"] #machcontainer {
                 display: block;
             }
-            #wrapper[trend-warning="true"][Vmo-warning="false"] #machcontainer {
+            #wrapper[trend-warning="true"][maxspeed-warning="false"] #machcontainer {
                 background-color: var(--wt-g3x5-amber);
             }
-            #wrapper[Vmo-warning="true"] #machcontainer {
+            #wrapper[maxspeed-warning="true"] #machcontainer {
                 background-color: red;
             }
                 #mach {
@@ -531,7 +536,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                     color: white;
                     font-size: var(--airspeedindicator-mach-font-size, 0.8em);
                 }
-                #wrapper[trend-warning="true"][Vmo-warning="false"] #mach {
+                #wrapper[trend-warning="true"][maxspeed-warning="false"] #mach {
                     color: black;
                 }
     </style>

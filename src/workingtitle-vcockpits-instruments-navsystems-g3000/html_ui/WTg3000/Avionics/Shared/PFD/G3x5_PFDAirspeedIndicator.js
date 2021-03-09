@@ -49,6 +49,15 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
 
     /**
      * @readonly
+     * @property {WT_PlayerAirplane} autopilot
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return this._airplane;
+    }
+
+    /**
+     * @readonly
      * @property {WT_NumberUnitReadOnly} ias
      * @type {WT_NumberUnitReadOnly}
      */
@@ -85,11 +94,10 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vmo
+     * @property {WT_NumberUnitReadOnly} maxSpeed
      * @type {WT_NumberUnitReadOnly}
      */
-    get Vmo() {
-        return this._airplane.references.Vmo;
+    get maxSpeed() {
     }
 
     /**
@@ -98,15 +106,6 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {WT_NumberUnitReadOnly}
      */
     get minSpeed() {
-    }
-
-    /**
-     * @readonly
-     * @property {WT_AirplaneAutopilot} autopilot
-     * @type {WT_AirplaneAutopilot}
-     */
-     get autopilot() {
-        return this._airplane.autopilot;
     }
 
     /**
@@ -295,31 +294,9 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         });
     }
 
-    _updateStrip(strip, definition) {
-        if (!strip) {
-            return;
-        }
-
-        strip.setAttribute("hide", "true");
-
-        let minPos = 1 - Math.min(1, Math.max(0, (definition.min - this._tapeMin) / this._tapeLength));
-        let maxPos = 1 - Math.min(1, Math.max(0, (definition.max - this._tapeMin) / this._tapeLength));
-        if (minPos === maxPos) {
-            return;
-        }
-
-        strip.setAttribute("hide", "false");
-        strip.style.top = `${maxPos * 100}%`;
-        strip.style.height = `${(minPos - maxPos) * 100}%`;
-    }
-
-    _updateStrips() {
-    }
-
     _updateTapeMin(min) {
         this._tapeMin = min;
         this._updateTapeLabels();
-        this._updateStrips();
     }
 
     _moveTape(tapePos) {
@@ -341,6 +318,36 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
 
         this._moveTape(tapePos);
         this._tapeTranslate = tapePos;
+    }
+
+    _showStrip(strip, value) {
+    }
+
+    _moveStrip(strip, minPos, maxPos) {
+    }
+
+    /**
+     *
+     * @param {Element} strip
+     * @param {WT_G3x5_PFDAirspeedIndicatorStripDefinition} definition
+     * @returns
+     */
+    _updateStrip(strip, definition) {
+        if (!strip) {
+            return;
+        }
+
+        let minPos = Math.min(1, Math.max(0, this._calculateAbsoluteTapePosition(definition.min)));
+        let maxPos = Math.min(1, Math.max(0, this._calculateAbsoluteTapePosition(definition.max)));
+        if (minPos === maxPos) {
+            this._showStrip(strip, false);
+        } else {
+            this._showStrip(strip, true);
+            this._moveStrip(strip, minPos, maxPos);
+        }
+    }
+
+    _updateStrips() {
     }
 
     _updateIASDigit(index, knots) {
@@ -374,7 +381,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} ias
      */
     _updateIAS(ias) {
-        let knots = ias.asUnit(WT_Unit.KNOT);
+        let knots = Math.max(this._context.scale.min, ias.asUnit(WT_Unit.KNOT));
         for (let i = 0; i < 3; i++) {
             this._updateIASDigit(i, knots);
         }
@@ -390,7 +397,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      */
     _updateTrend(ias, trend) {
         let trendEnd = ias.asUnit(WT_Unit.KNOT) + trend;
-        this._setTrendWarning(trendEnd >= this._context.model.Vmo.asUnit(WT_Unit.KNOT));
+        this._setTrendWarning(trendEnd >= this._context.model.maxSpeed.asUnit(WT_Unit.KNOT));
         if (Math.abs(trend) < this._context.trendThreshold) {
             this._trend.setAttribute("hide", true);
         } else {
@@ -434,14 +441,14 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         }
     }
 
-    _setVmoWarning(value) {
+    _setMaxSpeedWarning(value) {
     }
 
-    _updateVmo(ias) {
-        if (ias.compare(this._context.model.Vmo) >= 0) {
-            this._setVmoWarning(true);
+    _updateMaxSpeed(ias) {
+        if (ias.compare(this._context.model.maxSpeed) >= 0) {
+            this._setMaxSpeedWarning(true);
         } else {
-            this._setVmoWarning(false);
+            this._setMaxSpeedWarning(false);
         }
     }
 
@@ -487,11 +494,12 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         let ias = this._context.model.ias;
         let trend = this._context.model.iasTrend.number * this._context.trendLookahead;
         this._updateTape(ias);
+        this._updateStrips();
         this._updateIAS(ias);
         this._updateTrend(ias, trend);
         this._updateRefSpeed();
         this._updateMach();
-        this._updateVmo(ias);
+        this._updateMaxSpeed(ias);
         this._updateMinSpeed(ias, trend);
         this._updateSpeedBugs();
     }
@@ -515,12 +523,61 @@ WT_G3x5_PFDAirspeedIndicatorHTMLElement.TAPE_LABEL_CLASS = "label";
  * @property {Number} trendLookahead
  * @property {Number} trendThreshold
  * @property {Number} machDisplayThreshold
- * @property {{min:Number, max:Number}} [barberStrip]
- * @property {{min:Number, max:Number}} [greenStrip]
- * @property {{min:Number, max:Number}} [whiteStrip]
- * @property {{min:Number, max:Number}} [yellowStrip]
- * @property {{min:Number, max:Number}} [redStrip]
+ * @property {WT_G3x5_PFDAirspeedIndicatorStripDefinition} [barberStrip]
+ * @property {WT_G3x5_PFDAirspeedIndicatorStripDefinition} [greenStrip]
+ * @property {WT_G3x5_PFDAirspeedIndicatorStripDefinition} [whiteStrip]
+ * @property {WT_G3x5_PFDAirspeedIndicatorStripDefinition} [yellowStrip]
+ * @property {WT_G3x5_PFDAirspeedIndicatorStripDefinition} [redStrip]
  */
+
+class WT_G3x5_PFDAirspeedIndicatorStripDefinition {
+    /**
+     * @readonly
+     * @property {Number} min
+     * @type {Number}
+     */
+    get min() {
+    }
+
+    /**
+     * @readonly
+     * @property {Number} max
+     * @type {Number}
+     */
+    get max() {
+    }
+}
+
+class WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition extends WT_G3x5_PFDAirspeedIndicatorStripDefinition {
+    /**
+     * @param {Number} min
+     * @param {Number} max
+     */
+    constructor(min, max) {
+        super();
+
+        this._min = min;
+        this._max = max;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} min
+     * @type {Number}
+     */
+    get min() {
+        return this._min;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} max
+     * @type {Number}
+     */
+    get max() {
+        return this._max;
+    }
+}
 
 class WT_G3x5_PFDAirspeedIndicatorSpeedBug extends HTMLElement {
     constructor() {
