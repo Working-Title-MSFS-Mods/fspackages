@@ -782,7 +782,6 @@ cj4-pfd-element #Mainframe #ElapsedTime {
     transform: rotateX(0);
     position: absolute;
     background-color: black;
-    width: 25%;
     height: 3%;
     bottom: 6.7%;
     left: 1.2%
