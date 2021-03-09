@@ -1,4 +1,5 @@
 # Working Title CJ4 Mod - Repainting Guide
+Because of certain techniques, not all published CJ4 repaints are compatible with the Working Title CJ4 Mod. This guide gives a short outline of why that is the case and how liveries can be made compatible starting with v0.11.
 
 ## CURRENT STATE
 At the moment, the flags `atc_id_enable` or `atc_id_color` are existing in the `aircraft.cfg` but they do **not** have any effect on the display of aircraft registrations on the exterior model. Instead, like registrations on the interior model, placeholders for registrations are included in the exterior model files. The exact positioning, size and color are then controlled by the following line defined in the `panel.cfg`.
@@ -39,6 +40,12 @@ Removes the dynamically set registration altogether. Use this option if you want
 [fltsim]
 alias=Asobo_CJ4\panel.noreg
 ```
+
+# SUBMIT
+If you have followed those steps and wish to have your livery featured in our [List of Compatible Liveries](https://docs.google.com/spreadsheets/d/1-FZh5ZNXsSoHZFRcvkQwa-PHuBSk1QRTt7eYvx7Q4xU/edit?usp=sharing), you can fill out the following form.
+
+[Submit your livery for review](https://forms.gle/kz9mNdQWWxCk1TvDA)
+
 
 # ⚠️ NOTE
 Be aware, that if you decide to use a `panel.whitereg` or `panel.noreg` fallback, your liveries will **not** work with the default CJ4 anymore.
