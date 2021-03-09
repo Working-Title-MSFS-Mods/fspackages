@@ -336,8 +336,11 @@ class CJ4_MFD extends BaseAirliners {
             case "Lwr_Push_Chart_1":
                 if (this._chartView.style.visibility === "visible") {
                     this._chartView.hide();
+                    this.isExtended = this.wasExtended;
                 } else {
                     this._chartView.show();
+                    this.wasExtended = this.isExtended;
+                    this.isExtended = false;
                 }
                 break;
             case "Lwr_Push_TERR_WX":
@@ -568,7 +571,7 @@ class CJ4_MFD extends BaseAirliners {
         this.map.setSymbol(CJ4_MapSymbol.MISSEDAPPR, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_MISSEDAPPR) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.NDBS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_NDBS) == "ON") ? true : false);
         WTDataStore.set("WT_CJ4_RANGE_SEL_DISABLED", _dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_RNGSEL) == "ON" ? 0 : 1);
-        
+
         let sysMode = _dict.get(CJ4_PopupMenu_Key.SYS_SRC);
         if (sysMode == "OFF") {
             this.isExtended = true;
