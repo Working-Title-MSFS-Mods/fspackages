@@ -5,6 +5,8 @@ Latest Version: [v0.10.2](https://github.com/Working-Title-MSFS-Mods/fspackages/
 
 User Guide: https://docs.google.com/document/d/1qzxPMTSQRkvau8QOi7xUqNvjx9rbww_qHlso5AT5OnI/
 
+Repainter Guide: [REPAINT_README.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/REPAINT_README.md)
+
 Changelog: [CHANGES.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/CHANGES.md)
 
 Track Updates and Progress on Discord [https://discord.com/invite/Fa6w2xK](https://discord.com/invite/Fa6w2xK)
@@ -57,11 +59,6 @@ We are excited to announce that we've added a new feature that allows you to loa
 [Interim SoP Document](https://docs.google.com/document/d/15qb3g2ECsA8XH6gSbqbe5kGydNJ3Tj0j7vJPAWirwh4/edit?usp=sharing)
 
 [SIMBRIEF PROFILE](https://www.simbrief.com/system/dispatch.php?sharefleet=eyJ0cyI6IjE2MDI1MzkxMTUxODMiLCJiYXNldHlwZSI6IkMyNUMiLCJjb21tZW50cyI6IldPUktJTkcgVElUTEUgQ0o0IiwiaWNhbyI6IkMyNUMiLCJuYW1lIjoiQ0lUQVRJT04gQ0o0IiwiZW5naW5lcyI6IkZKNDQtNEEiLCJyZWciOiJONTI1V1QiLCJmaW4iOiIyNTQiLCJzZWxjYWwiOiIiLCJoZXhjb2RlIjoiIiwiY2F0IjoiTSIsInBlciI6IkIiLCJlcXVpcCI6IlNERTJFM0ZHSFJXWFlaIiwidHJhbnNwb25kZXIiOiJMQjEiLCJwYm4iOiJBMUIyQzJEMkQzTzJPM1MyIiwiZXh0cmFybWsiOiIiLCJtYXhwYXgiOiI3Iiwid2d0dW5pdHMiOiJMQlMiLCJvZXciOiIxMDI4MCIsIm16ZnciOiIxMjUwMCIsIm10b3ciOiIxNzExMCIsIm1sdyI6IjE1NjYwIiwibWF4ZnVlbCI6IjU3NjIiLCJwYXh3Z3QiOiIxNzAiLCJkZWZhdWx0Y2kiOiIiLCJmdWVsZmFjdG9yIjoiUDAwIiwiY3J1aXNlb2Zmc2V0IjoiUDAwMDAifQ--)
-
-### FMC
-With the added functions of the PERF menu, the FMC will calculate takeoff and landing speeds on their respective pages. You need to enter the winds as DDD/SS (where DDD is the magnetic direction of the wind and SS is the speed). You need to enter the temp in degrees C, so for 15C you'd enter just 15; you can read the SAT temp from the bottom of the MFD and use that temp for departure. You need to enter the pressure in inHG with the decimal, so for example, 29.92 - at this time HPA is not supported.
-
-You can use the "SEND" soft key on the FMS pages to transmit your automatically calculated VSpeeds to the PFD and they'll appear there in magenta. If you modify them directly on the PFD, they will be set to cyan to indicate they are not FMC values.
 
 ### CREDITS
 This list is incomplete, but thanks to everyone that contributed from inside and outside the Working Title team.
