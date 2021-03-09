@@ -38,7 +38,9 @@ class CJ4_FMC_ModSettingsPageOne {
         return this._lightMode;
     }
     set lightMode(value) {
-        if (value == 3) value = 0;
+        if (value == 3) {
+            value = 0;
+        }
         this._lightMode = value;
 
         // set simvar
@@ -64,7 +66,9 @@ class CJ4_FMC_ModSettingsPageOne {
         return this._cj4Units;
     }
     set cj4Units(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._cj4Units = value;
 
         // set datastore
@@ -77,7 +81,9 @@ class CJ4_FMC_ModSettingsPageOne {
         return this._gpuSetting;
     }
     set gpuSetting(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._gpuSetting = value;
 
         // set simvar
@@ -90,7 +96,9 @@ class CJ4_FMC_ModSettingsPageOne {
         return this._yokeHide;
     }
     set yokeHide(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._yokeHide = value;
 
         // set simvar
@@ -107,7 +115,9 @@ class CJ4_FMC_ModSettingsPageOne {
         return this._fpSync;
     }
     set fpSync(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._fpSync = value;
 
         // set datastore
@@ -163,7 +173,9 @@ class CJ4_FMC_ModSettingsPageOne {
             this.cj4Units = this.cj4Units + 1;
         };
         this._fmc.onLeftInput[3] = () => {
-            if (this._gpuAvailable) this.gpuSetting = this.gpuSetting + 1;
+            if (this._gpuAvailable) {
+                this.gpuSetting = this.gpuSetting + 1;
+            }
         };
         this._fmc.onLeftInput[4] = () => {
             this.yokeHide = this.yokeHide + 1;
@@ -202,9 +214,13 @@ class CJ4_FMC_ModSettingsPageTwo {
         this._atisSrc = WTDataStore.get('WT_ATIS_Source', 0);
     }
 
-    get atisSrc() { return this._atisSrc; }
+    get atisSrc() {
+        return this._atisSrc;
+    }
     set atisSrc(value) {
-        if (value == 3) value = 0;
+        if (value == 3) {
+            value = 0;
+        }
         this._atisSrc = value;
 
         // set datastore
@@ -213,9 +229,13 @@ class CJ4_FMC_ModSettingsPageTwo {
         this.invalidate();
     }
 
-    get metarSrc() { return this._metarSrc; }
+    get metarSrc() {
+        return this._metarSrc;
+    }
     set metarSrc(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._metarSrc = value;
 
         // set datastore
@@ -224,10 +244,13 @@ class CJ4_FMC_ModSettingsPageTwo {
         this.invalidate();
     }
 
-
-    get dlProcTime() { return this._dlProcTime; }
+    get dlProcTime() {
+        return this._dlProcTime;
+    }
     set dlProcTime(value) {
-        if (value == 2) value = 0;
+        if (value == 2) {
+            value = 0;
+        }
         this._dlProcTime = value;
 
         // set datastore
@@ -238,20 +261,20 @@ class CJ4_FMC_ModSettingsPageTwo {
 
     render() {
 
-        let metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["VATSIM", "MSFS"], this.metarSrc);
-        let dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
-        let atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
+        const metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["VATSIM", "MSFS"], this.metarSrc);
+        const dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
+        const atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "WT MOD SETTINGS[yellow]"],
-            ["METAR SOURCE[blue]", "ATIS SOURCE[blue]"],
-            [metarSrcSwitch, atisSrcSwitch],
+            ["METAR SOURCE[blue]"],
+            [metarSrcSwitch],
+            ["ATIS SOURCE[blue]"],
+            [atisSrcSwitch],
             ["DATALINK PROCESSING TIME[blue]"],
             [dlProcSwitch],
             ["HOPPIE LOGON CODE[blue]"],
             [this._hoppieLogon],
-            [""],
-            [""],
             [""],
             [""],
             [""],
@@ -260,10 +283,18 @@ class CJ4_FMC_ModSettingsPageTwo {
     }
 
     bindEvents() {
-        this._fmc.onLeftInput[0] = () => { this.metarSrc = this.metarSrc + 1; };
-        this._fmc.onRightInput[0] = () => { this.atisSrc = this.atisSrc + 1; };
-        this._fmc.onLeftInput[1] = () => { this.dlProcTime = this.dlProcTime + 1; };
-        this._fmc.onPrevPage = () => { CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc); };
+        this._fmc.onLeftInput[0] = () => {
+            this.metarSrc = this.metarSrc + 1;
+        };
+        this._fmc.onLeftInput[1] = () => {
+            this.atisSrc = this.atisSrc + 1;
+        };
+        this._fmc.onLeftInput[2] = () => {
+            this.dlProcTime = this.dlProcTime + 1;
+        };
+        this._fmc.onPrevPage = () => {
+            CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc);
+        };
     }
 
     invalidate() {
@@ -272,7 +303,6 @@ class CJ4_FMC_ModSettingsPageTwo {
         this.bindEvents();
     }
 }
-
 
 class CJ4_FMC_ModSettingsPage {
     static setPassCabinLights(value) {
@@ -289,7 +319,7 @@ class CJ4_FMC_ModSettingsPage {
     static ShowPage1(fmc) {
         fmc.clearDisplay();
 
-        // create page instance and init 
+        // create page instance and init
         ModSettingsPage1Instance = new CJ4_FMC_ModSettingsPageOne(fmc);
         ModSettingsPage1Instance.invalidate();
     }
