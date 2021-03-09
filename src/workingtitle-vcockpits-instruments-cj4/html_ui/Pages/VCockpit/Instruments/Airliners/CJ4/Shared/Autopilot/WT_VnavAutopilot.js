@@ -345,7 +345,6 @@ class WT_VerticalAutopilot {
             case GlideslopeStatus.GS_CAN_ARM:
                 if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.ILS) {
                     this._glideslopeStatus = GlideslopeStatus.GS_ARMED;
-                    this.navMode = 1;
                 }
                 break;
             case GlideslopeStatus.GS_ARMED:
