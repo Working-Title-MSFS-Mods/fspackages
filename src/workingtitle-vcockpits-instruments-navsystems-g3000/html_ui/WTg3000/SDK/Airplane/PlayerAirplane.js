@@ -2,6 +2,7 @@ class WT_PlayerAirplane {
     constructor() {
         this._type = this._getAircraftType();
         this._dynamics = this._createDynamics();
+        this._environment = this._createEnvironment();
         this._navigation = this._createNavigation();
         this._fms = this._createFMS();
         this._navCom = this._createNavCom();
@@ -23,6 +24,10 @@ class WT_PlayerAirplane {
 
     _createDynamics() {
         return new WT_AirplaneDynamics(this);
+    }
+
+    _createEnvironment() {
+        return new WT_AirplaneEnvironment(this);
     }
 
     _createNavigation() {
@@ -79,6 +84,15 @@ class WT_PlayerAirplane {
      */
     get dynamics() {
         return this._dynamics;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_AirplaneEnvironment} environment - the environment component of this airplane.
+     * @type {WT_AirplaneEnvironment}
+     */
+    get environment() {
+        return this._environment;
     }
 
     /**
@@ -389,11 +403,46 @@ class WT_AirplaneDynamics extends WT_AirplaneComponent {
     }
 }
 
+class WT_AirplaneEnvironment extends WT_AirplaneComponent {
+    /**
+     * Gets the pressure altitude at the airplane's current position.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the pressure altitude at the airplane's current position.
+     */
+    pressureAltitude(reference) {
+        let value = SimVar.GetSimVarValue("PRESSURE ALTITUDE", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
+    }
+
+    /**
+     * Gets the outside air temperature at the airplane's current position.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of degrees Celsius.
+     * @returns {WT_NumberUnit} the outside air temperature at the airplane's current position.
+     */
+    oat(reference) {
+        let value = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius");
+        return reference ? reference.set(value, WT_Unit.CELSIUS) : new WT_NumberUnit(value, WT_Unit.CELSIUS);
+    }
+
+    /**
+     * Gets the atmospheric pressure at the airplane's current position.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of inHg.
+     * @returns {WT_NumberUnit} the atmospheric pressure at the airplane's current position.
+     */
+    pressure(reference) {
+        let value = SimVar.GetSimVarValue("AMBIENT PRESSURE", "inHg");
+        return reference ? reference.set(value, WT_Unit.IN_HG) : new WT_NumberUnit(value, WT_Unit.IN_HG);
+    }
+}
+
 class WT_AirplaneNavigation extends WT_AirplaneComponent {
     /**
      * Gets the airplane's current geographic position.
      * @param {WT_GeoPoint} [reference] - a WT_GeoPoint object in which to store the result. If not supplied, a new WT_GeoPoint
-     *                                      object will be created.
+     *                                    object will be created.
      * @returns {WT_GeoPoint}  the current position of the airplane.
      */
     position(reference) {
@@ -980,6 +1029,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
 
     _initFromData(data) {
         this._vmo = data.vmo ? WT_Unit.KNOT.createNumber(data.vmo) : undefined;
+        this._mmo = data.mmo ? data.mmo : undefined;
+        this._crossover = data.crossover ? WT_Unit.FOOT.createNumber(data.crossover) : undefined;
         this._v1 = data.v1 ? WT_Unit.KNOT.createNumber(data.v1) : undefined;
         this._vr = data.vr ? WT_Unit.KNOT.createNumber(data.vr) : undefined;
         this._v2 = data.v2 ? WT_Unit.KNOT.createNumber(data.v2) : undefined;
@@ -993,7 +1044,7 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vmo - the airplane's maximum operating speed.
+     * @property {WT_NumberUnitReadOnly} Vmo - the airplane's maximum indicated operating speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vmo() {
@@ -1002,10 +1053,29 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
 
     /**
      * @readonly
+     * @property {Number} Mmo - the airplane's maximum mach operating speed.
+     * @type {Number}
+     */
+    get Mmo() {
+        return this._mmo;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} crossover - the airplane's crossover pressure altitude, the pressure altitude
+     *                                               at which Vmo and Mmo are equal.
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get crossover() {
+        return this._crossover ? this._crossover.readonly() : undefined;
+    }
+
+    /**
+     * @readonly
      * @property {WT_NumberUnitReadOnly} V1 - the airplane's decision speed.
      * @type {WT_NumberUnitReadOnly}
      */
-     get V1() {
+    get V1() {
         return this._v1 ? this._v1.readonly() : undefined;
     }
 
@@ -1088,15 +1158,23 @@ WT_AirplaneReferences.TBM930_DATA = {
     vy: 124,
     vx: 100,
     vapp: 85,
-    vglide: 120
+    vglide: 120,
+    vle: 178,
+    vfe: [178, 122]
 };
 
 WT_AirplaneReferences.CITATION_LONGITUDE_DATA = {
-    vmo: 280,
+    vmo: 325,
+    mmo: 0.84,
+    crossover: 29375,
     v1: 110,
     vr: 120,
     v2: 137,
     vfto: 180,
     vapp: 115,
-    vref: 108
+    vref: 108,
+    vno: 235,
+    mno: 0.75,
+    vle: 230,
+    vfe: [250, 230, 180]
 };
