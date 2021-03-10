@@ -9,6 +9,8 @@
   0%, 100% {
     visibility: hidden; } }
 
+
+
 html {
   height: 100%;
   width: 100%;
@@ -61,7 +63,7 @@ html {
     background-color: none;
     color: aqua; } }
 
-    @keyframes FlashYellow {
+@keyframes FlashYellow {
   5%, 45% {
     color: yellow;
     background-color: #1a1d21; }
@@ -168,6 +170,8 @@ as3x-touch-element {
         font-size: 2vh;
         bottom: 0%;
         width: 100%; }
+      as3x-touch-element #TopBar #com_standby_btn #com_active_ident, as3x-touch-element #TopBar #com_active_btn #com_active_ident {
+        display: none; }
     as3x-touch-element #TopBar #xpdr_btn #xpdr_code {
       position: absolute;
       bottom: 2%;
@@ -267,6 +271,11 @@ as3x-touch-element {
     bottom: 2%;
     width: auto;
     height: auto; }
+  as3x-touch-element #PFD #WindData {
+    position: absolute;
+    right: calc(50% + 9vh);
+    bottom: 25vh;
+    height: 5vh; }
   as3x-touch-element #PFD #ElevatorTrim {
     position: absolute;
     right: calc(50% + 13vh);
@@ -487,7 +496,9 @@ as3x-touch-element {
       as3x-touch-element #MFD #PagesContainer[state=NearestAirport] #NearestAirport,
       as3x-touch-element #MFD #PagesContainer[state=NearestVOR] #NearestVOR,
       as3x-touch-element #MFD #PagesContainer[state=NearestNDB] #NearestNDB,
-      as3x-touch-element #MFD #PagesContainer[state=NearestIntersection] #NearestIntersection {
+      as3x-touch-element #MFD #PagesContainer[state=NearestIntersection] #NearestIntersection,
+      as3x-touch-element #MFD #PagesContainer[state=Setup] #Setup,
+      as3x-touch-element #MFD #PagesContainer[state=Display] #Display {
         display: block; }
       as3x-touch-element #MFD #PagesContainer #FPL #Afpl_Map {
         position: absolute;
@@ -1227,6 +1238,100 @@ as3x-touch-element {
         width: 20vw; }
       as3x-touch-element #MFD #NearestNDB .NearestList thead tr th:nth-child(4), as3x-touch-element #MFD #NearestNDB .NearestList tbody tr:first-child td:nth-child(4) {
         width: 20vw; }
+    as3x-touch-element #MFD #Display .master {
+      position: absolute;
+      top: 10%;
+      left: calc((100% - 60vh) / 2);
+      width: 60vh;
+      height: 40vh;
+      border: 0.4vh solid white; }
+      as3x-touch-element #MFD #Display .master *[state=Greyed] {
+        filter: grayscale(100%) brightness(40%); }
+      as3x-touch-element #MFD #Display .master .title {
+        position: absolute;
+        top: 2vh;
+        width: 100%;
+        font-size: 4vh;
+        color: white;
+        text-align: center; }
+      as3x-touch-element #MFD #Display .master #MasterBrightnessMode {
+        position: absolute;
+        top: 7vh;
+        height: 9vh;
+        width: 30vh;
+        left: 15vh; }
+      as3x-touch-element #MFD #Display .master #LightingMasterValue {
+        position: absolute;
+        top: 17vh;
+        width: 100%;
+        font-size: 3.5vh;
+        color: aqua;
+        text-align: center; }
+      as3x-touch-element #MFD #Display .master #MasterBacklightBgSVG {
+        position: absolute;
+        top: 23vh;
+        left: 15vh;
+        height: 9vh;
+        width: 30vh; }
+      as3x-touch-element #MFD #Display .master #MasterBacklightCursorSVG {
+        position: absolute;
+        top: 23vh;
+        left: 20vh;
+        height: 9vh;
+        width: 3vh; }
+      as3x-touch-element #MFD #Display .master #LightingMasterLess {
+        position: absolute;
+        top: 23vh;
+        left: 3vh;
+        width: 9vh;
+        height: 9vh; }
+        as3x-touch-element #MFD #Display .master #LightingMasterLess .image {
+          position: absolute;
+          width: 80%;
+          height: 80%;
+          top: 10%;
+          left: 10%; }
+      as3x-touch-element #MFD #Display .master #LightingMasterMore {
+        position: absolute;
+        top: 23vh;
+        right: 3vh;
+        width: 9vh;
+        height: 9vh; }
+        as3x-touch-element #MFD #Display .master #LightingMasterMore .image {
+          position: absolute;
+          width: 80%;
+          height: 80%;
+          top: 10%;
+          left: 10%; }
+      as3x-touch-element #MFD #Display .master #MasterBrightnessMode_Popup {
+        position: absolute;
+        width: 100%;
+        height: 100%; }
+        as3x-touch-element #MFD #Display .master #MasterBrightnessMode_Popup[state=Inactive] {
+          display: none; }
+        as3x-touch-element #MFD #Display .master #MasterBrightnessMode_Popup .content {
+          position: absolute;
+          width: 35vh;
+          left: 12.5vh;
+          top: 7vh;
+          height: 29vh;
+          background-color: black;
+          border: 0.4vh solid white;
+          border-radius: 2vh; }
+          as3x-touch-element #MFD #Display .master #MasterBrightnessMode_Popup .content #MasterBrightnessMode_Photocell {
+            position: absolute;
+            top: 1vh;
+            height: 12vh;
+            left: 2.5vh;
+            right: 2.5vh;
+            width: auto; }
+          as3x-touch-element #MFD #Display .master #MasterBrightnessMode_Popup .content #MasterBrightnessMode_Manual {
+            position: absolute;
+            top: 14vh;
+            height: 12vh;
+            left: 2.5vh;
+            right: 2.5vh;
+            width: auto; }
     as3x-touch-element #MFD .popup {
       position: absolute;
       top: 0%;
@@ -1821,8 +1926,8 @@ as3x-touch-element {
       top: 71%;
       height: 20%;
       left: 5%;
-      /*right: 35%; */
-      width: 65%;}
+      right: 35%;
+      width: auto; }
       as3x-touch-element #MFD #PFD_Menu #timer #timer_startStop_button {
         left: 2%;
         width: 55%; }
@@ -1841,18 +1946,6 @@ as3x-touch-element {
       as3x-touch-element #MFD #PFD_Menu #timer #timer_reset_button {
         right: 2%;
         width: 35%; }
-    as3x-touch-element #MFD #PFD_Menu #wind {
-      top: 71%;
-      height: 20%;
-      right: 5%;
-      width: 24%;
-    }
-      as3x-touch-element #MFD #PFD_Menu #wind #wind_mode_button {
-        left: 5%;
-        right: 5%;
-        width: auto;
-      }
-
     as3x-touch-element #MFD #PFD_Menu #minimums {
       top: 71%;
       height: 20%;
@@ -1863,6 +1956,80 @@ as3x-touch-element {
         left: 5%;
         right: 5%;
         width: auto; }
+    as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsButton {
+      position: absolute;
+      right: 5%;
+      top: 75%;
+      bottom: 0.5vh;
+      height: 10vh;
+      width: 25%; }
+      as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsButton .mainText {
+        position: absolute;
+        font-size: 3vh;
+        width: 100%;
+        text-align: center; }
+    as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(1, 1, 1, 0.8); }
+      as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content {
+        position: absolute;
+        top: 20%;
+        bottom: 20%;
+        left: 20%;
+        right: 20%;
+        border: 0.4vh solid white;
+        border-radius: 2vh;
+        background-color: black; }
+        as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content .option {
+          width: 90%;
+          margin-left: 5%;
+          margin-top: 5%; }
+        as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content .gradientButton .mainText {
+          position: absolute;
+          font-size: 3vh;
+          width: 100%;
+          text-align: center; }
+        as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content #windSelection_button .value {
+          position: absolute;
+          top: auto;
+          bottom: 3vh;
+          left: 1vh;
+          right: 1vh;
+          width: auto;
+          text-align: center; }
+        as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content #windSelection_window {
+          position: absolute;
+          top: 0vh;
+          left: 0vh;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(1, 1, 1, 0.8);
+          border-radius: 2vh; }
+          as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content #windSelection_window .Content {
+            position: absolute;
+            left: 2vh;
+            right: 2vh;
+            top: 10vh;
+            height: 34vh;
+            background-color: black;
+            border: 0.4vh solid white;
+            border-radius: 2vh; }
+            as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content #windSelection_window .Content .gradientButton {
+              margin-top: 2%;
+              margin-left: 2%;
+              width: 96%;
+              height: 10vh; }
+          as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content #windSelection_window[state=Inactive] {
+            display: none; }
+        as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow .content #PFD_moreOptions_backButton {
+          position: absolute;
+          right: 5%;
+          bottom: 5%;
+          width: 40%; }
+      as3x-touch-element #MFD #PFD_Menu #PFD_moreOptionsWindow[state=Inactive] {
+        display: none; }
   as3x-touch-element #WaypointDuplicateWindow {
     color: white;
     font-size: 3vh;
@@ -2381,7 +2548,7 @@ as3x-touch-element {
         font-size: 4vh; }
       as3x-touch-element #SelectionList .content .gradientButton[state=Inactive] {
         display: none; }
-  as3x-touch-element #Annunciations {
+    as3x-touch-element #Annunciations {
     position: absolute;
     background-color: black;
     top: 67%;
@@ -2412,15 +2579,7 @@ as3x-touch-element {
   as3x-touch-element[instrumentstyle=e330] #MainDisplay #PFD #HorizonContainer #SyntheticVision {
     left: -54vh; }
 
-  as3x-touch-element #PFD #WindData {
-        position: absolute;
-        top: 63%;
-        right: calc(50% + 15vh);
-        height: 10vh;
-        width: 9vh;
-  };
-
-  as3x-touch-element #MFD #MapMenu .title {
+    as3x-touch-element #MFD #MapMenu .title {
     position: absolute;
     width: 100%;
     top: 0%;
@@ -2626,3 +2785,19 @@ as3x-touch-element #MFD #MapMenu #range {
         width: 90%;
     }
 
+as3x-touch-element .gradientButton {
+border: 0.2vh solid #666666;
+border-radius: 1vh;
+background: linear-gradient(#333333, rgba(0, 0, 254, 0) 60%);
+}
+
+as3x-touch-element .roundButton {
+border-radius: 50%;
+border: 0.2vh solid #666666;
+background: linear-gradient(#333333, rgba(0, 0, 254, 0) 60%);
+}
+
+as3x-touch-element #TopBar .Button {
+    border: 0.2vh solid #666666;
+    background: linear-gradient(#333333, rgba(0, 0, 254, 0) 60%);
+}

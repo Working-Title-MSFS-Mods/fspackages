@@ -32,8 +32,7 @@ class AS3X_Touch extends NavSystemTouch {
         this.mfdMapMapElement = this.mfdMapElement.getElementsByTagName("map-instrument")[0];
         this.warnings = new PFD_Warnings();
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this.warnings));
-        this.mainMap = new AS3X_Touch_Map("MainMap");
-        this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", this.mainMap));
+        this.addIndependentElementContainer(new NavSystemElementContainer("MainMap", "Map_Elements", new AS3X_Touch_Map()));
         this.topBar = new AS3X_Touch_TopBar();
         this.addIndependentElementContainer(new NavSystemElementContainer("TopBar", "TopBar", this.topBar));
         this.transponderWindow = new NavSystemElementContainer("Transponder", "XPDR", new AS3X_Touch_Transponder());
@@ -56,8 +55,8 @@ class AS3X_Touch extends NavSystemTouch {
         this.pfdMenu.setGPS(this);
         this.pageMenu = new NavSystemElementContainer("Page menu", "PageMenu", new AS3X_Touch_PageMenu());
         this.pageMenu.setGPS(this);
-        this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_MapMenu());
-        this.mapMenu.setGPS(this);
+        // this.mapMenu = new NavSystemElementContainer("Map menu", "MapMenu", new AS3X_Touch_MapMenu());
+        // this.mapMenu.setGPS(this);
         this.afcsMenu = new NavSystemElementContainer("AFCS Menu", "AFCS_Menu", new AS3X_Touch_AFCSMenu());
         this.afcsMenu.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Full Keyboard", "fullKeyboard", new AS3X_Touch_FullKeyboard());
@@ -66,17 +65,14 @@ class AS3X_Touch extends NavSystemTouch {
         this.duplicateWaypointSelection.setGPS(this);
         this.pageGroups = [
             new AS3X_Touch_PageGroup("MFD", this, [
-                new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png",
-                    () => { if(this.displayMode == 'MFD' || this.m_isSplit) this.switchToPopUpPage(this.mapMenu)}),
+                new AS3X_Touch_NavSystemPage("Map", "Map", new AS3X_Touch_MapContainer("Map"), "Map", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_1.png"),
                 new AS3X_Touch_NavSystemPage("Active FPL", "FPL", new NavSystemElementGroup([
                     new NavSystemTouch_ActiveFPL(true),
                     new AS3X_Touch_MapContainer("Afpl_Map")
-                ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png",
-                    null,
-                    null,  // should we disable nexrad when in shrunken-window mode?
-                    null), // not sure, but if so, these callback hooks can do it.
-                new AS3X_Touch_NavSystemPage("Procedures", "Procedures", new AS3X_Touch_Procedures(), "Proc", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png")
+                ]), "FPL", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_FLIGHT_PLAN_MED_1.png"),
+                new AS3X_Touch_NavSystemPage("Procedures", "Procedures", new AS3X_Touch_Procedures(), "Proc", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png"),
             ], [
+                new AS3X_Touch_MenuButton("Setup", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_SYSTEM_PROP_1.png", this.SwitchToPageGroupMenu.bind(this, "Setup"), false),
                 new AS3X_Touch_MenuButton("Direct-To", "", this.switchToPopUpPage.bind(this, this.directToWindow), true),
                 new AS3X_Touch_MenuButton("Nearest", "", this.SwitchToPageGroupMenu.bind(this, "NRST"), true),
                 new AS3X_Touch_MenuButton("Com 1 Frequency", "", this.openFrequencyKeyboard.bind(this, "COM 1 Standby", 118, 136.99, "COM ACTIVE FREQUENCY:1", "COM STANDBY FREQUENCY:1", this.setCom1Freq.bind(this), "COM SPACING MODE:1"), false),
@@ -91,6 +87,11 @@ class AS3X_Touch extends NavSystemTouch {
                 new AS3X_Touch_NavSystemPage("Nearest Int", "NearestIntersection", new AS3X_Touch_NRST_Intersection(), "INT", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png"),
             ], [
                 new AS3X_Touch_MenuButton("Main Menu", "", this.SwitchToPageGroupMenu.bind(this, "MFD"), true),
+            ]),
+            new AS3X_Touch_PageGroup("Setup", this, [
+                new AS3X_Touch_NavSystemPage("Display", "Display", new AS3X_Touch_Setup_Display(), "Disp", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_LIGHTING_CONFIG.png"),
+            ], [
+                new AS3X_Touch_MenuButton("Main Menu", "", this.SwitchToPageGroupMenu.bind(this, "MFD"), false),
             ])
         ];
         if (SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") != 1) {
@@ -116,16 +117,17 @@ class AS3X_Touch extends NavSystemTouch {
                 this.switchToPopUpPage(this.pfdMenu);
             }
         }.bind(this));
-        this.makeButton(this.getChildById("AutopilotInfos"), function () {
-            if (this.popUpElement == this.afcsMenu) {
-                this.closePopUpElement();
-            }
-            else {
-                this.switchToPopUpPage(this.afcsMenu);
-            }
-        }.bind(this));
-        this.maxUpdateBudget = 12;
-        this.autoPitotHeat = false;
+      this.makeButton(this.getChildById("AutopilotInfos"), function () {
+        if (this.popUpElement == this.afcsMenu) {
+          this.closePopUpElement();
+        }
+        else {
+          this.switchToPopUpPage(this.afcsMenu);
+        }
+      }.bind(this));
+      this.maxUpdateBudget = 12;
+      this.autoPitotHeat = false;
+      SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAuto", "number", 1);
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -145,20 +147,20 @@ class AS3X_Touch extends NavSystemTouch {
                 this.tactileOnly = true;
                 this.getChildById("LeftKnobInfos").style.display = "None";
                 this.getChildById("RightKnobInfos").style.display = "None";
-            }
-            let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
-            if (autoPitotHeat && autoPitotHeat.textContent == "True") {
-                this.autoPitotHeat = true;
-                this.pitotOnTime = null;
-                this.pitotHeating = false;
-            }
-        }
-        switch (this.displayMode) {
+          }
+          let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
+          if (autoPitotHeat && autoPitotHeat.textContent == "True") {
+            this.autoPitotHeat = true;
+            this.pitotOnTime = null;
+            this.pitotHeating = false;
+          }
+      }
+      switch (this.displayMode) {
             case "PFD":
                 this.mainMfd.style.display = "None";
-                this.pfdContainer = new AS3X_Touch_PFD();
-                this.addIndependentElementContainer(this.pfdContainer);
+                this.addIndependentElementContainer(new AS3X_Touch_PFD());
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
+                this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
                 this.getChildById("EngineInfos").style.display = "None";
                 this.mainDisplay.setAttribute("state", "FullNoEngine");
                 this.mfd.setAttribute("state", "HideNoEngine");
@@ -171,7 +173,6 @@ class AS3X_Touch extends NavSystemTouch {
                 break;
             case "MFD":
                 this.pfd.style.display = "None";
-                this.pfdContainer = null;
                 this.mainMap = new AS3X_Touch_MFD_Main();
                 this.addIndependentElementContainer(this.mainMap);
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
@@ -186,9 +187,9 @@ class AS3X_Touch extends NavSystemTouch {
                 break;
             case "Splitted":
                 this.mainMfd.style.display = "None";
-                this.pfdContainer = new AS3X_Touch_PFD();
-                this.addIndependentElementContainer(this.pfdContainer);
+                this.addIndependentElementContainer(new AS3X_Touch_PFD());
                 this.addIndependentElementContainer(new NavSystemElementContainer("EngineInfos", "EngineInfos", new GlassCockpit_XMLEngine()));
+                this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new PFD_WindData()));
                 this.engineDisplayed = true;
                 this.m_isSplit = true;
                 let splitMaps = this.getElementsByClassName("SplitMap");
@@ -208,27 +209,26 @@ class AS3X_Touch extends NavSystemTouch {
         if (this.warnings)
             this.warnings.reset();
     }
-
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         if (this.autoPitotHeat) {
-            let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
-            let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
-            let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
-            if (temp <= 7 && rpm > 0) {
-                if (!pitotHeat) {
-                    SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
-                    SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
-                    this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
-                } else {
-                    let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
-                    if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
-                        SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
-                    };
-                }
-            } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
-                SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
+          let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
+          let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
+          let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
+          if (temp <= 7 && rpm > 0) {
+            if (!pitotHeat) {
+              SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
+              SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
+              this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+            } else {
+              let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+              if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
+                SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
+              };
             }
+          } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
+            SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
+          }
         }
         if (this.handleReversionaryMode && this.displayMode == "PFD") {
             let reversionary = false;
@@ -275,6 +275,15 @@ class AS3X_Touch extends NavSystemTouch {
         let minutes = Math.floor((time / 60) % 60);
         let hours = Math.floor(Math.min(time / 3600, 99));
         Avionics.Utils.diffAndSet(this.botLineLocalTime, (hours < 10 ? "0" : "") + hours + (minutes < 10 ? ":0" : ":") + minutes + (seconds < 10 ? ":0" : ":") + seconds);
+        let timeOfDay = SimVar.GetSimVarValue("E:TIME OF DAY", "number");
+        let autoBright = (timeOfDay == 1 ? 1 : timeOfDay == 3 ? 0.1 : 0.35);
+        SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Auto", "number", autoBright);
+        if (SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 1) {
+            SimVar.SetSimVarValue("L:AS3X_Touch_Brightness", "number", 0.05 + 0.95 * autoBright);
+        }
+        else {
+            SimVar.SetSimVarValue("L:AS3X_Touch_Brightness", "number", 0.05 + 0.95 * SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number"));
+        }
     }
     updateKnobsLabels() {
         if (this.displayMode == "MFD") {
@@ -366,7 +375,7 @@ class AS3X_Touch extends NavSystemTouch {
         }
     }
     crs_CB(_inc) {
-        let cdiSrc = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+        let cdiSrc = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : Simplane.getAutoPilotSelectedNav();
         if (_inc) {
             if (cdiSrc == 1) {
                 SimVar.SetSimVarValue("K:VOR1_OBI_INC", "number", 0);
@@ -412,22 +421,21 @@ class AS3X_Touch extends NavSystemTouch {
         super.computeEvent(_event);
         switch (_event) {
             case "Menu_Push":
-                if (this.displayMode != "MFD" && !this.m_isSplit) {
-                    // we're in full PFD mode, if we don't have a popup open show the PFD menu
-                    if (!this.popUpElement) {
-                        this.switchToPopUpPage(this.pfdMenu);
-                    }
+                if (this.popUpElement == this.pageMenu) {
+                    this.closePopUpElement();
                 }
-
+                else {
+                    this.switchToPopUpPage(this.pageMenu);
+                }
                 break;
             case "Back_Push":
                 if (this.popUpElement) {
                     this.closePopUpElement();
                 }
                 else {
-                    this.SwitchToMenuName("MFD");
-                    this.computeEvent("Master_Caution_Push");
-                    this.computeEvent("Master_Warning_Push");
+                  this.SwitchToMenuName("MFD");
+                  this.computeEvent("Master_Caution_Push");
+                  this.computeEvent("Master_Warning_Push");
                 }
                 break;
             case "NRST_Push":
@@ -550,15 +558,12 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     constructor() {
         super("PFD", "PFD", null);
         this.attitude = new PFD_Attitude();
-        this.attitude.setSyntheticVisionEnabled(true);
-        this.mapInstrument = new MapInstrumentElement();
-        this.windData = new AS3X_Touch_WindData();
-        this.annunciations = new AS3X_Touch_Annunciations();
+      this.mapInstrument = new MapInstrumentElement();
+      this.annunciations = new AS3X_Touch_Annunciations();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
             new PFD_Airspeed(),
             new PFD_Compass(),
-            this.windData,
             this.attitude,
             this.mapInstrument,
             this.annunciations,
@@ -571,7 +576,6 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     init() {
         super.init();
         this.attitude.svg.setAttribute("background", "false");
-        this.windData.mode = 1;
         this.gps.makeButton(this.gps.getChildById("Annunciations"), () => {
             this.gps.computeEvent("Master_Caution_Push");
             this.gps.computeEvent("Master Warning Push");
@@ -581,30 +585,24 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
 class AS3X_Touch_MFD_Main extends NavSystemElementContainer {
     constructor() {
         super("MainMFD", "MainMFD", null);
-        this.element = new AS3X_Touch_Map("MainMFDMap");
-    }
-}
-class AS3X_Touch_WindData extends PFD_WindData {
-    init(root) {
-        super.init(root);
-        this.svg = root.querySelector("glasscockpit-wind-data");
+        this.element = new AS3X_Touch_Map();
     }
 }
 class AS3X_Touch_Annunciations extends Cabin_Annunciations {
-    onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-        // Hide ourselves if we have no messages to avoid an empty black box
-        let hideMe = true;
-        for (var i = 0; i < this.allMessages.length; i++) {
-            if (this.allMessages[i].Visible) {
-                hideMe = false;
-                break;
-            }
-        }
-        if (hideMe) {
-            this.annunciations.setAttribute("state", "Hidden");
-        }
+  onUpdate(_deltaTime) {
+    super.onUpdate(_deltaTime);
+    // Hide ourselves if we have no messages to avoid an empty black box
+    let hideMe = true;
+    for (var i = 0; i < this.allMessages.length; i++) {
+      if (this.allMessages[i].Visible) {
+        hideMe = false;
+        break;
+      }
     }
+    if (hideMe) {
+      this.annunciations.setAttribute("state", "Hidden");
+    }
+  }
 }
 class AS3X_Touch_TopBar extends NavSystemElement {
     constructor() {
@@ -746,262 +744,110 @@ class AS3X_Touch_MapContainer extends NavSystemElement {
     }
 }
 class AS3X_Touch_Map extends MapInstrumentElement {
-    constructor(_mapId) {
-        super();
-        this.mapId = _mapId;
-    }
     init(root) {
         super.init(root);
-        this.instrument.zoomRanges = [0.5, 1, 2, 3, 5, 10, 15, 20, 35, 50, 100, 150, 200, 500, 1000, 1500, 2000];
-        this.instrument.rotationHandler = this;
         this.mapPlus = root.querySelector(".mapPlus");
         this.mapLess = root.querySelector(".mapLess");
         this.mapCenter = root.querySelector(".mapCenter");
-        this.mapOrientation = root.querySelector("#MapOrientation");
         this.gps.makeButton(this.mapPlus, this.instrument.onEvent.bind(this.instrument, "RANGE_DEC"));
         this.gps.makeButton(this.mapLess, this.instrument.onEvent.bind(this.instrument, "RANGE_INC"));
         this.gps.makeButton(this.mapCenter, this.centerOnPlane.bind(this));
         this.instrument.addEventListener("mousedown", this.moveMode.bind(this));
         this.instrument.supportMouseWheel(false);
-        this.instrument.offsetPlaneInHdgTrk = true;
-        this.loadSavedMapWeather();
-        this.loadSavedTopoState();
-        this._autoRange = false;
-        this._lastAutoRangeDistance = 0;
-        this._orientation = WTDataStore.get(`Map.${this._mapId}.Orientation`, AS3X_Touch_Map.ORIENTATION_TRK_UP);
-        this._rotationDisabled = false;
     }
-    get orientation() {
-        return this._orientation
-    }
-    set orientation(orientation) {
-        this._orientation = orientation;
-        WTDataStore.set(`Map.${this._mapId}.Orientation`, orientation);
-        switch (orientation) {
-            case AS3X_Touch_Map.ORIENTATION_TRK_UP:
-                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "TRACK UP")
-                break;
-            case AS3X_Touch_Map.ORIENTATION_DTK_UP:
-                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "DTK UP")
-                break;
-            default:
-                Avionics.Utils.diffAndSet(this.instrument.mapOrientationElement, "NORTH UP")
+    moveMode(_event) {
+        if (_event.button == 0) {
+            this.instrument.setAttribute("bing-mode", "vfr");
+            this.mapCenter.setAttribute("state", "Active");
         }
-    }
-    get rotationDisabled() {
-        return AS3X_Touch_DirectTo._rotationDisabled
-    }
-    set rotationDisabled(disabled) {
-        this._rotationDisabled = disabled;
-    }
-    getRotation() {
-        if (this._rotationDisabled) {
-            return 0;
-        }
-
-        switch (this._orientation) {
-            case AS3X_Touch_Map.ORIENTATION_TRK_UP: return -SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
-            case AS3X_Touch_Map.ORIENTATION_DTK_UP: return -(SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree") + SimVar.GetSimVarValue("MAGVAR", "degree"));
-        }
-        return 0;
-    }
-    onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-        if (this._autoRange) {
-            this.doAutoRange();
-        }
-        if (this.nexradOn) {
-            this.updateWeather();
-        }
-    }
-    moveMode() {
-        this.instrument.setAttribute("bing-mode", "vfr");
-        this.mapCenter.setAttribute("state", "Active");
     }
     centerOnPlane() {
         this.instrument.setCenteredOnPlane();
         this.mapCenter.setAttribute("state", "Inactive");
     }
-    getMapOrientation() {
-        return SimVar.GetSimVarValue(`L:G3X_Map_${this.mapId}_Orient`, "number");
-    }
-    loadSavedMapWeather() {
-        let state = WTDataStore.get(`Map.${this._mapId}.Weather`, false);
-        this.setMapWeather(state);
-    }
-    setMapWeather(state) {
-        WTDataStore.set(`Map.${this._mapId}.Weather`, state);
-        this.nexradOn = state;
-        this.updateWeather();
-    }
-    getMapWeather() {
-        return this.nexradOn;
-    }
-    loadSavedTopoState() {
-        let state = WTDataStore.get(`Map.${this._mapId}.Topo`, false)
-        this.setIsolines(state);
-    }
-    setIsolines(state) {
-        if (this.getIsolines() != state) {
-            this.toggleIsolines();
-        }
-        WTDataStore.set(`Map.${this._mapId}.Topo`, state);
-    }
-    getRangeText() {
-        return this.instrument.zoomRanges[this.instrument.getZoom()];
-    }
-    setAutoRange(state) {
-        this._autoRange = state;
-    }
-    getAutoRange() {
-        return this._autoRange;
-    }
-    doAutoRange() {
-        let wptDistance = SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical mile");
-        // For efficiency, don't compute the full thing if we haven't moved much
-        if (Math.abs(wptDistance - this._lastAutoRangeDistance) < 0.5) {
-            return;
-        }
-        let ranges = this.instrument.zoomRanges;
-        let currentRangeIdx = this.instrument.getZoom();
-        let newIdx = 0
-        for (let i = 1; ranges[i-1] <= wptDistance * 2; i++) {
-            newIdx = i
-        }
-        if (currentRangeIdx != newIdx) {
-            this.instrument.setZoom(newIdx);
-        }
-        this._lastAutoRangeDistance = wptDistance;
-    }
-    onEvent(_event) {
-        console.log(_event);
-
-        switch (_event) {
-            case "RANGE_INC":
-            case "RANGE_DEC":
-                this.setAutoRange(false);
-                this.instrument.onEvent(_event);
-                break;
-        }
-    }
-
 }
 class AS3X_Touch_PageMenu_Button {
 }
 class AS3X_Touch_Popup extends NavSystemElement {
-    init(root) {
-        this.root = root;
-    }
-    onEnter() {
-        this.root.setAttribute("state", "Active");
-    }
-    onUpdate() {
-        super.onUpdate();
-    }
-    onExit() {
-        this.root.setAttribute("state", "Inactive");
-    }
-    onEvent(_event) {
-    }
-}
-class AS3X_Touch_MapMenu extends AS3X_Touch_Popup {
-    init(root) {
-        super.init(root);
-        this._map = this.gps.mainMap;
-        this.northUp = this.gps.getChildById("MapMenu_Orient_North");
-        this.trkUp = this.gps.getChildById("MapMenu_Orient_Track");
-        this.dtkUp = this.gps.getChildById("MapMenu_Orient_Dtk");
-        this.weather = this.gps.getChildById("MapMenu_Weather");
-        this.topo = this.gps.getChildById("MapMenu_Topo");
-        this.titleRange = this.gps.getChildById("MapMenu_Title_Range");
-        this.rangeInc = this.gps.getChildById("MapMenu_Range_Inc");
-        this.rangeDec = this.gps.getChildById("MapMenu_Range_Dec");
-        this.rangeAuto = this.gps.getChildById("MapMenu_Range_Auto");
-        this.gps.makeButton(this.northUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_NORTH_UP });
-        this.gps.makeButton(this.trkUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_TRK_UP });
-        this.gps.makeButton(this.dtkUp, () => { this._map.orientation = AS3X_Touch_Map.ORIENTATION_DTK_UP });
-        this.gps.makeButton(this.weather, () => { this._map.setMapWeather(!this._map.getMapWeather()) });
-        this.gps.makeButton(this.topo, () => { this._map.setIsolines(!this._map.getIsolines()) });
-        this.gps.makeButton(this.rangeDec, () => this.gps.computeEvent("RANGE_DEC"));
-        this.gps.makeButton(this.rangeInc, () => this.gps.computeEvent("RANGE_INC"));
-        this.gps.makeButton(this.rangeAuto, () => {
-            this._map.setAutoRange(!this._map.getAutoRange());
-        })
-    }
-    onUpdate() {
-        Avionics.Utils.diffAndSetAttribute(this.northUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_NORTH_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.trkUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_TRK_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.dtkUp, "state", this._map.orientation == AS3X_Touch_Map.ORIENTATION_DTK_UP ? "Active" : "")
-        Avionics.Utils.diffAndSetAttribute(this.weather, "state", this._map.getMapWeather() ? "Active" : "");
-        Avionics.Utils.diffAndSetAttribute(this.topo, "state", this._map.getIsolines() ? "Active" : "");
-        Avionics.Utils.diffAndSet(this.titleRange, `(${this._map.getRangeText()}nm)`);
-        Avionics.Utils.diffAndSetAttribute(this.rangeAuto, "state", this._map.getAutoRange() ? "Active" : "");
-    }
+  init(root) {
+    this.root = root;
+  }
+  onEnter() {
+    this.root.setAttribute("state", "Active");
+  }
+  onUpdate() {
+    super.onUpdate();
+  }
+  onExit() {
+    this.root.setAttribute("state", "Inactive");
+  }
+  onEvent(_event) {
+  }
 }
 class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
-    init(root) {
-        super.init(root);
-        this.MasterButton = this.gps.getChildById("AFCS_AP_Master");
-        this.FdButton = this.gps.getChildById("AFCS_FD_Button");
-        this.YdButton = this.gps.getChildById("AFCS_YD_Button");
-        this.LvlButton = this.gps.getChildById("AFCS_LVL_Button");
-        this.HdgButton = this.gps.getChildById("AFCS_HDG_Button");
-        this.NavButton = this.gps.getChildById("AFCS_NAV_Button");
-        this.ApprButton = this.gps.getChildById("AFCS_APPR_Button");
-        this.IasButton = this.gps.getChildById("AFCS_IAS_Button");
-        this.AltButton = this.gps.getChildById("AFCS_ALT_Button");
-        this.VsButton = this.gps.getChildById("AFCS_VS_Button");
-        this.UpButton = this.gps.getChildById("AFCS_UP_Button");
-        this.DnButton = this.gps.getChildById("AFCS_DN_Button");
-        this.gps.makeButton(this.MasterButton, () => {this.buttonToggle("K:AP_MASTER")});
-        this.gps.makeButton(this.FdButton, () => {this.buttonToggle("K:TOGGLE_FLIGHT_DIRECTOR")});
-        this.gps.makeButton(this.YdButton, () => {this.buttonToggle("K:YAW_DAMPER_TOGGLE")});
-        this.gps.makeButton(this.LvlButton, () => {this.buttonToggle("K:AP_WING_LEVELER")});
-        this.gps.makeButton(this.HdgButton, () => {this.buttonToggle("K:AP_HDG_HOLD")});
-        this.gps.makeButton(this.NavButton, () => {this.buttonToggle("K:AP_NAV1_HOLD")});
-        this.gps.makeButton(this.ApprButton, () => {this.buttonToggle("K:AP_APR_HOLD")});
-        this.gps.makeButton(this.IasButton, () => {this.buttonToggle("K:FLIGHT_LEVEL_CHANGE")});
-        this.gps.makeButton(this.AltButton, () => {this.buttonToggle("K:AP_ALT_HOLD")});
-        this.gps.makeButton(this.VsButton, () => {this.buttonToggle("K:AP_VS_HOLD")});
-        this.gps.makeButton(this.UpButton, () => {this.buttonUpDn("UP")});
-        this.gps.makeButton(this.DnButton, () => {this.buttonUpDn("DN")});
+  init(root) {
+    super.init(root);
+    this.MasterButton = this.gps.getChildById("AFCS_AP_Master");
+    this.FdButton = this.gps.getChildById("AFCS_FD_Button");
+    this.YdButton = this.gps.getChildById("AFCS_YD_Button");
+    this.LvlButton = this.gps.getChildById("AFCS_LVL_Button");
+    this.HdgButton = this.gps.getChildById("AFCS_HDG_Button");
+    this.NavButton = this.gps.getChildById("AFCS_NAV_Button");
+    this.ApprButton = this.gps.getChildById("AFCS_APPR_Button");
+    this.IasButton = this.gps.getChildById("AFCS_IAS_Button");
+    this.AltButton = this.gps.getChildById("AFCS_ALT_Button");
+    this.VsButton = this.gps.getChildById("AFCS_VS_Button");
+    this.UpButton = this.gps.getChildById("AFCS_UP_Button");
+    this.DnButton = this.gps.getChildById("AFCS_DN_Button");
+    this.gps.makeButton(this.MasterButton, () => {this.buttonToggle("K:AP_MASTER")});
+    this.gps.makeButton(this.FdButton, () => {this.buttonToggle("K:TOGGLE_FLIGHT_DIRECTOR")});
+    this.gps.makeButton(this.YdButton, () => {this.buttonToggle("K:YAW_DAMPER_TOGGLE")});
+    this.gps.makeButton(this.LvlButton, () => {this.buttonToggle("K:AP_WING_LEVELER")});
+    this.gps.makeButton(this.HdgButton, () => {this.buttonToggle("K:AP_HDG_HOLD")});
+    this.gps.makeButton(this.NavButton, () => {this.buttonToggle("K:AP_NAV1_HOLD")});
+    this.gps.makeButton(this.ApprButton, () => {this.buttonToggle("K:AP_APR_HOLD")});
+    this.gps.makeButton(this.IasButton, () => {this.buttonToggle("K:FLIGHT_LEVEL_CHANGE")});
+    this.gps.makeButton(this.AltButton, () => {this.buttonToggle("K:AP_ALT_HOLD")});
+    this.gps.makeButton(this.VsButton, () => {this.buttonToggle("K:AP_VS_HOLD")});
+    this.gps.makeButton(this.UpButton, () => {this.buttonUpDn("UP")});
+    this.gps.makeButton(this.DnButton, () => {this.buttonUpDn("DN")});
+  }
+  onUpdate() {
+    this.MasterButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "Active" : ""));
+    this.FdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : ""));
+    this.YdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "Active" : ""));
+    this.LvlButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool") ? "Active" : ""));
+    this.HdgButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") ? "Active" : ""));
+    this.NavButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Bool") ? "Active" : ""));
+    this.ApprButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool") ? "Active" : ""));
+    this.IasButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Bool") ? "Active" : ""));
+    this.AltButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Bool") ? "Active" : ""));
+    this.VsButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Bool") ? "Active" : ""));
+  }
+  buttonToggle(simvar) {
+    SimVar.SetSimVarValue(simvar, "number", 0)
+  }
+  buttonUpDn(dir) {
+    if (SimVar.GetSimVarValue("A:AUTOPILOT VERTICAL HOLD", "bool")) {
+      var cmds = { "UP": "K:AP_VS_VAR_INC", "DN": "K:AP_VS_VAR_DEC" }
+    } else if (SimVar.GetSimVarValue("A:AUTOPILOT FLIGHT LEVEL CHANGE", "bool")) {
+      var cmds = { "UP": "K:AP_SPD_VAR_DEC", "DN": "K:AP_SPD_VAR_INC" }
+    } else if (SimVar.GetSimVarValue("A:AUTOPILOT PITCH HOLD", "bool")) {
+      var cmds = { "UP": "K:PITCH_REF_INC_UP", "DN": "K:PITCH_REF_INC_DN" }
+    } else {
+      var cmds = {}
     }
-    onUpdate() {
-        this.MasterButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "Active" : ""));
-        this.FdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : ""));
-        this.YdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "Active" : ""));
-        this.LvlButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool") ? "Active" : ""));
-        this.HdgButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") ? "Active" : ""));
-        this.NavButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Bool") ? "Active" : ""));
-        this.ApprButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool") ? "Active" : ""));
-        this.IasButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Bool") ? "Active" : ""));
-        this.AltButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Bool") ? "Active" : ""));
-        this.VsButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Bool") ? "Active" : ""));
-    }
-    buttonToggle(simvar) {
-        SimVar.SetSimVarValue(simvar, "number", 0)
-    }
-    buttonUpDn(dir) {
-        if (SimVar.GetSimVarValue("A:AUTOPILOT VERTICAL HOLD", "bool")) {
-            var cmds = { "UP": "K:AP_VS_VAR_INC", "DN": "K:AP_VS_VAR_DEC" }
-        } else if (SimVar.GetSimVarValue("A:AUTOPILOT FLIGHT LEVEL CHANGE", "bool")) {
-            var cmds = { "UP": "K:AP_SPD_VAR_DEC", "DN": "K:AP_SPD_VAR_INC" }
-        } else if (SimVar.GetSimVarValue("A:AUTOPILOT PITCH HOLD", "bool")) {
-            var cmds = { "UP": "K:PITCH_REF_INC_UP", "DN": "K:PITCH_REF_INC_DN" }
-        } else {
-            var cmds = {}
-        }
-        if (dir in cmds) this.buttonToggle(cmds[dir]);
-    }
+    if (dir in cmds) this.buttonToggle(cmds[dir]);
+  }
 }
 class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
     init(root) {
-        super.init(root);
+      super.init(root);
         this.buttons = [];
         this.menuElements = root.getElementsByClassName("menuElements")[0];
     }
     onEnter() {
-        super.onEnter();
+      super.onEnter();
         let pageGroup = this.gps.getCurrentPageGroup();
         for (let i = 0; i < (pageGroup.pages.length + pageGroup.additionalMenuButtons.length); i++) {
             if (i >= this.buttons.length) {
@@ -1039,6 +885,13 @@ class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
             this.buttons[i].base.style.display = "none";
         }
     }
+    onUpdate(_deltaTime) {
+    }
+    onExit() {
+        this.root.setAttribute("state", "Inactive");
+    }
+    onEvent(_event) {
+    }
     switchToPage(i) {
         let pageGroup = this.gps.getCurrentPageGroup();
         if (i < pageGroup.pages.length) {
@@ -1050,8 +903,7 @@ class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
             pageGroup.additionalMenuButtons[i - pageGroup.pages.length].callback();
         }
     }
-    onUpdate() {
-    }
+
 }
 class AS3X_Touch_FullKeyboard extends NavSystemTouch_FullKeyboard {
     init(_root) {
@@ -1133,27 +985,10 @@ class AS3X_Touch_PageGroup extends NavSystemPageGroup {
     }
 }
 class AS3X_Touch_NavSystemPage extends NavSystemPage {
-    constructor(_name, _htmlElemId, _element, _shortName, _imagePath, _menuCb, _enterCb, _exitCb) {
+    constructor(_name, _htmlElemId, _element, _shortName, _imagePath) {
         super(_name, _htmlElemId, _element);
         this.shortName = _shortName;
         this.imagePath = _imagePath;
-        this._menuCb = _menuCb;
-        this._enterCb = _enterCb;
-        this._exitCb = _exitCb;
-
-    }
-    onEvent(_event) {
-        if (_event == 'Menu_Push' && this._menuCb) {
-            this._menuCb();
-        }
-    }
-    onEnter() {
-        super.onEnter();
-        if (this._enterCb) this._enterCb();
-    }
-    onExit() {
-        super.onExit();
-        if (this._exitCb) this._exitCb();
     }
 }
 class AS3X_Touch_DirectTo extends NavSystemTouch_DirectTo {
@@ -1183,35 +1018,50 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.timerStartTime = -1;
         this.isTimerOn = false;
         this.pauseTime = 0;
+        this.syntheticVision = true;
     }
     init(root) {
         this.window = root;
-        this.windData = this.gps.pfdContainer.windData;
         this.cdiSource = this.gps.getChildById("cdi_source_Button");
         this.leftBearing = this.gps.getChildById("left_bearing_button");
         this.rightBearing = this.gps.getChildById("right_bearing_button");
         this.timerStartStop = this.gps.getChildById("timer_startStop_button");
         this.timerReset = this.gps.getChildById("timer_reset_button");
+        this.moreOptions = this.gps.getChildById("PFD_moreOptionsButton");
+        this.moreOptions_Window = this.gps.getChildById("PFD_moreOptionsWindow");
+        this.moreOptions_Back = this.gps.getChildById("PFD_moreOptions_backButton");
+        this.moreOptions_SyntheticVision = this.gps.getChildById("syntheticTerrain_button");
+        this.moreOptions_SyntheticVision_Status = this.moreOptions_SyntheticVision.getElementsByClassName("statusBar")[0];
+        this.moreOptions_WindMode = this.gps.getChildById("windSelection_button");
+        this.moreOptions_WindMode_Status = this.moreOptions_WindMode.getElementsByClassName("value")[0];
+        this.moreOptions_WindMode_SpeedDir = this.gps.getChildById("windSelection_SpeedDir_button");
+        this.moreOptions_WindMode_HeadXWind = this.gps.getChildById("windSelection_HeadXWind_button");
+        this.moreOptions_WindMode_Off = this.gps.getChildById("windSelection_Off_button");
+        this.moreOptions_WindMode_Window = this.gps.getChildById("windSelection_window");
         this.cdiSource_value = this.cdiSource.getElementsByClassName("mainText")[0];
         this.leftBearing_value = this.leftBearing.getElementsByClassName("mainText")[0];
         this.rightBearing_value = this.rightBearing.getElementsByClassName("mainText")[0];
         this.timerStartStop_value = this.timerStartStop.getElementsByClassName("value")[0];
         this.timerStartStop_action = this.timerStartStop.getElementsByClassName("topTitle")[0];
         this.timerReset_value = this.timerReset.getElementsByClassName("mainText")[0];
-        this.windMode = this.gps.getChildById("wind_mode_button");
-        this.windMode_value = this.windMode.getElementsByClassName("value")[0];
         this.hsi = this.gps.getChildById("Compass");
+        this.syntheticVisionElement = this.gps.getChildById("SyntheticVision");
         this.gps.makeButton(this.cdiSource, this.gps.computeEvent.bind(this.gps, "SoftKey_CDI"));
         this.gps.makeButton(this.leftBearing, this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG1"));
         this.gps.makeButton(this.rightBearing, this.gps.computeEvent.bind(this.gps, "SoftKeys_PFD_BRG2"));
         this.gps.makeButton(this.timerStartStop, this.timer_Toggle.bind(this));
         this.gps.makeButton(this.timerReset, this.timer_Reset.bind(this));
-        this.gps.makeButton(this.comActiveButton, SimVar.SetSimVarValue.bind(this, "K:COM_STBY_RADIO_SWAP", "number", 1));
-        this.gps.makeButton(this.windMode, this.setWindMode.bind(this));
-
+        this.gps.makeButton(this.moreOptions, this.openMoreOptions.bind(this));
+        this.gps.makeButton(this.moreOptions_Back, this.closeMoreOptions.bind(this));
+        this.gps.makeButton(this.moreOptions_SyntheticVision, this.toggleSyntheticVision.bind(this));
+        this.gps.makeButton(this.moreOptions_WindMode, this.openWindModeOptions.bind(this));
+        this.gps.makeButton(this.moreOptions_WindMode_SpeedDir, this.switchToWindMode.bind(this, 3));
+        this.gps.makeButton(this.moreOptions_WindMode_HeadXWind, this.switchToWindMode.bind(this, 1));
+        this.gps.makeButton(this.moreOptions_WindMode_Off, this.switchToWindMode.bind(this, 0));
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
+        this.closeMoreOptions();
     }
     onUpdate(_deltaTime) {
         Avionics.Utils.diffAndSet(this.cdiSource_value, this.hsi.getAttribute("nav_source"));
@@ -1228,6 +1078,21 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
             Avionics.Utils.diffAndSet(this.rightBearing_value, "Off");
         }
         Avionics.Utils.diffAndSet(this.timerStartStop_value, this.getTimerValue());
+        let windMode = SimVar.GetSimVarValue("L:Glasscockpit_Wind_Mode", "number");
+        switch (windMode) {
+            case 0:
+                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Off");
+                break;
+            case 1:
+                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Head/X-Wind");
+                break;
+            case 2:
+                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Off");
+                break;
+            case 3:
+                Avionics.Utils.diffAndSet(this.moreOptions_WindMode_Status, "Speed/Dir");
+                break;
+        }
     }
     getTimerValue() {
         if (this.timerStartTime == -1) {
@@ -1275,11 +1140,43 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.isTimerOn = false;
         this.timerStartStop_action.textContent = "Start";
     }
-    setWindMode() {
-        let events = ["SoftKeys_Wind_O1", "SoftKeys_Wind_O2", "SoftKeys_Wind_O3", "SoftKeys_Wind_Off"];
-        let event = events[this.windData.mode];
-        this.windData.onEvent(event);
-        Avionics.Utils.diffAndSet(this.windMode_value, this.windData.mode);
+    openMoreOptions() {
+        Avionics.Utils.diffAndSetAttribute(this.moreOptions_Window, "state", "Active");
+    }
+    closeMoreOptions() {
+        Avionics.Utils.diffAndSetAttribute(this.moreOptions_Window, "state", "Inactive");
+    }
+    toggleSyntheticVision() {
+        this.syntheticVision = !this.syntheticVision;
+        let attitude = this.gps.getElementOfType(PFD_Attitude);
+        if (attitude) {
+            Avionics.Utils.diffAndSetAttribute(attitude.svg, "background", (this.syntheticVision ? "false" : "true"));
+        }
+        if (this.syntheticVisionElement) {
+            this.syntheticVisionElement.style.display = (this.syntheticVision ? "Block" : "None");
+        }
+        Avionics.Utils.diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
+        SimVar.SetSimVarValue("L:Glasscockpit_SVTTerrain", "number", (this.syntheticVision ? 1 : 0));
+    }
+    openWindModeOptions() {
+        this.moreOptions_WindMode_Window.setAttribute("state", "active");
+    }
+    switchToWindMode(_mode) {
+        this.moreOptions_WindMode_Window.setAttribute("state", "Inactive");
+        switch (_mode) {
+            case 0:
+                this.gps.computeEvent("Wind_Off");
+                break;
+            case 1:
+                this.gps.computeEvent("Wind_O1");
+                break;
+            case 2:
+                this.gps.computeEvent("Wind_O2");
+                break;
+            case 3:
+                this.gps.computeEvent("Wind_O3");
+                break;
+        }
     }
 }
 class AS3X_Touch_NRST_Airport extends NavSystemTouch_NRST_Airport {
@@ -1439,11 +1336,11 @@ class AS3X_Touch_FrequencyKeyboard extends NavSystemTouch_FrequencyKeyboard {
         this.gps.closePopUpElement();
     }
     validateEdit() {
-        this.endCallback(this.inputIndex != -1 ? this.currentInput : SimVar.GetSimVarValue(this.stbyFreqSimVar, "MHz"), false);
+        this.endCallback(this.inputIndex != -1 ? this.currentInput : SimVar.GetSimVarValue(this.stbyFreqSimVar, "Hz"), false);
         this.cancelEdit();
     }
     validateAndTransferEdit() {
-        this.endCallback(this.inputIndex != -1 ? this.currentInput : SimVar.GetSimVarValue(this.stbyFreqSimVar, "MHz"), true);
+        this.endCallback(this.inputIndex != -1 ? this.currentInput : SimVar.GetSimVarValue(this.stbyFreqSimVar, "Hz"), true);
         this.inputIndex = -1;
     }
 }
@@ -1504,6 +1401,101 @@ class AS3X_Touch_AudioPanel extends NavSystemElement {
         this.root.setAttribute("state", "Inactive");
     }
     onEvent(_event) {
+    }
+}
+class AS3X_Touch_Setup_Display extends NavSystemElement {
+    constructor() {
+        super(...arguments);
+        this.isCursorMoving = true;
+        this.cursorStartVH = 18;
+        this.cursorBGWidthVH = 40;
+    }
+    init(root) {
+        this.masterPercentText = this.gps.getChildById("LightingMasterValue");
+        this.masterBG = this.gps.getChildById("MasterBacklightBgSVG");
+        this.masterBGTriangle = this.gps.getChildById("MasterBacklightTriangle");
+        this.masterCursor = this.gps.getChildById("MasterBacklightCursorSVG");
+        this.buttonLess = this.gps.getChildById("LightingMasterLess");
+        this.buttonMore = this.gps.getChildById("LightingMasterMore");
+        this.buttonMode = this.gps.getChildById("MasterBrightnessMode");
+        this.buttonMode_Value = this.buttonMode.getElementsByClassName("mainText")[0];
+        this.buttonAuto = this.gps.getChildById("MasterBrightnessMode_Photocell");
+        this.buttonManual = this.gps.getChildById("MasterBrightnessMode_Manual");
+        this.modePopup = this.gps.getChildById("MasterBrightnessMode_Popup");
+        this.gps.makeButton(this.buttonLess, this.onLessPress.bind(this));
+        this.gps.makeButton(this.buttonMore, this.onMorePress.bind(this));
+        this.gps.makeButton(this.buttonMode, this.openModePopup.bind(this));
+        this.gps.makeButton(this.buttonAuto, this.switchToAuto.bind(this));
+        this.gps.makeButton(this.buttonManual, this.switchToManual.bind(this));
+        if (this.masterCursor.hasAttribute("beginvh")) {
+            this.cursorStartVH = parseFloat(this.masterCursor.getAttribute("beginvh"));
+        }
+        if (this.masterCursor.hasAttribute("animwidthvh")) {
+            this.cursorBGWidthVH = parseFloat(this.masterCursor.getAttribute("animwidthvh"));
+        }
+        this.masterCursor.addEventListener("mousedown", this.cursorMouseDown.bind(this));
+        root.addEventListener("mouseup", this.cursorMouseUp.bind(this));
+        root.addEventListener("mouseleave", this.cursorMouseUp.bind(this));
+        root.addEventListener("mousemove", this.mouseMove.bind(this));
+    }
+    onEnter() {
+    }
+    onExit() {
+    }
+    onEvent(_event) {
+    }
+    onUpdate(_deltaTime) {
+        let manualBright = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number");
+        let autoBright = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Auto", "number");
+        let isAuto = SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 1;
+        let backLightValue = isAuto ? autoBright : manualBright;
+        Avionics.Utils.diffAndSet(this.masterPercentText, (backLightValue * 100).toFixed(0));
+        let length = backLightValue * 100;
+        let height = backLightValue * 30;
+        Avionics.Utils.diffAndSetAttribute(this.masterBGTriangle, "points", "0,30 " + length + "," + (30 - height) + " " + length + ",30");
+        Avionics.Utils.diffAndSetAttribute(this.masterCursor, "state", isAuto ? "Greyed" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonLess, "state", isAuto ? "Greyed" : "");
+        Avionics.Utils.diffAndSetAttribute(this.buttonMore, "state", isAuto ? "Greyed" : "");
+        this.masterCursor.style.left = (this.cursorStartVH + (this.cursorBGWidthVH * backLightValue)) + "vh";
+    }
+    onLessPress() {
+        if (SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 0) {
+            SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number", Math.max(0, Math.min(1, SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number") - 0.01)));
+        }
+    }
+    onMorePress() {
+        if (SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 0) {
+            SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number", Math.max(0, Math.min(1, SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number") + 0.01)));
+        }
+    }
+    cursorMouseDown(event) {
+        this.isCursorMoving = true;
+        let clientRect = this.masterBG.getBoundingClientRect();
+        this.leftX = clientRect.left;
+        this.widthX = clientRect.width;
+    }
+    cursorMouseUp() {
+        this.isCursorMoving = false;
+    }
+    mouseMove(event) {
+        if (this.isCursorMoving && SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number") == 0) {
+            let pos = Math.max(0, Math.min(1, (event.clientX - this.leftX) / this.widthX));
+            SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number", pos);
+        }
+    }
+    openModePopup() {
+        Avionics.Utils.diffAndSetAttribute(this.modePopup, "state", "Active");
+    }
+    switchToAuto() {
+        Avionics.Utils.diffAndSetAttribute(this.modePopup, "state", "Inactive");
+        SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number", 1);
+        Avionics.Utils.diffAndSet(this.buttonMode_Value, "Photo Cell");
+    }
+    switchToManual() {
+        Avionics.Utils.diffAndSetAttribute(this.modePopup, "state", "Inactive");
+        SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAUto", "number", 0);
+        SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_Manual", "number", SimVar.GetSimVarValue("L:AS3X_Touch_Brightness_AUto", "number"));
+        Avionics.Utils.diffAndSet(this.buttonMode_Value, "Manual");
     }
 }
 class AS3X_Touch_Procedures extends NavSystemTouch_Procedures {
@@ -1600,11 +1592,5 @@ class AS3X_Touch_ApproachSelection extends NavSystemTouch_ApproachSelection {
         this.gps.closePopUpElement();
     }
 }
-
-AS3X_Touch_Map.ORIENTATION_TRK_UP = 0;
-AS3X_Touch_Map.ORIENTATION_DTK_UP = 1;
-AS3X_Touch_Map.ORIENTATION_NORTH_UP = 2;
-
-
 registerInstrument("as3x-touch-element", AS3X_Touch);
 //# sourceMappingURL=AS3X_Touch.js.map

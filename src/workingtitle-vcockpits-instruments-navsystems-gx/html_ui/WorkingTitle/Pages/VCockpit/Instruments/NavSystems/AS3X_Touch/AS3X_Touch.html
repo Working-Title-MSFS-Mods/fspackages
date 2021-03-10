@@ -38,7 +38,7 @@
                     <div class="value" id="trk">___°m</div>
                 </div>
                 <div class="Button" id="audio_btn">
-                    <div class="title">Audio</div>
+                    <div class="title">SHMAUDIO</div>
                 </div>
                 <div class="Button big" id="com_active_btn">
                     <div class="title">COM 1</div>
@@ -78,7 +78,7 @@
                     <div id="AutopilotInfos">
                         <div class="Left">
                             <div id="AP_LateralActive">ROL</div>
-                            <div id="AP_LateralArmed">FMS</div>
+                            <div id="AP_LateralArmed">GPS</div>
                         </div>
                         <div class="Center">
                             <div id="AP_Status">AP</div>
@@ -543,6 +543,79 @@
                             </table>
                         </div>
                     </div>
+
+                    <div id="Display" class="page">
+                        <div class="master">
+                            <div class="title">Master</div>
+                            <div class="gradientButton" id="MasterBrightnessMode">
+                                <div class="mainText">Photo Cell</div>
+                            </div>
+                            <div id="LightingMasterValue">50%</div>
+                            <div class="gradientButton" id="LightingMasterLess">
+                                <svg class="image" viewBox="0 0 50 50">
+                                    <defs>
+                                        <linearGradient id="triangleGradient" x1="0" y1="0" x2="0" y2="100%">
+                                            <stop offset="0%" stop-color="aqua" />
+                                            <stop offset="50%" stop-color="white" />
+                                            <stop offset="100%" stop-color="aqua" />
+                                        </linearGradient>
+                                    </defs>
+                                    <polygon points="50,50 50,0 0,25" fill="url(#triangleGradient)" />
+                                    <polygon points="15,23 45,23 45,27 15,27" fill="black" />
+                                </svg>
+                            </div>
+
+                            <svg id="MasterBacklightBgSVG" viewBox="0 0 100 30">
+                                <rect x="0" y="28" height="2" width="100" fill="grey" />
+                                <polygon id="MasterBacklightTriangle" points="0,30 100,0 100,30" fill="aqua" />
+                            </svg>
+
+                            <svg id="MasterBacklightCursorSVG" viewBox="0 0 10 30" beginvh="13" animwidthvh="30">
+                                <defs>
+                                    <linearGradient id="cursorGradient" x1="0" y1="0" x2="0" y2="100%">
+                                        <stop offset="0%" stop-color="aqua" />
+                                        <stop offset="30%" stop-color="white" />
+                                        <stop offset="100%" stop-color="aqua" />
+                                    </linearGradient>
+                                    <linearGradient id="cursorLineGradient" x1="0" y1="0" x2="0" y2="100%">
+                                        <stop offset="0%" stop-color="aqua" />
+                                        <stop offset="100%" stop-color="#353535" />
+                                    </linearGradient>
+                                </defs>
+                                <rect x="0" y="0" height="30" width="10" fill="url(#cursorGradient)" stroke="#353535" stroke-width="2" rx="3" />
+                                <rect x="1" y="3" height="2" width="8" fill="url(#cursorLineGradient)" />
+                                <rect x="1" y="9" height="2" width="8" fill="url(#cursorLineGradient)" />
+                                <rect x="1" y="15" height="2" width="8" fill="url(#cursorLineGradient)" />
+                                <rect x="1" y="20" height="2" width="8" fill="url(#cursorLineGradient)" />
+                                <rect x="1" y="25" height="2" width="8" fill="url(#cursorLineGradient)" />
+                            </svg>
+
+                            <div class="gradientButton" id="LightingMasterMore">
+                                <svg class="image" viewBox="0 0 50 50">
+                                    <defs>
+                                        <linearGradient id="triangleGradient" x1="0" y1="0" x2="0" y2="100%">
+                                            <stop offset="0%" stop-color="aqua" />
+                                            <stop offset="50%" stop-color="white" />
+                                            <stop offset="100%" stop-color="aqua" />
+                                        </linearGradient>
+                                    </defs>
+                                    <polygon points="0,50 0,0 50,25" fill="url(#triangleGradient)" />
+                                    <polygon points="5,23 16,23 16,12 20,12 20,23 31,23 31,27 20,27 20,38 16,38 16,27 5,27" fill="black" />
+                                </svg>
+                            </div>
+                            <div id="MasterBrightnessMode_Popup" state="Inactive">
+                                <div class="content">
+                                    <div class="gradientButton" id="MasterBrightnessMode_Photocell">
+                                        <div class="mainValue">Photo Cell</div>
+                                    </div>
+                                    <div class="gradientButton" id="MasterBrightnessMode_Manual">
+                                        <div class="mainValue">Manual</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div id="MFD_BottomBar">
                     <div id="currentPage">
@@ -553,56 +626,6 @@
                 <div id="PageMenu" class="popup" state="Inactive">
                     <div class="WindowTitle">Select Page</div>
                     <div class="menuElements">
-                    </div>
-                </div>
-                <div id="MapMenu" class="popup" state="Inactive">
-                    <div class="WindowTitle">Map Menu</div>
-                    <div id="orientation" class="subpart">
-                        <div class="title">Map Orientation</div>
-                        <div class="gradientButton" id="MapMenu_Orient_North">
-                            <div class="title">North Up</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_Orient_Track">
-                            <div class="title">Track Up</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_Orient_Dtk">
-                            <div class="title">DTK Up</div>
-                            <div class="statusBar"></div>
-                        </div>
-                    </div>
-                    <div id="features" class="subpart">
-                        <div class="title">Map Features</div>
-                        <div class="gradientButton" id="MapMenu_Weather">
-                            <div class="title">Weather</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_Topo">
-                            <div class="title">Topo</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_RangeRing">
-                            <div class="title">Range Ring</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_Arc">
-                            <div class="title">Compass Arc</div>
-                            <div class="statusBar"></div>
-                        </div>
-                    </div>
-                    <div id="range" class="subpart">
-                        <div class="title">Range <span id="MapMenu_Title_Range"></span></div>
-                        <div class="gradientButton" id="MapMenu_Range_Dec">
-                            <div class="mainText">Decrease</div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_Range_Inc">
-                            <div class="mainText">Increase</div>
-                        </div>
-                        <div class="gradientButton" id="MapMenu_Range_Auto">
-                            <div class="title">Auto</div>
-                            <div class="statusBar"></div>
-                        </div>
                     </div>
                 </div>
                 <div id="XPDR" class="popup" state="Inactive">
@@ -1498,11 +1521,35 @@
                             <div class="mainText">Set...</div>
                         </div>
                     </div> -->
-                    <div id="wind" class="subpart">
-                        <div class="title">Wind</div>
-                        <div class="gradientButton" id="wind_mode_button">
-                            <div class="topTitle">Mode</div>
-                            <div class="value">1</div>
+                    <div class="gradientButton" id="PFD_moreOptionsButton">
+                        <div class="mainText">More Options...</div>
+                    </div>
+                    <div id = "PFD_moreOptionsWindow" state ="Inactive">
+                        <div class="content">
+                            <div class="gradientButton option" id="syntheticTerrain_button">
+                                <div class="mainText">Synthetic Vision</div>
+                                <div class="statusBar" state="Active"></div>
+                            </div>
+                            <div class="gradientButton option" id="windSelection_button">
+                                <div class="mainText">Wind Vector</div>
+                                <div class="value">Off</div>
+                            </div>
+                            <div class="gradientButton" id="PFD_moreOptions_backButton">
+                                <div class="mainText">Back</div>
+                            </div>
+                            <div id="windSelection_window" state ="Inactive">
+                                <div class="Content">
+                                    <div class="gradientButton option" id="windSelection_SpeedDir_button">
+                                        <div class="mainText">Speed/Dir</div>
+                                    </div>
+                                    <div class="gradientButton option" id="windSelection_HeadXWind_button">
+                                        <div class="mainText">Head/X-wind</div>
+                                    </div>
+                                    <div class="gradientButton option" id="windSelection_Off_button">
+                                        <div class="mainText">Off</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1564,12 +1611,11 @@
 </script>
 
 <link rel="stylesheet" href="AS3X_Touch.css" />
-<link rel="stylesheet" href="AS3X_Touch_Buttons.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/NumberUnit.js"></script>
+<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/NumberUnit.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/WorkingTitle/MapInstrument.html"></script>
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/XMLEngineDisplay/XMLEngineDisplay.js"></script>
@@ -1589,7 +1635,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
+<script type="text/html" zz import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/Shared/CommonPFD_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 
 <script type="text/html" import-script="/WorkingTitle/Pages/VCockpit/Instruments/NavSystems/AS3X_Touch/AS3X_Touch.js"></script>
