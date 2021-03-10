@@ -1,6 +1,6 @@
 # Working Title CJ4 v0.11.1
 
-Welcome to the Working Title CJ4 v0.11.1. In this update we introduce Charts, the VNAV Window on the MFD, enhanced datalink along with a number of bug fixes and full Sim Update 3 compatability.
+Welcome to the Working Title CJ4 v0.11.1. This is a hotfix to address a few high-priority bugs with v0.11.0.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -12,7 +12,9 @@ Charts in the CJ4 are powered by Navigraph - special thanks to the team at Navig
 
 # Changes
 
--
+- Fixed problem with FP SYNC option.
+- Addressed problems displaying VNAV TOD in certain cirsumstances.
+- Removed INOP tooltip from chart joystick.
 
 ## ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
