@@ -97,11 +97,11 @@ export class FlightPlanAsoboSync {
 
         if (plan.hasOrigin && plan.hasDestination) {
           if (plan.hasOrigin) {
-            await Coherent.call("SET_ORIGIN", plan.originAirfield.icao);
+            await Coherent.call("SET_ORIGIN", plan.originAirfield.icao, false);
           }
 
           if (plan.hasDestination) {
-            await Coherent.call("SET_DESTINATION", plan.destinationAirfield.icao);
+            await Coherent.call("SET_DESTINATION", plan.destinationAirfield.icao, false);
           }
 
           let coIndex = 1;
