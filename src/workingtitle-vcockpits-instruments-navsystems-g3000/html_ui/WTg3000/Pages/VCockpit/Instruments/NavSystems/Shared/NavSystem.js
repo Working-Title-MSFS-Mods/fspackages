@@ -11,6 +11,9 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.eventLinkedPopUpElements = [];
         this.popUpElement = null;
         this.popUpCloseCallback = null;
+        this.selectablesBeforePopup = [];
+        this.interactionStateBeforePopup = -1;
+        this.interactionStateBeforeMenu = -1;
         this.currentPageGroupIndex = 0;
         this.currentInteractionState = 0;
         this.cursorIndex = 0;
@@ -32,7 +35,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.needValidationAfterInit = false;
         this.initAcknowledged = false;
         this.reversionaryMode = false;
-        this.alwaysUpdateList = new Array();
     }
     get flightPlanManager() {
         return this.currFlightPlanManager;
@@ -98,8 +100,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
                 if (_event == this.eventLinkedPopUpElements[i].popUpEvent) {
                     if (this.popUpElement == this.eventLinkedPopUpElements[i]) {
-                        this.popUpElement.onExit();
-                        this.popUpElement = null;
+                        this.closePopUpElement();
                     }
                     else {
                         this.switchToPopUpPage(this.eventLinkedPopUpElements[i]);
@@ -153,26 +154,27 @@ class NavSystem extends WT_G3x5_BaseInstrument {
                         let count = 0;
                         do {
                             this.cursorIndex = (this.cursorIndex + 1) % this.currentContextualMenu.elements.length;
-                            if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
-                                this.contextualMenuDisplayBeginIndex++;
-                            }
-                            if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
-                                this.contextualMenuDisplayBeginIndex = 0;
-                            }
                             count++;
                         } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
+                            this.contextualMenuDisplayBeginIndex = this.cursorIndex;
+                        }
+                        else if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1))) {
+                            this.contextualMenuDisplayBeginIndex += this.cursorIndex - (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1));
+                        }
                     }
                     if (_event == "NavigationSmallDec") {
                         let count = 0;
                         do {
                             this.cursorIndex = (this.cursorIndex - 1) < 0 ? (this.currentContextualMenu.elements.length - 1) : (this.cursorIndex - 1);
-                            if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
-                                this.contextualMenuDisplayBeginIndex--;
-                            }
-                            if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + 5)) {
-                                this.contextualMenuDisplayBeginIndex = this.currentContextualMenu.elements.length - 5;
-                            }
+                            count++;
                         } while (this.currentContextualMenu.elements[this.cursorIndex].isInactive() == true && count < this.currentContextualMenu.elements.length);
+                        if (this.cursorIndex < (this.contextualMenuDisplayBeginIndex)) {
+                            this.contextualMenuDisplayBeginIndex = this.cursorIndex;
+                        }
+                        else if (this.cursorIndex > (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1))) {
+                            this.contextualMenuDisplayBeginIndex += this.cursorIndex - (this.contextualMenuDisplayBeginIndex + (this.menuMaxElems - 1));
+                        }
                     }
                     if (_event == "MENU_Push") {
                         this.SwitchToInteractionState(0);
@@ -324,109 +326,104 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     }
     Update() {
         super.Update();
-        if (this.CanUpdate()) {
-            if (NavSystem._iterations < 10000) {
-                NavSystem._iterations += 1;
-            }
-            let t0 = performance.now();
-            if (this.isElectricityAvailable()) {
-                if (!this.isStarted) {
-                    this.onPowerOn();
+        if (NavSystem._iterations < 10000) {
+            NavSystem._iterations += 1;
+        }
+        let t0 = performance.now();
+        this.updateAspectRatio();
+        if (this.currFlightPlanManager) {
+            this.currFlightPlanManager.update(this.deltaTime);
+            if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
+                if (SimVar.GetSimVarValue("L:FMC_FLIGHT_PLAN_IS_TEMPORARY", "number") != 1) {
+                    this.currFlightPlanManager.tryAutoActivateApproach();
                 }
-                if (this.isBootProcedureComplete()) {
-                    if (this.reversionaryMode) {
-                        if (this.electricity) {
-                            this.electricity.setAttribute("state", "Backup");
-                            SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
-                            SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 3);
-                        }
+            }
+        }
+        if (this.popUpElement) {
+            this.popUpElement.onUpdate(this.deltaTime);
+        }
+        if (this.pagesContainer) {
+            this.pagesContainer.setAttribute("state", this.getCurrentPage().htmlElemId);
+        }
+        if (this.useUpdateBudget) {
+            this.updateGroupsWithBudget();
+        }
+        else {
+            this.updateGroups();
+        }
+        switch (this.currentInteractionState) {
+            case 0:
+                for (var i = 0; i < this.currentSelectableArray.length; i++) {
+                    this.currentSelectableArray[i].updateSelection(false);
+                }
+                break;
+            case 1:
+                for (var i = 0; i < this.currentSelectableArray.length; i++) {
+                    if (i == this.cursorIndex) {
+                        this.currentSelectableArray[i].updateSelection(this.blinkGetState(400, 200));
                     }
                     else {
-                        if (this.electricity) {
-                            this.electricity.setAttribute("state", "on");
-                            SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
-                            SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 2);
-                        }
+                        this.currentSelectableArray[i].updateSelection(false);
                     }
                 }
-                else if (Date.now() - this.startTime > this.initDuration) {
+                break;
+            case 2:
+                this.currentContextualMenu.Update(this, this.menuMaxElems);
+                break;
+        }
+        this.onUpdate(this.deltaTime);
+        let t = performance.now() - t0;
+        NavSystem.maxTimeUpdateAllTime = Math.max(t, NavSystem.maxTimeUpdateAllTime);
+        NavSystem.maxTimeUpdate = Math.max(t, NavSystem.maxTimeUpdate);
+        let factor = 1 / NavSystem._iterations;
+        NavSystem.mediumTimeUpdate *= (1 - factor);
+        NavSystem.mediumTimeUpdate += factor * t;
+    }
+    updateElectricity() {
+        if (this.isElectricityAvailable()) {
+            if (!this.isStarted) {
+                this.onPowerOn();
+            }
+            if (this.isBootProcedureComplete()) {
+                if (this.reversionaryMode) {
                     if (this.electricity) {
-                        this.electricity.setAttribute("state", "initWaitingValidation");
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
+                        this.electricity.setAttribute("state", "Backup");
+                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
+                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 3);
                     }
                 }
                 else {
                     if (this.electricity) {
-                        this.electricity.setAttribute("state", "init");
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
-                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
+                        this.electricity.setAttribute("state", "on");
+                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 1);
+                        SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 2);
                     }
                 }
             }
-            else {
-                this.hasBeenOff = true;
-                if (this.isStarted) {
-                    this.onShutDown();
-                }
+            else if (Date.now() - this.startTime > this.initDuration) {
                 if (this.electricity) {
-                    this.electricity.setAttribute("state", "off");
-                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0);
-                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 0);
+                    this.electricity.setAttribute("state", "initWaitingValidation");
+                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
+                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
                 }
-            }
-            this.updateAspectRatio();
-            if (this.currFlightPlanManager) {
-                this.currFlightPlanManager.update(this.deltaTime);
-                if (this.currFlightPlanManager.isLoadedApproach() && !this.currFlightPlanManager.isActiveApproach() && (this.currFlightPlanManager.getActiveWaypointIndex() == -1 || (this.currFlightPlanManager.getActiveWaypointIndex() > this.currFlightPlanManager.getLastIndexBeforeApproach()))) {
-                    if (SimVar.GetSimVarValue("L:FMC_FLIGHT_PLAN_IS_TEMPORARY", "number") != 1) {
-                        this.currFlightPlanManager.tryAutoActivateApproach();
-                    }
-                }
-            }
-            if (this.popUpElement) {
-                this.popUpElement.onUpdate(this.deltaTime);
-            }
-            if (this.pagesContainer) {
-                this.pagesContainer.setAttribute("state", this.getCurrentPage().htmlElemId);
-            }
-            if (this.useUpdateBudget) {
-                this.updateGroupsWithBudget();
             }
             else {
-                this.updateGroups();
+                if (this.electricity) {
+                    this.electricity.setAttribute("state", "init");
+                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0.2);
+                    SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 1);
+                }
             }
-            switch (this.currentInteractionState) {
-                case 0:
-                    for (var i = 0; i < this.currentSelectableArray.length; i++) {
-                        this.currentSelectableArray[i].updateSelection(false);
-                    }
-                    break;
-                case 1:
-                    for (var i = 0; i < this.currentSelectableArray.length; i++) {
-                        if (i == this.cursorIndex) {
-                            this.currentSelectableArray[i].updateSelection(this.blinkGetState(400, 200));
-                        }
-                        else {
-                            this.currentSelectableArray[i].updateSelection(false);
-                        }
-                    }
-                    break;
-                case 2:
-                    this.currentContextualMenu.Update(this, this.menuMaxElems);
-                    break;
-            }
-            this.onUpdate(this.deltaTime);
-            let t = performance.now() - t0;
-            NavSystem.maxTimeUpdateAllTime = Math.max(t, NavSystem.maxTimeUpdateAllTime);
-            NavSystem.maxTimeUpdate = Math.max(t, NavSystem.maxTimeUpdate);
-            let factor = 1 / NavSystem._iterations;
-            NavSystem.mediumTimeUpdate *= (1 - factor);
-            NavSystem.mediumTimeUpdate += factor * t;
         }
         else {
-            for (var i = 0; i < this.alwaysUpdateList.length; i++) {
-                this.alwaysUpdateList[i].onUpdate(this.deltaTime);
+            this.hasBeenOff = true;
+            if (this.isStarted) {
+                this.onShutDown();
+            }
+            if (this.electricity) {
+                this.electricity.setAttribute("state", "off");
+                SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_ScreenLuminosity", "number", 0);
+                SimVar.SetSimVarValue("L:" + this.instrumentIdentifier + "_State", "number", 0);
             }
         }
     }
@@ -486,9 +483,11 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     }
     UpdateSlider(_slider, _cursor, _index, _nbElem, _maxElems) {
         if (_nbElem > _maxElems) {
+            let cursorHeight = (_maxElems * 100) / _nbElem;
+            let pct = _index / (_nbElem - _maxElems);
+            let cursorTop = Math.min(pct, 1.0) * (100 - cursorHeight);
             _slider.setAttribute("state", "Active");
-            _cursor.setAttribute("style", "height:" + (_maxElems * 100 / _nbElem) +
-                "%;top:" + (_index * 100 / _nbElem) + "%");
+            _cursor.setAttribute("style", "height:" + cursorHeight + "%; top:" + cursorTop + "%");
         }
         else {
             _slider.setAttribute("state", "Inactive");
@@ -578,6 +577,13 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     InteractionStateIn() {
         switch (this.currentInteractionState) {
             case 0:
+                if (this.currentContextualMenu) {
+                    this.currentContextualMenu = null;
+                    if (this.popUpElement && this.interactionStateBeforeMenu > 0) {
+                        this.SwitchToInteractionState(this.interactionStateBeforeMenu);
+                        this.interactionStateBeforeMenu = -1;
+                    }
+                }
                 break;
             case 1:
                 this.cursorIndex = 0;
@@ -598,19 +604,24 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         this.InteractionStateIn();
     }
     ShowContextualMenu(_menu) {
+        if (this.popUpElement) {
+            this.interactionStateBeforeMenu = this.GetInteractionState();
+        }
         this.currentContextualMenu = _menu;
         this.SwitchToInteractionState(2);
         this.currentContextualMenu.Update(this, this.menuMaxElems);
     }
     ActiveSelection(_selectables) {
-        this.SwitchToInteractionState(1);
         this.currentSelectableArray = _selectables;
-        let begin = this.cursorIndex;
-        while (!this.currentSelectableArray[this.cursorIndex].isActive) {
-            this.cursorIndex = (this.cursorIndex + 1) % this.currentSelectableArray.length;
-            if (this.cursorIndex == begin) {
-                this.SwitchToInteractionState(0);
-                return;
+        if (_selectables.length > 0) {
+            this.SwitchToInteractionState(1);
+            let begin = this.cursorIndex;
+            while (!this.currentSelectableArray[this.cursorIndex].isActive) {
+                this.cursorIndex = (this.cursorIndex + 1) % this.currentSelectableArray.length;
+                if (this.cursorIndex == begin) {
+                    this.SwitchToInteractionState(0);
+                    return;
+                }
             }
         }
     }
@@ -636,6 +647,7 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     SwitchToPageName(_menu, _page) {
         this.lastRelevantICAO = null;
         this.lastRelevantICAOType = null;
+        this.closePopUpElement();
         if (this.overridePage) {
             this.closeOverridePage();
         }
@@ -731,6 +743,11 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         if (this.currentContextualMenu) {
             this.SwitchToInteractionState(0);
         }
+        if (this.interactionStateBeforePopup >= 0) {
+            this.ActiveSelection(this.selectablesBeforePopup);
+            this.SwitchToInteractionState(this.interactionStateBeforePopup);
+            this.interactionStateBeforePopup = -1;
+        }
         if (callback) {
             callback();
         }
@@ -767,8 +784,13 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             }
             ;
         }
+        this.interactionStateBeforePopup = -1;
         if (this.currentContextualMenu) {
             this.SwitchToInteractionState(0);
+        }
+        else {
+            this.interactionStateBeforePopup = this.GetInteractionState();
+            this.selectablesBeforePopup = this.currentSelectableArray;
         }
         this.popUpCloseCallback = _PopUpCloseCallback;
         this.popUpElement = _pageContainer;
@@ -868,7 +890,8 @@ class NavSystem extends WT_G3x5_BaseInstrument {
         for (let i = 0; i < this.eventLinkedPopUpElements.length; i++) {
             this.eventLinkedPopUpElements[i].onShutDown();
         }
-        this.alwaysUpdateList.splice(0, this.alwaysUpdateList.length);
+        this.clearAlwaysList();
+        this.clearPendingCalls();
     }
     onPowerOn() {
         console.log("System Turned ON");
@@ -911,17 +934,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
             }
         }
         return true;
-    }
-    alwaysUpdate(_element, _val) {
-        for (var i = 0; i < this.alwaysUpdateList.length; i++) {
-            if (this.alwaysUpdateList[i] == _element) {
-                if (!_val)
-                    this.alwaysUpdateList.splice(i, 1);
-                return;
-            }
-        }
-        if (_val)
-            this.alwaysUpdateList.push(_element);
     }
 }
 NavSystem.maxTimeUpdateAllTime = 0;
@@ -1123,8 +1135,6 @@ class NavSystemPage extends NavSystemElementContainer {
     getSoftKeyMenu() {
         return this.softKeys;
     }
-}
-class Updatable {
 }
 class NavSystemElement extends Updatable {
     constructor() {
@@ -1436,9 +1446,33 @@ class MapInstrumentElement extends NavSystemElement {
         this.displayMode = EMapDisplayMode.GPS;
         this.nexradOn = false;
         this.radarMode = ERadarMode.HORIZON;
+        this.fuelRangeOn = false;
+        this.fuelRangeReserveMinutes = 45;
+        this.smoothFactor = 0.9;
+        this.smoothedSpeed = 0;
+        this.smoothedFF = 0;
+    }
+    setFuelRangeActive(_active) {
+        this.fuelRangeOn = _active;
+    }
+    getFuelRangeActive() {
+        return this.fuelRangeOn;
+    }
+    setFuelRangeReserveMinute(_reserve) {
+        this.fuelRangeReserveMinutes = _reserve;
+    }
+    getFuelRangeReserveMinute() {
+        return this.fuelRangeReserveMinutes;
+    }
+    setRotationMode(_val) {
+        this.instrument.setRotationMode(_val);
+    }
+    getRotationMode() {
+        return this.instrument.getRotationMode();
     }
     init(root) {
         this.instrument = root.querySelector("map-instrument");
+        this.fuelRangeCircle = root.querySelector("glasscockpit-fuel-range-circle");
         if (this.instrument) {
             TemplateElement.callNoBinding(this.instrument, () => {
                 this.onTemplateLoaded();
@@ -1465,6 +1499,34 @@ class MapInstrumentElement extends NavSystemElement {
                 for (let i = 0; i < this.weatherTexts.length; i++) {
                     this.weatherTexts[i].textContent = fastToFixed(range * ratio * (i + 1), 2) + "NM";
                 }
+            }
+            if (this.fuelRangeCircle && this.fuelRangeOn) {
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "state", "Active");
+                let size = Math.max(this.instrument.clientHeight, this.instrument.clientWidth);
+                this.fuelRangeCircle.style.height = size + "px";
+                this.fuelRangeCircle.style.width = size + "px";
+                this.fuelRangeCircle.style.top = (this.instrument.clientHeight < size ? (this.instrument.clientHeight - size) / 2 : 0) + "px";
+                this.fuelRangeCircle.style.left = (this.instrument.clientWidth < size ? (this.instrument.clientWidth - size) / 2 : 0) + "px";
+                let groundSpeed = SimVar.GetSimVarValue("GROUND VELOCITY", "knot") / 60;
+                this.smoothedSpeed = this.smoothFactor * this.smoothedSpeed + (1 - this.smoothFactor) * groundSpeed;
+                let fuelQuantity = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
+                let fuelFlow = SimVar.GetSimVarValue("ENG FUEL FLOW GPH:1", "gallons per hour");
+                this.smoothedFF = this.smoothFactor * this.smoothedFF + (1 - this.smoothFactor) * fuelFlow;
+                let timeToEmpty = (fuelQuantity / this.smoothedFF) * 60;
+                let timeToReserve = Math.max(0, timeToEmpty - this.fuelRangeReserveMinutes);
+                let distanceToReserve = timeToReserve * this.smoothedSpeed;
+                let distanceToEmpty = timeToEmpty * this.smoothedSpeed;
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "radius-reserve", Math.min(2000, distanceToEmpty * 1000 / this.instrument.getDisplayRange()).toString());
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "inner-radius", Math.min(2000, distanceToReserve * 1000 / this.instrument.getDisplayRange()).toString());
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "time-to-reserve", (timeToReserve).toString());
+                let offset = this.instrument.getPlaneCoords();
+                offset.y = (offset.y - 500) * this.instrument.getOverdrawFactor();
+                offset.x = (offset.x - 500) * this.instrument.getOverdrawFactor();
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "offset-x", (offset.x).toString());
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "offset-y", (offset.y).toString());
+            }
+            else if (this.fuelRangeCircle) {
+                Avionics.Utils.diffAndSetAttribute(this.fuelRangeCircle, "state", "Inactive");
             }
         }
     }
