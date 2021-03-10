@@ -301,7 +301,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _toggleDCLTR() {
-        if (this._innerMap.isEnabled()) {
+        if (this._innerMap.showSetting.getValue()) {
             let currentValue = this._innerMap.navMap.dcltrSetting.getValue();
             let newValue = (currentValue + 1) % WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS.length;
             this._innerMap.navMap.dcltrSetting.setValue(newValue);
@@ -313,7 +313,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _toggleTerrain() {
-        if (this._innerMap.isEnabled()) {
+        if (this._innerMap.showSetting.getValue()) {
             let currentValue = this._innerMap.navMap.terrainSetting.getValue();
             let newValue = (currentValue + 1) % WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
             this._innerMap.navMap.terrainSetting.setValue(newValue);
@@ -325,7 +325,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _toggleWX() {
-        if (this._innerMap.isEnabled()) {
+        if (this._innerMap.showSetting.getValue()) {
             this._innerMap.navMap.nexradShowSetting.setValue(!this._innerMap.navMap.nexradShowSetting.getValue());
         }
     }
