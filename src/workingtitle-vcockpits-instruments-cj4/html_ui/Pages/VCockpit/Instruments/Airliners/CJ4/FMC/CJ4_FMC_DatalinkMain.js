@@ -256,7 +256,7 @@ class CJ4_FMC_DatalinkMain {
         fmc.onRightInput[0] = () => { this.handleTafInput(fmc, "1R"); };
         fmc.onRightInput[1] = () => { this.handleTafInput(fmc, "2R"); };
         fmc.onRightInput[2] = () => { this.handleTafInput(fmc, "3R"); };
-        fmc.onRightInput[4] = () => { this.handleTafQuery(fmc); };
+        fmc.onRightInput[4] = () => { if(tafOne !== "----" || tafTwo !== "----" || tafThree !== "----" || tafFour !== "----" || tafFive !== "----" || tafSix !== "----") this.handleTafQuery(fmc); };
         fmc.onLeftInput[5] = () => { _tafReqStatus = ""; isOnSpecialPage = "Page3"; CJ4_FMC_DatalinkMain.ShowPage3(fmc); };
     }
 
