@@ -67,7 +67,7 @@ class CJ4_FMC_DatalinkMain {
                 [`🠓SINGLE REPORT`],
                 [""],
                 ["", `${_reqStatus ? _reqStatus : ""}`],
-                ["", "SEND"], // waiting for asterisk implementatio
+                ["", "SEND"], // waiting for asterisk implementation
                 [""],
                 ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]", `${_atisStatus ? "ATIS>" : ""}`]
             ]);
