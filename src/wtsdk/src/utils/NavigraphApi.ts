@@ -4,9 +4,9 @@ import { request, RequestResult } from './WebRequest';
 
 export class NavigraphApi {
   public readonly RFRSH_TOKEN_KEY = "WT_NG_REFRESH_TOKEN"
+  public readonly ACC_TOKEN_KEY = "WT_NG_ACC_TOKEN"
 
   private _refreshToken: string = "";
-  private _accessToken: string = "";
 
   private _chartListCache: Map<string, NgApi.NG_Charts> = new Map();
   private _chartCacheTimestamp: number = 0;
@@ -30,13 +30,18 @@ export class NavigraphApi {
 
   /** Returns a boolean indicating if a access token is known */
   public get hasAccessToken(): boolean {
-    return this._accessToken !== "";
+    return this.accessToken !== null;
   }
 
   /** Sets the access token */
   public set accessToken(val: string) {
-    this._accessToken = val;
+    localStorage.setItem(this.ACC_TOKEN_KEY, val);
     this._accessTokenTimestamp = Date.now();
+  }
+
+  /** Gets the access token */
+  public get accessToken(): string {
+    return localStorage.getItem(this.ACC_TOKEN_KEY);
   }
 
   /**
@@ -84,7 +89,7 @@ export class NavigraphApi {
     if (!this._chartListCache.has(icao)) {
       await this.validateToken();
       const signedUrlResp = await this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
-      if(signedUrlResp.ok){
+      if (signedUrlResp.ok) {
         const signedUrl = signedUrlResp.data;
         const chartsListResp = await this.sendRequest(signedUrl, "get");
         if (chartsListResp.ok) {
@@ -174,7 +179,7 @@ export class NavigraphApi {
     };
 
     if (auth) {
-      options.headers["Authorization"] = "Bearer " + this._accessToken;
+      options.headers["Authorization"] = "Bearer " + this.accessToken;
     }
 
     const response = await request(method, path, null, formData, options);
