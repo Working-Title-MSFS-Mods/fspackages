@@ -60,22 +60,25 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
 
   public onEvent(event: string): boolean {
     let handled = false;
-    handled = this._views.get(this._mode).onEvent(event);
 
-    if (!handled) {
-      switch (event) {
-        case "Lwr_Push_ESC":
-          if (this._mode === CHARTS_MENU_MODE.INDEX) {
-            this.hide();
-          } else {
-            this._mode = CHARTS_MENU_MODE.INDEX;
-            this._views.delete(CHARTS_MENU_MODE.ANYCHART);
-            this._views.delete(CHARTS_MENU_MODE.LIST);
-            this._overlayHeader.classList.remove("pale");
-            this._views.get(this._mode).update(true);
-          }
-          handled = true;
-          break;
+    if (this.isVisible) {
+      handled = this._views.get(this._mode).onEvent(event);
+
+      if (!handled) {
+        switch (event) {
+          case "Lwr_Push_ESC":
+            if (this._mode === CHARTS_MENU_MODE.INDEX) {
+              this.hide();
+            } else {
+              this._mode = CHARTS_MENU_MODE.INDEX;
+              this._views.delete(CHARTS_MENU_MODE.ANYCHART);
+              this._views.delete(CHARTS_MENU_MODE.LIST);
+              this._overlayHeader.classList.remove("pale");
+              this._views.get(this._mode).update(true);
+            }
+            handled = true;
+            break;
+        }
       }
     }
 
