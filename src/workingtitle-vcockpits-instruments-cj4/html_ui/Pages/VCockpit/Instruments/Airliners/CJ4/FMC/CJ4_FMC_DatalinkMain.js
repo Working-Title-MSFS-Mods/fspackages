@@ -67,7 +67,7 @@ class CJ4_FMC_DatalinkMain {
                 [`🠓SINGLE REPORT`],
                 [""],
                 ["", `${_reqStatus ? _reqStatus : ""}`],
-                ["", "SEND"], // waiting for asterisk implementation
+                ["", "SEND"], // waiting for asterisk implementatio
                 [""],
                 ["<RETURN [white]" + hourspad + "[blue s-text]" + ":[blue s-text]" + minutesspad + "[blue s-text]", `${_atisStatus ? "ATIS>" : ""}`]
             ]);
@@ -286,12 +286,12 @@ class CJ4_FMC_DatalinkMain {
         let rcvdMetarFive = WTDataStore.get("WT_CJ4_MetarFive", `METAR FOR ${tafFive} UNAVAILABLE`);
         let rcvdMetarSix = WTDataStore.get("WT_CJ4_MetarSix", `METAR FOR ${tafSix} UNAVAILABLE`);
 
-        rcvdTafOne = (rcvdMetarOne.includes("METAR") ? rcvdMetarOne : "METAR " + rcvdMetarOne) + " " + rcvdTafOne;
-        rcvdTafTwo = (rcvdMetarTwo.includes("METAR") ? rcvdMetarTwo : "METAR " + rcvdMetarTwo) + " " + rcvdTafTwo;
-        rcvdTafThree = (rcvdMetarThree.includes("METAR") ? rcvdMetarThree : "METAR " + rcvdMetarThree) + " " + rcvdTafThree;
-        rcvdTafFour = (rcvdMetarFour.includes("METAR") ? rcvdMetarFour : "METAR " + rcvdMetarFour) + " " + rcvdTafFour;
-        rcvdTafFive = (rcvdMetarFive.includes("METAR") ? rcvdMetarFive : "METAR " + rcvdMetarFive) + " " + rcvdTafFive;
-        rcvdTafSix = (rcvdMetarSix.includes("METAR") ? rcvdMetarSix : "METAR " + rcvdMetarSix) + " " + rcvdTafSix;
+        rcvdTafOne = (!rcvdMetarOne.startsWith(tafOne) ? rcvdMetarOne : "METAR " + rcvdMetarOne) + " " + rcvdTafOne;
+        rcvdTafTwo = (!rcvdMetarTwo.startsWith(tafTwo) ? rcvdMetarTwo : "METAR " + rcvdMetarTwo) + " " + rcvdTafTwo;
+        rcvdTafThree = (!rcvdMetarThree.startsWith(tafThree) ? rcvdMetarThree : "METAR " + rcvdMetarThree) + " " + rcvdTafThree;
+        rcvdTafFour = (!rcvdMetarFour.startsWith(tafFour) ? rcvdMetarFour : "METAR " + rcvdMetarFour) + " " + rcvdTafFour;
+        rcvdTafFive = (!rcvdMetarFive.startsWith(tafFive) ? rcvdMetarFive : "METAR " + rcvdMetarFive) + " " + rcvdTafFive;
+        rcvdTafSix = (!rcvdMetarSix.startsWith(tafSix) ? rcvdMetarSix : "METAR " + rcvdMetarSix) + " " + rcvdTafSix;
 
         fmc.registerPeriodicPageRefresh(() => {
 
