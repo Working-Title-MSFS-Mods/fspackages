@@ -35,6 +35,14 @@ class CJ4_MFD extends BaseAirliners {
         this.navBar = new CJ4_NavBarContainer("Nav", "NavBar");
         this.popup = new CJ4_PopupMenuContainer("Menu", "PopupMenu");
 
+        this._chartView = document.querySelector("#chartview");
+        this._chartView.hide();
+        this._chartView.connectedCallback();
+
+        this._chartPopup = document.querySelector("#ChartOverlay");
+        this._chartPopup.hide();
+        this._chartPopup.connectedCallback(this.onChartSelected.bind(this));
+
         this.mem1 = new MemoryState(1);
         this.mem2 = new MemoryState(2);
         this.mem3 = new MemoryState(3);
@@ -67,6 +75,10 @@ class CJ4_MFD extends BaseAirliners {
         if (this.systems2)
             this.systems2.reboot();
     }
+    onChartSelected(url, chart) {
+        this._chartPopup.hide();
+        this._chartView.loadChart(url, chart);
+    }
     onUnitSystemChanged() {
         this.modeChangeTimer = -1;
         this.initDuration = 11000;
@@ -96,6 +108,8 @@ class CJ4_MFD extends BaseAirliners {
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
+        this._chartView.update(_deltaTime);
+        this._chartPopup.update();
         if (this.allContainersReady()) {
 
             // check for unit system change
@@ -302,7 +316,33 @@ class CJ4_MFD extends BaseAirliners {
     }
     onEvent(_event) {
         //console.log(_event);
+        if (this._chartView.onEvent(_event)) {
+            return;
+        }
+        if (this._chartPopup.onEvent(_event)) {
+            return;
+        }
         switch (_event) {
+            case "Lwr_DATA_DEC":
+                if (this._chartView.isVisible && !this._chartPopup.isVisible) {
+                    this._chartPopup.selectPrevChart();
+                }
+                break;
+            case "Lwr_DATA_INC":
+                if (this._chartView.isVisible && !this._chartPopup.isVisible) {
+                    this._chartPopup.selectNextChart();
+                }
+                break;
+            case "Lwr_Push_Chart_1":
+                if (this._chartView.style.visibility === "visible") {
+                    this._chartView.hide();
+                    this.isExtended = this.wasExtended;
+                } else {
+                    this._chartView.show();
+                    this.wasExtended = this.isExtended;
+                    this.isExtended = false;
+                }
+                break;
             case "Lwr_Push_TERR_WX":
                 if (this.showTerrain) {
                     this.showTerrain = false;
@@ -343,15 +383,19 @@ class CJ4_MFD extends BaseAirliners {
                 }
                 break;
             case "Lwr_Push_LWR_MENU":
-                this.fillDictionary(this.popup.dictionary);
-                this.popup.setMode(CJ4_PopupMenu.LOWER);
-                if (this.popup.mode == CJ4_PopupMenu.LOWER) {
-                    this.checklist.otherMenusOpen = true;
-                    this.passengerBrief.otherMenusOpen = true;
-                }
-                else {
-                    this.checklist.otherMenusOpen = false;
-                    this.passengerBrief.otherMenusOpen = false;
+                if (this._chartView.style.visibility === "visible") {
+                    this._chartPopup.show();
+                } else {
+                    this.fillDictionary(this.popup.dictionary);
+                    this.popup.setMode(CJ4_PopupMenu.LOWER);
+                    if (this.popup.mode == CJ4_PopupMenu.LOWER) {
+                        this.checklist.otherMenusOpen = true;
+                        this.passengerBrief.otherMenusOpen = true;
+                    }
+                    else {
+                        this.checklist.otherMenusOpen = false;
+                        this.passengerBrief.otherMenusOpen = false;
+                    }
                 }
                 break;
             case "Lwr_Push_CKLST_1":
@@ -527,7 +571,7 @@ class CJ4_MFD extends BaseAirliners {
         this.map.setSymbol(CJ4_MapSymbol.MISSEDAPPR, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_MISSEDAPPR) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.NDBS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_NDBS) == "ON") ? true : false);
         WTDataStore.set("WT_CJ4_RANGE_SEL_DISABLED", _dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_RNGSEL) == "ON" ? 0 : 1);
-        
+
         let sysMode = _dict.get(CJ4_PopupMenu_Key.SYS_SRC);
         if (sysMode == "OFF") {
             this.isExtended = true;

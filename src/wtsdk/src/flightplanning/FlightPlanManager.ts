@@ -404,7 +404,7 @@ export class FlightPlanManager {
   /**
    * Gets the currently selected departure information for the current flight plan.
    */
-  public getDeparture(): WayPoint | undefined {
+  public getDeparture(): any | undefined {
     const origin = this.getOrigin();
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 

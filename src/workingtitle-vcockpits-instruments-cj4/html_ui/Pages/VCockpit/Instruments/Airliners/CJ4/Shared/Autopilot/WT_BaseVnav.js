@@ -89,7 +89,7 @@ class WT_BaseVnav {
          * The furthest distance away to show a constraint on the PFD.
          * @type {number}
          */
-        this._distanceToShowConstraint = 40;
+        this._distanceToShowConstraint = 80;
 
         /**
          * The vertical direct target waypoint.
@@ -215,8 +215,16 @@ class WT_BaseVnav {
                 this._fpChecksum = this.flightplan.checksum;
             }
 
+            if (this._vnavState === VnavState.DIRECT) {
+                const directWaypoint = this.currentWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident); });
+                if (!directWaypoint) {
+                    this._vnavState = VnavState.PATH;
+                }
+            }
+
             this.manageConstraints();
             this.calculateTod();
+            this.calculateAdvisoryDescent();
         }
     }
 
@@ -498,8 +506,8 @@ class WT_BaseVnav {
                 if (segmentBreakIndex != endingIndex && !this._verticalFlightPlan[segmentBreakIndex].waypointFPTA && !isFlatSegment) {
                     const segmentLateralDistance = lateralDistance - this._verticalFlightPlan[segmentBreakIndex].legDistanceTo;
                     const segmentStartFPTA = this._verticalFlightPlan[endingIndex].waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, segmentLateralDistance);
-                    this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = Math.min(segmentStartFPTA, maxAltitude);
-                    segmentStartsLevel = maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
+                    this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = maxAltitude > 0 ? Math.min(segmentStartFPTA, maxAltitude) : segmentStartFPTA;
+                    segmentStartsLevel = maxAltitude > 0 && maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
                     console.log("based on distance: " + segmentLateralDistance + " FPA: " + bestFPA);
                     console.log("setting: " + this._verticalFlightPlan[segmentBreakIndex].ident + " wpt FPTA: " + this._verticalFlightPlan[segmentBreakIndex].waypointFPTA);
                 }
@@ -571,7 +579,7 @@ class WT_BaseVnav {
         let isClimb = false;
         if (this._verticalFlightPlan.length > 0 && this._verticalFlightPlan[this.flightplan.activeWaypointIndex].isClimb) {
             isClimb = true;
-            for (let i = this.flightplan.activeWaypointIndex; i < this._firstPossibleDescentIndex - 1; i++) {
+            for (let i = this.flightplan.activeWaypointIndex; i <= this._lastClimbIndex; i++) {
                 if (this._verticalFlightPlan[i].upperConstraintAltitude && this._verticalFlightPlan[i].upperConstraintAltitude < Infinity) {
                     constraint = this._verticalFlightPlan[i].upperConstraintAltitude;
                     index = i;
@@ -761,6 +769,23 @@ class WT_BaseVnav {
         }
     }
 
+    calculateAdvisoryDescent() { //Creates a point when VNAV is not available to start descent to reach 1500' AGL 10nm from airport
+        if (this.vnavState == VnavState.NONE) {
+            if (this.destination && this._fmc.cruiseFlightLevel && !Simplane.getIsGrounded()) {
+                const elevation = parseFloat(this.destination.infos.oneWayRunways[0].elevation) * 3.28;
+                const altitude = this._fmc.cruiseFlightLevel * 100;
+                const verticalDistance = (altitude - elevation) - 1500;
+                const horizontalDescentDistance = ((verticalDistance / Math.tan(3 * Math.PI / 180)) / 6076.12) + 10;
+                const distanceToTod = (this.destination.cumulativeDistanceInFP - horizontalDescentDistance) - this._currentDistanceInFP;
+                SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", horizontalDescentDistance);
+                SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", distanceToTod);
+                SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 1);
+            }          
+        } else {
+            SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 0);
+        }
+    }
+
     setTodWaypoint(calculate = false, todDistanceInFP) {
 
         if (calculate === true) {
@@ -775,6 +800,7 @@ class WT_BaseVnav {
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", 0);
         }
     }
+
 
     // writeDatastoreValues() {
     //     const vnavValues = {
