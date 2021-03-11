@@ -210,4 +210,37 @@
             </Update>
         </Condition>
     </Template>
+
+    <Template Name="WT_ELECTRICAL_Switch_Circuit_Template">
+        <DefaultTemplateParameters>
+            <NODE_ID>ELECTRICAL_#INTERACTION#_Circuit_#ID#</NODE_ID>
+            <ANIM_NAME>ELECTRICAL_#INTERACTION#_Circuit_#ID#</ANIM_NAME>
+            <PART_ID>ELECTRICAL_#INTERACTION#_Circuit</PART_ID>
+            <LEFT_SINGLE_CODE>#CIRCUIT_ID# (&gt;K:ELECTRICAL_CIRCUIT_TOGGLE)</LEFT_SINGLE_CODE>
+            <WWISE_EVENT_1>electrical_circuit_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>electrical_circuit_switch_off</WWISE_EVENT_2>
+            <AUDIO_NORMALIZED_TIME_1>0.1</AUDIO_NORMALIZED_TIME_1>
+            <AUDIO_NORMALIZED_TIME_2>0.5</AUDIO_NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <UseTemplate Name="ASOBO_GT_Switch_Code">
+                <ANIM_CODE>(A:CIRCUIT SWITCH ON:#CIRCUIT_ID#, Bool) ! 50 *</ANIM_CODE>
+            </UseTemplate>
+        </Component>
+    </Template>
+
+    <Template Name="WT_ELECTRICAL_Switch_EmerLight_Template">
+        <DefaultTemplateParameters>
+            <LEFT_SINGLE_CODE>(L:EMER_LIGHT_ARMED) ! (&gt;L:EMER_LIGHT_ARMED)</LEFT_SINGLE_CODE>
+            <WWISE_EVENT_1>electrical_circuit_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>electrical_circuit_switch_off</WWISE_EVENT_2>
+            <AUDIO_NORMALIZED_TIME_1>0.1</AUDIO_NORMALIZED_TIME_1>
+            <AUDIO_NORMALIZED_TIME_2>0.5</AUDIO_NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <UseTemplate Name="ASOBO_GT_Switch_Code">
+                <ANIM_CODE>(L:EMER_LIGHT_ARMED) 50 *</ANIM_CODE>
+            </UseTemplate>
+        </Component>
+    </Template>
 </ModelBehaviors>
