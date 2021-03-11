@@ -389,10 +389,10 @@ class CJ4_FMC_LegsPage {
                                 }
                             }
                             const scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : undefined;
-                            const userWaypoint = await CJ4_FMC_PilotWaypointParser.parseWaypointInput(value, scratchPadWaypointIndex, this._fmc);
+                            const userWaypoint = await CJ4_FMC_PilotWaypointParser.parseInput(value, scratchPadWaypointIndex, this._fmc);
                             if (userWaypoint) {
                                 let insertIndex = selectedWpIndex;
-                                if (userWaypoint.offset !== false) {
+                                if (userWaypoint.offset > 0) {
                                     if (scratchPadWaypointIndex !== selectedWpIndex || (i == 1 && this._currentPage == 1 && userWaypoint.offset <= 0)) {
                                         this._fmc.showErrorMessage("WPT NOT MATCHED");
                                         this._fmc.setMsg();
