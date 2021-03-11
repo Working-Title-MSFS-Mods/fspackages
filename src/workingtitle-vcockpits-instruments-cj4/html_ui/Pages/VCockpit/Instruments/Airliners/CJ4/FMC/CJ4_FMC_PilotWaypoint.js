@@ -137,13 +137,14 @@ class CJ4_FMC_PilotWaypointPage {
   }
 
   render() {
-
+    let leftInputText = "<STORE WPT";
     if (this._showPilotWaypointPage) {
       let waypointLatString = "";
       let waypointLongString = "";
       let waypointIdent = "";
 
       if (this._selectedPilotWaypointIndex) {
+        leftInputText = "<DELETE WPT";
         const waypoint = this._fmc._pilotWaypoint._pilotWaypointArray[this._selectedPilotWaypointIndex];
         waypointIdent = waypoint.ident;
         const waypointLatDir = waypoint.la >= 0 ? "N" : "S";
@@ -155,16 +156,21 @@ class CJ4_FMC_PilotWaypointPage {
         const waypointLongDeg = Math.floor(Math.abs(waypoint.lo));
         const waypointLongMin = 60 * (Math.abs(waypoint.lo) - Math.abs(waypointLongDeg));
         waypointLongString = waypointLongDir + waypointLongDeg.toFixed(0).padStart(3, "0") + "\xB0C" + waypointLongMin.toFixed(2).padStart(5, "0");
+        place = "-[s-text]";
+        bearing = "";
+        distance = "-[s-text]";
       } else {
         if (this._tempWaypoint && this._tempWaypoint.ident) {
           waypointLatString = this._tempWaypoint.la;
           waypointLongString = this._tempWaypoint.lo;
           waypointIdent = this._tempWaypoint.ident;
         } else {
-          this._tempWaypoint = new CJ4_FMC_PilotWaypoint;
-          waypointLatString = this._tempWaypoint.la;
-          waypointLongString = this._tempWaypoint.lo;
-          waypointIdent = this._tempWaypoint.ident;
+          waypointLatString = "□□□□□□□□[s-text]";;
+          waypointLongString = "□□□□□□□□[s-text]";;
+          waypointIdent = "□□□□□[s-text]";
+          place = "□□□□□[s-text]";
+          bearing = "□□□[s-text]";
+          distance = "□□□□[s-text]";
         }
         
 
@@ -180,10 +186,10 @@ class CJ4_FMC_PilotWaypointPage {
         ["LATITUDE   LONGITUDE[blue s-text]"],
         [waypointLatString + "  " + waypointLongString],
         ["PLACE BRG  /DIST[blue s-text]"],
+        [place + bearing + "/" + distance],
         [""],
         [""],
-        [""],
-        ["<STORE WPT", "RETURN>"]
+        [leftInputText, "RETURN>"]
       ]);
     }
     else {
@@ -221,7 +227,39 @@ class CJ4_FMC_PilotWaypointPage {
   bindEvents() {
 
     if (this._showPilotWaypointPage) {
+      if (this._selectedPilotWaypointIndex) {
+        this._fmc.onLeftInput[5] = () => {
+          this._selectedPilotWaypointIndex = undefined;
+          this._showPilotWaypointPage = true;
+          this.invalidate();
+        };
+      } else {
 
+        for (let i = 0; i < 5; i++) {
+          this._fmc.onLeftInput[i] = () => {
+            const selectedIndex = i + ((this._currentPage - 1) * 5);
+            const pilotWaypoint = this._fmc._pilotWaypoint._pilotWaypointArray[selectedIndex]
+            if (pilotWaypoint && pilotWaypoint.ident != undefined) {
+              this._selectedPilotWaypointIndex = selectedIndex;
+              this._showPilotWaypointPage = true;
+              this.invalidate();
+            } 
+          }
+        }
+
+        this._fmc.onLeftInput[5] = () => {
+          waypointLatString = this._tempWaypoint.la;
+          waypointLongString = this._tempWaypoint.lo;
+          waypointIdent = this._tempWaypoint.ident;
+
+
+          this._selectedPilotWaypointIndex = undefined;
+          this._showPilotWaypointPage = true;
+          this.invalidate();
+        };
+        this._tempWaypoint = new CJ4_FMC_PilotWaypoint;
+        
+      }
 
     } else {
 
