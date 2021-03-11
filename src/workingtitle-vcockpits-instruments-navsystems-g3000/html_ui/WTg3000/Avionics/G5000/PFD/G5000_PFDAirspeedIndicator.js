@@ -83,7 +83,7 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
         } else if (feet < this._airplane.references.crossover.asUnit(WT_Unit.FOOT)) {
             this._maxSpeed.set(this._airplane.references.Vmo);
         } else {
-            this._maxSpeed.set(WT_AviationMath.machToIAS(this._airplane.references.Mmo, feet));
+            this._airplane.dynamics.machToIAS(this._airplane.references.Mmo, this._maxSpeed);
         }
     }
 
