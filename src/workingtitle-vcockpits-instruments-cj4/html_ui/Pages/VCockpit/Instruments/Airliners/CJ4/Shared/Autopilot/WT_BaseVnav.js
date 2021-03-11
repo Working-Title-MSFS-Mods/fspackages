@@ -754,13 +754,16 @@ class WT_BaseVnav {
         else if (this.flightplan.activeWaypointIndex > this._lastClimbIndex) {
             altitude = this.indicatedAltitude;
             if (currentSegment >= 0) {
-                const fptaSegment = this._verticalFlightPlan[this._verticalFlightPlan.findIndex(x => (x.waypointFPTA !== undefined && !x.isClimb && x.waypointFPTA < altitude))].segment;
+                const fptaIdx = this._verticalFlightPlan.findIndex(x => (x.waypointFPTA !== undefined && !x.isClimb && x.waypointFPTA < altitude));
+                if (fptaIdx > -1) {
+                    const fptaSegment = this._verticalFlightPlan[fptaIdx].segment;
 
-                fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[fptaSegment].targetIndex].waypointFPTA;
-                fpa = this._verticalFlightPlanSegments[fptaSegment].fpa;
-                const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
-                todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[fptaSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
-                todExists = true;
+                    fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[fptaSegment].targetIndex].waypointFPTA;
+                    fpa = this._verticalFlightPlanSegments[fptaSegment].fpa;
+                    const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
+                    todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[fptaSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
+                    todExists = true;
+                }
             } else {
                 todExists = false;
             }
