@@ -729,7 +729,8 @@ class WT_BaseVnav {
         if (currentSegment == undefined && this._verticalFlightPlanSegments.length > 0) {
             currentSegment = this._verticalFlightPlanSegments.length - 1;
         }
-        if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE) {
+        if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && (this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE
+            || this._fmc._currentVerticalAutopilot._glidepathStatus == GlidepathStatus.GP_ACTIVE || this._fmc._currentVerticalAutopilot._glideslopeStatus == GlideslopeStatus.GS_ACTIVE)) {
             todExists = false;
         }
         else if (currentSegment !== undefined && currentSegment > 0 && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
