@@ -764,8 +764,6 @@ class WT_BaseVnav {
                     todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[fptaSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
                     todExists = true;
                 }
-            } else {
-                todExists = false;
             }
         }
         if (todExists) {
