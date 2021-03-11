@@ -401,6 +401,27 @@ class WT_AirplaneDynamics extends WT_AirplaneComponent {
     isOnGround() {
         return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
     }
+
+    /**
+     * Converts a mach number to indicated airspeed (IAS) given the aircraft's current situation.
+     * @param {Number} mach - the mach number to convert.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} the indicated airspeed equivalent of the mach number.
+     */
+    machToIAS(mach, reference) {
+        let value = SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", mach);
+        return reference ? reference.set(value, WT_Unit.KNOT) : WT_Unit.KNOT.createNumber(value);
+    }
+
+    /**
+     * Converts indicated airspeed (IAS) to mach given the aircraft's current situation.
+     * @param {WT_NumberUnit} ias - the indicated airspeed to convert.
+     * @returns {Number} the mach equivalent of the indicated airspeed.
+     */
+    iasToMach(ias) {
+        return SimVar.GetGameVarValue("FROM KIAS TO MACH", "number", ias.asUnit(WT_Unit.KNOT));
+    }
 }
 
 class WT_AirplaneEnvironment extends WT_AirplaneComponent {
