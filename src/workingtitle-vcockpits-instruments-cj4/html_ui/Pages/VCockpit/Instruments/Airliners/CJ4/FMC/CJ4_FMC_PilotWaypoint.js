@@ -7,15 +7,21 @@ class CJ4_FMC_PilotWaypoint_Manager {
     this._pilotWaypointArray = [];
     this._pilotWaypointCount = 0;
 
+    this._pilotWaypointArray1 = []; //To protect datastore, only 5 wpts per array for a total of 25
+    this._pilotWaypointArray2 = [];
+    this._pilotWaypointArray3 = [];
+    this._pilotWaypointArray4 = [];
+    this._pilotWaypointArray5 = [];
+      
+  }
+
+  activate() {
     this._pilotWaypointArray1 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_1', '{ }')); //To protect datastore, only 5 wpts per array for a total of 25
     this._pilotWaypointArray2 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_2', '{ }'));
     this._pilotWaypointArray3 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_3', '{ }'));
     this._pilotWaypointArray4 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_4', '{ }'));
     this._pilotWaypointArray5 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_5', '{ }'));
-      
-  }
 
-  activate() {
     if (this._pilotWaypointArray1.length > 0) {
       this._pilotWaypointArray = [...this._pilotWaypointArray1]
     }
@@ -88,6 +94,15 @@ class CJ4_FMC_PilotWaypoint_Manager {
       const waypointsToWrite = JSON.stringify(eval(k + i));
       WTDataStore.set(('CJ4_PILOTWPT_' + i), waypointsToWrite); 
     }
+    
+    if (arraysRequired < 5) {
+      for (let l = arraysRequired + 1; l <= 5; l++) {
+        if (WTDataStore.get('CJ4_PILOTWPT_' + l, '{ }') !== { }) {
+          WTDataStore.remove('CJ4_PILOTWPT_' + l);
+        }
+      }
+    }
+    
   }
 }
 
@@ -102,6 +117,8 @@ class CJ4_FMC_PilotWaypointPage {
 
     this._selectedPilotWaypointIndex = undefined;
     this._showPilotWaypointPage = false;
+
+    this._tempWaypoint = undefined;
 
     this.prepare();
   }
@@ -144,7 +161,10 @@ class CJ4_FMC_PilotWaypointPage {
           waypointLongString = this._tempWaypoint.lo;
           waypointIdent = this._tempWaypoint.ident;
         } else {
-          this._tempWaypoint = new pilotWaypoint;
+          this._tempWaypoint = new CJ4_FMC_PilotWaypoint;
+          waypointLatString = this._tempWaypoint.la;
+          waypointLongString = this._tempWaypoint.lo;
+          waypointIdent = this._tempWaypoint.ident;
         }
         
 
