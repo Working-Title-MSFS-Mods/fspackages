@@ -113,6 +113,14 @@ export class CJ4_FMC_PilotWaypointParser {
     // 5 = LONG DEG
     // 6 = LONG MINS
     // 7 = IDENT
+
+    if(matchFullLatLong[3].trim() === ""){
+      matchFullLatLong[3] = "0";
+    }
+    if(matchFullLatLong[6].trim() === ""){
+      matchFullLatLong[6] = "0";
+    }
+
     const latitude = matchFullLatLong[1] == "S" ? 0 - parseInt(matchFullLatLong[2]) - (parseFloat(matchFullLatLong[3]) / 60)
       : parseInt(matchFullLatLong[2]) + (parseFloat(matchFullLatLong[3]) / 60);
     const longitude = matchFullLatLong[4] == "W" ? 0 - parseInt(matchFullLatLong[5]) - (parseFloat(matchFullLatLong[6]) / 60)
