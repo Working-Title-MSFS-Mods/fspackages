@@ -38,20 +38,29 @@ class CJ4_FMC_PilotWaypoint_Manager {
     this._pilotWaypointCount = this._pilotWaypointArray.length;
   }
 
-  addPilotWaypoint(ident, latitude, longitude) {
+  checkDuplicates(ident) {
     let pilotDuplicate = false;
     let databaseDuplicate = false;
     pilotDuplicate = this._pilotWaypointArray.find(w => { return w.id == ident;});
-
     if (!pilotDuplicate) {
       this._fmc.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
-        if (waypoints && waypoints.length > 0) {
+        if (waypoints && waypoints.length > 0 && waypoints.find(w => { return w.ident === ident;})) {
           databaseDuplicate = true;
         }
       });
     }
+    const duplicate = {
+      exists: pilotDuplicate || databaseDuplicate ? true : false,
+      pilot: pilotDuplicate,
+      database: databaseDuplicate
+    }
+    return duplicate;
+  }
 
-    if (pilotDuplicate || databaseDuplicate) {
+  addPilotWaypoint(ident, latitude, longitude) {
+    const duplicateCheck = this.checkDuplicates(ident);
+
+    if (duplicateCheck.exists === true) {
       return false;
     }
     else {
@@ -119,6 +128,7 @@ class CJ4_FMC_PilotWaypointPage {
     this._showPilotWaypointPage = false;
 
     this._tempWaypoint = undefined;
+    this._tempWaypointParameters = undefined;
 
     this.prepare();
   }
@@ -139,9 +149,12 @@ class CJ4_FMC_PilotWaypointPage {
   render() {
     let leftInputText = "<STORE WPT";
     if (this._showPilotWaypointPage) {
-      let waypointLatString = "";
-      let waypointLongString = "";
-      let waypointIdent = "";
+      let waypointLatString = "□□□□□□□□[s-text]";
+      let waypointLongString = "□□□□□□□□[s-text]";
+      let waypointIdent = "□□□□□[s-text]";
+      let place = "□□□□□[s-text]";
+      let bearing = "□□□[s-text]";
+      let distance = "□□□□[s-text]";
 
       if (this._selectedPilotWaypointIndex) {
         leftInputText = "<DELETE WPT";
@@ -160,17 +173,13 @@ class CJ4_FMC_PilotWaypointPage {
         bearing = "";
         distance = "-[s-text]";
       } else {
-        if (this._tempWaypoint && this._tempWaypoint.ident) {
-          waypointLatString = this._tempWaypoint.la;
-          waypointLongString = this._tempWaypoint.lo;
-          waypointIdent = this._tempWaypoint.ident;
-        } else {
-          waypointLatString = "□□□□□□□□[s-text]";;
-          waypointLongString = "□□□□□□□□[s-text]";;
-          waypointIdent = "□□□□□[s-text]";
-          place = "□□□□□[s-text]";
-          bearing = "□□□[s-text]";
-          distance = "□□□□[s-text]";
+        if (this._tempWaypointParameters && this._tempWaypointParameters.exists) {
+          waypointLatString = this._tempWaypointParameters.la ? this._tempWaypointParameters.la : "□□□□□□□□[s-text]";
+          waypointLongString = this._tempWaypointParameters.lo ? this._tempWaypointParameters.lo : "□□□□□□□□[s-text]";
+          waypointIdent = this._tempWaypointParameters.ident ? this._tempWaypointParameters.ident : "□□□□□[s-text]";
+          place = this._tempWaypointParameters.place ? this._tempWaypointParameters.place : "□□□□□[s-text]";
+          bearing = this._tempWaypointParameters.bearing ? this._tempWaypointParameters.bearing : "□□□[s-text]";
+          distance = this._tempWaypointParameters.distance ? this._tempWaypointParameters.distance : "□□□□[s-text]";
         }
         
 
@@ -183,11 +192,11 @@ class CJ4_FMC_PilotWaypointPage {
         [""],
         [""],
         [""],
+        [""],
         ["LATITUDE   LONGITUDE[blue s-text]"],
         [waypointLatString + "  " + waypointLongString],
         ["PLACE BRG  /DIST[blue s-text]"],
         [place + bearing + "/" + distance],
-        [""],
         [""],
         [leftInputText, "RETURN>"]
       ]);
@@ -234,16 +243,71 @@ class CJ4_FMC_PilotWaypointPage {
           this.invalidate();
         };
       } else {
+        this._fmc.onLeftInput[0] = () => {
+          const inputValue = this._fmc.inOut;
+          if (inputValue.length > 0 && inputValue.length <= 5) {
+            const duplicateCheck = this._fmc._pilotWaypoints.checkDuplicates(ident);
+            if (duplicateCheck != true) {
+              this._tempWaypointParameters.ident = inputValue;
+              this._tempWaypointParameters.exists = true;
+              this.invalidate();
+            }
+            else {
+              const duplicateError = duplicateCheck.pilotDuplicate ? "PILOT WPT DUPLICATE" : duplicateCheck.databaseDuplicate ? "NAVDATA WPT DUPLICATE" : "INVALID ENTRY";
+              this._fmc.showErrorMessage(duplicateError);
+            }
+          }
+          else {
+            this._fmc.showErrorMessage("INVALID ENTRY");
+          }
+        }
+        this._fmc.onLeftInput[3] = () => {
+          const inputValue = this._fmc.inOut;
+          if (inputValue.length > 0) {
+            const waypoint = CJ4_FMC_PilotWaypointParser.parseInputLatLong(inputValue, this._fmc).wpt;
+            if (waypoint) {
+              this._tempWaypointParameters.la = waypoint.infos.coordinates.lat;
+              this._tempWaypointParameters.lo = waypoint.infos.coordinates.long;
+            }
+            this._tempWaypoint.ident = inputValue;
+            this._tempWaypoint.exists = true;
+            this.invalidate();
+          }
+          else {
+            this._fmc.showErrorMessage("INVALID ENTRY");
+          }
+        }
+        this._fmc.onLeftInput[4] = () => {
+          const inputValue = this._fmc.inOut;
+          if (inputValue.length > 0 && inputValue.length <= 5) {
+            this._tempWaypoint.ident = inputValue;
+            this._tempWaypoint.exists = true;
+            this.invalidate();
+          }
+          else {
+            this._fmc.showErrorMessage("INVALID ENTRY");
+          }
+        }
 
         for (let i = 0; i < 5; i++) {
           this._fmc.onLeftInput[i] = () => {
-            const selectedIndex = i + ((this._currentPage - 1) * 5);
-            const pilotWaypoint = this._fmc._pilotWaypoint._pilotWaypointArray[selectedIndex]
-            if (pilotWaypoint && pilotWaypoint.ident != undefined) {
-              this._selectedPilotWaypointIndex = selectedIndex;
-              this._showPilotWaypointPage = true;
-              this.invalidate();
-            } 
+            const inputValue = this._fmc.inOut;
+            switch(i){
+              case 0:
+                this._tempWaypoint = new 
+                this._tempWaypoint.ident = inputValue;
+                break;
+              case "number":
+                if (constraint > 0) {
+                    constraintText = constraint.toFixed(0);
+                } else {
+                    constraintText = "";
+                }
+                break;
+              default:
+                return;
+            }
+
           }
         }
 
@@ -300,9 +364,10 @@ class CJ4_FMC_PilotWaypointPage {
     }
 
     invalidate() {
-        this._fmc.clearDisplay();
-        this.render();
-        this.bindEvents();
+      this._fmc.clearUserInput();
+      this._fmc.clearDisplay();
+      this.render();
+      this.bindEvents();
     }
 
     static ShowPage1(fmc) {
