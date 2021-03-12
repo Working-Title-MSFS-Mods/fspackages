@@ -8,7 +8,7 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
   private _model: CJ4_MFD_ChartsIndexModel;
   private _selectedIndex: number = 0;
 
-  public constructor(private _container: HTMLElement, ngApi:NavigraphApi, private _chartSelectCallback: (url: string, chart: NG_Chart) => void, private _multiChartCallback: (icao: string, type: CHART_TYPE) => void) {
+  public constructor(private _container: HTMLElement, ngApi: NavigraphApi, private _chartSelectCallback: (url: string, chart: NG_Chart) => void, private _multiChartCallback: (icao: string, type: CHART_TYPE) => void) {
     this._model = new CJ4_MFD_ChartsIndexModel(ngApi);
     this.update();
   }
@@ -70,7 +70,8 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
     const chart = this._model.getChartAtIndex(this._selectedIndex);
     if (chart !== undefined) {
       if (chart.id !== undefined) {
-        const url = await this._model.getChartPngUrl(chart);
+        const isDay = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:3", "number") === 1;
+        const url = await this._model.getChartPngUrl(chart, isDay);
         if (url !== "") {
           this._chartSelectCallback(url, chart);
         }
