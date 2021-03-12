@@ -3162,8 +3162,8 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             const altitude = Math.min(Simplane.getAltitude(), 15000);
 
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
-            curve.add(0, '#000000');       
-            if (AGL <= 1000)  {
+            curve.add(0, '#000000');
+            if (AGL <= 1000) {
                 curve.add(altitude - 1, '#ffe017');             
                 curve.add(altitude - 250, '#ffe017');
                 curve.add(altitude - 500, '#000000');
@@ -3171,7 +3171,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 curve.add(altitude - 1, '#5cdb37');
                 curve.add(altitude - 500, '#5cdb37');
                 curve.add(altitude - 1000, '#000000');
-            } else if (AGL > 2000){
+            } else if (AGL > 2000) {
                 curve.add(altitude - 1, '#5cdb37');
                 curve.add(altitude - 500, '#5cdb37');
                 curve.add(altitude - 1000, '#000000');
