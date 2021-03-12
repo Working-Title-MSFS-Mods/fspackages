@@ -78,6 +78,7 @@ class CJ4_FMC extends FMCMainDisplay {
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_BOT, this._pfdMsgReceiver);
 
         this._navRadioSystem = new CJ4_NavRadioSystem();
+        this._pilotWaypoints = undefined;
     }
 
     get templateID() {
@@ -266,6 +267,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
 
         this._navRadioSystem.initialize();
+
+        this._pilotWaypoints = new CJ4_FMC_PilotWaypoint_Manager(this);
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
