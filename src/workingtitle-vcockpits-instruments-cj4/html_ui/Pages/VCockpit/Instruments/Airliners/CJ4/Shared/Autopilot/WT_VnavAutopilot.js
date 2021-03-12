@@ -296,8 +296,8 @@ class WT_VerticalAutopilot {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     break;
                 }
-                if (this.verticalMode !== VerticalNavModeState.PATH && this._pathInterceptStatus !== PathInterceptStatus.LEVELING 
-                        && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
+                if (this.verticalMode !== VerticalNavModeState.PATH && this._pathInterceptStatus !== PathInterceptStatus.LEVELING
+                    && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
@@ -395,6 +395,8 @@ class WT_VerticalAutopilot {
                     }
                     this.observeConstraints();
                 }
+
+                this.observeSpeedConstraints();
         }
         this.setArmedApproachVerticalState();
         this.setArmedVnavVerticalState();
@@ -890,6 +892,20 @@ class WT_VerticalAutopilot {
                 break;
             default:
                 this.currentAltitudeTracking = AltitudeState.NONE;
+        }
+    }
+
+    observeSpeedConstraints() {
+        const wpt = this._vnav.allWaypoints[this._vnav.flightplan.activeWaypointIndex];
+        // TODO what to do on back to back flights
+        if (wpt && wpt.speedConstraint !== "") {
+            this._currentSpeedConstraint = this._vnav.allWaypoints[this._vnav.flightplan.activeWaypointIndex].speedConstraint;
+        }
+
+        if (this._currentSpeedConstraint !== "" && Simplane.getIndicatedSpeed() > (this._currentSpeedConstraint + 20)) {
+            MessageService.getInstance().post(FMS_MESSAGE_ID.CHK_SPD, () => {
+                return (Simplane.getIndicatedSpeed() < (this._currentSpeedConstraint)) || this._currentSpeedConstraint === "" || !this.isVNAVOn;
+            });
         }
     }
 
