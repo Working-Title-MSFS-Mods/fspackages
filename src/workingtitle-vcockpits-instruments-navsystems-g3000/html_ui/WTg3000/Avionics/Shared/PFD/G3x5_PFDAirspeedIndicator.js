@@ -1,8 +1,8 @@
 class WT_G3x5_PFDAirspeedIndicator extends WT_G3x5_PFDElement {
     /**
      * @readonly
-     * @property {WT_G3000_PFDNavDMEInfoHTMLElement} htmlElement
-     * @type {WT_G3000_PFDNavDMEInfoHTMLElement}
+     * @property {WT_G3x5_PFDAirspeedIndicatorHTMLElement} htmlElement
+     * @type {WT_G3x5_PFDAirspeedIndicatorHTMLElement}
      */
     get htmlElement() {
         return this._htmlElement;
@@ -390,6 +390,12 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     _setTrendWarning(value) {
     }
 
+    _showTrend(value) {
+    }
+
+    _setTrendLength(trend) {
+    }
+
     /**
      *
      * @param {WT_NumberUnit} ias
@@ -399,10 +405,10 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         let trendEnd = ias.asUnit(WT_Unit.KNOT) + trend;
         this._setTrendWarning(trendEnd >= this._context.model.maxSpeed.asUnit(WT_Unit.KNOT));
         if (Math.abs(trend) < this._context.trendThreshold) {
-            this._trend.setAttribute("hide", true);
+            this._showTrend(false);
         } else {
-            this._trend.setAttribute("hide", false);
-            this._trend.element.style.transform = `scaleY(${Math.max(-this._tapeLength / 2, Math.min(this._tapeLength / 2, -trend))})`;
+            this._showTrend(true);
+            this._setTrendLength(trend);
         }
     }
 
