@@ -76,6 +76,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._pfdMsgReceiver = new CJ4_PFD_MessageReceiver();
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_TOP, this._pfdMsgReceiver);
         MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_BOT, this._pfdMsgReceiver);
+        this.userMsg = "";
 
         this._navRadioSystem = new CJ4_NavRadioSystem();
     }
@@ -170,12 +171,12 @@ class CJ4_FMC extends FMCMainDisplay {
         };
         this.onTun = () => {
             const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
-			      if (AvionicsComp == 1) {
-              CJ4_FMC_NavRadioDispatch.Dispatch(this);    		
-			      } else {
-              CJ4_FMC_NavRadioPage.ShowPage1(this);
-			      };
-        }
+            if (AvionicsComp == 1) {
+                CJ4_FMC_NavRadioDispatch.Dispatch(this);
+            } else {
+                CJ4_FMC_NavRadioPage.ShowPage1(this);
+            };
+        };
         this.onExec = () => {
             if (this.onExecPage) {
                 console.log("if this.onExecPage");
@@ -402,6 +403,15 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     setMsg(value = "") {
+        this.userMsg = value;
+        if (value === "") {
+            this.setFmsMsg();
+        } else {
+            this._templateRenderer.setMsg(value);
+        }
+    }
+
+    setFmsMsg(value = "") {
         if (value === "") {
             if (this._fmcMsgReceiver.hasMsg()) {
                 value = this._fmcMsgReceiver.getMsgText();
@@ -409,7 +419,9 @@ class CJ4_FMC extends FMCMainDisplay {
         }
         if (value !== this._msg) {
             this._msg = value;
-            this._templateRenderer.setMsg(value);
+            if (this.userMsg === "") {
+                this._templateRenderer.setMsg(value);
+            }
         }
     }
 
@@ -927,7 +939,7 @@ class CJ4_FMC extends FMCMainDisplay {
             }
 
             MessageService.getInstance().update();
-            this.setMsg(this._fmcMsgReceiver.getMsgText());
+            this.setFmsMsg(this._fmcMsgReceiver.getMsgText());
             this._pfdMsgReceiver.update();
             this._msgUpdateCd = 500;
         }
