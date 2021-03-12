@@ -757,12 +757,13 @@ class WT_BaseVnav {
                 const fptaIdx = this._verticalFlightPlan.findIndex(x => (x.waypointFPTA !== undefined && !x.isClimb && x.waypointFPTA < altitude));
                 if (fptaIdx > -1) {
                     const fptaSegment = this._verticalFlightPlan[fptaIdx].segment;
-
-                    fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[fptaSegment].targetIndex].waypointFPTA;
-                    fpa = this._verticalFlightPlanSegments[fptaSegment].fpa;
-                    const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
-                    todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[fptaSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
-                    todExists = true;
+                    if (fptaSegment !== undefined) {
+                        fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[fptaSegment].targetIndex].waypointFPTA;
+                        fpa = this._verticalFlightPlanSegments[fptaSegment].fpa;
+                        const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
+                        todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[fptaSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
+                        todExists = true;
+                    }
                 }
             }
         }
