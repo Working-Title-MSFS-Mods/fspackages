@@ -66,6 +66,11 @@ class WT_VerticalAutopilot {
         * @type {number}
         */
         this._activeConstraintIndex = undefined;
+
+        /**
+         * The last active speed constraint
+         */
+        this._currentSpeedConstraint = -1;
     }
 
     get vnavState() {
@@ -898,13 +903,13 @@ class WT_VerticalAutopilot {
     observeSpeedConstraints() {
         const wpt = this._vnav.allWaypoints[this._vnav.flightplan.activeWaypointIndex];
         // TODO what to do on back to back flights
-        if (wpt && wpt.speedConstraint !== "") {
+        if (wpt && wpt.speedConstraint > -1) {
             this._currentSpeedConstraint = this._vnav.allWaypoints[this._vnav.flightplan.activeWaypointIndex].speedConstraint;
         }
 
-        if (this._currentSpeedConstraint !== "" && Simplane.getIndicatedSpeed() > (this._currentSpeedConstraint + 20)) {
+        if (this._currentSpeedConstraint > -1 && Simplane.getIndicatedSpeed() > (this._currentSpeedConstraint + 20)) {
             MessageService.getInstance().post(FMS_MESSAGE_ID.CHK_SPD, () => {
-                return (Simplane.getIndicatedSpeed() < (this._currentSpeedConstraint)) || this._currentSpeedConstraint === "" || !this.isVNAVOn;
+                return (Simplane.getIndicatedSpeed() < (this._currentSpeedConstraint)) || this._currentSpeedConstraint === -1 || !this.isVNAVOn;
             });
         }
     }
