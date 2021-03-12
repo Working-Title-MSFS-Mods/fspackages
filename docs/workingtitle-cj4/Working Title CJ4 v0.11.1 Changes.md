@@ -1,6 +1,6 @@
-# Working Title CJ4 v0.11.2
+# Working Title CJ4 v0.11.1
 
-Welcome to the Working Title CJ4 v0.11.2. This is a hotfix to address a few high-priority bugs with v0.11.x.
+Welcome to the Working Title CJ4 v0.11.1. This is a hotfix to address a few high-priority bugs with v0.11.0.
 
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
@@ -12,13 +12,9 @@ Charts in the CJ4 are powered by Navigraph - special thanks to the team at Navig
 
 # Changes
 
-- Fixed Standby Attitude Indicator Switch
-- Fixed Emergency Light Switch
-- Add Emergency Light CAS Message
-- Fix co-pilot audio panel
-- Remove TOD display when in approach
-- Fixed VNAV FPTA error that sometimes could cause LNAV to stop responding
-- Added CHECK SPEED message that will show when your speed is >20kts than the current restriction 
+- Fixed problem with FP SYNC option.
+- Addressed problems displaying VNAV TOD in certain cirsumstances.
+- Removed INOP tooltip from chart joystick.
 
 ## ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
