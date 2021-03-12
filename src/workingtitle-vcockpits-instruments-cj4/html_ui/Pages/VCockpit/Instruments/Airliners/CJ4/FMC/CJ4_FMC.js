@@ -446,7 +446,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                if (wp) {
+                if (wp && wp.ident === ident) {
                     uniqueWaypoints.set(wp.icao, wp);
                 }
             });
