@@ -269,6 +269,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._navRadioSystem.initialize();
 
         this._pilotWaypoints = new CJ4_FMC_PilotWaypoint_Manager(this);
+        this._pilotWaypoints.activate();
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
