@@ -3160,6 +3160,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         if (this.lastTerrainUpdate > 1000) {
             const curve = new Avionics.Curve();
             const altitude = Math.min(Simplane.getAltitude(), 15000);
+            const AGL = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
 
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
             curve.add(0, '#000000');
