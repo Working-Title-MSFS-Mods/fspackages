@@ -70,7 +70,7 @@ export class CJ4_MFD_ChartsIndex implements ICJ4_MFD_ChartsPopupPage {
     const chart = this._model.getChartAtIndex(this._selectedIndex);
     if (chart !== undefined) {
       if (chart.id !== undefined) {
-        const isDay = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:3", "number") === 1;
+        const isDay = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:3", "number") === 1 || SimVar.GetSimVarValue("LIGHT POTENTIOMETER:3", "number") === 0;
         const url = await this._model.getChartPngUrl(chart, isDay);
         if (url !== "") {
           this._chartSelectCallback(url, chart);
