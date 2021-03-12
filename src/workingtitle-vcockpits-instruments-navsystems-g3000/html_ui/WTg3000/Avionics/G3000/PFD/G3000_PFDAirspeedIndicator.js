@@ -180,6 +180,14 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._updateStrip(this._redStrip, this._context.redStrip);
     }
 
+    _showTrend(value) {
+        this._trend.setAttribute("show", `${value}`);
+    }
+
+    _setTrendLength(trend) {
+        this._trend.element.style.transform = `scaleY(${Math.max(-this._tapeLength / 2, Math.min(this._tapeLength / 2, -trend))})`;
+    }
+
     _showRefSpeed(value) {
         this._wrapper.setAttribute("show-refspeed", `${value}`);
         this._isRefSpeedVisible = value;
@@ -422,9 +430,10 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             stroke: white;
                             stroke-width: 1px;
                             transform-origin: 50% 50%;
-                        }
-                        #trend[hide="true"] {
                             display: none;
+                        }
+                        #trend[show="true"] {
+                            display: inherit;
                         }
                 #iasdisplaycontainer {
                     position: absolute;
