@@ -2798,7 +2798,8 @@ class CJ4_SystemFMS extends NavSystemElement {
 
                                 let todDistance = "";
                                 if (data.toddistance)
-                                    todDistance = data.toddistance.toFixed(1);
+                                    todDistance = data.toddistance > 100 ? data.toddistance.toFixed(0) : data.toddistance.toFixed(1);
+                                    let timeToTOD = "";;
                                 let timeToTOD = "";
                                 if (groundSpeed > 0) {
                                     timeToTOD = new Date(this.calcETEseconds(todDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
@@ -2807,7 +2808,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 let descentRate = data.descentrate;
                                 let constraintName = data.constraintreal;
                                 let fptaConstraint = data.constraintrealaltitude ? data.constraintrealaltitude : "";
-                                let fptaDistance = data.fptaDistance.toFixed(1);
+                                let fptaDistance = data.fptaDistance > 100 ? data.fptaDistance.toFixed(0) : data.fptaDistance.toFixed(1);
                                 let fptaTime = new Date(this.calcETEseconds(fptaDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
                                 let isDirect = data.isdirect;
                                 let isClimb = data.isclimb;
