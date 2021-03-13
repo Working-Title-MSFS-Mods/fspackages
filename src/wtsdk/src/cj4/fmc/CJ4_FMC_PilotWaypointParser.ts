@@ -104,6 +104,13 @@ export class CJ4_FMC_PilotWaypointParser {
     return newWaypoint;
   }
 
+  public static buildPilotWaypointFromExisting(ident: string, latitude: number, longitude: number, fmc: FMCMainDisplay): WayPoint {
+    const coordinates = new LatLongAlt(latitude, longitude, 0);
+    const newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates, fmc);
+    console.log("newWaypoint: " + newWaypoint.ident + " " + newWaypoint.infos.coordinates.lat + " " + newWaypoint.infos.coordinates.long);
+    return newWaypoint;
+  }
+
   private static parseFullLatLong(matchFullLatLong: RegExpMatchArray, fmc: FMCMainDisplay): WayPoint {
     console.log("match full lat long");
     // 1 = N/S
@@ -128,7 +135,7 @@ export class CJ4_FMC_PilotWaypointParser {
     const coordinates = new LatLongAlt(latitude, longitude, 0);
     const ident = CJ4_FMC_PilotWaypointParser.procMatch(matchFullLatLong[7], matchFullLatLong[1] + matchFullLatLong[2].slice(0, 2) + matchFullLatLong[4] + matchFullLatLong[5] + matchFullLatLong[6].slice(0, 2));
 
-    return WaypointBuilder.fromCoordinates(ident, coordinates, fmc)
+    return WaypointBuilder.fromCoordinates(ident, coordinates, fmc);
   }
 
   private static parseShorthandLatLongEnd(matchShorthandLatLongEnd: RegExpMatchArray, fmc: FMCMainDisplay): WayPoint {
@@ -144,7 +151,7 @@ export class CJ4_FMC_PilotWaypointParser {
     const coordinates = new LatLongAlt(latitude, longitude, 0);
     const ident = matchShorthandLatLongEnd[1] + matchShorthandLatLongEnd[2] + direction;
 
-    return WaypointBuilder.fromCoordinates(ident, coordinates, fmc)
+    return WaypointBuilder.fromCoordinates(ident, coordinates, fmc);
   }
 
   private static parseShorthandLatLongMid(matchShorthandLatLongMid: RegExpMatchArray, fmc: FMCMainDisplay): WayPoint {
@@ -160,7 +167,7 @@ export class CJ4_FMC_PilotWaypointParser {
     const coordinates = new LatLongAlt(latitude, longitude, 0);
     const ident = matchShorthandLatLongMid[1] + direction + matchShorthandLatLongMid[3];
 
-    return WaypointBuilder.fromCoordinates(ident, coordinates, fmc)
+    return WaypointBuilder.fromCoordinates(ident, coordinates, fmc);
   }
 
   private static async parsePlaceBearingDistance(matchPlaceBearingDistance: RegExpMatchArray, fmc: FMCMainDisplay): Promise<WayPoint | undefined> {

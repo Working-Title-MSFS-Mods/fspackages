@@ -81,6 +81,27 @@ class CJ4_FMC_PilotWaypoint_Manager {
     }
   }
 
+  addPilotWaypointWithOverwrite(ident, latitude, longitude) {
+    let duplicateExists = false;
+    duplicateExists = this.checkPilotDuplicates(ident);
+    if (duplicateExists) {
+      this.deletePilotWaypoint(ident);
+    }
+    const pilotWaypoint = new CJ4_FMC_PilotWaypoint(ident, latitude, longitude);
+    this._pilotWaypointArray.push(pilotWaypoint);
+    this._pilotWaypointCount++;
+    if (this._pilotWaypointCount > 25) {
+      const deleteCount = this._pilotWaypointCount - 25;
+      this._pilotWaypointArray.splice(0, deleteCount);
+    }
+    this.writePilotWaypointsToDatastore();
+    if (duplicateExists) {
+      this._fmc.showErrorMessage("PILOT WPT OVERWRITE");
+    } else {
+      this._fmc.showErrorMessage("PILOT WPT ADDED");
+    }
+  }
+
   deletePilotWaypoint(ident) {
     const pilotWaypoint = this._pilotWaypointArray.find(w => { return w.id == ident; });
     if (pilotWaypoint) {

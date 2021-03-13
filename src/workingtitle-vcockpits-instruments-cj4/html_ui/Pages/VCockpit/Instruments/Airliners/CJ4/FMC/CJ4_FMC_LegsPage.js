@@ -391,6 +391,12 @@ class CJ4_FMC_LegsPage {
                             const scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : undefined;
                             const userWaypoint = await CJ4_FMC_PilotWaypointParser.parseInput(value, scratchPadWaypointIndex, this._fmc);
                             if (userWaypoint) {
+                                const databaseDuplicate = await this._fmc._pilotWaypoints.checkDatabaseDuplicates(userWaypoint.wpt.ident);
+                                if (databaseDuplicate) {
+                                    this._fmc.showErrorMessage("DUPLICATE IDENT");
+                                    this._fmc.setMsg();
+                                    return;
+                                }
                                 let insertIndex = selectedWpIndex;
                                 if (userWaypoint.offset > 0) {
                                     if (scratchPadWaypointIndex !== selectedWpIndex || (i == 1 && this._currentPage == 1 && userWaypoint.offset <= 0)) {
@@ -401,6 +407,7 @@ class CJ4_FMC_LegsPage {
                                         insertIndex = userWaypoint.offset >= 0 ? selectedWpIndex + 1 : selectedWpIndex;
                                     }
                                 }
+                                this._fmc._pilotWaypoints.addPilotWaypointWithOverwrite(userWaypoint.wpt.ident, userWaypoint.wpt.infos.coordinates.lat, userWaypoint.wpt.infos.coordinates.long);
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                     this._fmc.flightPlanManager.addUserWaypoint(userWaypoint.wpt, insertIndex, () => {
                                         const isDirectTo = (i == 1 && this._currentPage == 1);
@@ -418,9 +425,11 @@ class CJ4_FMC_LegsPage {
                                     });
                                 });
                             } else {
-                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
-                                        if (isSuccess) {
+                                const pilotWaypoint = this._fmc._pilotWaypoints._pilotWaypointArray.find(w => w.id == value);
+                                if (pilotWaypoint) {
+                                    const pilotWaypointObject = CJ4_FMC_PilotWaypointParser.buildPilotWaypointFromExisting(pilotWaypoint.id, parseFloat(pilotWaypoint.la), parseFloat(pilotWaypoint.lo), this._fmc);
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        this._fmc.flightPlanManager.addUserWaypoint(pilotWaypointObject, selectedWpIndex, () => {
                                             const isDirectTo = (i == 1 && this._currentPage == 1);
                                             if (isDirectTo) {
                                                 this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
@@ -433,16 +442,35 @@ class CJ4_FMC_LegsPage {
                                                     this.resetAfterOp();
                                                 });
                                             }
-                                        } else {
-                                            this._fmc.fpHasChanged = false;
-                                            this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                                            this._fmc.setMsg();
-                                            this._fmc.eraseTemporaryFlightPlan(() => {
-                                                this.resetAfterOp();
-                                            });
-                                        }
+                                        });
                                     });
-                                });
+                                } else {
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                            if (isSuccess) {
+                                                const isDirectTo = (i == 1 && this._currentPage == 1);
+                                                if (isDirectTo) {
+                                                    this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
+                                                        this._fmc.activateRoute(true, () => {
+                                                            this.resetAfterOp();
+                                                        });
+                                                    });
+                                                } else {
+                                                    this._fmc.activateRoute(false, () => {
+                                                        this.resetAfterOp();
+                                                    });
+                                                }
+                                            } else {
+                                                this._fmc.fpHasChanged = false;
+                                                this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                                this._fmc.setMsg();
+                                                this._fmc.eraseTemporaryFlightPlan(() => {
+                                                    this.resetAfterOp();
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
                             }
                         } else if (i == 0 && this._currentPage == 1) {
                             this._fmc.showErrorMessage("UNABLE ADD FROM WPT");
