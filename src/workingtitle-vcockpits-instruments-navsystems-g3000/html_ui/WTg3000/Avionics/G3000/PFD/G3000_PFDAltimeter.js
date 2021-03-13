@@ -364,10 +364,9 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                 #indicatedaltdisplaycontainer {
                     position: absolute;
                     left: calc(var(--altimeter-minortick-width, 12%) / 2);
+                    top: calc(50% - var(--altimeter-indicatedalt-font-size, 1.25em) * 1.2);
                     width: calc(100% - var(--altimeter-minortick-width, 12%) / 2);
-                    top: 50%;
                     height: calc(var(--altimeter-indicatedalt-font-size, 1.25em) * 1.2 * 2);
-                    transform: translateY(-50%);
                 }
                     #indicatedaltdisplaybg {
                         width: 100%;
