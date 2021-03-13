@@ -107,7 +107,6 @@ export class CJ4_FMC_PilotWaypointParser {
   public static buildPilotWaypointFromExisting(ident: string, latitude: number, longitude: number, fmc: FMCMainDisplay): WayPoint {
     const coordinates = new LatLongAlt(latitude, longitude, 0);
     const newWaypoint = WaypointBuilder.fromCoordinates(ident, coordinates, fmc);
-    console.log("newWaypoint: " + newWaypoint.ident + " " + newWaypoint.infos.coordinates.lat + " " + newWaypoint.infos.coordinates.long);
     return newWaypoint;
   }
 
