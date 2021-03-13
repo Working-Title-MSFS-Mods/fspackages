@@ -988,6 +988,10 @@ class WT_AirplaneAutopilot {
         return SimVar.GetSimVarValue("AUTOPILOT MASTER", "Boolean") === 1;
     }
 
+    /**
+     * Gets the current navigation source of the autopilot.
+     * @returns {WT_AirplaneAutopilot.NavSource} the current navigation souce of the autopilot.
+     */
     navigationSource() {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
             return WT_AirplaneAutopilot.NavSource.FMS;
@@ -1000,7 +1004,7 @@ class WT_AirplaneAutopilot {
      * Checks whether Pitch Hold mode is enabled.
      * @returns {Boolean} whether Pitch Hold mode is enabled.
      */
-     isPitchHold() {
+    isPitchHold() {
         return SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") === 1;
     }
 
@@ -1021,6 +1025,17 @@ class WT_AirplaneAutopilot {
     }
 
     /**
+     * Gets the autopilot's selected altitude setting.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} - the autopilot's selected altitude setting.
+     */
+    selectedAltitude(reference) {
+        let value = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : WT_Unit.FOOT.createNumber(value);
+    }
+
+    /**
      * Gets the autopilot's reference airspeed setting.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of knots.
@@ -1029,6 +1044,17 @@ class WT_AirplaneAutopilot {
     referenceAirspeed(reference) {
         let value = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
         return reference ? reference.set(value, WT_Unit.KNOT) : WT_Unit.KNOT.createNumber(value);
+    }
+
+    /**
+     * Gets the autopilot's reference vertical speed setting.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} - the autopilot's reference vertical speed setting.
+     */
+    referenceVS(reference) {
+        let value = SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute");
+        return reference ? reference.set(value, WT_Unit.FPM) : WT_Unit.FPM.createNumber(value);
     }
 }
 /**

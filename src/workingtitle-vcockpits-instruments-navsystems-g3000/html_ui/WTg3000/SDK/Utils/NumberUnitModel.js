@@ -118,9 +118,34 @@ class WT_NumberUnitModelSimVar extends WT_NumberUnitModelAutoUpdated {
      * @param {String} simVarUnit - the unit to use when retrieving the SimVar used to update the new model's value.
      * @param {WT_Unit} [setUnit] - the unit to use when interpreting the value of the SimVar used to update the new
      *                              model's value. Defaults to the reference unit type of the new model's number value.
+     * @param {Boolean} [isSettable] - whether the value of the new model is settable. False by default.
      */
-    constructor(unit, simVarName, simVarUnit, setUnit) {
+    constructor(unit, simVarName, simVarUnit, setUnit, isSettable = false) {
         super(unit, {updateValue(value) {value.set(SimVar.GetSimVarValue(simVarName, simVarUnit), setUnit)}});
+
+        this._isSettable = isSettable;
+        this._simVarName = simVarName;
+        this._simVarUnit = simVarUnit;
+        this._setUnit = setUnit ? setUnit : unit;
+    }
+
+    /**
+     * @readonly
+     * @property {Boolean} isSettable - whether this model's value can be manually set by calling setValue().
+     * @type {Boolean}
+     */
+    get isSettable() {
+        return this._isSettable;
+    }
+
+    /**
+     * Sets the value of this model. Has no effect unless this.isSettable is true.
+     * @param {WT_NumberUnit} value - the new value.
+     */
+    setValue(value) {
+        if (this.isSettable) {
+            SimVar.SetSimVarValue(simVarName, simVarUnit, value.asUnit(this._setUnit));
+        }
     }
 }
 
