@@ -362,10 +362,10 @@ class CJ4_FMC_PilotWaypointPage {
         this._fmc.onLeftInput[3] = () => {
           const inputValue = this._fmc.inOut;
           if (inputValue.length > 0) {
-            const waypoint = CJ4_FMC_PilotWaypointParser.parseInputLatLong(inputValue, this._fmc).wpt;
+            const waypoint = CJ4_FMC_PilotWaypointParser.parseInputLatLong(inputValue, this._fmc);
             if (waypoint) {
-              this._tempWaypointParameters.la = waypoint.infos.coordinates.lat;
-              this._tempWaypointParameters.lo = waypoint.infos.coordinates.long;
+              this._tempWaypointParameters.la = waypoint.wpt.infos.coordinates.lat;
+              this._tempWaypointParameters.lo = waypoint.wpt.infos.coordinates.long;
               this._tempWaypointParameters.pbd = undefined;
               this._tempWaypointParameters.exists = true;
               this.invalidate();
@@ -380,10 +380,7 @@ class CJ4_FMC_PilotWaypointPage {
         this._fmc.onLeftInput[4] = async () => {
           const inputValue = this._fmc.inOut;
           if (inputValue.length > 0) {
-            console.log("inputValue: " + inputValue);
             CJ4_FMC_PilotWaypointParser.parseInputPlaceBearingDistance(inputValue, this._fmc).then((waypoint) => {
-              console.log("waypoint exists? " + (waypoint ? "true" : "false"));
-              console.log("ident: " + waypoint.wpt.ident);
               if (waypoint && waypoint.wpt) {
                 this._tempWaypointParameters.la = waypoint.wpt.infos.coordinates.lat;
                 this._tempWaypointParameters.lo = waypoint.wpt.infos.coordinates.long;
@@ -414,11 +411,13 @@ class CJ4_FMC_PilotWaypointPage {
               this._showPilotWaypointPage = false;
               this._fmc.clearUserInput();
               this._fmc.clearDisplay();
+              this._fmc.showErrorMessage("STORING PILOT WPT");
               setTimeout(() => {
                 this._fmc.showErrorMessage("STORING PILOT WPT");
                 CJ4_FMC_PilotWaypointPage.ShowPage1(this._fmc, false);
               }, 1000);
               
+             
             } else {
               this._fmc.showErrorMessage("ERROR ADDING PILOT WPT");
               this.invalidate();
