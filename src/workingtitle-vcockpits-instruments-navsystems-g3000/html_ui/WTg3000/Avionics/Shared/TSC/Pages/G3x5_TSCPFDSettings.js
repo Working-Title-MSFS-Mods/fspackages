@@ -11,6 +11,7 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
         this.controller.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this.controller));
         this.controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this.controller));
         this.controller.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this.controller));
+        this.controller.addSetting(this._altimeterMetersSetting = new WT_G3x5_PFDAltimeterMetersSetting(this.controller));
     }
 
     /**
@@ -65,6 +66,15 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
      */
     get baroUnitsSetting() {
         return this._baroUnitsSetting;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDAltimeterMetersSetting} altimeterMetersSetting
+     * @type {WT_G3x5_PFDAltimeterMetersSetting}
+     */
+    get altimeterMetersSetting() {
+        return this._altimeterMetersSetting;
     }
 
     _createHTMLElement() {

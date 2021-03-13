@@ -50,3 +50,10 @@ WT_G3x5_PFDBaroUnitsSetting.Mode = {
     HPA: 1
 };
 WT_G3x5_PFDBaroUnitsSetting.DEFAULT = WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG;
+
+class WT_G3x5_PFDAltimeterMetersSetting extends WT_DataStoreSetting {
+    constructor(controller, defaultValue = false, autoUpdate = false, isPersistent = true, key = WT_G3x5_PFDAltimeterMetersSetting.KEY) {
+        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    }
+}
+WT_G3x5_PFDAltimeterMetersSetting.KEY = "WT_Altimeter_Meters";

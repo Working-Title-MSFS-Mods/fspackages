@@ -110,6 +110,10 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
         return new WT_G3000_PFDAirspeedIndicator();
     }
 
+    _createAltimeter() {
+        return new WT_G3000_PFDAltimeter();
+    }
+
     _createAoAIndicator() {
         return this._aoaIndicator = new WT_G3000_PFDAoAIndicator("PFD");
     }
@@ -387,7 +391,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _softkeyBaroUnitCompare(value) {
-        return this._altimeter.getBaroUnitsMode() === value;
+        return this._altimeter.baroUnitsSetting.getValue() === value;
     }
 }
 WT_G3000_PFDMainPage.AOA_MODE_TEXT = [
