@@ -6,6 +6,7 @@ export class CJ4_SpeedObserver {
   private _fpChecksum: number = 0;
   private _currentSpeedRestriction = 0;
   private _speedProfile: number[];
+  private _vnavDescentIas = 290;
 
   /**
    *
@@ -17,6 +18,7 @@ export class CJ4_SpeedObserver {
   update(): void {
     if (this._fpChecksum !== this._fpm.getFlightPlan(0).checksum) {
       this.updateSpeedProfile();
+      this._vnavDescentIas = WTDataStore.get('CJ4_vnavDescentIas', 290);
       this._fpChecksum = this._fpm.getFlightPlan(0).checksum;
     }
 
@@ -30,6 +32,9 @@ export class CJ4_SpeedObserver {
 
     if (isVnavOn) {
       this._currentSpeedRestriction = this._speedProfile[this._fpm.getActiveWaypointIndex()];
+      
+      // TODO if VPATH is active check for descent target speed
+      
       if (Simplane.getIndicatedSpeed() > (this._currentSpeedRestriction + 20)) {
         MessageService.getInstance().post(FMS_MESSAGE_ID.CHK_SPD, () => {
           return (Simplane.getIndicatedSpeed() < (this._currentSpeedRestriction + 20)) || !isVnavOn;
