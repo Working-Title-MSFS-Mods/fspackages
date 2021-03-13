@@ -115,6 +115,15 @@ class WT_G3x5_PFDAltimeterModel {
 
         this._showReferenceVSpeed = false;
         this._referenceVSpeed = WT_Unit.FPM.createNumber(0);
+
+        this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
+        this._verticalTrackDeflection = 0;
+        this._verticalDeviationError = WT_Unit.FOOT.createNumber(0);
+        this._isGlidePreviewActive = false;
+        this._glidePreviewDeflection = 0;
+
+        this._tempFoot1 = WT_Unit.FOOT.createNumber(0);
+        this._tempFoot2 = WT_Unit.FOOT.createNumber(0);
     }
 
     /**
@@ -162,6 +171,42 @@ class WT_G3x5_PFDAltimeterModel {
         return this._showReferenceVSpeed ? this._referenceVSpeed.readonly() : null;
     }
 
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDAltimeterModel.VDeviationMode} verticalDeviationMode
+     * @type {WT_G3x5_PFDAltimeterModel.VTrackMode}
+     */
+    get verticalTrackMode() {
+        return this._verticalTrackMode;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} glideError
+     * @type {Number}
+     */
+    get verticalTrackDeflection() {
+        return this._verticalTrackDeflection;
+    }
+
+    /**
+     * @readonly
+     * @property {Boolean} isGlidePreviewActive
+     * @type {Boolean}
+     */
+    get isGlidePreviewActive() {
+        return this._isGlidePreviewActive;
+    }
+
+    /**
+     * @readonly
+     * @property {Number} glidePreviewError
+     * @type {Number}
+     */
+    get glidePreviewDeflection() {
+        return this._glidePreviewDeflection;
+    }
+
     getShowMeters() {
         return this._showMeters;
     }
@@ -207,12 +252,141 @@ class WT_G3x5_PFDAltimeterModel {
         }
     }
 
+    _calculateGlideslopeDeflection(error) {
+        return -error / WT_G3x5_PFDAltimeterModel.GLIDESLOPE_FULL_DEFLECTION;
+    }
+
+    /**
+     *
+     * @param {Number} angle
+     * @param {Number} error
+     * @param {WT_NumberUnit} deviation
+     */
+    _calculateGlidepathDeflection(angle, error, deviation) {
+        let angleRad = angle * Avionics.Utils.DEG2RAD;
+        let errorRad = error * Avionics.Utils.DEG2RAD;
+        let distance = this._tempFoot2.set(deviation).scale(1 / (Math.tan(angleRad + errorRad) - Math.tan(angleRad)), true);
+        let maxDeflection = distance.scale(Math.tan(WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_ANGLE * Avionics.Utils.DEG2RAD), true);
+        if (maxDeflection.compare(WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MAX) > 0) {
+            maxDeflection.set(WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MAX);
+        } else if (maxDeflection.compare(WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MIN) < 0) {
+            maxDeflection.set(WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MIN);
+        }
+        return -deviation.ratio(maxDeflection);
+    }
+
+    _updateVerticalTrackGlidePreview() {
+        let isActive = false;
+        if (this._airplane.autopilot.navigationSource() === WT_AirplaneAutopilot.NavSource.FMS) {
+            /**
+             * @type {WT_FlightPlanLeg}
+             */
+            let activeLeg = this._airplane.fms.flightPlanManager.getActiveLeg(true);
+            let beforeFAF = activeLeg &&
+                        activeLeg.segment === WT_FlightPlan.Segment.APPROACH &&
+                        activeLeg.index < this._airplane.fms.flightPlanManager.activePlan.legCount() - 2;
+            if (beforeFAF) {
+                if (this._airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
+                    isActive = true;
+                    this._glidePreviewDeflection = this._calculateGlidepathDeflection(this._airplane.fms.glidepathAngle(), this._airplane.fms.glidepathError(), this._airplane.fms.glidepathDeviation(this._tempFoot1));
+                } else {
+                    for (let i = 1; i < 3; i++) {
+                        let nav = this._airplane.navCom.getNav(i);
+                        let gsError = nav.glideslopeError();
+                        if (gsError !== null) {
+                            isActive = true;
+                            this._glidePreviewDeflection = this._calculateGlideslopeDeflection(gsError);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        this._isGlidePreviewActive = isActive;
+    }
+
+    _updateVerticalTrackFromFMS() {
+        /**
+         * @type {WT_FlightPlanLeg}
+         */
+        let activeLeg = this._airplane.fms.flightPlanManager.getActiveLeg(true);
+        let atFAF = activeLeg &&
+                    activeLeg.segment === WT_FlightPlan.Segment.APPROACH &&
+                    activeLeg.index >= this._airplane.fms.flightPlanManager.activePlan.legCount() - 2;
+        if (atFAF) {
+            if (this._airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
+                this._verticalTrackDeflection = this._calculateGlidepathDeflection(this._airplane.fms.glidepathAngle(), this._airplane.fms.glidepathError(), this._airplane.fms.glidepathDeviation(this._tempFoot1));
+                this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDEPATH;
+            } else {
+                for (let i = 1; i < 3; i++) {
+                    let nav = this._airplane.navCom.getNav(i);
+                    let gsError = nav.glideslopeError();
+                    if (gsError !== null) {
+                        this._verticalTrackDeflection = this._calculateGlideslopeDeflection(gsError);
+                        this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDESLOPE;
+                        return;
+                    }
+                }
+                this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
+            }
+        } else {
+            this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_AirplaneNavSlot} nav
+     */
+    _updateGlideSlope(nav) {
+        let error = nav.glideslopeError();
+        if (error === null) {
+            this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.NONE;
+        } else {
+            this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDESLOPE;
+        }
+        this._verticalTrackDeflection = error ? this._calculateGlideslopeDeflection(error) : 0;
+    }
+
+    _updateVerticalTrackIndicator() {
+        switch(this._airplane.autopilot.navigationSource()) {
+            case WT_AirplaneAutopilot.NavSource.FMS:
+                this._updateVerticalTrackFromFMS();
+                break;
+            case WT_AirplaneAutopilot.NavSource.NAV1:
+                this._updateGlideSlope(this._airplane.navCom.getNav(1));
+                break;
+            case WT_AirplaneAutopilot.NavSource.NAV2:
+                this._updateGlideSlope(this._airplane.navCom.getNav(2));
+                break;
+        }
+    }
+
+    _updateVerticalTrack() {
+        this._updateVerticalTrackIndicator();
+        this._updateVerticalTrackGlidePreview();
+    }
+
     update() {
         this._updateAltitude();
         this._updateVSpeed();
         this._updateSelectedAltitude();
         this._updateReferenceVSpeed();
+        this._updateVerticalTrack();
     }
+}
+WT_G3x5_PFDAltimeterModel.GLIDESLOPE_FULL_DEFLECTION = 0.7;
+WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_ANGLE = 0.7;
+WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MIN = WT_Unit.METER.createNumber(45);
+WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MAX = WT_Unit.METER.createNumber(150);
+/**
+ * @enum {Number}
+ */
+WT_G3x5_PFDAltimeterModel.VTrackMode = {
+    NONE: 0,
+    GLIDESLOPE: 1,
+    GLIDEPATH: 2,
+    VERTICAL_DEVIATION: 3
 }
 
 class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
@@ -239,6 +413,14 @@ class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
 
     /**
      *
+     * @returns {WT_G3x5_PFDAltimeterVerticalTrackHTMLElement}
+     */
+    _createVerticalTrackElement() {
+        return new WT_G3x5_PFDAltimeterVerticalTrackHTMLElement();
+    }
+
+    /**
+     *
      * @returns {WT_G3x5_PFDAltimeterAltitudeHTMLElement}
      */
     _createAltitudeHTMLElement() {
@@ -253,12 +435,15 @@ class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
     }
 
     _initChildren() {
+        this._vTrack = this._createVerticalTrackElement();
         this._altitude = this._createAltitudeHTMLElement();
         this._vSpeed = this._createVSpeedElement();
 
+        this._vTrack.id = WT_G3x5_PFDAltimeterHTMLElement.VTRACK_ID;
         this._altitude.id = WT_G3x5_PFDAltimeterHTMLElement.ALTITUDE_ID;
         this._vSpeed.id = WT_G3x5_PFDAltimeterHTMLElement.VSPEED_ID;
 
+        this._wrapper.appendChild(this._vTrack);
         this._wrapper.appendChild(this._altitude);
         this._wrapper.appendChild(this._vSpeed);
     }
@@ -287,6 +472,12 @@ class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
         });
     }
 
+    _updateVTrackContext() {
+        this._vTrack.setContext({
+            model: this._context.model
+        });
+    }
+
     _updateFromContext() {
         if (!this._context) {
             return;
@@ -294,6 +485,7 @@ class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
 
         this._updateAltitudeContext();
         this._updateVSpeedContext();
+        this._updateVTrackContext();
     }
 
     /**
@@ -314,6 +506,7 @@ class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
     _updateDisplay() {
         this._altitude.update();
         this._vSpeed.update();
+        this._vTrack.update();
     }
 
     update() {
@@ -324,7 +517,7 @@ class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
         this._updateDisplay();
     }
 }
-WT_G3x5_PFDAltimeterHTMLElement.GLIDESLOPE_ID = "glideslope";
+WT_G3x5_PFDAltimeterHTMLElement.VTRACK_ID = "vdeviation";
 WT_G3x5_PFDAltimeterHTMLElement.ALTITUDE_ID = "altitude";
 WT_G3x5_PFDAltimeterHTMLElement.VSPEED_ID = "vspeed";
 WT_G3x5_PFDAltimeterHTMLElement.TEMPLATE = document.createElement("template");
@@ -339,7 +532,7 @@ WT_G3x5_PFDAltimeterHTMLElement.TEMPLATE.innerHTML = `
             width: 100%;
             height: 100%;
         }
-            #${WT_G3x5_PFDAltimeterHTMLElement.GLIDESLOPE_ID} {
+            #${WT_G3x5_PFDAltimeterHTMLElement.VTRACK_ID} {
                 position: absolute;
                 left: 0%;
                 top: 0%;
@@ -1123,11 +1316,310 @@ customElements.define(WT_G3x5_PFDAltimeterVSpeedHTMLElement.NAME, WT_G3x5_PFDAlt
 * @property {Number} threshold
 */
 
-class WT_G3x5_PFDAltimeterGlideslopeHTMLElement extends HTMLElement {
+class WT_G3x5_PFDAltimeterVerticalTrackHTMLElement extends HTMLElement {
     constructor() {
         super();
 
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
     }
+
+    _getTemplate() {
+        return WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.TEMPLATE;
+    }
+
+    _defineChildren() {
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
+
+        this._label = new WT_CachedElement(this.shadowRoot.querySelector(`#label`));
+        this._previewContainer = new WT_CachedElement(this.shadowRoot.querySelector(`#previewcontainer`));
+        this._indicatorContainer = new WT_CachedElement(this.shadowRoot.querySelector(`#indicatorcontainer`));
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_PFDAltimeterVSpeedContext} context
+     */
+    setContext(context) {
+        this._context = context;
+    }
+
+    _calculateIndicatorPosition(deflection) {
+        return -deflection * WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.FULL_DEFLECTION_SCALE * 0.5;
+    }
+
+    _show(value) {
+        this._wrapper.setAttribute("show", `${value}`);
+    }
+
+    _setMode(mode) {
+        let value;
+        switch (mode) {
+            case WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDESLOPE:
+                value = "glideslope";
+                break;
+            case WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDEPATH:
+                value = "glidepath";
+                break;
+            case WT_G3x5_PFDAltimeterModel.VTrackMode.VERTICAL_DEVIATION:
+                value = "vdev";
+                break;
+            default:
+                value = "none";
+        }
+        this._wrapper.setAttribute("mode", value);
+    }
+
+    _updateMode() {
+        this._setMode(this._context.model.verticalTrackMode);
+    }
+
+    _updateLabel() {
+        let mode = this._context.model.verticalTrackMode;
+        let isPreviewActive = this._context.model.isGlidePreviewActive;
+
+        if (mode === WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDESLOPE || mode === WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDEPATH || isPreviewActive) {
+            this._label.innerHTML = "G";
+        } else if (mode === WT_G3x5_PFDAltimeterModel.VTrackMode.VERTICAL_DEVIATION) {
+            this._label.innerHTML = "V";
+        }
+    }
+
+    _moveIndicator(pos) {
+        this._indicatorContainer.setAttribute("style", `transform: translateY(${Math.max(-0.5, Math.min(0.5, pos)) * 100}%);`);
+    }
+
+    _updateIndicator() {
+        if (this._context.model.verticalTrackMode !== WT_G3x5_PFDAltimeterModel.VTrackMode.NONE) {
+            this._moveIndicator(this._calculateIndicatorPosition(this._context.model.verticalTrackDeflection));
+        }
+    }
+
+    _showPreview(value) {
+        this._wrapper.setAttribute("show-preview", `${value}`);
+    }
+
+    _movePreview(pos) {
+        this._previewContainer.setAttribute("style", `transform: translateY(${Math.max(-0.5, Math.min(0.5, pos)) * 100}%);`);
+    }
+
+    _updatePreview() {
+        if (this._context.model.isGlidePreviewActive) {
+            this._movePreview(this._calculateIndicatorPosition(this._context.model.glidePreviewDeflection));
+            this._showPreview(true);
+        } else {
+            this._showPreview(false);
+        }
+    }
+
+    _updateDisplay() {
+        let show = this._context.model.verticalTrackMode !== WT_G3x5_PFDAltimeterModel.VTrackMode.NONE || this._context.model.isGlidePreviewActive;
+        this._show(show);
+        if (show) {
+            this._updateMode();
+            this._updateLabel();
+            this._updateIndicator();
+            this._updatePreview();
+        }
+    }
+
+    update() {
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        this._updateDisplay();
+    }
 }
+WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.FULL_DEFLECTION_SCALE = 0.8;
+WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.NAME = "wt-pfd-altimeter-vdeviation";
+WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        #wrapper[show="true"] {
+            display: block;
+        }
+            #labelcontainer {
+                position: absolute;
+                left: 0%;
+                bottom: 80%;
+                width: 100%;
+                height: 1.2em;
+                font-size: var(--altimeter-vdeviation-label-font-size, 1em);
+                color: #979797;
+                background-color: var(--wt-g3x5-bggray);
+            }
+                #wrapper[mode="glidepath"] #labelcontainer,
+                #wrapper[mode="vdev"] #labelcontainer {
+                    color: var(--wt-g3x5-purple);
+                }
+                #wrapper[mode="glideslope"] #labelcontainer {
+                    color: var(--wt-g3x5-lightgreen);
+                }
+                #label {
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                }
+            #scalecontainer {
+                position: absolute;
+                left: 0%;
+                top: 20%;
+                width: 100%;
+                height: 60%;
+                background-color: rgba(0, 0, 0, var(--altimeter-vdeviation-bg-alpha, 0.2));
+                overflow: hidden;
+            }
+                #scale {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+                    .dot {
+                        position: absolute;
+                        left: 50%;
+                        width: 33%;
+                        transform: translate(-50%, -50%);
+                        fill: transparent;
+                        stroke: white;
+                        stroke-width: 20;
+                    }
+                    #dot0 {
+                        top: ${50 - WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.FULL_DEFLECTION_SCALE * 100 / 2}%
+                    }
+                    #dot1 {
+                        top: ${50 - WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.FULL_DEFLECTION_SCALE * 100 / 4}%
+                    }
+                    #dot2 {
+                        top: ${50 + WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.FULL_DEFLECTION_SCALE * 100 / 4}%
+                    }
+                    #dot3 {
+                        top: ${50 + WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.FULL_DEFLECTION_SCALE * 100 / 2}%
+                    }
+                    #centerline {
+                        position: absolute;
+                        top: 50%;
+                        left: 0%;
+                        width: 100%;
+                        transform: translateY(-50%);
+                        stroke: white;
+                        stroke-width: 1;
+                    }
+            #previewcontainer {
+                position: absolute;
+                top: 0%;
+                left: 0%;
+                width: 100%;
+                height: 100%;
+                display: none;
+            }
+            #wrapper[show-preview="true"] #previewcontainer {
+                display: block;
+            }
+                #previewindicator {
+                    position: absolute;
+                    left: 15%;
+                    top: 50%;
+                    width: 70%;
+                    height: 15%;
+                    transform: translateY(-50%);
+                    fill: transparent;
+                    stroke: #979797;
+                    stroke-width: 4;
+                }
+            #indicatorcontainer {
+                position: absolute;
+                top: 0%;
+                left: 0%;
+                width: 100%;
+                height: 100%;
+                display: none;
+            }
+            #wrapper:not([mode="none"]) #indicatorcontainer {
+                display: block;
+            }
+                .indicator {
+                    position: absolute;
+                    top: 50%;
+                    height: 10%;
+                    transform: translateY(-50%);
+                }
+                #glideindicator {
+                    left: 15%;
+                    width: 70%;
+                    stroke: black;
+                    stroke-width: 1;
+                    display: block;
+                }
+                #wrapper[mode^="glide"] #glideindicator {
+                    display: block;
+                }
+                #wrapper[mode$="slope"] #glideindicator {
+                    fill: var(--wt-g3x5-lightgreen);
+                }
+                #wrapper[mode$="path"] #glideindicator {
+                    fill: var(--wt-g3x5-purple);
+                }
+                #vdeviationindicator {
+                    display: none;
+                }
+                #wrapper[mode="vdev"] #vdeviationindicator {
+                    display: block;
+                }
+    </style>
+    <div id="wrapper">
+        <div id="labelcontainer">
+            <div id="label"></div>
+        </div>
+        <div id="scalecontainer">
+            <div id="scale">
+                <svg id="dot0" class="dot" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" />
+                </svg>
+                <svg id="dot1" class="dot" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" />
+                </svg>
+                <svg id="dot2" class="dot" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" />
+                </svg>
+                <svg id="dot3" class="dot" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" />
+                </svg>
+                <svg id="centerline" viewBox="0 0 100 100">
+                    <line x1="0" y1="50" x2="100" y2="50" />
+                </svg>
+            </div>
+            <div id="previewcontainer">
+                <svg id="previewindicator" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M 50 10 L 90 50 L 50 90 L 10 50 Z" vector-effect="non-scaling-stroke" />
+                </svg>
+            </div>
+            <div id="indicatorcontainer">
+                <svg id="glideindicator" class="indicator" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M 50 5 L 95 50 L 50 95 L 5 50 Z" vector-effect="non-scaling-stroke" />
+                </svg>
+                <svg id="vdeviationindicator" class="indicator" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M 5 50 L 95 95 L 95 85 L 25 50 L 95 15 L 95 5 Z" vector-effect="non-scaling-stroke" />
+                </svg>
+            </div>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_PFDAltimeterVerticalTrackHTMLElement.NAME, WT_G3x5_PFDAltimeterVerticalTrackHTMLElement);
