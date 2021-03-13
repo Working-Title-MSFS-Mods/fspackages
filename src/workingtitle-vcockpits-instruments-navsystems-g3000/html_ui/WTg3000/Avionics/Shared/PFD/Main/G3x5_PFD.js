@@ -306,12 +306,31 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         this.element = new NavSystemElementGroup(this._createElements());
     }
 
+    /**
+     *
+     * @returns {WT_G3x5_PFDAirspeedIndicator}
+     */
     _createAirspeedIndicator() {
     }
 
+    /**
+     *
+     * @returns {WT_G3x5_PFDAltimeter}
+     */
+    _createAltimeter() {
+    }
+
+    /**
+     *
+     * @returns {WT_G3x5_PFDAoAIndicator}
+     */
     _createAoAIndicator() {
     }
 
+    /**
+     *
+     * @returns {WT_G3x5_PFDBottomInfo}
+     */
     _createBottomInfo() {
     }
 
@@ -319,7 +338,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
         return [
             this._attitude = new AS3000_PFD_Attitude("PFD"),
             this._airspeed = this._createAirspeedIndicator(),
-            this._altimeter = new AS3000_PFD_Altimeter("PFD"),
+            this._altimeter = this._createAltimeter(),
             this._annunciations = new PFD_Annunciations(),
             this._compass = new WT_G3x5_PFDCompass(),
             this._aoaIndicator = this._createAoAIndicator(),
@@ -424,75 +443,6 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
 
     _onSVTShowSettingChanged(setting, newValue, oldValue) {
         this._setSVTShow(newValue);
-    }
-}
-
-class AS3000_PFD_Altimeter extends PFD_Altimeter {
-    constructor(instrumentID) {
-        super();
-
-        this._instrumentID = instrumentID;
-
-        this._isInit = false;
-
-        this._initController();
-    }
-
-    _initController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this._controller));
-        this.baroUnitsSetting.addListener(this._onBaroUnitsSettingChanged.bind(this));
-
-        this._controller.init();
-        this._baroUnits = this.baroUnitsSetting.getValue();
-    }
-
-    /**
-     * @readonly
-     * @property {String} instrumentID
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_PFDBaroUnitsSetting} baroUnitsSetting
-     * @type {WT_G3x5_PFDBaroUnitsSetting}
-     */
-    get baroUnitsSetting() {
-        return this._baroUnitsSetting;
-    }
-
-    getBaroUnitsMode() {
-        return this._baroUnits;
-    }
-
-    init(root) {
-        super.init(root);
-
-        this._updateBaroUnits();
-        this._isInit = true;
-    }
-
-    _updateBaroUnits() {
-        this.altimeterElement.setAttribute("baro-mode", this._baroUnits === WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG ? "IN" : "HPA");
-    }
-
-    _setBaroUnits(value) {
-        if (this._baroUnits === value) {
-            return;
-        }
-
-        this._baroUnits = value;
-        if (this._isInit) {
-            this._updateBaroUnits();
-        }
-    }
-
-    _onBaroUnitsSettingChanged(setting, newValue, oldValue) {
-        this._setBaroUnits(newValue);
     }
 }
 

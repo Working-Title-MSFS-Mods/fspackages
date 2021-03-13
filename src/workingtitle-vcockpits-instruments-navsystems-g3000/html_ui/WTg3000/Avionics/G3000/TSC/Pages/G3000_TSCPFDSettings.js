@@ -21,6 +21,7 @@ class WT_G3000_TSCPFDSettingsHTMLElement extends HTMLElement {
         this._table.attachRow(new WT_G3000_TSCPFDSettingsSVTShowRow(this._parentPage.svtShowSetting));
         this._table.attachRow(new WT_G3000_TSCPFDSettingsWindModeRow(this._parentPage.windModeSetting));
         this._table.attachRow(new WT_G3x5_TSCPFDSettingsBaroUnitsRow(this._parentPage.baroUnitsSetting));
+        this._table.attachRow(new WT_G3000_TSCPFDSettingsAltimeterMetersRow(this._parentPage.altimeterMetersSetting));
     }
 
     init() {
@@ -75,3 +76,9 @@ WT_G3000_TSCPFDSettingsWindModeRow.VALUE_TEXT = [
     "Option 2",
     "Option 3"
 ];
+
+class WT_G3000_TSCPFDSettingsAltimeterMetersRow extends WT_G3x5_TSCPFDSettingsTitledToggleRow {
+    constructor(setting) {
+        super("Meters Overlay", setting, "Enable");
+    }
+}

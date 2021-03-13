@@ -695,7 +695,7 @@ WT_G5000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
             </div>
         </div>
         <div id="speedbugcontainer">
-            </div>
+        </div>
         <div id="machcontainer">
             <div id="mach">
             </div>
