@@ -17,7 +17,8 @@ class WT_FlightPlanAsoboInterface {
     }
 
     async _getWaypointEntriesFromData(data, array) {
-        for (let leg of data) {
+        for (let i = 0; i < data.length; i++) {
+            let leg = data[i];
             let waypoint = null;
             try {
                 waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
