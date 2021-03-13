@@ -61,6 +61,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this._currentVerticalAutopilot = undefined;
         this._vnav = undefined;
         this._lnav = undefined;
+        /** @type {CJ4_SpeedObserver} */
+        this._speedObs = undefined;
         this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
         this._altAlertCd = 500;
         this._altAlertPreselect = 0;
@@ -573,6 +575,13 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._currentVerticalAutopilot.activate();
             } else {
                 this._currentVerticalAutopilot.update();
+            }
+
+            // RUN SPEED RESTRICTION OBSERVER
+            if (this._speedObs === undefined) {
+                this._speedObs = new CJ4_SpeedObserver(this.flightPlanManager);
+            } else {
+                this._speedObs.update();
             }
 
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
