@@ -13,6 +13,7 @@ class WT_G3x5_PFD extends NavSystem {
 
         this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
+        this.airplane.fms.setFlightPlanManager(this._fpm);
 
         this._citySearcher = new WT_CitySearcher();
 

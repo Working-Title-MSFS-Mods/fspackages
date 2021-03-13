@@ -570,6 +570,23 @@ WT_AirplaneNavigation._tempNavAngleUnit = new WT_NavAngleUnit(true);
 
 class WT_AirplaneFMS extends WT_AirplaneComponent {
     /**
+     * @readonly
+     * @property {WT_FlightPlanManager} flightPlanManager - the flight plan manager associated with this FMS.
+     * @type {WT_FlightPlanManager}
+     */
+    get flightPlanManager() {
+        return this._fpm;
+    }
+
+    /**
+     * Associates a flight plan manager with this FMS.
+     * @param {WT_FlightPlanManager} fpm - a flight plan manager.
+     */
+    setFlightPlanManager(fpm) {
+        this._fpm = fpm;
+    }
+
+    /**
      * Checks whether this FMS is tracking a target.
      * @returns {Boolean} whether this FMS is tracking a target.
      */
@@ -638,9 +655,61 @@ class WT_AirplaneFMS extends WT_AirplaneComponent {
         let value = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
         return reference ? reference.set(value, WT_Unit.SECOND) : WT_Unit.SECOND.createNumber(value);
     }
+
+    /**
+     * Gets the currently activated approach type.
+     * @returns {WT_AirplaneFMS.ApproachType} the currently activated approach type.
+     */
+    approachType() {
+        return SimVar.GetSimVarValue("GPS APPROACH APPROACH TYPE", "Enum");
+    }
+
+    /**
+     * Gets the angle of the active glidepath.
+     * @returns {Number} the angle, in degrees, of the active glidepath.
+     */
+    glidepathAngle() {
+        return SimVar.GetSimVarValue("GPS VERTICAL ANGLE", "degrees");
+    }
+
+    /**
+     * Gets the angular difference between the aircraft's current position and the active glidepath.
+     * @returns {Number} the angular difference, in degrees, between the aircraft's current position and the active glidepath.
+     */
+    glidepathError() {
+        return SimVar.GetSimVarValue("GPS VERTICAL ANGLE ERROR", "radians") * Avionics.Utils.RAD2DEG;
+    }
+
+    /**
+     * Gets the vertical deviation between the aircraft's current position and the active glidepath.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the vertical deviation between the aircraft's current position and the active glidepath.
+     */
+    glidepathDeviation(reference) {
+        let value = SimVar.GetSimVarValue("GPS VERTICAL ERROR", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : WT_Unit.FOOT.createNumber(value);
+    }
 }
 WT_AirplaneFMS._tempGeoPoint = new WT_GeoPoint(0, 0);
 WT_AirplaneFMS._tempNavAngleUnit = new WT_NavAngleUnit(true);
+/**
+ * @enum {Number}
+ */
+WT_AirplaneFMS.ApproachType = {
+    UNKNOWN: 0,
+    GPS: 1,
+    VOR: 2,
+    NDB: 3,
+    ILS: 4,
+    LOC: 5,
+    SDF: 6,
+    LDA: 7,
+    VOR_DME: 8,
+    NDB_DME: 9,
+    RNAV: 10,
+    LOC_BACK_COURSE: 11
+}
 
 class WT_AirplaneNavCom extends WT_AirplaneComponent {
     constructor(airplane, numComSlots, numNavSlots, numADFSlots) {
@@ -855,6 +924,10 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
         }
     }
 
+    /**
+     * Checks whether the tuned navigation station is equipped with DME.
+     * @returns {Boolean} whether the tuned navigation station is equipped with DME.
+     */
     hasDME() {
         return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "Bool") !== 0;
     }
@@ -873,6 +946,28 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
 
         let value = SimVar.GetSimVarValue(`NAV DME:${this.index}`, "nautical miles");
         return reference ? reference.set(value, WT_Unit.NMILE) : new WT_Unit.NMILE.createNumber(value);
+    }
+
+    /**
+     * Checks whether the tuned navigation station is equipped with a glideslope.
+     * @returns {Boolean} whether the tuned navigation station is equipped with a glideslope.
+     */
+    hasGS() {
+        return SimVar.GetSimVarValue(`NAV HAS GLIDE SLOPE:${this.index}`, "Bool") !== 0;
+    }
+
+    /**
+     * Gets the angular difference between the aircraft's current position and the glideslope of the tuned navigation station.
+     * @returns {Number} the angular difference, in degrees, between the aircraft's current position and the glideslope of the tuned
+     *                   navigation station, or null if this radio is not currently receiving or the tuned navigation station is
+     *                   equipped with a glideslope.
+     */
+    glideslopeError() {
+        if (!this.isReceiving() || !this.hasGS()) {
+            return null;
+        }
+
+        return SimVar.GetSimVarValue(`NAV GLIDE SLOPE ERROR:${this.index}`, "radians") * Avionics.Utils.RAD2DEG;
     }
 }
 WT_AirplaneNavSlot._tempGeoPoint = new WT_GeoPoint(0, 0);
