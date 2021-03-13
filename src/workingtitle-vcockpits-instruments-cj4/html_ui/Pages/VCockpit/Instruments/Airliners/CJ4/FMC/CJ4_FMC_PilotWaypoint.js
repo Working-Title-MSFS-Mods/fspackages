@@ -7,7 +7,7 @@ class CJ4_FMC_PilotWaypoint_Manager {
     this._pilotWaypointArray = [];
     this._pilotWaypointCount = 0;
 
-    this._pilotWaypointArray1 = []; //To protect datastore, only 5 wpts per array for a total of 25
+    this._pilotWaypointArray1 = []; //To protect datastore, only 4 wpts per array for a total of 20
     this._pilotWaypointArray2 = [];
     this._pilotWaypointArray3 = [];
     this._pilotWaypointArray4 = [];
@@ -16,7 +16,7 @@ class CJ4_FMC_PilotWaypoint_Manager {
   }
 
   activate() {
-    this._pilotWaypointArray1 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_1', '{ }')); //To protect datastore, only 5 wpts per array for a total of 25
+    this._pilotWaypointArray1 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_1', '{ }')); //To protect datastore, only 4 wpts per array for a total of 20
     this._pilotWaypointArray2 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_2', '{ }'));
     this._pilotWaypointArray3 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_3', '{ }'));
     this._pilotWaypointArray4 = JSON.parse(WTDataStore.get('CJ4_PILOTWPT_4', '{ }'));
@@ -72,8 +72,8 @@ class CJ4_FMC_PilotWaypoint_Manager {
       const pilotWaypoint = new CJ4_FMC_PilotWaypoint(ident, latitude, longitude);
       this._pilotWaypointArray.push(pilotWaypoint);
       this._pilotWaypointCount++;
-      if (this._pilotWaypointCount > 25) {
-        const deleteCount = this._pilotWaypointCount - 25;
+      if (this._pilotWaypointCount > 20) {
+        const deleteCount = this._pilotWaypointCount - 20;
         this._pilotWaypointArray.splice(0, deleteCount);
       }
       this.writePilotWaypointsToDatastore();
@@ -87,11 +87,11 @@ class CJ4_FMC_PilotWaypoint_Manager {
     if (duplicateExists) {
       this.deletePilotWaypoint(ident);
     }
-    const pilotWaypoint = new CJ4_FMC_PilotWaypoint(ident, latitude, longitude);
+    const pilotWaypoint = new CJ4_FMC_PilotWaypoint(ident, Math.round(latitude * 10000) / 10000, Math.round(longitude * 10000) / 10000);
     this._pilotWaypointArray.push(pilotWaypoint);
     this._pilotWaypointCount++;
-    if (this._pilotWaypointCount > 25) {
-      const deleteCount = this._pilotWaypointCount - 25;
+    if (this._pilotWaypointCount > 20) {
+      const deleteCount = this._pilotWaypointCount - 20;
       this._pilotWaypointArray.splice(0, deleteCount);
     }
     this.writePilotWaypointsToDatastore();
@@ -121,7 +121,7 @@ class CJ4_FMC_PilotWaypoint_Manager {
     if (pilotWaypointCount != this._pilotWaypointCount) {
       this._pilotWaypointCount = pilotWaypointCount;
     }
-    const arraysRequired = Math.ceil(this._pilotWaypointCount / 5);
+    const arraysRequired = Math.ceil(this._pilotWaypointCount / 4);
     this._pilotWaypointArray1 = [];
     this._pilotWaypointArray2 = [];
     this._pilotWaypointArray3 = [];
@@ -133,45 +133,45 @@ class CJ4_FMC_PilotWaypoint_Manager {
     for (let i = 1; i <= arraysRequired; i++) {
       switch (i) {
         case 1:
-          for (let j = 0; j < 5; j++) {
-            if (this._pilotWaypointArray[((i - 1) * 5) + j]) {
-              this._pilotWaypointArray1.push(this._pilotWaypointArray[((i - 1) * 5) + j]);
+          for (let j = 0; j < 4; j++) {
+            if (this._pilotWaypointArray[((i - 1) * 4) + j]) {
+              this._pilotWaypointArray1.push(this._pilotWaypointArray[((i - 1) * 4) + j]);
             }
           }
           waypointsToWrite = JSON.stringify(this._pilotWaypointArray1);
           WTDataStore.set(('CJ4_PILOTWPT_1'), waypointsToWrite);
           break;
         case 2:
-          for (let j = 0; j < 5; j++) {
-            if (this._pilotWaypointArray[((i - 1) * 5) + j]) {
-              this._pilotWaypointArray2.push(this._pilotWaypointArray[((i - 1) * 5) + j]);
+          for (let j = 0; j < 4; j++) {
+            if (this._pilotWaypointArray[((i - 1) * 4) + j]) {
+              this._pilotWaypointArray2.push(this._pilotWaypointArray[((i - 1) * 4) + j]);
             }
           }
           waypointsToWrite = JSON.stringify(this._pilotWaypointArray2);
           WTDataStore.set(('CJ4_PILOTWPT_2'), waypointsToWrite);
           break;
         case 3:
-          for (let j = 0; j < 5; j++) {
-            if (this._pilotWaypointArray[((i - 1) * 5) + j]) {
-              this._pilotWaypointArray3.push(this._pilotWaypointArray[((i - 1) * 5) + j]);
+          for (let j = 0; j < 4; j++) {
+            if (this._pilotWaypointArray[((i - 1) * 4) + j]) {
+              this._pilotWaypointArray3.push(this._pilotWaypointArray[((i - 1) * 4) + j]);
             }
           }
           waypointsToWrite = JSON.stringify(this._pilotWaypointArray3);
           WTDataStore.set(('CJ4_PILOTWPT_3'), waypointsToWrite);
           break;
         case 4:
-          for (let j = 0; j < 5; j++) {
-            if (this._pilotWaypointArray[((i - 1) * 5) + j]) {
-              this._pilotWaypointArray4.push(this._pilotWaypointArray[((i - 1) * 5) + j]);
+          for (let j = 0; j < 4; j++) {
+            if (this._pilotWaypointArray[((i - 1) * 4) + j]) {
+              this._pilotWaypointArray4.push(this._pilotWaypointArray[((i - 1) * 4) + j]);
             }
           }
           waypointsToWrite = JSON.stringify(this._pilotWaypointArray4);
           WTDataStore.set(('CJ4_PILOTWPT_4'), waypointsToWrite);
           break;
         case 5:
-          for (let j = 0; j < 5; j++) {
-            if (this._pilotWaypointArray[((i - 1) * 5) + j]) {
-              this._pilotWaypointArray5.push(this._pilotWaypointArray[((i - 1) * 5) + j]);
+          for (let j = 0; j < 4; j++) {
+            if (this._pilotWaypointArray[((i - 1) * 4) + j]) {
+              this._pilotWaypointArray5.push(this._pilotWaypointArray[((i - 1) * 4) + j]);
             }
           }
           waypointsToWrite = JSON.stringify(this._pilotWaypointArray5);
