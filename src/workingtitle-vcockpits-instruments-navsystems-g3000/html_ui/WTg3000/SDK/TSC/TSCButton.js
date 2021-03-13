@@ -15,6 +15,8 @@ class WT_TSCButton extends HTMLElement {
         this.shadowRoot.appendChild(this._wrapper);
 
         this._listeners = [];
+        this.enabled = "true";
+        this.highlight = "false";
     }
 
     _initHostStyle() {
@@ -106,9 +108,8 @@ class WT_TSCButton extends HTMLElement {
     }
 
     _initState() {
-        this.enabled = "true";
+        this._setEnabled(this.enabled === "true");
         this._setPrimed(false);
-        this.highlight = "false";
     }
 
     connectedCallback() {
