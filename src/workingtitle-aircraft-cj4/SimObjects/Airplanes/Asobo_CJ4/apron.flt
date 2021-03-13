@@ -96,6 +96,9 @@ FoldingWingsState=0, 0
 [Gauges.0]
 KollsmanSetting=29.921342849731445313
 
+[Electrical.0]
+circuit.49=False
+
 [BleedAir.0]
 BleedAirSource=0
 
@@ -172,3 +175,4 @@ WT_CJ4_NAV_ON=0
 WT_CJ4_FLC_ON=0
 WT_CJ4_VS_ON=0
 WT_CJ4_LNAV_MODE=0
+WT_CJ4_EMER_LIGHT_ARMED=0

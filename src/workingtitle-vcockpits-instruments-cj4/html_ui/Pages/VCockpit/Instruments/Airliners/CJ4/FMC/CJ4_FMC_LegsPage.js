@@ -389,10 +389,16 @@ class CJ4_FMC_LegsPage {
                                 }
                             }
                             const scratchPadWaypointIndex = this._fmc.selectedWaypoint ? this._fmc.selectedWaypoint.index : undefined;
-                            const userWaypoint = await this.parseWaypointInput(value, scratchPadWaypointIndex);
+                            const userWaypoint = await CJ4_FMC_PilotWaypointParser.parseInput(value, scratchPadWaypointIndex, this._fmc);
                             if (userWaypoint) {
+                                const databaseDuplicate = await this._fmc._pilotWaypoints.checkDatabaseDuplicates(userWaypoint.wpt.ident);
+                                if (databaseDuplicate) {
+                                    this._fmc.showErrorMessage("DUPLICATE IDENT");
+                                    this._fmc.setMsg();
+                                    return;
+                                }
                                 let insertIndex = selectedWpIndex;
-                                if (userWaypoint.offset !== false) {
+                                if (userWaypoint.offset > 0) {
                                     if (scratchPadWaypointIndex !== selectedWpIndex || (i == 1 && this._currentPage == 1 && userWaypoint.offset <= 0)) {
                                         this._fmc.showErrorMessage("WPT NOT MATCHED");
                                         this._fmc.setMsg();
@@ -401,6 +407,7 @@ class CJ4_FMC_LegsPage {
                                         insertIndex = userWaypoint.offset >= 0 ? selectedWpIndex + 1 : selectedWpIndex;
                                     }
                                 }
+                                this._fmc._pilotWaypoints.addPilotWaypointWithOverwrite(userWaypoint.wpt.ident, userWaypoint.wpt.infos.coordinates.lat, userWaypoint.wpt.infos.coordinates.long);
                                 this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
                                     this._fmc.flightPlanManager.addUserWaypoint(userWaypoint.wpt, insertIndex, () => {
                                         const isDirectTo = (i == 1 && this._currentPage == 1);
@@ -418,9 +425,11 @@ class CJ4_FMC_LegsPage {
                                     });
                                 });
                             } else {
-                                this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                                    this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
-                                        if (isSuccess) {
+                                const pilotWaypoint = this._fmc._pilotWaypoints._pilotWaypointArray.find(w => w.id == value);
+                                if (pilotWaypoint) {
+                                    const pilotWaypointObject = CJ4_FMC_PilotWaypointParser.buildPilotWaypointFromExisting(pilotWaypoint.id, parseFloat(pilotWaypoint.la), parseFloat(pilotWaypoint.lo), this._fmc);
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        this._fmc.flightPlanManager.addUserWaypoint(pilotWaypointObject, selectedWpIndex, () => {
                                             const isDirectTo = (i == 1 && this._currentPage == 1);
                                             if (isDirectTo) {
                                                 this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
@@ -433,16 +442,35 @@ class CJ4_FMC_LegsPage {
                                                     this.resetAfterOp();
                                                 });
                                             }
-                                        } else {
-                                            this._fmc.fpHasChanged = false;
-                                            this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
-                                            this._fmc.setMsg();
-                                            this._fmc.eraseTemporaryFlightPlan(() => {
-                                                this.resetAfterOp();
-                                            });
-                                        }
+                                        });
                                     });
-                                });
+                                } else {
+                                    this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                                        this._fmc.insertWaypoint(value, selectedWpIndex, (isSuccess) => {
+                                            if (isSuccess) {
+                                                const isDirectTo = (i == 1 && this._currentPage == 1);
+                                                if (isDirectTo) {
+                                                    this._fmc.flightPlanManager.activateDirectToByIndex(selectedWpIndex, () => {
+                                                        this._fmc.activateRoute(true, () => {
+                                                            this.resetAfterOp();
+                                                        });
+                                                    });
+                                                } else {
+                                                    this._fmc.activateRoute(false, () => {
+                                                        this.resetAfterOp();
+                                                    });
+                                                }
+                                            } else {
+                                                this._fmc.fpHasChanged = false;
+                                                this._fmc.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
+                                                this._fmc.setMsg();
+                                                this._fmc.eraseTemporaryFlightPlan(() => {
+                                                    this.resetAfterOp();
+                                                });
+                                            }
+                                        });
+                                    });
+                                }
                             }
                         } else if (i == 0 && this._currentPage == 1) {
                             this._fmc.showErrorMessage("UNABLE ADD FROM WPT");
@@ -640,150 +668,6 @@ class CJ4_FMC_LegsPage {
         altitudeConstraint = altitudeConstraint.padStart(6, " ");
 
         return speedConstraint + "/" + altitudeConstraint + "[green]";
-    }
-
-    async parseWaypointInput(value, referenceIndex) {
-        const fullLatLong = /([NS])([0-8][0-9])((?:[0-5][0-9])?(?:\.\d{1,2})?)([EW])((?:[0][0-9][0-9])|(?:[1][0-7][0-9]))((?:[0-5][0-9])?(?:\.\d{1,2})?)(?:\/(\w{0,5}))?/;
-        const shorhandLatLongEnd = /([0-8][0-9])([0-9][0-9]|[1][0-8][0-9])([NSEW])/;
-        const shorthandLatLongMid = /([0-8][0-9])([NSEW])([1][0-8][0-9]|[0-9][0-9])/;
-        const placeBearingDistance = /(\w{3,5})([0-3][0-9][0-9])\/(\d{1,3}(?:\.\d{1})?)(?:\/(\w{0,5}))?/;
-        const alongTrackOffset = /(\w{3,5})\/(?:(\-*\d{0,3}\.*\d{0,1}))?(?:\/(\w{0,5}))?/;
-
-        const matchFullLatLong = value.match(fullLatLong);
-        const matchShorhandLatLongEnd = value.match(shorhandLatLongEnd);
-        const matchShorthandLatLongMid = value.match(shorthandLatLongMid);
-        const matchPlaceBearingDistance = value.match(placeBearingDistance);
-        const matchAlongTrackOffset = value.match(alongTrackOffset);
-
-        const procMatch = (item, defaultVal) => {
-            return (item === undefined) ? defaultVal : item;
-        };
-
-        const getIndexedName = (ident) => {
-            const waypoints = this._fmc.flightPlanManager.getAllWaypoints();
-            const identPrefix = ident.substr(0, 3);
-
-            let namingIndex;
-            let currentIndex = 1;
-
-            while (namingIndex === undefined) {
-                const currentName = `${identPrefix}${String(currentIndex).padStart(2, '0')}`;
-                const waypointIndex = waypoints.findIndex(x => x.ident === currentName);
-
-                if (waypointIndex === -1) {
-                    return currentName;
-                } else {
-                    currentIndex++;
-                }
-            }
-        };
-
-        let newWaypoint = undefined;
-
-        if (matchFullLatLong) {
-            console.log("match full lat long");
-            // 1 = N/S
-            // 2 = LAT DEG
-            // 3 = LAT MINS
-            // 4 = E/W
-            // 5 = LONG DEG
-            // 6 = LONG MINS
-            // 7 = IDENT
-            const latitude = matchFullLatLong[1] == "S" ? 0 - parseInt(matchFullLatLong[2]) - (parseFloat(matchFullLatLong[3]) / 60)
-                : parseInt(matchFullLatLong[2]) + (parseFloat(matchFullLatLong[3]) / 60);
-            const longitude = matchFullLatLong[4] == "W" ? 0 - parseInt(matchFullLatLong[5]) - (parseFloat(matchFullLatLong[6]) / 60)
-                : parseInt(matchFullLatLong[5]) + (parseFloat(matchFullLatLong[6]) / 60);
-            const coordinates = new LatLongAlt(latitude, longitude, 0);
-            const ident = procMatch(matchFullLatLong[7], matchFullLatLong[1] + matchFullLatLong[2].slice(0, 2) + matchFullLatLong[4] + matchFullLatLong[5] + matchFullLatLong[6].slice(0, 2));
-
-            newWaypoint = {
-                wpt: WaypointBuilder.fromCoordinates(ident, coordinates),
-                offset: false
-            }
-
-        } else if (matchShorhandLatLongEnd) {
-            // 1 = LAT DEG
-            // 2 = LONG DEG
-            // 3 = N/E/S/W (N = N:W; E = N:E; S = S:E; W = S:W)
-            const direction = matchShorhandLatLongEnd[3];
-
-            const latitude = direction == "S" || direction == "W" ? 0 - parseInt(matchShorhandLatLongEnd[1])
-                : parseInt(matchShorhandLatLongEnd[1]);
-            const longitude = direction == "N" || direction == "W" ? 0 - parseInt(matchShorhandLatLongEnd[2])
-                : parseInt(matchShorhandLatLongEnd[2]);
-            const coordinates = new LatLongAlt(latitude, longitude, 0);
-            const ident = matchShorhandLatLongEnd[1] + matchShorhandLatLongEnd[2] + direction;
-
-            newWaypoint = {
-                wpt: WaypointBuilder.fromCoordinates(ident, coordinates),
-                offset: false
-            }
-
-        } else if (matchShorthandLatLongMid) {
-            // 1 = LAT DEG
-            // 2 = N/E/S/W (N = N:W; E = N:E; S = S:E; W = S:W)
-            // 3 = LONG DEG
-            const direction = matchShorthandLatLongMid[2];
-
-            const latitude = direction == "S" || direction == "W" ? 0 - parseInt(matchShorthandLatLongMid[1])
-                : parseInt(matchShorthandLatLongMid[1]);
-            const longitude = direction == "N" || direction == "W" ? 0 - 100 - parseInt(matchShorthandLatLongMid[3])
-                : 100 + parseInt(matchShorthandLatLongMid[3]);
-            const coordinates = new LatLongAlt(latitude, longitude, 0);
-            const ident = matchShorthandLatLongMid[1] + direction + matchShorthandLatLongMid[3];
-
-            newWaypoint = {
-                wpt: WaypointBuilder.fromCoordinates(ident, coordinates),
-                offset: false
-            }
-
-        } else if (matchPlaceBearingDistance) {
-            // 1 = Reference Ident
-            // 2 = Bearing from Reference
-            // 3 = Distance from Reference
-            // 4 = Ident
-
-            let referenceWaypoint = this._fmc.flightPlanManager.getAllWaypoints().find(x => x.ident === matchPlaceBearingDistance[1]);
-            if (referenceWaypoint === undefined) {
-                const getWpt = (refWpt) => {
-                    return new Promise(resolve => {
-                        this._fmc.getOrSelectWaypointByIdent(refWpt, (w) => resolve(w));
-                    });
-                };
-
-                referenceWaypoint = await getWpt(matchPlaceBearingDistance[1]);
-            }
-
-            if (referenceWaypoint !== undefined) {
-                const referenceCoordinates = referenceWaypoint.infos.coordinates;
-                const bearing = parseInt(matchPlaceBearingDistance[2]);
-                const distance = parseFloat(matchPlaceBearingDistance[3]);
-                const ident = procMatch(matchPlaceBearingDistance[4], getIndexedName(referenceWaypoint.ident));
-
-                newWaypoint = {
-                    wpt: WaypointBuilder.fromPlaceBearingDistance(ident, referenceCoordinates, bearing, distance, this._fmc),
-                    offset: false
-                }
-            }
-        } else if (matchAlongTrackOffset) {
-            // 1 = Reference Ident
-            // 2 = Distance from Reference
-            // 3 = Ident
-
-            referenceIndex = this._fmc.flightPlanManager.getAllWaypoints().findIndex(x => x.ident === matchAlongTrackOffset[1]);
-
-            if (referenceIndex > -1) {
-                const ident = procMatch(matchAlongTrackOffset[3], getIndexedName(this._fmc.flightPlanManager.getWaypoint(referenceIndex).ident));
-                const distance = parseFloat(matchAlongTrackOffset[2]);
-
-                newWaypoint = {
-                    wpt: WaypointBuilder.fromPlaceAlongFlightPlan(ident, referenceIndex, distance, this._fmc, this._fmc.flightPlanManager),
-                    offset: distance
-                }
-            }
-        }
-
-        return newWaypoint;
     }
 
     parseConstraintInput(value, waypoint) {

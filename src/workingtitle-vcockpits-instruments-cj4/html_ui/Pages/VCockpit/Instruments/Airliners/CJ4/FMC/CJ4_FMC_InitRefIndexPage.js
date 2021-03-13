@@ -714,6 +714,8 @@ class CJ4_FMC_InitRefIndexPage {
         ]);
 
         fmc.onLeftInput[5] = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(fmc); };
+        fmc.onRightInput[4] = () => { CJ4_FMC_PilotWaypointPage.ShowPage1(fmc, false); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_PilotWaypointPage.ShowPage1(fmc, true); };
         fmc.updateSideButtonActiveStatus();
     }
     static ShowPage19(fmc, databaseWaypoint, runwayUnitsReload) { //DATABASE AIRPORT
@@ -1267,7 +1269,7 @@ class CJ4_FMC_InitRefIndexPage {
             ["Working-Title-MSFS-Mods[white s-text]"],
             [""],
             [" VERSION[blue]"],
-            ["0.11.1[s-text white]"],
+            ["0.11.2[s-text white]"],
             [""],
             [""],
             [""],

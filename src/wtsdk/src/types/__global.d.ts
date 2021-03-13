@@ -188,6 +188,7 @@ declare class Simplane {
   static getHeadingMagnetic(): number;
   static getGroundSpeed(): number;
   static getNextWaypointName(): string;
+  static getIndicatedSpeed():number;
 }
 
 declare class EmptyCallback {
@@ -202,7 +203,7 @@ declare class Coherent {
 declare function RegisterViewListener(handler: string): void
 declare function OpenBrowser(url: string): void;
 
-declare class FMCMainDisplay {
+declare class FMCMainDisplay extends BaseInstrument {
   lastPos: string;
   onLeftInput: { (): void }[];
   onRightInput: { (): void }[];
@@ -211,6 +212,8 @@ declare class FMCMainDisplay {
   inOut: string;
   showErrorMessage(message: string);
   defaultInputErrorMessage: string;
+  getOrSelectWaypointByIdent
+  flightPlanManager: any
 }
 
 declare class RadioNav {
