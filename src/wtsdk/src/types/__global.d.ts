@@ -188,6 +188,7 @@ declare class Simplane {
   static getHeadingMagnetic(): number;
   static getGroundSpeed(): number;
   static getNextWaypointName(): string;
+  static getIndicatedSpeed():number;
 }
 
 declare class EmptyCallback {
@@ -211,8 +212,8 @@ declare class FMCMainDisplay extends BaseInstrument {
   inOut: string;
   showErrorMessage(message: string);
   defaultInputErrorMessage: string;
-  flightPlanManager:FlightPlanManager;
   getOrSelectWaypointByIdent
+  flightPlanManager: any
 }
 
 declare class RadioNav {

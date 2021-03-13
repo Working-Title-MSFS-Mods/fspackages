@@ -296,8 +296,8 @@ class WT_VerticalAutopilot {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     break;
                 }
-                if (this.verticalMode !== VerticalNavModeState.PATH && this._pathInterceptStatus !== PathInterceptStatus.LEVELING 
-                        && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
+                if (this.verticalMode !== VerticalNavModeState.PATH && this._pathInterceptStatus !== PathInterceptStatus.LEVELING
+                    && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;

@@ -14,6 +14,7 @@ export * from "./messages/MessageService";
 export * from "./messages/Message";
 export * from "./messages/MessageDefinition";
 
+export * from "./cj4/CJ4_SpeedObserver";
 export * from "./cj4/CJ4_MessageDefinitions";
 export * from "./cj4/fmc/pages/CJ4_FMC_MsgPage";
 export * from "./cj4/fmc/pages/CJ4_FMC_NavControlPage";
