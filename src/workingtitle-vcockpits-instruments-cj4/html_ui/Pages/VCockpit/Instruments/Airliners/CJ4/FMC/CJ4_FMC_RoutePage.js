@@ -375,12 +375,25 @@ class CJ4_FMC_RoutePage {
                         });
                     });
                 } else {
-                    this._fmc.insertWaypoint(value, wpIdx, (isSuccess) => {
-                        if (isSuccess) {
-                            this._fmc.setMsg();
-                            this.update(true);
-                        }
-                    });
+                    const pilotWaypoint = this._fmc._pilotWaypoints._pilotWaypointArray.find(w => w.id == value);
+                    if (pilotWaypoint) {
+                        const pilotWaypointObject = CJ4_FMC_PilotWaypointParser.buildPilotWaypointFromExisting(pilotWaypoint.id, parseFloat(pilotWaypoint.la), parseFloat(pilotWaypoint.lo), this._fmc);
+                        this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                            this._fmc.flightPlanManager.addUserWaypoint(pilotWaypointObject, wpIdx, () => {
+                                this._fmc.activateRoute(false, () => {
+                                    this._fmc.setMsg();
+                                    this.update(true);
+                                });
+                            });
+                        });
+                    } else {
+                        this._fmc.insertWaypoint(value, wpIdx, (isSuccess) => {
+                            if (isSuccess) {
+                                this._fmc.setMsg();
+                                this.update(true);
+                            }
+                        });
+                    }
                 }
             } else {
                 this._fmc.setMsg();
