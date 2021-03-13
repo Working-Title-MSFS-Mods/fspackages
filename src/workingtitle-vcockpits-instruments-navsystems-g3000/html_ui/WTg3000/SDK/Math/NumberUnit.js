@@ -196,7 +196,7 @@ class WT_NumberUnit {
         if (Math.abs(diff) < 1e-14) {
             return 0;
         }
-        return diff;
+        return Math.sign(diff);
     }
 
     /**
