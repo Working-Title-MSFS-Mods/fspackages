@@ -12,6 +12,8 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 ## Charts Integration
 Charts in the CJ4 are powered by Navigraph - special thanks to the team at Navigraph for their support with API integration. In order to use the charts in the CJ4, you need to have a subscription that includes charts - https://navigraph.com/products/subscriptions. If you have a subscription, all you need to do is select the NAVIGRAPH line in MOD SETTINGS in the FMC and that will launch your web browser and ask you to log in to your Navigraph account - from there an access token will be issued. These tokens do time out from time-to-time, so if you're prompted by the aircraft, or if you ever encounter difficulties loading charts, please go back to this option and resync your account. Details on using the Charts capabilities are in the user guide.
 
+Please note that occasionally the Navigraph token can time out; this especially happens if you do not exit the sim via the main menu. If that happens, please use MOD SETTINGS to refresh your Navigraph token and make a change to your flight plan, such as going DIRECT TO your current active waypoint - this will refresh the chart link.
+
 # Changes
 - Implemented charts darkmode (when panel lights off or at full, in day mode, otherwise night mode)
 - Added ability to store up to 20 pilot waypoints (IDX->DATABASE)
