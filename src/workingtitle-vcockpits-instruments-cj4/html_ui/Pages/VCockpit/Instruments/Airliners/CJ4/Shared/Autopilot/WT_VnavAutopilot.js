@@ -779,12 +779,10 @@ class WT_VerticalAutopilot {
                 this.targetAltitude = undefined;
                 this.manageAltitude();
             case PathInterceptStatus.INTERCEPTING:
-                console.log("this.glideslopeFpa " + this.glideslopeFpa);
                 this.interceptPath(this.glideslopeFpa);
                 break;
             case PathInterceptStatus.INTERCEPTED:
                 this.manageAltitude();
-                console.log("this.glideslopeFpa " + this.glideslopeFpa);
                 this.commandVerticalSpeed(this.glideslopeFpa, this.trackGlideslope());
         }
     }
