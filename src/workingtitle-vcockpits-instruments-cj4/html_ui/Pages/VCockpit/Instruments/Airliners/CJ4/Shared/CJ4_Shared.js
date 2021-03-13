@@ -2797,19 +2797,21 @@ class CJ4_SystemFMS extends NavSystemElement {
                             if (data.constraintreal && !Simplane.getIsGrounded()) {
 
                                 let todDistance = "";
-                                if (data.toddistance)
+                                if (data.toddistance) {
                                     todDistance = data.toddistance > 100 ? data.toddistance.toFixed(0) : data.toddistance.toFixed(1);
-                                    let timeToTOD = "";;
+                                }
                                 let timeToTOD = "";
-                                if (groundSpeed > 0) {
-                                    timeToTOD = new Date(this.calcETEseconds(todDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+                                const todDistanceNumber = parseFloat(todDistance);
+                                if (groundSpeed > 0 && todDistanceNumber) {
+                                    timeToTOD = new Date(this.calcETEseconds(todDistanceNumber, groundSpeed) * 1000).toISOString().substr(12, 4);
                                 }
                                 let descentAngle = data.fpa;
                                 let descentRate = data.descentrate;
                                 let constraintName = data.constraintreal;
                                 let fptaConstraint = data.constraintrealaltitude ? data.constraintrealaltitude : "";
                                 let fptaDistance = data.fptaDistance > 100 ? data.fptaDistance.toFixed(0) : data.fptaDistance.toFixed(1);
-                                let fptaTime = new Date(this.calcETEseconds(fptaDistance, groundSpeed) * 1000).toISOString().substr(12, 4);
+                                const fptaDistanceNumber = parseFloat(fptaDistance);
+                                let fptaTime = new Date(this.calcETEseconds(fptaDistanceNumber, groundSpeed) * 1000).toISOString().substr(12, 4);
                                 let isDirect = data.isdirect;
                                 let isClimb = data.isclimb;
 
@@ -3160,13 +3162,27 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         if (this.lastTerrainUpdate > 1000) {
             const curve = new Avionics.Curve();
             const altitude = Math.min(Simplane.getAltitude(), 15000);
+            const AGL = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
 
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
             curve.add(0, '#000000');
-            curve.add(altitude, '#000000');
-            curve.add(altitude + 1000, '#00c417');
-            curve.add(altitude + 2000, '#ffe600');
-            curve.add(altitude + 3000, '#cc0000');
+            if (AGL <= 1000) {
+                curve.add(altitude - 1, '#ffe017');             
+                curve.add(altitude - 250, '#ffe017');
+                curve.add(altitude - 500, '#000000');
+            } else if ((AGL > 1000) && (AGL <= 2000)) {
+                curve.add(altitude - 1, '#5cdb37');
+                curve.add(altitude - 500, '#5cdb37');
+                curve.add(altitude - 1000, '#000000');
+            } else if (AGL > 2000) {
+                curve.add(altitude - 1, '#5cdb37');
+                curve.add(altitude - 500, '#5cdb37');
+                curve.add(altitude - 1000, '#000000');
+            }
+            curve.add(altitude, '#ffe017');
+            curve.add(altitude + 500, '#ffe017');
+            curve.add(altitude + 1999, '#ffe017');
+            curve.add(altitude + 2000, '#ff0000');
 
             const altitudeColors = [SvgMapConfig.hexaToRGB('#0000ff')];
 
