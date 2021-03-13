@@ -410,10 +410,8 @@ class CJ4_FMC_PilotWaypointPage {
               this._selectedPilotWaypointIndex = undefined;
               this._showPilotWaypointPage = false;
               this._fmc.clearUserInput();
-              this._fmc.clearDisplay();
               this._fmc.showErrorMessage("STORING PILOT WPT");
               setTimeout(() => {
-                this._fmc.showErrorMessage("STORING PILOT WPT");
                 CJ4_FMC_PilotWaypointPage.ShowPage1(this._fmc, false);
               }, 1000);
               
