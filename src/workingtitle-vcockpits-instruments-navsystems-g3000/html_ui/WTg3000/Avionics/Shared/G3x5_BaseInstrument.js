@@ -30,9 +30,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
                 if (BaseInstrument.allInstrumentsLoaded && !this.xmlConfigLoading && this._isModConfigLoaded && SimVar.IsReady()) {
                     if (!this._isInitialized)
                         this.Init();
-                    this.beforeUpdate();
-                    this.Update();
-                    this.afterUpdate();
+                    this.doUpdate();
                 }
             } catch (e) {
                 console.error(this.instrumentIdentifier + " : " + e, e.stack);
