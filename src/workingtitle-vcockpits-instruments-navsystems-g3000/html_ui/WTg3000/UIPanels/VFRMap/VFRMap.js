@@ -454,7 +454,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _initView(modConfig) {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
-        let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
+        this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = this._initBorderData();
         if (modConfig.roads.showInVFRMap) {
             let roadData = this._initRoadData(modConfig);
@@ -467,8 +467,8 @@ class WT_VFRMapWT extends WT_VFRMap {
             this.view.addLayer(new WT_MapViewRoadLayer(roadData.feature, roadData.label, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
-        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(this._airplaneLayer = new WT_MapViewAirplaneLayer());
     }
@@ -648,6 +648,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _updateView() {
         this.view.update();
+        this._waypointRenderer.update(this.view.state);
     }
 
     onUpdate(deltaTime) {

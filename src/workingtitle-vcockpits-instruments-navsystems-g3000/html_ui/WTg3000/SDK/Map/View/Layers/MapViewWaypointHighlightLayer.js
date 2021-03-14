@@ -7,11 +7,11 @@ class WT_MapViewWaypointHighlightLayer extends WT_MapViewMultiLayer {
     constructor(waypointRenderer, className = WT_MapViewWaypointHighlightLayer.CLASS_DEFAULT, configName = WT_MapViewWaypointHighlightLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
-        this._highlightLayer = new WT_MapViewCanvas(true, true);
+        this._highlightLayer = new WT_MapViewCanvas(false, true);
         this.addSubLayer(this._highlightLayer);
 
         this._waypointRenderer = waypointRenderer;
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT, this._highlightLayer.buffer.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT, this._highlightLayer.display.context);
         this._waypointStyleHandler = {getOptions: this._getWaypointStyleOptions.bind(this)};
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewWaypointHighlightLayer.OPTIONS_DEF);
@@ -193,8 +193,6 @@ class WT_MapViewWaypointHighlightLayer extends WT_MapViewMultiLayer {
 
     _updateHighlightLayer(state) {
         this._highlightLayer.display.clear();
-        this._highlightLayer.copyBufferToCanvas();
-        this._highlightLayer.resetBuffer();
     }
 
     /**

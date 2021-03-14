@@ -17,6 +17,44 @@ class WT_MapViewWaypointCanvasRenderer {
          */
         this._registered = new Map();
 
+        this._contexts = {
+            normal: {
+                iconFactory: null,
+                labelFactory: null,
+                canvasContext: null,
+                styleOptionHandler: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.normal;}},
+                visibilityHandler: {isVisible(state, waypoint) {return true;}}
+            },
+            airway: {
+                iconFactory: null,
+                labelFactory: null,
+                canvasContext: null,
+                styleOptionHandler: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.airway;}},
+                visibilityHandler: {isVisible(state, waypoint) {return true;}}
+            },
+            flightPlan: {
+                iconFactory: null,
+                labelFactory: null,
+                canvasContext: null,
+                styleOptionHandler: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.flightPlan;}},
+                visibilityHandler: {isVisible(state, waypoint) {return true;}}
+            },
+            flightPlanActive: {
+                iconFactory: null,
+                labelFactory: null,
+                canvasContext: null,
+                styleOptionHandler: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.flightPlanActive;}},
+                visibilityHandler: {isVisible(state, waypoint) {return true;}}
+            },
+            highlight: {
+                iconFactory: null,
+                labelFactory: null,
+                canvasContext: null,
+                styleOptionHandler: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.highlight;}},
+                visibilityHandler: {isVisible(state, waypoint) {return true;}}
+            }
+        }
+
         this._iconFactories = {
             normal: null,
             airway: null,
@@ -67,19 +105,19 @@ class WT_MapViewWaypointCanvasRenderer {
     setIconFactory(context, factory) {
         switch (context) {
             case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
-                this._iconFactories.normal = factory;
+                this._contexts.normal.iconFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
-                this._iconFactories.airway = factory;
+                this._contexts.airway.iconFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
-                this._iconFactories.flightPlan = factory;
+                this._contexts.flightPlan.iconFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
-                this._iconFactories.flightPlanActive = factory;
+                this._contexts.flightPlanActive.iconFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
-                this._iconFactories.highlight = factory;
+                this._contexts.highlight.iconFactory = factory;
                 break;
         }
     }
@@ -92,19 +130,19 @@ class WT_MapViewWaypointCanvasRenderer {
     setLabelFactory(context, factory) {
         switch (context) {
             case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
-                this._labelFactories.normal = factory;
+                this._contexts.normal.labelFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
-                this._labelFactories.airway = factory;
+                this._contexts.airway.labelFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
-                this._labelFactories.flightPlan = factory;
+                this._contexts.flightPlan.labelFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
-                this._labelFactories.flightPlanActive = factory;
+                this._contexts.flightPlanActive.labelFactory = factory;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
-                this._labelFactories.highlight = factory;
+                this._contexts.highlight.labelFactory = factory;
                 break;
         }
     }
@@ -117,19 +155,19 @@ class WT_MapViewWaypointCanvasRenderer {
     setCanvasContext(context, canvasContext) {
         switch (context) {
             case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
-                this._canvasContexts.normal = canvasContext;
+                this._contexts.normal.canvasContext = canvasContext;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
-                this._canvasContexts.airway = canvasContext;
+                this._contexts.airway.canvasContext = canvasContext;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
-                this._canvasContexts.flightPlan = canvasContext;
+                this._contexts.flightPlan.canvasContext = canvasContext;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
-                this._canvasContexts.flightPlanActive = canvasContext;
+                this._contexts.flightPlanActive.canvasContext = canvasContext;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
-                this._canvasContexts.highlight = canvasContext;
+                this._contexts.highlight.canvasContext = canvasContext;
                 break;
         }
     }
@@ -143,19 +181,19 @@ class WT_MapViewWaypointCanvasRenderer {
     setVisibilityHandler(context, handler) {
         switch (context) {
             case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
-                this._visibilityHandlers.normal = handler;
+                this._contexts.normal.visibilityHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
-                this._visibilityHandlers.airway = handler;
+                this._contexts.airway.visibilityHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
-                this._visibilityHandlers.flightPlan = handler;
+                this._contexts.flightPlan.visibilityHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
-                this._visibilityHandlers.flightPlanActive = handler;
+                this._contexts.flightPlanActive.visibilityHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
-                this._visibilityHandlers.highlight = handler;
+                this._contexts.highlight.visibilityHandler = handler;
                 break;
         }
     }
@@ -170,19 +208,19 @@ class WT_MapViewWaypointCanvasRenderer {
     setStyleOptionHandler(context, handler) {
         switch (context) {
             case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
-                this._styleOptionHandlers.normal = handler;
+                this._contexts.normal.styleOptionHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
-                this._styleOptionHandlers.airway = handler;
+                this._contexts.airway.styleOptionHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
-                this._styleOptionHandlers.flightPlan = handler;
+                this._contexts.flightPlan.styleOptionHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
-                this._styleOptionHandlers.flightPlanActive = handler;
+                this._contexts.flightPlanActive.styleOptionHandler = handler;
                 break;
             case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
-                this._styleOptionHandlers.highlight = handler;
+                this._contexts.highlight.styleOptionHandler = handler;
                 break;
         }
     }
@@ -203,7 +241,7 @@ class WT_MapViewWaypointCanvasRenderer {
      * Checks if a waypoint is registered with this renderer. A context or contexts can be optionally specified such
      * that the method will only return true if the waypoint is registered under those specific contexts.
      * @param {WT_Waypoint} waypoint - a waypoint.
-     * @param {Number} [context] - the specific context(s) to check.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} [context] - the specific context(s) to check.
      * @returns {Boolean} whether the waypoint is registered with this renderer.
      */
     isRegistered(waypoint, context) {
@@ -227,7 +265,7 @@ class WT_MapViewWaypointCanvasRenderer {
      * appropriate the next time this renderer's .update() method is called. Registering a waypoint under a context under
      * which it is already registered has no effect.
      * @param {WT_Waypoint} waypoint - the waypoint to register.
-     * @param {Number} context - the context(s) under which the waypoint should be registered.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - the context(s) under which the waypoint should be registered.
      */
     register(waypoint, context) {
         if (!waypoint || context === 0) {
@@ -259,7 +297,7 @@ class WT_MapViewWaypointCanvasRenderer {
      * Deregisters a waypoint with this render from a specific context or contexts. Once a waypoint is deregistered from
      * a context, it will no longer be rendered in that context the next this renderer's update() method is called.
      * @param {WT_Waypoint} waypoint - the waypoint to deregister.
-     * @param {Number} context - the context(s) from which the waypoint should be deregistered.
+     * @param {WT_MapViewWaypointCanvasRenderer.Context} context - the context(s) from which the waypoint should be deregistered.
      */
     deregister(waypoint, context) {
         if (!waypoint) {
@@ -307,19 +345,19 @@ class WT_MapViewWaypointCanvasRenderer {
             let icon = entry.icon;
             switch(entry.lastShowContext) {
                 case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
-                    icon.draw(state, this._canvasContexts.normal);
+                    icon.draw(state, this._contexts.normal.canvasContext);
                     break;
                 case WT_MapViewWaypointCanvasRenderer.Context.AIRWAY:
-                    icon.draw(state, this._canvasContexts.airway);
+                    icon.draw(state, this._contexts.airway.canvasContext);
                     break;
                 case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN:
-                    icon.draw(state, this._canvasContexts.flightPlan);
+                    icon.draw(state, this._contexts.flightPlan.canvasContext);
                     break;
                 case WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE:
-                    icon.draw(state, this._canvasContexts.flightPlanActive);
+                    icon.draw(state, this._contexts.flightPlanActive.canvasContext);
                     break;
                 case WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT:
-                    icon.draw(state, this._canvasContexts.highlight);
+                    icon.draw(state, this._contexts.highlight.canvasContext);
                     break;
             }
         }
@@ -598,27 +636,27 @@ class WT_MapViewWaypointCanvasRendererEntry {
         let propertyName = "";
 
         if (isInView) {
-            if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT) && this._renderer._visibilityHandlers.highlight.isVisible(state, this.waypoint)) {
+            if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT) && this._renderer._contexts.highlight.visibilityHandler.isVisible(state, this.waypoint)) {
                 showContext = WT_MapViewWaypointCanvasRenderer.Context.HIGHLIGHT;
                 showIcon = true;
                 showLabel = true;
                 propertyName = "highlight";
-            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE) && this._renderer._visibilityHandlers.flightPlanActive.isVisible(state, this.waypoint)) {
+            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE) && this._renderer._contexts.flightPlanActive.visibilityHandler.isVisible(state, this.waypoint)) {
                 showContext = WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE;
                 showIcon = true;
                 showLabel = true;
                 propertyName = "flightPlanActive";
-            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN) && this._renderer._visibilityHandlers.flightPlan.isVisible(state, this.waypoint)) {
+            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN) && this._renderer._contexts.flightPlan.visibilityHandler.isVisible(state, this.waypoint)) {
                 showContext = WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN;
                 showIcon = true;
                 showLabel = true;
                 propertyName = "flightPlan";
-            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL) && this._renderer._visibilityHandlers.normal.isVisible(state, this.waypoint)) {
+            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL) && this._renderer._contexts.normal.visibilityHandler.isVisible(state, this.waypoint)) {
                 showContext = WT_MapViewWaypointCanvasRenderer.Context.NORMAL;
                 showIcon = true;
                 showLabel = true;
                 propertyName = "normal";
-            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY) && this._renderer._visibilityHandlers.airway.isVisible(state, this.waypoint)) {
+            } else if (this.isAnyContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY) && this._renderer._contexts.airway.visibilityHandler.isVisible(state, this.waypoint)) {
                 showContext = WT_MapViewWaypointCanvasRenderer.Context.AIRWAY;
                 showIcon = true;
                 showLabel = false;
@@ -633,9 +671,9 @@ class WT_MapViewWaypointCanvasRendererEntry {
         if (hide) {
             this._draw(state, this.lastShowContext, false, false);
         } else {
-            let iconFactory = this._renderer._iconFactories[propertyName];
-            let labelFactory = this._renderer._labelFactories[propertyName];
-            let optionHandler = this._renderer._styleOptionHandlers[propertyName];
+            let iconFactory = this._renderer._contexts[propertyName].iconFactory;
+            let labelFactory = this._renderer._contexts[propertyName].labelFactory;
+            let optionHandler = this._renderer._contexts[propertyName].styleOptionHandler;
             this._draw(state, showContext, showIcon, showLabel, iconFactory, labelFactory, optionHandler);
         }
 

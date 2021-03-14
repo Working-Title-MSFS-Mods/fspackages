@@ -126,7 +126,7 @@ class WT_G3x5_NavMap {
 
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
-        let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
+        this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
@@ -134,8 +134,8 @@ class WT_G3x5_NavMap {
             this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
-        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
@@ -269,6 +269,7 @@ class WT_G3x5_NavMap {
     update() {
         this._rangeTargetRotationController.update();
         this.view.update();
+        this._waypointRenderer.update(this.view.state);
     }
 }
 WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT = {
