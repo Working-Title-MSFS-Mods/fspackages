@@ -12,7 +12,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewTrackVectorLayer.OPTIONS_DEF);
 
-        this._vectorLayer = new WT_MapViewCanvas(true, true);
+        this._vectorLayer = new WT_MapViewCanvas(false, true);
 
         this.addSubLayer(this._vectorLayer);
 
@@ -74,6 +74,13 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         } else {
             return Math.pow(0.5, dt * this.smoothingConstant);
         }
+    }
+
+    _setLastDrawnBounds(left, top, width, height) {
+        this._lastDrawnBounds.left = left;
+        this._lastDrawnBounds.top = top;
+        this._lastDrawnBounds.width = width;
+        this._lastDrawnBounds.height = height;
     }
 
     /**
@@ -148,29 +155,29 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     }
 
     /**
-     * Loads a path definition into this layer's buffer rendering context.
+     * Loads a path definition into this layer's canvas rendering context.
      * @param {{x:Number, y:Number}[]} points - a list of points, in pixel coordinates, comprising the path.
      */
     _composeVectorPath(points) {
-        this._vectorLayer.buffer.context.beginPath();
+        this._vectorLayer.display.context.beginPath();
         let i = 0;
         let currentPoint = points[i++];
-        this._vectorLayer.buffer.context.moveTo(currentPoint.x, currentPoint.y);
+        this._vectorLayer.display.context.moveTo(currentPoint.x, currentPoint.y);
         while (i < points.length) {
-            this._vectorLayer.buffer.context.lineTo(currentPoint.x, currentPoint.y);
+            this._vectorLayer.display.context.lineTo(currentPoint.x, currentPoint.y);
             currentPoint = points[i++];
         }
     }
 
     /**
-     * Applies a stroke to this layer's buffer rendering context using the specified styles.
+     * Applies a stroke to this layer's canvas rendering context using the specified styles.
      * @param {Number} lineWidth - the width of the stroke, in pixels.
      * @param {String|CanvasGradient|CanvasPattern} strokeStyle - the style of the stroke.
      */
-    _applyStrokeToBuffer(lineWidth, strokeStyle) {
-        this._vectorLayer.buffer.context.lineWidth = lineWidth;
-        this._vectorLayer.buffer.context.strokeStyle = strokeStyle;
-        this._vectorLayer.buffer.context.stroke();
+    _applyStroke(lineWidth, strokeStyle) {
+        this._vectorLayer.display.context.lineWidth = lineWidth;
+        this._vectorLayer.display.context.strokeStyle = strokeStyle;
+        this._vectorLayer.display.context.stroke();
     }
 
     /**
@@ -180,21 +187,19 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     _drawDynamicVector(state) {
         let points = this._calculateDynamicVector(state);
 
-        this._vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this._vectorLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this._composeVectorPath(points);
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
+            this._applyStroke((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
         }
-        this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
+        this._applyStroke(this.strokeWidth * state.dpiScale, this.strokeColor);
 
         let thick = (this.outlineWidth + this.strokeWidth / 2) * state.dpiScale;
         let toDrawLeft = Math.max(0, Math.min(...points.map(point => point.x)) - thick - 5);
         let toDrawTop = Math.max(0, Math.min(...points.map(point => point.y)) - thick - 5);
         let toDrawWidth = Math.min(state.projection.viewWidth, Math.max(...points.map(point => point.x)) + thick + 5) - toDrawLeft;
         let toDrawHeight = Math.min(state.projection.viewHeight, Math.max(...points.map(point => point.y)) + thick + 5) - toDrawTop;
-        this._lastDrawnBounds = this._vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
-        this._vectorLayer.resetBuffer();
+        this._setLastDrawnBounds(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
     /**
@@ -222,15 +227,14 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         ];
         let geoJSON = this._buildGeoJSON(points);
 
-        this._vectorLayer.buffer.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
         this._vectorLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        this._vectorLayer.buffer.context.beginPath();
-        state.projection.renderer.renderCanvas(geoJSON, this._vectorLayer.buffer.context);
+        this._vectorLayer.display.context.beginPath();
+        state.projection.renderer.renderCanvas(geoJSON, this._vectorLayer.display.context);
         if (this.outlineWidth > 0) {
-            this._applyStrokeToBuffer((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
+            this._applyStroke((this.outlineWidth * 2 + this.strokeWidth) * state.dpiScale, this.outlineColor);
         }
-        this._applyStrokeToBuffer(this.strokeWidth * state.dpiScale, this.strokeColor);
+        this._applyStroke(this.strokeWidth * state.dpiScale, this.strokeColor);
 
         let bounds = state.projection.renderer.calculateBounds(geoJSON);
         let thick = (this.outlineWidth + this.strokeWidth / 2) * state.dpiScale;
@@ -238,8 +242,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let toDrawTop = Math.max(0, bounds[0].y - thick - 5);
         let toDrawWidth = Math.min(state.projection.viewWidth, bounds[1].x + thick + 5) - toDrawLeft;
         let toDrawHeight = Math.min(state.projection.viewHeight, bounds[1].y + thick + 5) - toDrawTop;
-        this._lastDrawnBounds = this._vectorLayer.copyBufferToCanvas(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
-        this._vectorLayer.resetBuffer();
+        this._setLastDrawnBounds(toDrawLeft, toDrawTop, toDrawWidth, toDrawHeight);
     }
 
     /**
