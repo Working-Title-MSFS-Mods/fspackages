@@ -244,7 +244,7 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateReferenceVSpeed() {
-        if (this._airplane.autopilot.isVS()) {
+        if (this._airplane.autopilot.isVSActive()) {
             this._showReferenceVSpeed = true;
             this._airplane.autopilot.referenceVS(this._referenceVSpeed);
         } else {
@@ -839,6 +839,28 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         }
     }
 
+    _set1000ToGoAlert(value) {
+    }
+
+    _setAltSActiveAlert(value) {
+    }
+
+    _updateAlerts() {
+        let indicatedAltFeet = this._context.model.indicatedAltitude.asUnit(WT_Unit.FOOT);
+
+        if (this._context.model.airplane.autopilot.isALTSArmed()){
+            let selectedAltFeet = this._context.model.selectedAltitude.asUnit(WT_Unit.FOOT);
+            this._set1000ToGoAlert(Math.abs(indicatedAltFeet - selectedAltFeet) < 1000);
+            this._setAltSActiveAlert(false);
+        } else if (this._context.model.airplane.autopilot.isALTSActive()) {
+            this._setAltSActiveAlert(true);
+            this._set1000ToGoAlert(false);
+        } else {
+            this._set1000ToGoAlert(false);
+            this._setAltSActiveAlert(false);
+        }
+    }
+
     update() {
         if (!this._isInit || !this._context) {
             return;
@@ -850,6 +872,7 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         this._updateSelectedAltitude();
         this._updateBaro();
         this._updateMeters();
+        this._updateAlerts();
     }
 }
 WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_TICK_MAJOR_CLASS = "tickmajor";

@@ -1096,27 +1096,70 @@ class WT_AirplaneAutopilot {
     }
 
     /**
-     * Checks whether Pitch Hold mode is enabled.
-     * @returns {Boolean} whether Pitch Hold mode is enabled.
+     * Checks whether Pitch Hold Mode (PIT) is active.
+     * @returns {Boolean} whether Pitch Hold Mode is active.
      */
-    isPitchHold() {
+    isPitchHoldActive() {
         return SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") === 1;
     }
 
     /**
-     * Checks whether Flight Level Change (FLC) mode is enabled.
-     * @returns {Boolean} whether Flight Level Change mode is enabled.
+     * Checks whether Flight Level Change Mode (FLC) is active.
+     * @returns {Boolean} whether Flight Level Change Mode is active.
      */
-    isFLC() {
+    isFLCActive() {
         return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") === 1;
     }
 
     /**
-     * Checks whether Vertical Speed (VS) mode is enabled.
-     * @returns {Boolean} whether Vertical Speed mode is enabled.
+     * Checks whether Vertical Speed Mode (VS) is active.
+     * @returns {Boolean} whether Vertical Speed Mode is active.
      */
-    isVS() {
+    isVSActive() {
         return SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") === 1;
+    }
+
+    /**
+     * Checks whether Altitude Hold (ALT) mode is active.
+     * @returns {Boolean} whether Altitude Hold Mode is active.
+     */
+    isAltHoldActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") === 1 && !this.isAltHoldArmed();
+    }
+
+    /**
+     * Checks whether Altitude Hold Mode (ALT) is armed.
+     * @returns {Boolean} whether Altitude Hold Mode is armed.
+     */
+    isAltHoldArmed() {
+        return SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean") === 1;
+    }
+
+    /**
+     * Checks whether Selected Altitude Capture Mode (ALTS) is active.
+     * @returns {Boolean} whether Selected Altitude Capture Mode is active.
+     */
+    isALTSActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean") === 1 && this.isAltHoldArmed();
+    }
+
+    /**
+     * Checks whether Selected Altitude Capture Mode (ALTS) is armed.
+     * @returns {Boolean} whether Selected Altitude Capture Mode is armed.
+     */
+    isALTSArmed() {
+        return !this.isAltHoldArmed() && (this.isPitchHoldActive() || this.isVSActive() || this.isFLCActive());
+    }
+
+    /**
+     * Gets the autopilot's altitude hold setting.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} - the autopilot's altitude hold setting.
+     */
+    holdAltitude(reference) {
+        let value = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : WT_Unit.FOOT.createNumber(value);
     }
 
     /**
