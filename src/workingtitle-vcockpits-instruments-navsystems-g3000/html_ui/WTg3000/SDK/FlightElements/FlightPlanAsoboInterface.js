@@ -56,10 +56,10 @@ class WT_FlightPlanAsoboInterface {
         let waypointEntries = [];
         let originEnd = (origin ? 1 : 0);
         let destinationStart = data.waypoints.length - (destination ? 1 : 0);
-        let departureStart = (data.departureWaypointsSize === -1) ? -1 : originEnd;
-        let enrouteStart = (data.departureWaypointsSize === -1) ? originEnd : data.departureWaypointsSize;
-        let enrouteEnd = destinationStart - (data.arrivalWaypointsSize === -1 ? 0 : data.arrivalWaypointsSize);
-        let arrivalStart = (data.arrivalWaypointsSize === -1) ? -1 : enrouteEnd;
+        let departureStart = (data.departureWaypointsSize <= 0) ? -1 : originEnd;
+        let enrouteStart = originEnd + ((data.departureWaypointsSize <= 0) ? 0 : data.departureWaypointsSize);
+        let enrouteEnd = destinationStart - ((data.arrivalWaypointsSize <= 0) ? 0 : data.arrivalWaypointsSize);
+        let arrivalStart = (data.arrivalWaypointsSize <= 0) ? -1 : enrouteEnd;
 
         if (data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
