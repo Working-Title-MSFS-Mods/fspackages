@@ -28,6 +28,11 @@ class WT_FlightPlanAsoboInterface {
                 }
             }
             if (waypoint) {
+                if (waypoint instanceof WT_ICAOWaypoint && waypoint.location.distance(leg.lla) > 0.0001) {
+                    // sometimes Asobo will rename custom "USR" waypoints to match the ICAO of the previous waypoint
+                    waypoint = new WT_CustomWaypoint("USR", leg.lla);
+                }
+
                 let entry = {waypoint: waypoint};
                 if (leg.transitionLLas && leg.transitionLLas.length > 1) {
                     entry.steps = leg.transitionLLas.slice(0, leg.transitionLLas.length - 1).map(lla => new WT_GeoPoint(lla.lat, lla.long));
@@ -82,9 +87,10 @@ class WT_FlightPlanAsoboInterface {
         }
         if (data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
-            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, tempFlightPlan.getApproach().length());
+            // replace all waypoints except for the last, which should always be a runway fix.
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, tempFlightPlan.getApproach().length() - 1);
             waypointEntries = [];
-            await this._getWaypointEntriesFromData(approachData.waypoints, waypointEntries);
+            await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - 1), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.APPROACH, waypointEntries, 0);
         }
 
