@@ -178,6 +178,14 @@ class WT_G3000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
     _setSelectedAltitudeMetersDisplay(altitude) {
         this._selectedAltMeters.innerHTML = this._metersFormatter.getFormattedHTML(altitude, WT_Unit.METER);
     }
+
+    _set1000ToGoAlert(value) {
+        this._wrapper.setAttribute("alert-1000togo", `${value}`);
+    }
+
+    _setAltSActiveAlert(value) {
+        this._wrapper.setAttribute("alert-ALTSactive", `${value}`);
+    }
 }
 WT_G3000_PFDAltimeterAltitudeHTMLElement.SMALL_DIGIT_CLASS = "smallDigit";
 WT_G3000_PFDAltimeterAltitudeHTMLElement.UNIT_CLASS = "unit";
@@ -187,6 +195,12 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
+        }
+
+        @keyframes alert-ALTSactive {
+            0% {color: var(--wt-g3x5-lightblue);}
+            50% {color: transparent;}
+            100% {color: var(--wt-g3x5-lightblue);}
         }
 
         #wrapper {
@@ -203,6 +217,9 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                 background-color: var(--wt-g3x5-bggray);
                 border-radius: 0 var(--altimeter-tape-bg-border-radius, 10px) 0 0;
             }
+            #wrapper[alert-1000togo="true"] #selectedaltcontainer {
+                background-color: var(--wt-g3x5-lightblue);
+            }
                 #selectedalticonsvg {
                     position: absolute;
                     left: 7.5%;
@@ -213,14 +230,24 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                     #selectedalticon {
                         fill: var(--wt-g3x5-lightblue);
                     }
+                    #wrapper[alert-1000togo="true"] #selectedalticon {
+                        fill: black;
+                    }
                 #selectedalt {
                     position: absolute;
                     left: 60%;
                     top: 50%;
                     transform: translate(-50%, -50%);
                     text-align: center;
-                    color: var(--wt-g3x5-lightblue);
+                    font-weight: bold;
                     font-size: var(--altimeter-selectedalt-font-size, 1em);
+                    color: var(--wt-g3x5-lightblue);
+                }
+                #wrapper[alert-1000togo="true"] #selectedalt {
+                    color: black;
+                }
+                #wrapper[alert-ALTSactive="true"] #selectedalt {
+                    animation: alert-ALTSactive 1s infinite
                 }
             #tapecontainer {
                 position: absolute;
