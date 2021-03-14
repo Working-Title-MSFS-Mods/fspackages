@@ -303,7 +303,7 @@ class WT_GeoPoint {
      * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Boolean} whether this point is equal to the other point.
      */
-    equals(arg1, arg2, arg3) {
+    equals(arg1, arg2) {
         let other = WT_GeoPoint._parseArgs(arg1, arg2);
         if (other) {
             return Math.abs(this.lat - other.lat) + Math.abs(this.long - other.long) <= WT_GeoPoint.EQUALITY_TOLERANCE;
