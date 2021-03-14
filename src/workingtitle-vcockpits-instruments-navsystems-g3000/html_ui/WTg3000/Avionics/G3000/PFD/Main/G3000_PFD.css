@@ -58,17 +58,6 @@
         width: 19%;
         left: 70%; }
 
-as3000-pfd-element wt-pfd-altimeter {
-    position: absolute;
-    left: 70%;
-    top: 10%;
-    width: 18.25%;
-    height: 50%;
-    font-size: 3vh;
-    font-family: "Roboto-Regular";
-    font-weight: normal;
-}
-
 as3000-pfd-element wt-pfd-airspeedindicator {
     position: absolute;
     right: 70%;
@@ -78,6 +67,17 @@ as3000-pfd-element wt-pfd-airspeedindicator {
     font-size: 3vh;
     font-family: "Roboto-Regular";
     font-weight: normal;
+}
+
+as3000-pfd-element wt-pfd-altimeter {
+  position: absolute;
+  left: 70%;
+  top: 10%;
+  width: 18.25%;
+  height: 50%;
+  font-size: 3vh;
+  font-family: "Roboto-Regular";
+  font-weight: normal;
 }
 
 as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
