@@ -3,7 +3,7 @@ class WT_FlightPlanManager {
         this._active = new WT_FlightPlan(icaoWaypointFactory);
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
         this._directTo = new WT_DirectTo();
-        this._airplaneModel = WT_PlayerAirplane.INSTANCE;
+        this._airplane = WT_PlayerAirplane.INSTANCE;
 
         this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
 
@@ -77,11 +77,11 @@ class WT_FlightPlanManager {
 
     /**
      *
-     * @param {WT_FlightPlanLeg} leg
+     * @param {WT_Waypoint} waypoint
      */
-    _distanceToLegFix(leg) {
-        if (leg) {
-            return leg.fix.location.distance(this._airplaneModel.position(WT_FlightPlanManager._tempGeoPoint));
+    _distanceToWaypoint(waypoint) {
+        if (waypoint) {
+            return waypoint.location.distance(this._airplane.position(WT_FlightPlanManager._tempGeoPoint));
         } else {
             return 0;
         }
@@ -93,9 +93,9 @@ class WT_FlightPlanManager {
      * @param {WT_NumberUnit} reference
      */
     _distanceToActiveFix(activeLeg, reference) {
-        let distance = this._distanceToLegFix(activeLeg);
+        let distance = this._distanceToWaypoint(activeLeg ? activeLeg.fix : null);
         if (!reference) {
-            reference = new WT_NumberUnit(0, WT_Unit.NMILE);
+            reference = WT_Unit.NMILE.createNumber(0);
         }
         return reference.set(distance, WT_Unit.GA_RADIAN);
     }
@@ -127,6 +127,7 @@ class WT_FlightPlanManager {
     }
 
     /**
+     *
      * @param {Boolean} [cached]
      * @param {WT_NumberUnit} [reference]
      * @returns {Promise<WT_NumberUnit>|WT_NumberUnit}
@@ -139,6 +140,31 @@ class WT_FlightPlanManager {
                 let leg = await this.getActiveLeg();
                 resolve(this._distanceToDestination(leg, reference));
             });
+        }
+    }
+
+    _distanceToDirectTo(reference) {
+        if (!reference) {
+            reference = WT_Unit.NMILE.createNumber(0);
+        }
+        let distance = this._distanceToWaypoint(this.directTo.isActive() ? this.directTo.getDestination() : null);
+        return reference.set(distance, WT_Unit.GA_RADIAN);
+    }
+
+    /**
+     *
+     * @param {Boolean} [cached]
+     * @param {WT_NumberUnit} [reference]
+     * @returns {Promise<WT_NumberUnit>|WT_NumberUnit}
+     */
+    distanceToDirectTo(cached = false, reference) {
+        if (cached) {
+            return this._distanceToDirectTo(reference);
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._distanceToDirectTo(reference));
+            })
         }
     }
 }
