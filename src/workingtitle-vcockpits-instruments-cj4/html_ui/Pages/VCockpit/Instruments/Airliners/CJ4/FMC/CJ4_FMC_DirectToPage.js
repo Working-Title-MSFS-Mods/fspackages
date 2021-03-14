@@ -147,11 +147,17 @@ class CJ4_FMC_DirectToPage {
             const value = fmc.inOut;
             if (value !== "") {
                 fmc.clearUserInput();
-                fmc.getOrSelectWaypointByIdent(value, (w) => {
-                    if (w) {
-                        CJ4_FMC_DirectToPage.ShowPage1(fmc, w);
-                    }
-                });
+                const pilotWaypoint = fmc._pilotWaypoints._pilotWaypointArray.find(w => w.id == value);
+                if (pilotWaypoint) {
+                    const pilotWaypointObject = CJ4_FMC_PilotWaypointParser.buildPilotWaypointFromExisting(pilotWaypoint.id, parseFloat(pilotWaypoint.la), parseFloat(pilotWaypoint.lo), this._fmc);
+                    CJ4_FMC_DirectToPage.ShowPage1(fmc, pilotWaypointObject);
+                } else {
+                    fmc.getOrSelectWaypointByIdent(value, (w) => {
+                        if (w) {
+                            CJ4_FMC_DirectToPage.ShowPage1(fmc, w);
+                        }
+                    });
+                }
             } else if (onDirect) {
                 const wpt = fmc.flightPlanManager.getDirectToTarget();
                 const index = fmc.flightPlanManager.getAllWaypoints().indexOf(wpt);
@@ -164,15 +170,29 @@ class CJ4_FMC_DirectToPage {
                 });
             } else if (directWaypoint) {
                 const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
-                fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                    fmc.flightPlanManager.addWaypoint(directWaypoint.icao, activeIndex, () => {
-                        fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
-                            fmc.activateRoute(true, () => {
-                                fmc.onLegs();
+                const pilotWaypoint = fmc._pilotWaypoints._pilotWaypointArray.find(w => w.id == directWaypoint.ident);
+                if (pilotWaypoint) {
+                    const pilotWaypointObject = CJ4_FMC_PilotWaypointParser.buildPilotWaypointFromExisting(pilotWaypoint.id, parseFloat(pilotWaypoint.la), parseFloat(pilotWaypoint.lo), this._fmc);
+                    fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                        fmc.flightPlanManager.addUserWaypoint(pilotWaypointObject, activeIndex, () => {
+                            fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                                fmc.activateRoute(true, () => {
+                                    fmc.onLegs();
+                                });
                             });
                         });
                     });
-                });
+                } else {
+                    fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                        fmc.flightPlanManager.addWaypoint(directWaypoint.icao, activeIndex, () => {
+                            fmc.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                                fmc.activateRoute(true, () => {
+                                    fmc.onLegs();
+                                });
+                            });
+                        });
+                    });
+                }
             }
         };
         fmc.onRightInput[0] = () => {

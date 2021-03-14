@@ -101,6 +101,19 @@
                 </UseTemplate>
             </Component>
         </Condition>
+        <Condition Valid="NODE_ID_CHART">
+            <Component ID="#NODE_ID_CHART#" Node="#NODE_ID_CHART#">
+                <UseTemplate Name = "ASOBO_GT_Push_Button">
+                    <ANIM_NAME>#NODE_ID_CHART#</ANIM_NAME>
+                    <LEFT_SINGLE_CODE>(&gt;H:#KEY_PREFIX#_Push_Chart_1)</LEFT_SINGLE_CODE>
+                    <WWISE_EVENT_1>WT_hard_button_on</WWISE_EVENT_1>
+                    <NORMALIZED_TIME_1>0.1</NORMALIZED_TIME_1>
+                    <WWISE_EVENT_2>WT_hard_button_off</WWISE_EVENT_2>
+                    <NORMALIZED_TIME_2>0.5</NORMALIZED_TIME_2>
+                    <TOOLTIPID>Show Charts</TOOLTIPID>
+                </UseTemplate>
+            </Component>
+        </Condition>
     </Template>
 
     <!-- FMS ########################################### -->
@@ -131,7 +144,7 @@
 
         <UseTemplate Name="ASOBO_FMC_PushButton">
             <HTML_EVENT_ID>CLR</HTML_EVENT_ID>
-		    <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>
+            <LONG_CLICK_TIME>0.5</LONG_CLICK_TIME>
             <HAS_LONG_PRESS>True</HAS_LONG_PRESS>
             <NODE_ID>#NODE_ID_CLR#</NODE_ID>
             <ANIM_NAME>#ANIM_NAME_CLR#</ANIM_NAME>
@@ -196,5 +209,65 @@
 				#INIT#
             </Update>
         </Condition>
+    </Template>
+
+    <Template Name="WT_ELECTRICAL_Switch_Circuit_Template">
+        <DefaultTemplateParameters>
+            <NODE_ID>ELECTRICAL_#INTERACTION#_Circuit_#ID#</NODE_ID>
+            <ANIM_NAME>ELECTRICAL_#INTERACTION#_Circuit_#ID#</ANIM_NAME>
+            <PART_ID>ELECTRICAL_#INTERACTION#_Circuit</PART_ID>
+            <LEFT_SINGLE_CODE>#CIRCUIT_ID# (&gt;K:ELECTRICAL_CIRCUIT_TOGGLE)</LEFT_SINGLE_CODE>
+            <WWISE_EVENT_1>electrical_circuit_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>electrical_circuit_switch_off</WWISE_EVENT_2>
+            <AUDIO_NORMALIZED_TIME_1>0.1</AUDIO_NORMALIZED_TIME_1>
+            <AUDIO_NORMALIZED_TIME_2>0.5</AUDIO_NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <UseTemplate Name="ASOBO_GT_Switch_Code">
+                <ANIM_CODE>(A:CIRCUIT SWITCH ON:#CIRCUIT_ID#, Bool) ! 50 *</ANIM_CODE>
+            </UseTemplate>
+        </Component>
+    </Template>
+
+    <Template Name="WT_ELECTRICAL_Switch_EmerLight_Template">
+        <DefaultTemplateParameters>
+            <LEFT_SINGLE_CODE>(L:WT_CJ4_EMER_LIGHT_ARMED) ! (&gt;L:WT_CJ4_EMER_LIGHT_ARMED)</LEFT_SINGLE_CODE>
+            <WWISE_EVENT_1>electrical_circuit_switch_on</WWISE_EVENT_1>
+            <WWISE_EVENT_2>electrical_circuit_switch_off</WWISE_EVENT_2>
+            <AUDIO_NORMALIZED_TIME_1>0.1</AUDIO_NORMALIZED_TIME_1>
+            <AUDIO_NORMALIZED_TIME_2>0.5</AUDIO_NORMALIZED_TIME_2>
+        </DefaultTemplateParameters>
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <UseTemplate Name="ASOBO_GT_Switch_Code">
+                <ANIM_CODE>(L:WT_CJ4_EMER_LIGHT_ARMED) ! 50 *</ANIM_CODE>
+            </UseTemplate>
+        </Component>
+    </Template>
+    
+    <Template Name="WT_AUDIO_Button_Template">
+        <UseTemplate Name="ASOBO_AUDIO_Button_Template">
+            <ANIM_NAME>AudioPanel_Push_COM_1_#ID#</ANIM_NAME>
+            <NODE_ID>AudioPanel_Push_COM_1_#ID#</NODE_ID>
+            <INDICATOR_NODE_ID>AudioPanel_Push_COM_1_Active_#ID#</INDICATOR_NODE_ID>
+            <ID>COM1</ID>
+            <LEFT_SINGLE_CODE>
+					0 (&gt;K:PILOT_TRANSMITTER_SET)
+					0 (&gt;K:COPILOT_TRANSMITTER_SET)
+            </LEFT_SINGLE_CODE>
+            <EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:1, bool)</EMISSIVE_INDICATOR_CODE>
+            <TOOLTIPID>%((A:COM TRANSMIT:1, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_OFF%{end}</TOOLTIPID>
+        </UseTemplate>
+        <UseTemplate Name="ASOBO_AUDIO_Button_Template">
+            <ANIM_NAME>AudioPanel_Push_COM_2_#ID#</ANIM_NAME>
+            <NODE_ID>AudioPanel_Push_COM_2_#ID#</NODE_ID>
+            <INDICATOR_NODE_ID>AudioPanel_Push_COM_2_Active_#ID#</INDICATOR_NODE_ID>
+            <ID>COM2</ID>
+            <LEFT_SINGLE_CODE>
+					1 (&gt;K:PILOT_TRANSMITTER_SET)
+					1 (&gt;K:COPILOT_TRANSMITTER_SET)
+            </LEFT_SINGLE_CODE>
+            <EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:2, bool)</EMISSIVE_INDICATOR_CODE>
+            <TOOLTIPID>%((A:COM TRANSMIT:2, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_OFF%{end}</TOOLTIPID>
+        </UseTemplate>
     </Template>
 </ModelBehaviors>

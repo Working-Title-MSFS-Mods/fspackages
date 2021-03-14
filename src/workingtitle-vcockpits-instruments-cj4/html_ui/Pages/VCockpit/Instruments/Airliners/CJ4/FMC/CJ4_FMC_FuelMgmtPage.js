@@ -81,7 +81,7 @@ class CJ4_FMC_FuelMgmtPageOne {
             [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes.toString().padStart(2, "0")],
             [" FUEL FLOW[blue]", "RNG TO RESV[blue] "],
             [" " + totalFuelFlowText, this._rngToResv + "[d-text]NM[s-text]"],
-            [" RESERVES[blue]", "SP RNG[blue] "],
+            [" RESERVES[blue]", "SP RNG GS[blue] "],
             [" " + reserveFuelText, spRangeText],
             [" GND SPD[blue]"],
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],

@@ -89,7 +89,7 @@ class WT_BaseVnav {
          * The furthest distance away to show a constraint on the PFD.
          * @type {number}
          */
-        this._distanceToShowConstraint = 40;
+        this._distanceToShowConstraint = 80;
 
         /**
          * The vertical direct target waypoint.
@@ -215,8 +215,16 @@ class WT_BaseVnav {
                 this._fpChecksum = this.flightplan.checksum;
             }
 
+            if (this._vnavState === VnavState.DIRECT) {
+                const directWaypoint = this.currentWaypoints.find(w => { return (w && w.ident === this._verticalDirectWaypoint.ident); });
+                if (!directWaypoint) {
+                    this._vnavState = VnavState.PATH;
+                }
+            }
+
             this.manageConstraints();
             this.calculateTod();
+            this.calculateAdvisoryDescent();
         }
     }
 
@@ -340,10 +348,10 @@ class WT_BaseVnav {
             firstPossibleDescentIndex = (isClimb && vwp.hasConstraint && i < lastApproachWaypointIndex) ? i : firstPossibleDescentIndex;
         }
         console.log("lastClimbIndex " + lastClimbIndex);
-        const segmentBuildStartIndex = Math.max(this.flightplan.activeWaypointIndex - 1, lastClimbIndex); 
+        const segmentBuildStartIndex = Math.max(this.flightplan.activeWaypointIndex - 1, lastClimbIndex);
         this._verticalFlightPlanSegments = [];
         let segment = 0;
-        let nextSegmentEndIndex = undefined;
+        const nextSegmentEndIndex = undefined;
         let verticalDirectSegmentCreated = false;
         for (let j = lastApproachWaypointIndex; j > segmentBuildStartIndex; j--) { //Build Path Segments
             console.log("j: " + j + " ident: " + this._verticalFlightPlan[j].ident + " segment: " + this._verticalFlightPlan[j].segment + " FPTA: " + this._verticalFlightPlan[j].waypointFPTA);
@@ -420,7 +428,7 @@ class WT_BaseVnav {
                         maxAltitude = 0;
                     }
                 }
-                let upperAltitude = maxAltitude > 0 ? Math.min(maxAltitude, wptToEvaluate.upperConstraintAltitude) : wptToEvaluate.upperConstraintAltitude;
+                const upperAltitude = maxAltitude > 0 ? Math.min(maxAltitude, wptToEvaluate.upperConstraintAltitude) : wptToEvaluate.upperConstraintAltitude;
                 const altToUpperConstraint = upperAltitude - vwp.waypointFPTA;
                 const altToLowerConstraint = wptToEvaluate.lowerConstraintAltitude - vwp.waypointFPTA;
                 console.log("segment wpt " + wptToEvaluate.ident + " upperAltitude " + upperAltitude + " wptToEvaluate.lowerConstraintAltitude " + wptToEvaluate.lowerConstraintAltitude);
@@ -479,7 +487,7 @@ class WT_BaseVnav {
                     console.log("segmentMaxFPA updated to " + segmentMaxFPA + "; segmentMinFPA updated to " + segmentMinFPA);
                     console.log(wptToEvaluate.ident + " added to segment " + segment);
                 }
-                
+
             }
         }
         const segmentStartIndex = isFlatSegment ? flatPathStartIndex : Math.min(segmentBreakIndex + 1, endingIndex);
@@ -498,8 +506,8 @@ class WT_BaseVnav {
                 if (segmentBreakIndex != endingIndex && !this._verticalFlightPlan[segmentBreakIndex].waypointFPTA && !isFlatSegment) {
                     const segmentLateralDistance = lateralDistance - this._verticalFlightPlan[segmentBreakIndex].legDistanceTo;
                     const segmentStartFPTA = this._verticalFlightPlan[endingIndex].waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, segmentLateralDistance);
-                    this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = Math.min(segmentStartFPTA, maxAltitude);
-                    segmentStartsLevel = maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
+                    this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = maxAltitude > 0 ? Math.min(segmentStartFPTA, maxAltitude) : segmentStartFPTA;
+                    segmentStartsLevel = maxAltitude > 0 && maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
                     console.log("based on distance: " + segmentLateralDistance + " FPA: " + bestFPA);
                     console.log("setting: " + this._verticalFlightPlan[segmentBreakIndex].ident + " wpt FPTA: " + this._verticalFlightPlan[segmentBreakIndex].waypointFPTA);
                 }
@@ -571,7 +579,7 @@ class WT_BaseVnav {
         let isClimb = false;
         if (this._verticalFlightPlan.length > 0 && this._verticalFlightPlan[this.flightplan.activeWaypointIndex].isClimb) {
             isClimb = true;
-            for (let i = this.flightplan.activeWaypointIndex; i < this._firstPossibleDescentIndex - 1; i++) {
+            for (let i = this.flightplan.activeWaypointIndex; i <= this._lastClimbIndex; i++) {
                 if (this._verticalFlightPlan[i].upperConstraintAltitude && this._verticalFlightPlan[i].upperConstraintAltitude < Infinity) {
                     constraint = this._verticalFlightPlan[i].upperConstraintAltitude;
                     index = i;
@@ -721,7 +729,8 @@ class WT_BaseVnav {
         if (currentSegment == undefined && this._verticalFlightPlanSegments.length > 0) {
             currentSegment = this._verticalFlightPlanSegments.length - 1;
         }
-        if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE) {
+        if (this._fmc._currentVerticalAutopilot && this._fmc._currentVerticalAutopilot._vnavPathStatus && (this._fmc._currentVerticalAutopilot._vnavPathStatus == VnavPathStatus.PATH_ACTIVE
+            || this._fmc._currentVerticalAutopilot._glidepathStatus == GlidepathStatus.GP_ACTIVE || this._fmc._currentVerticalAutopilot._glideslopeStatus == GlideslopeStatus.GS_ACTIVE)) {
             todExists = false;
         }
         else if (currentSegment !== undefined && currentSegment > 0 && this._verticalFlightPlanSegments[currentSegment].fpa == 0) {
@@ -745,19 +754,40 @@ class WT_BaseVnav {
         else if (this.flightplan.activeWaypointIndex > this._lastClimbIndex) {
             altitude = this.indicatedAltitude;
             if (currentSegment >= 0) {
-                fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[currentSegment].targetIndex].waypointFPTA;
-                fpa = this._verticalFlightPlanSegments[currentSegment].fpa;
-                const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
-                todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[this._firstPathSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
-                todExists = true;
-            } else {
-                todExists = false;
+                const fptaIdx = this._verticalFlightPlan.findIndex(x => (x.waypointFPTA !== undefined && !x.isClimb && x.waypointFPTA < altitude));
+                if (fptaIdx > -1) {
+                    const fptaSegment = this._verticalFlightPlan[fptaIdx].segment;
+                    if (fptaSegment !== undefined) {
+                        fpta = this._verticalFlightPlan[this._verticalFlightPlanSegments[fptaSegment].targetIndex].waypointFPTA;
+                        fpa = this._verticalFlightPlanSegments[fptaSegment].fpa;
+                        const descentDistance = AutopilotMath.calculateDescentDistance(fpa, altitude - fpta);
+                        todDistanceInFP = this.allWaypoints[this._verticalFlightPlanSegments[fptaSegment].targetIndex].cumulativeDistanceInFP - descentDistance;
+                        todExists = true;
+                    }
+                }
             }
         }
         if (todExists) {
             this.setTodWaypoint(true, todDistanceInFP);
         } else {
             this.setTodWaypoint();
+        }
+    }
+
+    calculateAdvisoryDescent() { //Creates a point when VNAV is not available to start descent to reach 1500' AGL 10nm from airport
+        if (this.vnavState == VnavState.NONE) {
+            if (this.destination && this._fmc.cruiseFlightLevel && !Simplane.getIsGrounded()) {
+                const elevation = parseFloat(this.destination.infos.oneWayRunways[0].elevation) * 3.28;
+                const altitude = this._fmc.cruiseFlightLevel * 100;
+                const verticalDistance = (altitude - elevation) - 1500;
+                const horizontalDescentDistance = ((verticalDistance / Math.tan(3 * Math.PI / 180)) / 6076.12) + 10;
+                const distanceToTod = (this.destination.cumulativeDistanceInFP - horizontalDescentDistance) - this._currentDistanceInFP;
+                SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", horizontalDescentDistance);
+                SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", distanceToTod);
+                SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 1);
+            }
+        } else {
+            SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 0);
         }
     }
 
@@ -775,6 +805,7 @@ class WT_BaseVnav {
             SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", 0);
         }
     }
+
 
     // writeDatastoreValues() {
     //     const vnavValues = {

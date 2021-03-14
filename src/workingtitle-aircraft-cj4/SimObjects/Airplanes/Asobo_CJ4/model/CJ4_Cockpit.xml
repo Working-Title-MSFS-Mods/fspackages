@@ -56,11 +56,16 @@
 					<ANIMTIP_2>TT:COCKPIT.TOOLTIPS.ALTERNATOR_RH_RESET</ANIMTIP_2>
 				</UseTemplate>
 			</Component>
-			<UseTemplate Name="ASOBO_ELECTRICAL_Switch_Circuit_Template">
+			<UseTemplate Name="WT_ELECTRICAL_Switch_Circuit_Template">
 				<NODE_ID>switch_electricicalPanel_STBY_FTL</NODE_ID>
 				<ANIM_NAME>switch_electricicalPanel_STBY_FTL</ANIM_NAME>
 				<PART_ID>switch_electricicalPanel_STBY_FTL</PART_ID>
 				<CIRCUIT_ID>49</CIRCUIT_ID>
+			</UseTemplate>
+			<UseTemplate Name="WT_ELECTRICAL_Switch_EmerLight_Template">
+				<NODE_ID>switch_electricicalPanel_emerLights</NODE_ID>
+				<ANIM_NAME>switch_electricicalPanel_emerLights</ANIM_NAME>
+				<PART_ID>switch_electricicalPanel_emerLights</PART_ID>
 			</UseTemplate>
 			<CameraTitle>Instrument02</CameraTitle>
 		</Component>
@@ -140,29 +145,11 @@
 				<CONTAINER_ID>2</CONTAINER_ID>
 			</UseTemplate>
 
-			<UseTemplate Name="ASOBO_AUDIO_Button_Template">
-				<ANIM_NAME>AudioPanel_Push_COM_1_1</ANIM_NAME>
-				<NODE_ID>AudioPanel_Push_COM_1_1</NODE_ID>
-				<INDICATOR_NODE_ID>AudioPanel_Push_COM_1_Active_1</INDICATOR_NODE_ID>
-				<ID>COM1</ID>
-				<LEFT_SINGLE_CODE>
-					0 (&gt;K:PILOT_TRANSMITTER_SET)
-					0 (&gt;K:COPILOT_TRANSMITTER_SET)
-				</LEFT_SINGLE_CODE>
-				<EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:1, bool)</EMISSIVE_INDICATOR_CODE>
-				<TOOLTIPID>%((A:COM TRANSMIT:1, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM1_OFF%{end}</TOOLTIPID>
+			<UseTemplate Name="WT_AUDIO_Button_Template">
+				<ID>1</ID>
 			</UseTemplate>
-			<UseTemplate Name="ASOBO_AUDIO_Button_Template">
-				<ANIM_NAME>AudioPanel_Push_COM_2_1</ANIM_NAME>
-				<NODE_ID>AudioPanel_Push_COM_2_1</NODE_ID>
-				<INDICATOR_NODE_ID>AudioPanel_Push_COM_2_Active_1</INDICATOR_NODE_ID>
-				<ID>COM2</ID>
-				<LEFT_SINGLE_CODE>
-					1 (&gt;K:PILOT_TRANSMITTER_SET)
-					1 (&gt;K:COPILOT_TRANSMITTER_SET)
-				</LEFT_SINGLE_CODE>
-				<EMISSIVE_INDICATOR_CODE>(A:COM TRANSMIT:2, bool)</EMISSIVE_INDICATOR_CODE>
-				<TOOLTIPID>%((A:COM TRANSMIT:2, bool))%{if}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_ON%{else}TT:COCKPIT.TOOLTIPS.NAVCOM_COM2_OFF%{end}</TOOLTIPID>
+			<UseTemplate Name="WT_AUDIO_Button_Template">
+				<ID>2</ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Update">
 				<FREQUENCY>1</FREQUENCY>
@@ -310,10 +297,12 @@
 				<ID>1</ID>
 				<!-- LOWER PANEL -->
 				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
+				<NODE_ID_CKLST>CCP_PUSH_CKLST_1</NODE_ID_CKLST>
 				<NODE_ID_PASSBRIEF>CCP_PUSH_PASSBRIEF_1</NODE_ID_PASSBRIEF>
 				<NODE_ID_MEM1>CCP_PUSH_MEM1_1</NODE_ID_MEM1>
 				<NODE_ID_MEM2>CCP_PUSH_MEM2_1</NODE_ID_MEM2>
 				<NODE_ID_MEM3>CCP_PUSH_MEM3_1</NODE_ID_MEM3>
+				<NODE_ID_CHART>CCP_Push_chart_1</NODE_ID_CHART>
 			</UseTemplate>
 			<UseTemplate Name="WT_Detached_Control_Panel_Template">
 				<KEY_PREFIX>Generic_Lwr</KEY_PREFIX>
@@ -324,6 +313,7 @@
 				<NODE_ID_MEM1>CCP_PUSH_MEM1_2</NODE_ID_MEM1>
 				<NODE_ID_MEM2>CCP_PUSH_MEM2_2</NODE_ID_MEM2>
 				<NODE_ID_MEM3>CCP_PUSH_MEM3_2</NODE_ID_MEM3>
+				<NODE_ID_CHART>CCP_Push_chart_2</NODE_ID_CHART>
 			</UseTemplate>
 
 			<!-- ADDED FIRE BOTTLE FOR TO/GA BUTTON -->
@@ -1143,9 +1133,6 @@
 				<NODE_ID>push_coPilot_DCP_CCPMENU</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>switch_electricicalPanel_emerLights</NODE_ID>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>lever_pilot_oxygenSupply</NODE_ID>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
@@ -1196,10 +1183,6 @@
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
 				<NODE_ID>CCP_PUSH_DATABASE</NODE_ID>
-				<CONTAINER_COUNT>2</CONTAINER_COUNT>
-			</UseTemplate>
-			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
-				<NODE_ID>CCP_PUSH_CHART</NODE_ID>
 				<CONTAINER_COUNT>2</CONTAINER_COUNT>
 			</UseTemplate>
 			<UseTemplate Name="ASOBO_GT_Interaction_Tooltip">
