@@ -467,6 +467,11 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} trend
      */
     _updateMinSpeed(ias, trend) {
+        if (this._context.model.airplane.dynamics.isOnGround()) {
+            this._setMinSpeedWarning(false);
+            return;
+        }
+
         let iasKnots = ias.asUnit(WT_Unit.KNOT);
         let trendEnd = iasKnots + trend;
         let minSpeed = this._context.model.minSpeed.asUnit(WT_Unit.KNOT);
