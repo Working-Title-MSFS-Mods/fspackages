@@ -11,6 +11,10 @@ class WT_G5000_PFDMainPage extends WT_G3x5_PFDMainPage {
         return new WT_G5000_PFDAirspeedIndicator();
     }
 
+    _createAltimeter() {
+        return new WT_G5000_PFDAltimeter();
+    }
+
     _createAoAIndicator() {
         return new WT_G5000_PFDAoAIndicator();
     }
