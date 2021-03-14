@@ -28,7 +28,7 @@ class WT_NavDataBarModel {
             DIS: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelSimVar(WT_Unit.NMILE, "GPS WP DISTANCE", "nautical miles")),
             DTG: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DTG, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {
                 updateValue(value) {
-                    return flightPlanManager.distanceToDestination(true, value);
+                    return flightPlanManager.directTo.isActive() ? flightPlanManager.distanceToDirectTo(true, value) : flightPlanManager.distanceToDestination(true, value);
                 }
             })),
             DTK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DTK, new WT_NavAngleModelSimVar(true, {
