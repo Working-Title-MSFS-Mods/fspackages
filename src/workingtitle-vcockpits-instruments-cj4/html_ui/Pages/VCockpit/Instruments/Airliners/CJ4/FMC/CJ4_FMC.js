@@ -509,7 +509,10 @@ class CJ4_FMC extends FMCMainDisplay {
     //function added to set arrival and runway transition
     setArrivalAndRunwayIndex(arrivalIndex, enrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
-            const landingRunway = this.flightPlanManager.getApproachRunway();
+            let landingRunway = this.vfrLandingRunway;
+            if (landingRunway === undefined) {
+                landingRunway = this.flightPlanManager.getApproachRunway();
+            }
             this.flightPlanManager.setArrivalProcIndex(arrivalIndex, () => {
                 this.flightPlanManager.setArrivalEnRouteTransitionIndex(enrouteTransitionIndex, () => {
                     if (landingRunway) {
