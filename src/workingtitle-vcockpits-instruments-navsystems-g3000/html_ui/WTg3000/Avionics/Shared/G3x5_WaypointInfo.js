@@ -86,13 +86,13 @@ class WT_G3x5_WaypointInfo {
 
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
-        let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
+        this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let runwayRenderer = new WT_MapViewRunwayCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.instrumentID));
         this.view.addLayer(new WT_MapViewAirportRunwayLayer(runwayRenderer));
-        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewWaypointHighlightLayer(waypointRenderer));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
+        this.view.addLayer(new WT_MapViewWaypointHighlightLayer(this._waypointRenderer));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewCrosshairLayer());
@@ -129,6 +129,7 @@ class WT_G3x5_WaypointInfo {
     update() {
         this._rangeTargetController.update();
         this.view.update();
+        this._waypointRenderer.update(this.view.state);
     }
 }
 
