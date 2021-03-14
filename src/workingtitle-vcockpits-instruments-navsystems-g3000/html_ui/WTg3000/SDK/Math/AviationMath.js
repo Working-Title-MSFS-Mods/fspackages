@@ -1,6 +1,6 @@
 class WT_AviationMath {
     /**
-     * Converts indicated airspeed (IAS) to mach.
+     * Converts indicated airspeed (IAS) to mach. Only valid for subsonic speeds.
      * @param {Number} ias - the indicated airspeed to convert, in knots.
      * @param {Number} pressure - the static pressure, in inches of mercury.
      * @returns {Number} the mach equivalent of the indicated airspeed.
@@ -10,7 +10,7 @@ class WT_AviationMath {
     }
 
     /**
-     * Converts a mach number to indicated airspeed (IAS).
+     * Converts a mach number to indicated airspeed (IAS). Only valid for subsonic speeds.
      * @param {Number} mach - the mach number to convert.
      * @param {Number} pressure - the static pressure, in inches of mercury.
      * @returns {Number} the indicated airspeed equivalent of the mach number, in knots.
@@ -20,7 +20,7 @@ class WT_AviationMath {
     }
 
     /**
-     * Converts a mach number to true airspeed (TAS).
+     * Converts a mach number to true airspeed (TAS). Only valid for subsonic speeds.
      * @param {Number} mach - the mach number to convert.
      * @param {Number} oat - the true air temperature, in degrees Celsius.
      * @returns {Number} the true airspeed equivalent of the mach number, in knots.
@@ -30,7 +30,7 @@ class WT_AviationMath {
     }
 
     /**
-     * Converts true airspeed (TAS) to mach.
+     * Converts true airspeed (TAS) to mach. Only valid for subsonic speeds.
      * @param {Number} tas - the true airspeed to convert, in knots.
      * @param {Number} oat - the true air temperature, in degrees Celsius.
      * @returns {Number} the mach equivalent of the true airspeed.
@@ -40,7 +40,7 @@ class WT_AviationMath {
     }
 
     /**
-     * Converts indicated airspeed (IAS) to true airspeed (TAS).
+     * Converts indicated airspeed (IAS) to true airspeed (TAS). Only valid for subsonic speeds.
      * @param {Number} ias - the indicated airspeed to convert, in knots.
      * @param {Number} pressure - the static pressure, in inches of mercury.
      * @param {Number} oat - the true air temperature, in degrees Celsius.
@@ -51,7 +51,7 @@ class WT_AviationMath {
     }
 
     /**
-     * Converts true airspeed (TAS) to indicated airspeed (IAS).
+     * Converts true airspeed (TAS) to indicated airspeed (IAS). Only valid for subsonic speeds.
      * @param {Number} tas - the indicated airspeed to convert, in knots.
      * @param {Number} pressure - the static pressure, in inches of mercury.
      * @param {Number} oat - the true air temperature, in degrees Celsius.
