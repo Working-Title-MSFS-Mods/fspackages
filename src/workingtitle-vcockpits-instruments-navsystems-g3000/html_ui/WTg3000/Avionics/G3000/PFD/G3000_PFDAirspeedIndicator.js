@@ -87,10 +87,26 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         super();
 
         this._isRefSpeedVisible = false;
+
+        this._initRefKnotsFormatter();
     }
 
     _getTemplate() {
         return WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE;
+    }
+
+    _initRefKnotsFormatter() {
+        let formatter = new WT_NumberFormatter({
+            precision: 1,
+            unitCaps: true
+        });
+        this._refKnotsFormatter = new WT_NumberHTMLFormatter(formatter, {
+            classGetter: {
+                getNumberClassList: (numberUnit, forceUnit) => [],
+                getUnitClassList: (numberUnit, forceUnit) => [WT_G3000_PFDAirspeedIndicatorHTMLElement.UNIT_CLASS]
+            },
+            numberUnitDelim: ""
+        });
     }
 
     _createIASDigitEntry(container) {
@@ -124,7 +140,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
         this._trend = new WT_CachedElement(this.shadowRoot.querySelector(`#trend`));
 
-        this._refSpeed = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeed .value`));
+        this._refSpeed = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeed`));
         this._refSpeedBugContainer = this.shadowRoot.querySelector(`#refspeedbugcontainer`);
         this._refSpeedBug = new WT_CachedElement(this.shadowRoot.querySelector(`#refspeedbug`));
 
@@ -193,6 +209,14 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         this._isRefSpeedVisible = value;
     }
 
+    _setRefSpeedDisplay(speed, isMach) {
+        if (isMach) {
+            this._refSpeed.innerHTML = `M ${speed.toFixed(3).replace(/^0\./, ".")}`;
+        } else {
+            this._refSpeed.innerHTML = this._refKnotsFormatter.getFormattedHTML(speed, WT_Unit.KNOT);
+        }
+    }
+
     _moveRefSpeedBug(tapePos) {
         let translate = Math.max(-40, Math.min(50, (tapePos - 0.5) * 100));
         this._refSpeedBugContainer.setAttribute("style", `transform: translateY(${translate}%);`);
@@ -200,6 +224,10 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
     _showMach(value) {
         this._wrapper.setAttribute("show-mach", `${value}`);
+    }
+
+    _setMachDisplay(mach) {
+        this._mach.innerHTML = `M ${mach.toFixed(3).replace(/^0\./, ".")}`;
     }
 
     _setTrendWarning(value) {
@@ -233,6 +261,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         entry.htmlElement.setAttribute("style", `transform: translateY(${translate}%);`);
     }
 }
+WT_G3000_PFDAirspeedIndicatorHTMLElement.UNIT_CLASS = "unit";
 WT_G3000_PFDAirspeedIndicatorHTMLElement.SPEED_BUG_LABELS = {
     vr: "R",
     vx: "X",
@@ -394,7 +423,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 }
                     #refspeediconsvg {
                         position: absolute;
-                        left: 10%;
+                        left: 7.5%;
                         top: 25%;
                         width: 10%;
                         height: 50%;
@@ -404,15 +433,13 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                         }
                     #refspeed {
                         position: absolute;
-                        left: 62.5%;
+                        left: 20%;
                         top: 50%;
-                        transform: translate(-50%, -50%);
+                        width: 80%;
+                        transform: translateY(-50%);
                         text-align: center;
                         color: var(--wt-g3x5-lightblue);
                         font-size: var(--airspeedindicator-refspeed-font-size, 0.8em);
-                    }
-                    #refspeed .unit {
-                        font-size: var(--airspeedindicator-refspeed-unit-font-size, 0.75em);
                     }
                 #trendcontainer {
                     position: absolute;
@@ -548,6 +575,10 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 #wrapper[trend-warning="true"][maxspeed-warning="false"] #mach {
                     color: black;
                 }
+
+        .${WT_G3000_PFDAirspeedIndicatorHTMLElement.UNIT_CLASS} {
+            font-size: var(--airspeedindicator-refspeed-unit-font-size, 0.75em);
+        }
     </style>
     <div id="wrapper">
         <div id="minspeedcontainer">
@@ -579,9 +610,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 <svg id="refspeediconsvg" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <path id="refspeedicon" d="M 0 0 h 100 v 100 h -100 v -25 L 66.67 50 L 0 25 Z" />
                 </svg>
-                <div id="refspeed">
-                    <span class="value"></span><span class="unit">KT</span>
-                </div>
+                <div id="refspeed"></div>
             </div>
             <div id="trendcontainer">
                 <svg>
