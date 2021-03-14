@@ -113,6 +113,10 @@ class WT_G3x5_PFDAltimeterModel {
         this._verticalSpeed = WT_Unit.FPM.createNumber(0);
         this._selectedAltitude = WT_Unit.FOOT.createNumber(0);
 
+        this._minimums = new WT_G3x5_Minimums();
+        this._showMinimums = false;
+        this._minimumsAltitude = WT_Unit.FOOT.createNumber(0);
+
         this._showReferenceVSpeed = false;
         this._referenceVSpeed = WT_Unit.FPM.createNumber(0);
 
@@ -160,6 +164,15 @@ class WT_G3x5_PFDAltimeterModel {
      */
     get selectedAltitude() {
         return this._selectedAltitude.readonly();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} minimums
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get minimumsAltitude() {
+        return this._showMinimums ? this._minimumsAltitude.readonly() : null;
     }
 
     /**
@@ -237,6 +250,16 @@ class WT_G3x5_PFDAltimeterModel {
 
     _updateVSpeed() {
         this._airplane.navigation.verticalSpeed(this._verticalSpeed);
+    }
+
+    _updateMinimums() {
+        let mode = this._minimums.getMode();
+        if (mode === WT_G3x5_Minimums.Mode.BARO) {
+            this._minimums.getAltitude(this._minimumsAltitude);
+            this._showMinimums = true;
+        } else {
+            this._showMinimums = false;
+        }
     }
 
     _updateSelectedAltitude() {
@@ -371,6 +394,7 @@ class WT_G3x5_PFDAltimeterModel {
         this._updateAltitude();
         this._updateVSpeed();
         this._updateSelectedAltitude();
+        this._updateMinimums();
         this._updateReferenceVSpeed();
         this._updateVerticalTrack();
     }
@@ -804,6 +828,22 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         this._moveSelectedAltitudeBug(this._calculateTranslatedTapePosition(selectedAltFeet));
     }
 
+    _showMinimums(value) {
+    }
+
+    _moveMinimumsBug(tapePos) {
+    }
+
+    _updateMinimums() {
+        let minimumsAlt = this._context.model.minimumsAltitude;
+        if (minimumsAlt) {
+            this._moveMinimumsBug(this._calculateTranslatedTapePosition(minimumsAlt.asUnit(WT_Unit.FOOT)));
+            this._showMinimums(true);
+        } else {
+            this._showMinimums(false);
+        }
+    }
+
     _setBaroNumberText(text) {
     }
 
@@ -870,6 +910,7 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         this._updateIndicatedAltitude();
         this._updateTrend();
         this._updateSelectedAltitude();
+        this._updateMinimums();
         this._updateBaro();
         this._updateMeters();
         this._updateAlerts();
