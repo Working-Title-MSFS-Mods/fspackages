@@ -103,10 +103,10 @@ export class CJ4_MFD_ChartsIndexModel {
   }
 
   /** Gets the signed png url of the requested chart */
-  public async getChartPngUrl(chart: NG_Chart): Promise<string> {
+  public async getChartPngUrl(chart: NG_Chart, dayChart = true): Promise<string> {
     if (chart !== undefined) {
       await this._api.validateToken();
-      const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${chart.file_day}`;
+      const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${dayChart ? chart.file_day : chart.file_night}`;
       const urlResp = await this._api.sendRequest(url, "get", null, true);
       return urlResp.data;
     }
