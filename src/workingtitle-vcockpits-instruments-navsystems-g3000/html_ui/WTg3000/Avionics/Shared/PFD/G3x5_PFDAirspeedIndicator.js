@@ -89,7 +89,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {WT_NumberUnitReadOnly}
      */
     get refSpeed() {
-        return this._airplane.autopilot.isFLC() ? this._refSpeed.readonly() : null;
+        return this._airplane.autopilot.isFLCActive() ? this._refSpeed.readonly() : null;
     }
 
     /**
