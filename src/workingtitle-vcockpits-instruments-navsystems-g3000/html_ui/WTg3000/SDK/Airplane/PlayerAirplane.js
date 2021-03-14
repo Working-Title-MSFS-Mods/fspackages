@@ -1108,7 +1108,15 @@ class WT_AirplaneAutopilot {
      * @returns {Boolean} whether Flight Level Change Mode is active.
      */
     isFLCActive() {
-        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") === 1;
+        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean");
+    }
+
+    /**
+     * Checks whether the current reference airspeed units is Mach.
+     * @returns {Boolean} whether the current reference airspeed units is Mach.
+     */
+    isAirspeedReferenceMach() {
+        return SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") || SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MANAGED SPEED IN MACH", "Boolean");
     }
 
     /**
@@ -1182,6 +1190,14 @@ class WT_AirplaneAutopilot {
     referenceAirspeed(reference) {
         let value = SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots");
         return reference ? reference.set(value, WT_Unit.KNOT) : WT_Unit.KNOT.createNumber(value);
+    }
+
+    /**
+     * Gets the autopilot's reference Mach setting.
+     * @returns {Number} - the autopilot's reference Mach setting.
+     */
+    referenceMach() {
+        return SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "Number");
     }
 
     /**

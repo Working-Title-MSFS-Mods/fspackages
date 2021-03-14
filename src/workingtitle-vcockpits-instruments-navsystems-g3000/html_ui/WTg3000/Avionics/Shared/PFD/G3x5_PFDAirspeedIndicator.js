@@ -43,6 +43,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
         this._ias = WT_Unit.KNOT.createNumber(0);
         this._iasTrend = new WT_CompoundUnit([WT_Unit.KNOT], [WT_Unit.SECOND]).createNumber(0);
         this._refSpeed = WT_Unit.KNOT.createNumber(0);
+        this._refMach = 0;
 
         this._speedBugCollection = speedBugCollection;
     }
@@ -89,7 +90,16 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {WT_NumberUnitReadOnly}
      */
     get refSpeed() {
-        return this._airplane.autopilot.isFLCActive() ? this._refSpeed.readonly() : null;
+        return (this._airplane.autopilot.isFLCActive() && !this._airplane.autopilot.isAirspeedReferenceMach()) ? this._refSpeed.readonly() : null;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} refMach
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get refMach() {
+        return (this._airplane.autopilot.isFLCActive() && this._airplane.autopilot.isAirspeedReferenceMach()) ? this._refMach : null;
     }
 
     /**
@@ -136,10 +146,15 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
         this._airplane.autopilot.referenceAirspeed(this._refSpeed);
     }
 
+    _updateRefMach() {
+        this._refMach = this._airplane.autopilot.referenceMach();
+    }
+
     update() {
         this._updateIAS();
         this._updateTrend();
         this._updateRefSpeed();
+        this._updateRefMach();
     }
 }
 WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR = 3;
@@ -415,8 +430,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     _showRefSpeed(value) {
     }
 
-    _setRefSpeedDisplay(text) {
-        this._refSpeed.innerHTML = text;
+    _setRefSpeedDisplay(speed, isMach) {
     }
 
     _moveRefSpeedBug(tapePos) {
@@ -424,9 +438,15 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
 
     _updateRefSpeed() {
         let refSpeed = this._context.model.refSpeed;
+        let refMach = this._context.model.refMach;
         if (refSpeed) {
             let refSpeedKnots = refSpeed.asUnit(WT_Unit.KNOT);
-            this._setRefSpeedDisplay(refSpeedKnots.toFixed(0));
+            this._setRefSpeedDisplay(refSpeed, false);
+            this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
+            this._showRefSpeed(true);
+        } else if (refMach !== null) {
+            let refSpeedKnots = this._context.model.airplane.dynamics.machToIAS(refMach);
+            this._setRefSpeedDisplay(refMach, true);
             this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
             this._showRefSpeed(true);
         } else {
@@ -437,10 +457,13 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     _showMach(value) {
     }
 
+    _setMachDisplay(mach) {
+    }
+
     _updateMach() {
         let mach = this._context.model.mach;
         if (mach >= this._context.machDisplayThreshold) {
-            this._mach.innerHTML = `M ${mach.toFixed(3).replace(/^0\./, ".")}`;
+            this._setMachDisplay(mach);
             this._showMach(true);
         } else {
             this._showMach(false);
