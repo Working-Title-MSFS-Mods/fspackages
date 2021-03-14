@@ -71,6 +71,15 @@ class WT_MapView extends HTMLElement {
 
     /**
      * @readonly
+     * @property {WT_MapViewState} state - the current state of this view.
+     * @type {WT_MapViewState}
+     */
+    get state() {
+        return this._state;
+    }
+
+    /**
+     * @readonly
      * @property {Number} viewWidth - the width, in pixels, of the viewing window.
      * @type {Number}
      */

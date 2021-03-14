@@ -39,13 +39,13 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewWaypointLayer.OPTIONS_DEF);
 
         this._airwayLayer = new WT_MapViewPersistentCanvas(WT_MapViewWaypointLayer.AIRWAY_OVERDRAW_FACTOR);
-        this._iconLayer = new WT_MapViewCanvas(true, true);
+        this._iconLayer = new WT_MapViewCanvas(false, true);
         this.addSubLayer(this._airwayLayer);
         this.addSubLayer(this._iconLayer);
 
         this._waypointRenderer = waypointRenderer;
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, this._iconLayer.buffer.context);
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, this._iconLayer.buffer.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, this._iconLayer.display.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, this._iconLayer.display.context);
         this._waypointRenderer.setVisibilityHandler(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, {isVisible: this._shouldShowNormalWaypoint.bind(this)});
         this._waypointStyleHandler = {getOptions: this._getWaypointStyleOptions.bind(this)};
 
@@ -694,11 +694,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      *
      * @param {WT_MapViewState} state
      */
-    _updateWaypointRenderer(state) {
-        this._waypointRenderer.update(state);
+    _updateIconLayer(state) {
         this._iconLayer.display.clear();
-        this._iconLayer.copyBufferToCanvas();
-        this._iconLayer.resetBuffer();
     }
 
     /**
@@ -726,7 +723,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._updateVisibilityFromModel(state);
         this._retrieveWaypointsInRange(state);
         this._updateAirways(state);
-        this._updateWaypointRenderer(state);
+        this._updateIconLayer(state);
         this._updateStandaloneWaypoints(state);
         this._lastTime = state.currentTime / 1000;
         this._lastStandaloneWaypointsCount = this._standaloneWaypoints.size;

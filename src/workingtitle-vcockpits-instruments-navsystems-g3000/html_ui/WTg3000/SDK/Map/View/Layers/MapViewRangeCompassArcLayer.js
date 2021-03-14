@@ -27,9 +27,9 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewRangeCompassArcLayer.OPTIONS_DEF);
 
         this._arcLayer = new WT_MapViewCanvas(false, true);
-        this._bearingTickLayer = new WT_MapViewCanvas(true, true);
+        this._bearingTickLayer = new WT_MapViewCanvas(false, true);
         this._forwardTickLayer = new WT_MapViewCanvas(false, true);
-        this._bearingLabelLayer = new WT_MapViewCanvas(true, true);
+        this._bearingLabelLayer = new WT_MapViewCanvas(false, true);
 
         this.addSubLayer(this._arcLayer, this._compassContainer);
         this.addSubLayer(this._bearingTickLayer, this._compassContainer);
@@ -356,6 +356,13 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._needRepositionLabel = true;
     }
 
+    _setBounds(bounds, left, top, width, height) {
+        bounds.left = left;
+        bounds.top = top;
+        bounds.width = width;
+        bounds.height = height;
+    }
+
     /**
      * Applies a stroke to a canvas rendering context using the specified styles.
      * @param {CanvasRenderingContext2D} context - the rendering context to which to apply the stroke.
@@ -410,7 +417,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        this._arcLayer.display.context.clearRect(this._arcLastDrawnBounds.left, this._arcLastDrawnBounds.top, this._arcLastDrawnBounds.width, this._arcLastDrawnBounds.height);
+        this._arcLayer.display.clear(this._arcLastDrawnBounds.left, this._arcLastDrawnBounds.top, this._arcLastDrawnBounds.width, this._arcLastDrawnBounds.height);
 
         let center = this.center;
         let arcAngularWidthRad = this.arcAngularWidth * Avionics.Utils.DEG2RAD;
@@ -456,14 +463,14 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {{start:{x:Number, y:Number}, end:{x:Number, y:Number}}[]} majorTicks - an array of start and end points for the major ticks to draw.
      */
     _composeBearingTicksPath(minorTicks, majorTicks) {
-        this._bearingTickLayer.buffer.context.beginPath();
+        this._bearingTickLayer.display.context.beginPath();
         for (let tick of minorTicks) {
-            this._bearingTickLayer.buffer.context.moveTo(tick.start.x, tick.start.y);
-            this._bearingTickLayer.buffer.context.lineTo(tick.end.x, tick.end.y);
+            this._bearingTickLayer.display.context.moveTo(tick.start.x, tick.start.y);
+            this._bearingTickLayer.display.context.lineTo(tick.end.x, tick.end.y);
         }
         for (let tick of majorTicks) {
-            this._bearingTickLayer.buffer.context.moveTo(tick.start.x, tick.start.y);
-            this._bearingTickLayer.buffer.context.lineTo(tick.end.x, tick.end.y);
+            this._bearingTickLayer.display.context.moveTo(tick.start.x, tick.start.y);
+            this._bearingTickLayer.display.context.lineTo(tick.end.x, tick.end.y);
         }
     }
 
@@ -485,7 +492,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      */
     _calculateBearingLabelPosition(angle, text, tickLengthPx, offsetPx, fontSizePx) {
         let viewAngleRad = (angle + this.rotation) * Avionics.Utils.DEG2RAD;
-        let textWidth = this._bearingLabelLayer.buffer.context.measureText(text).width;
+        let textWidth = this._bearingLabelLayer.display.context.measureText(text).width;
         let textHeight = fontSizePx;
 
         let textBoundsOffset = new WT_GVector2(-textWidth / 2, textHeight / 2);
@@ -501,14 +508,14 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {Number} offsetPx - the offset distance of the label, in pixels, from the inner end of its associated bearing tick.
      * @param {Number} fontSizePx - the font size of the label.
      */
-    _drawBearingLabelToBuffer(angle, tickLengthPx, offsetPx, fontSizePx) {
+    _drawBearingLabel(angle, tickLengthPx, offsetPx, fontSizePx) {
         let text = angle.toString().padStart(3, "0") + (this.isMagnetic ? "" : "ᵀ");
         let position = this._calculateBearingLabelPosition(angle, text, tickLengthPx, offsetPx, fontSizePx);
 
         if (this.bearingLabelFontOutlineWidth > 0) {
-            this._bearingLabelLayer.buffer.context.strokeText(text, position.x, position.y);
+            this._bearingLabelLayer.display.context.strokeText(text, position.x, position.y);
         }
-        this._bearingLabelLayer.buffer.context.fillText(text, position.x, position.y);
+        this._bearingLabelLayer.display.context.fillText(text, position.x, position.y);
     }
 
     /**
@@ -516,16 +523,15 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - current map view state.
      */
     _drawBearingLabels(state, toDrawBounds) {
-        this._bearingLabelLayer.buffer.context.clearRect(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
-        this._bearingLabelLayer.display.context.clearRect(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
+        this._bearingLabelLayer.display.clear(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
 
         if (this.bearingLabelFontOutlineWidth > 0) {
-            this._bearingLabelLayer.buffer.context.lineWidth = this.bearingLabelFontOutlineWidth * state.dpiScale * 2;
-            this._bearingLabelLayer.buffer.context.strokeStyle = this.bearingLabelFontOutlineWidth;
+            this._bearingLabelLayer.display.context.lineWidth = this.bearingLabelFontOutlineWidth * state.dpiScale * 2;
+            this._bearingLabelLayer.display.context.strokeStyle = this.bearingLabelFontOutlineWidth;
         }
 
-        this._bearingLabelLayer.buffer.context.font = `${this.bearingLabelFontSize * state.dpiScale}px ${this.bearingLabelFont}`;
-        this._bearingLabelLayer.buffer.context.fillStyle = this.bearingLabelFontColor;
+        this._bearingLabelLayer.display.context.font = `${this.bearingLabelFontSize * state.dpiScale}px ${this.bearingLabelFont}`;
+        this._bearingLabelLayer.display.context.fillStyle = this.bearingLabelFontColor;
 
         let halfAngularWidth = this.arcAngularWidth / 2;
         let centerAngle = (-this.rotation + this.facing + 360) % 360;
@@ -535,10 +541,8 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let offsetPx = this.bearingLabelOffset * state.dpiScale;
         let fontSizePx = this.bearingLabelFontSize * state.dpiScale;
         for (let angle of bearingLabelToDrawAngles) {
-            this._drawBearingLabelToBuffer(angle, tickLengthPx, offsetPx, fontSizePx);
+            this._drawBearingLabel(angle, tickLengthPx, offsetPx, fontSizePx);
         }
-        this._bearingLabelLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
-        this._bearingLabelLayer.resetBuffer();
     }
 
     /**
@@ -560,8 +564,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        this._bearingTickLayer.buffer.context.clearRect(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
-        this._bearingTickLayer.display.context.clearRect(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
+        this._bearingTickLayer.display.clear(this._bearingLastDrawnBounds.left, this._bearingLastDrawnBounds.top, this._bearingLastDrawnBounds.width, this._bearingLastDrawnBounds.height);
 
         let center = this.center;
         let minorTicks = this.bearingTickMinorAngles.map((function(angle) {
@@ -580,12 +583,11 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this._composeBearingTicksPath(minorTicks, majorTicks);
 
         if (this.arcOutlineWidth > 0) {
-            this._applyStrokeToContext(this._bearingTickLayer.buffer.context, (this.arcStrokeWidth + 2 * this.arcOutlineWidth) * state.dpiScale, this.arcOutlineColor);
+            this._applyStrokeToContext(this._bearingTickLayer.display.context, (this.arcStrokeWidth + 2 * this.arcOutlineWidth) * state.dpiScale, this.arcOutlineColor);
         }
-        this._applyStrokeToContext(this._bearingTickLayer.buffer.context, this.arcStrokeWidth * state.dpiScale, this.arcStrokeColor);
+        this._applyStrokeToContext(this._bearingTickLayer.display.context, this.arcStrokeWidth * state.dpiScale, this.arcStrokeColor);
 
-        this._bearingLastDrawnBounds = this._bearingTickLayer.copyBufferToCanvas(toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
-        this._bearingTickLayer.resetBuffer();
+        this._setBounds(this._bearingLastDrawnBounds, toDrawBounds.left, toDrawBounds.top, toDrawBounds.width, toDrawBounds.height);
 
         this._needRedrawBearings = false;
     }
@@ -619,7 +621,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let begin = WT_GVector2.fromPolar(this.radius, angleRad).add(this.center);
         let end = WT_GVector2.fromPolar(lengthPx, angleRad).add(begin);
 
-        this._forwardTickLayer.display.context.clearRect(this._forwardTickLastDrawnBounds.left, this._forwardTickLastDrawnBounds.top, this._forwardTickLastDrawnBounds.width, this._forwardTickLastDrawnBounds.height)
+        this._forwardTickLayer.display.clear(this._forwardTickLastDrawnBounds.left, this._forwardTickLastDrawnBounds.top, this._forwardTickLastDrawnBounds.width, this._forwardTickLastDrawnBounds.height)
         this._composeForwardTickPath(begin, end);
 
         if (this.arcOutlineWidth > 0) {
@@ -633,10 +635,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         let drawnRight = Math.min(state.projection.viewWidth, Math.max(begin.x, end.x) + thick + 5);
         let drawnBottom = Math.min(state.projection.viewHeight, Math.max(begin.y, end.y) + thick + 5);
 
-        this._forwardTickLastDrawnBounds.left = drawnLeft;
-        this._forwardTickLastDrawnBounds.top = drawnTop;
-        this._forwardTickLastDrawnBounds.width = drawnRight - drawnLeft;
-        this._forwardTickLastDrawnBounds.height = drawnBottom - drawnTop;
+        this._setBounds(this._forwardTickLastDrawnBounds, drawnLeft, drawnTop, drawnRight - drawnLeft, drawnBottom - drawnTop)
     }
 
     /**

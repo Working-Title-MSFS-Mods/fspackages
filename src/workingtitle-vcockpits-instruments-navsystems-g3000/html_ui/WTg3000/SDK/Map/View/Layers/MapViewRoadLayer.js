@@ -22,7 +22,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
             new WT_MapViewPersistentCanvas(WT_MapViewRoadLayer.OVERDRAW_FACTOR),
             new WT_MapViewPersistentCanvas(WT_MapViewRoadLayer.OVERDRAW_FACTOR),
         ];
-        this._labelLayer = new WT_MapViewCanvas(true, true);
+        this._labelLayer = new WT_MapViewCanvas(false, true);
         this.addSubLayer(this._roadLayers[1]);
         this.addSubLayer(this._roadLayers[0]);
         this.addSubLayer(this._labelLayer);
@@ -500,7 +500,7 @@ class WT_MapViewRoadLabelManager {
      * @param {WT_MapViewRoadLabel} label
      */
     _renderLabel(state, label) {
-        label.draw(state, this._layer.buffer.context);
+        label.draw(state, this._layer.display.context);
     }
 
     /**
@@ -508,10 +508,7 @@ class WT_MapViewRoadLabelManager {
      * @param {WT_MapViewState} state
      */
     update(state) {
-        this._layer.buffer.clear();
-        this._registered.array.forEach(this._renderLabel.bind(this, state));
         this._layer.display.clear();
-        this._layer.copyBufferToCanvas();
-        this._layer.resetBuffer();
+        this._registered.array.forEach(this._renderLabel.bind(this, state));
     }
 }

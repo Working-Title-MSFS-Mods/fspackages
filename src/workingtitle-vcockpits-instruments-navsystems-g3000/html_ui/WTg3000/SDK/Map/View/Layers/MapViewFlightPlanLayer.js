@@ -24,13 +24,13 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
         this._drctRenderer.setDirectTo(this._fpm.directTo);
 
         this._pathLayer = new WT_MapViewPersistentCanvas(WT_MapViewFlightPlanLayer.OVERDRAW_FACTOR);
-        this._iconLayer = new WT_MapViewCanvas(true, true);
+        this._iconLayer = new WT_MapViewCanvas(false, true);
         this.addSubLayer(this._pathLayer);
         this.addSubLayer(this._iconLayer);
 
         this._waypointRenderer = waypointRenderer;
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN, this._iconLayer.buffer.context);
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE, this._iconLayer.buffer.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN, this._iconLayer.display.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE, this._iconLayer.display.context);
         this._inactiveWaypointStyleHandler = {getOptions: this._getInactiveWaypointStyleOptions.bind(this)};
         this._activeWaypointStyleHandler = {getOptions: this._getActiveWaypointStyleOptions.bind(this)};
 
@@ -445,8 +445,6 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
      */
     _updateWaypointLayer(state) {
         this._iconLayer.display.clear();
-        this._iconLayer.copyBufferToCanvas();
-        this._iconLayer.resetBuffer();
     }
 
     /**
