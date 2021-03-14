@@ -200,7 +200,9 @@ class WT_VerticalAutopilot {
     }
 
     get navMode() {
-        return SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number");
+        const navMode = this._navModeSelector.lNavModeState;
+        const navSource = navMode == LNavModeState.NAV2 ? 2 : navMode == LNavModeState.NAV1 ? 1 : 0;
+        return navSource;
     }
 
     get modeSelectorPathStatus() {
@@ -343,12 +345,12 @@ class WT_VerticalAutopilot {
             case GlideslopeStatus.NONE:
                 break;
             case GlideslopeStatus.GS_CAN_ARM:
-                if (this.lateralMode === LateralNavModeState.APPR && this.approachMode === WT_ApproachType.ILS) {
+                if (this.lateralMode === LateralNavModeState.APPR && this.approachMode !== WT_ApproachType.RNAV) {
                     this._glideslopeStatus = GlideslopeStatus.GS_ARMED;
                 }
                 break;
             case GlideslopeStatus.GS_ARMED:
-                if (this.lateralMode !== LateralNavModeState.APPR || this.approachMode !== WT_ApproachType.ILS) {
+                if (this.lateralMode !== LateralNavModeState.APPR || this.approachMode !== WT_ApproachType.ILS && this.navMode < 1) {
                     console.log("GS Canceled");
                     this.cancelGlideslope();
                     break;

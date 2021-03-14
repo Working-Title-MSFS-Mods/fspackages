@@ -447,28 +447,29 @@ class Jet_MFD_NDInfo extends HTMLElement {
                             ils.distance = this.getDMEDistance(this._navSource);
                         }
 
-                        let suffix = "";
-                        if (ils.id == 1 || ils.id == 2 || this._navSource == 1) {
-                            if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
-                                suffix = "1";
-                            else
-                                suffix = " L";
-                        }
-                        else if (ils.id == 2 || ils.id == 4 || this._navSource == 2) {
-                            if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
-                                suffix = "2";
-                            else
-                                suffix = " R";
-                        }
+                        // let suffix = "";
+                        // if (ils.id == 1 || ils.id == 2 || this._navSource == 1) {
+                        //     if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
+                        //         suffix = "1";
+                        //     else
+                        //         suffix = " L";
+                        // }
+                        // else if (ils.id == 2 || ils.id == 4 || this._navSource == 2) {
+                        //     if (this.aircraft == Aircraft.A320_NEO || this.aircraft == Aircraft.CJ4)
+                        //         suffix = "2";
+                        //     else
+                        //         suffix = " R";
+                        // }
                         let type = "LOC";
                         let freq = "--.--";
                         let course = "---";
                         let ident = "";
                         let distance = "----";
+                        let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
 
                         if (ils.id > 0) {
                             freq = ils.freq.toFixed(2);
-                            let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
+                            //let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                             course = SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString().padStart(3, "0");
                             ident = ils.ident;
 
@@ -480,6 +481,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
                                 distance = ils.distance;
                             }
                         }
+                        let suffix = source == 1 ? "1" : source == 2 ? "2" : "";
 
                         this.approachType.textContent = type + suffix;
                         this.approachFreq.textContent = freq;

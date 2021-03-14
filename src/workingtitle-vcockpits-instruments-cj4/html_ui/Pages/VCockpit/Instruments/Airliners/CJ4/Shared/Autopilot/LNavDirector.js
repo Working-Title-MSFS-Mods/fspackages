@@ -204,7 +204,8 @@ class LNavDirector {
     const armedState = this.navModeSelector.currentLateralArmedState;
     const activeState = this.navModeSelector.currentLateralActiveState;
 
-    if ((armedState === LateralNavModeState.APPR || activeState === LateralNavModeState.APPR) && this.navModeSelector.approachMode === WT_ApproachType.ILS) {
+    if ((armedState === LateralNavModeState.APPR || activeState === LateralNavModeState.APPR)
+       && (this.navModeSelector.approachMode === WT_ApproachType.ILS || this.navModeSelector.lNavModeState === LNavModeState.NAV1 || this.navModeSelector.lNavModeState === LNavModeState.NAV2)) {
       this.locDirector.update();
       return this.locDirector.state === LocDirectorState.ACTIVE;
     }
@@ -468,13 +469,19 @@ class LNavDirector {
     const approach = this.fpm.getApproachWaypoints();
     if (approach.length > 1) {
       let finalApproachFix = approach[approach.length - 2];
-      let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
+      //let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
 
-      if (finalApproachFixDistance < 3 && approach.length >= 3) {
-        finalApproachFix = approach[approach.length - 3];
+      // THERE IS SOMETHING WRONG HERE BECAUSE the finalApproachFix.cumulativeDistanceInFp will never be under 3;
+      // THIS SHOULD BE LOOKING TO SEE WHETHER the FAF selected is < 3 nm from the arrival runway and, if so, the FAF is
+      // ONE FURTHER FIX BACK. TO FIX LATER.
+      // if (finalApproachFixDistance < 3 && approach.length >= 3) {
+      //   finalApproachFix = approach[approach.length - 3];
+      // }
+      let finalApproachFixDistance = 100;
+      if (finalApproachFix && finalApproachFix.infos && finalApproachFix.infos.coordinates) {
+        finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
       }
 
-      finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
       return finalApproachFixDistance;
     }
 
