@@ -142,6 +142,15 @@ class WT_FlightPlan {
     }
 
     /**
+     *
+     * @param {Number} index
+     * @returns {WT_FlightPlanLeg}
+     */
+    leg(index) {
+        return this._legs[index];
+    }
+
+    /**
      * @returns {WT_FlightPlanLeg[]}
      */
     legs() {
@@ -1309,6 +1318,15 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
         this._updateSteps();
         super._update();
         this._updateDTK();
+    }
+
+    previousLeg() {
+        if (this._prev) {
+            let prevLegs = this._prev.legs();
+            return (prevLegs && prevLegs.length > 0) ? prevLegs[prevLegs.length - 1] : null;
+        } else {
+            return null;
+        }
     }
 
     /**

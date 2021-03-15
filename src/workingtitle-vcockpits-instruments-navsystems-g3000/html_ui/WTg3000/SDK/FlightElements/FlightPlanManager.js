@@ -7,6 +7,10 @@ class WT_FlightPlanManager {
 
         this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
 
+        /**
+         * @type {WT_FlightPlanLeg[]}
+         */
+        this._activePlanLegsCached = [];
         this._activeLegCached = null;
     }
 
@@ -52,6 +56,8 @@ class WT_FlightPlanManager {
 
     async syncActiveFromGame() {
         await this._interface.syncFromGame(this._active, this._directTo);
+        this._activePlanLegsCached = this._active.legs();
+
         if (!this.directTo.isActive()) {
             this._activeLegCached = await this._interface.getActiveLeg(this._active);
         } else {
@@ -72,6 +78,27 @@ class WT_FlightPlanManager {
                 await this.syncActiveFromGame();
                 resolve(this._activeLegCached);
             });
+        }
+    }
+
+    _getDirectToLeg() {
+        if (!this.directTo.isActive()) {
+            return null;
+        }
+
+        let waypoint = this.directTo.getDestination();
+        let leg = this._activePlanLegsCached.find(leg => leg.fix.equals(waypoint));
+        return leg ? leg : null;
+    }
+
+    getDirectToLeg(cached = false) {
+        if (cached) {
+            return this._getDirectToLeg();
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._getDirectToLeg());
+            })
         }
     }
 

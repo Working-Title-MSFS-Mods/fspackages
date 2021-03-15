@@ -51,12 +51,6 @@
         top: auto;
         background-color: black;
         border: 0.4vh solid white; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #Altimeter {
-        transform: rotateX(0);
-        position: absolute;
-        bottom: 36%;
-        width: 19%;
-        left: 70%; }
 
 as3000-pfd-element wt-pfd-airspeedindicator {
     position: absolute;
@@ -481,55 +475,19 @@ as3000-pfd-element wt-pfd-aoaindicator {
           bottom: 0%;
           left: 5%;
           text-align: center; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos {
-        position: absolute;
-        width: 25%;
-        left: 66%;
-        bottom: 27%;
-        height: 8%;
-        background-color: #1a1d21;
-        font-size: 3vh; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #FromWP {
-          position: absolute;
-          top: 5%;
-          left: 5%;
-          width: 30%;
-          min-width: 30%;
-          height: 60%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #LegSymbol {
-          position: absolute;
-          top: 5%;
-          left: 43%;
-          right: 43%;
-          height: 60%;
-          text-align: center; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #LegSymbol img {
-            display: inline-block;
-            width: 100%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #ToWP {
-          position: absolute;
-          top: 5%;
-          right: 5%;
-          width: 30%;
-          min-width: 30%;
-          height: 60%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #BottomInfos {
-          position: absolute;
-          bottom: 5%;
-          width: 100%;
-          height: 40%;
-          font-size: 2.4vh;
-          display: flex;
-          justify-content: center; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #BottomInfos .value {
-            color: #d12bc7;
-            text-align: center;
-            margin-left: 2%;
-            margin-right: 2%; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #NavInfos #BottomInfos .title {
-            text-align: center;
-            margin-left: 2%;
-            margin-right: 2%; }
+
+as3000-pfd-element wt-pfd-navstatusbox {
+    position: absolute;
+    left: 60%;
+    top: 61%;
+    width: 27%;
+    height: 7%;
+    font-size: 2.5vh;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+    --navstatusbox-margin-left: 10%;
+    -webkit-clip-path: url(#navstatusboxclip);
+}
 
 as3000-pfd-element wt-pfd-navdmeinfo {
     position: absolute;
@@ -544,13 +502,13 @@ as3000-pfd-element wt-pfd-navdmeinfo {
     --navdmeinfo-right-margin: 8%;
     --navdmeinfo-top-margin: 0.1em;
     --navdmeinfo-bottom-margin: 0.1em;
-    -webkit-clip-path: url(#navdmeInfoClip);
+    -webkit-clip-path: url(#navdmeinfoclip);
 }
 
       as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums {
         position: absolute;
         left: 61%;
-        bottom: 37%;
+        bottom: 40%;
         height: 6%;
         width: 11%;
         background-color: #1a1d21;
@@ -615,7 +573,7 @@ as3000-pfd-element wt-pfd-bottominfo {
     font-family: "Roboto-Regular";
     font-weight: normal;
     font-size: 2.5vh;
-    -webkit-clip-path: url(#bottomInfoClip);
+    -webkit-clip-path: url(#bottominfoclip);
 }
     as3000-pfd-element wt-pfd-bottominfo .pfdBottomInfoCell {
         position: absolute;
