@@ -345,7 +345,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._aoaIndicator = this._createAoAIndicator(),
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
-            new AS3000_PFD_NavStatus(),
             this._mapInstrument = new MapInstrumentElement(),
             new PFD_AutopilotDisplay(),
             new PFD_Minimums(),
