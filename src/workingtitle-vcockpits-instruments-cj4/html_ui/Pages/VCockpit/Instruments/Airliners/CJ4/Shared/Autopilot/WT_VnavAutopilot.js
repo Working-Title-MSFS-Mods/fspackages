@@ -467,7 +467,7 @@ class WT_VerticalAutopilot {
                     const distance = this._vnav.getDistanceToTarget();
                     const altitudeDifference = this.indicatedAltitude - this._vnav.getTargetAltitude();
                     const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
-                    const reqVs = -1 * AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
+                    const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
                     if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
                         && this.selectedAltitude < this.indicatedAltitude - 100 && this.selectedAltitude < this.lockedAltitude - 100) {
                         console.log("normal path arming");
