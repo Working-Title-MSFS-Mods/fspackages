@@ -302,6 +302,12 @@ class WT_VerticalAutopilot {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
+                if (!this.canPathActivate()) {
+                    this.setVerticalNavModeState(VerticalNavModeState.ALT);
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    Coherent.call("AP_ALT_VAR_SET_ENGLISH", 3, this.indicatedAltitude, true);
+                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, false, false);
+                }
                 this.checkAndSetTrackedAltitude(this._vnavPathStatus);
                 this.followPath();
                 break;
