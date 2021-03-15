@@ -124,6 +124,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
 
     _createElements() {
         let elements = super._createElements();
+        elements.push(new WT_G3000_PFDNavStatusBox());
         elements.push(new WT_G3000_PFDNavDMEInfo());
         return elements;
     }
