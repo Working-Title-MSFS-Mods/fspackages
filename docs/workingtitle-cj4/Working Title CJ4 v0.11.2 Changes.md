@@ -1,5 +1,5 @@
-# Working Title CJ4 v0.11.3
-Welcome to the Working Title CJ4 v0.11.3. Bug fixes! This release is all about working through some backlogged bug fixes.
+# Working Title CJ4 v0.11.2
+Welcome to the Working Title CJ4 v0.11.2. This update brings some exciting new features like "night" charts (darkened) and storable pilot waypoints, in addition to some important bug fixes.
 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
@@ -15,13 +15,20 @@ Charts in the CJ4 are powered by Navigraph - special thanks to the team at Navig
 Please note that occasionally the Navigraph token can time out; this especially happens if you do not exit the sim via the main menu. If that happens, please use MOD SETTINGS to refresh your Navigraph token and make a change to your flight plan, such as going DIRECT TO your current active waypoint - this will refresh the chart link.
 
 # Changes
-- Fixed bug with Pilot Waypoint storage that could cause errors for users adding waypoints to the data store for the first time
-- Fixed missing STAR transition legs when selecting a VFR runway for landing instead of a published approach
-- Fixed a bug with the autopilot update loop that could occasionally cause LNAV or VNAV to stop responding
-- Made adjustments to LNAV turn anticipation in certain turn types
-- Fixed bug that prevented the correct hold entry type from being updated when changing inbound course and turn direction
-- Fixed bug where AP dives to pre-select altitude when VNAV is disabled while in PATH mode
-- Fix behavior when a flight plan change causes PATH recalculation while in PATH mode - will now go to ALT and attempt to re-arm PATH
+- Implemented charts darkmode (when panel lights off or at full, in day mode, otherwise night mode)
+- Added ability to store up to 20 pilot waypoints (IDX->DATABASE)
+- Added ability to type pilot waypoint idents in LEGS, DIR and FPLN pages
+- Fixed Standby Attitude Indicator and Emergency Light Switches
+- Add Emergency Light CAS Message
+- Fix co-pilot audio panel
+- Fixes for TOD problems, including showing a TOD when in an approach and missing when in cruise
+- Fixed VNAV FPTA error that sometimes could cause LNAV to stop responding
+- Added CHECK SPEED message that will show when your speed is >20kts than the current restriction (remember speed constraints are not automatically loaded from nav data and must be manually entered)
+- Further enhancement of terrain colors for the TERR map option; adds curve points above and below aircraft based on aircraft AGL altitude.
+- Cleanup of some small FMC bugs, including missing Working... messages for some screens.
+- Improved duplicate detection methods when importing flight plans (fewer duplicates will flag)
+- Removed 'select waypoint' page being triggered during an import if there are no exact duplicates
+- Refined TOD rounding on MFD in VNAV WINDOW
 
 ## ⚠️ Known Issues
 * PTCH mode will not level off at an altitude and it can have some quirky behaviors.  This is currently a sim AP issue.
