@@ -147,6 +147,7 @@ class CJ4_FMC_HoldsPage {
       const course = parseInt(matches[1]);
       const isTrueCourse = matches[2] === 'T';
       const isLeftTurn = matches[3] === 'L';
+      const bearingToHoldWaypoint = this._fmc.flightPlanManager.getAllWaypoints()[currentHold.index - 1].bearingInFP;
 
       this._fmc.ensureCurrentFlightPlanIsTemporary(() => {
         const newDetails = Object.assign({}, currentHold.waypoint.holdDetails);
@@ -154,7 +155,7 @@ class CJ4_FMC_HoldsPage {
         newDetails.holdCourse = course;
         newDetails.isHoldCourseTrue = isTrueCourse;
         newDetails.turnDirection = isLeftTurn ? HoldTurnDirection.Left : HoldTurnDirection.Right;
-        newDetails.entryType = HoldDetails.calculateEntryType(course, currentHold.waypoint.bearingInFP, newDetails.turnDirection);
+        newDetails.entryType = HoldDetails.calculateEntryType(course, bearingToHoldWaypoint, newDetails.turnDirection);
 
         this._state.isModifying = true;
         this._fmc.fpHasChanged = true;

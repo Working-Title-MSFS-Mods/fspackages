@@ -302,6 +302,12 @@ class WT_VerticalAutopilot {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
+                if (!this.canPathActivate()) {
+                    this.setVerticalNavModeState(VerticalNavModeState.ALT);
+                    this._vnavPathStatus = VnavPathStatus.NONE;
+                    Coherent.call("AP_ALT_VAR_SET_ENGLISH", 3, this.indicatedAltitude, true);
+                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, false, false);
+                }
                 this.checkAndSetTrackedAltitude(this._vnavPathStatus);
                 this.followPath();
                 break;
@@ -467,7 +473,7 @@ class WT_VerticalAutopilot {
                     const distance = this._vnav.getDistanceToTarget();
                     const altitudeDifference = this.indicatedAltitude - this._vnav.getTargetAltitude();
                     const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
-                    const reqVs = -1 * AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
+                    const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
                     if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
                         && this.selectedAltitude < this.indicatedAltitude - 100 && this.selectedAltitude < this.lockedAltitude - 100) {
                         console.log("normal path arming");
