@@ -26,10 +26,15 @@ class CJ4_SystemContainer extends NavSystemElementContainer {
         }
 
         setTimeout(() => {
-            if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
-                this.annunciations.addMessage(Annunciation_MessageType.WARNING, "INCOMPATIBLE LIVERY", () => true);
-            }
+            this.checkLivery();
         }, 10000);
+    }
+
+    checkLivery() {
+        if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
+            // FADEC MISSING
+            this.annunciations.addMessage(Annunciation_MessageType.WARNING, "INCOMPATIBLE LIVERY", () => SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") === 0);
+        }
     }
     reboot() {
         if (this.warnings)
