@@ -613,7 +613,7 @@ class Jet_MFD_NDInfo extends HTMLElement {
         return distance;
     }
 }
-Jet_MFD_NDInfo.MIN_WIND_STRENGTH_FOR_ARROW_DISPLAY = 2;
+Jet_MFD_NDInfo.MIN_WIND_STRENGTH_FOR_ARROW_DISPLAY = 5;
 class VORDMENavAid {
 
     constructor(_parent, _index) {
