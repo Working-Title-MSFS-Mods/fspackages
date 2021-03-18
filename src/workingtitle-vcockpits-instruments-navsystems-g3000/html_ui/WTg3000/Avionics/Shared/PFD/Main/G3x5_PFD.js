@@ -330,6 +330,14 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
 
     /**
      *
+     * @returns {WT_G3x5_PFDMinimums}
+     */
+    _createMinimums() {
+        return new WT_G3x5_PFDMinimums();
+    }
+
+    /**
+     *
      * @returns {WT_G3x5_PFDBottomInfo}
      */
     _createBottomInfo() {
@@ -343,11 +351,11 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._annunciations = new PFD_Annunciations(),
             this._compass = new WT_G3x5_PFDCompass(),
             this._aoaIndicator = this._createAoAIndicator(),
+            this._minimums = this._createMinimums(),
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
             this._mapInstrument = new MapInstrumentElement(),
             new PFD_AutopilotDisplay(),
-            new PFD_Minimums(),
             new PFD_RadarAltitude(),
             new PFD_MarkerBeacon()
         ];

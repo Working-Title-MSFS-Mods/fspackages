@@ -505,38 +505,17 @@ as3000-pfd-element wt-pfd-navdmeinfo {
     -webkit-clip-path: url(#navdmeinfoclip);
 }
 
-      as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums {
-        position: absolute;
-        left: 61%;
-        bottom: 40%;
-        height: 6%;
-        width: 11%;
-        background-color: #1a1d21;
-        font-size: 2vh;
-        vertical-align: central; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums #Minimums_Source {
-          position: absolute;
-          width: 35%;
-          height: 100%;
-          left: 0%;
-          text-align: center; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums #Minimums_Value {
-          position: absolute;
-          width: 65%;
-          height: 100%;
-          right: 0%;
-          text-align: center;
-          font-size: 3vh;
-          line-height: 5vh;
-          color: #36c8d2; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums #Minimums_Value[state=near] {
-            color: white; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums #Minimums_Value[state=low] {
-            color: yellow; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums #Minimums_Value .unit {
-            font-size: 2vh; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #Minimums[state=Inactive] {
-          display: none; }
+as3000-pfd-element wt-pfd-minimums {
+    position: absolute;
+    left: 61%;
+    bottom: 40%;
+    height: 4.6%;
+    width: 11%;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+    font-size: 3vh;
+}
+
       as3000-pfd-element #Mainframe #InstrumentsContainer #RadarAltitude {
         position: absolute;
         left: 60%;

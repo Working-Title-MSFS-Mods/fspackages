@@ -1,7 +1,7 @@
 class WT_G3x5_Minimums {
     /**
      * Gets the set minimums mode.
-     * @returns {WT_Minimums.Mode} the currently set mode.
+     * @returns {WT_G3x5_Minimums.Mode} the currently set mode.
      */
     getMode() {
         return SimVar.GetSimVarValue("L:AS3000_MinimalsMode", "number");
@@ -9,7 +9,7 @@ class WT_G3x5_Minimums {
 
     /**
      * Sets the minimums mode.
-     * @param {WT_Minimums.Mode} mode - the new mode.
+     * @param {WT_G3x5_Minimums.Mode} mode - the new mode.
      */
     setMode(mode) {
         SimVar.SetSimVarValue("L:AS3000_MinimalsMode", "number", mode);
