@@ -375,8 +375,40 @@ class WT_G3x5_PFDNavStatusBRGModel extends WT_G3x5_PFDNavStatusNumberUnitModel {
 
         if (target) {
             let airplanePos = this._airplane.navigation.position(this._tempGeoPoint);
-            this._value.unit.setLocation(airplanePos)
+            this._value.unit.setLocation(airplanePos);
             this._value.set(airplanePos.bearingTo(target));
+        } else {
+            this._value.set(NaN);
+        }
+    }
+}
+
+class WT_G3x5_PFDNavStatusETEModel extends WT_G3x5_PFDNavStatusNumberUnitModel {
+    /**
+     * @param {WT_PlayerAirplane} airplane - the player airplane.
+     */
+     constructor(airplane) {
+        super(WT_Unit.SECOND, airplane);
+
+        this._tempNM = WT_Unit.NMILE.createNumber(0);
+        this._tempKnot = WT_Unit.KNOT.createNumber(0);
+    }
+
+    _updateValue() {
+        let fpm = this._airplane.fms.flightPlanManager;
+        let distance = null;
+        if (fpm.directTo.isActive()) {
+            distance = fpm.distanceToDirectTo(true, this._tempNM);
+        } else {
+            let activeLeg = fpm.getActiveLeg(true);
+            if (activeLeg) {
+                distance = fpm.distanceToActiveFix(true, this._tempNM);
+            }
+        }
+
+        if (distance) {
+            let gs = this._airplane.navigation.groundSpeed(this._tempKnot);
+            this._value.set(distance.number / gs.number, WT_Unit.HOUR);
         } else {
             this._value.set(NaN);
         }

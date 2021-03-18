@@ -3,8 +3,173 @@ class WT_G5000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
         this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsController));
         this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoNAVDMECell(this.instrument.airplane, this.instrument.unitsController));
+        this.addCell(new WT_G5000_PFDBottomInfoNavStatusCell(this.instrument.airplane, this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoBearingContainerCell(this.instrument.bearingInfos));
         this.addCell(new WT_G3x5_PFDBottomInfoTimeCell());
+    }
+}
+
+class WT_G5000_PFDBottomInfoNavStatusCell extends WT_G3x5_PFDBottomInfoCell {
+    constructor(airplane, unitsController) {
+        super();
+
+        this._airplane = airplane;
+        this._unitsController = unitsController;
+        this._initNavDataInfos();
+        this._setHTMLElementContext();
+    }
+
+    _createHTMLElement() {
+        return new WT_G5000_PFDBottomInfoNavStatusCellHTMLElement();
+    }
+
+    _createDistanceFormatter() {
+        return new WT_NumberFormatter({
+            precision: 0.1,
+            maxDigits: 3,
+            unitSpaceBefore: false,
+            unitCaps: true
+        });
+    }
+
+    _createETEFormatter() {
+        return new WT_TimeFormatter({
+            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
+            delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
+        });
+    }
+
+    _initNavDataInfos() {
+        let distanceFormatter = this._createDistanceFormatter();
+        let eteFormatter = this._createETEFormatter();
+
+        this._infos = [
+            {
+                model: new WT_NavDataInfoNumber({shortName: "DIS", longName: "Distance to Next Waypoint"}, new WT_G3x5_PFDNavStatusDISModel(this._airplane)),
+                formatter: new WT_NavDataInfoViewNumberFormatter(distanceFormatter, "___")
+            },
+            {
+                model: new WT_NavDataInfoNumber({shortName: "ETE", longName: "Estimated Time Enroute"}, new WT_G3x5_PFDNavStatusETEModel(this._airplane)),
+                formatter: new WT_NavDataInfoViewTimeFormatter(eteFormatter, "__:__")
+            }
+        ];
+
+        this._unitsControllerAdapter = new WT_G5000_UnitsControllerNavStatusAdapter(this._unitsController, this._infos[0].model, this._infos[1].model);
+    }
+
+    _setHTMLElementContext() {
+        this.htmlElement.setContext({
+            airplane: this._airplane,
+            infos: this._infos
+        });
+    }
+
+    update() {
+        this.htmlElement.update();
+    }
+}
+
+class WT_G5000_PFDBottomInfoNavStatusCellHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._context = null;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.TEMPLATE;
+    }
+
+    _defineChildren() {
+        let navStatus = this.shadowRoot.querySelector(`wt-pfd-navstatus`);
+        if (navStatus instanceof WT_G3x5_PFDNavStatusHTMLElement) {
+            this._navStatus = navStatus;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async _connectedCallbackHelper() {
+        await WT_Wait.wait(this._defineChildren.bind(this));
+        this._isInit = true;
+        this._updateFromContext();
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _updateFromContext() {
+        this._navStatus.setContext(this._context);
+    }
+
+    setContext(context) {
+        if (this._context === context) {
+            return;
+        }
+
+        this._context = context;
+        if (this._isInit) {
+            this._updateFromContext();
+        }
+    }
+
+    update() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._navStatus.update();
+    }
+}
+WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.NAME = "wt-pfd-bottominfo-navstatuscell";
+WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.TEMPLATE = document.createElement("template");
+WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+            wt-pfd-navstatus {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+    </style>
+    <div id="wrapper">
+        <wt-pfd-navstatus></wt-pfd-navstatus>
+    </div>
+`;
+
+customElements.define(WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.NAME, WT_G5000_PFDBottomInfoNavStatusCellHTMLElement);
+
+class WT_G5000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+    /**
+     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_NavDataBarModel} navDataBarModel
+     */
+    constructor(controller, disInfo, eteInfo) {
+        super(controller);
+
+        this._disInfo = disInfo;
+        this._eteInfo = eteInfo;
+        this._initListeners();
+        this._initModel();
+    }
+
+    _updateDistance() {
+        let unit = this.controller.distanceSpeedSetting.getDistanceUnit();
+        this._disInfo.setDisplayUnit(unit);
     }
 }
 

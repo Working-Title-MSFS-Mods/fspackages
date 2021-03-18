@@ -600,32 +600,36 @@ as3000-pfd-element wt-pfd-bottominfo {
   font-weight: normal;
   font-size: 2.5vh;
 }
-  as3000-pfd-element wt-pfd-bottominfo .pfdBottomInfoCell {
-      position: absolute;
-      top: 0%;
-      height: 100%;
-  }
-  as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-airspeedcell {
-      left: 0.5%;
-      width: 7%;
-  }
-  as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-temperaturecell {
-      left: 8.5%;
-      width: 7%;
-  }
-  as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-navdmecell {
-      right: 63%;
-      width: 16%;
-  }
-  as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-bearingcellcontainer {
-      left: 63%;
-      width: 19%;
-      --bearingcell-bottom-font-family: "Roboto-Condensed";
-  }
-  as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-timecell {
-      left: 83%;
-      width: 9%;
-  }
+    as3000-pfd-element wt-pfd-bottominfo .pfdBottomInfoCell {
+        position: absolute;
+        top: 0%;
+        height: 100%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-airspeedcell {
+        left: 0.5%;
+        width: 7%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-temperaturecell {
+        left: 8.5%;
+        width: 7%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-navdmecell {
+        right: 63%;
+        width: 16%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-navstatuscell {
+        left: 38%;
+        width: 24%;
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-bearingcellcontainer {
+        left: 63%;
+        width: 19%;
+        --bearingcell-bottom-font-family: "Roboto-Condensed";
+    }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-timecell {
+        left: 83%;
+        width: 9%;
+    }
 
     as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys {
       position: absolute;
