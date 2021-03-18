@@ -524,23 +524,34 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
     /**
      * Gets the airplane's current true altitude.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current altitude of the airplane. Default unit is feet.
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the current altitude of the airplane.
      */
     altitude(reference) {
-        let alt = SimVar.GetSimVarValue("PLANE ALTITUDE", "feet");
-        return reference ? reference.set(alt, WT_Unit.FOOT) : new WT_NumberUnit(alt, WT_Unit.FOOT);
+        let value = SimVar.GetSimVarValue("PLANE ALTITUDE", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
     }
 
     /**
      * Gets the airplane's current indicated altitude.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current indicated altitude of the airplane. Default unit is feet.
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the current indicated altitude of the airplane.
      */
     altitudeIndicated(reference) {
-        let alt = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-        return reference ? reference.set(alt, WT_Unit.FOOT) : new WT_NumberUnit(alt, WT_Unit.FOOT);
+        let value = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
+    }
+
+    /**
+     * Gets the airplane's current radar altitude.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the current radar altitude of the airplane.
+     */
+    radarAltitude(reference) {
+        let value = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
     }
 
     /**
