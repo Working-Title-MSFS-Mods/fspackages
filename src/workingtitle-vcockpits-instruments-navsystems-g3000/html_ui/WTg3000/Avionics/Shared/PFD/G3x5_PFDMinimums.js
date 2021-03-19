@@ -9,7 +9,7 @@ class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
     }
 
     _createModel() {
-        return new WT_G3x5_PFDMinimumsModel(this.instrument.airplane, new WT_G3x5_Minimums());
+        return new WT_G3x5_PFDMinimumsModel(this.instrument, new WT_G3x5_Minimums());
     }
 
     _createHTMLElement() {
@@ -35,17 +35,26 @@ class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
 
 class WT_G3x5_PFDMinimumsModel {
     /**
-     * @param {WT_PlayerAirplane} airplane
+     * @param {WT_G3x5_PFD} instrument
      * @param {WT_G3x5_Minimums} minimums
      */
-    constructor(airplane, minimums) {
-        this._airplane = airplane;
+    constructor(instrument, minimums) {
+        this._instrument = instrument;
         this._minimums = minimums;
         this._mode = WT_G3x5_Minimums.Mode.NONE;
         this._altitude = WT_Unit.FOOT.createNumber(0);
         this._state = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;
 
         this._tempFoot = WT_Unit.FOOT.createNumber(0);
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFD} mode
+     * @type {WT_G3x5_PFD}
+     */
+    get instrument() {
+        return this._instrument;
     }
 
     /**
@@ -84,13 +93,18 @@ class WT_G3x5_PFDMinimumsModel {
     }
 
     _updateState() {
+        if (this.instrument.airplane.dynamics.isOnGround()) {
+            this._state = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;
+            return;
+        }
+
         let currentAlt = this._tempFoot;
         switch (this.mode) {
             case WT_G3x5_Minimums.Mode.BARO:
-                this._airplane.navigation.altitudeIndicated(currentAlt);
+                this.instrument.airplane.navigation.altitudeIndicated(currentAlt);
                 break;
             case WT_G3x5_Minimums.Mode.RADAR:
-                this._airplane.navigation.radarAltitude(currentAlt);
+                this.instrument.airplane.navigation.radarAltitude(currentAlt);
                 break;
             default:
                 this._state = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;
@@ -136,6 +150,8 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
         this._context = null;
         this._isInit = false;
         this._isVisible = false;
+
+        this._lastState = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;
     }
 
     _getTemplate() {
@@ -195,7 +211,14 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
     }
 
     _updateState() {
-        this._setState(this._context.model.state);
+        let state = this._context.model.state;
+        this._setState(state);
+        if (state !== this._lastState) {
+            if (state === WT_G3x5_PFDMinimumsModel.State.BELOW) {
+                this._context.model.instrument.playInstrumentSound("aural_minimums");
+            }
+            this._lastState = state;
+        }
     }
 
     _updateDisplay() {
@@ -216,7 +239,7 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
 WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXT = [
     "NONE",
     "BARO",
-    "TEMP",
+    "COMP",
     "RA"
 ];
 WT_G3x5_PFDMinimumsHTMLElement.STATE_ATTRIBUTE = [
