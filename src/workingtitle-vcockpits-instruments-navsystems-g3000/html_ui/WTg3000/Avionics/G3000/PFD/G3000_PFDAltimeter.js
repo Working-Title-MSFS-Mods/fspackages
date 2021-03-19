@@ -1,6 +1,6 @@
 class WT_G3000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
     _createModel() {
-        return new WT_G3x5_PFDAltimeterModel(this.instrument.airplane, 1);
+        return new WT_G3x5_PFDAltimeterModel(this.instrument, 1);
     }
 
     _createHTMLElement() {
@@ -194,14 +194,17 @@ class WT_G3000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         this._selectedAltMeters.innerHTML = this._metersFormatter.getFormattedHTML(altitude, WT_Unit.METER);
     }
 
-    _set1000ToGoAlert(value) {
-        this._wrapper.setAttribute("alert-1000togo", `${value}`);
-    }
-
-    _setAltSActiveAlert(value) {
-        this._wrapper.setAttribute("alert-ALTSactive", `${value}`);
+    _setAlertState(state) {
+        this._wrapper.setAttribute("alert", WT_G3000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTE[state]);
     }
 }
+WT_G3000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTE = [
+    "none",
+    "1000",
+    "200",
+    "captured",
+    "deviation"
+];
 WT_G3000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTE = [
     "unknown",
     "above",
@@ -218,10 +221,22 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
             display: block;
         }
 
-        @keyframes alert-ALTSactive {
+        @keyframes alert-1000 {
+            0% {color: black;}
+            50% {color: transparent;}
+            100% {color: black;}
+        }
+
+        @keyframes alert-200 {
             0% {color: var(--wt-g3x5-lightblue);}
             50% {color: transparent;}
             100% {color: var(--wt-g3x5-lightblue);}
+        }
+
+        @keyframes alert-deviation {
+            0% {color: var(--wt-g3x5-amber);}
+            50% {color: transparent;}
+            100% {color: var(--wt-g3x5-amber);}
         }
 
         #wrapper {
@@ -238,7 +253,7 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                 background-color: var(--wt-g3x5-bggray);
                 border-radius: 0 var(--altimeter-tape-bg-border-radius, 10px) 0 0;
             }
-            #wrapper[alert-1000togo="true"] #selectedaltcontainer {
+            #wrapper[alert="1000"] #selectedaltcontainer {
                 background-color: var(--wt-g3x5-lightblue);
             }
                 #selectedalticonsvg {
@@ -251,7 +266,7 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                     #selectedalticon {
                         fill: var(--wt-g3x5-lightblue);
                     }
-                    #wrapper[alert-1000togo="true"] #selectedalticon {
+                    #wrapper[alert="1000"] #selectedalticon {
                         fill: black;
                     }
                 #selectedalt {
@@ -264,11 +279,14 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                     font-size: var(--altimeter-selectedalt-font-size, 1em);
                     color: var(--wt-g3x5-lightblue);
                 }
-                #wrapper[alert-1000togo="true"] #selectedalt {
-                    color: black;
+                #wrapper[alert="1000"] #selectedalt {
+                    animation: alert-1000 1s step-end 5 forwards;
                 }
-                #wrapper[alert-ALTSactive="true"] #selectedalt {
-                    animation: alert-ALTSactive 1s infinite
+                #wrapper[alert="200"] #selectedalt {
+                    animation: alert-200 1s step-end 5 forwards;
+                }
+                #wrapper[alert="deviation"] #selectedalt {
+                    animation: alert-deviation 1s step-end 5 forwards;
                 }
             #tapecontainer {
                 position: absolute;
