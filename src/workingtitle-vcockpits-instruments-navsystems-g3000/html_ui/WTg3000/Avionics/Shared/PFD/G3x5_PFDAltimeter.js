@@ -339,7 +339,7 @@ class WT_G3x5_PFDAltimeterModel {
 
     _updateMinimums() {
         let mode = this._minimums.getMode();
-        if (mode === WT_G3x5_Minimums.Mode.BARO) {
+        if (mode === WT_G3x5_Minimums.Mode.BARO && !this.airplane.dynamics.isOnGround()) {
             this._minimums.getAltitude(this._minimumsAltitude);
             this._showMinimums = true;
             this._updateMinimumsState();
