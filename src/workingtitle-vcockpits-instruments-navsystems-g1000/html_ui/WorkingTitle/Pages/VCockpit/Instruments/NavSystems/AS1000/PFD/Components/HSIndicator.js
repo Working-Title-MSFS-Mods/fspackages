@@ -154,14 +154,14 @@ class HSIndicator extends HTMLElement {
         }
         return g;
     }
-    createHeadingBug() {
-        return this.createSvgElement("polygon", { points: "-4,-50 -3,-50 0,-46 3,-50 4,-50 4,-45 -4,-45", class: "heading-bug" });
-    }
     createInnerCircle() {
         return this.createSvgElement("path", { d: this.createCirclePath(30, 180), class: "inner-circle" });
     }
     createTopArrow() {
         return this.createSvgElement("polygon", { points: "-4,-53 4,-53 0,-47", fill: "white", stroke: "#222", "stroke-width": "0.5" });
+    }
+    createHeadingBug() {
+        return this.createSvgElement("path", { d: "M 0 0 m -4 -50 l 2 0 l 2 3.5 l 2 -3.5 l 2 0 l 0 4 l -8 0 l 0 -4 Z", class: "heading-bug" });
     }
     createPlane() {
         return this.createSvgElement("path", {
@@ -374,13 +374,15 @@ class HSIndicator extends HTMLElement {
         this.backgroundCircle.append(this.createBackgroundCircle());
         this.backgroundCircle.append(this.createCircleGraduations());
         this.backgroundCircle.append(this.createBackgroudCircleText());
-        this.headingBug = this.createHeadingBug();
-        this.elements.overlay.appendChild(this.headingBug);
+        
         this.innerCircle = this.createInnerCircle();
         this.elements.backgroundCircle.appendChild(this.innerCircle);
 
         this.currentTrackIndicator = this.createCurrentTrackIndicator();
         this.elements.overlay.appendChild(this.currentTrackIndicator);
+
+        this.headingBug = this.createHeadingBug(); // Heading bug should be on top of track & top arrow
+        this.elements.overlay.appendChild(this.headingBug);
 
         this.course = this.createCourse();
         this.elements.overlay.appendChild(this.course);

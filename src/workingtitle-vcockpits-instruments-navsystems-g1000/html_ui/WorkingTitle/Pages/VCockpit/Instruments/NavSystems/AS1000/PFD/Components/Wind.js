@@ -23,12 +23,12 @@ class WT_PFD_Wind_Model {
         );
 
         this.xSpeed = directionSpeed$.pipe(
-            rxjs.operators.map(([relativeDirection, speed]) => speed * Math.sin(relativeDirection / 180 * Math.PI)),
+            rxjs.operators.map(([relativeDirection, speed]) => speed * Math.abs(Math.sin(relativeDirection / 180 * Math.PI))),
             WT_RX.shareReplay()
         )
 
         this.ySpeed = directionSpeed$.pipe(
-            rxjs.operators.map(([relativeDirection, speed]) => speed * Math.cos(relativeDirection / 180 * Math.PI)),
+            rxjs.operators.map(([relativeDirection, speed]) => speed * Math.abs(Math.cos(relativeDirection / 180 * Math.PI))),
             WT_RX.shareReplay()
         )
 
