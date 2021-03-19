@@ -110,6 +110,7 @@ class WT_G3x5_PFDAltimeterModel {
         this._lastTrendTime = 0;
 
         this._indicatedAltitude = WT_Unit.FOOT.createNumber(0);
+        this._groundAltitude = WT_Unit.FOOT.createNumber(0);
         this._verticalSpeed = WT_Unit.FPM.createNumber(0);
         this._selectedAltitude = WT_Unit.FOOT.createNumber(0);
 
@@ -159,6 +160,15 @@ class WT_G3x5_PFDAltimeterModel {
      */
     get indicatedAltitude() {
         return this._indicatedAltitude.readonly();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} groundAltitude
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get groundAltitude() {
+        return this._groundAltitude.readonly();
     }
 
     /**
@@ -277,6 +287,10 @@ class WT_G3x5_PFDAltimeterModel {
 
     _updateAltitude() {
         this.airplane.navigation.altitudeIndicated(this._indicatedAltitude);
+    }
+
+    _updateGroundAltitude() {
+        this.airplane.navigation.radarAltitude(this._groundAltitude).scale(-1, true).add(this.indicatedAltitude);
     }
 
     _updateVSpeed() {
@@ -475,6 +489,7 @@ class WT_G3x5_PFDAltimeterModel {
 
     update() {
         this._updateAltitude();
+        this._updateGroundAltitude();
         this._updateVSpeed();
         this._updateSelectedAltitude();
         this._updateAltitudeAlertState();
@@ -815,8 +830,8 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         return 1 - (feet - this._tapeMin) / this._tapeLength;
     }
 
-    _calculateTranslatedTapePosition(knots) {
-        return (this._calculateAbsoluteTapePosition(knots) - this._tapeTranslate) * this._tapeLength / this._context.scale.window + 0.5;
+    _calculateTranslatedTapePosition(feet) {
+        return (this._calculateAbsoluteTapePosition(feet) - this._tapeTranslate) * this._tapeLength / this._context.scale.window + 0.5;
     }
 
     _updateTapeLabel(label, number) {
@@ -850,6 +865,13 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
 
         this._moveTape(tapePos);
         this._tapeTranslate = tapePos;
+    }
+
+    _setGroundHeight(tapePos) {
+    }
+
+    _updateGround() {
+        this._setGroundHeight(this._calculateTranslatedTapePosition(this._context.model.groundAltitude.asUnit(WT_Unit.FOOT)));
     }
 
     _updateIndicatedAltitudeDigit(index, feet) {
@@ -1009,6 +1031,7 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         }
 
         this._updateTape();
+        this._updateGround();
         this._updateIndicatedAltitude();
         this._updateTrend();
         this._updateSelectedAltitude();
