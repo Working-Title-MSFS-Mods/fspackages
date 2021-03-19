@@ -64,14 +64,25 @@ as3000-pfd-element wt-pfd-airspeedindicator {
 }
 
 as3000-pfd-element wt-pfd-altimeter {
-  position: absolute;
-  left: 70%;
-  top: 10%;
-  width: 18.25%;
-  height: 50%;
-  font-size: 3vh;
-  font-family: "Roboto-Regular";
-  font-weight: normal;
+    position: absolute;
+    left: 70%;
+    top: 10%;
+    width: 18.25%;
+    height: 50%;
+    font-size: 3vh;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+}
+
+as3000-pfd-element wt-pfd-radaraltimeter {
+    position: absolute;
+    right: 30.5%;
+    bottom: 50%;
+    height: 4%;
+    width: 8.5%;
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+    font-size: 3.5vh;
 }
 
 as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
@@ -515,33 +526,6 @@ as3000-pfd-element wt-pfd-minimums {
     font-weight: normal;
     font-size: 3vh;
 }
-
-      as3000-pfd-element #Mainframe #InstrumentsContainer #RadarAltitude {
-        position: absolute;
-        left: 60%;
-        bottom: 50%;
-        height: 5%;
-        width: 8%;
-        background-color: #1a1d21;
-        vertical-align: central; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #RadarAltitude #RA_Title {
-          position: absolute;
-          width: 35%;
-          height: 100%;
-          left: 0%;
-          font-size: 3vh;
-          text-align: center;
-          line-height: 5vh; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #RadarAltitude #RA_Value {
-          position: absolute;
-          width: 65%;
-          height: 100%;
-          right: 0%;
-          text-align: center;
-          font-size: 3.4vh;
-          line-height: 5vh; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #RadarAltitude[state=Inactive] {
-          display: none; }
 
 as3000-pfd-element wt-pfd-bottominfo {
     position: absolute;
