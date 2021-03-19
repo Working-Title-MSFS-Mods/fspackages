@@ -167,6 +167,10 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         this._minimumsContainer.setAttribute("style", `transform: translateY(${translate}%);`);
     }
 
+    _setMinimumsState(state) {
+        this._wrapper.setAttribute("minimums-state", WT_G5000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTE[state]);
+    }
+
     _setBaroNumberText(text) {
         this._baroNumber.innerHTML = text;
     }
@@ -195,6 +199,12 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         this._wrapper.setAttribute("alert-ALTSactive", `${value}`);
     }
 }
+WT_G5000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTE = [
+    "unknown",
+    "above",
+    "100",
+    "below"
+];
 WT_G5000_PFDAltimeterAltitudeHTMLElement.SMALL_DIGIT_CLASS = "smallDigit";
 WT_G5000_PFDAltimeterAltitudeHTMLElement.UNIT_CLASS = "unit";
 WT_G5000_PFDAltimeterAltitudeHTMLElement.NAME = "wt-pfd-altimeter-altitude";
@@ -303,68 +313,6 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                         }
                             .label {
                                 dominant-baseline: central;
-                            }
-                #altbugclip {
-                    position: absolute;
-                    top: 0%;
-                    height: 100%;
-                    left: 0%;
-                    width: 100%;
-                    overflow-y: hidden;
-                }
-                    #minimumsbugcontainer {
-                        position: absolute;
-                        left: calc(var(--altimeter-minortick-width, 12%) * 0.75);
-                        top: 0%;
-                        width: calc(var(--altimeter-minortick-width, 12%) * 1.25);
-                        height: 100%;
-                        display: none;
-                    }
-                    #wrapper[show-minimums="true"] #minimumsbugcontainer {
-                        display: block;
-                    }
-                        #minimumsbug {
-                            position: absolute;
-                            left: 0%;
-                            top: 50%;
-                            width: 100%;
-                            height: calc(var(--altimeter-indicatedalt-font-size, 1.25em) * 1.7);
-                            transform: translateY(-50%);
-                            fill: transparent;
-                        }
-                            #minimumsbug path {
-                                vector-effect: non-scaling-stroke;
-                            }
-                            #minimumsbugstroke {
-                                stroke: var(--wt-g3x5-lightblue);
-                                stroke-width: 3;
-                            }
-                            #minimumsbugoutline {
-                                stroke: black;
-                                stroke-width: 4;
-                            }
-                    #selectedaltbugcontainer {
-                        position: absolute;
-                        left: 0%;
-                        top: 0%;
-                        width: calc(var(--altimeter-minortick-width, 12%) * 1.25);
-                        height: 100%;
-                    }
-                        #selectedaltbug {
-                            position: absolute;
-                            left: 0%;
-                            top: 50%;
-                            width: 100%;
-                            height: calc(var(--altimeter-indicatedalt-font-size, 1.25em) * 1.2);
-                            transform: translateY(-50%);
-                            fill: var(--wt-g3x5-lightblue);
-                            stroke: #299aa0;
-                            stroke-width: 1;
-                        }
-                            #selectedaltbug path {
-                                transform: scale(1.15);
-                                transform-origin: center;
-                                vector-effect: non-scaling-stroke;
                             }
                 #trendcontainer {
                     position: absolute;
@@ -502,6 +450,74 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                                 .minusDigit[show="true"] {
                                     display: inherit;
                                 }
+                #altbugclip {
+                    position: absolute;
+                    top: 0%;
+                    height: 100%;
+                    left: 0%;
+                    width: 100%;
+                    overflow-y: hidden;
+                }
+                    #minimumsbugcontainer {
+                        position: absolute;
+                        left: calc(var(--altimeter-minortick-width, 12%) * 0.6);
+                        top: 0%;
+                        width: calc(var(--altimeter-minortick-width, 12%) * 1);
+                        height: 100%;
+                        display: none;
+                    }
+                    #wrapper[show-minimums="true"] #minimumsbugcontainer {
+                        display: block;
+                    }
+                        #minimumsbug {
+                            position: absolute;
+                            left: 0%;
+                            top: 50%;
+                            width: 100%;
+                            height: calc(var(--altimeter-indicatedalt-font-size, 1.25em) * 1.7);
+                            transform: translateY(-50%);
+                            fill: transparent;
+                        }
+                            #minimumsbug path {
+                                vector-effect: non-scaling-stroke;
+                            }
+                            #minimumsbugstroke {
+                                stroke: var(--wt-g3x5-lightblue);
+                                stroke-width: 3;
+                            }
+                            #wrapper[minimums-state="100"] #minimumsbugstroke {
+                                stroke: white;
+                            }
+                            #wrapper[minimums-state="below"] #minimumsbugstroke {
+                                stroke: var(--wt-g3x5-amber);
+                            }
+                            #minimumsbugoutline {
+                                stroke: black;
+                                stroke-width: 4;
+                            }
+                    #selectedaltbugcontainer {
+                        position: absolute;
+                        left: 0%;
+                        top: 0%;
+                        width: calc(var(--altimeter-minortick-width, 12%) * 1.25);
+                        height: 100%;
+                    }
+                        #selectedaltbug {
+                            position: absolute;
+                            left: 0%;
+                            top: 50%;
+                            width: 100%;
+                            height: calc(var(--altimeter-indicatedalt-font-size, 1.25em) * 1.2);
+                            transform: translateY(-50%);
+                            fill: var(--wt-g3x5-lightblue);
+                            stroke: #299aa0;
+                            stroke-width: 1;
+                        }
+                            #selectedaltbug path {
+                                transform: scale(1.15);
+                                transform-origin: center;
+                                vector-effect: non-scaling-stroke;
+                            }
             #barocontainer {
                 position: absolute;
                 left: 0%;
@@ -547,19 +563,6 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                     <svg id="minorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <svg id="majorticks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
                     <svg id="labels"></svg>
-                </div>
-            </div>
-            <div id="altbugclip">
-                <div id="minimumsbugcontainer">
-                    <svg id="minimumsbug" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path id="minimumsbugoutline" d="M 90 10 L 90 40 L 20 50 L 90 60 L 90 90" />
-                        <path id="minimumsbugstroke" d="M 90 10 L 90 40 L 20 50 L 90 60 L 90 90" />
-                    </svg>
-                </div>
-                <div id="selectedaltbugcontainer">
-                    <svg id="selectedaltbug" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M 90 10 L 10 10 L 10 90 L 90 90 L 90 65 L 40 50 L 90 35 Z" />
-                    </svg>
                 </div>
             </div>
             <div id="trendcontainer">
@@ -636,6 +639,19 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                             </text>
                         </svg>
                     </div>
+                </div>
+            </div>
+            <div id="altbugclip">
+                <div id="minimumsbugcontainer">
+                    <svg id="minimumsbug" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path id="minimumsbugoutline" d="M 90 10 L 90 40 L 20 50 L 90 60 L 90 90" />
+                        <path id="minimumsbugstroke" d="M 90 10 L 90 40 L 20 50 L 90 60 L 90 90" />
+                    </svg>
+                </div>
+                <div id="selectedaltbugcontainer">
+                    <svg id="selectedaltbug" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M 90 10 L 10 10 L 10 90 L 90 90 L 90 65 L 40 50 L 90 35 Z" />
+                    </svg>
                 </div>
             </div>
         </div>
