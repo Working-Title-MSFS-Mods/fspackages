@@ -90,6 +90,7 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         this._tapeMajorTickLayer = this.shadowRoot.querySelector(`#majorticks`);
         this._tapeLabelLayer = this.shadowRoot.querySelector(`#labels`);
         this._tapeMinorTickLayer = this.shadowRoot.querySelector(`#minorticks`);
+        this._ground = new WT_CachedElement(this.shadowRoot.querySelector(`#ground`));
 
         this._trend = new WT_CachedElement(this.shadowRoot.querySelector(`#trend`));
 
@@ -127,6 +128,16 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
     _moveTape(tapePos) {
         let translate = Math.max(0, 100 - tapePos * 100);
         this._tape.style.transform = `translateY(${translate}%)`;
+    }
+
+    _setGroundHeight(tapePos) {
+        let height = Math.max(0, Math.min(100, 100 - tapePos * 100));
+        if (height === 0) {
+            this._ground.setAttribute("show", "false");
+        } else {
+            this._ground.setAttribute("style", `height: ${height.toFixed(1)}%;`);
+            this._ground.setAttribute("show", "true");
+        }
     }
 
     _setIndicatedAltitudeSignPlace(place) {
@@ -332,6 +343,19 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                             .label {
                                 dominant-baseline: central;
                             }
+                #ground {
+                    position: absolute;
+                    left: 50%;
+                    bottom: 0%;
+                    width: calc(100% - 2px);
+                    transform: translateX(-50%);
+                    border: solid 1px white;
+                    background: #523100 url("/WTg3000/SDK/Assets/Images/Garmin/PFD/TILE_ALTIMETER_GROUND.png");
+                    display: none;
+                }
+                #ground[show="true"] {
+                    display: block;
+                }
                 #trendcontainer {
                     position: absolute;
                     left: 0%;
@@ -583,6 +607,7 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                     <svg id="labels"></svg>
                 </div>
             </div>
+            <div id="ground"></div>
             <div id="trendcontainer">
                 <svg>
                     <rect id="trend" x="0%" y="50%" width="100%" vector-effect="non-scaling-stroke" />
