@@ -323,6 +323,14 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
 
     /**
      *
+     * @returns {WT_G3x5_PFDRadarAltimeter}
+     */
+    _createRadarAltimeter() {
+        return new WT_G3x5_PFDRadarAltimeter();
+    }
+
+    /**
+     *
      * @returns {WT_G3x5_PFDAoAIndicator}
      */
     _createAoAIndicator() {
@@ -356,7 +364,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             new AS3000_PFD_ActiveCom(),
             this._mapInstrument = new MapInstrumentElement(),
             new PFD_AutopilotDisplay(),
-            new PFD_RadarAltitude(),
+            this._radarAltimeter = this._createRadarAltimeter(),
             new PFD_MarkerBeacon()
         ];
     }
@@ -478,53 +486,6 @@ class WT_G3x5_PFDCompass extends PFD_Compass {
         this._refreshFormatting();
     }
 }
-
-class AS3000_PFD_BottomInfos extends NavSystemElement {
-    constructor() {
-        super();
-
-        this._initTimer();
-    }
-
-    _initTimer() {
-        this._timer = new WT_Timer("Generic");
-        this._timer.clear();
-
-        this._timerFormatter = new WT_TimeFormatter({round: 0});
-    }
-
-    init(root) {
-        this.tas = this.gps.getChildById("TAS_Value");
-        this.oat = this.gps.getChildById("OAT_Value");
-        this.gs = this.gps.getChildById("GS_Value");
-        this.isa = this.gps.getChildById("ISA_Value");
-        this.timer = this.gps.getChildById("TMR_Value");
-        this.utcTime = this.gps.getChildById("UTC_Value");
-    }
-
-    onEnter() {
-    }
-
-    _updateTimer() {
-        this._timer.update();
-        Avionics.Utils.diffAndSet(this.timer, this._timerFormatter.getFormattedString(this._timer.value));
-    }
-
-    onUpdate(deltaTime) {
-        Avionics.Utils.diffAndSet(this.tas, fastToFixed(Simplane.getTrueSpeed(), 0) + "KT");
-        Avionics.Utils.diffAndSet(this.oat, fastToFixed(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius"), 0) + "°C");
-        Avionics.Utils.diffAndSet(this.gs, fastToFixed(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"), 0) + "KT");
-        Avionics.Utils.diffAndSet(this.isa, fastToFixed(SimVar.GetSimVarValue("STANDARD ATM TEMPERATURE", "celsius"), 0) + "°C");
-        Avionics.Utils.diffAndSet(this.utcTime, Utils.SecondsToDisplayTime(SimVar.GetGlobalVarValue("ZULU TIME", "seconds"), true, true, false));
-        this._updateTimer();
-    }
-
-    onExit() {
-    }
-
-    onEvent(_event) {
-    }
-}
 class AS3000_PFD_ActiveCom extends NavSystemElement {
     init(root) {
         this.activeCom = this.gps.getChildById("ActiveCom");
@@ -539,16 +500,6 @@ class AS3000_PFD_ActiveCom extends NavSystemElement {
     onExit() {
     }
     onEvent(_event) {
-    }
-}
-
-class AS3000_PFD_NavStatus extends PFD_NavStatus {
-    init(root) {
-        this.currentLegFrom = this.gps.getChildById("FromWP");
-        this.currentLegSymbol = this.gps.getChildById("LegSymbol");
-        this.currentLegTo = this.gps.getChildById("ToWP");
-        this.currentLegDistance = this.gps.getChildById("DisValue");
-        this.currentLegBearing = this.gps.getChildById("BrgValue");
     }
 }
 
