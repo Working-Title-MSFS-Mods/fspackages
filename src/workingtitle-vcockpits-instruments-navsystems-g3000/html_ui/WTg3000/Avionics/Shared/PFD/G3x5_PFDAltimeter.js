@@ -116,6 +116,7 @@ class WT_G3x5_PFDAltimeterModel {
         this._minimums = new WT_G3x5_Minimums();
         this._showMinimums = false;
         this._minimumsAltitude = WT_Unit.FOOT.createNumber(0);
+        this._minimumsState = WT_G3x5_PFDAltimeterModel.MinimumsState.UNKNOWN;
 
         this._showReferenceVSpeed = false;
         this._referenceVSpeed = WT_Unit.FPM.createNumber(0);
@@ -173,6 +174,15 @@ class WT_G3x5_PFDAltimeterModel {
      */
     get minimumsAltitude() {
         return this._showMinimums ? this._minimumsAltitude.readonly() : null;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDAltimeterModel.MinimumsState} minimumsState
+     * @type {WT_G3x5_PFDAltimeterModel.MinimumsState}
+     */
+    get minimumsState() {
+        return this._minimumsState;
     }
 
     /**
@@ -252,13 +262,26 @@ class WT_G3x5_PFDAltimeterModel {
         this._airplane.navigation.verticalSpeed(this._verticalSpeed);
     }
 
+    _updateMinimumsState() {
+        let difference = this.indicatedAltitude.asUnit(WT_Unit.FOOT) - this.minimumsAltitude.asUnit(WT_Unit.FOOT);
+        if (difference > 100) {
+            this._minimumsState = WT_G3x5_PFDAltimeterModel.MinimumsState.ABOVE;
+        } else if (difference > 0) {
+            this._minimumsState = WT_G3x5_PFDAltimeterModel.MinimumsState.WITHIN_100_FT;
+        } else {
+            this._minimumsState = WT_G3x5_PFDAltimeterModel.MinimumsState.BELOW;
+        }
+    }
+
     _updateMinimums() {
         let mode = this._minimums.getMode();
         if (mode === WT_G3x5_Minimums.Mode.BARO) {
             this._minimums.getAltitude(this._minimumsAltitude);
             this._showMinimums = true;
+            this._updateMinimumsState();
         } else {
             this._showMinimums = false;
+            this._minimumsState = WT_G3x5_PFDAltimeterModel.MinimumsState.UNKNOWN;
         }
     }
 
@@ -411,6 +434,15 @@ WT_G3x5_PFDAltimeterModel.VTrackMode = {
     GLIDESLOPE: 1,
     GLIDEPATH: 2,
     VERTICAL_DEVIATION: 3
+}
+/**
+ * @enum {Number}
+ */
+WT_G3x5_PFDAltimeterModel.MinimumsState = {
+    UNKNOWN: 0,
+    ABOVE: 1,
+    WITHIN_100_FT: 2,
+    BELOW: 3
 }
 
 class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
@@ -834,10 +866,14 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
     _moveMinimumsBug(tapePos) {
     }
 
+    _setMinimumsState(state) {
+    }
+
     _updateMinimums() {
         let minimumsAlt = this._context.model.minimumsAltitude;
         if (minimumsAlt) {
             this._moveMinimumsBug(this._calculateTranslatedTapePosition(minimumsAlt.asUnit(WT_Unit.FOOT)));
+            this._setMinimumsState(this._context.model.minimumsState);
             this._showMinimums(true);
         } else {
             this._showMinimums(false);
