@@ -95,11 +95,11 @@ WT_G3x5_PFDAltimeter.BARO_UNITS = [
 
 class WT_G3x5_PFDAltimeterModel {
     /**
-     * @param {WT_PlayerAirplane} airplane
+     * @param {WT_G3x5_PFD} instrument
      * @param {Number} index
      */
-    constructor(airplane, index) {
-        this._airplane = airplane;
+    constructor(instrument, index) {
+        this._instrument = instrument;
         this._index = index;
 
         this._showMeters = false;
@@ -112,6 +112,9 @@ class WT_G3x5_PFDAltimeterModel {
         this._indicatedAltitude = WT_Unit.FOOT.createNumber(0);
         this._verticalSpeed = WT_Unit.FPM.createNumber(0);
         this._selectedAltitude = WT_Unit.FOOT.createNumber(0);
+
+        this._altitudeAlertAltitude = WT_Unit.FOOT.createNumber(0);
+        this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.NONE;
 
         this._minimums = new WT_G3x5_Minimums();
         this._showMinimums = false;
@@ -133,11 +136,20 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
+     * @property {WT_G3x5_PFD} instrument
+     * @type {WT_G3x5_PFD}
+     */
+    get instrument() {
+        return this._instrument;
+    }
+
+    /**
+     * @readonly
      * @property {WT_PlayerAirplane} autopilot
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
-        return this._airplane;
+        return this.instrument.airplane;
     }
 
     /**
@@ -165,6 +177,15 @@ class WT_G3x5_PFDAltimeterModel {
      */
     get selectedAltitude() {
         return this._selectedAltitude.readonly();
+    }
+
+    /**
+     * @readonly
+     * @property {WT_G3x5_PFDAltimeterModel.AltitudeAlertState} altitudeAlertState
+     * @type {WT_G3x5_PFDAltimeterModel.AltitudeAlertState}
+     */
+    get altitudeAlertState() {
+        return this._altitudeAlertState;
     }
 
     /**
@@ -255,11 +276,54 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateAltitude() {
-        this._airplane.navigation.altitudeIndicated(this._indicatedAltitude);
+        this.airplane.navigation.altitudeIndicated(this._indicatedAltitude);
     }
 
     _updateVSpeed() {
-        this._airplane.navigation.verticalSpeed(this._verticalSpeed);
+        this.airplane.navigation.verticalSpeed(this._verticalSpeed);
+    }
+
+    _updateSelectedAltitude() {
+        this.airplane.autopilot.selectedAltitude(this._selectedAltitude);
+    }
+
+    _updateAltitudeAlertStateBeforeCaptured(differenceFeet) {
+        let differenceAbs = Math.abs(differenceFeet);
+        if (differenceAbs > 1000) {
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.NONE;
+        } else if (differenceAbs > 200) {
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.WITHIN_1000_FT;
+        } else if (differenceAbs > 10) {
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.WITHIN_200_FT;
+        } else {
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.CAPTURED;
+        }
+    }
+
+    _updateAltitudeAlertStateAfterCaptured(differenceFeet) {
+        let differenceAbs = Math.abs(differenceFeet);
+        if (differenceAbs > 200) {
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.DEVIATION;
+        } else {
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.CAPTURED;
+        }
+    }
+
+    _updateAltitudeAlertState() {
+        if (!this._altitudeAlertAltitude.equals(this.selectedAltitude)) {
+            this._altitudeAlertAltitude.set(this.selectedAltitude);
+            this._altitudeAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.NONE;
+        }
+
+        let difference = this.indicatedAltitude.asUnit(WT_Unit.FOOT) - this._altitudeAlertAltitude.asUnit(WT_Unit.FOOT);
+        switch (this.altitudeAlertState) {
+            case WT_G3x5_PFDAltimeterModel.AltitudeAlertState.CAPTURED:
+            case WT_G3x5_PFDAltimeterModel.AltitudeAlertState.DEVIATION:
+                this._updateAltitudeAlertStateAfterCaptured(difference);
+                break;
+            default:
+                this._updateAltitudeAlertStateBeforeCaptured(difference);
+        }
     }
 
     _updateMinimumsState() {
@@ -285,14 +349,10 @@ class WT_G3x5_PFDAltimeterModel {
         }
     }
 
-    _updateSelectedAltitude() {
-        this._airplane.autopilot.selectedAltitude(this._selectedAltitude);
-    }
-
     _updateReferenceVSpeed() {
-        if (this._airplane.autopilot.isVSActive()) {
+        if (this.airplane.autopilot.isVSActive()) {
             this._showReferenceVSpeed = true;
-            this._airplane.autopilot.referenceVS(this._referenceVSpeed);
+            this.airplane.autopilot.referenceVS(this._referenceVSpeed);
         } else {
             this._showReferenceVSpeed = false;
         }
@@ -323,21 +383,21 @@ class WT_G3x5_PFDAltimeterModel {
 
     _updateVerticalTrackGlidePreview() {
         let isActive = false;
-        if (this._airplane.autopilot.navigationSource() === WT_AirplaneAutopilot.NavSource.FMS) {
+        if (this.airplane.autopilot.navigationSource() === WT_AirplaneAutopilot.NavSource.FMS) {
             /**
              * @type {WT_FlightPlanLeg}
              */
-            let activeLeg = this._airplane.fms.flightPlanManager.getActiveLeg(true);
+            let activeLeg = this.airplane.fms.flightPlanManager.getActiveLeg(true);
             let beforeFAF = activeLeg &&
                         activeLeg.segment === WT_FlightPlan.Segment.APPROACH &&
-                        activeLeg.index < this._airplane.fms.flightPlanManager.activePlan.legCount() - 2;
+                        activeLeg.index < this.airplane.fms.flightPlanManager.activePlan.legCount() - 2;
             if (beforeFAF) {
-                if (this._airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
+                if (this.airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
                     isActive = true;
-                    this._glidePreviewDeflection = this._calculateGlidepathDeflection(this._airplane.fms.glidepathAngle(), this._airplane.fms.glidepathError(), this._airplane.fms.glidepathDeviation(this._tempFoot1));
+                    this._glidePreviewDeflection = this._calculateGlidepathDeflection(this.airplane.fms.glidepathAngle(), this.airplane.fms.glidepathError(), this.airplane.fms.glidepathDeviation(this._tempFoot1));
                 } else {
                     for (let i = 1; i < 3; i++) {
-                        let nav = this._airplane.navCom.getNav(i);
+                        let nav = this.airplane.navCom.getNav(i);
                         let gsError = nav.glideslopeError();
                         if (gsError !== null) {
                             isActive = true;
@@ -355,17 +415,17 @@ class WT_G3x5_PFDAltimeterModel {
         /**
          * @type {WT_FlightPlanLeg}
          */
-        let activeLeg = this._airplane.fms.flightPlanManager.getActiveLeg(true);
+        let activeLeg = this.airplane.fms.flightPlanManager.getActiveLeg(true);
         let atFAF = activeLeg &&
                     activeLeg.segment === WT_FlightPlan.Segment.APPROACH &&
-                    activeLeg.index >= this._airplane.fms.flightPlanManager.activePlan.legCount() - 2;
+                    activeLeg.index >= this.airplane.fms.flightPlanManager.activePlan.legCount() - 2;
         if (atFAF) {
-            if (this._airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
-                this._verticalTrackDeflection = this._calculateGlidepathDeflection(this._airplane.fms.glidepathAngle(), this._airplane.fms.glidepathError(), this._airplane.fms.glidepathDeviation(this._tempFoot1));
+            if (this.airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
+                this._verticalTrackDeflection = this._calculateGlidepathDeflection(this.airplane.fms.glidepathAngle(), this.airplane.fms.glidepathError(), this.airplane.fms.glidepathDeviation(this._tempFoot1));
                 this._verticalTrackMode = WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDEPATH;
             } else {
                 for (let i = 1; i < 3; i++) {
-                    let nav = this._airplane.navCom.getNav(i);
+                    let nav = this.airplane.navCom.getNav(i);
                     let gsError = nav.glideslopeError();
                     if (gsError !== null) {
                         this._verticalTrackDeflection = this._calculateGlideslopeDeflection(gsError);
@@ -395,15 +455,15 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateVerticalTrackIndicator() {
-        switch(this._airplane.autopilot.navigationSource()) {
+        switch(this.airplane.autopilot.navigationSource()) {
             case WT_AirplaneAutopilot.NavSource.FMS:
                 this._updateVerticalTrackFromFMS();
                 break;
             case WT_AirplaneAutopilot.NavSource.NAV1:
-                this._updateGlideSlope(this._airplane.navCom.getNav(1));
+                this._updateGlideSlope(this.airplane.navCom.getNav(1));
                 break;
             case WT_AirplaneAutopilot.NavSource.NAV2:
-                this._updateGlideSlope(this._airplane.navCom.getNav(2));
+                this._updateGlideSlope(this.airplane.navCom.getNav(2));
                 break;
         }
     }
@@ -417,11 +477,31 @@ class WT_G3x5_PFDAltimeterModel {
         this._updateAltitude();
         this._updateVSpeed();
         this._updateSelectedAltitude();
+        this._updateAltitudeAlertState();
         this._updateMinimums();
         this._updateReferenceVSpeed();
         this._updateVerticalTrack();
     }
 }
+/**
+ * @enum {Number}
+ */
+WT_G3x5_PFDAltimeterModel.AltitudeAlertState = {
+    NONE: 0,
+    WITHIN_1000_FT: 1,
+    WITHIN_200_FT: 2,
+    CAPTURED: 3,
+    DEVIATION: 4
+};
+/**
+ * @enum {Number}
+ */
+ WT_G3x5_PFDAltimeterModel.MinimumsState = {
+    UNKNOWN: 0,
+    ABOVE: 1,
+    WITHIN_100_FT: 2,
+    BELOW: 3
+};
 WT_G3x5_PFDAltimeterModel.GLIDESLOPE_FULL_DEFLECTION = 0.7;
 WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_ANGLE = 0.7;
 WT_G3x5_PFDAltimeterModel.GLIDEPATH_FULL_DEFLECTION_DEVIATION_MIN = WT_Unit.METER.createNumber(45);
@@ -434,16 +514,7 @@ WT_G3x5_PFDAltimeterModel.VTrackMode = {
     GLIDESLOPE: 1,
     GLIDEPATH: 2,
     VERTICAL_DEVIATION: 3
-}
-/**
- * @enum {Number}
- */
-WT_G3x5_PFDAltimeterModel.MinimumsState = {
-    UNKNOWN: 0,
-    ABOVE: 1,
-    WITHIN_100_FT: 2,
-    BELOW: 3
-}
+};
 
 class WT_G3x5_PFDAltimeterHTMLElement extends HTMLElement {
     constructor() {
@@ -641,6 +712,8 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         this._minorTicks = [];
         this._tapeMin = null;
         this._tapeTranslate = 0;
+
+        this._lastAlertState = WT_G3x5_PFDAltimeterModel.AltitudeAlertState.NONE;
     }
 
     connectedCallback() {
@@ -915,25 +988,18 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         }
     }
 
-    _set1000ToGoAlert(value) {
+    _setAlertState(state) {
     }
 
-    _setAltSActiveAlert(value) {
-    }
+    _updateAlertState() {
+        let alertState = this._context.model.altitudeAlertState;
+        this._setAlertState(alertState);
 
-    _updateAlerts() {
-        let indicatedAltFeet = this._context.model.indicatedAltitude.asUnit(WT_Unit.FOOT);
-
-        if (this._context.model.airplane.autopilot.isALTSArmed()){
-            let selectedAltFeet = this._context.model.selectedAltitude.asUnit(WT_Unit.FOOT);
-            this._set1000ToGoAlert(Math.abs(indicatedAltFeet - selectedAltFeet) < 1000);
-            this._setAltSActiveAlert(false);
-        } else if (this._context.model.airplane.autopilot.isALTSActive()) {
-            this._setAltSActiveAlert(true);
-            this._set1000ToGoAlert(false);
-        } else {
-            this._set1000ToGoAlert(false);
-            this._setAltSActiveAlert(false);
+        if (alertState !== this._lastAlertState) {
+            if (alertState === WT_G3x5_PFDAltimeterModel.AltitudeAlertState.DEVIATION) {
+                this._context.model.instrument.playInstrumentSound("tone_altitude_alert_default");
+            }
+            this._lastAlertState = alertState;
         }
     }
 
@@ -949,7 +1015,7 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         this._updateMinimums();
         this._updateBaro();
         this._updateMeters();
-        this._updateAlerts();
+        this._updateAlertState();
     }
 }
 WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_TICK_MAJOR_CLASS = "tickmajor";
