@@ -1,8 +1,4 @@
 class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
-    constructor() {
-        super();
-    }
-
     /**
      * @readonly
      * @property {WT_G3x5_PFDBottomInfoHTMLElement} htmlElement
