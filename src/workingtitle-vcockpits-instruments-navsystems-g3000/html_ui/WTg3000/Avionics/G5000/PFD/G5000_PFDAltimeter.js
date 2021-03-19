@@ -163,7 +163,7 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
     }
 
     _moveMinimumsBug(tapePos) {
-        let translate = Math.max(-50, Math.min(50, (tapePos - 0.5) * 100));
+        let translate = Math.max(-100, Math.min(100, (tapePos - 0.5) * 100));
         this._minimumsContainer.setAttribute("style", `transform: translateY(${translate}%);`);
     }
 
