@@ -402,31 +402,31 @@ class WT_VFRMapWT extends WT_VFRMap {
         for (let region of regions) {
             switch (region) {
                 case WT_MapViewRoadFeatureCollection.Region.NA:
-                    data.push(new WT_MapViewNARouteCollection());
+                    data.push(new WT_Garmin_MapViewNARouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.CA:
-                    data.push(new WT_MapViewMexicoRouteCollection());
+                    data.push(new WT_Garmin_MapViewMexicoRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EI:
-                    data.push(new WT_MapViewEIRouteCollection());
+                    data.push(new WT_Garmin_MapViewEIRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EW:
-                    data.push(new WT_MapViewEWRouteCollection());
+                    data.push(new WT_Garmin_MapViewEWRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EC:
-                    data.push(new WT_MapViewECRouteCollection());
+                    data.push(new WT_Garmin_MapViewECRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.RU:
-                    data.push(new WT_MapViewRussiaRouteCollection());
+                    data.push(new WT_Garmin_MapViewRussiaRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.CH:
-                    data.push(new WT_MapViewCHRouteCollection());
+                    data.push(new WT_Garmin_MapViewCHRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.AE:
-                    data.push(new WT_MapViewAERouteCollection());
+                    data.push(new WT_Garmin_MapViewAERouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.OC:
-                    data.push(new WT_MapViewOCRouteCollection());
+                    data.push(new WT_Garmin_MapViewOCRouteCollection());
                     break;
             }
         }
