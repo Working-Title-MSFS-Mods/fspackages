@@ -131,9 +131,7 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
      *
      * @param {WT_FlightPlanLeg} activeLeg
      */
-    _updateLeg(activeLeg) {
-        let flightPlan = this._context.airplane.fms.flightPlanManager.activePlan;
-        let previousLeg = flightPlan.leg(activeLeg.index - 1);
+    _updateLeg(activeLeg, previousLeg) {
         this._left.innerHTML = this._getWaypointDisplay(previousLeg);
         this._right.innerHTML = this._getWaypointDisplay(activeLeg);
     }
@@ -145,9 +143,10 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
             this._updateDirectTo();
         } else {
             let activeLeg = fpm.getActiveLeg(true);
-            if (activeLeg) {
+            let previousLeg = activeLeg ? fpm.activePlan.leg(activeLeg.index - 1) : null;
+            if (previousLeg) {
                 this._main.setAttribute("mode", "leg");
-                this._updateLeg(activeLeg);
+                this._updateLeg(activeLeg, previousLeg);
             } else {
                 this._main.setAttribute("mode", "none");
             }
@@ -204,6 +203,9 @@ WT_G3x5_PFDNavStatusHTMLElement.TEMPLATE.innerHTML = `
                     .mainsub {
                         margin: 0 0.1em;
                         color: var(--wt-g3x5-purple);
+                    }
+                    #main[mode="none"] .mainsub {
+                        display: none;
                     }
                         .middleicon {
                             width: 1.1em;
