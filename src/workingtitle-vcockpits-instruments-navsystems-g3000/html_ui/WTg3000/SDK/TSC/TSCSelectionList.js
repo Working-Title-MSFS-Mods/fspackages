@@ -27,7 +27,7 @@ class WT_TSCSelectionList extends HTMLElement {
         return this._context;
     }
 
-    _defineChildren() {
+    _initScrollList() {
         this._scrollList = new WT_TSCScrollList();
         this._scrollList.slot = "scrolllist";
         this._scrollList.style.position = "relative";
@@ -37,7 +37,7 @@ class WT_TSCSelectionList extends HTMLElement {
     }
 
     connectedCallback() {
-        this._defineChildren();
+        this._initScrollList();
         this._isInit = true;
     }
 
