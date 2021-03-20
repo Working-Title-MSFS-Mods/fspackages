@@ -567,64 +567,95 @@ as3000-pfd-element wt-pfd-bottominfo {
         width: 9%;
     }
 
-      as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys {
+as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys {
+    position: absolute;
+    left: 0%;
+    bottom: 0%;
+    width: 100%;
+    height: 7.5%;
+    font-family: "Roboto-Condensed";
+    font-weight: normal;
+    font-size: 2.5vh;
+    text-align: center;
+    background-color: var(--wt-g3x5-bggray);
+}
+    as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys #softkeyscontainer {
         position: absolute;
-        background-color: #1a1d21;
+        left: 50%;
+        top: 0%;
+        height: 100%;
+        transform: translateX(-50%);
         display: flex;
-        width: 100%;
-        height: 7.5%;
-        bottom: 0%;
-        font-size: 2vh;
-        text-align: center;
-        border-top: 0.4vh solid white; }
+        flex-flow: row nowrap;
+    }
         as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey {
-          position: relative;
-          width: 8.3%;
-          height: 100%;
-          border-right: 0.6vh solid;
-          padding-top: calc(var(--viewportHeightRatio) * (8px / 21.6) * var(--currentPageHeight) / 100); }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=White] {
+            position: relative;
+            width: 8.25vw;
+            height: 100%;
+            border: 1px solid #5a5a5a;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            background: linear-gradient(#373b42, #202329 50%);
+        }
+        as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=White] {
             color: #1a1d21;
-            background-color: white; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=AdvisoryAlert] {
+            background-color: white;
+        }
+        as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=AdvisoryAlert] {
             color: #1a1d21;
-            background-color: white; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=YellowAlert] {
+            background-color: white;
+        }
+        as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=YellowAlert] {
             color: #1a1d21;
-            background-color: yellow; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=RedAlert] {
+            background-color: yellow;
+        }
+        as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[state=RedAlert] {
             color: white;
-            background-color: red; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Title {
-            position: absolute;
-            width: 95%;
-            left: 2.5%;
-            height: 90%; }
+            background-color: red;
+        }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Title {
+                position: absolute;
+                left: 5%;
+                top: 40%;
+                width: 90%;
+                transform: translateY(-50%);
+            }
             as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Title[state=Greyed] {
-              color: #505050; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Value {
-            position: absolute;
-            height: 50%;
-            width: 95%;
-            left: 2.5%;
-            bottom: 0%;
-            color: #36c8d2; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status {
-            position: absolute;
-            width: 80%;
-            left: 10%;
-            height: 10%;
-            bottom: 10%;
-            display: none; }
-            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status[state=Active] {
-              display: block;
-              background-color: lawngreen; }
-            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status[state=Inactive] {
-              display: block;
-              background-color: black; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .end {
-          border: none;
-          width: 8.7%; }
+                color: #505050;
+            }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[show-value="true"] .Title {
+                top: 5%;
+                transform: none;
+            }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Value {
+                position: absolute;
+                left: 5%;
+                top: 72.5%;
+                width: 90%;
+                transform: translateY(-50%);
+                color: var(--wt-g3x5-lightblue);
+                display: none;
+            }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[show-value="true"] .Value {
+                display: block;
+            }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status {
+                position: absolute;
+                width: 60%;
+                left: 20%;
+                height: 10%;
+                bottom: 10%;
+                display: none;
+            }
+            as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey[show-statusbar="true"] .Status {
+                display: block;
+            }
+                as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status[toggle="on"] {
+                    background-color: lawngreen;
+                }
+                as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status[toggle="off"] {
+                    background-color: black;
+                }
 
 as3000-pfd-element #Electricity map-view {
     position: absolute;
