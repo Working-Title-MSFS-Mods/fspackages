@@ -409,7 +409,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._updateParentTitle();
     }
 }
-WT_G3x5_TSCAirportInfoHTMLElement.WAYPOINT_ICON_PATH = "/WTg3000/SDK/Assets/Images/TSC/Waypoints";
+WT_G3x5_TSCAirportInfoHTMLElement.WAYPOINT_ICON_PATH = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCAirportInfoHTMLElement.HEADER_CLASS = "airportInfoHeader";
 WT_G3x5_TSCAirportInfoHTMLElement.SELECT_BUTTON_CLASS = "airportInfoSelectButton";
 WT_G3x5_TSCAirportInfoHTMLElement.OPTIONS_BUTTON_CLASS = "airportInfoOptionsButton";
