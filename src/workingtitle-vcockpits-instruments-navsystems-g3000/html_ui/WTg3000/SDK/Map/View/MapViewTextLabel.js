@@ -284,7 +284,13 @@ class WT_MapViewTextLabelManager {
         this._lastPerformanceMode = false;
         this._preventOverlapChanged = false;
 
+        /**
+         * @type {Map<WT_MapViewTextLabel,WT_MapViewManagedTextLabel>}
+         */
         this._managedLabels = new Map();
+        /**
+         * @type {Set<WT_MapViewManagedTextLabel>}
+         */
         this._visibleLabels = new Set();
 
         this._lastRange = new WT_NumberUnit(0, WT_Unit.NMILE);
@@ -293,10 +299,19 @@ class WT_MapViewTextLabelManager {
 
         this._lastRotation = 0;
 
+        /**
+         * @type {WT_MapViewManagedTextLabel[]}
+         */
         this._collisionUpdateBuffer = [];
         this._collisionUpdateHead = 0;
 
+        /**
+         * @type {Set<WT_MapViewTextLabel>}
+         */
         this._toAddBuffer = new Set();
+        /**
+         * @type {Set<WT_MapViewTextLabel>}
+         */
         this._toRemoveBuffer = new Set();
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewTextLabelManager.OPTIONS_DEF);
@@ -347,8 +362,13 @@ class WT_MapViewTextLabelManager {
         return this._managedLabels.size >= this.perfModeThreshold;
     }
 
-    _updateOnAdd(data, managedLabelToAdd) {
-        managedLabelToAdd.label.update(data);
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewManagedTextLabel} managedLabelToAdd
+     */
+    _updateOnAdd(state, managedLabelToAdd) {
+        managedLabelToAdd.label.update(state);
         let show = true;
         if (this.preventOverlap) {
             let compareSet = this._isInPerformanceMode() ? this._visibleLabels.values() : this._managedLabels.values();
@@ -366,19 +386,33 @@ class WT_MapViewTextLabelManager {
         this._changeVisibility(managedLabelToAdd, show);
     }
 
+    /**
+     *
+     * @param {WT_MapViewManagedTextLabel} managedLabelToRemove
+     */
     _updateOnRemove(managedLabelToRemove) {
         this._changeVisibility(managedLabelToRemove, false);
-        for (let conflicted of managedLabelToRemove.collisions) {
-            conflicted.collisions.delete(managedLabelToRemove);
-        }
+        managedLabelToRemove.collisions.forEach(conflicted => conflicted.collisions.delete(managedLabelToRemove));
 
         this._managedLabels.delete(managedLabelToRemove.label);
     }
 
+    /**
+     *
+     * @param {WT_MapViewManagedTextLabel} managedLabel
+     * @param {Boolean} show
+     */
     _changeVisibility(managedLabel, show) {
         this._changeVisibilityHelper(managedLabel, show, 1);
     }
 
+    /**
+     *
+     * @param {WT_MapViewManagedTextLabel} managedLabel
+     * @param {Boolean} show
+     * @param {Number} depth
+     * @returns {Number}
+     */
     _changeVisibilityHelper(managedLabel, show, depth) {
         let queries = 0;
         if (depth > this.collisionResolutionMaxStackDepth) {
@@ -416,24 +450,20 @@ class WT_MapViewTextLabelManager {
     }
 
     _updateVisibleLabels(state) {
-        for (let visible of this._visibleLabels.values()) {
-            visible.label.update(state);
-        }
+        this._visibleLabels.forEach(visible => visible.label.update(state));
     }
 
     _updateAllLabels(state) {
-        for (let managedLabel of this._managedLabels.values()) {
-            managedLabel.label.update(state);
-        }
+        this._managedLabels.forEach(managedLabel => managedLabel.label.update(state));
     }
 
     _showAll(state) {
-        for (let managedLabel of this._managedLabels.values()) {
+        this._managedLabels.forEach(managedLabel => {
             managedLabel.collisions.clear();
             managedLabel.label.update(state);
             this._visibleLabels.add(managedLabel);
             managedLabel.show = true;
-        }
+        }, this);
     }
 
     _doUpdateCollisions() {
@@ -470,13 +500,9 @@ class WT_MapViewTextLabelManager {
     _startUpdateCollisions(state) {
         this._visibleLabels.clear();
 
-        for (let label of this._toRemoveBuffer.values()) {
-            this._managedLabels.delete(label);
-        }
+        this._toRemoveBuffer.forEach(label => this._managedLabels.delete(label), this);
         this._toRemoveBuffer.clear();
-        for (let label of this._toAddBuffer.values()) {
-            this._managedLabels.set(label, new WT_MapViewManagedTextLabel(label));
-        }
+        this._toAddBuffer.forEach(label => this._managedLabels.set(label, new WT_MapViewManagedTextLabel(label)), this);
         this._toAddBuffer.clear();
 
         this._lastPerformanceMode = this._isInPerformanceMode();
@@ -491,10 +517,10 @@ class WT_MapViewTextLabelManager {
             }
         );
         this._collisionUpdateHead = 0;
-        for (let managedLabel of this._collisionUpdateBuffer) {
+        this._collisionUpdateBuffer.forEach(managedLabel => {
             managedLabel.label.update(state);
             managedLabel.collisions.clear();
-        }
+        });
         this._doUpdateCollisions();
     }
 
@@ -502,8 +528,8 @@ class WT_MapViewTextLabelManager {
         return this._collisionUpdateBuffer.length > 0;
     }
 
-    _doAddRemove(data) {
-        this._isInPerformanceMode() ? this._updateVisibleLabels(data) : this._updateAllLabels(data);
+    _doAddRemove(state) {
+        this._isInPerformanceMode() ? this._updateVisibleLabels(state) : this._updateAllLabels(state);
 
         let queries = 0;
         while (this._toRemoveBuffer.size > 0 && queries <= this.addRemoveMaxQueries) {
@@ -513,7 +539,7 @@ class WT_MapViewTextLabelManager {
         }
         while (this._toAddBuffer.size > 0 && queries <= this.addRemoveMaxQueries) {
             let labelToAdd = this._toAddBuffer.values().next().value;
-            queries += this._updateOnAdd(data, new WT_MapViewManagedTextLabel(labelToAdd));
+            queries += this._updateOnAdd(state, new WT_MapViewManagedTextLabel(labelToAdd));
             this._toAddBuffer.delete(labelToAdd);
         }
     }
@@ -614,8 +640,8 @@ class WT_MapViewManagedTextLabel {
     }
 
     /**
+     * This label.
      * @readonly
-     * @property {WT_MapViewTextLabel} label - this label.
      * @type {WT_MapViewTextLabel}
      */
     get label() {
@@ -623,8 +649,8 @@ class WT_MapViewManagedTextLabel {
     }
 
     /**
+     * The set of labels that collide with this one.
      * @readonly
-     * @property {Set<WT_MapViewManagedTextLabel>} collisions - the set of labels that collide with this one.
      * @type {Set<WT_MapViewManagedTextLabel>}
      */
     get collisions() {
