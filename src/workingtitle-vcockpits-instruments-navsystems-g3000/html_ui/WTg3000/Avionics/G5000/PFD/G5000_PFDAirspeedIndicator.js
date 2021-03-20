@@ -27,8 +27,10 @@ class WT_G5000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
             trendLookahead: WT_G5000_PFDAirspeedIndicator.TREND_LOOKAHEAD,
             trendThreshold: WT_G5000_PFDAirspeedIndicator.TREND_THRESHOLD,
             machDisplayThreshold: WT_G5000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD,
-            redStrip: new WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition(this.instrument.airplane, [40, 40, 40, 40], [108, 104, 100, 86]),
-            yellowStrip: new WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition(this.instrument.airplane, [108, 104, 100, 86], [115, 111, 107, 93]),
+            //redStrip: new WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition(this.instrument.airplane, [40, 40, 40, 40], [140, 128, 120, 104]),
+            //yellowStrip: new WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition(this.instrument.airplane, [140, 128, 120, 104], [148, 135, 127, 110]),
+            redStrip: new WT_G5000_PFDAirspeedIndicatorAoAStripDefinition(this._model, WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MIN, WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MAX),
+            yellowStrip: new WT_G5000_PFDAirspeedIndicatorAoAStripDefinition(this._model, WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MIN, WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MAX),
             barberStrip: new WT_G5000_PFDAirspeedIndicatorBarberStripDefinition(this._model)
         });
         return htmlElement;
@@ -41,10 +43,18 @@ WT_G5000_PFDAirspeedIndicator.TAPE_MINOR_TICK_FACTOR = 1;
 WT_G5000_PFDAirspeedIndicator.TREND_LOOKAHEAD = 10;
 WT_G5000_PFDAirspeedIndicator.TREND_THRESHOLD = 1;
 WT_G5000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD = 0.4;
+WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MIN = 7.7;
+WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MAX = 9.9;
+WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MIN = 9.9;
+WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MAX = Infinity;
 
 class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
     constructor(airplane, speedBugCollection) {
         super(airplane, speedBugCollection);
+
+        this._aoaCoefSmoother = new WT_ExponentialSmoother(WT_G5000_PFDAirspeedIndicatorModel.AOA_SMOOTHING_CONSTANT);
+        this._aoaCoef = 0;
+        this._lastAoACoefTime = 0;
 
         this._minSpeed = WT_Unit.KNOT.createNumber(0);
         this._maxSpeed = WT_Unit.KNOT.createNumber(0);
@@ -54,7 +64,6 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} minSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get minSpeed() {
@@ -63,11 +72,38 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} maxSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get maxSpeed() {
         return this._maxSpeed.readonly();
+    }
+
+    /**
+     *
+     * @param {Number} aoa
+     * @param {WT_NumberUnit} [reference]
+     * @returns {WT_NumberUnit}
+     */
+    aoaToIAS(aoa, reference) {
+        if (this.airplane.dynamics.isOnGround()) {
+            return null;
+        }
+
+        let value = Math.sqrt(this._aoaCoef / aoa);
+        return reference ? reference.set(value, WT_Unit.KNOT) : WT_Unit.KNOT.createNumber(value);
+    }
+
+    _updateAoACoef() {
+        if (!this.airplane.dynamics.isOnGround()) {
+            let time = Date.now() / 1000;
+            let dt = time - this._lastAoACoefTime;
+            let ias = this.ias.asUnit(WT_Unit.KNOT);
+            let vSquared = ias * ias;
+            let aoa = this.airplane.dynamics.aoa();
+            let coef = aoa * vSquared;
+            this._aoaCoef = this._aoaCoefSmoother.next(coef, dt);
+            this._lastAoACoefTime = time;
+        }
     }
 
     _updateMinSpeed() {
@@ -90,10 +126,12 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
     update() {
         super.update();
 
+        this._updateAoACoef();
         this._updateMinSpeed();
         this._updateMaxSpeed();
     }
 }
+WT_G5000_PFDAirspeedIndicatorModel.AOA_SMOOTHING_CONSTANT = 5;
 
 class WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition extends WT_G3x5_PFDAirspeedIndicatorStripDefinition {
     /**
@@ -111,7 +149,6 @@ class WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition extends WT_G3x5_PFDAirsp
 
     /**
      * @readonly
-     * @property {Number} min
      * @type {Number}
      */
     get min() {
@@ -120,7 +157,6 @@ class WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition extends WT_G3x5_PFDAirsp
 
     /**
      * @readonly
-     * @property {Number} max
      * @type {Number}
      */
     get max() {
@@ -140,7 +176,6 @@ class WT_G5000_PFDAirspeedIndicatorBarberStripDefinition extends WT_G3x5_PFDAirs
 
     /**
      * @readonly
-     * @property {Number} min
      * @type {Number}
      */
     get min() {
@@ -149,11 +184,43 @@ class WT_G5000_PFDAirspeedIndicatorBarberStripDefinition extends WT_G3x5_PFDAirs
 
     /**
      * @readonly
-     * @property {Number} max
      * @type {Number}
      */
     get max() {
         return Infinity;
+    }
+}
+
+class WT_G5000_PFDAirspeedIndicatorAoAStripDefinition extends WT_G3x5_PFDAirspeedIndicatorStripDefinition {
+    /**
+     * @param {WT_G5000_PFDAirspeedIndicatorModel} model
+     */
+    constructor(model, minAoA, maxAoA) {
+        super();
+
+        this._model = model;
+        this._minAoA = minAoA;
+        this._maxAoA = maxAoA;
+
+        this._tempKnot = WT_Unit.KNOT.createNumber(0);
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get min() {
+        let speed = this._model.aoaToIAS(this._maxAoA, this._tempKnot);
+        return speed ? Math.round(speed.number) : 0;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+     get max() {
+        let speed = this._model.aoaToIAS(this._minAoA, this._tempKnot);
+        return speed ? Math.round(speed.number) : 0;
     }
 }
 
