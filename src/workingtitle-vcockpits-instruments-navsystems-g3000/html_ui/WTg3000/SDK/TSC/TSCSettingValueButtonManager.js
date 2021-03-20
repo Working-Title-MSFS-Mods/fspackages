@@ -4,7 +4,7 @@ class WT_TSCSettingValueButtonManager {
      * @param {WT_TSCValueButton} button
      * @param {WT_DataStoreSetting} setting
      * @param {NavSystemElementContainer} selectionListWindow
-     * @param {WT_TSCSelectionListWindowContext} context
+     * @param {WT_TSCSelectionListContext} context
      */
     constructor(instrument, button, setting, selectionListWindow, context, valueTextMapper) {
         this._instrument = instrument;
@@ -49,8 +49,8 @@ class WT_TSCSettingValueButtonManager {
 
     /**
      * @readonly
-     * @property {WT_TSCSelectionListWindow} selectionListWindow
-     * @type {WT_TSCSelectionListWindow}
+     * @property {NavSystemElementContainer} selectionListWindow
+     * @type {NavSystemElementContainer}
      */
     get selectionListWindow() {
         return this._selectionListWindow;

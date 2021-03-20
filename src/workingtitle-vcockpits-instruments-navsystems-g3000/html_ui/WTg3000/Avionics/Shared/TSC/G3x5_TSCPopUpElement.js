@@ -1,12 +1,14 @@
 class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     constructor() {
         super();
+
+        this._title = null;
+        this._isInit = false;
     }
 
     /**
      * @readonly
-     * @property {NavSystemTouch} instrument
-     * @type {NavSystemTouch}
+     * @type {AS3000_TSC}
      */
     get instrument() {
         return this.gps;
@@ -14,7 +16,6 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} popUpWindow
      * @type {HTMLElement}
      */
     get popUpWindow() {
@@ -23,7 +24,14 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPopUpElementContext} context
+     * @type {String}
+     */
+    get title() {
+        return this._title;
+    }
+
+    /**
+     * @readonly
      * @type {WT_G3x5_TSCPopUpElementContext}
      */
     get context() {
@@ -48,12 +56,38 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
         return this.context ? this.context.homePageName : undefined;
     }
 
+    onInit() {
+    }
+
     init(root) {
         this._popUpWindow = root;
+        this._titleDisplay = root.querySelector(`.WindowTitle`);
+        if (this._title === null) {
+            this._title = this._titleDisplay.textContent;
+        } else {
+            this._updateTitle();
+        }
+        this.onInit();
+        this._isInit = true;
     }
 
     setContext(context) {
         this._context = context;
+    }
+
+    _updateTitle() {
+        this._titleDisplay.textContent = this._title;
+    }
+
+    setTitle(title) {
+        if (title === this._title) {
+            return;
+        }
+
+        this._title = title;
+        if (this._isInit) {
+            this._updateTitle();
+        }
     }
 
     _onBackPressed() {

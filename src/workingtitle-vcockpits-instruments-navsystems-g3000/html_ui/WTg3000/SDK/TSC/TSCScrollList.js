@@ -5,7 +5,29 @@ class WT_TSCScrollList extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(WT_TSCScrollList.TEMPLATE.content.cloneNode(true));
     }
+
+    /**
+     * @readonly
+     * @type {WT_TSCScrollManager}
+     */
+    get scrollManager() {
+        return this._scrollManager;
+    }
+
+    _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+    }
+
+    _initScrollManager() {
+        this._scrollManager = new WT_TSCScrollManager(this._wrapper);
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._initScrollManager();
+    }
 }
+WT_TSCScrollList.NAME = "wt-tsc-scrolllist";
 WT_TSCScrollList.TEMPLATE = document.createElement("template");
 WT_TSCScrollList.TEMPLATE.innerHTML = `
     <style>
@@ -48,4 +70,4 @@ WT_TSCScrollList.TEMPLATE.innerHTML = `
     </div>
 `;
 
-customElements.define("tsc-scrolllist", WT_TSCScrollList);
+customElements.define(WT_TSCScrollList.NAME, WT_TSCScrollList);

@@ -421,8 +421,7 @@ WT_G3x5_TSCSpeedBugsTabHTMLElement.TEMPLATE.innerHTML = `
         </div>
         <div id="divider"></div>
         <div id="rowscontainer">
-            <tsc-scrolllist id="rows">
-            </tsc-scrolllist>
+            <wt-tsc-scrolllist id="rows"></wt-tsc-scrolllist>
         </div>
     </div>
 `;
