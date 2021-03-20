@@ -11,7 +11,13 @@ class WT_ICAOWaypointFactory {
     constructor(cacheSize = WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT) {
         this._cacheSize = cacheSize;
 
+        /**
+         * @type {Map<String,Set<String>>}
+         */
         this._icaosToRetrieve = new Map();
+        /**
+         * @type {Map<String,WT_ICAOWaypointFactoryCacheEntry>}
+         */
         this._waypointCache = new Map();
 
         this._airwayCache = new Map();
@@ -84,10 +90,10 @@ class WT_ICAOWaypointFactory {
             return;
         }
 
-        for (let route of routes) {
+        routes.forEach(route => {
             let airway = this._buildAirway(waypoint, route);
             waypoint.airways.push(airway);
-        }
+        }, this);
     }
 
     /**
@@ -169,9 +175,7 @@ class WT_ICAOWaypointFactory {
             this._icaosToRetrieve.set(coherentCallName, new Set());
         }
         let icaosToRetrieve = this._icaosToRetrieve.get(coherentCallName);
-        for (let icao of icaos) {
-            icaosToRetrieve.add(icao);
-        }
+        icaos.forEach(icao => icaosToRetrieve.add(icao));
     }
 
     /**
@@ -411,10 +415,9 @@ class WT_ICAOWaypointFactory {
     }
 
     update() {
-        for (let key of this._icaosToRetrieve.keys()) {
-            let icaos = this._icaosToRetrieve.get(key);
+        this._icaosToRetrieve.forEach((icaos, key) => {
             if (!icaos || icaos.size === 0) {
-                continue;
+                return;
             }
             let icaoArray = Array.from(icaos);
             Coherent.call(key, icaoArray, icaoArray.length);
@@ -422,7 +425,7 @@ class WT_ICAOWaypointFactory {
                 Coherent.call(WT_ICAOWaypointFactory.COHERENT_CALL_INTS, icaoArray, icaoArray.length);
             }
             icaos.clear();
-        }
+        }, this);
     }
 }
 WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT = 5000;
