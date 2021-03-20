@@ -738,9 +738,9 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
     }
 
     _clearTape() {
-        this._majorTicks.forEach(tick => this._tapeMajorTickLayer.removeChild(tick));
-        this._labels.forEach(label => this._tapeLabelLayer.removeChild(label));
-        this._minorTicks.forEach(tick => this._tapeMinorTickLayer.removechild(tick));
+        this._majorTicks.forEach(tick => this._tapeMajorTickLayer.removeChild(tick), this);
+        this._labels.forEach(label => this._tapeLabelLayer.removeChild(label), this);
+        this._minorTicks.forEach(tick => this._tapeMinorTickLayer.removechild(tick), this);
 
         this._majorTicks = [];
         this._labels = [];
@@ -1041,8 +1041,8 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         this._updateAlertState();
     }
 }
-WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_TICK_MAJOR_CLASS = "tickmajor";
-WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_TICK_MINOR_CLASS = "tickmajor";
+WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_TICK_MAJOR_CLASS = "tickMajor";
+WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_TICK_MINOR_CLASS = "tickMinor";
 WT_G3x5_PFDAltimeterAltitudeHTMLElement.TAPE_LABEL_CLASS = "label";
 
 /**
