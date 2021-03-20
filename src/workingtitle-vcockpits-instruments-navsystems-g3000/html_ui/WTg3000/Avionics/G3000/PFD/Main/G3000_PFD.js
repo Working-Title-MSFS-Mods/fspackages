@@ -10,7 +10,7 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
     }
 
     _initSoftkeyContainer() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(WT_G3000_PFDSoftKeyHTMLElement)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(WT_G3000_PFDSoftKey)));
     }
 
     _initComponents() {
@@ -28,32 +28,79 @@ class WT_G3000_PFDSoftKeyElement extends SoftKeyElement {
         this.valueCallback = _valueCB;
     }
 }
-class WT_G3000_PFDSoftKeyHTMLElement extends SoftKeyHtmlElement {
-    constructor(_elem) {
-        super(_elem);
-        this.Element = _elem.getElementsByClassName("Title")[0];
-        this.ValueElement = _elem.getElementsByClassName("Value")[0];
-        this.StatusBar = _elem.getElementsByClassName("Status")[0];
+
+class WT_G3000_PFDSoftKey {
+    /**
+     * @param {HTMLElement} container
+     */
+    constructor(container) {
+        this._container = container;
+
+        this._defineChildren();
     }
-    fillFromElement(_elem) {
-        super.fillFromElement(_elem);
-        if (_elem.statusBarCallback == null) {
-            Avionics.Utils.diffAndSetAttribute(this.StatusBar, "state", "None");
+
+    _defineChildren() {
+        this._containerCached = new WT_CachedElement(this._container);
+        this._title = new WT_CachedElement(this._container.querySelector(`.Title`));
+        this._value = new WT_CachedElement(this._container.querySelector(`.Value`));
+        this._statusBar = new WT_CachedElement(this._container.querySelector(`.Status`));
+    }
+
+    _updateTitle(element) {
+        this._title.innerHTML = element.name;
+    }
+
+    _updateState(element) {
+        if (element.stateCallback) {
+            element.state = element.stateCallback();
+        } else if (!element.callback) {
+            element.state = "Greyed";
         }
-        else {
-            if (_elem.statusBarCallback()) {
-                Avionics.Utils.diffAndSetAttribute(this.StatusBar, "state", "Active");
-            }
-            else {
-                Avionics.Utils.diffAndSetAttribute(this.StatusBar, "state", "Inactive");
-            }
+
+        if (element.state) {
+            this._title.setAttribute("state", element.state);
         }
-        if (_elem.valueCallback == null) {
-            Avionics.Utils.diffAndSet(this.ValueElement, "");
+    }
+
+    _showStatusBar(value) {
+        this._containerCached.setAttribute("show-statusbar", `${value}`);
+    }
+
+    _setStatusBarToggle(value) {
+        this._statusBar.setAttribute("toggle", value ? "on" : "off");
+    }
+
+    _updateStatusBar(element) {
+        if (element.statusBarCallback == null) {
+            this._showStatusBar(false);
+        } else {
+            this._setStatusBarToggle(element.statusBarCallback());
+            this._showStatusBar(true);
         }
-        else {
-            Avionics.Utils.diffAndSet(this.ValueElement, _elem.valueCallback());
+    }
+
+    _showValue(value) {
+        this._containerCached.setAttribute("show-value", `${value}`);
+    }
+
+    _setValueDisplay(text) {
+        this._value.innerHTML = text;
+    }
+
+    _updateValue(element) {
+        if (element.valueCallback == null) {
+            this._showValue(false);
+        } else {
+            this._setValueDisplay(element.valueCallback());
+            this._showValue(true);
         }
+    }
+
+    fillFromElement(element) {
+        this._updateTitle(element);
+        this._updateState(element);
+        this._updateStatusBar(element);
+        this._updateValue(element);
     }
 }
 
@@ -150,8 +197,8 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
         this._innerMap = this.gps.getElementOfType(WT_G3x5_PFDInsetMap);
 
         this._rootMenu.elements = [
-            new WT_G3000_PFDSoftKeyElement("Map Range-", this._changeMapRange.bind(this, -1), null, null, this._getInsetMapSoftkeyState.bind(this)),
-            new WT_G3000_PFDSoftKeyElement("Map Range+", this._changeMapRange.bind(this, 1), null, null, this._getInsetMapSoftkeyState.bind(this)),
+            new WT_G3000_PFDSoftKeyElement("Map Range&nbsp−", this._changeMapRange.bind(this, -1), null, null, this._getInsetMapSoftkeyState.bind(this)),
+            new WT_G3000_PFDSoftKeyElement("Map Range&nbsp+", this._changeMapRange.bind(this, 1), null, null, this._getInsetMapSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("PFD Map Settings", this._switchSoftkeyMenu.bind(this, this._pfdMapMenu)),
             new WT_G3000_PFDSoftKeyElement("Traffic Inset", null, this._constElement.bind(this, false)),
             new WT_G3000_PFDSoftKeyElement("PFD Settings", this._switchSoftkeyMenu.bind(this, this._pfdMenu)),
