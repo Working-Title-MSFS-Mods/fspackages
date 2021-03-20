@@ -11,9 +11,9 @@ class WT_G5000_PFDAoAIndicator extends WT_G3x5_PFDAoAIndicator {
     _createHTMLElement() {
         let htmlElement = new WT_G5000_PFDAoAIndicatorHTMLElement();
         htmlElement.setContext({
-            tickFraction: 0.6,
+            yellowFraction: 0.7,
             redFraction: 0.9,
-            criticalAngle: 12,
+            criticalAngle: 11,
             airplane: this.instrument.airplane,
             modeSetting: this.aoaModeSetting
         });
@@ -41,18 +41,22 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
         this._modeListener = this._onModeSettingChanged.bind(this);
 
         /**
-         * @type {{tickFraction:Number, redFraction:Number, criticalAngle:Number, airplane:WT_PlayerAirplane, modeSetting:WT_G3x5_PFDAoAModeSetting}}
+         * @type {WT_G5000_PFDAoAIndicatorContext}
          */
         this._context = null;
-        this._oldContext;
+        this._oldContext = null;
         this._isInit = false;
 
         this._mode = WT_G3x5_PFDAoAModeSetting.Mode.OFF;
+
+        this._tempVector1 = new WT_GVector2(0, 0);
+        this._tempVector2 = new WT_GVector2(0, 0);
     }
 
     _defineChildren() {
-        this._tick = this.shadowRoot.querySelector(`#tick`);
+        this._yellowArc = this.shadowRoot.querySelector(`#yellowarc`);
         this._redArc = this.shadowRoot.querySelector(`#redarc`);
+        this._ticks = this.shadowRoot.querySelectorAll(`#ticks line`);
         this._needle = this.shadowRoot.querySelector(`#needle`);
     }
 
@@ -62,8 +66,19 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
         this._updateFromContext();
     }
 
-    _rotateElement(element, fraction) {
-        element.setAttribute("transform", `rotate(${fraction * 90} 95 95)`);
+    _calculateAngle(fraction) {
+        let window = WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MAX - WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MIN;
+        return -(fraction - WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MIN) / window * 180 + 180;
+    }
+
+    _selectColor(fraction) {
+        if (fraction >= this._context.redFraction) {
+            return WT_G5000_PFDAoAIndicatorHTMLElement.Color.RED;
+        } else if (fraction >= this._context.yellowFraction) {
+            return WT_G5000_PFDAoAIndicatorHTMLElement.Color.YELLOW;
+        } else {
+            return WT_G5000_PFDAoAIndicatorHTMLElement.Color.WHITE;
+        }
     }
 
     _updateModeListener() {
@@ -76,27 +91,42 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
         }
     }
 
-    _updateTick() {
-        this._rotateElement(this._tick, this._context ? this._context.tickFraction : 0.5);
+    _updateArc(arc, startFraction, endFraction) {
+        let startAngle = Math.max(0, Math.min(180, this._calculateAngle(startFraction))) * Avionics.Utils.DEG2RAD;
+        let endAngle = Math.max(0, Math.min(180, this._calculateAngle(endFraction))) * Avionics.Utils.DEG2RAD;
+
+        let start = this._tempVector1.setFromPolar(45, startAngle).add(50, 50);
+        let end = this._tempVector2.setFromPolar(45, endAngle).add(50, 50);
+
+        arc.setAttribute("d", `M ${start.x} ${start.y} A 45 45 0 0 0 ${end.x} ${end.y}`);
+    }
+
+    _updateYellowArc() {
+        this._updateArc(this._yellowArc, this._context ? this._context.yellowFraction : WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MAX, this._context ? this._context.redFraction : WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MAX);
     }
 
     _updateRedArc() {
-        let angle = ((this._context ? this._context.redFraction : 1) - 1) * Math.PI / 2;
-        let x = 95 + 90 * Math.sin(angle);
-        let y = 95 - 90 * Math.cos(angle);
-        this._redArc.setAttribute("d", `M ${x} ${y} A 90 90 0 0 1 95 5`);
+        this._updateArc(this._redArc, this._context ? this._context.redFraction : WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MAX, WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MAX);
+    }
+
+    _updateTicks() {
+        this._ticks.forEach(tick => {
+            let fraction = parseFloat(tick.getAttribute("fraction"));
+            tick.setAttribute("color", this._selectColor(fraction));
+        });
     }
 
     _updateFromContext() {
         this._updateModeListener();
         this._updateMode();
-        this._updateTick();
+        this._updateYellowArc();
         this._updateRedArc();
+        this._updateTicks();
     }
 
     /**
      *
-     * @param {{tickFraction:Number, redFraction:Number, criticalAngle:Number, airplane:WT_PlayerAirplane, modeSetting:WT_G3x5_PFDAoAModeSetting}} context
+     * @param {WT_G5000_PFDAoAIndicatorContext} context
      */
     setContext(context) {
         if (this._context === context) {
@@ -111,19 +141,24 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
         }
     }
 
+    _rotateNeedle(fraction) {
+        let angle = this._calculateAngle(fraction);
+        this._needle.setAttribute("transform", `rotate(${Math.max(0, Math.min(180, angle))} 50 50)`);
+    }
+
+    _setNeedleColor(fraction) {
+        this._needle.setAttribute("color", this._selectColor(fraction));
+    }
+
     _updateNeedle() {
-        let aoa = this._context ? this._context.airplane.dynamics.aoa() : 0;
-        let fraction = Math.max(0, Math.min(1, this._context ? (aoa / this._context.criticalAngle) : 0));
-        this._rotateElement(this._needle, fraction);
-        if (fraction >= (this._context ? this._context.redFraction : 1)) {
-            this._needle.setAttribute("red", "true");
-        } else {
-            this._needle.setAttribute("red", "false");
-        }
+        let aoa = this._context.airplane.dynamics.aoa();
+        let fraction = aoa / this._context.criticalAngle;
+        this._rotateNeedle(fraction);
+        this._setNeedleColor(fraction);
     }
 
     update() {
-        if (!this._isInit) {
+        if (!this._isInit || !this._context) {
             return;
         }
 
@@ -144,6 +179,16 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
         this._updateMode();
     }
 }
+/**
+ * @enum {String}
+ */
+WT_G5000_PFDAoAIndicatorHTMLElement.Color = {
+    WHITE: "white",
+    YELLOW: "yellow",
+    RED: "red"
+};
+WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MIN = 0.2;
+WT_G5000_PFDAoAIndicatorHTMLElement.SCALE_MAX = 1;
 WT_G5000_PFDAoAIndicatorHTMLElement.NAME = "wt-pfd-aoaindicator";
 WT_G5000_PFDAoAIndicatorHTMLElement.TEMPLATE = document.createElement("template");
 WT_G5000_PFDAoAIndicatorHTMLElement.TEMPLATE.innerHTML = `
@@ -159,10 +204,10 @@ WT_G5000_PFDAoAIndicatorHTMLElement.TEMPLATE.innerHTML = `
 
         #wrapper {
             position: absolute;
-            left: var(--aoaindicator-margin-left, 0%);
-            top: var(--aoaindicator-margin-top, 0%);
-            width: calc(100% - var(--aoaindicator-margin-left, 0%) - var(--aoaindicator-margin-right, 0%));
-            height: calc(100% - var(--aoaindicator-margin-top, 0%) - var(--aoaindicator-margin-bottom, 0%));
+            left: var(--aoaindicator-margin-left, 0.1em);
+            top: var(--aoaindicator-margin-top, 0.1em);
+            width: calc(100% - var(--aoaindicator-margin-left, 0.1em) - var(--aoaindicator-margin-right, 0.1em));
+            height: calc(100% - var(--aoaindicator-margin-top, 0.1em) - var(--aoaindicator-margin-bottom, 0.1em));
         }
             #gauge {
                 position: absolute;
@@ -172,50 +217,90 @@ WT_G5000_PFDAoAIndicatorHTMLElement.TEMPLATE.innerHTML = `
                 height: 100%;
             }
                 svg {
-                    width: 90%;
+                    width: 100%;
                     height: 100%;
                 }
-                    #tick {
-                        stroke: white;
-                        stroke-width: 2;
-                        fill: transparent;
-                    }
                     .arc {
-                        stroke-width: 6;
+                        stroke-width: 4;
                         fill: transparent;
                     }
                     #whitearc {
                         stroke: white;
                     }
+                    #yellowarc {
+                        stroke: var(--wt-g3x5-amber);
+                    }
                     #redarc {
                         stroke: red;
+                    }
+                    #ticks {
+                        stroke-width: 3;
+                        fill: transparent;
+                    }
+                        #ticks line {
+                            stroke: white;
+                        }
+                        #ticks line[color="yellow"] {
+                            stroke: var(--wt-g3x5-amber);
+                        }
+                        #ticks line[color="red"] {
+                            stroke: red;
+                        }
+                    #labels {
+                        fill: white;
+                        font-size: var(--aoaindicator-label-font-size, 0.95em);
                     }
                     #needle {
                         stroke: black;
                         stroke-width: 1;
                         fill: white;
                     }
-                    #needle[red="true"] {
+                    #needle[color="yellow"] {
+                        fill: var(--wt-g3x5-amber);
+                    }
+                    #needle[color="red"] {
                         fill: red;
                     }
-            #label {
+            #title {
                 position: absolute;
-                right: 0%;
-                top: 60%;
+                left: 0%;
+                top: 40%;
                 transform: translateY(-50%);
             }
     </style>
     <div id="wrapper">
         <div id="gauge">
             <svg viewBox="0 0 100 100">
-                <path id="tick" d="M 5 95 L -15 95"></path>
-                <path id="whitearc" class="arc" d="M 5 95 A 90 90 0 0 1 95 5"></path>
+                <path id="whitearc" class="arc" d="M 50 95 A 45 45 0 0 0 50 5"></path>
+                <path id="yellowarc" class="arc" d=""></path>
                 <path id="redarc" class="arc" d=""></path>
-                <path id="needle" d="M 5 95 L 25 100 L 25 90 Z"></path>
+                <g id="ticks">
+                    <line fraction="0.2" x1="50" y1="97" x2="50" y2="85" transform="rotate(0 50 50)" />
+                    <line fraction="0.4" x1="50" y1="95" x2="50" y2="85" transform="rotate(-45 50 50)" />
+                    <line fraction="0.6" x1="50" y1="95" x2="50" y2="85" transform="rotate(-90 50 50)" />
+                    <line fraction="0.8" x1="50" y1="95" x2="50" y2="85" transform="rotate(-135 50 50)" />
+                    <line fraction="1" x1="50" y1="97" x2="50" y2="85" transform="rotate(-180 50 50)" />
+                </g>
+                <g id="labels">
+                    <text x="50" y="80" text-anchor="middle" alignment-baseline="text-bottom">.2</text>
+                    <text x="80" y="50" text-anchor="end" alignment-baseline="middle">.6</text>
+                    <text x="50" y="20" text-anchor="middle" alignment-baseline="hanging">1.0</text>
+                </g>
+                <path id="needle" d="M 50 50 C 45 40 45 40 50 5 C 55 40 55 40 50 50"></path>
             </svg>
         </div>
-        <div id="label">AOA</div>
+        <div id="title">AOA</div>
     </div>
 `;
 
 customElements.define(WT_G5000_PFDAoAIndicatorHTMLElement.NAME, WT_G5000_PFDAoAIndicatorHTMLElement);
+
+/**
+ * @typedef WT_G5000_PFDAoAIndicatorContext
+ * @property {{min:Number, max:Number, majorTick:Number, minorTickFactor:Number, majorTickLength:Number, minorTickLength:Number, labelFontSize:Number}} scale
+ * @property {Number} yellowFraction
+ * @property {Number} redFraction
+ * @property {Number} criticalAngle
+ * @property {WT_PlayerAirplane} airplane
+ * @property {WT_G3x5_PFDAoAModeSetting} modeSetting
+ */
