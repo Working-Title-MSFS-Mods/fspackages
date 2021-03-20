@@ -13,16 +13,14 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {String} homePageGroup
      * @type {String}
      */
-     get homePageGroup() {
+    get homePageGroup() {
         return this.instrument.getCurrentPageGroup().name;
     }
 
     /**
      * @readonly
-     * @property {String} homePageName
      * @type {String}
      */
     get homePageName() {
@@ -31,7 +29,6 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_SpeedBugCollection}
      * @type {WT_SpeedBugCollection}
      */
     get speedBugCollection() {
@@ -40,7 +37,6 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {{title:String, speedBugs:WT_SpeedBug[]}[]} tabDefinitions
      * @type {{title:String, speedBugs:WT_SpeedBug[]}[]}
      */
     get tabDefinitions() {
@@ -49,7 +45,6 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCSpeedBugHTMLElement} htmlElement
      * @type {WT_G3x5_TSCSpeedBugsHTMLElement}
      */
     get htmlElement() {
@@ -69,8 +64,20 @@ class WT_G3x5_TSCSpeedBugs extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
     }
 
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.open();
+    }
+
     onUpdate(deltaTime) {
         this.htmlElement.update();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
     }
 }
 
@@ -90,7 +97,6 @@ class WT_G3x5_TSCSpeedBugsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCSpeedBug} parentPage
      * @type {WT_G3x5_TSCSpeedBugs}
      */
     get parentPage() {
@@ -109,7 +115,7 @@ class WT_G3x5_TSCSpeedBugsHTMLElement extends HTMLElement {
     _initTabs() {
         let tabDefs = this.parentPage.tabDefinitions;
         tabDefs.forEach(this._initTab.bind(this));
-        this._tabbedContent.setActiveTabIndex(0);
+        this._lastActiveTabIndex = 0;
     }
 
     _initTabbedContent() {
@@ -160,12 +166,33 @@ class WT_G3x5_TSCSpeedBugsHTMLElement extends HTMLElement {
         this._tabbedContent.setActiveTabIndex(index);
     }
 
+    _updateActiveTab() {
+        this._tabbedContent.getActiveTab().update();
+    }
+
+    open() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._tabbedContent.setActiveTabIndex(this._lastActiveTabIndex);
+    }
+
     update() {
         if (!this._isInit) {
             return;
         }
 
-        this._tabbedContent.getActiveTab().update();
+        this._updateActiveTab();
+    }
+
+    close() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._lastActiveTabIndex = this._tabbedContent.getActiveTabIndex();
+        this._tabbedContent.setActiveTabIndex(-1);
     }
 }
 WT_G3x5_TSCSpeedBugsHTMLElement.DEFAULT_BUTTON_CLASS = "speedBugsDefaultButton";
@@ -209,7 +236,6 @@ class WT_G3x5_TSCSpeedBugsTab extends WT_G3x5_TSCTabContent {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCSpeedBug} parentPage
      * @type {WT_G3x5_TSCSpeedBugs}
      */
     get parentPage() {
@@ -218,7 +244,6 @@ class WT_G3x5_TSCSpeedBugsTab extends WT_G3x5_TSCTabContent {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCSpeedBugsTabHTMLElement} htmlElement
      * @type {WT_G3x5_TSCSpeedBugsTabHTMLElement}
      */
     get htmlElement() {
@@ -227,7 +252,6 @@ class WT_G3x5_TSCSpeedBugsTab extends WT_G3x5_TSCTabContent {
 
     /**
      * @readonly
-     * @property {WT_SpeedBug[]} speedBugs
      * @type {WT_SpeedBug[]}
      */
     get speedBugs() {
@@ -262,8 +286,36 @@ class WT_G3x5_TSCSpeedBugsTab extends WT_G3x5_TSCTabContent {
         this.speedBugs.forEach(speedBug => speedBug.setShow(false));
     }
 
+    _activateNavButtons() {
+        this.parentPage.instrument.activateNavButton(5, "Up", this._onUpPressed.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.parentPage.instrument.activateNavButton(6, "Down", this._onDownPressed.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
+    }
+
+    _deactivateNavButtons() {
+        this.parentPage.instrument.deactivateNavButton(5, false);
+        this.parentPage.instrument.deactivateNavButton(6, false);
+    }
+
+    onActivated() {
+        this._activateNavButtons();
+        this.htmlElement.open();
+    }
+
+    onDeactivated() {
+        this._deactivateNavButtons();
+        this.htmlElement.close();
+    }
+
     update() {
         this.htmlElement.update();
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollDown();
     }
 }
 
@@ -284,7 +336,6 @@ class WT_G3x5_TSCSpeedBugsTabHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCSpeedBugsTab} parent
      * @type {WT_G3x5_TSCSpeedBugsTab}
      */
      get parent() {
@@ -294,10 +345,11 @@ class WT_G3x5_TSCSpeedBugsTabHTMLElement extends HTMLElement {
     _defineChildren() {
         let allOnButton = this.shadowRoot.querySelector(`#allon`);
         let allOffButton = this.shadowRoot.querySelector(`#alloff`);
-        if (allOnButton instanceof WT_TSCLabeledButton && allOffButton instanceof WT_TSCLabeledButton) {
+        let rowsElement = this.shadowRoot.querySelector(`#rows`);
+        if (allOnButton instanceof WT_TSCLabeledButton && allOffButton instanceof WT_TSCLabeledButton && rowsElement instanceof WT_TSCScrollList) {
             this._allOnButton = allOnButton;
             this._allOffButton = allOffButton;
-            this._rowsElement = this.shadowRoot.querySelector(`#rows`);
+            this._rowsElement = rowsElement;
             return true;
         } else {
             return false;
@@ -335,12 +387,31 @@ class WT_G3x5_TSCSpeedBugsTabHTMLElement extends HTMLElement {
         }
     }
 
+    scrollUp() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._rowsElement.scrollManager.scrollUp();
+    }
+
+    scrollDown() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._rowsElement.scrollManager.scrollDown();
+    }
+
     _onAllOnButtonPressed(button) {
         this.parent.toggleAllBugsOn();
     }
 
     _onAllOffButtonPressed(button) {
         this.parent.toggleAllBugsOff();
+    }
+
+    open() {
     }
 
     _updateAllToggleButtons() {
@@ -351,12 +422,25 @@ class WT_G3x5_TSCSpeedBugsTabHTMLElement extends HTMLElement {
         this._allOffButton.enabled = `${offCount < total}`;
     }
 
+    _updateScroll() {
+        this._rowsElement.scrollManager.update();
+    }
+
     update() {
         if (!this._isInit) {
             return;
         }
 
         this._updateAllToggleButtons();
+        this._updateScroll();
+    }
+
+    close() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._rowsElement.scrollManager.cancelScroll();
     }
 }
 WT_G3x5_TSCSpeedBugsTabHTMLElement.NAME = "wt-tsc-speedbugs-tab";
