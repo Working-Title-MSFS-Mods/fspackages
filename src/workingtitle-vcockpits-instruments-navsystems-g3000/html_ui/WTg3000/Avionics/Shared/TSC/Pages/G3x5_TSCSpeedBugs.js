@@ -708,7 +708,7 @@ class WT_G3x5_TSCSpeedBugSpeedButton extends WT_TSCLabeledButton {
         this._updateEditIcon(speedBug);
     }
 }
-WT_G3x5_TSCSpeedBugSpeedButton.EDIT_ICON_IMAGE_PATH = "/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png";
+WT_G3x5_TSCSpeedBugSpeedButton.EDIT_ICON_IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_PENCIL.png";
 WT_G3x5_TSCSpeedBugSpeedButton.UNIT_CLASS = "unit";
 WT_G3x5_TSCSpeedBugSpeedButton.NAME = "wt-tsc-button-speedbugspeed";
 
