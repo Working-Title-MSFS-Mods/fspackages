@@ -83,7 +83,7 @@ var AS1000;
                             this.nav1ActiveValue = nav1ActiveValue;
                     }
                 }
-                Avionics.Utils.diffAndSet(this.nav1IdentElement, SimVar.GetSimVarValue("NAV IDENT:1", "string"));
+                Avionics.Utils.diffAndSet(this.nav1IdentElement, SimVar.GetSimVarValue("NAV SIGNAL:1", "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:1", "string") : "");
                 var nav2Active = SimVar.GetSimVarValue("NAV ACTIVE FREQUENCY:2", "MHz");
                 if (nav2Active) {
                     var nav2ActiveValue = nav2Active.toFixed(2);
@@ -92,7 +92,7 @@ var AS1000;
                         this.nav2ActiveValue = nav2ActiveValue;
                     }
                 }
-                Avionics.Utils.diffAndSet(this.nav2IdentElement, SimVar.GetSimVarValue("NAV IDENT:2", "string"));
+                Avionics.Utils.diffAndSet(this.nav2IdentElement, SimVar.GetSimVarValue("NAV SIGNAL:2", "number") > 0 ? SimVar.GetSimVarValue("NAV IDENT:2", "string") : "");
                 var nav1Sby = SimVar.GetSimVarValue("NAV STANDBY FREQUENCY:1", "MHz");
                 if (nav1Sby) {
                     var nav1SbyValue = nav1Sby.toFixed(2);
@@ -403,8 +403,8 @@ class Engine extends NavSystemElementContainer {
                     this.addGauge().Set(_engine.querySelector(".Turbo_IttGauge"), this.settings.ITTEngineOff, this.getItt.bind(this, _index), "ITT", "°C");
                     this.addGauge().Set(_engine.querySelector(".Turbo_OilPressGauge"), this.settings.OilPressure, this.getOilPress.bind(this, _index), "OIL PRESS", "");
                     this.addGauge().Set(_engine.querySelector(".Turbo_OilTempGauge"), this.settings.OilTemperature, this.getOilTempCelsius.bind(this, _index), "OIL TEMP", "");
-                    let CAS = new Engine_Annunciations();
-                    this.allElements.push(CAS);
+                    this.engineAnnunciations = new Engine_Annunciations();
+                    this.allElements.push(this.engineAnnunciations);
                     break;
                 }
         }
@@ -412,6 +412,10 @@ class Engine extends NavSystemElementContainer {
             this.allEnginesReady = true;
             this.element = new NavSystemElementGroup(this.allElements);
         }
+    }
+    reset() {
+        if (this.engineAnnunciations)
+            this.engineAnnunciations.reset();
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);

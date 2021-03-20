@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_WT_aural_minimums" ID="{B0EA6710-2E6D-4A20-8D75-1895A5466FDD}">
+					<ChildrenList>
+						<Action Name="" ID="{63E761FB-B7CD-44B1-B95F-1CD2EFED3646}" ShortID="1005793564">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Minimums" ID="{56279A5F-865F-4D47-8C3A-B57AA7F99377}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_landing_gear" ID="{9D4746EF-5E85-47CE-8BCA-5A3D2D405EDC}">
+					<ChildrenList>
+						<Action Name="" ID="{FD6960C2-A232-44B3-B6A3-DC4160E0CA46}" ShortID="83176080">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Landing Gear" ID="{48003B72-21DD-43FB-9A88-ECB85ECFB694}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="PLay_Asobo_CJ4_WT_aural_overspeed" ID="{4D2554F3-4710-45AC-8D4E-77290D39C2D2}">
+					<ChildrenList>
+						<Action Name="" ID="{509D5CC4-9C6C-4E1C-B39B-F492F1FE3EBD}" ShortID="184811662">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Overspeed" ID="{C2137D82-431E-4365-B5C1-F538F203A9EF}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_pull_up" ID="{F4409C70-BAB8-4099-AD9F-3FCD7B2D83F5}">
+					<ChildrenList>
+						<Action Name="" ID="{04B665EE-35CC-4FC3-B027-A0C43EEBCFC1}" ShortID="459452801">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Pull Up" ID="{24FC2A89-AAA0-452F-90B0-22A93DFC8FED}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_tone_caution" ID="{29767814-0A73-44D7-84D2-0C6170AEDA21}">
+					<ChildrenList>
+						<Action Name="" ID="{2D364EB1-4B9C-4D15-84BD-630EA129D147}" ShortID="309241973">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Caution" ID="{BA931A27-373B-403F-944D-FA9238145F71}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_tone_warning" ID="{2E101E13-37F4-4B29-AE34-66F563FE0D1F}">
+					<ChildrenList>
+						<Action Name="" ID="{6F0588B4-ABA5-437D-BE46-95EC14000DEA}" ShortID="743846372">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Warning" ID="{8EE90D65-AB2B-4611-B80B-EF5839AF48B7}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_altitude_alerter" ID="{519FC418-3F07-4DD1-88B6-8AF7DCA46DF2}">
+					<ChildrenList>
+						<Action Name="" ID="{A18F17B9-7E80-4094-8439-F87184BB61F8}" ShortID="635883731">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Altitude Alerter" ID="{42ABCC31-E81D-4AFE-BBEF-14EC5C416BED}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_500ft" ID="{58C19F51-5D26-4090-83D9-F4139E7EAF0F}">
+					<ChildrenList>
+						<Action Name="" ID="{9EEBCCF5-583B-4BE5-AF1A-BBC735DB3A61}" ShortID="1069460360">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="500" ID="{EE7A5224-ED63-4E5C-8411-09FE190C051C}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_sink_rate" ID="{F6417036-7B1E-4B81-98E1-D13B65EB44D3}">
+					<ChildrenList>
+						<Action Name="" ID="{317C0269-2D26-46CE-AD0F-70D3756D2038}" ShortID="199054394">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Sink Rate" ID="{499F1C72-3F5E-4824-B4A5-64F6EE9B93DB}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_aural_dont_sink" ID="{E92F1B62-0B2D-4D63-9356-2528EAC61824}">
+					<ChildrenList>
+						<Action Name="" ID="{43CBD458-28CF-4A79-A8F7-35EB6C19B2BA}" ShortID="286883218">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Dont Sink" ID="{5974EBA0-240A-4BB7-AFA4-0698C1AF0D4B}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_AP_Disconnect" ID="{9C185DAB-38CF-4443-845E-B476AE72E628}">
+					<ChildrenList>
+						<Action Name="" ID="{17C088A4-1D57-4CB9-9B8B-BF9F639B104F}" ShortID="545263794">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Autopilot Disconnect" ID="{E0C0190F-6A0F-4C49-9FD1-7B3F7286104B}" WorkUnitID="{776BA055-3B9A-4A60-8C5E-FA283A26CCCF}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

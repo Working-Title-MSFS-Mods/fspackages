@@ -34,10 +34,13 @@
                                 </div>
                                 <div class="cj4x-navigation-data-col cj4x-navigation-data-waypoint-eta">
                                 <span class="cj4x-navigation-data-label">
-                                    --:--
+                                    ----
                                 </span>
                                 </div>
                                 <div class="cj4x-navigation-data-col-large">
+                                <span class="cj4x-navigation-data-label cj4x-navigation-data-vnav-advisory-time-distance">
+                                    --:-- ---NM
+                                </span>
                                 </div>
                             </div>
 
@@ -63,6 +66,9 @@
                                 </span>
                                 </div>
                                 <div class="cj4x-navigation-data-col-large">
+                                <span class="cj4x-navigation-data-label cj4x-navigation-data-vnav-angle-descent-rate">
+                                    ----   ----
+                                </span>
                                 </div>
                             </div>
 
@@ -88,6 +94,9 @@
                                 </span>
                                 </div>
                                 <div class="cj4x-navigation-data-col-large">
+                                <span class="cj4x-navigation-data-label cj4x-navigation-data-vnav-constraint">
+                                    -----
+                                </span>
                                 </div>
                             </div>
 
@@ -154,6 +163,7 @@
                                 <div id="WP_Type" class="Large">FMS1</div>
                                 <div id="WP_Track" class="Small">DTK <span id="WP_Track_Value" class="Large">---</span></div>
                                 <div id="WP_Name" class="Small">&nbsp</div>
+                                <div id="WP_Ttg" style="width:101px;" class="Small">TTG <span style="float:right;text-align:right" id="WP_Ttg_Value">--:--</span></div>
                                 <div><span id="WP_Distance_Value" class="Large">----</span> <span id="WP_Distance_Units" class="Small">NM</span></div>
                             </div>
                         </div>
@@ -178,23 +188,18 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class='bearing-block-arrow'>
-                                        <svg viewBox='-6 0 12 20'>
-                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
-                                        </svg>
-                                    </div>
-                                    <div class='bearing-block-dist'>
-                                        <div>
-                                            <span id='State'>FMS</span>1
-                                        </div>
-                                        <div>
-                                            <span id='Distance'>-.-</span><span id='Unit'> NM</span>
-                                        </div>
-                                    </div>
-                                    <div style='clear: both;'></div>
-                                </div>
-                                <div id='ID'>---</div>
+                                <table class='bearing-pointer-info'>
+                                    <tr>
+                                        <td><span id='State'>FMS</span>1</td>
+                                        <td>
+                                            <svg class='bearing-pointer-icon' viewBox='-6 0 12 20'>
+                                                <path id="Arrow" d="M0,0 L0,6 L4,12 L0,6 L-4,12 L0,6 L0,20"/>
+                                            </svg>
+                                        </td>
+                                        <td><span id='Distance'>-.-</span></td>
+                                    </tr>
+                                    <tr><td><span id='ID'>---</div></td></tr>
+                                </table>
                             </div>
 
                             <div id="VORDMENavaid_Right" style="display:none">
@@ -216,31 +221,28 @@
                                         </g>
                                     </svg>
                                 </div>
-                                <div>
-                                    <div class='bearing-block-arrow'>
-                                        <svg viewBox='-6 0 12 20'>
-                                            <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
-                                        </svg>
-                                    </div>
-                                    <div class='bearing-block-dist'>
-                                        <div>
-                                            <span id='State'>FMS</span>2
-                                        </div>
-                                        <div>
-                                            <span id='Distance'>-.-</span><span id='Unit'> NM</span>
-                                        </div>
-                                    </div>
-                                    <div style='clear: both;'></div>
-                                </div>
-                                <div id='ID'>---</div>
+                                <table class='bearing-pointer-info'>
+                                    <tr>
+                                        <td><span id='State'>FMS</span>2</td>
+                                        <td>
+                                            <svg class='bearing-pointer-icon' viewBox='-6 0 12 20'>
+                                                <path id="Arrow" d="M0,0 L0,6 L4,12 L1.2,8 L1.2,30 L1.2,8 L0,6 L-4,12 L-1.2,8 L-1.2,30 L-1.2,8 L0,6"/>
+                                            </svg>
+                                        </td>
+                                        <td><span id='Distance'>-.-</span></td>
+                                    </tr>
+                                    <tr><td><span id='ID'>---</div></td></tr>
+                                </table>
                             </div>
                         </div>
 
                         <div id="Symbols">
-                            <svg>
-                                <text id="WX" x="100%" y="50%" alignment-baseline="baseline">WX</text>
-                                <text id="TERR" x="100%" y="50%" alignment-baseline="baseline">TERR</text>
-                            </svg>
+                            <ul>
+                                <li class='overlay-terr'>TERR</li>
+                                <li class='overlay-wx'>WX</li>
+                                <li class='overlay-wx-line1'>WX</li>
+                                <li class='overlay-wx-line2'>T-1.5A</li>
+                            </ul>
                         </div>
 
                         <div id="ElapsedTime">
@@ -259,9 +261,20 @@
 
                 </div>
                 <div id="SystemOverlay">
-                    <div class="SystemHeader">Systems 1/2</div>
+                    <div class="SystemHeader">SYSTEMS 1/2</div>
                     <div class="SystemBody"></div>
                 </div>
+               
+                <cj4-mfd-chartview id="chartview" style="position:absolute; width:100%;height:79%; bottom:3.9%;left:0; background-color:black;">
+                    <div id="chartinfo" style="font-size: 21px; color:#cccac8"><div id="chartinfo_indexnumber" style="float:left;margin-left:18px;"></div><span style="float:left;padding-left:70px" id="chartinfo_procidentifier"></span><span style="display:none;float:right;padding-right:10px" id="chartinfo_nogeoref"><img style="height:18px;vertical-align:middle;" src="coui://html_UI/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/Images/icon_nogeoref.png" /></span></div>
+                    <canvas id="chartcanvas" style="width:100%;height:100%;display: block;"></canvas>
+                </cj4-mfd-chartview>
+
+                <cj4-mfd-chartspopup id="ChartOverlay">
+                    <div id="ChartOverlayHeader" class="ChartHeader">CHART MAIN INDEX</div>
+                    <div id="ChartsTable"></div>
+                </cj4-mfd-chartspopup>
+
                 <div id="NavBar">
                     <div id="Coms">
                         <div id="GS">
@@ -272,20 +285,20 @@
                             <div>TAS</div>
                             <div class="Modifiable" id="Tas_Value">000</div>
                         </div>
-                        <div id="Rat">
+                        <div id="Rat" style="min-width: 112px">
                             <div>RAT</div>
                             <div class="Modifiable" id="Rat_Value">15</div>
-                            <div>°C</div>
+                            <div id="Rat_Unit">°C</div>
                         </div>
-                        <div id="Sat">
+                        <div id="Sat" style="min-width: 112px">
                             <div>SAT</div>
                             <div class="Modifiable" id="Sat_Value">15</div>
-                            <div>°C</div>
+                            <div id="Sat_Unit">°C</div>
                         </div>
-                        <div id="Utc">
+                        <div id="Isa" style="min-width: 112px">
                             <div>ISA</div>
                             <div class="Modifiable" id="Isa_Value">00</div>
-                            <div>°C</div>
+                            <div id="Isa_Unit">°C</div>
                         </div>
                     </div>
 
@@ -325,6 +338,12 @@
                 <div id="PopupMenu">
                 </div>
             </div>
+            <div id="liverywarning" style="display:none;width:100%;height:100%;position:absolute;top:1%; background-color:red; z-index: 2147483647;">
+                <div style="width:100%; height:200px;margin:auto auto;text-align:center;font-size:60px;position: absolute; top:40%">
+                    <h1 class="blinking">WARNING</h1>
+                    <h4>INCOMPATIBLE LIVERY</h4>
+                </div>
+            </div>
         </div>
     </div>
 </script>
@@ -332,12 +351,16 @@
 <link rel="stylesheet" href="CJ4_MFD.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_SimPlaneMod.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_ConvertUnit.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/WT_GCMath.js"></script>
 
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/Utils/RadioNav.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Autopilot/AutopilotMath.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Autopilot/HoldsDirector.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/MapInstrument.html"></script>
 
@@ -358,3 +381,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CJ4_Shared.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/MFD/CJ4_MFD.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/MFD/CJ4_MFD_Storage.js"></script>
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Shared/WorkingTitle/DataStore.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/LzUtf8.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/CJ4/WTLibs/wtsdk.js"></script>

@@ -1,9 +1,12 @@
+// TODO this should be in TS or something, but somehow it doesnt work, so put it here for just now
+const ngApi = new NavigraphApi();
+
 class CJ4_FMC extends FMCMainDisplay {
     constructor() {
         super(...arguments);
         this._registered = false;
         this._isRouteActivated = false;
-        this._lastUpdateAPTime = NaN;
+        this._lastUpdateTime = NaN;
         this.refreshFlightPlanCooldown = 0;
         this.updateAutopilotCooldown = 0;
         this._hasSwitchedToHoldOnTakeOff = false;
@@ -46,6 +49,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this._msg = "";
         this._activatingDirectToExisting = false;
         this.vfrLandingRunway = undefined;
+        this.vfrRunwayExtension = undefined;
         this.modVfrRunway = false;
         this.deletedVfrLandingRunway = undefined;
         this.selectedWaypoint = undefined;
@@ -54,11 +58,40 @@ class CJ4_FMC extends FMCMainDisplay {
         this.currentInput = undefined;
         this.previousInput = undefined;
         this._frameUpdates = 0;
+        this._currentVerticalAutopilot = undefined;
+        this._vnav = undefined;
+        this._lnav = undefined;
+        /** @type {CJ4_SpeedObserver} */
+        this._speedObs = undefined;
+        this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+        this._altAlertCd = 500;
+        this._altAlertPreselect = 0;
+        this._msgUpdateCd = 500;
+        SimVar.SetSimVarValue("L:WT_CJ4_INHIBIT_SEQUENCE", "number", 0);
+        this._nearest = undefined;
+        /** @type {CJ4_FMC_NavigationService} */
+        this._navigationService = new CJ4_FMC_NavigationService(this);
+        /** @type {CJ4_FMC_MessageReceiver} */
+        this._fmcMsgReceiver = new CJ4_FMC_MessageReceiver();
+        MessageService.getInstance().registerReceiver(MESSAGE_TARGET.FMC, this._fmcMsgReceiver);
+        /** @type {CJ4_PFD_MessageReceiver} */
+        this._pfdMsgReceiver = new CJ4_PFD_MessageReceiver();
+        MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_TOP, this._pfdMsgReceiver);
+        MessageService.getInstance().registerReceiver(MESSAGE_TARGET.PFD_BOT, this._pfdMsgReceiver);
+        this.userMsg = "";
+
+        this._navRadioSystem = new CJ4_NavRadioSystem();
+        this._pilotWaypoints = undefined;
     }
-    get templateID() { return "CJ4_FMC"; }
+
+    get templateID() {
+        return "CJ4_FMC";
+    }
 
     // Property for EXEC handling
-    get fpHasChanged() { return this._fpHasChanged; }
+    get fpHasChanged() {
+        return this._fpHasChanged;
+    }
     set fpHasChanged(value) {
         this._fpHasChanged = value;
         if (this._fpHasChanged) {
@@ -66,6 +99,19 @@ class CJ4_FMC extends FMCMainDisplay {
         } else {
             this._templateRenderer.hideExec();
         }
+    }
+
+    updateRouteOrigin(newRouteOrigin, callback = EmptyCallback.Boolean) {
+        this.dataManager.GetAirportByIdent(newRouteOrigin).then(airport => {
+            if (!airport) {
+                this.showErrorMessage("NOT IN DATABASE");
+                return callback(false);
+            }
+            this.flightPlanManager.setOrigin(airport.icao, () => {
+                this.tmpOrigin = airport.ident;
+                callback(true);
+            });
+        });
     }
 
     connectedCallback() {
@@ -79,6 +125,12 @@ class CJ4_FMC extends FMCMainDisplay {
                     this._registered = true;
                 });
             });
+
+            this.addEventListener("FlightStart", async function () {
+                if (localStorage.length > 0) {
+                    localStorage.clear();
+                }
+            }.bind(this));
         }
     }
 
@@ -91,65 +143,95 @@ class CJ4_FMC extends FMCMainDisplay {
         // init WT_FMC_Renderer.js
         this._templateRenderer = new WT_FMC_Renderer(this);
 
+        // check for pos init message
+        if (this.lastPos === "") {
+            MessageService.getInstance().post(FMS_MESSAGE_ID.INIT_POS, () => {
+                return this.lastPos !== "";
+            });
+        }
+
         this.maxCruiseFL = 450;
-        this.onFplan = () => { CJ4_FMC_RoutePage.ShowPage1(this); };
-        this.onLegs = () => { CJ4_FMC_LegsPage.ShowPage1(this); };
-        this.onIdx = () => { CJ4_FMC_InitRefIndexPage.ShowPage1(this); };
-        this.onDepArr = () => { CJ4_FMC_DepArrPage.ShowPage1(this); };
-        this.onDsplMenu = () => { CJ4_FMC_DsplMenuPage.ShowPage1(this); };
-        this.onPerf = () => { CJ4_FMC_PerfInitPage.ShowPage1(this); };
-        this.onMfdAdv = () => { CJ4_FMC_MfdAdvPage.ShowPage1(this); };
-        this.onTun = () => { CJ4_FMC_NavRadioPage.ShowPage1(this); };
+        this.onFplan = () => {
+            CJ4_FMC_RoutePage.ShowPage1(this);
+        };
+        this.onLegs = () => {
+            CJ4_FMC_LegsPage.ShowPage1(this);
+        };
+        this.onIdx = () => {
+            CJ4_FMC_InitRefIndexPage.ShowPage1(this);
+        };
+        this.onDepArr = () => {
+            CJ4_FMC_DepArrPage.ShowPage1(this);
+        };
+        this.onDsplMenu = () => {
+            CJ4_FMC_DsplMenuPage.ShowPage1(this);
+        };
+        this.onPerf = () => {
+            CJ4_FMC_PerfInitPage.ShowPage1(this);
+        };
+        this.onMfdAdv = () => {
+            CJ4_FMC_MfdAdvPage.ShowPage1(this);
+        };
+        this.onTun = () => {
+            const AvionicsComp = SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number");
+            if (AvionicsComp == 1) {
+                CJ4_FMC_NavRadioDispatch.Dispatch(this);
+            } else {
+                CJ4_FMC_NavRadioPage.ShowPage1(this);
+            };
+        };
         this.onExec = () => {
-            this.messageBox = "Working . . .";
             if (this.onExecPage) {
                 console.log("if this.onExecPage");
                 this.onExecPage();
-            }
-            else {
-                // console.log("onExec Else");
+            } else {
                 this._isRouteActivated = false;
-                // console.log("onExec else this._isRouteActivated = false");
                 this.fpHasChanged = false;
-                // console.log("onExec else this.fpHasChanged = false");
-                this.messageBox = "";
-                // console.log("onExec else this.messageBox.innerHTML");
                 this._activatingDirectTo = false;
-                // console.log("onExec else this._activatingDirectTo = false");
             }
         };
         this.onExecPage = undefined;
         this.onExecDefault = () => {
             if (this.getIsRouteActivated() && !this._activatingDirectTo) {
-                // console.log("running this.getIsRouteActivated() && !this._activatingDirectTo");
                 this.insertTemporaryFlightPlan(() => {
                     this.copyAirwaySelections();
                     this._isRouteActivated = false;
-                    SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
-                    // console.log("done with onExec insert temp");
+                    this._activatingDirectToExisting = false;
                     this.fpHasChanged = false;
-                    // console.log("this.fpHasChanged = false");
-                    this.messageBox = "";
+                    SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                     if (this.refreshPageCallback) {
                         this.refreshPageCallback();
                     }
                 });
-            }
-            else {
-                // console.log("running onExecDefault else");
+            } else if (this.getIsRouteActivated() && this._activatingDirectTo) {
+                const activeIndex = this.flightPlanManager.getActiveWaypointIndex();
+                this.insertTemporaryFlightPlan(() => {
+                    this.flightPlanManager.activateDirectToByIndex(activeIndex, () => {
+                        this.copyAirwaySelections();
+                        this._isRouteActivated = false;
+                        this._activatingDirectToExisting = false;
+                        this._activatingDirectTo = false;
+                        this.fpHasChanged = false;
+                        SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
+                        if (this.refreshPageCallback) {
+                            this.refreshPageCallback();
+                        }
+                    });
+                });
+            } else {
                 this.fpHasChanged = false;
-                // console.log("fpHasChanged = false");
-                this.messageBox = "";
                 this._isRouteActivated = false;
                 SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 0);
                 if (this.refreshPageCallback) {
                     this._activatingDirectTo = false;
                     this.fpHasChanged = false;
-                    // console.log("Else refreshPageCallback");
                     this.refreshPageCallback();
                 }
             }
-            this._activatingDirectToExisting = false;
+        };
+
+        this.onMsg = () => {
+            this._navigationService.showPage(CJ4_FMC_MsgPage);
         };
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
@@ -158,34 +240,60 @@ class CJ4_FMC extends FMCMainDisplay {
         this._pageRefreshTimer = null;
 
         //Hijaack and amend the standard FMC logic to work with the PL21 TUNE page
-        let initRadioNav = super.initRadioNav.bind(this);
+        const initRadioNav = super.initRadioNav.bind(this);
         this.initRadioNav = (_boot) => {
             initRadioNav(_boot);
             this.initializeStandbyRadios(_boot);
         };
 
-        // set persisted heading
-        SimVar.SetSimVarValue('K:HEADING_BUG_SET', 'degrees', WTDataStore.get("AP_HEADING", Simplane.getHeadingMagnetic()));
-
-        // get HideYoke        
-        let yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
+        // get HideYoke
+        const yokeHide = WTDataStore.get('WT_CJ4_HideYoke', 1);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden1", "number", yokeHide);
         SimVar.SetSimVarValue("L:XMLVAR_YOKEHidden2", "number", yokeHide);
+
+        // load persisted heading
+        const hdg = WTDataStore.get("AP_HEADING", 0);
+        Coherent.call("HEADING_BUG_SET", 1, hdg);
+
+        // set pos if battery already on
+        const batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
+        if (batteryOn) {
+            const fmsPos = new LatLong(SimVar.GetSimVarValue("GPS POSITION LAT", "degree latitude"), SimVar.GetSimVarValue("GPS POSITION LON", "degree longitude")).toDegreeString();
+            this.tryUpdateIrsCoordinatesDisplay(fmsPos);
+        }
+
+        // set constraint altitude to 0 on flight start/FMC reboot
+        SimVar.SetSimVarValue("L:WT_CJ4_CONSTRAINT_ALTITUDE", "number", 0);
 
         const fuelWeight = SimVar.GetSimVarValue("FUEL WEIGHT PER GALLON", "pounds");
         this.initialFuelLeft = Math.trunc(SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons") * fuelWeight);
         this.initialFuelRight = Math.trunc(SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons") * fuelWeight);
+
+        this._navRadioSystem.initialize();
+
+        this._pilotWaypoints = new CJ4_FMC_PilotWaypoint_Manager(this);
+        this._pilotWaypoints.activate();
     }
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
-        this.updateAutopilot();
+
+        const now = performance.now();
+        const dt = now - this._lastUpdateTime;
+        this._lastUpdateTime = now;
+
+        this._navRadioSystem.update();
+        this.updateAutopilot(dt);
+        this.updateNearestAirports(dt);
         this.adjustFuelConsumption();
         this.updateFlightLog();
         this.updateCabinLights();
         this.updatePersistentHeading();
-
+        this.updateAlerters(dt);
+        this.updateMsgs(_deltaTime);
         this._frameUpdates++;
-        if (this._frameUpdates > 64000) this._frameUpdates = 0;
+        if (this._frameUpdates > 64000) {
+            this._frameUpdates = 0;
+        }
     }
     onInputAircraftSpecific(input) {
         console.log("CJ4_FMC.onInputAircraftSpecific input = '" + input + "'");
@@ -234,7 +342,7 @@ class CJ4_FMC extends FMCMainDisplay {
             return true;
         }
         if (input === "DIR") {
-            CJ4_FMC_DirectToPage.ShowPage(this);
+            CJ4_FMC_DirectToPage.ShowPage1(this);
         }
         if (input === "EXEC") {
             if (this.onExec) {
@@ -242,44 +350,54 @@ class CJ4_FMC extends FMCMainDisplay {
             }
             return true;
         }
+        if (input === "MSG") {
+            if (this.onMsg) {
+                this.onMsg();
+            }
+            return true;
+        }
 
         return false;
+    }
+
+    onInteractionEvent(args) {
+        super.onInteractionEvent(args);
+
+        const apPrefix = "WT_CJ4_AP_";
+        if (args[0].startsWith(apPrefix)) {
+            this._navModeSelector.onNavChangedEvent(args[0].substring(apPrefix.length));
+        }
     }
 
     //Overwrite of FMCMainDisplay to disable always settings nav hold to GPS mode
     updateRadioNavState() {
         if (this.isPrimary) {
-            let radioNavOn = this.isRadioNavActive();
+            const radioNavOn = this.isRadioNavActive();
             if (radioNavOn != this._radioNavOn) {
                 this._radioNavOn = radioNavOn;
-                if (!radioNavOn)
+                if (!radioNavOn) {
                     this.initRadioNav(false);
-                if (this.refreshPageCallback)
+                }
+                if (this.refreshPageCallback) {
                     this.refreshPageCallback();
+                }
             }
             let apNavIndex = 1;
-            let gpsDriven = true;
-            let apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
+            const apprHold = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool");
             if (apprHold) {
                 if (this.canSwitchToNav()) {
                     let navid = 0;
-                    let ils = this.radioNav.getBestILSBeacon();
+                    const ils = this.radioNav.getBestILSBeacon();
                     if (ils.id > 0) {
                         navid = ils.id;
-                    }
-                    else {
-                        let vor = this.radioNav.getBestVORBeacon();
+                    } else {
+                        const vor = this.radioNav.getBestVORBeacon();
                         if (vor.id > 0) {
                             navid = vor.id;
                         }
                     }
                     if (navid > 0) {
                         apNavIndex = navid;
-                        let hasFlightplan = Simplane.getAutopilotGPSActive();
-                        let apprCaptured = Simplane.getAutoPilotAPPRCaptured();
-                        if (apprCaptured || !hasFlightplan) {
-                            gpsDriven = false;
-                        }
                     }
                 }
             }
@@ -291,8 +409,26 @@ class CJ4_FMC extends FMCMainDisplay {
     }
 
     setMsg(value = "") {
-        this._msg = value;
-        this._templateRenderer.setMsg(value);
+        this.userMsg = value;
+        if (value === "") {
+            this.setFmsMsg();
+        } else {
+            this._templateRenderer.setMsg(value);
+        }
+    }
+
+    setFmsMsg(value = "") {
+        if (value === "") {
+            if (this._fmcMsgReceiver.hasMsg()) {
+                value = this._fmcMsgReceiver.getMsgText();
+            }
+        }
+        if (value !== this._msg) {
+            this._msg = value;
+            if (this.userMsg === "") {
+                this._templateRenderer.setMsg(value);
+            }
+        }
     }
 
     clearDisplay() {
@@ -300,15 +436,23 @@ class CJ4_FMC extends FMCMainDisplay {
         this._templateRenderer.clearDisplay.apply(this);
         this.onPrevPage = EmptyCallback.Void;
         this.onNextPage = EmptyCallback.Void;
-
         this.unregisterPeriodicPageRefresh();
+
+        for (let k = 0; k < 6; k++) {
+            this.onLeftInput[k] = () => {
+                this.showErrorMessage('KEY NOT ACTIVE');
+            };
+            this.onRightInput[k] = () => {
+                this.showErrorMessage('KEY NOT ACTIVE');
+            };
+        }
     }
 
     getOrSelectWaypointByIdent(ident, callback) {
         this.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
             const uniqueWaypoints = new Map();
             waypoints.forEach(wp => {
-                if (wp) {
+                if (wp && wp.ident === ident) {
                     uniqueWaypoints.set(wp.icao, wp);
                 }
             });
@@ -331,15 +475,21 @@ class CJ4_FMC extends FMCMainDisplay {
     }
     updateSideButtonActiveStatus() {
     }
+
     getIsRouteActivated() {
         return this._isRouteActivated;
     }
-    activateRoute(callback = EmptyCallback.Void) {
+    activateRoute(directTo = false, callback = EmptyCallback.Void) {
+        if (directTo) {
+            this._activatingDirectTo = true;
+        }
         this._isRouteActivated = true;
         this.fpHasChanged = true;
         SimVar.SetSimVarValue("L:FMC_EXEC_ACTIVE", "number", 1);
+        this.setMsg();
         callback();
     }
+
     //function added to set departure enroute transition index
     setDepartureEnrouteTransitionIndex(departureEnrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
@@ -359,21 +509,18 @@ class CJ4_FMC extends FMCMainDisplay {
     //function added to set arrival and runway transition
     setArrivalAndRunwayIndex(arrivalIndex, enrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
-            console.log("Setting Landing Runway");
-            let landingRunway = this.flightPlanManager.getApproachRunway();
-            console.log("Set Landing Runway");
+            let landingRunway = this.vfrLandingRunway;
+            if (landingRunway === undefined) {
+                landingRunway = this.flightPlanManager.getApproachRunway();
+            }
             this.flightPlanManager.setArrivalProcIndex(arrivalIndex, () => {
-                console.log("Set Arrival Procedure Index");
                 this.flightPlanManager.setArrivalEnRouteTransitionIndex(enrouteTransitionIndex, () => {
-                    console.log("Set Enroute Transition Index");
                     if (landingRunway) {
-                        console.log("If Landing Runway");
-                        let arrival = this.flightPlanManager.getArrival();
-                        let arrivalRunwayIndex = arrival.runwayTransitions.findIndex(t => {
+                        const arrival = this.flightPlanManager.getArrival();
+                        const arrivalRunwayIndex = arrival.runwayTransitions.findIndex(t => {
                             return t.name.indexOf(landingRunway.designation) != -1;
                         });
                         if (arrivalRunwayIndex >= -1) {
-                            console.log("Setting Arrival Runway Index");
                             return this.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
                                 return callback(true);
                             });
@@ -384,12 +531,8 @@ class CJ4_FMC extends FMCMainDisplay {
             });
         });
     }
-    //function added to convert FMS units between metric and imperial
 
-    updateAutopilot() {
-        let now = performance.now();
-        let dt = now - this._lastUpdateAPTime;
-        this._lastUpdateAPTime = now;
+    updateAutopilot(dt) {
         if (isFinite(dt)) {
             this.updateAutopilotCooldown -= dt;
         }
@@ -398,125 +541,164 @@ class CJ4_FMC extends FMCMainDisplay {
             this.updateAutopilotCooldown = -1;
         }
         if (this.updateAutopilotCooldown < 0) {
-            let currentApMasterStatus = SimVar.GetSimVarValue("AUTOPILOT MASTER", "boolean");
+            const currentApMasterStatus = SimVar.GetSimVarValue("AUTOPILOT MASTER", "boolean");
             if (currentApMasterStatus != this._apMasterStatus) {
                 this._apMasterStatus = currentApMasterStatus;
             }
             this._apHasDeactivated = !currentApMasterStatus && this._previousApMasterStatus;
             this._previousApMasterStatus = currentApMasterStatus;
-            let isVNAVActivate = SimVar.GetSimVarValue("L:XMLVAR_VNAVButtonValue", "boolean");
-            let currentAltitude = Simplane.getAltitude();
-            let groundSpeed = Simplane.getGroundSpeed();
-            let apTargetAltitude = Simplane.getAutoPilotAltitudeLockValue("feet");
-            let planeHeading = Simplane.getHeadingMagnetic();
-            let planeCoordinates = new LatLong(SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude"));
-            if (isVNAVActivate) {
-                let isInAltMode = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") == 3;
-                this._wasInAltMode = isInAltMode || this._wasInAltMode;
-                let prevWaypoint = this.flightPlanManager.getPreviousActiveWaypoint();
-                let nextWaypoint = this.flightPlanManager.getActiveWaypoint();
-                if (nextWaypoint && (nextWaypoint.legAltitudeDescription === 3 || nextWaypoint.legAltitudeDescription === 4)) {
-                    let targetAltitude = nextWaypoint.legAltitude1;
-                    if (nextWaypoint.legAltitudeDescription === 4) {
-                        targetAltitude = Math.max(nextWaypoint.legAltitude1, nextWaypoint.legAltitude2);
-                    }
-                    let showTopOfDescent = false;
-                    let topOfDescentLat;
-                    let topOfDescentLong;
-                    this._hasReachedTopOfDescent = true;
-                    if (currentAltitude > targetAltitude + 40) {
-                        let vSpeed = 3000;
-                        let descentDuration = Math.abs(targetAltitude - currentAltitude) / vSpeed / 60;
-                        let descentDistance = descentDuration * groundSpeed;
-                        let distanceToTarget = Avionics.Utils.computeGreatCircleDistance(prevWaypoint.infos.coordinates, nextWaypoint.infos.coordinates);
-                        showTopOfDescent = true;
-                        let f = 1 - descentDistance / distanceToTarget;
-                        topOfDescentLat = Avionics.Utils.lerpAngle(planeCoordinates.lat, nextWaypoint.infos.lat, f);
-                        topOfDescentLong = Avionics.Utils.lerpAngle(planeCoordinates.long, nextWaypoint.infos.long, f);
-                        if (distanceToTarget + 1 > descentDistance) {
-                            this._hasReachedTopOfDescent = false;
-                        }
-                    }
-                    if (showTopOfDescent) {
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_SHOW_TOP_DSCNT", "number", 1);
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_LAT_TOP_DSCNT", "number", topOfDescentLat);
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_LONG_TOP_DSCNT", "number", topOfDescentLong);
-                    }
-                    else {
-                        SimVar.SetSimVarValue("L:AIRLINER_FMS_SHOW_TOP_DSCNT", "number", 0);
-                    }
-                    let altitude = Simplane.getAutoPilotSelectedAltitudeLockValue("feet");
-                    let constraintRespected = false;
-                    if (isFinite(nextWaypoint.legAltitude1) && altitude <= nextWaypoint.legAltitude1) {
-                        if (this._hasReachedTopOfDescent) {
-                            SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-                            Coherent.call("AP_ALT_VAR_SET_ENGLISH", 2, nextWaypoint.legAltitude1, true);
-                            SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 1);
-                            constraintRespected = true;
-                        }
-                    }
-                    if (!constraintRespected) {
-                        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this._wasInAltMode ? 3 : 0);
-                        SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-                        this._wasInAltMode = false;
-                    }
-                }
-                else {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", this._wasInAltMode ? 3 : 0);
-                    SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
+
+            if (!this._navModeSelector) {
+                this._navModeSelector = new CJ4NavModeSelector(this.flightPlanManager);
+            }
+
+            if (!this._navToNavTransfer) {
+                this._navToNavTransfer = new NavToNavTransfer(this.flightPlanManager, this._navRadioSystem, this._navModeSelector);
+            }
+
+            this._navToNavTransfer.update(dt);
+
+            //RUN VNAV ALWAYS
+            if (this._vnav === undefined) {
+                this._vnav = new WT_BaseVnav(this.flightPlanManager, this);
+                this._vnav.activate();
+            } else {
+                try {
+                    this._vnav.update();
+                } catch (error) {
+                    console.error(error);
                 }
             }
-            else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
-                if (this._wasInAltMode) {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-                    this._wasInAltMode = false;
-                }
-                else {
-                    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 0);
-                }
-                SimVar.SetSimVarValue("L:AP_CURRENT_TARGET_ALTITUDE_IS_CONSTRAINT", "number", 0);
-            }
-            if (!this.flightPlanManager.isActiveApproach()) {
-                let activeWaypoint = this.flightPlanManager.getActiveWaypoint();
-                let nextActiveWaypoint = this.flightPlanManager.getNextActiveWaypoint();
-                if (activeWaypoint && nextActiveWaypoint) {
-                    let pathAngle = nextActiveWaypoint.bearingInFP - activeWaypoint.bearingInFP;
-                    while (pathAngle < 180) {
-                        pathAngle += 360;
-                    }
-                    while (pathAngle > 180) {
-                        pathAngle -= 360;
-                    }
-                    let absPathAngle = 180 - Math.abs(pathAngle);
-                    let airspeed = Simplane.getIndicatedSpeed();
-                    if (airspeed < 400) {
-                        let turnRadius = airspeed * 360 / (1091 * 0.36 / airspeed) / 3600 / 2 / Math.PI;
-                        let activateDistance = Math.pow(90 / absPathAngle, 1.6) * turnRadius * 1.2;
-                        let distanceToActive = Avionics.Utils.computeGreatCircleDistance(planeCoordinates, activeWaypoint.infos.coordinates);
-                        if (distanceToActive < activateDistance) {
-                            this.flightPlanManager.setActiveWaypointIndex(this.flightPlanManager.getActiveWaypointIndex() + 1);
-                        }
-                    }
+
+            //RUN LNAV ALWAYS
+            if (this._lnav === undefined) {
+                this._lnav = new LNavDirector(this.flightPlanManager, this._navModeSelector);
+            } else {
+                try {
+                    this._lnav.update();
+                } catch (error) {
+                    console.error(error);
                 }
             }
+
+            this._navModeSelector.generateInputDataEvents();
+            this._navModeSelector.processEvents();
+
+            //RUN VERTICAL AP ALWAYS
+            if (this._currentVerticalAutopilot === undefined) {
+                this._currentVerticalAutopilot = new WT_VerticalAutopilot(this._vnav, this._navModeSelector);
+                this._currentVerticalAutopilot.activate();
+            } else {
+                try {
+                    this._currentVerticalAutopilot.update();
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            // RUN SPEED RESTRICTION OBSERVER
+            if (this._speedObs === undefined) {
+                this._speedObs = new CJ4_SpeedObserver(this.flightPlanManager);
+            } else {
+                try {
+                    this._speedObs.update();
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MAX_CALCULATED", "knots", Simplane.getMaxSpeed(Aircraft.CJ4));
 
-            const machMode = Simplane.getAutoPilotMachModeActive();
-            if (machMode) {
-                const machAirspeed = Simplane.getAutoPilotMachHoldValue();
-                Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(machAirspeed.toFixed(2)));
+            //TAKEOFF MODE HEADING SET (constant update to current heading when on takeoff roll)
+            if (this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO && Simplane.getIsGrounded()) {
+                Coherent.call("HEADING_BUG_SET", 2, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
             }
 
-
+            //WT MANUAL BANK FD
+            // const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
+            // if (fdOn && !this._apMasterStatus) {
+            //     const bank = 0;
+            //     const planeHeading = Simplane.getHeadingMagnetic();
+            //     const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
+            //     if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV
+            //         || this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO || this._navModeSelector.currentLateralActiveState === LateralNavModeState.GA)) {
+            //         const deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
+            //         this.driveFlightDirector(deltaAngle, bank);
+            //     } else if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
+            //         const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
+            //         const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + nav, "bool");
+            //         const isIls = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + nav, "bool");
+            //         const isLnav = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
+            //         if (isLnav) {
+            //             const deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
+            //             this.driveFlightDirector(deltaAngle, bank);
+            //         } else if (signal && isIls) {
+            //             const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
+            //             const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
+            //             const correctionAngle = 0.23 * cdi;
+            //             const desiredHeading = AutopilotMath.normalizeHeading(loc + correctionAngle);
+            //             const windCorrectedHeading = AutopilotMath.normalizeHeading(desiredHeading - AutopilotMath.windCorrectionAngle(desiredHeading, Simplane.getTrueSpeed(), Simplane.getWindDirection(), Simplane.getWindStrength()));
+            //             const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
+            //             this.driveFlightDirector(deltaAngle, bank);
+            //         } else if (signal && !isIls) {
+            //             const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
+            //             const obs = SimVar.GetSimVarValue("NAV OBS:" + nav, "degrees");
+            //             const correctionAngle = 0.23 * cdi;
+            //             const desiredHeading = AutopilotMath.normalizeHeading(obs + correctionAngle);
+            //             const windCorrectedHeading = AutopilotMath.normalizeHeading(desiredHeading - AutopilotMath.windCorrectionAngle(desiredHeading, Simplane.getTrueSpeed(), Simplane.getWindDirection(), Simplane.getWindStrength()));
+            //             const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
+            //             this.driveFlightDirector(deltaAngle, bank);
+            //         } else {
+            //             if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
+            //                 this.driveFlightDirector(0, 0);
+            //             }
+            //         }
+            //     } else {
+            //         if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
+            //             this.driveFlightDirector(0, 0);
+            //         }
+            //     }
+            // }
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }
+
+    /**
+    * Method to maintain a nearest airport list - this method is called in the update loop and calls the CJ4_FMC_Nearest class.
+    */
+    updateNearestAirports(dt) {
+        if (this._nearest === undefined) {
+            this._nearest = new CJ4_FMC_Nearest(this);
+            this._nearest.activate();
+            this._nearest.nearestCooldown = this._nearest._nearestCooldownTimer;
+            this._nearest._ranGetRunways = false;
+        }
+        if (isFinite(dt)) {
+            this._nearest.nearestCooldown -= dt;
+        }
+        if (this._nearest.nearestCooldown < 0) {
+            this._nearest.update();
+            this._nearest.nearestCooldown = this._nearest._nearestCooldownTimer;
+            this._nearest._ranGetRunways = false;
+        } else if (this._nearest.nearestCooldown < 24500 && !this._nearest._ranGetRunways) {
+            this._nearest.getRunways();
+            this._nearest._ranGetRunways = true;
+        }
+
+    }
+
+    // driveFlightDirector(deltaAngle, bank = 0) {
+    //     bank = 1.5 * deltaAngle;
+    //     bank = bank < -30 ? -30 : bank > 30 ? 30 : bank;
+    //     SimVar.SetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number", bank);
+    // }
+
     //add new method to find correct runway designation (with leading 0)
     getRunwayDesignation(selectedRunway) {
         if (selectedRunway) {
-            let selectedRunwayDesignation = new String(selectedRunway.designation);
-            let selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
+            const selectedRunwayDesignation = new String(selectedRunway.designation);
+            const selectedRunwayMod = new String(selectedRunwayDesignation.slice(-1));
             if (selectedRunwayMod == "L" || selectedRunwayMod == "C" || selectedRunwayMod == "R") {
                 if (selectedRunwayDesignation.length == 2) {
                     this.selectedRunwayOutput = "0" + selectedRunwayDesignation;
@@ -543,16 +725,19 @@ class CJ4_FMC extends FMCMainDisplay {
      * interval. If false, it will start after the supplied interval.
      */
     registerPeriodicPageRefresh(action, interval, runImmediately) {
-        let refreshHandler = () => {
-            let isBreak = action();
-            if (isBreak) return;
+        this.unregisterPeriodicPageRefresh();
+
+        const refreshHandler = () => {
+            const isBreak = action();
+            if (isBreak) {
+                return;
+            }
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
         };
 
         if (runImmediately) {
             refreshHandler();
-        }
-        else {
+        } else {
             this._pageRefreshTimer = setTimeout(refreshHandler, interval);
         }
     }
@@ -568,15 +753,14 @@ class CJ4_FMC extends FMCMainDisplay {
 
     /**
      * Initializes the standby radios in the FMC.
-     * @param {Boolean} isFirstBoot 
+     * @param {Boolean} isFirstBoot
      */
     initializeStandbyRadios(isFirstBoot) {
         if (this.isPrimary) {
             if (isFirstBoot) {
                 this.rcl1Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1);
                 this.pre2Frequency = this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 2);
-            }
-            else {
+            } else {
                 if (Math.abs(this.radioNav.getVHFStandbyFrequency(this.instrumentIndex, 1) - this.rcl1Frequency) > 0.005) {
                     this.radioNav.setVHFStandbyFrequency(this.instrumentIndex, 1, this.rcl1Frequency);
                 }
@@ -592,15 +776,13 @@ class CJ4_FMC extends FMCMainDisplay {
      * local fuel consumption lvar.
      */
     adjustFuelConsumption() {
-
         const leftFuelQty = SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "gallons");
         const rightFuelQty = SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "gallons");
 
         if (this.previousRightFuelQty === undefined && this.previousLeftFuelQty === undefined) {
             this.previousLeftFuelQty = leftFuelQty;
             this.previousRightFuelQty = rightFuelQty;
-        }
-        else {
+        } else {
             const thrustLeft = SimVar.GetSimVarValue("TURB ENG JET THRUST:1", "pounds");
             const thrustRight = SimVar.GetSimVarValue("TURB ENG JET THRUST:2", "pounds");
 
@@ -640,8 +822,7 @@ class CJ4_FMC extends FMCMainDisplay {
 
                 this.previousLeftFuelQty = newLeftFuelQty;
                 this.previousRightFuelQty = newRightFuelQty;
-            }
-            else {
+            } else {
                 this.previousLeftFuelQty = leftFuelQty;
                 this.previousRightFuelQty = rightFuelQty;
             }
@@ -650,8 +831,8 @@ class CJ4_FMC extends FMCMainDisplay {
 
     // Copy airway selections from temporary to active flightplan
     copyAirwaySelections() {
-        let temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
-        let activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
+        const temporaryFPWaypoints = this.flightPlanManager.getWaypoints(1);
+        const activeFPWaypoints = this.flightPlanManager.getWaypoints(0);
         for (let i = 0; i < activeFPWaypoints.length; i++) {
             if (activeFPWaypoints[i].infos && temporaryFPWaypoints[i] && activeFPWaypoints[i].icao === temporaryFPWaypoints[i].icao && temporaryFPWaypoints[i].infos) {
                 activeFPWaypoints[i].infos.airwayIn = temporaryFPWaypoints[i].infos.airwayIn;
@@ -662,14 +843,14 @@ class CJ4_FMC extends FMCMainDisplay {
 
     updatePersistentHeading() {
         if (this._frameUpdates % 500 == 499) {
-            WTDataStore.set("AP_HEADING", SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree"));
+            WTDataStore.set("AP_HEADING", SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degree"));
         }
     }
 
     updateCabinLights() {
         if (this._frameUpdates % 100 == 0) {
             // TODO should go somewhere else later
-            let batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
+            const batteryOn = SimVar.GetSimVarValue("ELECTRICAL MASTER BATTERY", "bool");
             if (!batteryOn) {
                 CJ4_FMC_ModSettingsPage.setPassCabinLights(CJ4_FMC_ModSettingsPage.LIGHT_MODE.OFF);
             } else {
@@ -678,48 +859,130 @@ class CJ4_FMC extends FMCMainDisplay {
         }
     }
 
+    //METHOD TO RESET VSPEEDS ON NEW FPLN ENTRY/LOAD
+    resetVspeeds() {
+        SimVar.SetSimVarValue("L:WT_CJ4_VAP", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_V1_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_VR_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_V2_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_VT_SPEED", "knots", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_VREF_SPEED", "knots", 0);
+    }
+
+    //METHOD TO RESET FUEL USED ON FLIGHT START AND ON FPLN LOAD AND WITH BUTTON PRESS IN FUEL MGMT
+    resetFuelUsed() {
+        const fuelWeight = 6.7;
+        const fuelQuantityLeft = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL LEFT QUANTITY", "Gallons"));
+        const fuelQuantityRight = Math.trunc(fuelWeight * SimVar.GetSimVarValue("FUEL RIGHT QUANTITY", "Gallons"));
+        this.initialFuelLeft = fuelQuantityLeft;
+        this.initialFuelRight = fuelQuantityRight;
+    }
+
     updateFlightLog() {
-        const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
-        const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
-        const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
-        const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
-        const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
+        if (this._frameUpdates % 30 == 0) {
+            const takeOffTime = SimVar.GetSimVarValue("L:TAKEOFF_TIME", "seconds");
+            const landingTime = SimVar.GetSimVarValue("L:LANDING_TIME", "seconds");
+            const onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
+            const altitude = SimVar.GetSimVarValue("PLANE ALT ABOVE GROUND", "number");
+            const zuluTime = SimVar.GetGlobalVarValue("ZULU TIME", "seconds");
 
-        // Update takeoff time
-        if (!takeOffTime) {
-            if (!onGround && altitude > 15) {
-                if (zuluTime) {
-                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+            // Update takeoff time
+            if (!takeOffTime) {
+                if (!onGround && altitude > 15) {
+                    if (zuluTime) {
+                        SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                    }
+                }
+            } else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
+                if (!onGround && altitude > 15) {
+                    if (zuluTime) {
+                        SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+                    }
+                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
+                    SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
+                }
+            }
+
+            if (takeOffTime && takeOffTime > 0) {
+                // Update landing time
+                if (onGround && (!landingTime || landingTime == 0)) {
+                    if (zuluTime) {
+                        SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
+                    }
+                }
+                // Update enroute time
+                if (!landingTime || landingTime == 0) {
+                    const enrouteTime = zuluTime - takeOffTime;
+                    SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
                 }
             }
         }
-        else if (takeOffTime && takeOffTime > 0 && landingTime && landingTime > 0) {
-            if (!onGround && altitude > 15) {
-                if (zuluTime) {
-                    SimVar.SetSimVarValue("L:TAKEOFF_TIME", "seconds", zuluTime);
+    }
+
+    updateAlerters(dt) {
+        const preselector = Simplane.getAutoPilotSelectedAltitudeLockValue();
+        const indicated = Simplane.getAltitude();
+        const difference = Math.abs(indicated - preselector);
+
+        switch (this._altAlertState) {
+            case CJ4_FMC.ALTALERT_STATE.NONE:
+                SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 0);
+                if (difference < 1000) {
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.ARMED;
                 }
-                SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", 0); // Reset landing time
-                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", 0); // Reset enroute time
-            }
+                break;
+            case CJ4_FMC.ALTALERT_STATE.ARMED:
+                if (isFinite(dt)) {
+                    this._altAlertCd -= dt;
+                }
+
+                if (this._altAlertCd < 0) {
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.ALERT;
+                    this._altAlertCd = 500;
+                } else if (difference > 1000) {
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+                    this._altAlertCd = 500;
+                }
+                break;
+            case CJ4_FMC.ALTALERT_STATE.ALERT:
+                if (!Simplane.getIsGrounded() && SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number") === 0 && SimVar.GetSimVarValue("L:WT_CJ4_Altitude_Alerter_Cancel", "Number") === 0) {
+                    this._altAlertPreselect = preselector;
+                    SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Active", "Number", 1);
+                }
+
+                // go to NONE when preselector changed or
+                if (Math.abs(preselector - this._altAlertPreselect) > 1000) {
+                    this._altAlertState = CJ4_FMC.ALTALERT_STATE.NONE;
+                    SimVar.SetSimVarValue("L:WT_CJ4_Altitude_Alerter_Cancel", "Number", 0);
+
+                }
+                break;
         }
+    }
 
+    updateMsgs(dt) {
+        this._msgUpdateCd -= dt;
+        if (this._msgUpdateCd < 0) {
+            // TODO where to put this message
+            if (this.flightPlanManager.getActiveWaypointIdent() === "") {
+                MessageService.getInstance().post(FMS_MESSAGE_ID.NO_FPLN, () => {
+                    return this.flightPlanManager.getActiveWaypointIdent() !== "";
+                });
+            }
 
-        if (takeOffTime && takeOffTime > 0) {
-            // Update landing time
-            if (onGround && (!landingTime || landingTime == 0)) {
-                if (zuluTime) {
-                    SimVar.SetSimVarValue("L:LANDING_TIME", "seconds", zuluTime);
-                }
-            }
-            // Update enroute time
-            if (!landingTime || landingTime == 0) {
-                const enrouteTime = zuluTime - takeOffTime;
-                SimVar.SetSimVarValue("L:ENROUTE_TIME", "seconds", enrouteTime);
-            }
+            MessageService.getInstance().update();
+            this.setFmsMsg(this._fmcMsgReceiver.getMsgText());
+            this._pfdMsgReceiver.update();
+            this._msgUpdateCd = 500;
         }
     }
 }
 
+CJ4_FMC.ALTALERT_STATE = {
+    NONE: 0,
+    ARMED: 1,
+    ALERT: 2
+};
 
 CJ4_FMC.VSPEED_STATUS = {
     NONE: 0,
@@ -728,4 +991,3 @@ CJ4_FMC.VSPEED_STATUS = {
 };
 
 registerInstrument("cj4-fmc", CJ4_FMC);
-//# sourceMappingURL=CJ4_FMC.js.map

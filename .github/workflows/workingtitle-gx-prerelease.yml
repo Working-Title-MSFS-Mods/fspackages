@@ -12,7 +12,7 @@ jobs:
       - name: Build Package
         run: powershell.exe -noexit .\build.ps1 -Project workingtitle-project-gx.xml
       - name: Get clean tag name
-        uses: olegtarasov/get-tag@v2
+        uses: little-core-labs/get-git-tag@v3.0.1
         id: tag_name
       - name: Zip Release Files
         run: Compress-Archive -Path build\* -DestinationPath workingtitle-gx.zip

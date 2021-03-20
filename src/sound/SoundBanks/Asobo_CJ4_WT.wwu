@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" SchemaVersion="97">
+	<SoundBanks>
+		<WorkUnit Name="Asobo_CJ4_WT" ID="{45BA91ED-07D2-463B-AE6A-6E6C5501C282}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="Asobo_CJ4_WT" ID="{CCCCFDFA-06A9-42B0-B420-F5811DF76F04}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Rain" ID="{28129900-453E-4395-BB86-21E0FCD94D02}" WorkUnitID="{28129900-453E-4395-BB86-21E0FCD94D02}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Wind" ID="{AC9E2451-3589-439A-B1E1-3E0DCD89678F}" WorkUnitID="{AC9E2451-3589-439A-B1E1-3E0DCD89678F}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Autopilot" ID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" WorkUnitID="{DC8809ED-DC91-4407-A9A6-6B2461F62D39}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Push_Buttons" ID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" WorkUnitID="{F6618DDC-F7BA-44C3-B994-790C6AC9D7FA}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Gear" ID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" WorkUnitID="{578E8A29-4A61-44C9-8BCD-ED68E7432571}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Hard Buttons" ID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" WorkUnitID="{9E86C14C-A7C8-4553-8074-7566484AB9E0}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Passenger_Announcements" ID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" WorkUnitID="{AFDA6CBA-193C-4741-BD52-29067282C6D6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Knobs" ID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" WorkUnitID="{59D541E6-EF83-47C0-8CFE-C30A41D6F546}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Asobo_CJ4_WT_air_fan" ID="{D6BECD9A-B239-499E-8538-86DE7B951FBB}" WorkUnitID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Engines" ID="{56901329-1362-4C16-9FB5-DA8711422FA8}" WorkUnitID="{56901329-1362-4C16-9FB5-DA8711422FA8}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Soft Buttons" ID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" WorkUnitID="{3AD3A153-CA3C-4C60-A4F7-4D9BFCA95853}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" WorkUnitID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Switches" ID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" WorkUnitID="{7AC2DAB5-0757-4DDD-B0E6-EF4B5F0A494B}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Spoiler Drag" ID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" WorkUnitID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Aural" ID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" WorkUnitID="{9F2DA274-CC3E-4FCB-9204-266F88D59B5D}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

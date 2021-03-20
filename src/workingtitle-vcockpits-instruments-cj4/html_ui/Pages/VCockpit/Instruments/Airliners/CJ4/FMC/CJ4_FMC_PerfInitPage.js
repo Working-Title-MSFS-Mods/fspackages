@@ -7,7 +7,7 @@ class CJ4_FMC_PerfInitPage {
             [""],
             ["<PERF INIT", "FUEL MGMT>"],
             [""],
-            ["<VNAV SETUP[disabled]", "FLT LOG>"], //Page 3, 4, 5 ----12
+            ["<VNAV SETUP", "FLT LOG>"], //Page 3, 4, 5 ----12
             [""],
             ["<TAKEOFF", "APPROACH>"], //Page 6, 7, 8 ---13, 14, 15
             [""],
@@ -18,10 +18,10 @@ class CJ4_FMC_PerfInitPage {
             ["        --- KT[s-text white]"]
         ]);
         fmc.onLeftInput[0] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.onLeftInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        fmc.onLeftInput[1] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.onLeftInput[2] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[0] = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(fmc); };
-        fmc.onRightInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage12(fmc); };
+        fmc.onRightInput[1] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
         fmc.onRightInput[2] = () => { CJ4_FMC_ApproachRefPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
@@ -60,11 +60,13 @@ class CJ4_FMC_PerfInitPage {
         const grossWeightText = gwtValueUnit.Value.toFixed(0) + " " + gwtValueUnit.Unit + "[s-text]";
         const bowText = fmc.zFWActive == 1 ? " -----": " " + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText + "[s-text]";
         const paxText = fmc.zFWActive == 1 ? "--/--" : fmc.paxNumber + paxLabel;
+        const transitionFL = 180;
+        const cruiseAltText = crzAltCell == "□□□□□" ? "□□□□□" : crzAltCell < transitionFL ? crzAltCell * 100 : "FL" + crzAltCell;
 
         fmc._templateRenderer.setTemplateRaw([
             [" ACT PERF INIT[blue]","",""],
             [" BOW[blue]", "CRZ ALT[blue] "],
-            [bowText, "FL" + crzAltCell],
+            [bowText, cruiseAltText + ""],
             [" PASS/WT[blue]"],
             [" " + paxText],
             [" CARGO[blue]", "= ZFW[blue] "],
@@ -78,6 +80,7 @@ class CJ4_FMC_PerfInitPage {
         ]);
         fmc.onRightInput[0] = () => {
             let value = fmc.inOut;
+            value = value.replace(/^F(\d{1,3})/, "FL$1")
             if (fmc.setCruiseFlightLevelAndTemperature(value)) {
                 CJ4_FMC_PerfInitPage.ShowPage2(fmc);
             }
@@ -105,6 +108,14 @@ class CJ4_FMC_PerfInitPage {
             fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
+        fmc.onLeftInput[3] = () => {
+            if (fmc.inOut == FMCMainDisplay.clrValue){
+                fmc.clearUserInput();
+                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            }else {
+                fmc.showErrorMessage("INVALID");
+            }
+        };
 		fmc.onRightInput[2] = () => {
             let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
 			if (fmc.inOut == FMCMainDisplay.clrValue){
@@ -123,78 +134,19 @@ class CJ4_FMC_PerfInitPage {
 			fmc.clearUserInput();
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
+        fmc.onRightInput[3] = () => {
+            if (fmc.inOut == FMCMainDisplay.clrValue){
+                fmc.clearUserInput();
+                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
+            }else {
+                fmc.showErrorMessage("INVALID");
+            }
+        };
         fmc.onRightInput[4] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
+        fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };
         fmc.updateSideButtonActiveStatus();
     }
-    static ShowPage3(fmc) { //VNAV SETUP Page 1
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT VNAV CLIMB[blue]", "1/3[blue]"],
-            [" TGT SPEED[blue]", "TRANS ALT [blue]"],
-            ["240/.64", "18000"],
-            [" SPD/ALT LIMIT[blue]"],
-            ["250/10000"],
-            [""],
-            ["---/-----"],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["-----------------------[blue]"],
-            ["", "PERF INIT>"]
-        ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
-    static ShowPage4(fmc) { //VNAV SETUP Page 2
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT VNAV CRUISE[blue]", "2/3[blue]"],
-            [" TGT SPEED[blue]", "CRZ ALT [blue]"],
-            ["300/.74", "crzAltCell"],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["-----------------------[blue]"],
-            ["", "PERF INIT>"]
-        ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage5(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
-    static ShowPage5(fmc) { //VNAV SETUP Page 3
-        fmc.clearDisplay();
-        fmc._templateRenderer.setTemplateRaw([
-            [" ACT VNAV DESCENT[blue]", "3/3[blue]"],
-            [" TGT SPEED[blue]", "TRANS FL [blue]"],
-            [".74/290", "FL180"],
-            [" SPD/ALT LIMIT[blue]"],
-            ["250/10000"],
-            ["", "", "VPA [blue]"],
-            ["---/-----", "3.0\xB0"],
-            [""],
-            [""],
-            [""],
-            [""],
-            ["-----------------------[blue]"],
-            ["<DESC INFO", "PERF INIT>"]
-        ]);
-        fmc.onPrevPage = () => { CJ4_FMC_PerfInitPage.ShowPage4(fmc); };
-        fmc.onNextPage = () => { CJ4_FMC_PerfInitPage.ShowPage3(fmc); };
-        fmc.onRightInput[5] = () => { CJ4_FMC_PerfInitPage.ShowPage2(fmc); };
-        fmc.updateSideButtonActiveStatus();
-    }
-
-    static ShowPage12(fmc) { //FLIGHT LOG
+    static ShowPage3(fmc) { //FLIGHT LOG
         fmc.clearDisplay();
 
         let fuelUsed = "---";
@@ -267,4 +219,3 @@ class CJ4_FMC_PerfInitPage {
         fmc.updateSideButtonActiveStatus();
     }
 }
-//# sourceMappingURL=CJ4_FMC_PerfInitPage.js.map

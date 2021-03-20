@@ -383,6 +383,15 @@ class AS1000_MFD extends BaseAS1000 {
         super.onShutDown();
         this.planeState.shutDown();
     }
+    reboot() {
+        super.reboot();
+        if (this.engineDisplay)
+            this.engineDisplay.reset();
+    }
+    loadSavedMapOrientation() {
+        let state = WTDataStore.get("MFD.TrackUp", false);
+        this.setMapOrientation(state);
+    }
     onPowerOn() {
         super.onPowerOn();
         this.planeState.powerOn();

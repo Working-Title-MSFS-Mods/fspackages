@@ -46,9 +46,9 @@ class CJ4_FMC_FuelMgmtPageOne {
     }
 
     updateFuel() {
-        this._hours = Math.trunc((this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow).toFixed(0);
-        let hoursForResv = ((this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow);
-        this._minutes = ((((this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow) % 1) * 60).toFixed(0).toString().padStart(2, "0");
+        const hoursForResv = (this._fuelQuantityTotal - this._fmc.reserveFuel) / this._totalFuelFlow;
+        this._hours = Math.trunc(hoursForResv);
+        this._minutes = Math.trunc((hoursForResv % 1) * 60);
         let groundSpeed = Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots"));
         this._rngToResv = (groundSpeed * hoursForResv).toFixed(0);
         this._spRng = ((1 / this._totalFuelFlow) * groundSpeed).toFixed(2).toString().substr(1);
@@ -67,7 +67,6 @@ class CJ4_FMC_FuelMgmtPageOne {
     }
 
     render() {
-        console.log("Render Fuel");
 
         const fuelQuantityTotalText = WT_ConvertUnit.getWeight(this._fuelQuantityTotal).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG[s-text]" : "[d-text] LB[s-text]");
         const totalFuelFlowText = WT_ConvertUnit.getWeight(this._totalFuelFlow).Value.toFixed(0).padStart(4, " ") + (WT_ConvertUnit.isMetric() ? "[d-text] KG/HR[s-text]" : "[d-text] LB/HR[s-text]");
@@ -79,10 +78,10 @@ class CJ4_FMC_FuelMgmtPageOne {
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/3[blue] ", "FUEL MGMT[blue]"],
             [" FUEL[blue]", "TIME TO RESV[blue] "],
-            [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes],
+            [" " + fuelQuantityTotalText, this._hours + ":" + this._minutes.toString().padStart(2, "0")],
             [" FUEL FLOW[blue]", "RNG TO RESV[blue] "],
             [" " + totalFuelFlowText, this._rngToResv + "[d-text]NM[s-text]"],
-            [" RESERVES[blue]", "SP RNG[blue] "],
+            [" RESERVES[blue]", "SP RNG GS[blue] "],
             [" " + reserveFuelText, spRangeText],
             [" GND SPD[blue]"],
             [Math.round(SimVar.GetSimVarValue("GPS GROUND SPEED", "knots")).toString()],
@@ -94,8 +93,9 @@ class CJ4_FMC_FuelMgmtPageOne {
     }
 
     bindEvents() {
+        
         this._fmc.onLeftInput[2] = () => {
-            let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
+            let value = WT_ConvertUnit.setWeight(parseInt(this._fmc.inOut));
             if (value >= 0 && value <= 5000) {
                 this._fmc.reserveFuel = value;
             }
@@ -106,6 +106,8 @@ class CJ4_FMC_FuelMgmtPageOne {
             //console.log(this._fmc.reserve);
             this.invalidate();
             this.update();
+            this.updateFuel();
+            this.render();
         };
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage3(this._fmc); };
         this._fmc.onNextPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage2(this._fmc); };
@@ -223,8 +225,7 @@ class CJ4_FMC_FuelMgmtPageTwo {
 
     bindEvents() {
         this._fmc.onLeftInput[4] = () => {
-            this._fmc.initialFuelLeft = this._fuelQuantityLeft;
-            this._fmc.initialFuelRight = this._fuelQuantityRight;
+            this._fmc.resetFuelUsed();
         };
 
         this._fmc.onPrevPage = () => { CJ4_FMC_FuelMgmtPage.ShowPage1(this._fmc); };

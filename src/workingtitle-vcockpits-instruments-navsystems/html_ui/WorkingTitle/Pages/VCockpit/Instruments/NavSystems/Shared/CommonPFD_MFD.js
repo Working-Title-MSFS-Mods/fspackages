@@ -100,7 +100,7 @@ class PFD_Airspeed extends NavSystemElement {
         this.lastSpeed = indicatedSpeed;
         this.airspeedElement.setAttribute("airspeed-trend", (this.acceleration).toString());
         let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
-        let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+        let cruiseMach = SimVar.GetSimVarValue("MACH MAX OPERATE", "mach");
         let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
         if (crossSpeed != 0) {
             this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString());
@@ -305,7 +305,8 @@ class PFD_Attitude extends NavSystemElement {
         if (xyz) {
             let gs = Simplane.getGroundSpeed() * 101.269;
             let vs = Simplane.getVerticalSpeed();
-            let angle = Math.atan(vs/gs);
+            let angle = Math.atan(vs / gs);
+            this.svg.setSytheticVisionEnabled(this.syntheticVisionEnabled);
             this.svg.setAttribute("ground-speed", Simplane.getGroundSpeed().toString());
             this.svg.setAttribute("actual-pitch", (angle / Math.PI * 180).toString());
             this.svg.setAttribute("pitch", (xyz.pitch / Math.PI * 180).toString());
@@ -409,35 +410,6 @@ class PFD_Compass extends NavSystemElement {
         }
         else {
             this.ifTimer -= this.gps.deltaTime;
-        }
-        if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == 4) {
-            let approachWPNb = this.gps.currFlightPlanManager.getApproachWaypoints().length;
-            let activeWP = this.gps.currFlightPlanManager.getActiveWaypoint();
-            if (((this.ifIcao && this.ifIcao != "" && activeWP && this.ifIcao == activeWP.icao) || (approachWPNb > 0 && this.gps.currFlightPlanManager.getActiveWaypointIndex() >= approachWPNb - 2)) && !this.hasLocBeenEntered) {
-                    let approachFrequency = this.gps.currFlightPlanManager.getApproachNavFrequency();
-                    if (!isNaN(approachFrequency)) {
-                        SimVar.SetSimVarValue("K:NAV1_RADIO_SWAP", "number", 0);
-                        SimVar.SetSimVarValue("K:NAV1_RADIO_SET_HZ", "hertz", approachFrequency * 1000000);
-                    }
-                    this.hasLocBeenEntered = true;
-            } else {
-                let approachWP;
-                let wpIndex = this.gps.currFlightPlanManager.getActiveWaypointIndex() - 1;
-                if (wpIndex >= 0 && wpIndex < approachWPNb) {
-                    approachWP = this.gps.currFlightPlanManager.getApproachWaypoints()[wpIndex];
-                }
-                if (((this.ifIcao && this.ifIcao != "" && approachWP && this.ifIcao == approachWP.icao && this.hasLocBeenEntered) || (approachWPNb > 0 && this.gps.currFlightPlanManager.getActiveWaypointIndex() == approachWPNb - 1)) && !this.hasLocBeenActivated) {
-                    if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean")) {
-                        SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
-                    }
-                    SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", 1);
-                    this.hasLocBeenActivated = true;
-                }
-            }
-        }
-        else {
-            this.hasLocBeenEntered = false;
-            this.hasLocBeenActivated = false;
         }
     }
     onExit() {
@@ -1420,6 +1392,8 @@ class PFD_AutopilotDisplay extends NavSystemElement {
     constructor() {
         super(...arguments);
         this.altimeterIndex = 0;
+        this.apStatusDisplay = 0;
+        this.yellowFlashBegin = 0;
     }
     init(root) {
         this.AP_LateralActive = this.gps.getChildById("AP_LateralActive");
@@ -1442,8 +1416,39 @@ class PFD_AutopilotDisplay extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
+        let apStatus = SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool");
+        if (apStatus == true) {
+            this.apStatusDisplay = 5;
+        }
+        else {
+            if (this.apStatusDisplay == 5) {
+                this.apStatusDisplay = 1;
+            }
+            if (this.apStatusDisplay == 2 && this.yellowFlashBegin + 5 < SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds")) {
+                this.apStatusDisplay = 4;
+            }
+        }
         Avionics.Utils.diffAndSet(this.AP_YDStatus, SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "YD" : "");
-        Avionics.Utils.diffAndSet(this.AP_Status, SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "AP" : "");
+        Avionics.Utils.diffAndSet(this.AP_Status, this.apStatusDisplay != 0 ? "AP" : "");
+        switch (this.apStatusDisplay) {
+            case 1:
+                Avionics.Utils.diffAndSetAttribute(this.AP_Status, "Display", "RedFlash");
+                break;
+            case 2:
+                Avionics.Utils.diffAndSetAttribute(this.AP_Status, "Display", "YellowFlash");
+                break;
+            case 3:
+                Avionics.Utils.diffAndSetAttribute(this.AP_Status, "Display", "Red");
+                break;
+            case 4:
+                Avionics.Utils.diffAndSetAttribute(this.AP_Status, "Display", "Yellow");
+                break;
+            case 0:
+            case 5:
+            default:
+                Avionics.Utils.diffAndSetAttribute(this.AP_Status, "Display", "");
+                break;
+        }
         Avionics.Utils.diffAndSetAttribute(this.AP_FDIndicatorArrow, "state", SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : "Inactive");
         if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "PIT");
@@ -1592,6 +1597,15 @@ class PFD_AutopilotDisplay extends NavSystemElement {
     onExit() {
     }
     onEvent(_event) {
+        switch (_event) {
+            case "Autopilot_Manual_Off":
+                this.apStatusDisplay = 2;
+                this.yellowFlashBegin = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                break;
+            case "Autopilot_Disc":
+                this.apStatusDisplay = 0;
+                break;
+        }
     }
 }
 class MFD_FlightPlanLine {
@@ -3991,7 +4005,7 @@ function fastToFixed(num, p) {
     if (p <= 0)
         return Math.round(num).toString();
 
-    r  = Math.round(num * Math.pow(10, p)).toString();
+    r = Math.round(num * Math.pow(10, p)).toString();
     l = r.length;
 
     return r.substring(0, l - p) + "." + r.substring(l - p, l);

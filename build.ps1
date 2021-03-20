@@ -1,7 +1,7 @@
 param (
     [Parameter(Mandatory = $true)][string]$Project,
     [string]$Package,
-    [string]$MinimumGameVersion = "1.10.7",
+    [string]$MinimumGameVersion = "1.14.5",
     [string]$OutputPath = ".\build\",
     [switch]$WatchFiles = $false,
     [switch]$CleanBuild = $false
@@ -10,6 +10,8 @@ param (
 # global var and action for filewatcher
 $global:FileChanged = $false
 $Action = 'Update-Packages'
+
+Get-EventSubscriber -Force | Unregister-Event -Force
 
 function Update-Packages {
     param (
@@ -142,7 +144,36 @@ function Wait-FileChange {
         NotifyFilter          = [IO.NotifyFilters]'FileName, LastWrite'
     }
     $onChange = Register-ObjectEvent $Watcher -EventName "Changed" -Action {
-        $global:FileChanged = $true
+        if($global:FileChanged -eq $false) {
+            $details = $event.SourceEventArgs
+            $Name = $details.Name
+            $FullPath = $details.FullPath
+            $OldFullPath = $details.OldFullPath
+            $OldName = $details.OldName
+            $ChangeType = $details.ChangeType
+            $Timestamp = $event.TimeGenerated
+            if($FullPath -NotLike ".\src\wtsdk*"){
+                $text = "{0} was {1} at {2}" -f $FullPath, $ChangeType, $Timestamp
+                Write-Host ""
+                Write-Host $text -ForegroundColor Green
+    
+                $global:FileChanged = $true
+            } elseif($FullPath -Like ".\src\wtsdk\src*") {
+                $text = "{0} was {1} at {2}" -f $FullPath, $ChangeType, $Timestamp
+                Write-Host ""
+                Write-Host $text -ForegroundColor Green     
+                Write-Host "npm run build...please wait..." -ForegroundColor Yellow 
+                Push-Location "src\wtsdk"
+                $global:FileChanged = $true
+                & npm run build | Write-Host
+                if (!$?) {
+                    Pop-Location 
+                    throw "npm build failed"
+                }
+                Pop-Location           
+                Write-Host "build finished" -ForegroundColor Green
+            }
+        }
     }
 
     while ($global:FileChanged -eq $false) {
@@ -153,13 +184,29 @@ function Wait-FileChange {
     Unregister-Event -SubscriptionId $onChange.Id
 }
 
+if($Project -Like "*cj4*"){
+    Write-Host "npm run build...please wait..." -ForegroundColor Yellow
+    Push-Location "src\wtsdk"
+    & npm run build | Write-Host
+    if (!$?) {
+        Pop-Location 
+        throw "npm build failed"
+    }
+    Pop-Location  
+}
+
 Update-Packages
 
 # FILE WATCHER
 if ($WatchFiles -eq $true) {
-    while (1 -eq 1) {
-        Write-Host "Waiting for file changes... (CTRL+C to quit)"
-        Wait-FileChange -Folder (Join-Path "." "src") -Action $Action
-        Start-Sleep -Milliseconds 100
+    try {
+        while (1 -eq 1) {
+            Write-Host "Waiting for file changes... (CTRL+C to quit)"
+            Wait-FileChange -Folder (Join-Path "." "src") -Action $Action
+            Start-Sleep -Milliseconds 100
+        }        
+    }
+    finally {
+        Get-EventSubscriber -Force | Unregister-Event -Force
     }
 }

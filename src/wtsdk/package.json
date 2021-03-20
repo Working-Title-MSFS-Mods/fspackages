@@ -1,0 +1,33 @@
+{
+    "name": "wtsdk",
+    "version": "0.1.0",
+    "description": "Working Title SDK",
+    "main": "dist/wtsdk.js",
+    "typings": "dist/wtsdk.d.ts",
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "scripts": {
+        "build": "tsc --module commonjs && rollup -c rollup.config.ts"
+    },
+    "author": "Working Title",
+    "license": "MIT",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.14.0",
+        "@typescript-eslint/parser": "^4.14.0",
+        "eslint": "^7.18.0",
+        "rollup": "^2.37.1",
+        "rollup-plugin-commonjs": "^10.1.0",
+        "rollup-plugin-copy": "^3.3.0",
+        "rollup-plugin-json": "^4.0.0",
+        "rollup-plugin-node-resolve": "^5.2.0",
+        "rollup-plugin-sourcemaps": "^0.6.3",
+        "rollup-plugin-typescript2": "^0.29.0",
+        "typescript": "^4.1.3"
+    },
+    "dependencies": {}
+}

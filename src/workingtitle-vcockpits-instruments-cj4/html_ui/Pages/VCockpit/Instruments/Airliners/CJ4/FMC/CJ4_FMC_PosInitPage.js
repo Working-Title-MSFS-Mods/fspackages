@@ -13,6 +13,7 @@ class CJ4_FMC_PosInitPageOne {
         this.refAirport = "-----";
         this.refAirportCoordinates = "";
         this.irsPos = "□□□°□□.□ □□□□°□□.□";
+        this.setGnssLabel = "SET POS TO GNSS [blue]";
     }
 
     prepare() {
@@ -29,6 +30,7 @@ class CJ4_FMC_PosInitPageOne {
 
         if (this._fmc.initCoordinates) {
             this.irsPos = this._fmc.initCoordinates;
+            this.setGnssLabel = "COMPLETE [blue]";
         }
 
         if (this._fmc.refAirport && this._fmc.refAirport.ident) {
@@ -61,7 +63,10 @@ class CJ4_FMC_PosInitPageOne {
             this._fmc.inOut = this.refAirportCoordinates;
         };
         this._fmc.onRightInput[3] = () => {
-            this._fmc.inOut = this._currPos;
+            if (this._fmc.tryUpdateIrsCoordinatesDisplay(this._currPos)) {
+                this._isDirty = true;
+                this.update();
+            }
         };
         this._fmc.onRightInput[4] = () => {
             let value = this._fmc.inOut;
@@ -105,7 +110,7 @@ class CJ4_FMC_PosInitPageOne {
             [this.originCell, this.originPos],
             [" PILOT/REF WPT[blue]"],
             [this.refAirport, this.refAirportCoordinates],
-            ["", "SET POS TO GNSS [blue]"],
+            ["", this.setGnssLabel],
             ["", this._currPos],
             ["", "SET POS      [blue]"],
             ["", this.irsPos],
@@ -163,4 +168,3 @@ class CJ4_FMC_PosInitPage {
         fmc.updateSideButtonActiveStatus();
     }
 }
-//# sourceMappingURL=CJ4_FMC_PosInitPage.js.map

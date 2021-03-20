@@ -147,6 +147,13 @@ class Jet_NDCompass extends HTMLElement {
                 this._navigationMode = Jet_NDCompass_Navigation.NONE;
             }
         }
+
+        try {
+            this.navPreset = new NavPresetElement(document.querySelector('#NavPreset .preset-info'));
+            this.navTransferTuning = new NavTransferTuningElement(document.querySelector('#NavPreset .preset-tuning'));
+        }
+        catch (err) { }
+
         this.construct();
     }
     init() {
@@ -195,6 +202,7 @@ class Jet_NDCompass extends HTMLElement {
     update(_deltaTime) {
         this.updateCompass(_deltaTime);
         this.updateNavigationInfo();
+        this.updateCourseNeedleAnimation(_deltaTime);
         this.updateMapRange();
     }
     updateCompass(_deltaTime) {
@@ -205,9 +213,9 @@ class Jet_NDCompass extends HTMLElement {
         }
 
         let simHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
-        let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degree");
+        let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degree");
         let simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");
-        let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+        let simSelectedTrack = Simplane.getNextWaypointTrack();
         let simGroundSpeed = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
         if (Simplane.getAutoPilotTRKModeActive() || Simplane.getAutoPilotTRKFPAModeActive())
             this._referenceMode = Jet_NDCompass_Reference.TRACK;
@@ -344,8 +352,8 @@ class Jet_NDCompass extends HTMLElement {
                     if (this.aircraft == Aircraft.CJ4) {
                         let CompassAngle = this.degreeToArc(compass);
                         let selectedAngle = this.degreeToArc(simSelectedHeading);
-                        let delta = Math.abs(CompassAngle - selectedAngle);
-                        this.selectedHeadingLine.classList.toggle('hide', (delta > 65 && this._displayMode !== Jet_NDCompass_Display.ROSE && Simplane.getAutoPilotHeadingLockActive()) ? false : true);
+                        let delta = Math.abs(Avionics.Utils.angleDiff(CompassAngle, selectedAngle));
+                        this.selectedHeadingLine.classList.toggle('hide', (delta > 65 && this._displayMode !== Jet_NDCompass_Display.ROSE && (SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") === 1)) ? false : true);
                         this.selectedHeadingBug.classList.toggle('hide', (delta > 90 && this._displayMode === Jet_NDCompass_Display.ARC) ? true : false);
 
                         if (showSelectedHeading) {
@@ -422,6 +430,10 @@ class Jet_NDCompass extends HTMLElement {
         }
     }
     updateNavigationInfo() {
+        if (this.navPreset) {
+            this.navPreset.update();
+        }
+        
         if (this.courseGroup && this.displayMode !== Jet_NDCompass_Display.PLAN) {
             if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode == Jet_NDCompass_Navigation.VOR || this.navigationMode == Jet_NDCompass_Navigation.NAV) {
                 const waypointName = Simplane.getNextWaypointName();
@@ -439,6 +451,8 @@ class Jet_NDCompass extends HTMLElement {
                     this.courseFROMBorder.setAttribute("visibility", "hidden");
                     this.courseFROMLine.setAttribute("visibility", "hidden");
                     this.courseTOBorder.setAttribute("visibility", "hidden");
+                    this.courseGroup.setAttribute("visibility", "hidden");
+                    this.noFplnGroup.setAttribute("visibility", "visible");
                 } else {
                     this.courseDeviation.setAttribute("visibility", "visible");
                     this.courseTO.setAttribute("visibility", "visible");
@@ -447,6 +461,8 @@ class Jet_NDCompass extends HTMLElement {
                     this.courseFROMBorder.setAttribute("visibility", "visible");
                     this.courseFROMLine.setAttribute("visibility", "visible");
                     this.courseTOBorder.setAttribute("visibility", "visible");
+                    this.courseGroup.setAttribute("visibility", "visible");
+                    this.noFplnGroup.setAttribute("visibility", "hidden");
 
                     if (bearingDiff > 90 && bearingDiff < 270) {
                         this.courseTO.setAttribute("visibility", "hidden");
@@ -467,7 +483,6 @@ class Jet_NDCompass extends HTMLElement {
                         this.courseTOBorder.setAttribute("visibility", "visible");
                         this.courseFROM.setAttribute("visibility", "hidden");
                         this.courseFROMBorder.setAttribute("visibility", "hidden");
-                        console.log("NAV TO");
                     } else if (navFlag ==2) {
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");
@@ -475,7 +490,6 @@ class Jet_NDCompass extends HTMLElement {
                         this.courseFROMBorder.setAttribute("visibility", "visible");
                         this.courseFROM.setAttribute("transform", "translate(0 220)", "rotate(0 50 50)");
                         this.courseFROMBorder.setAttribute("transform", "translate(0 220)", "rotate(0 50 50)");
-                        console.log("NAV FROM")
                     }
                 }
 
@@ -483,9 +497,16 @@ class Jet_NDCompass extends HTMLElement {
                 let compass = Number(this.getAttribute('rotation'));
                 let displayCourseDeviation = false;
                 let displayVerticalDeviation = false;
+                let source = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "Number");
                 if (this.navigationMode == Jet_NDCompass_Navigation.ILS || this.navigationMode === Jet_NDCompass_Navigation.VOR) {
                     let beacon;
                     this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                    if (this.navTransferTuning && this.navPreset) {
+                        this.navTransferTuning.setDisplayed(false);
+                        this.navPreset.setDisplayed(true);
+                    }
+
                     if (this.navigationMode == Jet_NDCompass_Navigation.ILS) {
                         beacon = this.gps.radioNav.getBestILSBeacon();
                     }
@@ -498,7 +519,12 @@ class Jet_NDCompass extends HTMLElement {
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
-                        this.setAttribute("course", beacon.course.toString());
+
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue(`K:VOR${source}_SET`, "number", beacon.course); //Sets the OBS so the LOC needle gets set to the correct course
+
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
                         this.setAttribute("course_deviation", deviation.toString());
                         if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:" + beacon.id, "Bool")) {
                             displayVerticalDeviation = true;
@@ -506,7 +532,8 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     }
                     else {
-                        this.setAttribute("course", compass.toString());
+                        this.setAttribute("course", SimVar.GetSimVarValue(`NAV OBS:${source}`, "degree").toString());
+                        //this.setAttribute("course", compass.toString());
                         this.setAttribute("course_deviation", "0");
                         this.courseTO.setAttribute("visibility", "hidden");
                         this.courseTOBorder.setAttribute("visibility", "hidden");
@@ -518,9 +545,23 @@ class Jet_NDCompass extends HTMLElement {
                 else if (this.navigationMode === Jet_NDCompass_Navigation.NAV) {
 
                     displayCourseDeviation = true;
-                    let crossTrack = SimVar.GetSimVarValue("GPS WP CROSS TRK", "Number");
-                    let deviation = (crossTrack * 0.000539957) / 2; //Converts cross track to NM and then divides by 2 since enroute max deflection is 2nm off course)
-                    let simSelectedTrack = SimVar.GetSimVarValue("GPS WP DESIRED TRACK", "degree");
+                    let crossTrack = SimVar.GetSimVarValue("L:WT_CJ4_XTK", "number");
+                    const sensitivity = SimVar.GetSimVarValue("L:WT_NAV_SENSITIVITY", "number");
+                    let deviation = -(crossTrack);
+
+                    if (sensitivity === 0) {
+                        deviation = deviation / 2;
+                    }
+                    else if (sensitivity > 2) {
+                        deviation = deviation / 0.3;
+                        if (sensitivity === 4) {
+                            deviation /= SimVar.GetSimVarValue('L:WT_NAV_SENSITIVITY_SCALAR', 'number');
+                        }
+                    }
+
+                    //let simSelectedTrack = Simplane.getNextWaypointTrack();
+                    let simSelectedTrack = SimVar.GetSimVarValue("L:WT_CJ4_DTK", "number");
+
                     this.setAttribute("course", simSelectedTrack.toString());
                     this.setAttribute("course_deviation", deviation.toString());
 
@@ -533,18 +574,47 @@ class Jet_NDCompass extends HTMLElement {
 
                         let course = SimVar.GetSimVarValue("NAV LOCALIZER:1", "degree");
 
+                        let frequency = SimVar.GetSimVarValue('NAV ACTIVE FREQUENCY:1', 'MHz');
+                        if (this.navTransferTuning) {
+                            this.navTransferTuning.setFrequency(frequency);
+                        }
+
                         let deviation = (SimVar.GetSimVarValue("NAV CDI:1", "number") / 127);
                         let backCourse = SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "bool");
                         if (backCourse)
                             deviation = -deviation;
                         this.setAttribute("ghost_needle_course", course.toString());
                         this.setAttribute("ghost_needle_deviation", deviation.toString());
-                        this.ghostNeedleGroup.setAttribute("visibility", "visible");
+                        
+                        const navToNavTransferState = SimVar.GetSimVarValue('L:WT_NAV_TO_NAV_TRANSFER_STATE', 'number');
+
+                        if (navToNavTransferState === 3)
+                            SimVar.SetSimVarValue("K:VOR1_SET", "number", course); //Sets the OBS so the LOC needle gets set to the correct course
+                            
+                        if (navToNavTransferState === 3 || navToNavTransferState === 4) {
+                            this.ghostNeedleGroup.setAttribute("visibility", "visible");
+                            if (this.navTransferTuning && this.navPreset) {
+                                this.navTransferTuning.setDisplayed(true);
+                                this.navPreset.setDisplayed(false);
+                            }
+                        } else {
+                            this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                            if (this.navTransferTuning && this.navPreset) {
+                                this.navTransferTuning.setDisplayed(false);
+                                this.navPreset.setDisplayed(true);
+                            }
+                        }
                     }
                     else {
                         this.setAttribute("ghost_needle_course", compass.toString());
                         this.setAttribute("ghost_needle_deviation", "0");
                         this.ghostNeedleGroup.setAttribute("visibility", "hidden");
+
+                        if (this.navTransferTuning && this.navPreset) {
+                            this.navTransferTuning.setDisplayed(false);
+                            this.navPreset.setDisplayed(true);
+                        }
                     }
                 } 
                 this.setAttribute("display_course_deviation", displayCourseDeviation ? "True" : "False");
@@ -574,7 +644,7 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing1_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                            this.setAttribute("bearing1_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
@@ -613,7 +683,7 @@ class Jet_NDCompass extends HTMLElement {
                         }
                     case 3:
                         {
-                            this.setAttribute("bearing2_bearing", SimVar.GetSimVarValue("GPS WP BEARING", "degree"));
+                            this.setAttribute("bearing2_bearing", Simplane.getNextWaypointTrack());
                             break;
                         }
                     case 4:
@@ -633,6 +703,49 @@ class Jet_NDCompass extends HTMLElement {
             }
         }
     }
+
+    /**
+     * Updates the course needle animation.
+     * @param {number} deltaTime The deltatime, in milliseconds, since the last frame.
+     */
+    updateCourseNeedleAnimation(deltaTime) {
+
+        if (!this._courseTarget) {
+            this._courseTarget = 0;
+        }
+
+        if (!this._currentCourse) {
+            this._currentCourse = 0;
+        }
+
+        if (!this._previousDisplayMode) {
+            this._previousDisplayMode = this.displayMode;
+        }
+
+        if (this._currentCourse !== this._courseTarget) {
+            const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
+            const absAngleDiff = Math.abs(angleDiff);
+
+            const currentAnimationPosition = Math.pow((absAngleDiff / 180), .25);
+            let nextAnimationPosition = Math.pow(Math.max(currentAnimationPosition - (deltaTime / 2000), 0), 4);
+            
+            this._currentCourse = this._courseTarget - (nextAnimationPosition * 180 * Math.sign(angleDiff));      
+            let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+
+            if (this.course) {
+                this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            }
+        }
+        else if (this._currentCourse === this._courseTarget && this._previousDisplayMode !== this.displayMode) {
+            let factor = (this.displayMode === Jet_NDCompass_Display.ARC || this.displayMode === Jet_NDCompass_Display.PPOS) ? 1 : 10;
+            if (this.course) {
+                this.course.setAttribute("transform", "rotate(" + (this._currentCourse) + " " + (50 * factor) + " " + (50 * factor) + ")");
+            }
+        }
+
+        this._previousDisplayMode = this.displayMode;
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
             case "toggle_bearing1":
@@ -709,7 +822,7 @@ class Jet_NDCompass extends HTMLElement {
                 break;
             case "course":
                 if (this.course) {
-                    this.course.setAttribute("transform", "rotate(" + (newValue) + " " + (50 * factor) + " " + (50 * factor) + ")");
+                    this._courseTarget = parseFloat(newValue);
                 }
                 break;
             case "course_deviation":
@@ -840,7 +953,7 @@ class Jet_NDCompass extends HTMLElement {
         path += "A " + radius + " " + radius + " 0 0 " + (reverse ? 0 : 1) + " " + beginX + " " + beginY;
         return path;
     }
-    addMapRange(_parent, _x, _y, _color, _size, _withBg, _rangeFactor, _removeInteger) {
+    addMapRange(_parent, _x, _y, _color, _size, _withBg, _rangeFactor, _removeInteger, textAnchor = "left") {
         let range = new Jet_NDCompass_Range();
         {
             range.text = document.createElementNS(Avionics.SVG.NS, "text");
@@ -850,7 +963,7 @@ class Jet_NDCompass extends HTMLElement {
             range.text.setAttribute("fill", _color);
             range.text.setAttribute("font-size", _size.toString());
             range.text.setAttribute("font-family", "Roboto-Light");
-            range.text.setAttribute("text-anchor", "middle");
+            range.text.setAttribute("text-anchor", textAnchor);
             range.text.setAttribute("alignment-baseline", "central");
             range.factor = _rangeFactor;
             range.removeInteger = _removeInteger;
@@ -878,4 +991,3 @@ class Jet_NDCompass extends HTMLElement {
         this._showILS = _val;
     }
 }
-//# sourceMappingURL=BaseNDCompass.js.map

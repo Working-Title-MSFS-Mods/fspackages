@@ -1,117 +1,58 @@
 {
+    "root": true,
     "env": {
-        "browser": true,
-        "es2017": true
+      "browser": true,
+      "es2021": true
     },
-    "extends": "eslint:recommended",
     "rules": {
-        "no-redeclare": [
-            "error", {
-                "builtinGlobals": false
-            }
-        ],
-        "no-unused-vars": [
-            "error", {
-                "vars": "all",
-                "varsIgnorePattern": "^CJ4_|^WT|Loader$|^Jet_"
-            }
-        ],
-        "semi": [2, "always"]
-    },
-    "globals": {
-        "Avionics": "writable",
-        "EmptyCallback": "writable",
-        "LatLong": "writable",
-        "Coherent": "writable",
-        "SimVar": "writable",
-        "Simplane": "writable",
-        "fastToFixed": "writable",
-        "Aircraft": "writable",
-        "BaseAirliners": "writable",
-        "FMCMainDisplay": "writable",
-        "ERadarMode": "writable",
-        "NavMode": "writable",
-        "IntersectionInfo": "writable",
-        "RadioNav": "writable",
-        "RegisterViewListener": "writable",
-        "FMCDataManager": "writable",
-        "EMapDisplayMode": "writable",
-        "registerInstrument": "writable",
-        "WTUtils": "writable",
-        "WT_FMC_Renderer": "writable",
-        "Utils": "writable",
-        "WT_ConvertUnit": "writable",
-        "Jet_NDCompass_Display": "writable",
-        "NearestAirspace": "writable",
-        "FacilityLoader": "writable",
-        "MFD_MapElement": "writable",
-        "NavSystemElement": "writable",
-        "MFD_NearestNDB_Element": "writable",
-        "AS1000": "writable",
-        "g_modDebugMgr": "writable",
-        "BaseAS1000": "writable",
-        "NearestWaypointRoute": "writable",
-        "NearestIntersection": "writable",
-        "NearestAirport": "writable",
-        "NearestNDB": "writable",
-        "WayPoint": "writable",
-        "Airway": "writable",
-        "NDBLoader": "writable",
-        "VORLoader": "writable",
-        "NearestVOR": "writable",
-        "IntersectionLoader": "writable",
-        "LatLongAlt": "writable",
-        "SoftKeyElement": "writable",
-        "WTDataStore": "writable",
-        "NavSource": "writable",
-        "MFD_WaypointLine": "writable",
-        "MFD_Procedures": "writable",
-        "MFD_ApproachWaypointLine": "writable",
-        "MFD_ActiveFlightPlan_Element": "writable",
-        "MFD_NearestVOR_Element": "writable",
-        "MFD_NearestAirport_Element": "writable",
-        "MFD_NearestIntersection_Element": "writable",
-        "NavSystemPage": "writable",
-        "SearchFieldWaypointICAO": "writable",
-        "SelectableElementSliderGroup": "writable",
-        "SelectableElement": "writable",
-        "SoftKeysMenu": "writable",
-        "WTEngine": "writable",
-        "Include": "writable",
-        "NavSystemPageGroup": "writable",
-        "NavSystemEventLinkedPopUpWindow": "writable",
-        "Jet_NDCompass_Navigation": "writable",
-        "CJ4_FMC": "writable",
-        "CJ4_FMC_ModSettingsPage": "writable",
-        "CJ4_FMC_FplnRecallPage": "writable",
-        "CJ4_FMC_ApproachRefPage": "writable",
-        "CJ4_FMC_TakeoffRefPage": "writable",
-        "CJ4_FMC_FuelMgmtPage": "writable",
-        "CJ4_MapSymbol": "writable",
-        "CJ4_PopupMenu": "writable",
-        "CJ4_PopupMenu_Key": "writable",
-        "CJ4_SystemPage": "writable",
-        "CJ4_MapContainer": "writable",
-        "CJ4_MapOverlayContainer": "writable",
-        "CJ4_Checklist_Container": "writable",
-        "CJ4_PassengerBrief_Container": "writable",
-        "CJ4_NavBarContainer": "writable",
-        "CJ4_PopupMenuContainer": "writable",
-        "WayPointInfo": "writable",
-        "AirportInfo": "writable",
-        "CJ4_FMC_LegsPage": "writable",
-        "CJ4_SystemContainer": "writable",
-        "NavSystemElementGroup": "writable",
-        "NavSystemElementContainer": "writable",
-        "CJ4_FMC_DepArrPage": "writable",
-        "CJ4_FMC_DsplMenuPage": "writable",
-        "CJ4_FMC_PerfInitPage": "writable",
-        "CJ4_FMC_MfdAdvPage": "writable",
-        "CJ4_FMC_NavRadioPage": "writable",
-        "CJ4_FMC_SelectWptPage": "writable",
-        "CJ4_FMC_RoutePage": "writable",
-        "CJ4_FMC_DirectToPage": "writable",
-        "CJ4_FMC_InitRefIndexPage": "writable",
-        "CJ4_FMC_PosInitPage": "writable"
+      // "indent": [
+      //   "error",
+      //   4,
+      //   {
+      //     "SwitchCase": 1
+      //   }
+      // ],
+      "linebreak-style": "off",
+      "quotes": "off",
+      "semi": ["error", "always"],
+      "curly": ["error", "all"],
+      "brace-style": ["error", "1tbs"],
+      "space-before-blocks": "error",
+      "space-before-function-paren": [
+        "error",
+        {
+          "anonymous": "always",
+          "named": "never",
+          "asyncArrow": "always"
+        }
+      ],
+      "space-in-parens": "error",
+      "space-infix-ops": "error",
+      "space-unary-ops": "error",
+      "keyword-spacing": "error",
+      "no-irregular-whitespace": "error",
+      "no-trailing-spaces": "error",
+      "semi-spacing": "error",
+      "no-mixed-spaces-and-tabs": "error",
+      "no-multi-spaces": "error",
+      "no-var": "off",
+      "prefer-const": [
+        "error",
+        {
+          "destructuring": "all"
+        }
+      ],
+      "no-console": "off",
+      "no-debugger": "error",
+      "eol-last": ["error", "always"],
+      "no-multiple-empty-lines": [
+        "error",
+        {
+          "max": 1,
+          "maxBOF": 0,
+          "maxEOF": 0
+        }
+      ],
+      "@typescript-eslint/no-inferrable-types" : "off"
     }
-}
+  }

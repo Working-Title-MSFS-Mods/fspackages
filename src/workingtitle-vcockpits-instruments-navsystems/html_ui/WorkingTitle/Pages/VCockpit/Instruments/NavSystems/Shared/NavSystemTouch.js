@@ -1874,7 +1874,7 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
         let enroute = this.gps.currFlightPlanManager.getEnRouteWaypoints();
         let origin = this.gps.currFlightPlanManager.getOrigin();
         let destination = this.gps.currFlightPlanManager.getDestination();
-        if (origin) {
+        if (origin && origin != undefined) {
             if (departure.length > 0) {
                 Avionics.Utils.diffAndSet(this.origin_mainValue, "Departure - " + this.gps.currFlightPlanManager.getDeparture().name);
             }
@@ -1954,15 +1954,26 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                 else {
                     Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].base, "state", "Active");
                 }
-                let infos = departure[i].infos;
-                Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : departure[i].ident);
-                Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Name, infos.name);
-                Avionics.Utils.diffAndSet(this.departureWaypoints[i].altButton_Value, departure[i].altitudeinFP ? fastToFixed(Math.round(departure[i].altitudeinFP), 0) + "FT" : "_____FT");
-                Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", departure[i].altitudeModeinFP);
-                let symbol = infos.imageFileName();
-                Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-                Avionics.Utils.diffAndSet(this.departureWaypoints[i].dtk, fastToFixed(departure[i].bearingInFP, 0) + "°");
-                Avionics.Utils.diffAndSet(this.departureWaypoints[i].distance, fastToFixed(departure[i].distanceInFP, 0) + "NM");
+                if (departure[i] && departure[i] != undefined) {
+                    let infos = departure[i].infos;
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : departure[i].ident);
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Name, infos.name);
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].altButton_Value, departure[i].altitudeinFP ? fastToFixed(Math.round(departure[i].altitudeinFP), 0) + "FT" : "_____FT");
+                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", departure[i].altitudeModeinFP);
+                    let symbol = infos.imageFileName();
+                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].dtk, fastToFixed(departure[i].bearingInFP, 0) + "°");
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].distance, fastToFixed(departure[i].distanceInFP, 0) + "NM");
+                }
+                else {
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Ident, "");
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].identButton_Name, "");
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].altButton_Value, "_____FT");
+                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].altButton_Value, "altitudeMode", "");
+                    Avionics.Utils.diffAndSetAttribute(this.departureWaypoints[i].identButton_Logo, "src", "");
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].dtk, "___°");
+                    Avionics.Utils.diffAndSet(this.departureWaypoints[i].distance, "_____NM");
+                }
             }
         }
         else {
@@ -2045,20 +2056,31 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
             else {
                 Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "Active");
             }
-            let infos = enroute[i].infos;
-            Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : enroute[i].ident);
-            Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Name, infos.name);
-            let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].altButton_Value, enroute[i].altitudeinFP ? fastToFixed(Math.round(enroute[i].altitudeinFP), 0) + "FT" : "_____FT");
-            Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", enroute[i].altitudeModeinFP);
-            Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].dtk, fastToFixed(enroute[i].bearingInFP, 0) + "°");
-            Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].distance, fastToFixed(enroute[i].distanceInFP, 0) + "NM");
+            if (enroute[i] && enroute[i] != undefined) {
+                let infos = enroute[i].infos;
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : enroute[i].ident);
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Name, infos.name);
+                let symbol = infos.imageFileName();
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].altButton_Value, enroute[i].altitudeinFP ? fastToFixed(Math.round(enroute[i].altitudeinFP), 0) + "FT" : "_____FT");
+                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", enroute[i].altitudeModeinFP);
+                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].dtk, fastToFixed(enroute[i].bearingInFP, 0) + "°");
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].distance, fastToFixed(enroute[i].distanceInFP, 0) + "NM");
+            }
+            else {
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Ident, "");
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].identButton_Name, "");
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].altButton_Value, "_____FT");
+                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].altButton_Value, "altitudeMode", "");
+                Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].identButton_Logo, "src", "");
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].dtk, "___°");
+                Avionics.Utils.diffAndSet(this.enRouteWaypoints[i].distance, "_____NM");
+            }
         }
         for (let i = enroute.length; i < this.enRouteWaypoints.length; i++) {
             Avionics.Utils.diffAndSetAttribute(this.enRouteWaypoints[i].base, "state", "Inactive");
         }
-        if (destination) {
+        if (destination && destination != undefined) {
             if (arrival.length > 0) {
                 Avionics.Utils.diffAndSet(this.destination_mainValue, "Arrival - " + this.gps.currFlightPlanManager.getArrival().name);
             }
@@ -2143,15 +2165,26 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                 else {
                     Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].base, "state", "Active");
                 }
-                let infos = arrival[i].infos;
-                Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : arrival[i].ident);
-                Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Name, infos.name);
-                let symbol = infos.imageFileName();
-                Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].altButton_Value, arrival[i].altitudeinFP ? fastToFixed(Math.round(arrival[i].altitudeinFP), 0) + "FT" : "_____FT");
-                Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", arrival[i].altitudeModeinFP);
-                Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-                Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].dtk, fastToFixed(arrival[i].bearingInFP, 0) + "°");
-                Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].distance, fastToFixed(arrival[i].distanceInFP, 0) + "NM");
+                if (arrival[i] && arrival[i] != undefined) {
+                    let infos = arrival[i].infos;
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Ident, infos.ident != "" ? infos.ident : arrival[i].ident);
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Name, infos.name);
+                    let symbol = infos.imageFileName();
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].altButton_Value, arrival[i].altitudeinFP ? fastToFixed(Math.round(arrival[i].altitudeinFP), 0) + "FT" : "_____FT");
+                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", arrival[i].altitudeModeinFP);
+                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].dtk, fastToFixed(arrival[i].bearingInFP, 0) + "°");
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].distance, fastToFixed(arrival[i].distanceInFP, 0) + "NM");
+                }
+                else {
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Ident, "");
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].identButton_Name, "");
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].altButton_Value, "_____FT");
+                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].altButton_Value, "altitudeMode", "");
+                    Avionics.Utils.diffAndSetAttribute(this.arrivalWaypoints[i].identButton_Logo, "src", "");
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].dtk, "___°");
+                    Avionics.Utils.diffAndSet(this.arrivalWaypoints[i].distance, "_____NM");
+                }
             }
             if (approach && approach.length > 0) {
                 Avionics.Utils.diffAndSet(this.approach_mainValue, "Approach - " + approachInfos.name);
@@ -2221,12 +2254,21 @@ class NavSystemTouch_ActiveFPL extends NavSystemElement {
                     else {
                         Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Active");
                     }
-                    let infos = approach[i];
-                    Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Ident, infos.ident);
-                    Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Name, infos.ident);
-                    Avionics.Utils.diffAndSet(this.approachWaypoints[i].altButton_Value, approach[i].altitudeinFP ? fastToFixed(approach[i].altitudeinFP, 0) + "FT" : "_____FT");
-                    Avionics.Utils.diffAndSet(this.approachWaypoints[i].dtk, infos.bearingInFP ? fastToFixed(infos.bearingInFP, 0) + "°" : "");
-                    Avionics.Utils.diffAndSet(this.approachWaypoints[i].distance, infos.distanceInFP ? fastToFixed(infos.distanceInFP, 0) + "NM" : "");
+                    if (approach[i] && approach[i] != undefined) {
+                        let infos = approach[i];
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Ident, infos.ident);
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Name, infos.ident);
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].altButton_Value, approach[i].altitudeinFP ? fastToFixed(approach[i].altitudeinFP, 0) + "FT" : "_____FT");
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].dtk, infos.bearingInFP ? fastToFixed(infos.bearingInFP, 0) + "°" : "");
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].distance, infos.distanceInFP ? fastToFixed(infos.distanceInFP, 0) + "NM" : "");
+                    }
+                    else {
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Ident, "");
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].identButton_Name, "");
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].altButton_Value, "_____FT");
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].dtk, "___°");
+                        Avionics.Utils.diffAndSet(this.approachWaypoints[i].distance, "_____NM");
+                    }
                 }
                 for (let i = approach.length; i < this.approachWaypoints.length; i++) {
                     Avionics.Utils.diffAndSetAttribute(this.approachWaypoints[i].base, "state", "Inactive");

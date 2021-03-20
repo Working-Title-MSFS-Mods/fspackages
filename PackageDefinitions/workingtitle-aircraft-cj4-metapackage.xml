@@ -1,4 +1,4 @@
-<AssetPackage Name="workingtitle-aircraft-cj4" Version="0.7.1">
+<AssetPackage Name="workingtitle-aircraft-cj4" Version="0.11.3">
 	<ItemSettings>
 		<ContentType>CUSTOM</ContentType>
 		<Title>CJ4</Title>
@@ -16,14 +16,6 @@
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
 			<AssetDir>src\workingtitle-core-library</AssetDir>
-			<OutputDir>.\</OutputDir>
-		</AssetGroup>
-        <AssetGroup Name="workingtitle-vcockpits-instruments">
-			<Type>Copy</Type>
-			<Flags>
-				<FSXCompatibility>false</FSXCompatibility>
-			</Flags>
-			<AssetDir>src\workingtitle-vcockpits-instruments</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
 		<AssetGroup Name="workingtitle-aircraft-cj4">
@@ -48,6 +40,14 @@
 				<FSXCompatibility>false</FSXCompatibility>
 			</Flags>
 			<AssetDir>src\workingtitle-vcockpits-instruments-airliners</AssetDir>
+			<OutputDir>.\</OutputDir>
+		</AssetGroup>
+		<AssetGroup Name="workingtitle-core-library">
+			<Type>Copy</Type>
+			<Flags>
+				<FSXCompatibility>false</FSXCompatibility>
+			</Flags>
+			<AssetDir>src\workingtitle-core-library</AssetDir>
 			<OutputDir>.\</OutputDir>
 		</AssetGroup>
 	</AssetGroups>

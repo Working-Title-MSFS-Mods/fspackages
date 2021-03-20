@@ -8,7 +8,7 @@ class SvgMap {
         this.rotateWithPlane = false;
         this.mapElements = [];
 
-        this.textManager = new SvgTextManager(this);
+        // this.textManager = new SvgTextManager(this);
         this.elementsWithTextBox = new Set();
 
         this.svgLayersToUpdate = [];
@@ -79,17 +79,17 @@ class SvgMap {
         this.svgHtmlElement.appendChild(this.altitudeInterceptLayer);
         this.svgLayersToUpdate.push(this.altitudeInterceptLayer);
 
-        this.fuelRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.svgHtmlElement.appendChild(this.fuelRingLayer);
-        this.svgLayersToUpdate.push(this.fuelRingLayer);
+        // this.fuelRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
+        // this.svgHtmlElement.appendChild(this.fuelRingLayer);
+        // this.svgLayersToUpdate.push(this.fuelRingLayer);
 
-        this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.svgHtmlElement.appendChild(this.rangeRingLayer);
-        this.svgLayersToUpdate.push(this.rangeRingLayer);
+        // this.rangeRingLayer = document.createElementNS(Avionics.SVG.NS, "svg");
+        // this.svgHtmlElement.appendChild(this.rangeRingLayer);
+        // this.svgLayersToUpdate.push(this.rangeRingLayer);
 
-        this.maskLayer = document.createElementNS(Avionics.SVG.NS, "svg");
-        this.svgHtmlElement.appendChild(this.maskLayer);
-        this.svgLayersToUpdate.push(this.maskLayer);
+        // this.maskLayer = document.createElementNS(Avionics.SVG.NS, "svg");
+        // this.svgHtmlElement.appendChild(this.maskLayer);
+        // this.svgLayersToUpdate.push(this.maskLayer);
 
         this.planeLayer = document.createElementNS(Avionics.SVG.NS, "svg");
         this.svgHtmlElement.appendChild(this.planeLayer);
@@ -339,9 +339,9 @@ class SvgMap {
             let svgElement = this.mapElements[i].draw(this);
             svgElement.setAttribute("needDeletion", "false");
 
-            if (this.mapElements[i].hasTextBox) {
-                newElementsWithTextBox.add(this.mapElements[i].getLabelElement());
-            }
+            // if (this.mapElements[i].hasTextBox) {
+            //     this.mapElements[i].getLabelElement().draw(this);
+            // }
         }
         for (let svgLayer of this.svgLayersToUpdate) {
             let i = 0;
@@ -355,24 +355,24 @@ class SvgMap {
             }
         }
 
-        let toRemove = [];
-        for (let e of this.elementsWithTextBox) {
-            if (newElementsWithTextBox.has(e)) {
-                newElementsWithTextBox.delete(e);
-            } else {
-                toRemove.push(e);
-            }
-        }
-        for (let e of toRemove) {
-            this.textManager.remove(e);
-            this.elementsWithTextBox.delete(e);
-        }
-        for (let e of newElementsWithTextBox) {
-            this.elementsWithTextBox.add(e);
-            this.textManager.add(e);
-        }
+        // let toRemove = [];
+        // for (let e of this.elementsWithTextBox) {
+        //     if (newElementsWithTextBox.has(e)) {
+        //         newElementsWithTextBox.delete(e);
+        //     } else {
+        //         toRemove.push(e);
+        //     }
+        // }
+        // for (let e of toRemove) {
+        //     this.textManager.remove(e);
+        //     this.elementsWithTextBox.delete(e);
+        // }
+        // for (let e of newElementsWithTextBox) {
+        //     this.elementsWithTextBox.add(e);
+        //     this.textManager.add(e);
+        // }
 
-        this.textManager.update();
+        // this.textManager.update();
 
         if (SvgMap.LOG_PERFS) {
             let dt = performance.now() - t0;
@@ -580,4 +580,3 @@ class SvgMap {
 SvgMap.Index = 0;
 SvgMap.LOG_PERFS = false;
 checkAutoload();
-//# sourceMappingURL=SvgMap.js.map

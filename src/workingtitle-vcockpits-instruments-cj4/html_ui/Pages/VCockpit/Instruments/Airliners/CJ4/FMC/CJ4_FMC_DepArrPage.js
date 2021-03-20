@@ -45,7 +45,7 @@ class CJ4_FMC_DepArrPage {
         let rowDestination = [""];
         let destination = fmc.flightPlanManager.getDestination();
         if (destination) {
-            rowDestination = ["", "<ARR", destination.ident];
+            rowDestination = ["", "ARR>", destination.ident];
             fmc.onRightInput[1] = () => {
                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             };
@@ -108,8 +108,10 @@ class CJ4_FMC_DepArrPage {
             rows[0] = ["", Avionics.Utils.formatRunway(selectedRunway.designation) + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setMsg("Working...");
+                fmc.flightPlanManager.pauseSync();
                 fmc.setRunwayIndex(-1, () => {
                     fmc.setDepartureIndex(-1, () => {
+                        fmc.flightPlanManager.resumeSync();
                         fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
                     });
@@ -177,8 +179,10 @@ class CJ4_FMC_DepArrPage {
             rows[0][0] = selectedDeparture.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
                 fmc.setMsg("Working...");
+                fmc.flightPlanManager.pauseSync();
                 fmc.setRunwayIndex(-1, () => {
                     fmc.setDepartureIndex(-1, () => {
+                        fmc.flightPlanManager.resumeSync();
                         fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc, currentPage);
                     });
@@ -262,7 +266,9 @@ class CJ4_FMC_DepArrPage {
                 rows[2 * i][0] = departurePages[displayedPageIndex][i].text;
                 fmc.onLeftInput[i] = () => {
                     fmc.setMsg("Working...");
+                    fmc.flightPlanManager.pauseSync();
                     fmc.setDepartureIndex(departureIndex, () => {
+                        fmc.flightPlanManager.resumeSync();
                         fmc.setMsg();
                         //fmc.flightPlanManager.setDepartureEnRouteTransitionIndex(-1, () => {CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);});
                         CJ4_FMC_DepArrPage.ShowDeparturePage(fmc);
@@ -395,9 +401,11 @@ class CJ4_FMC_DepArrPage {
             rows[0] = ["  NONE", Avionics.Utils.formatRunway(selectedApproach.name).trim() + "[d-text green]"];
             fmc.onRightInput[0] = () => {
                 fmc.setMsg("Working...");
+                fmc.flightPlanManager.pauseSync();
                 fmc.setApproachIndex(-1, () => {
-                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                    fmc.flightPlanManager.resumeSync();
                     fmc.setMsg();
+                    CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                 });
             };
             rows[1] = ["", "TRANS [blue]"];
@@ -407,7 +415,9 @@ class CJ4_FMC_DepArrPage {
                 rows[2] = ["", selectedTransition.name.trim() + "[d-text green]"];
                 fmc.onRightInput[1] = () => {
                     fmc.setMsg("Working...");
+                    fmc.flightPlanManager.pauseSync();
                     fmc.setApproachTransitionIndex(-1, () => {
+                        fmc.flightPlanManager.resumeSync();
                         fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                     });
@@ -424,7 +434,11 @@ class CJ4_FMC_DepArrPage {
                         let name = transition.name.trim();
                         rows[2 * (i + 1)][1] = name;
                         fmc.onRightInput[i + 1] = () => {
+                            fmc.setMsg("Working...");
+                            fmc.flightPlanManager.pauseSync();
                             fmc.setApproachTransitionIndex(transitionIndex, () => {
+                                fmc.flightPlanManager.resumeSync();
+                                fmc.setMsg();
                                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                             });
                         };
@@ -435,14 +449,38 @@ class CJ4_FMC_DepArrPage {
         else if (selectedRunway) {
             headStr = "RUNWAYS";
             rows[0][1] = "RW" + Avionics.Utils.formatRunway(selectedRunway.designation) + "[d-text green]";
+            rows[1][1] = "RWY EXT [s-text blue]";
+            rows[2][1] = (fmc.vfrRunwayExtension && fmc.vfrRunwayExtension.toFixed(1)) + "[green]" + "NM[s-text white]";
             fmc.onRightInput[0] = () => {
                 fmc.setMsg("Working...");
+                fmc.flightPlanManager.pauseSync();
                 fmc.ensureCurrentFlightPlanIsTemporary(() => {
                     fmc.deletedVfrLandingRunway = selectedRunway;
                     fmc.vfrLandingRunway = undefined;
                     fmc.modVfrRunway = true;
-                    fmc.flightPlanManager.setArrivalRunwayIndex(-1, () => {
+                    fmc.flightPlanManager.setDestinationRunwayIndex(-1, -1, () => {
+                        fmc.flightPlanManager.resumeSync();
                         fmc.setMsg();
+                        CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
+                    });
+                });
+            };
+            fmc.onRightInput[1] = () => {
+                fmc.setMsg("Working...");
+                let vfrRunwayExtension = parseFloat(fmc.inOut);
+                if (isNaN(vfrRunwayExtension) || vfrRunwayExtension < 1 || vfrRunwayExtension > 25) {
+                    fmc.showErrorMessage("INVALID");
+                    return;
+                } else {
+                    fmc.vfrRunwayExtension = vfrRunwayExtension;
+                }
+                fmc.flightPlanManager.pauseSync();
+                fmc.ensureCurrentFlightPlanIsTemporary(() => {
+                    let runwayIndex = fmc.flightPlanManager.getFlightPlan(1).procedureDetails.destinationRunwayIndex;
+                    fmc.flightPlanManager.setDestinationRunwayIndex(runwayIndex, fmc.vfrRunwayExtension, () => {
+                        fmc.flightPlanManager.resumeSync();
+                        fmc.setMsg();
+                        fmc.inOut = '';
                         CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                     });
                 });
@@ -547,6 +585,7 @@ class CJ4_FMC_DepArrPage {
                     if (approachIndex <= lastApproachIndex) {
                         console.log("approachIndex <= lastApproachIndex");
                         fmc.setMsg("Working...");
+                        fmc.flightPlanManager.pauseSync();
                         console.log("approachIndex " + approachIndex);
                         fmc.setApproachIndex(approachIndex, () => {
                             console.log("approach index set, selecting arrival");
@@ -561,12 +600,14 @@ class CJ4_FMC_DepArrPage {
                                     if (arrivalRunwayIndex >= -1) {
                                         fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
                                             fmc.setMsg();
+                                            fmc.flightPlanManager.resumeSync();
                                             CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                                         });
                                     }
                                 }
                             }
                             fmc.setMsg();
+                            fmc.flightPlanManager.resumeSync();
                             CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                         });
                     }
@@ -575,28 +616,37 @@ class CJ4_FMC_DepArrPage {
                         fmc.setMsg("Working...");
                         let runwayApproachIndex = approachPages[displayedPageIndex][i].runwayIndex;
                         console.log("approachIndex " + approachIndex);
+                        fmc.flightPlanManager.pauseSync();
                         fmc.ensureCurrentFlightPlanIsTemporary(() => {
                             console.log("starting to set vfrLandingRunway");
+
                             fmc.modVfrRunway = true;
                             fmc.vfrLandingRunway = runways[runwayApproachIndex];
-                            if (selectedArrival) {
-                                let landingRunway = fmc.vfrLandingRunway;
-                                if (landingRunway) {
-                                    let arrivalRunwayIndex = selectedArrival.runwayTransitions.findIndex(t => {
-                                        return t.name.indexOf("RW" + landingRunway.designation) != -1;
-                                    });
-                                    if (arrivalRunwayIndex >= -1) {
-                                        fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
-                                            fmc.setMsg();
-                                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
+                            fmc.vfrRunwayExtension = 5;
+
+                            fmc.flightPlanManager.setDestinationRunwayIndex(runwayApproachIndex, fmc.vfrRunwayExtension, () => {
+                                if (selectedArrival) {
+                                    let landingRunway = fmc.vfrLandingRunway;
+                                    if (landingRunway) {
+                                        let arrivalRunwayIndex = selectedArrival.runwayTransitions.findIndex(t => {
+                                            return t.name.indexOf("RW" + landingRunway.designation) != -1;
                                         });
+                                        if (arrivalRunwayIndex >= -1) {            
+                                            fmc.flightPlanManager.setArrivalRunwayIndex(arrivalRunwayIndex, () => {
+                                                fmc.setMsg();
+                                                fmc.inOut = '';
+                                                fmc.flightPlanManager.resumeSync();
+                                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
+                                            });
+                                        }
                                     }
                                 }
-                            }
-                            console.log("completed setting vfrLandingRunway");
-                            fmc.setMsg();
-                            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
-                            });
+                                console.log("completed setting vfrLandingRunway");
+                                fmc.flightPlanManager.resumeSync();
+                                fmc.setMsg();
+                                CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
+                            });    
+                        });
                     }
 
                 };
@@ -614,7 +664,9 @@ class CJ4_FMC_DepArrPage {
             rows[0][0] = selectedArrival.name + "[d-text green]";
             fmc.onLeftInput[0] = () => {
                 fmc.setMsg("Working...");
+                fmc.flightPlanManager.pauseSync();
                 fmc.setArrivalProcIndex(-1, () => {
+                    fmc.flightPlanManager.resumeSync();
                     fmc.setMsg();
                     CJ4_FMC_DepArrPage.ShowArrivalPage(fmc, currentPage);
                 });
@@ -645,8 +697,10 @@ class CJ4_FMC_DepArrPage {
                         rows[2 * (i + 1)][0] = enrouteTransitionName;
                         fmc.onLeftInput[i + 1] = () => {
                             fmc.setMsg("Working...");
+                            fmc.flightPlanManager.pauseSync();
                             fmc.setArrivalAndRunwayIndex(selectedArrivalIndex, enrouteTransitionIndex, () => {
                                 fmc.setMsg();
+                                fmc.flightPlanManager.resumeSync();
                                 CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                             });
                         };
@@ -711,8 +765,10 @@ class CJ4_FMC_DepArrPage {
                 fmc.onLeftInput[i] = () => {
                     console.log("rows length before reload" + rows.length);
                     fmc.setMsg("Working...");
+                    fmc.flightPlanManager.pauseSync();
                     fmc.setArrivalAndRunwayIndex(arrivalIndex, -1, () => {
                         console.log("Setting Arrival and Runway Index");
+                        fmc.flightPlanManager.resumeSync();
                         fmc.setMsg();
                         CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
                     });
@@ -745,6 +801,7 @@ class CJ4_FMC_DepArrPage {
                 }
                 fmc.onExecDefault();
             }
+            CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
             fmc.refreshPageCallback = () => CJ4_FMC_DepArrPage.ShowArrivalPage(fmc);
         };
         //end of CWB EXEC handling
@@ -803,4 +860,3 @@ class CJ4_FMC_DepArrPage {
         };
     }
 }
-//# sourceMappingURL=CJ4_FMC_DepArrPage.js.map

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Spoiler Drag" ID="{E015AA16-3DD1-4DFE-B9B2-68A021A8CFEF}" OwnerID="{45D31A78-8278-4BAD-B9A7-522094AE903A}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_WT_spoiler_drag" ID="{F07FCD60-D6F8-414B-8595-5F374E27DE1F}">
+					<ChildrenList>
+						<Action Name="" ID="{29105F06-B07A-442F-9D79-82BB1D6CBF2C}" ShortID="321760245">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Spoiler Drag" ID="{0A7EECB8-7B73-4F58-A60D-C2DA27EC2B3F}" WorkUnitID="{30DABAEE-CADC-4B29-B080-211845AEA85F}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" SchemaVersion="97" RootDocumentID="{45D31A78-8278-4BAD-B9A7-522094AE903A}">
+	<Events>
+		<WorkUnit Name="Battery" ID="{EE91CD35-2E0A-4D74-B9E0-CB584A25B397}" OwnerID="{98276D74-BFDC-47D9-89D3-A4E076FD622F}" PersistMode="Nested">
+			<ChildrenList>
+				<Event Name="Play_Asobo_CJ4_WT_battery_off" ID="{E50873FA-CA00-42D3-9C0F-B86B7545D537}">
+					<ChildrenList>
+						<Action Name="" ID="{0E9988FC-E74F-4810-AB92-10310FCB073F}" ShortID="54075620">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CJ4_Battery_Off" ID="{89131AF4-9F00-488D-99F2-A523547A030A}" WorkUnitID="{C1079D91-FF2B-4433-A403-85578F051E45}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Asobo_CJ4_WT_battery_on" ID="{ED408425-4567-4879-989D-B21F93E89B57}">
+					<ChildrenList>
+						<Action Name="" ID="{0842CEDC-5D5A-4D70-A5ED-36CBE47F6157}" ShortID="11298372">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Battery_On_Seq" ID="{5F4F4A0F-04B9-47FF-B1FC-650E693B980F}" WorkUnitID="{C1079D91-FF2B-4433-A403-85578F051E45}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

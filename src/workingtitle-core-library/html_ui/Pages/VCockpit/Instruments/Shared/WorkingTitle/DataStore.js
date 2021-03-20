@@ -8,7 +8,7 @@ class WTDataStore {
 
     /**
      * Returns whether the datastore has an entry for the supplied key
-     * @param {string} key 
+     * @param {string} key
      * @returns {boolean}
      */
     static has(key) {
@@ -78,7 +78,7 @@ class WTDataStore {
 
     /**
      * Removes a key from the data store
-     * @param {string} key 
+     * @param {string} key
      */
     static remove(key) {
         const storeKey = WTDataStore.getStoreKey(key);
@@ -99,8 +99,8 @@ class WTDataStore {
     /**
      * Adds a listener to be called when a data store value is updated on another instrument
      * The listener is called with (key, value, previousValue) as arguments
-     * @param {function} listener 
-     * @param {string|null} prefix 
+     * @param {function} listener
+     * @param {string|null} prefix
      */
     static addListener(listener, prefix = null) {
         const windowListener = event => {
@@ -115,7 +115,7 @@ class WTDataStore {
 
     /**
      * Remove a previously added listener
-     * @param {function} listener 
+     * @param {function} listener
      */
     static removeListener(listener) {
         window.removeEventListener("storage", listener);
