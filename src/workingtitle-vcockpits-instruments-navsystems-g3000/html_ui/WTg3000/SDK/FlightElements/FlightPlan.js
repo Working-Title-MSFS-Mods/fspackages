@@ -154,7 +154,7 @@ class WT_FlightPlan {
      * @returns {WT_FlightPlanLeg[]}
      */
     legs() {
-        return Array.from(this._legs);
+        return this._legs.slice();
     }
 
     /**
@@ -894,10 +894,7 @@ class WT_FlightPlan {
         }
         this._enroute._setPrevious(this._departure ? this._departure : this._origin);
         if (!flightPlan.getEnroute().equals(this._enroute)) {
-            let enrouteElements = [];
-            for (let element of flightPlan.getEnroute().elements()) {
-                enrouteElements.push(element.copy());
-            }
+            let enrouteElements = flightPlan.getEnroute().elements().map(element => element.copy());
             this._clearSegment(this._enroute, eventData);
             this._insertToSegment(this._enroute, enrouteElements, 0, eventData);
         }
@@ -940,9 +937,7 @@ class WT_FlightPlan {
         }
 
         let event = new WT_FlightPlanEvent(eventData);
-        for (let listener of this._listeners) {
-            listener(event);
-        }
+        this._listeners.forEach(listener => listener(event));
     }
 
     addListener(listener) {
@@ -1652,7 +1647,6 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
 
     /**
      * @readonly
-     * @property {WT_GeoPointReadOnly} endpoint
      * @type {WT_GeoPointReadOnly}
      */
     get endpoint() {
@@ -1661,7 +1655,6 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
 
     /**
      * @readonly
-     * @property {Number} desiredTrack
      * @type {Number}
      */
     get desiredTrack() {
@@ -1672,12 +1665,21 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
         return this._elements.length;
     }
 
+    /**
+     *
+     * @param {Number} index
+     * @returns {WT_FlightPlanElement}
+     */
     getElement(index) {
         return this._elements[index];
     }
 
+    /**
+     *
+     * @returns {WT_FlightPlanElement[]}
+     */
     elements() {
-        return this._elements.values();
+        return this._elements.slice();
     }
 
     _updateDistance() {
@@ -1704,9 +1706,7 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
             index = this._elements.length;
         }
         this._elements.splice(index, 0, ...elements);
-        for (let element of elements) {
-            element._setParent(this);
-        }
+        elements.forEach(element => element._setParent(this), this);
         this._update();
     }
 
@@ -1719,25 +1719,19 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
 
     _removeByIndex(index, count = 1) {
         let removed = this._elements.splice(index, count);
-        for (let element of removed) {
-            element._setParent(null);
-        }
+        removed.forEach(element => element._setParent(null));
         this._update();
     }
 
     _clear() {
-        for (let element of this._elements) {
-            element._setParent(null);
-        }
+        this._elements.forEach(element => element._setParent(null));
         this._elements = [];
         this._update();
     }
 
     legs() {
         let legs = [];
-        for (let element of this._elements) {
-            legs.push(...element.legs());
-        }
+        this._elements.forEach(element => legs.push(...element.legs()));
         return legs;
     }
 
@@ -1774,7 +1768,6 @@ class WT_FlightPlanAirwaySequence extends WT_FlightPlanSequence {
 
     /**
      * @readonly
-     * @property {WT_Airway} airway
      * @type {WT_Airway}
      */
     get airway() {
@@ -1801,7 +1794,6 @@ class WT_FlightPlanOriginDest extends WT_FlightPlanSegment {
 
     /**
      * @readonly
-     * @property {WT_Waypoint} waypoint
      * @type {WT_Waypoint}
      */
     get waypoint() {
@@ -1871,7 +1863,6 @@ class WT_FlightPlanProcedureSegment extends WT_FlightPlanSegment {
 
     /**
      * @readonly
-     * @property {WT_Procedure} procedure
      * @type {WT_Procedure}
      */
     get procedure() {
@@ -1889,7 +1880,6 @@ class WT_FlightPlanDepartureArrival extends WT_FlightPlanProcedureSegment {
 
     /**
      * @readonly
-     * @property {Number} runwayTransitionIndex
      * @type {Number}
      */
     get runwayTransitionIndex() {
@@ -1898,7 +1888,6 @@ class WT_FlightPlanDepartureArrival extends WT_FlightPlanProcedureSegment {
 
     /**
      * @readonly
-     * @property {Number} enrouteTransitionIndex
      * @type {Number}
      */
     get enrouteTransitionIndex() {
@@ -1953,7 +1942,6 @@ class WT_FlightPlanApproach extends WT_FlightPlanProcedureSegment {
 
     /**
      * @readonly
-     * @property {Number} transitionIndex
      * @type {Number}
      */
     get transitionIndex() {
