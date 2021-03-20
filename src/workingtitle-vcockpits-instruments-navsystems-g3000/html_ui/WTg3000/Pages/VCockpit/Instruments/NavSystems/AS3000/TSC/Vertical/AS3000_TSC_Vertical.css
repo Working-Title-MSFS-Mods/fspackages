@@ -353,7 +353,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsetti
     as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings wt-tsc-button-label {
         font-size: 4vh;
     }
-as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsettings-table {
+as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .pfdSettingsTable {
     position: absolute;
     top: 2%;
     right: 2%;
