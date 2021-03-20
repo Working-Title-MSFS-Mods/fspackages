@@ -1021,7 +1021,7 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
 
         this.altitudeKeyboard.element = new AS3000_TSC_AltitudeKeyboard();
 
-        this.scrollController = new WT_TouchScrollController(this.waypointsBody, 2000, 0, 5);
+        this.scrollController = new WT_TSCScrollManager(this.waypointsBody, 2000, 0, 5);
     }
 
     onUpdate(_deltaTime) {

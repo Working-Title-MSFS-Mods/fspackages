@@ -300,21 +300,15 @@ wt-tsc-button-value {
       top: 50%;
       transform: translateY(-50%); }
 
-.dynamicSelectionListWindow .content {
-  position: absolute;
-  background-color: black;
-  border: 0.4vh solid white;
-  padding: 2%;
-  overflow-y: scroll; }
-  .dynamicSelectionListWindow .content::-webkit-scrollbar {
-    width: 1vw; }
-  .dynamicSelectionListWindow .content::-webkit-scrollbar-track {
-    background: none; }
-  .dynamicSelectionListWindow .content::-webkit-scrollbar-thumb {
-    background: white; }
+.dynamicSelectionListWindow wt-tsc-selectionlist {
+    position: absolute;
+    background-color: black;
+    border: 0.4vh solid white;
+}
     .dynamicSelectionListWindowButton {
-      width: 100%;
-      margin-bottom: 5%; }
+        width: 100%;
+        margin-bottom: 5%;
+    }
 
 tsc-mapsettings-tabrow {
     display: block;
