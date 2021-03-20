@@ -1613,7 +1613,7 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
     as3000-tsc-horizontal-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .statusText {
       font-size: 5vh; }
 
-    as3000-tsc-horizontal-element #Electricity .dynamicSelectionListWindow .content {
+    as3000-tsc-horizontal-element #Electricity .dynamicSelectionListWindow wt-tsc-selectionlist {
         width: 50%;
         left: 25%;
         height: 80%;
