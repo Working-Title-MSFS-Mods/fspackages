@@ -16,7 +16,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_DataStoreController} controller
      * @type {WT_DataStoreController}
      */
     get controller() {
@@ -25,7 +24,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettingsHTMLElement} htmlElement
      * @type {WT_G3x5_TSCPFDSettingsHTMLElement}
      */
     get htmlElement() {
@@ -34,7 +32,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDSVTShowSetting} svtShowSetting
      * @type {WT_G3x5_PFDSVTShowSetting}
      */
     get svtShowSetting() {
@@ -43,7 +40,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAoAModeSetting} aoaModeSetting
      * @type {WT_G3x5_PFDAoAModeSetting}
      */
     get aoaModeSetting() {
@@ -52,7 +48,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDWindModeSetting} windModeSetting
      * @type {WT_G3x5_PFDWindModeSetting}
      */
     get windModeSetting() {
@@ -61,7 +56,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDBaroUnitsSetting} baroUnitsSetting
      * @type {WT_G3x5_PFDBaroUnitsSetting}
      */
     get baroUnitsSetting() {
@@ -70,7 +64,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAltimeterMetersSetting} altimeterMetersSetting
      * @type {WT_G3x5_PFDAltimeterMetersSetting}
      */
     get altimeterMetersSetting() {
@@ -91,7 +84,7 @@ class WT_G3x5_TSCPFDSettingsTable {
     constructor(parentPage) {
         this._parentPage = parentPage;
 
-        this._htmlElement = new WT_G3x5_TSCPFDSettingsTableHTMLElement();
+        this._htmlElement = this._createHTMLElement();
 
         /**
          * @type {WT_G3x5_TSCMapSettingsTabRow[]}
@@ -99,10 +92,15 @@ class WT_G3x5_TSCPFDSettingsTable {
         this._rows = [];
     }
 
+    _createHTMLElement() {
+        let htmlElement = new WT_TSCScrollList();
+        htmlElement.classList.add(WT_G3x5_TSCPFDSettingsTable.CLASS);
+        return htmlElement;
+    }
+
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettingsTableHTMLElement} htmlElement
-     * @type {WT_G3x5_TSCPFDSettingsTableHTMLElement}
+     * @type {WT_TSCScrollList}
      */
     get htmlElement() {
         return this._htmlElement;
@@ -113,7 +111,7 @@ class WT_G3x5_TSCPFDSettingsTable {
      * @param {WT_G3x5_TSCPFDSettingsRow} row
      */
     _initRow(row) {
-        row.htmlElement.slot = "rows";
+        row.htmlElement.slot = "content";
         this.htmlElement.appendChild(row.htmlElement);
         row.setParentPage(this._parentPage);
         row.onAttached();
@@ -132,57 +130,10 @@ class WT_G3x5_TSCPFDSettingsTable {
         for (let row of this._rows) {
             row.onUpdate();
         }
+        this.htmlElement.scrollManager.update();
     }
 }
-
-class WT_G3x5_TSCPFDSettingsTableHTMLElement extends HTMLElement {
-    constructor() {
-        super();
-
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3x5_TSCPFDSettingsTableHTMLElement.TEMPLATE.content.cloneNode(true));
-    }
-}
-WT_G3x5_TSCPFDSettingsTableHTMLElement.TEMPLATE = document.createElement("template");
-WT_G3x5_TSCPFDSettingsTableHTMLElement.TEMPLATE.innerHTML = `
-    <style>
-        :host {
-            display: block;
-        }
-
-        #wrapper  {
-            position: relative;
-            width: 100%;
-            top: 2%;
-            height: 96%;
-            overflow-x: hidden;
-            overflow-y: scroll;
-        }
-            #wrapper::-webkit-scrollbar {
-                width: 1vw;
-            }
-            #wrapper::-webkit-scrollbar-track {
-                background: none;
-            }
-            #wrapper::-webkit-scrollbar-thumb {
-                background: white;
-            }
-
-            #rows {
-                position: relative;
-                left: 2%;
-                width: 96%;
-                display: flex;
-                flex-flow: column nowrap;
-                align-items: center;
-            }
-    </style>
-    <div id="wrapper">
-        <slot name="rows" id="rows"></slot>
-    </div>
-`;
-
-customElements.define("tsc-pfdsettings-table", WT_G3x5_TSCPFDSettingsTableHTMLElement);
+WT_G3x5_TSCPFDSettingsTable.CLASS = "pfdSettingsTable";
 
 class WT_G3x5_TSCPFDSettingsRow {
     constructor() {
@@ -193,7 +144,6 @@ class WT_G3x5_TSCPFDSettingsRow {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettings} parentPage
      * @type {WT_G3x5_TSCPFDSettings}
      */
     get parentPage() {
@@ -202,7 +152,6 @@ class WT_G3x5_TSCPFDSettingsRow {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettingsRowHTMLElement} htmlElement
      * @type {WT_G3x5_TSCPFDSettingsRowHTMLElement}
      */
     get htmlElement() {
@@ -241,7 +190,6 @@ class WT_G3x5_TSCPFDSettingsRowHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} left
      * @type {HTMLElement}
      */
     get left() {
@@ -250,7 +198,6 @@ class WT_G3x5_TSCPFDSettingsRowHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} right
      * @type {HTMLElement}
      */
     get right() {

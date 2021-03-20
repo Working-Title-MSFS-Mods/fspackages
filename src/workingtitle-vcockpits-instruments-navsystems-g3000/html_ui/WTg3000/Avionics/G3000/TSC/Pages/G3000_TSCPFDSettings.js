@@ -5,6 +5,32 @@ class WT_G3000_TSCPFDSettings extends WT_G3x5_TSCPFDSettings {
         element.init();
         return element;
     }
+
+    _activateNavButtons() {
+        super._activateNavButtons();
+
+        this.instrument.activateNavButton(5, "Up", this._onUpPressed.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.instrument.activateNavButton(6, "Down", this._onDownPressed.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
+    }
+
+    _deactivateNavButtons() {
+        super._deactivateNavButtons();
+
+        this.instrument.deactivateNavButton(5, false);
+        this.instrument.deactivateNavButton(6, false);
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollDown();
+    }
+
+    onUpdate(deltaTime) {
+        this.htmlElement.update();
+    }
 }
 
 class WT_G3000_TSCPFDSettingsHTMLElement extends HTMLElement {
@@ -43,6 +69,18 @@ class WT_G3000_TSCPFDSettingsHTMLElement extends HTMLElement {
 
     connectedCallback() {
         this._appendChildren();
+    }
+
+    scrollUp() {
+        this._table.htmlElement.scrollManager.scrollUp();
+    }
+
+    scrollDown() {
+        this._table.htmlElement.scrollManager.scrollDown();
+    }
+
+    update() {
+        this._table.update();
     }
 }
 WT_G3000_TSCPFDSettingsHTMLElement.TEMPLATE = document.createElement("template");
