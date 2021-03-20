@@ -1018,6 +1018,7 @@ class WT_G3x5_TSCAirportFreqTabHTMLElement extends HTMLElement {
          * @type {WT_Airport}
          */
         this._airport = null;
+        this._isInit = false;
     }
 
     /**
@@ -1055,6 +1056,7 @@ class WT_G3x5_TSCAirportFreqTabHTMLElement extends HTMLElement {
     connectedCallback() {
         this._initScrollList();
         this._initFreqLineRecycler();
+        this._isInit = true;
     }
 
     setParentPage(parentPage) {
@@ -1087,10 +1089,18 @@ class WT_G3x5_TSCAirportFreqTabHTMLElement extends HTMLElement {
     }
 
     scrollUp() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.scrollUp();
     }
 
     scrollDown() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.scrollDown();
     }
 
@@ -1098,10 +1108,18 @@ class WT_G3x5_TSCAirportFreqTabHTMLElement extends HTMLElement {
     }
 
     update() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.update();
     }
 
     close() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.cancelScroll();
     }
 }
@@ -1464,8 +1482,7 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
          * @type {WT_Airport}
          */
         this._airport = null;
-
-
+        this._isInit = false;
     }
 
     /**
@@ -1495,6 +1512,7 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
     connectedCallback() {
         this._initScrollList();
         this._initRunwayButtonRecycler();
+        this._isInit = true;
     }
 
     _updateRunways() {
@@ -1528,10 +1546,18 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
     }
 
     scrollUp() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.scrollUp();
     }
 
     scrollDown() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.scrollDown();
     }
 
@@ -1539,10 +1565,18 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
     }
 
     update() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.update();
     }
 
     close() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._scrollList.scrollManager.cancelScroll();
     }
 }
