@@ -54,7 +54,7 @@ WT_TSCScrollList.TEMPLATE.innerHTML = `
             }
 
             #content {
-                position: relative;
+                position: absolute;
                 left: var(--scrolllist-padding-left, 2%);
                 width: calc(100% - var(--scrolllist-padding-left, 2%) - var(--scrolllist-padding-right, 2%));
                 padding-top: var(--scrolllist-padding-top, 2%);
