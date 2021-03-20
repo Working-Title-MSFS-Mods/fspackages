@@ -322,7 +322,7 @@ class WT_MapViewWaypointCanvasRenderer {
     update(state) {
         let iconsToDraw = [];
         let toRemove = [];
-        for (let entry of this._registered.values()) {
+        this._registered.forEach(entry => {
             entry.update(state);
             if (entry.showIcon) {
                 iconsToDraw.push(entry);
@@ -331,7 +331,7 @@ class WT_MapViewWaypointCanvasRenderer {
             if (entry.isDeprecated) {
                 toRemove.push(entry);
             }
-        }
+        });
 
         for (let prop in this._canvasContexts) {
             let context = this._canvasContexts[prop];
@@ -341,7 +341,7 @@ class WT_MapViewWaypointCanvasRenderer {
         }
 
         iconsToDraw.sort((a, b) => a.icon.priority - b.icon.priority);
-        for (let entry of iconsToDraw) {
+        iconsToDraw.forEach(entry => {
             let icon = entry.icon;
             switch(entry.lastShowContext) {
                 case WT_MapViewWaypointCanvasRenderer.Context.NORMAL:
@@ -360,10 +360,9 @@ class WT_MapViewWaypointCanvasRenderer {
                     icon.draw(state, this._contexts.highlight.canvasContext);
                     break;
             }
-        }
-        for (let entry of toRemove) {
-            this._deleteEntry(entry);
-        }
+        }, this);
+
+        toRemove.forEach(entry => this._deleteEntry(entry), this);
     }
 }
 WT_MapViewWaypointCanvasRenderer.NORMAL_CACHE_SIZE = 1000;

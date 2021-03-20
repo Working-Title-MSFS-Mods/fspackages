@@ -33,6 +33,9 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         };
 
         this._labelCache = new WT_MapViewBorderLabelCache();
+        /**
+         * @type {Set<WT_MapViewBorderLabel>}
+         */
         this._labelsToShow = new Set();
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewBorderLayer.OPTIONS_DEF);
@@ -93,12 +96,16 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
         return 0;
     }
 
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewBorderDataFeatureInfo[]} features
+     */
     _enqueueFeaturesToDraw(state, features) {
         let clipExtent = this._borderLayer.buffer.projectionRenderer.viewClipExtent;
         let temp = [[0, 0], [0, 0]];
-        for (let feature of features.filter(this._cullFeatureByBounds.bind(this, this._borderLayer.buffer.projectionRenderer, clipExtent, temp))) {
-            this._borderLayer.buffer.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext);
-        }
+        let filtered = features.filter(this._cullFeatureByBounds.bind(this, this._borderLayer.buffer.projectionRenderer, clipExtent, temp));
+        filtered.forEach(feature => this._borderLayer.buffer.projectionRenderer.renderCanvas(feature.feature, this._bufferedContext), this);
     }
 
     _canContinueRender(current, renderCount, renderTime) {
@@ -183,9 +190,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
     }
 
     _clearLabels() {
-        for (let label of this._labelsToShow.values()) {
-            this._labelManager.remove(label);
-        }
+        this._labelsToShow.forEach(label => this._labelManager.remove(label), this);
         this._labelsToShow.clear();
     }
 
@@ -212,11 +217,11 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
 
     /**
      *
-     * @param {Iterable<WT_MapViewBorderLabel>} newLabelsToShow
+     * @param {WT_MapViewBorderLabel[]} newLabelsToShow
      */
     _updateLabelsToShow(newLabelsToShow) {
         this._clearLabels();
-        for (let label of newLabelsToShow) {
+        newLabelsToShow.forEach(label => {
             if (label.featureClass === WT_MapViewBorderLabel.Class.ADMIN0) {
                 this._setLabelStyles(label, this.countryFontSize, this.countryFontColor, this.countryFontOutlineWidth, this.countryFontOutlineColor);
             } else {
@@ -224,7 +229,7 @@ class WT_MapViewBorderLayer extends WT_MapViewMultiLayer {
             }
             this._labelsToShow.add(label);
             this._labelManager.add(label);
-        }
+        }, this);
     }
 
     /**

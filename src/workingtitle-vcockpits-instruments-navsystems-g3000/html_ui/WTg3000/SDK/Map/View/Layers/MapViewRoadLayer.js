@@ -252,7 +252,6 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
     }
 
     _abortRenderRoads() {
-
     }
 
     _clearLabels() {
@@ -282,9 +281,7 @@ class WT_MapViewRoadLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        for (let label of labels) {
-            this._labelManager.register(label);
-        }
+        labels.forEach(label => this._labelManager.register(label), this);
         this._labelSearchID[labelDataIndex] = null;
     }
 
