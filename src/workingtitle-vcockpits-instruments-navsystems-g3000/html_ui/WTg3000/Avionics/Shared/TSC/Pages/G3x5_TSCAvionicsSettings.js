@@ -33,8 +33,20 @@ class WT_G3x5_TSCAvionicsSettings extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
     }
 
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.open();
+    }
+
     onUpdate(deltaTime) {
         this.htmlElement.update();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
     }
 }
 
@@ -62,7 +74,7 @@ class WT_G3x5_TSCAvionicsSettingsHTMLElement extends HTMLElement {
         this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsMFDFieldsTab(this.parentPage, this.parentPage.mfdInstrumentID));
         this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsAudioTab(), WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
 
-        this._tabbedContent.setActiveTabIndex(1);
+        this._lastActiveTabIndex = 1;
     }
 
     _initTabbedContent() {
@@ -88,8 +100,17 @@ class WT_G3x5_TSCAvionicsSettingsHTMLElement extends HTMLElement {
         }
     }
 
+    open() {
+        this._tabbedContent.setActiveTabIndex(this._lastActiveTabIndex);
+    }
+
     update() {
         this._updateActiveTab();
+    }
+
+    close() {
+        this._lastActiveTabIndex = this._tabbedContent.getActiveTabIndex();
+        this._tabbedContent.setActiveTabIndex(-1);
     }
 }
 WT_G3x5_TSCAvionicsSettingsHTMLElement.TEMPLATE = document.createElement("template");
@@ -140,6 +161,32 @@ class WT_G3x5_TSCAvionicsSettingsTab extends WT_G3x5_TSCTabContent {
     }
 }
 
+class WT_G3x5_TSCAvionicsSettingsScrollTab extends WT_G3x5_TSCAvionicsSettingsTab {
+    _activateNavButtons() {
+        this.parentPage.instrument.activateNavButton(5, "Up", this._onUpPressed.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
+        this.parentPage.instrument.activateNavButton(6, "Down", this._onDownPressed.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
+    }
+
+    _deactivateNavButtons() {
+        this.parentPage.instrument.deactivateNavButton(5, false);
+        this.parentPage.instrument.deactivateNavButton(6, false);
+    }
+
+    onActivated() {
+        this._activateNavButtons();
+    }
+
+    onDeactivated() {
+        this._deactivateNavButtons();
+    }
+
+    _onUpPressed() {
+    }
+
+    _onDownPressed() {
+    }
+}
+
 class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsTab {
     constructor() {
         super(WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE);
@@ -154,7 +201,7 @@ class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsTa
 }
 WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE = "System";
 
-class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab {
+class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
     constructor(parentPage) {
         super(WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE, parentPage);
     }
@@ -223,8 +270,27 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsTab
         this._initRows();
     }
 
+    _cancelScroll() {
+        this.htmlElement.scrollManager.cancelScroll();
+    }
+
+    onDeactivated() {
+        super.onDeactivated();
+
+        this._cancelScroll();
+    }
+
     update() {
         this._magVarRow.update();
+        this.htmlElement.scrollManager.update();
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollManager.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollManager.scrollDown();
     }
 }
 WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE = "Units";
@@ -563,7 +629,7 @@ class WT_G3x5_TSCAvionicsSettingsAlertsTab extends WT_G3x5_TSCAvionicsSettingsTa
 }
 WT_G3x5_TSCAvionicsSettingsAlertsTab.TITLE = "Alerts";
 
-class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSettingsTab {
+class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
     constructor(parentPage, instrumentID) {
         super(WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.TITLE, parentPage);
 
@@ -610,6 +676,28 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
         this._initModel();
         this._initController();
         this._initRows();
+    }
+
+    _cancelScroll() {
+        this.htmlElement.scrollManager.cancelScroll();
+    }
+
+    onDeactivated() {
+        super.onDeactivated();
+
+        this._cancelScroll();
+    }
+
+    update() {
+        this.htmlElement.scrollManager.update();
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollManager.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollManager.scrollDown();
     }
 }
 WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.TITLE = "MFD<br>Fields";
