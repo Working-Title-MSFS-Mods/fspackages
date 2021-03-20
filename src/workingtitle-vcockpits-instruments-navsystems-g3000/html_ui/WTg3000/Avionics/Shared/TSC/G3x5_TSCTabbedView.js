@@ -90,7 +90,7 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
     }
 
     _updateActiveTab() {
-        if (!this._activeTabEntry) {
+        if (this._activeTabEntry === this._oldActiveTabEntry) {
             return;
         }
 
@@ -128,6 +128,10 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
      */
     getActiveTab() {
         return this._activeTabEntry ? this._activeTabEntry.tab : null;
+    }
+
+    getActiveTabIndex() {
+        return this._activeTabEntry ? this._tabs.indexOf(this._activeTabEntry) : -1;
     }
 
     setActiveTab(tab) {
