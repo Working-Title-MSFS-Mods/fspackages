@@ -1726,7 +1726,7 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
     as3000-tsc-vertical-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .mainText {
       top: 30%; }
 
-    as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow .content {
+    as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow wt-tsc-selectionlist {
         width: 60%;
         left: 20%;
         height: 80%;
