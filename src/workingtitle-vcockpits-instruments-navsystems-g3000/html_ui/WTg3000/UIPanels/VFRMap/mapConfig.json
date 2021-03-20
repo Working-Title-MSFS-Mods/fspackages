@@ -97,15 +97,15 @@
     },
 
     "waypoints": {
-        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map"
     },
 
     "flightPlan": {
-        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map"
     },
 
     "waypointHighlight": {
-        "iconDirectory": "/WTg3000/SDK/Assets/Images/Map/Garmin"
+        "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map"
     },
 
     "cities": {
