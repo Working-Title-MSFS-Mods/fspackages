@@ -15,8 +15,8 @@ class WT_ICAOSearcher {
     }
 
     /**
+     * This searcher's unique string ID.
      * @readonly
-     * @property {String} id - this searcher's unique string ID.
      * @type {String}
      */
     get id() {
@@ -134,8 +134,8 @@ class WT_ICAOSearchRequest {
     }
 
     /**
+     * The ICAO searcher to which this request belongs.
      * @readonly
-     * @property {WT_ICAOSearcher} searcher - the ICAO searcher to which this request belongs.
      * @type {WT_ICAOSearcher}
      */
     get searcher() {
@@ -143,8 +143,8 @@ class WT_ICAOSearchRequest {
     }
 
     /**
+     * The center of the search circle.
      * @readonly
-     * @property {WT_GeoPointReadOnly} center - the center of the search circle.
      * @type {WT_GeoPointReadOnly}
      */
     get center() {
@@ -152,8 +152,8 @@ class WT_ICAOSearchRequest {
     }
 
     /**
+     * The radius of the search circle.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} radius - the radius of the search circle.
      * @type {WT_NumberUnitReadOnly}
      */
     get radius() {
@@ -161,8 +161,8 @@ class WT_ICAOSearchRequest {
     }
 
     /**
+     * The maximum number of items to return with the search.
      * @readonly
-     * @property {Number} searchLimit - the maximum number of items to return with the search.
      * @type {Number}
      */
     get searchLimit() {
@@ -170,8 +170,8 @@ class WT_ICAOSearchRequest {
     }
 
     /**
+     * The results of the search, as an array of ICAO strings.
      * @readonly
-     * @property {String[]} results - the results of the search, as an array of ICAO strings.
      * @type {String[]}
      */
     get results() {
@@ -179,8 +179,8 @@ class WT_ICAOSearchRequest {
     }
 
     /**
+     * Whether this request is closed.
      * @readonly
-     * @property {Boolean} isClosed - whether this request is closed.
      * @type {Boolean}
      */
     get isClosed() {
@@ -233,9 +233,7 @@ class WT_ICAOSearchRequest {
     }
 
     _resolveUpdateQueue() {
-        for (let update of this._updateQueue) {
-            update();
-        }
+        this._updateQueue.forEach(update => update());
         this._updateQueue = [];
     }
 
@@ -258,13 +256,13 @@ class WT_ICAOSearchRequest {
         resolve();
         this._resolveUpdateQueue();
         this._checkClosing();
-        for (let paramChange of this._paramChangeQueue) {
+        this._paramChangeQueue.forEach(paramChange => {
             if (this._isClosed) {
                 paramChange.reject(new Error("ICAO search request is closed."));
             } else {
                 paramChange.resolve();
             }
-        }
+        }, this);
         this._paramChangeQueue = [];
     }
 
