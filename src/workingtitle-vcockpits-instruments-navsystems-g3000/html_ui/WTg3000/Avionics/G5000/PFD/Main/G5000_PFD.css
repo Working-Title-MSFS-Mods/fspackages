@@ -117,11 +117,7 @@ as3000-pfd-element wt-pfd-aoaindicator {
     left: 22%;
     top: 62%;
     width: 10vh;
-    height: 9vh;
-    --aoaindicator-margin-left: 5%;
-    --aoaindicator-margin-right: 5%;
-    --aoaindicator-margin-top: 5%;
-    --aoaindicator-margin-bottom: 5%;
+    height: 10vh;
     font-family: "Roboto-Regular";
     font-weight: normal;
     font-size: 2vh;
