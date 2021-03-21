@@ -305,7 +305,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
             new WT_G3000_PFDSoftKeyElement(""),
             new WT_G3000_PFDSoftKeyElement(""),
             new WT_G3000_PFDSoftKeyElement(""),
-            new WT_G3000_PFDSoftKeyElement("METERS"),
+            new WT_G3000_PFDSoftKeyElement("METERS", this._toggleAltimeterMetersOverlay.bind(this), this._softkeyAltimeterMetersCompare.bind(this)),
             new WT_G3000_PFDSoftKeyElement("IN", this._setBaroUnit.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG), this._softkeyBaroUnitCompare.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.IN_HG)),
             new WT_G3000_PFDSoftKeyElement("HPA", this._setBaroUnit.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.HPA), this._softkeyBaroUnitCompare.bind(this, WT_G3x5_PFDBaroUnitsSetting.Mode.HPA)),
             new WT_G3000_PFDSoftKeyElement(""),
@@ -436,6 +436,14 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
 
     _softkeyAoAStatus() {
         return WT_G3000_PFDMainPage.AOA_MODE_TEXT[this._aoaIndicator.aoaModeSetting.getValue()];
+    }
+
+    _toggleAltimeterMetersOverlay() {
+        this._altimeter.metersSetting.setValue(!this._altimeter.metersSetting.getValue());
+    }
+
+    _softkeyAltimeterMetersCompare() {
+        return this._altimeter.metersSetting.getValue();
     }
 
     _setBaroUnit(value) {
