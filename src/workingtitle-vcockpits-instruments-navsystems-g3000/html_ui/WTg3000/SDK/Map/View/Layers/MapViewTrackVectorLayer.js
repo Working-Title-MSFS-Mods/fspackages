@@ -22,6 +22,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
 
         this._tempNM = WT_Unit.NMILE.createNumber(0);
         this._tempKnot = WT_Unit.KNOT.createNumber(0);
+        this._tempTrueBearing = new WT_NavAngleUnit(false).createNumber(0);
         this._tempGeoPoint1 = new WT_GeoPoint(0, 0);
         this._tempGeoPoint2 = new WT_GeoPoint(0, 0);
     }
@@ -99,7 +100,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - the current map view state.
      */
     _calculateDynamicTimeStep(state) {
-        let tas = state.model.airplane.tas(this._tempKnot);
+        let tas = state.model.airplane.dynamics.tas(this._tempKnot);
         let resolution = state.projection.viewResolution;
 
         let targetResolutionDistance = this.dynamicTargetResolution * resolution.asUnit(WT_Unit.METER);
@@ -112,17 +113,18 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - the current map view state.
      */
     _calculateDynamicVector(state) {
+        let airplane = state.model.airplane;
         let timeStep = this._calculateDynamicTimeStep(state);
         let smoothingFactor = this._calculateSmoothingFactor(state);
 
         let resolution = state.projection.viewResolution.asUnit(WT_Unit.METER);
 
-        let trackRad = (state.model.airplane.trackTrue() + state.projection.rotation) * Avionics.Utils.DEG2RAD;
-        let tasPx = state.model.airplane.tas(this._tempKnot).asUnit(WT_Unit.MPS) / resolution;
-        let headingRad = (state.model.airplane.headingTrue() + state.projection.rotation) * Avionics.Utils.DEG2RAD;
-        let turnSpeedRad = state.model.airplane.turnSpeed() * Avionics.Utils.DEG2RAD;
-        let windSpeedPx = state.model.weather.windSpeed.asUnit(WT_Unit.MPS) / resolution;
-        let windDirectionRad = (state.model.weather.windDirection + state.projection.rotation + 180) * Avionics.Utils.DEG2RAD;
+        let trackRad = (airplane.navigation.trackTrue() + state.projection.rotation) * Avionics.Utils.DEG2RAD;
+        let tasPx = airplane.dynamics.tas(this._tempKnot).asUnit(WT_Unit.MPS) / resolution;
+        let headingRad = (airplane.navigation.headingTrue() + state.projection.rotation) * Avionics.Utils.DEG2RAD;
+        let turnSpeedRad = airplane.navigation.turnSpeed() * Avionics.Utils.DEG2RAD;
+        let windSpeedPx = airplane.environment.windSpeed(this._tempKnot).asUnit(WT_Unit.MPS) / resolution;
+        let windDirectionRad = (airplane.environment.windDirection(this._tempTrueBearing).number + state.projection.rotation + 180) * Avionics.Utils.DEG2RAD;
         let dynamicHeadingDeltaMaxRad = this.dynamicHeadingDeltaMax * Avionics.Utils.DEG2RAD;
 
         turnSpeedRad = this._smoothTurnSpeed(turnSpeedRad, smoothingFactor);
@@ -218,12 +220,13 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - the current map view state.
      */
     _drawSimpleVector(state) {
-        let planePos = state.model.airplane.position(this._tempGeoPoint1);
-        let gs = state.model.airplane.groundSpeed(this._tempKnot).number;
+        let airplane = state.model.airplane;
+        let planePos = airplane.navigation.position(this._tempGeoPoint1);
+        let gs = airplane.navigation.groundSpeed(this._tempKnot).number;
         let lookahead = state.model.trackVector.lookahead.asUnit(WT_Unit.HOUR);
         let points = [
             planePos,
-            state.projection.offsetByBearing(planePos, this._tempNM.set(gs * lookahead), state.model.airplane.trackTrue(), this._tempGeoPoint2)
+            state.projection.offsetByBearing(planePos, this._tempNM.set(gs * lookahead), airplane.navigation.trackTrue(), this._tempGeoPoint2)
         ];
         let geoJSON = this._buildGeoJSON(points);
 
@@ -251,7 +254,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (state.model.airplane.isOnGround()) {
+        if (state.model.airplane.dynamics.isOnGround()) {
             return;
         }
 

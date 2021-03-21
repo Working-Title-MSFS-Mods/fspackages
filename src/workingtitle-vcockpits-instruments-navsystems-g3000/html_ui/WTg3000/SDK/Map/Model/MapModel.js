@@ -14,8 +14,6 @@ class WT_MapModel {
 
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
 
-        this.addModule(new WT_MapModelWeatherModule());
-        this.addModule(new WT_MapModelAutopilotModule());
         this.addModule(new WT_MapModelUnitsModule());
     }
 
@@ -130,62 +128,3 @@ class WT_MapModelModule {
         this._optsManager.setOptions(opts);
     }
 }
-
-class WT_MapModelWeatherModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelWeatherModule.NAME_DEFAULT) {
-        super(name);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} windSpeed - the current wind speed at the airplane's position. Default unit is knots.
-     * @type {WT_NumberUnit}
-     */
-    get windSpeed() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), WT_Unit.KNOT);
-    }
-
-    /**
-     * @readonly
-     * @property {Number} windDirection - the current wind direction at the airplane's position in degrees.
-     * @type {Number}
-     */
-    get windDirection() {
-        return SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} airPressure - the current air pressure at the airplane's position. Default unit is inches of mercury.
-     * @type {WT_NumberUnit}
-     */
-    get airPressure() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT PRESSURE", "inHg"), WT_Unit.IN_HG);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} temperature - the current air temperature at the airplane's position. Default unit is degrees Celsius.
-     * @type {WT_NumberUnit}
-     */
-    get temperature() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), WT_Unit.CELSIUS);
-    }
-}
-WT_MapModelWeatherModule.NAME_DEFAULT = "weather";
-
-class WT_MapModelAutopilotModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelAutopilotModule.NAME_DEFAULT) {
-        super(name);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} altitudeTarget - the current autopilot target altitude. Default unit is feet.
-     * @type {WT_NumberUnit}
-     */
-    get altitudeTarget() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet"), WT_Unit.FOOT);
-    }
-}
-WT_MapModelAutopilotModule.NAME_DEFAULT = "autopilot";

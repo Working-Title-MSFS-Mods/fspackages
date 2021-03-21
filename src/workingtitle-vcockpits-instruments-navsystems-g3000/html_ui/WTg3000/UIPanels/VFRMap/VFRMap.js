@@ -545,7 +545,7 @@ class WT_VFRMapWT extends WT_VFRMap {
         await this._fpm.syncActiveFromGame();
         Coherent.trigger("ON_BACK_ON_TRACK_START");
         this.setShowAirplane(true);
-        this.setCenter(this.model.airplane.position());
+        this.setCenter(this.model.airplane.navigation.position());
 
         if (this._hidePlaneTimeout) {
             clearTimeout(this._hidePlaneTimeout);
@@ -636,7 +636,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _updateTarget() {
         if (this.isFollowingAirplane()) {
-            this.model.airplane.position(this._target);
+            this.model.airplane.navigation.position(this._target);
         } else {
             this._scroll();
         }
