@@ -895,7 +895,7 @@ class WT_G3x5_TSCAirportFreqLine extends HTMLElement {
         let context = {
             homePageGroup: this.parentPage.homePageGroup,
             homePageName: this.parentPage.homePageName,
-            frequencyText: `${this.airportFreq.frequency.toString(WT_Frequency.Prefix.MHz)} ${this.airportFreq.airport.ident} ${this.airportFreq.name}`,
+            frequencyText: `${button.labelText} ${this.airportFreq.airport.ident} ${this.airportFreq.name}`,
             frequency: this.airportFreq.frequency.bcd16,
             isNav: this.airportFreq.frequency.hertz(WT_Frequency.Prefix.MHz) < 118
         }
@@ -1069,10 +1069,10 @@ class WT_G3x5_TSCAirportFreqTabHTMLElement extends HTMLElement {
             return;
         }
 
-        for (let airportFreq of this.airport.frequencies) {
+        this.airport.frequencies.array.forEach(airportFreq => {
             let line = this._freqLineRecycler.request();
             line.setAirportFrequency(airportFreq);
-        }
+        }, this);
     }
 
     /**
@@ -1521,15 +1521,18 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
             return;
         }
 
+        /**
+         * @type {WT_Runway[]}
+         */
         let added = [];
-        for (let runway of this.airport.runways) {
+        this.airport.runways.array.forEach(runway => {
             let existing = added.find(compare => compare.pairDesignation === runway.pairDesignation);
             if (!existing) {
                 let button = this._buttonRecycler.request();
                 button.setRunway(runway);
                 added.push(runway);
             }
-        }
+        }, this);
     }
 
     /**
