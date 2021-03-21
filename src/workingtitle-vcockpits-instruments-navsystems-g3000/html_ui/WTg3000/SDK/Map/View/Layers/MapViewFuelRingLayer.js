@@ -55,7 +55,7 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return state.model.fuelRing.show && !state.model.airplane.isOnGround();
+        return state.model.fuelRing.show && !state.model.airplane.dynamics.isOnGround();
     }
 
     /**
@@ -107,15 +107,16 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
-        let fob = state.model.airplane.fuelOnboard(this._tempGal).number; // gallons
-        let fuelFlow = state.model.airplane.fuelFlowTotal(this._tempGPH).number; // gallons per hour
+        let airplane = state.model.airplane;
+        let fob = airplane.engineering.fuelOnboard(this._tempGal).number; // gallons
+        let fuelFlow = airplane.engineering.fuelFlowTotal(this._tempGPH).number; // gallons per hour
 
         let hoursRemainingTotal = fob / fuelFlow;
         let smoothingFactor = this._calculateSmoothingFactor(state);
         hoursRemainingTotal = this._smoothHoursRemaining(hoursRemainingTotal, smoothingFactor);
 
         let hoursRemainingReserve = Math.max(0, hoursRemainingTotal - state.model.fuelRing.reserveTime.asUnit(WT_Unit.HOUR));
-        let gs = state.model.airplane.groundSpeed(this._tempKnot).number; // knots
+        let gs = airplane.navigation.groundSpeed(this._tempKnot).number; // knots
         if (hoursRemainingReserve > 0) {
             this._outerRing.ring.strokeColor = this.outerRingStrokeColor;
             this._innerRing.ring.show = true;

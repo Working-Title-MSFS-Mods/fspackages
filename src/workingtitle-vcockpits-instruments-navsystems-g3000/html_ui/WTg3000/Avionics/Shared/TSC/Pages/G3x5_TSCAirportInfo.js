@@ -581,10 +581,11 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
 
     _updateBearingDistance() {
         if (this._airport) {
-            let ppos = WT_PlayerAirplane.INSTANCE.position(this._tempGeoPoint);
-            let heading = WT_PlayerAirplane.INSTANCE.headingTrue();
+            let airplane = WT_PlayerAirplane.INSTANCE;
+            let ppos = airplane.navigation.position(this._tempGeoPoint);
+            let heading = airplane.navigation.headingTrue();
             let bearing = ppos.bearingTo(this._airport.location);
-            let magBearing = bearing - WT_PlayerAirplane.INSTANCE.magVar();
+            let magBearing = bearing - airplane.navigation.magVar();
             this._brgValue.innerHTML = magBearing.toFixed(0) + "°";
             this._brgArrow.setBearing(bearing - heading);
 

@@ -108,7 +108,7 @@ class WT_FlightPlanManager {
      */
     _distanceToWaypoint(waypoint) {
         if (waypoint) {
-            return waypoint.location.distance(this._airplane.position(WT_FlightPlanManager._tempGeoPoint));
+            return waypoint.location.distance(this._airplane.navigation.position(WT_FlightPlanManager._tempGeoPoint));
         } else {
             return 0;
         }

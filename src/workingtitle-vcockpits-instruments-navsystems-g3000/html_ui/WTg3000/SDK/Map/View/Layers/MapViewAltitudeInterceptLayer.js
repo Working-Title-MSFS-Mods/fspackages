@@ -10,7 +10,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
+    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.navigation.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this.facingAngleGetter = facingAngleGetter;
@@ -138,25 +138,25 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (state.model.airplane.isOnGround()) {
+        if (state.model.airplane.dynamics.isOnGround()) {
             return;
         }
 
         this._arcLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        let vSpeed = state.model.airplane.verticalSpeed(this._tempFPM).number;
-        let currentAlt = state.model.airplane.altitudeIndicated(this._tempFoot).number;
-        let targetAlt = state.model.autopilot.altitudeTarget.number;
+        let vSpeed = state.model.airplane.navigation.verticalSpeed(this._tempFPM).number;
+        let currentAlt = state.model.airplane.navigation.altitudeIndicated(this._tempFoot).number;
+        let targetAlt = state.model.airplane.autopilot.selectedAltitude(this._tempFoot).number;
         let deltaAlt = targetAlt - currentAlt;
         let time = deltaAlt / vSpeed / 60; // hours
         if (Math.abs(vSpeed) < WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD || time < 0 || Math.abs(deltaAlt) < WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) {
             return;
         }
 
-        let gs = state.model.airplane.groundSpeed(this._tempKnot).number;
+        let gs = state.model.airplane.navigation.groundSpeed(this._tempKnot).number;
         let distance = this._tempNM.set(gs * time);
         let angle = this.facingAngleGetter.getFacingAngle(state);
-        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.position(this._tempGeoPoint), distance, angle, this._tempGeoPoint);
+        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.navigation.position(this._tempGeoPoint), distance, angle, this._tempGeoPoint);
         let viewArcTarget = state.projection.project(arcTarget, this._tempVector);
         let radius = viewArcTarget.subtract(state.viewPlane).length;
         if (state.projection.range.equals(this._lastRange)) {
