@@ -36,21 +36,23 @@
           top: 0px;
           width: 100%;
           height: 100%; }
+
     as3000-pfd-element #Mainframe #InstrumentsContainer {
       transform: rotateX(0);
       width: 100%;
       height: 100%;
       z-index: 0; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #InsetMap {
-        transform: rotateX(0);
-        position: absolute;
-        left: 1vh;
-        bottom: 18%;
-        width: 26vh;
-        height: 26vh;
-        top: auto;
-        background-color: black;
-        border: 0.4vh solid white; }
+
+as3000-pfd-element #Mainframe #InstrumentsContainer #InsetMap {
+    transform: rotateX(0);
+    position: absolute;
+    left: 0.5vh;
+    bottom: 15.5%;
+    width: 32vh;
+    height: 32vh;
+    background-color: black;
+    border: solid 1px white;
+}
 
 as3000-pfd-element wt-pfd-airspeedindicator {
     position: absolute;
