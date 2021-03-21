@@ -4,6 +4,10 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
     _createMainPage() {
         return new WT_G5000_PFDMainPage(this);
     }
+
+    _createApproachNavLoader() {
+        return new WT_G5000_ApproachNavLoader(this.airplane);
+    }
 }
 
 class WT_G5000_PFDMainPage extends WT_G3x5_PFDMainPage {

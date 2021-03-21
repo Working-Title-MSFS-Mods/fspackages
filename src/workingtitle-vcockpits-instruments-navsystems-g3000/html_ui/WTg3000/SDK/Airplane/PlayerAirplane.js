@@ -835,7 +835,7 @@ class WT_AirplaneComSlot extends WT_AirplaneRadioSlot {
      * @returns {WT_Frequency} this radio's active frequency.
      */
     activeFrequency() {
-        return WT_Frequency.createFromHz(SimVar.GetSimVarValue(`COM ACTIVE FREQUENCY:${this.index}`, "Hz"));
+        return new WT_Frequency(SimVar.GetSimVarValue(`COM ACTIVE FREQUENCY:${this.index}`, "Hz"));
     }
 
     /**
@@ -843,7 +843,7 @@ class WT_AirplaneComSlot extends WT_AirplaneRadioSlot {
      * @returns {WT_Frequency} this radio's standby frequency.
      */
     standbyFrequency() {
-        return WT_Frequency.createFromHz(SimVar.GetSimVarValue(`COM STANDBY FREQUENCY:${this.index}`, "Hz"));
+        return new WT_Frequency(SimVar.GetSimVarValue(`COM STANDBY FREQUENCY:${this.index}`, "Hz"));
     }
 
     /**
@@ -877,7 +877,7 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
      * @returns {WT_Frequency} this radio's active frequency.
      */
     activeFrequency() {
-        return WT_Frequency.createFromHz(SimVar.GetSimVarValue(`NAV ACTIVE FREQUENCY:${this.index}`, "Hz"));
+        return new WT_Frequency(SimVar.GetSimVarValue(`NAV ACTIVE FREQUENCY:${this.index}`, "Hz"));
     }
 
     /**
@@ -885,7 +885,7 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
      * @returns {WT_Frequency} this radio's standby frequency.
      */
     standbyFrequency() {
-        return WT_Frequency.createFromHz(SimVar.GetSimVarValue(`NAV STANDBY FREQUENCY:${this.index}`, "Hz"));
+        return new WT_Frequency(SimVar.GetSimVarValue(`NAV STANDBY FREQUENCY:${this.index}`, "Hz"));
     }
 
     /**
@@ -999,7 +999,7 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
      * @returns {WT_Frequency} this radio's active frequency.
      */
     activeFrequency() {
-        return WT_Frequency.createFromHz(SimVar.GetSimVarValue(`ADF ACTIVE FREQUENCY:${this.index}`, "Hz"));
+        return new WT_Frequency(SimVar.GetSimVarValue(`ADF ACTIVE FREQUENCY:${this.index}`, "Hz"));
     }
 
     /**
@@ -1007,7 +1007,7 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
      * @returns {WT_Frequency} this radio's standby frequency.
      */
     standbyFrequency() {
-        return WT_Frequency.createFromHz(SimVar.GetSimVarValue(`ADF STANDBY FREQUENCY:${this.index}`, "Hz"));
+        return new WT_Frequency(SimVar.GetSimVarValue(`ADF STANDBY FREQUENCY:${this.index}`, "Hz"));
     }
 
     /**
@@ -1107,6 +1107,23 @@ class WT_AirplaneAutopilot {
     }
 
     /**
+     * Sets the navigation source of the autopilot.
+     * @param {WT_AirplaneAutopilot.NavSource} source - the new navigation source.
+     */
+    setNavigationSource(source) {
+        if (source === WT_AirplaneAutopilot.NavSource.FMS) {
+            if (this.navigationSource() !== WT_AirplaneAutopilot.NavSource.FMS) {
+                SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 1);
+            }
+        } else {
+            if (this.navigationSource() === WT_AirplaneAutopilot.NavSource.FMS) {
+                SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
+            }
+            SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", source);
+        }
+    }
+
+    /**
      * Checks whether Pitch Hold Mode (PIT) is active.
      * @returns {Boolean} whether Pitch Hold Mode is active.
      */
@@ -1168,6 +1185,22 @@ class WT_AirplaneAutopilot {
      */
     isALTSArmed() {
         return !this.isAltHoldArmed() && (this.isPitchHoldActive() || this.isVSActive() || this.isFLCActive());
+    }
+
+    /**
+     * Checks whether Approach Mode is active.
+     * @returns {Boolean} whether Approach Mode is active.
+     */
+    isApproachActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether the autopilot has successfully captured an approach.
+     * @returns {Boolean} whether the autopilot has captured an approach.
+     */
+    isApproachCaptured() {
+        return SimVar.GetSimVarValue("AUTOPILOT APPROACH CAPTURED", "Boolean") !== 0;
     }
 
     /**

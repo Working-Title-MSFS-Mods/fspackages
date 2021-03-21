@@ -1,117 +1,132 @@
 class WT_Frequency {
     /**
-     * @param {Number} bcd - the value of the new frequency in binary-coded decimal format. The expected encoding format
-     *                       is 8 nibbles, encoding 8 digits from the 10^1 place to the 10^8 place.
+     * @param {Number} hertz - the value of the new frequency in hertz.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to use. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
      */
-    constructor(bcd) {
-        this._bcd = bcd;
+    constructor(hertz, prefix = WT_Frequency.Prefix.Hz) {
+        this._hertz = hertz * prefix;
     }
 
     /**
+     * The BCD16 binary-coded decimal format of this frequency. This BCD format encodes the 10^7 to the 10^4 places.
+     * The digit at the 10^8 place is assumed to be 1, and all other digits that are not explicitly encoded are assumed
+     * to be 0.
      * @readonly
-     * @property {Number} bcd - the 8-nibble binary-coded decimal format of this frequency.
-     * @type {Number}
-     */
-    get bcd() {
-        return this._bcd;
-    }
-
-    /**
-     * @readonly
-     * @property {Number} bcd16 - the 16-bit binary-coded decimal format of this frequency. This BCD format encodes the
-     *                            10^7 to the 10^4 places. The digit at the 10^8 place is assumed to be 1, and all other
-     *                            digits that are not explicitly encoded are assumed to be 0.
      * @type {Number}
      */
     get bcd16() {
-        return (this._bcd >> 12) & 0xffff;
+        return WT_Frequency.hertzToBCD16(this._hertz);
     }
 
     /**
+     * The BCD32 binary-coded decimal format of this frequency. This BCD format encodes the 10^7 to the 10^0 places.
+     * All digits that are not explicitly encoded are assumed to be 0.
      * @readonly
-     * @property {Number} bcd32 - the 32-bit binary-coded decimal format of this frequency. This BCD format encodes the
-     *                            10^7 to the 10^0 places. All digits that are not explicitly encoded are assumed to be
-     *                            0.
      * @type {Number}
      */
     get bcd32() {
-        return (this._bcd & 0xffffffff) >> 4;
+        return WT_Frequency.hertzToBCD32(this._hertz);
     }
 
     /**
      * Gets the hertz value of this frequency.
-     * @param {Number} [prefix] - a numeric value representing the exponent of the metric prefix of the frequency value
-     *                            to return (0 for no prefix, 3 for kilo, 6 for mega). Defaults to 0.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to return. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
      * @returns {Number} the hertz (with optional prefix) value of this frequency.
      */
-    hertz(prefix) {
-        return WT_Frequency.bcdToHertz(this.bcd, prefix);
+    hertz(prefix = WT_Frequency.Prefix.Hz) {
+        return this._hertz / prefix;
     }
 
     /**
-     * Gets the digit of this frequency at the specified place. Places are indexed 0 through 7 with 0 being the least
-     * significant digit (the 10^1 place) and 7 being the most significant digit (the 10^8 place).
+     * Gets the digit of this frequency at the specified place. Places are indexed 0 through 8 with 0 being the least
+     * significant digit (the 10^0 place) and 8 being the most significant digit (the 10^8 place).
      * @param {Number} place - the place index.
      * @returns {Number} a digit.
      */
     digit(place) {
-        if (place < 0 || place >= 8) {
+        if (place < 0 || place > 8) {
             return undefined;
         }
 
-        return (this.bcd >> (place * 4)) & 0xf;
+        let digits = this._hertz.toFixed(0).padStart(9, "0");
+        return parseInt(digits[digits.length - place]);
+    }
+
+    /**
+     * Checks whether this frequency is equal to the supplied argument. Returns true if and only if the argument is of
+     * type WT_Frequency and has the same frequency hertz value.
+     * @param {*} other - the argument to compare to this frequency.
+     * @returns {Boolean} whether this frequency is equal to the supplied argument.
+     */
+    equals(other) {
+        return other instanceof WT_Frequency && this.hertz() === other.hertz();
     }
 
     /**
      * Gets a string representation of this frequency. The string is this frequency's hertz value in decimal format.
-     * @param {Number} [prefix] - a numeric value representing the exponent of the metric prefix of the hertz value
-     *                            to use as the reference for the string representation (0 for no prefix, 3 for
-     *                            kilo, 6 for mega). Defaults to 0.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to represent. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
      * @returns {String} a string representation of this frequency.
      */
-    toString(prefix) {
-        prefix = prefix ? prefix : 0;
-        let string = "";
-        for (let i = 7; i >= 0; i--) {
-            string += this.digit(i);
-            if (i === prefix - 1) {
-                string += ".";
-            }
-        }
-        string += "0";
+    toString(prefix = WT_Frequency.Prefix.Hz) {
+        let place = Math.log10(prefix);
+        let string = this._hertz.toFixed(0);
+        let decimalPos = string.length - place;
+        string = string.substring(0, decimalPos) + "." + string.substring(decimalPos);
         return prefix > 0 ? string.replace(/0+$/, "").replace(/\.$/, "") : string;
     }
 
     /**
-     * Converts an 8-nibble binary-coded decimal to its equivalent value in hertz.
-     * @param {Number} bcd - an 8-nibble binary-coded decimal encoding digits from the 10^1 place to the 10^8 place.
-     *                       The ones (10^0) place is assumed to be zero.
-     * @param {Number} [prefix] - a numeric value representing the exponent of the metric prefix of the frequency value
-     *                            to return (0 for no prefix, 3 for kilo, 6 for mega). Defaults to 0.
+     * Converts a BCD16-encoded frequency to hertz.
+     * @param {Number} bcd - a BCD16-encoded frequency.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to return. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
      * @returns {Number} the hertz (with optional prefix) value of the frequency.
      */
-    static bcdToHertz(bcd, prefix) {
+    static bcd16ToHertz(bcd, prefix = WT_Frequency.Prefix.Hz) {
+        let hertz = 100000000;
+        let place = 10000;
+        for (let i = 0; i < 4; i++) {
+            let digit = (bcd >> (i * 4)) & 0xf;
+            hertz += digit * place;
+            place *= 10;
+        }
+        return hertz / prefix;
+    }
+
+    /**
+     * Converts a BCD32-encoded frequency to hertz.
+     * @param {Number} bcd - a BCD32-encoded frequency.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to return. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
+     * @returns {Number} the hertz (with optional prefix) value of the frequency.
+     */
+     static bcd32ToHertz(bcd, prefix = WT_Frequency.Prefix.Hz) {
         let hertz = 0;
-        let place = 10;
+        let place = 1;
         for (let i = 0; i < 8; i++) {
             let digit = (bcd >> (i * 4)) & 0xf;
             hertz += digit * place;
             place *= 10;
         }
-        return hertz / Math.pow(10, prefix ? prefix : 0);
+        return hertz / prefix;
     }
 
     /**
-     * Converts a hertz value to an 8-nibble binary-coded decimal encoding digits from the 10^1 place to the 10^8 place.
+     * Converts a hertz value to the BCD16 format. The BCD16 format is a 4-nibble binary-coded decimal encoding digits
+     * from the 10^4 place to the 10^7 place. The digit at the 10^8 place is assumed to be 1. All digits not explicitly
+     * encoded are assumed to be 0.
      * @param {Number} hertz - a hertz value.
-     * @param {Number} [prefix] - a numeric value representing the exponent of the metric prefix of the hertz frequency
-     *                            value (0 for no prefix, 3 for kilo, 6 for mega). Defaults to 0.
-     * @returns {Number} the 8-nibble binary-coded decimal value of the frequency.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to convert. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
+     * @returns {Number} the BCD16-encoded value of the frequency.
      */
-    static hertzToBCD(hertz, prefix) {
-        let number = Math.round(hertz * Math.pow(10, (prefix ? prefix : 0) - 1));
+    static hertzToBCD16(hertz, prefix = WT_Frequency.Prefix.Hz) {
+        let number = Math.round(hertz * prefix / 10000);
         let bcd = 0;
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 4; i++) {
             let digit = number % 10;
             bcd = bcd | (digit << (i * 4));
             number = Math.floor(number / 10);
@@ -120,21 +135,29 @@ class WT_Frequency {
     }
 
     /**
-     * Creates a new frequency from a specified hertz value.
-     * @param {Number} hertz - the hertz value of the new frequency.
-     * @param {Number} [prefix] - a numeric value representing the exponent of the metric prefix of the hertz frequency
-     *                            value (0 for no prefix, 3 for kilo, 6 for mega). Defaults to 0.
-     * @returns {WT_Frequency} a frequency.
+     * Converts a hertz value to the BCD32 format. The BCD32 format is a 8-nibble binary-coded decimal encoding digits
+     * from the 10^0 place to the 10^7 place. All digits not explicitly encoded are assumed to be 0.
+     * @param {Number} hertz - a hertz value.
+     * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to convert. Defaults to
+     *                                         WT_Frequency.Prefix.Hz.
+     * @returns {Number} the BCD16-encoded value of the frequency.
      */
-    static createFromHz(hertz, prefix) {
-        return new WT_Frequency(WT_Frequency.hertzToBCD(hertz, prefix));
+     static hertzToBCD32(hertz, prefix = WT_Frequency.Prefix.Hz) {
+        let number = Math.round(hertz * prefix);
+        let bcd = 0;
+        for (let i = 0; i < 8; i++) {
+            let digit = number % 10;
+            bcd = bcd | (digit << (i * 4));
+            number = Math.floor(number / 10);
+        }
+        return bcd;
     }
 }
 /**
  * @enum {Number}
  */
 WT_Frequency.Prefix = {
-    Hz: 0,
-    KHz: 3,
-    MHz: 6
+    Hz: 1,
+    KHz: 1000,
+    MHz: 1000000
 };
