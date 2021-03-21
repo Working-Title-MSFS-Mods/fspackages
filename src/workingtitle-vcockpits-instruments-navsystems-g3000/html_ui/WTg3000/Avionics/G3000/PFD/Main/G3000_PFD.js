@@ -5,6 +5,10 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
         return new WT_G3000_PFDMainPage(this);
     }
 
+    _createApproachNavLoader() {
+        return new WT_G3000_ApproachNavLoader(this.airplane);
+    }
+
     _initWindData() {
         this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new WT_G3000_PFDWindData("PFD")));
     }
