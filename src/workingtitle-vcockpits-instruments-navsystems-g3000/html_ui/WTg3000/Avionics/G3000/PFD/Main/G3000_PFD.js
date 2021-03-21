@@ -9,10 +9,6 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
         return new WT_G3000_ApproachNavLoader(this.airplane);
     }
 
-    _initWindData() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("WindData", "WindData", new WT_G3000_PFDWindData("PFD")));
-    }
-
     _initSoftkeyContainer() {
         this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys(WT_G3000_PFDSoftKey)));
     }
@@ -20,7 +16,6 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
     _initComponents() {
         super._initComponents();
 
-        this._initWindData();
         this._initSoftkeyContainer();
     }
 }
@@ -108,54 +103,6 @@ class WT_G3000_PFDSoftKey {
     }
 }
 
-class WT_G3000_PFDWindData extends PFD_WindData {
-    constructor(instrumentID) {
-        super();
-
-        this._instrumentID = instrumentID;
-
-        this._initController();
-    }
-
-    _initController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._controller));
-        this.windModeSetting.addListener(this._onWindModeSettingChanged.bind(this));
-
-        this._controller.init();
-        this._setWindMode(this.windModeSetting.getValue());
-    }
-
-    /**
-     * @readonly
-     * @property {String} instrumentID
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_PFDWindModeSetting} windModeSetting
-     * @type {WT_G3x5_PFDWindModeSetting}
-     */
-    get windModeSetting() {
-        return this._windModeSetting;
-    }
-
-    _setWindMode(value) {
-        this.mode = value;
-    }
-
-    _onWindModeSettingChanged(setting, newValue, oldValue) {
-        this._setWindMode(newValue);
-    }
-
-    onEvent(event) {
-    }
-}
-
 class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     _createAirspeedIndicator() {
         return new WT_G3000_PFDAirspeedIndicator();
@@ -175,6 +122,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
 
     _createElements() {
         let elements = super._createElements();
+        elements.push(this._windData = new WT_G3000_PFDWindData());
         elements.push(new WT_G3000_PFDNavStatusBox());
         elements.push(new WT_G3000_PFDNavDMEInfo());
         return elements;
@@ -191,10 +139,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
         this._altUnitsMenu = new SoftKeysMenu();
 
         this._hsi = this.gps.getChildById("Compass");
-        /**
-         * @type {AS3000_PFD_WindData}
-         */
-        this._wind = this.gps.getElementOfType(WT_G3000_PFDWindData);
+
         /**
          * @type {WT_G3x5_PFDInsetMap}
          */
@@ -421,11 +366,11 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _setWindMode(mode) {
-        this._wind.windModeSetting.setValue(mode);
+        this._windData.windModeSetting.setValue(mode);
     }
 
     _softkeyWindModeCompare(value) {
-        return this._wind.getCurrentMode() === value;
+        return this._windData.windModeSetting.getValue() === value;
     }
 
     _cycleAoAMode() {

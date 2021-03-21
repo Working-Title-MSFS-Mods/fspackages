@@ -457,14 +457,45 @@ class WT_AirplaneEnvironment extends WT_AirplaneComponent {
         let value = SimVar.GetSimVarValue("AMBIENT PRESSURE", "inHg");
         return reference ? reference.set(value, WT_Unit.IN_HG) : new WT_NumberUnit(value, WT_Unit.IN_HG);
     }
+
+    /**
+     * Gets the wind speed at the airplane's current position.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} the wind speed at the airplane's current position.
+     */
+    windSpeed(reference) {
+        let value = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
+        return reference ? reference.set(value, WT_Unit.KNOT) : WT_Unit.KNOT.createNumber(value);
+    }
+
+    /**
+     * Gets the wind direction at the airplane's current position.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of magnetic bearing.
+     * @returns {WT_NumberUnit} the wind direction at the airplane's current position.
+     */
+    windDirection(reference) {
+        let value = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
+        let position = this.airplane.position(WT_AirplaneEnvironment._tempGeoPoint);
+        WT_AirplaneEnvironment._tempTrueBearing.setLocation(position);
+        if (!reference) {
+            reference = new WT_NavAngleUnit(true, position).createNumber(0);
+        } else {
+            reference.unit.setLocation(position);
+        }
+        return reference.set(value, WT_AirplaneEnvironment._tempTrueBearing);
+    }
 }
+WT_AirplaneEnvironment._tempGeoPoint = new WT_GeoPoint(0, 0);
+WT_AirplaneEnvironment._tempTrueBearing = new WT_NavAngleUnit(false);
 
 class WT_AirplaneNavigation extends WT_AirplaneComponent {
     /**
      * Gets the airplane's current geographic position.
      * @param {WT_GeoPoint} [reference] - a WT_GeoPoint object in which to store the result. If not supplied, a new WT_GeoPoint
      *                                    object will be created.
-     * @returns {WT_GeoPoint}  the current position of the airplane.
+     * @returns {WT_GeoPoint} the current position of the airplane.
      */
     position(reference) {
         let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
@@ -472,11 +503,13 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
         return reference? reference.set(lat, long) : new WT_GeoPoint(lat, long);
     }
 
+    /**
+     * Gets the airplane's current heading.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of magnetic heading.
+     * @returns {WT_NumberUnit} the airplane's current heading.
+     */
     heading(reference) {
-        if (!this.hasTarget()) {
-            return null;
-        }
-
         let value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         let position = this.airplane.position(WT_AirplaneNavigation._tempGeoPoint);
         if (reference) {
