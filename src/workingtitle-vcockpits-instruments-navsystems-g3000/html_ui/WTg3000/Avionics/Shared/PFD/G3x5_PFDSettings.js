@@ -18,6 +18,9 @@ class WT_G3x5_PFDAoAModeSetting extends WT_DataStoreSetting {
     }
 }
 WT_G3x5_PFDAoAModeSetting.KEY = "WT_AoA_Mode";
+/**
+ * @enum {Number}
+ */
 WT_G3x5_PFDAoAModeSetting.Mode = {
     OFF: 0,
     ON: 1,
@@ -31,6 +34,9 @@ class WT_G3x5_PFDWindModeSetting extends WT_DataStoreSetting {
     }
 }
 WT_G3x5_PFDWindModeSetting.KEY = "WT_Wind_Mode";
+/**
+ * @enum {Number}
+ */
 WT_G3x5_PFDWindModeSetting.Mode = {
     OFF: 0,
     OPTION_1: 1,
@@ -45,6 +51,9 @@ class WT_G3x5_PFDBaroUnitsSetting extends WT_DataStoreSetting {
     }
 }
 WT_G3x5_PFDBaroUnitsSetting.KEY = "WT_Baro_Units";
+/**
+ * @enum {Number}
+ */
 WT_G3x5_PFDBaroUnitsSetting.Mode = {
     IN_HG: 0,
     HPA: 1
