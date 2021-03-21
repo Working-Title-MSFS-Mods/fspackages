@@ -248,7 +248,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
 
         this._magVarRow = new WT_G3x5_TSCUnitsDisplayRow();
         this._initDisplayRow(this._magVarRow, "Magnetic Variance", function() {
-            let magVar = Math.round(WT_PlayerAirplane.INSTANCE.magVar());
+            let magVar = Math.round(WT_PlayerAirplane.INSTANCE.navigation.magVar());
             let direction = "E";
             if (magVar < 0) {
                 magVar = -magVar;

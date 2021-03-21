@@ -278,7 +278,7 @@ class WT_MapView extends HTMLElement {
         });
 
         if (this.model.airplane) {
-            this.projection.project(this.model.airplane.position(this._airplanePosition), this._viewPlane);
+            this.projection.project(this.model.airplane.navigation.position(this._airplanePosition), this._viewPlane);
         }
     }
 
