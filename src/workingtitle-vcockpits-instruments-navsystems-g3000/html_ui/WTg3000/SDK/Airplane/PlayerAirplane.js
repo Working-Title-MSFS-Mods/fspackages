@@ -6,6 +6,7 @@ class WT_PlayerAirplane {
         this._navigation = this._createNavigation();
         this._fms = this._createFMS();
         this._navCom = this._createNavCom();
+        this._engineering = this._createEngineering();
         this._controls = this._createControls();
         this._autopilot = this._createAutopilot();
         this._references = this._createReferences();
@@ -42,6 +43,10 @@ class WT_PlayerAirplane {
         return new WT_AirplaneNavCom(this, 2, 2, 1);
     }
 
+    _createEngineering() {
+        return new WT_AirplaneEngineering(this);
+    }
+
     _createControls() {
         switch (this.type) {
             case WT_PlayerAirplane.Type.TBM930:
@@ -69,8 +74,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The type of this airplane.
      * @readonly
-     * @property {WT_PlayerAirplane.Type} type - the type this airplane.
      * @type {WT_PlayerAirplane.Type}
      */
     get type() {
@@ -78,8 +83,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The dynamics component of this airplane.
      * @readonly
-     * @property {WT_AirplaneDynamics} dynamics - the dynamics component of this airplane.
      * @type {WT_AirplaneDynamics}
      */
     get dynamics() {
@@ -87,8 +92,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The environment component of this airplane.
      * @readonly
-     * @property {WT_AirplaneEnvironment} environment - the environment component of this airplane.
      * @type {WT_AirplaneEnvironment}
      */
     get environment() {
@@ -96,8 +101,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The navigation component of this airplane.
      * @readonly
-     * @property {WT_AirplaneNavigation} navigation - the navigation component of this airplane.
      * @type {WT_AirplaneNavigation}
      */
     get navigation() {
@@ -105,8 +110,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The flight management system (FMS) component of this airplane.
      * @readonly
-     * @property {WT_AirplaneFMS} gps - the GPS component of this airplane.
      * @type {WT_AirplaneFMS}
      */
     get fms() {
@@ -114,8 +119,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The NAV/COM component of this airplane.
      * @readonly
-     * @property {WT_AirplaneNavCom} navCom - the NAVCOM component of this airplane.
      * @type {WT_AirplaneNavCom}
      */
     get navCom() {
@@ -123,17 +128,26 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * The engineering component of this airplane.
      * @readonly
-     * @property {WT_AirplaneControls} controls - the flight controls component of this airplane.
+     * @type {WT_AirplaneEngineering}
+     */
+    get engineering() {
+        return this._engineering;
+    }
+
+    /**
+     * The flight controls component of this airplane.
+     * @readonly
      * @type {WT_AirplaneControls}
      */
-     get controls() {
+    get controls() {
         return this._controls;
     }
 
     /**
+     * The autopilot component of this airplane.
      * @readonly
-     * @property {WT_AirplaneAutopilot} autopilot - the autopilot component of this airplane.
      * @type {WT_AirplaneAutopilot}
      */
     get autopilot() {
@@ -141,8 +155,8 @@ class WT_PlayerAirplane {
     }
 
     /**
+     * Reference values for this airplane.
      * @readonly
-     * @property {WT_AirplaneReferences} references - reference values for this airplane.
      * @type {WT_AirplaneReferences}
      */
     get references() {
@@ -150,161 +164,7 @@ class WT_PlayerAirplane {
     }
 
     /**
-     * Gets the airplane's current geographic position.
-     * @param {WT_GeoPoint} [reference] - a WT_GeoPoint object in which to store the result. If not supplied, a new WT_GeoPoint
-     *                                      object will be created.
-     * @returns {WT_GeoPoint}  the current position of the airplane.
-     */
-    position(reference) {
-        let lat = SimVar.GetSimVarValue("PLANE LATITUDE", "degree latitude");
-        let long = SimVar.GetSimVarValue("PLANE LONGITUDE", "degree longitude");
-        return reference? reference.set(lat, long) : new WT_GeoPoint(lat, long);
-    }
-
-    /**
-     * Gets the airplane's current true heading.
-     * @returns {Number} the true heading of the airplane in degrees.
-     */
-    headingTrue() {
-        return SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "degree");
-    }
-
-    /**
-     * Gets the airplane's current true ground track.
-     * @returns {Number} the true track of the airplane in degrees.
-     */
-    trackTrue() {
-        return SimVar.GetSimVarValue("GPS GROUND TRUE TRACK", "degree");
-    }
-
-    /**
-     * Gets the airplane's current turn speed.
-     * @returns {Number} the current turn speed of the airplane in degrees per second.
-     */
-    turnSpeed() {
-        return SimVar.GetSimVarValue("DELTA HEADING RATE", "degrees per second");
-    }
-
-    /**
-     * Gets the magnetic variation (declination) at the airplane's current position.
-     * @returns {Number} the magnetic variation, in degrees, at the current position of the airplane.
-     */
-    magVar() {
-        return SimVar.GetSimVarValue("GPS MAGVAR", "degree");
-    }
-
-    /**
-     * Gets the airplane's current true altitude.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current altitude of the airplane. Default unit is feet.
-     */
-    altitude(reference) {
-        let alt = SimVar.GetSimVarValue("PLANE ALTITUDE", "feet");
-        return reference ? reference.set(alt, WT_Unit.FOOT) : new WT_NumberUnit(alt, WT_Unit.FOOT);
-    }
-
-    /**
-     * Gets the airplane's current indicated altitude.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current indicated altitude of the airplane. Default unit is feet.
-     */
-    altitudeIndicated(reference) {
-        let alt = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-        return reference ? reference.set(alt, WT_Unit.FOOT) : new WT_NumberUnit(alt, WT_Unit.FOOT);
-    }
-
-    /**
-     * Gets the airplane's current ground speed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current ground speed of the airplane. Default unit is knots.
-     */
-    groundSpeed(reference) {
-        let gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
-        return reference ? reference.set(gs, WT_Unit.KNOT) : new WT_NumberUnit(gs, WT_Unit.KNOT);
-    }
-
-    /**
-     * Gets the airplane's current true airspeed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current true airspeed of the airplane. Default unit is knots.
-     */
-    tas(reference) {
-        let tas = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
-        return reference ? reference.set(tas, WT_Unit.KNOT) : new WT_NumberUnit(tas, WT_Unit.KNOT);
-    }
-
-    /**
-     * Gets the airplane's current vertical speed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current vertical speed of the airplane. Default unit is feet per minute.
-     */
-    verticalSpeed(reference) {
-        let vs = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
-        return reference ? reference.set(vs, WT_Unit.FPM) : new WT_NumberUnit(vs, WT_Unit.FPM);
-    }
-
-    /**
-     * Checks whether the airplane is currently on the ground.
-     * @returns {Boolean} whether the airplane is currently on the ground.
-     */
-    isOnGround() {
-        return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
-    }
-
-    /**
-     * Gets the current amount of fuel remaining on the airplane.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current amount of fuel remaining on the airplane. Default unit is gallons.
-     */
-    fuelOnboard(reference) {
-        let fob = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
-        return reference ? reference.set(fob, WT_Unit.GALLON) : new WT_NumberUnit(fob, WT_Unit.GALLON);
-    }
-
-    /**
-     * Gets the number of engines on board this airplane.
-     * @returns {Number} the number of engines on board this airplane.
-     */
-    engineCount() {
-        return SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
-    }
-
-    /**
-     * Gets the total fuel consumption of the airplane, which is the sum of the fuel consumption of all engines.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current total fuel consumption of the airplane. Default unit is gallons per hour.
-     */
-    fuelFlowTotal(reference) {
-        let numEngines = this.engineCount();
-        let fuelFlow = reference ? reference.set(0) : new WT_NumberUnit(0, WT_Unit.GPH);
-        for (let i = 0; i < numEngines; i++) {
-            fuelFlow.add(this.fuelFlow(i, WT_PlayerAirplane._tempGPH));
-        }
-        return fuelFlow;
-    }
-
-    /**
-     * Gets the fuel consumption of an engine.
-     * @param {Number} index - the index of the engine.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current fuel consumption of the engine. Default unit is gallons per hour.
-     */
-    fuelFlow(index, reference) {
-        let ff = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${index + 1}`, "gallons per hour");
-        return reference ? reference.set(ff, WT_Unit.GPH) : new WT_NumberUnit(ff, WT_Unit.GPH);
-    }
-
-    /**
      * @readonly
-     * @property {WT_PlayerAirplane} INSTANCE
      * @type {WT_PlayerAirplane}
      */
     static get INSTANCE() {
@@ -331,7 +191,6 @@ class WT_AirplaneComponent {
 
     /**
      * @readonly
-     * @property {WT_PlayerAirplane} index
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
@@ -477,7 +336,7 @@ class WT_AirplaneEnvironment extends WT_AirplaneComponent {
      */
     windDirection(reference) {
         let value = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
-        let position = this.airplane.position(WT_AirplaneEnvironment._tempGeoPoint);
+        let position = this.airplane.navigation.position(WT_AirplaneEnvironment._tempGeoPoint);
         WT_AirplaneEnvironment._tempTrueBearing.setLocation(position);
         if (!reference) {
             reference = new WT_NavAngleUnit(true, position).createNumber(0);
@@ -511,7 +370,7 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
      */
     heading(reference) {
         let value = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
-        let position = this.airplane.position(WT_AirplaneNavigation._tempGeoPoint);
+        let position = this.position(WT_AirplaneNavigation._tempGeoPoint);
         if (reference) {
             WT_AirplaneNavigation._tempNavAngleUnit.setLocation(position);
             reference.unit.setLocation(position);
@@ -673,7 +532,7 @@ class WT_AirplaneFMS extends WT_AirplaneComponent {
         }
 
         let value = SimVar.GetSimVarValue("GPS WP BEARING", "degree");
-        let position = this.airplane.position(WT_AirplaneFMS._tempGeoPoint);
+        let position = this.airplane.navigation.position(WT_AirplaneFMS._tempGeoPoint);
         if (reference) {
             WT_AirplaneFMS._tempNavAngleUnit.setLocation(position);
             reference.unit.setLocation(position);
@@ -1074,8 +933,52 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
     }
 }
 
-class WT_AirplaneEngine {
+class WT_AirplaneEngineering extends WT_AirplaneComponent {
+    /**
+     * Gets the current amount of fuel remaining on the airplane.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of gallons.
+     * @returns {WT_NumberUnit} the current amount of fuel remaining on the airplane.
+     */
+    fuelOnboard(reference) {
+        let value = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
+        return reference ? reference.set(value, WT_Unit.GALLON) : WT_Unit.GALLON.createNumber(value);
+    }
 
+    /**
+     * Gets the number of engines on board this airplane.
+     * @returns {Number} the number of engines on board this airplane.
+     */
+    engineCount() {
+        return SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
+    }
+
+    /**
+     * Gets the total fuel consumption of the airplane, which is the sum of the fuel consumption of all engines.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of gallons per hour.
+     * @returns {WT_NumberUnit} the current total fuel consumption of the airplane.
+     */
+    fuelFlowTotal(reference) {
+        let numEngines = this.engineCount();
+        let fuelFlow = reference ? reference.set(0) : WT_Unit.GPH.createNumber(0);
+        for (let i = 0; i < numEngines; i++) {
+            fuelFlow.add(this.fuelFlow(i, WT_PlayerAirplane._tempGPH));
+        }
+        return fuelFlow;
+    }
+
+    /**
+     * Gets the fuel consumption of an engine.
+     * @param {Number} index - the index of the engine.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of gallons per hour.
+     * @returns {WT_NumberUnit} the current fuel consumption of the engine.
+     */
+    fuelFlow(index, reference) {
+        let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${index + 1}`, "gallons per hour");
+        return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
+    }
 }
 
 class WT_AirplaneControls extends WT_AirplaneComponent {
@@ -1116,6 +1019,15 @@ WT_TBM930Controls.FlapsPosition = {
 }
 
 class WT_CitationLongitudeControls extends WT_AirplaneControls {
+}
+/**
+ * @enum {Number}
+ */
+ WT_CitationLongitudeControls.FlapsPosition = {
+    UP: 0,
+    FLAPS_1: 1,
+    FLAPS_2: 2,
+    FLAPS_3: 3
 }
 
 class WT_AirplaneAutopilot {

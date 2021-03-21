@@ -731,7 +731,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
         this.facing = this.facingAngleGetter.getFacingAngle(state);
         this.isMagnetic = state.model.units.bearing.isMagnetic;
 
-        let magVar = this.isMagnetic ? state.model.airplane.magVar() : 0;
+        let magVar = this.isMagnetic ? state.model.airplane.navigation.magVar() : 0;
         this.rotation = state.projection.rotation + magVar;
 
         this.forwardTickAngle = this.forwardTickBearingGetter.getForwardTickBearing(state) + state.projection.rotation;

@@ -113,6 +113,9 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
             }
         };
         this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
+
+        this._tempKnots = WT_Unit.KNOT.createNumber(0);
+        this._tempTrueBearing = new WT_NavAngleUnit(false).createNumber(0);
     }
 
     connectedCallback() {
@@ -161,16 +164,17 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
      * @param {WT_MapViewState} state
      */
     update(state) {
-        if (state.model.airplane.isOnGround()) {
+        let airplane = state.model.airplane;
+        if (airplane.dynamics.isOnGround()) {
             this._setNoData(true);
         } else {
             this._setNoData(false);
-            let windSpeed = state.model.weather.windSpeed;
+            let windSpeed = airplane.environment.windSpeed(this._tempKnots);
             if (windSpeed.asUnit(WT_Unit.KNOT) < 1) {
                 this._showArrow(false);
             } else {
                 this._showArrow(true);
-                this._rotateArrow(state, state.model.weather.windDirection);
+                this._rotateArrow(state, airplane.environment.windDirection(this._tempTrueBearing).number);
             }
             this._setSpeedText(state, windSpeed);
         }

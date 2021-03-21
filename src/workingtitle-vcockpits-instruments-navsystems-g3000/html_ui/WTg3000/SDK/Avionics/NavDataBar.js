@@ -22,7 +22,7 @@ class WT_NavDataBarModel {
         this._infos = {
             BRG: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.BRG, new WT_NavAngleModelSimVar(true, {
                 updateLocation(location) {
-                    airplaneModel.position(location);
+                    airplaneModel.navigation.position(location);
                 }
             }, "PLANE HEADING DEGREES MAGNETIC", "degree")),
             DIS: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelSimVar(WT_Unit.NMILE, "GPS WP DISTANCE", "nautical miles")),
@@ -33,15 +33,15 @@ class WT_NavDataBarModel {
             })),
             DTK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DTK, new WT_NavAngleModelSimVar(true, {
                 updateLocation(location) {
-                    airplaneModel.position(location);
+                    airplaneModel.navigation.position(location);
                 }
             }, "GPS WP DESIRED TRACK", "degree")),
             END: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.END, new WT_NumberUnitModelAutoUpdated(WT_Unit.HOUR, {
                 tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
                 tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
                 updateValue(value) {
-                    let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
-                    let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
+                    let fuelRemaining = airplaneModel.engineering.fuelOnboard(this.tempGal);
+                    let fuelFlow = airplaneModel.engineering.fuelFlowTotal(this.tempGPH);
                     if (fuelFlow.number == 0) {
                         value.set(0);
                     } else {
@@ -63,8 +63,8 @@ class WT_NavDataBarModel {
                 tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
                 tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
                 updateValue(value) {
-                    let fuelRemaining = airplaneModel.fuelOnboard(this.tempGal);
-                    let fuelFlow = airplaneModel.fuelFlowTotal(this.tempGPH);
+                    let fuelRemaining = airplaneModel.engineering.fuelOnboard(this.tempGal);
+                    let fuelFlow = airplaneModel.engineering.fuelFlowTotal(this.tempGPH);
                     let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
                     value.set(fuelRemaining.number - enr * fuelFlow.number);
                 }
@@ -81,7 +81,7 @@ class WT_NavDataBarModel {
             TKE: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.TKE, new WT_NumberUnitModelSimVar(WT_Unit.DEGREE, "GPS WP TRACK ANGLE ERROR", "degree")),
             TRK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.TRK, new WT_NavAngleModelSimVar(true, {
                 updateLocation(location) {
-                    airplaneModel.position(location);
+                    airplaneModel.navigation.position(location);
                 }
             }, "GPS GROUND MAGNETIC TRACK", "degree")),
             XTK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.XTK, new WT_NumberUnitModelSimVar(WT_Unit.METER, "GPS WP CROSS TRK", "meters"))
