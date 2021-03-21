@@ -542,6 +542,10 @@ as3000-pfd-element wt-pfd-bottominfo {
         left: 0.5%;
         width: 7%;
     }
+    as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-winddatacell {
+        left: 8.5%;
+        width: 7%;
+    }
     as3000-pfd-element wt-pfd-bottominfo wt-pfd-bottominfo-temperaturecell {
         left: 8.5%;
         width: 7%;

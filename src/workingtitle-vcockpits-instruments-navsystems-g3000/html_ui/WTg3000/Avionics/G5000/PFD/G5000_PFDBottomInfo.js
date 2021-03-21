@@ -1,7 +1,8 @@
 class WT_G5000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
     _initInfoCells() {
         this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsController));
-        this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
+        this.addCell(new WT_G5000_PFDBottomInfoWindDataCell(this.instrument.airplane, this.instrument.unitsController));
+        //this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoNAVDMECell(this.instrument.airplane, this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoNavStatusCell(this.instrument.airplane, this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoBearingContainerCell(this.instrument.bearingInfos));
@@ -465,3 +466,124 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G5000_PFDBottomInfoBearingCellHTMLElement.NAME, WT_G5000_PFDBottomInfoBearingCellHTMLElement);
+
+class WT_G5000_PFDBottomInfoWindDataCell extends WT_G3x5_PFDBottomInfoCell {
+    constructor(airplane, unitsController) {
+        super();
+
+        this._initController();
+        this._model = this._createModel(airplane, unitsController);
+        this._setHTMLElementContext();
+    }
+
+    _createHTMLElement() {
+        return new WT_G5000_PFDBottomInfoWindDataCellHTMLElement();
+    }
+
+    _createModel(airplane, unitsController) {
+        return new WT_G3x5_PFDWindDataModel(airplane, this._windModeSetting, unitsController);
+    }
+
+    _setHTMLElementContext() {
+        this.htmlElement.setContext({
+            model: this._model
+        });
+    }
+
+    _initController() {
+        this._controller = new WT_DataStoreController("PFD", null);
+        this._controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._controller));
+        this._controller.init();
+    }
+
+    update() {
+        this._model.update();
+        this.htmlElement.update();
+    }
+}
+
+class WT_G5000_PFDBottomInfoWindDataCellHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._context = null;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G5000_PFDBottomInfoWindDataCellHTMLElement.TEMPLATE;
+    }
+
+    _defineChildren() {
+        let windData = this.shadowRoot.querySelector(`wt-pfd-winddata`);
+        if (windData instanceof WT_G3x5_PFDWindDataHTMLElement) {
+            this._windData = windData;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async _connectedCallbackHelper() {
+        await WT_Wait.wait(this._defineChildren.bind(this));
+        this._isInit = true;
+        this._updateFromContext();
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _updateFromContext() {
+        this._windData.setContext(this._context);
+    }
+
+    /**
+     *
+     * @param {{model:WT_G3x5_PFDWindDataModel}} context
+     */
+    setContext(context) {
+        if (this._context === context) {
+            return;
+        }
+
+        this._context = context;
+        if (this._isInit) {
+            this._updateFromContext();
+        }
+    }
+
+    update() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._windData.update();
+    }
+}
+WT_G5000_PFDBottomInfoWindDataCellHTMLElement.NAME = "wt-pfd-bottominfo-winddatacell";
+WT_G5000_PFDBottomInfoWindDataCellHTMLElement.TEMPLATE = document.createElement("template");
+WT_G5000_PFDBottomInfoWindDataCellHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        wt-pfd-winddata {
+            position: absolute;
+            left: var(--winddatacell-padding-left, 0.2em);
+            top: var(--winddatacell-padding-top, 0.2em);
+            width: calc(100% - var(--winddatacell-padding-left, 0.2em) - var(--winddatacell-padding-right, 0.2em));
+            height: calc(100% - var(--winddatacell-padding-top, 0.2em) - var(--winddatacell-padding-bottom, 0.2em));
+        }
+    </style>
+    <wt-pfd-winddata></wt-pfd-winddata>
+`;
+
+customElements.define(WT_G5000_PFDBottomInfoWindDataCellHTMLElement.NAME, WT_G5000_PFDBottomInfoWindDataCellHTMLElement);
