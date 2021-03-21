@@ -101,12 +101,16 @@ as3000-pfd-element #Mainframe #InstrumentsContainer #Compass {
         font-weight: bold;
     }
 
-      as3000-pfd-element #Mainframe #InstrumentsContainer #WindData {
-        position: absolute;
-        top: 57%;
-        left: 30%;
-        height: 6%;
-        width: 9%; }
+as3000-pfd-element wt-pfd-winddatabox {
+    position: absolute;
+    bottom: 37%;
+    right: 62%;
+    height: 7.5%;
+    width: 7%;
+    font-family: "Roboto-Condensed";
+    font-weight: normal;
+    font-size: 2.5vh;
+}
 
 as3000-pfd-element wt-pfd-aoaindicator {
     position: absolute;
