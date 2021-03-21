@@ -31,7 +31,7 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     _initFrequencies(freqData) {
-        return freqData.map(freq => new WT_AirportFrequency(this, freq.name, WT_Frequency.createFromHz(Math.round(freq.freqMHz * 1000), WT_Frequency.Prefix.KHz)));
+        return freqData.map(freq => new WT_AirportFrequency(this, freq.name, new WT_Frequency(Math.round(freq.freqMHz * 1000), WT_Frequency.Prefix.KHz)));
     }
 
     _initRunways(runwayData) {
@@ -110,8 +110,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * The size of this airport.
      * @readonly
-     * @property {WT_Airport.Size} size - the size of this airport.
      * @type {WT_Airport.Size}
      */
     get size() {
@@ -119,8 +119,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * The class of this airport.
      * @readonly
-     * @property {WT_Airport.Class} class - the class of this airport.
      * @type {WT_Airport.Class}
      */
     get class() {
@@ -128,8 +128,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * The privacy type of this airport.
      * @readonly
-     * @property {WT_Airport.Privacy} privacy - the privacy type of this airport.
      * @type {WT_Airport.Privacy}
      */
     get privacy() {
@@ -137,8 +137,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * Whether is airport is tower-controlled.
      * @readonly
-     * @property {Boolean} isTowered - whether is airport is tower-controlled.
      * @type {Boolean}
      */
     get isTowered() {
@@ -150,8 +150,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * The type of radar coverage this airport has.
      * @readonly
-     * @property {WT_Airport.RadarCoverage} radarCoverage - the type of radar coverage this airport has.
      * @type {WT_Airport.RadarCoverage}
      */
     get radarCoverage() {
@@ -159,8 +159,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * The elevation of this airport.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} elevation - the elevation of this airport.
      * @type {WT_NumberUnitReadOnly}
      */
     get elevation() {
@@ -168,8 +168,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * A list of radio frequencies associated with airport.
      * @readonly
-     * @property {WT_AirportFrequencyList} runways - a list of frequencies associated with airport.
      * @type {WT_AirportFrequencyList}
      */
     get frequencies() {
@@ -177,8 +177,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * A list of runways belonging to this airport.
      * @readonly
-     * @property {WT_RunwayList} runways - a list of runways belonging to this airport.
      * @type {WT_RunwayList}
      */
     get runways() {
@@ -186,9 +186,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * A list of standard instrument departure procedures (SIDs) belonging to this airport.
      * @readonly
-     * @property {WT_ProcedureList<WT_Departure>} departures - a list of standard instrument departure procedures (SIDs) belonging
-     *                                                         to this airport.
      * @type {WT_ProcedureList<WT_Departure>}
      */
     get departures() {
@@ -196,9 +195,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * A list of standard terminal arrival procedures (STARs) belonging to this airport.
      * @readonly
-     * @property {WT_ProcedureList<WT_Arrival>} arrivals - a list of standard terminal arrival procedures (STARs) belonging
-     *                                                     to this airport.
      * @type {WT_ProcedureList<WT_Arrival>}
      */
     get arrivals() {
@@ -206,8 +204,8 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     /**
+     * A list of approach procedures belonging to this airport.
      * @readonly
-     * @property {WT_ProcedureList<WT_Approach>} approaches - a list of approach procedures belonging to this airport.
      * @type {WT_ProcedureList<WT_Approach>}
      */
     get approaches() {
@@ -267,8 +265,8 @@ class WT_AirportFrequency {
     }
 
     /**
+     * The airport to which this frequency entry belongs.
      * @readonly
-     * @property {WT_Airport} airport - the airport to which this frequency entry belongs.
      * @type {WT_Airport}
      */
     get airport() {
@@ -276,8 +274,8 @@ class WT_AirportFrequency {
     }
 
     /**
+     * The name of this airport frequency entry.
      * @readonly
-     * @property {String} name - the name of this airport frequency entry.
      * @type {String}
      */
     get name() {
@@ -285,8 +283,8 @@ class WT_AirportFrequency {
     }
 
     /**
+     * The frequency of this airport frequency entry.
      * @readonly
-     * @property {WT_Frequency} name - the frequency of this airport frequency entry.
      * @type {WT_Frequency}
      */
     get frequency() {
@@ -302,16 +300,16 @@ class WT_AirportFrequencyList {
      * @param {WT_AirportFrequency[]} frequencies - an array of frequencies with which to initialize this list.
      */
     constructor(frequencies) {
-        this._frequencies = frequencies;
+        this._array = new WT_ReadOnlyArray(frequencies);
     }
 
     /**
-     * Gets a frequency from this list by its index.
-     * @param {Number} index - the index of the frequency to get.
-     * @returns {WT_AirportFrequency} a frequency.
+     * A read-only array of the frequencies in this list.
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_AirportFrequency>}
      */
-    getByIndex(index) {
-        return this._frequencies[index];
+    get array() {
+        return this._array;
     }
 
     /**
@@ -320,15 +318,7 @@ class WT_AirportFrequencyList {
      * @returns {WT_AirportFrequency} a frequency.
      */
     getByName(name) {
-        let index = this._frequencies.findIndex(frequency => frequency.name === name);
-        return this.getByIndex(index);
-    }
-
-    /**
-     * @returns {Iterator<WT_AirportFrequency>}
-     */
-    [Symbol.iterator]() {
-        return this._frequencies.values();
+        return this._array.find(frequency => frequency.name === name);
     }
 }
 
@@ -340,25 +330,18 @@ class WT_RunwayList {
      * @param {WT_Runway[]} runways - an array containing the runways with which to initialize the new list.
      */
     constructor(runways) {
-        /**
-         * @type {WT_Runway[]}
-         */
-        this._runways = runways;
+        this._array = new WT_ReadOnlyArray(runways);
 
-        this._longest;
-        for (let runway of this._runways) {
-            if (!this._longest || runway.length.compare(this._longest.length) > 0) {
-                this._longest = runway;
-            }
-        }
+        this._longest = this._array.reduce((previous, current) => (current.length.compare(previous.length) > 0) ? current : previous);
     }
 
     /**
-     * Gets the number of runways in this list.
-     * @returns {Number} the number of runways in this list.
+     * A read-only array of the runways in this list.
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_Runway>}
      */
-    count() {
-        return this._runways.length;
+    get array() {
+        return this._array;
     }
 
     /**
@@ -370,29 +353,12 @@ class WT_RunwayList {
     }
 
     /**
-     * Gets a runway from this list by its index.
-     * @param {WT_Runway} index - the index of the runway to get.
-     * @returns {WT_Runway} a runway.
-     */
-    getByIndex(index) {
-        return this._runways[index];
-    }
-
-    /**
      * Gets a runway from this list by its designation.
      * @param {String} designation - the designation of the runway to get.
      * @returns {WT_Runway} a runway.
      */
     getByDesignation(designation) {
-        let index = this._runways.findIndex(runway => runway.designation === designation);
-        return this.getByIndex(index);
-    }
-
-    /**
-     * @returns {IterableIterator<WT_Runway>}
-     */
-    [Symbol.iterator]() {
-        return this._runways.values();
+        return this._array.find(runway => runway.designation === designation);
     }
 }
 
@@ -579,9 +545,9 @@ class WT_Runway {
      */
     static _createFromData(airport, data) {
         let designations = data.designation.split("-");
-        let returnValue = [new WT_Runway(airport, designations[0], data, false)];
+        let returnValue = [new WT_Runway(airport, parseInt(designations[0]), data, false)];
         if (designations.length > 1) {
-            returnValue.push(new WT_Runway(airport, designations[1], data, true));
+            returnValue.push(new WT_Runway(airport, parseInt(designations[1]), data, true));
 
             let pairDesignation = `${returnValue[0].designation}-${returnValue[1].designation}`;
 

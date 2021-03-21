@@ -14,8 +14,8 @@ class WT_Procedure {
     }
 
     /**
+     * The airport to which this procedure belongs.
      * @readonly
-     * @property {WT_Airport} airport - the airport to which this procedure belongs.
      * @type {WT_Airport}
      */
     get airport() {
@@ -23,8 +23,8 @@ class WT_Procedure {
     }
 
     /**
+     * The name of this procedure.
      * @readonly
-     * @property {String} name - the name of this procedure.
      * @type {String}
      */
     get name() {
@@ -32,8 +32,8 @@ class WT_Procedure {
     }
 
     /**
+     * The index of this procedure in its parent airport's procedure list.
      * @readonly
-     * @property {Number} index - the index of this procedure in its parent airport's procedure list.
      * @type {Number}
      */
     get index() {
@@ -82,8 +82,8 @@ class WT_DepartureArrival extends WT_Procedure {
     }
 
     /**
+     * The common legs for this procedure.
      * @readonly
-     * @property {WT_ProcedureLegList} commonLegs - the common legs for this procedure.
      * @type {WT_ProcedureLegList}
      */
     get commonLegs() {
@@ -91,8 +91,8 @@ class WT_DepartureArrival extends WT_Procedure {
     }
 
     /**
+     * The runway transitions for this procedure.
      * @readonly
-     * @property {WT_TransitionList<WT_ProcedureRunwayTransition>} runwayTransitions - the runway transitions for this procedure.
      * @type {WT_TransitionList<WT_ProcedureRunwayTransition>}
      */
     get runwayTransitions() {
@@ -100,8 +100,8 @@ class WT_DepartureArrival extends WT_Procedure {
     }
 
     /**
+     * The enroute transitions for this procedure.
      * @readonly
-     * @property {WT_TransitionList<WT_ProcedureTransition>} enrouteTransitions - the enroute transitions for this procedure.
      * @type {WT_TransitionList<WT_ProcedureTransition>}
      */
     get enrouteTransitions() {
@@ -137,12 +137,25 @@ class WT_Approach extends WT_Procedure {
         this._initFromData(data);
     }
 
-    _initFromData(data) {
+    _initType(data) {
+        if (this.name.indexOf("ILS") >= 0) {
+            this._type = WT_Approach.Type.ILS_LOC;
+        } else if (this.name.indexOf("RNAV") >= 0) {
+            this._type = WT_Approach.Type.RNAV;
+        } else {
+            this._type = WT_Approach.Type.UNKNOWN;
+        }
+    }
+
+    _initRunway(data) {
         let runwayDesignation = data.runway.trim();
         this._runway = this.airport.runways.getByDesignation(runwayDesignation);
         if (!this._runway) {
             this._runway = this.airport.runways.getByDesignation(runwayDesignation + "C"); // data from the game leaves out the C for center runways
         }
+    }
+
+    _initLegs(data) {
         if (data.finalLegs) {
             this._finalLegs = new WT_ProcedureLegList(data.finalLegs.map(this._legMap.bind(this)));
         }
@@ -151,9 +164,37 @@ class WT_Approach extends WT_Procedure {
         }
     }
 
+    _initFrequency() {
+        if (this.type !== WT_Approach.Type.ILS_LOC) {
+            return;
+        }
+
+        let name = `ILS RW${this.runway.number.toFixed(0).padStart(2, "0")}${this.runway.suffix}`;
+        let airportFreq = this.airport.frequencies.array.find(airportFreq => airportFreq.name === name);
+        if (airportFreq) {
+            this._frequency = airportFreq.frequency;
+        }
+    }
+
+    _initFromData(data) {
+        this._initType(data);
+        this._initRunway(data);
+        this._initLegs(data);
+        this._initFrequency();
+    }
+
     /**
+     * The type of this approach.
      * @readonly
-     * @property {WT_Runway} runway - the runway for this approach.
+     * @type {WT_Approach.Type}
+     */
+    get type() {
+        return this._type;
+    }
+
+    /**
+     * The runway for this approach.
+     * @readonly
      * @type {WT_Runway}
      */
     get runway() {
@@ -161,8 +202,8 @@ class WT_Approach extends WT_Procedure {
     }
 
     /**
+     * The final approach legs for this approach.
      * @readonly
-     * @property {WT_ProcedureLegList} finalLegs - the final approach legs for this approach.
      * @type {WT_ProcedureLegList}
      */
     get finalLegs() {
@@ -170,13 +211,30 @@ class WT_Approach extends WT_Procedure {
     }
 
     /**
+     * The transitions for this approach.
      * @readonly
-     * @property {WT_TransitionList<WT_ProcedureTransition>} transitions - the transitions for this approach.
      * @type {WT_TransitionList<WT_ProcedureTransition>}
      */
     get transitions() {
         return this._transitions;
     }
+
+    /**
+     * The ILS/LOC frequency of this approach. If this approach is not an ILS/LOC approach, this property is undefined.
+     * @readonly
+     * @type {WT_Frequency}
+     */
+    get frequency() {
+        return this._frequency;
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_Approach.Type = {
+    UNKNOWN: 0,
+    ILS_LOC: 1,
+    RNAV: 2
 }
 
 /**
@@ -440,14 +498,6 @@ class WT_InitialFix extends WT_ProcedureLeg {
     get fixICAO() {
         return this._fixICAO;
     }
-
-    /**
-     * Generates a terminator waypoint fix for this leg.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint.
-     */
-    async waypointFix(icaoWaypointFactory) {
-        return icaoWaypointFactory.getWaypoint(this.fixICAO);
-    }
 }
 
 class WT_ProcedureLegCourse extends WT_ProcedureLeg {
@@ -628,16 +678,6 @@ class WT_FlyVectors extends WT_ProcedureLeg {
      */
     get discontinuity() {
         return true;
-    }
-
-    /**
-     * Generates a (terminal) waypoint fix for this leg.
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the factory to use to create a new WT_ICAOWaypoint object, if necessary.
-     * @param {WT_Waypoint} previousFix - the waypoint fix of the previous leg in the sequence to which this leg belongs.
-     * @returns {Promise<WT_Waypoint>} a Promise to return a waypoint fix.
-     */
-    async waypointFix(icaoWaypointFactory, previousFix) {
-        return new WT_CustomWaypoint("VECTORS", previousFix.location);
     }
 }
 

@@ -94,6 +94,15 @@ class WT_G3x5_PFD extends NavSystem {
     _createMainPage() {
     }
 
+    _initMainPage() {
+        this._mainPage = this._createMainPage();
+        this.pageGroups = [
+            new NavSystemPageGroup("Main", this, [
+                this._mainPage
+            ]),
+        ];
+    }
+
     _initInsetMap() {
         this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", new WT_G3x5_PFDInsetMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT, this.unitsController, this.citySearcher)));
     }
@@ -103,15 +112,18 @@ class WT_G3x5_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this._warnings));
     }
 
+    _createApproachNavLoader() {
+    }
+
+    _initApproachNavLoader() {
+        this._approachNavLoader = this._createApproachNavLoader();
+    }
+
     _initComponents() {
-        this._mainPage = this._createMainPage();
-        this.pageGroups = [
-            new NavSystemPageGroup("Main", this, [
-                this._mainPage
-            ]),
-        ];
+        this._initMainPage();
         this._initWarnings();
         this._initInsetMap();
+        this._initApproachNavLoader();
     }
 
     connectedCallback() {
@@ -161,12 +173,17 @@ class WT_G3x5_PFD extends NavSystem {
         }
     }
 
+    _updateApproachNavLoader() {
+        this._approachNavLoader.update();
+    }
+
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
 
         this._updateReversionaryMode();
         this._updateICAOWaypointFactory();
         this._updateFlightPlanManager();
+        this._updateApproachNavLoader();
     }
 
     reboot() {
