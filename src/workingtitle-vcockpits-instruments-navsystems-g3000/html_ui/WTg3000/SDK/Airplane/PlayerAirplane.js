@@ -816,7 +816,7 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
         }
 
         let value = SimVar.GetSimVarValue(`NAV RADIAL:${this.index}`, "degree");
-        let position = this.airplane.position(WT_AirplaneNavSlot._tempGeoPoint);
+        let position = this.airplane.navigation.position(WT_AirplaneNavSlot._tempGeoPoint);
         if (reference) {
             WT_AirplaneNavSlot._tempNavAngleUnit.setLocation(position);
             reference.unit.setLocation(position);
