@@ -225,6 +225,7 @@ class WT_G3x5_UnitsControllerModelAdapter {
         this.controller.navAngleSetting.addListener(this._onNavAngleSettingChanged.bind(this));
         this.controller.distanceSpeedSetting.addListener(this._onDistanceSpeedSettingChanged.bind(this));
         this.controller.altitudeSetting.addListener(this._onAltitudeSettingChanged.bind(this));
+        this.controller.extTemperatureSetting.addListener(this._onExtTemperatureSettingChanged.bind(this));
     }
 
     _initModel() {
@@ -233,6 +234,7 @@ class WT_G3x5_UnitsControllerModelAdapter {
         this._updateSpeed();
         this._updateAltitude();
         this._updateVerticalSpeed();
+        this._updateExtTemperature();
     }
 
     /**
@@ -256,6 +258,9 @@ class WT_G3x5_UnitsControllerModelAdapter {
     }
 
     _updateVerticalSpeed() {
+    }
+
+    _updateExtTemperature() {
     }
 
     /**
@@ -288,6 +293,16 @@ class WT_G3x5_UnitsControllerModelAdapter {
     _onAltitudeSettingChanged(setting, newValue, oldValue) {
         this._updateAltitude();
         this._updateVerticalSpeed();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_ExtTemperatureUnitsSetting} setting
+     * @param {WT_G3x5_ExtTemperatureUnitsSetting.Value} newValue
+     * @param {WT_G3x5_ExtTemperatureUnitsSetting.Value} oldValue
+     */
+    _onExtTemperatureSettingChanged(setting, newValue, oldValue) {
+        this._updateExtTemperature();
     }
 }
 
