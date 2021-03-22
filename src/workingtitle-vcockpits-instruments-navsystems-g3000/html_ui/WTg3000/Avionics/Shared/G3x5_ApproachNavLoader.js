@@ -98,7 +98,7 @@ class WT_G3x5_ApproachNavLoader {
 
     _switchAutopilotToNav() {
         let frequency = this._currentApproach.frequency;
-        if (!frequency) {
+        if (!frequency || this._airplane.autopilot.navigationSource() !== WT_AirplaneAutopilot.NavSource.FMS) {
             return;
         }
 
