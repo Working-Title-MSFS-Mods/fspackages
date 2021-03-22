@@ -210,13 +210,10 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
      * @param {WT_Airport} airport
      */
     _calculateAirportRadius(airport) {
-        let maxRunwayDistance = 0;
-        for (let runway of airport.runways) {
+        let maxRunwayDistance = airport.runways.array.reduce((accum, runway) => {
             let distance = Math.max(runway.start.distance(airport.location), runway.end.distance(airport.location));
-            if (distance > maxRunwayDistance) {
-                maxRunwayDistance = distance;
-            }
-        }
+            return (distance > accum) ? distance : accum;
+        }, 0);
         return maxRunwayDistance;
     }
 

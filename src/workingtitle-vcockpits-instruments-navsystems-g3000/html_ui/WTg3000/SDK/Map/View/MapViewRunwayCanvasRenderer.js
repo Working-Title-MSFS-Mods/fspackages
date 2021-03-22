@@ -131,9 +131,9 @@ class WT_MapViewRunwayCanvasRenderer {
      * @param {WT_MapViewRunwayLabelLayerAirportEntry} entry
      */
     _renderAirport(state, context, projectionRenderer, entry) {
-        for (let runway of entry.physicalRunways) {
+        entry.physicalRunways.forEach(runway => {
             this._renderRunway(state, context, projectionRenderer, runway, entry.styleOptions.runway);
-        }
+        }, this);
     }
 
     /**
@@ -143,9 +143,9 @@ class WT_MapViewRunwayCanvasRenderer {
      * @param {WT_MapProjectionRenderer} projectionRenderer
      */
     render(state, context, projectionRenderer) {
-        for (let entry of this._registered.values()) {
+        this._registered.forEach(entry => {
             this._renderAirport(state, context, projectionRenderer, entry);
-        }
+        }, this);
     }
 }
 
@@ -223,10 +223,10 @@ class WT_MapViewRunwayLabelLayerAirportEntry {
     }
 
     _init() {
-        for (let runway of this.airport.runways) {
+        this.airport.runways.array.forEach(runway => {
             this._initLabel(runway);
             this._filterPhysicalRunways(runway);
-        }
+        }, this);
     }
 
     /**
