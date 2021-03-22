@@ -991,11 +991,11 @@ class WT_AirplaneControls extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets this airplane's current gear position.
-     * @returns {WT_AirplaneControls.GearPosition} this airplane's current gear position.
+     * Checks whether this airplane's gear handle is in the down position.
+     * @returns {Boolean} whether this airplane's gear handle is in the down position.
      */
-    gearPosition() {
-        return SimVar.GetSimVarValue("GEAR POSITION", "Number");
+    isGearHandleDown() {
+        return SimVar.GetSimVarValue("GEAR HANDLE POSITION", "Number") !== 0;
     }
 }
 /**
