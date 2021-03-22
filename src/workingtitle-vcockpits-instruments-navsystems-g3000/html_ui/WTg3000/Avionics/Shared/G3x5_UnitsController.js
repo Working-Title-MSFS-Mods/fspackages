@@ -8,12 +8,12 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
     _initSettings() {
         this.addSetting(this._navAngleSetting = new WT_G3x5_NavAngleUnitsSetting(this));
         this.addSetting(this._distanceSpeedSetting = new WT_G3x5_DistanceSpeedUnitsSetting(this));
+        this.addSetting(this._altitudeSetting = new WT_G3x5_AltitudeUnitsSetting(this));
         this.addSetting(this._extTemperatureSetting = new WT_G3x5_ExtTemperatureUnitsSetting(this));
     }
 
     /**
      * @readonly
-     * @property {WT_G3x5_NavAngleUnitsSetting} navAngleSetting
      * @type {WT_G3x5_NavAngleUnitsSetting}
      */
     get navAngleSetting() {
@@ -22,7 +22,6 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
 
     /**
      * @readonly
-     * @property {WT_G3x5_DistanceSpeedUnitsSetting} distanceSpeedSetting
      * @type {WT_G3x5_DistanceSpeedUnitsSetting}
      */
     get distanceSpeedSetting() {
@@ -31,7 +30,14 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
 
     /**
      * @readonly
-     * @property {WT_G3x5_ExtTemperatureUnitsSetting} extTemperatureSetting
+     * @type {WT_G3x5_AltitudeUnitsSetting}
+     */
+    get altitudeSetting() {
+        return this._altitudeSetting;
+    }
+
+    /**
+     * @readonly
      * @type {WT_G3x5_ExtTemperatureUnitsSetting}
      */
     get extTemperatureSetting() {
@@ -135,6 +141,43 @@ WT_G3x5_DistanceSpeedUnitsSetting.UNITS = {
 WT_G3x5_DistanceSpeedUnitsSetting.KEY = "WT_Units_DistanceSpeed";
 WT_G3x5_DistanceSpeedUnitsSetting.DEFAULT = WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL;
 
+class WT_G3x5_AltitudeUnitsSetting extends WT_G3x5_UnitsSetting {
+    constructor(controller, defaultOption = WT_G3x5_AltitudeUnitsSetting.DEFAULT, key = WT_G3x5_AltitudeUnitsSetting.KEY) {
+        super(controller, key, defaultOption);
+
+        this._allUnits = this._getAllUnitsHelper(WT_G3x5_AltitudeUnitsSetting.Value, [WT_G3x5_AltitudeUnitsSetting.UNITS.altitude, WT_G3x5_AltitudeUnitsSetting.UNITS.verticalSpeed]);
+    }
+
+    getAltitudeUnit() {
+        return WT_G3x5_AltitudeUnitsSetting.UNITS.altitude[this.getValue()];
+    }
+
+    getVerticalSpeedUnit() {
+        return WT_G3x5_AltitudeUnitsSetting.UNITS.verticalSpeed[this.getValue()];
+    }
+
+    /**
+     *
+     * @returns {WT_Unit[][]}
+     */
+    getAllUnits() {
+        return this._allUnits;
+    }
+}
+/**
+ * @enum {Number}
+ */
+ WT_G3x5_AltitudeUnitsSetting.Value = {
+    FEET: 0,
+    METERS: 1
+};
+WT_G3x5_AltitudeUnitsSetting.UNITS = {
+    altitude: [WT_Unit.FOOT, WT_Unit.METER],
+    verticalSpeed: [WT_Unit.FPM, WT_Unit.MPM]
+};
+WT_G3x5_AltitudeUnitsSetting.KEY = "WT_Units_Altitude";
+WT_G3x5_AltitudeUnitsSetting.DEFAULT = WT_G3x5_AltitudeUnitsSetting.Value.FEET;
+
 class WT_G3x5_ExtTemperatureUnitsSetting extends WT_G3x5_UnitsSetting {
     constructor(controller, defaultValue = WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT, key = WT_G3x5_ExtTemperatureUnitsSetting.KEY) {
         super(controller, key, defaultValue);
@@ -181,17 +224,19 @@ class WT_G3x5_UnitsControllerModelAdapter {
     _initListeners() {
         this.controller.navAngleSetting.addListener(this._onNavAngleSettingChanged.bind(this));
         this.controller.distanceSpeedSetting.addListener(this._onDistanceSpeedSettingChanged.bind(this));
+        this.controller.altitudeSetting.addListener(this._onAltitudeSettingChanged.bind(this));
     }
 
     _initModel() {
         this._updateBearing();
         this._updateDistance();
         this._updateSpeed();
+        this._updateAltitude();
+        this._updateVerticalSpeed();
     }
 
     /**
      * @readonly
-     * @property {WT_G3x5_UnitsController} controller
      * @type {WT_G3x5_UnitsController}
      */
     get controller() {
@@ -205,6 +250,12 @@ class WT_G3x5_UnitsControllerModelAdapter {
     }
 
     _updateSpeed() {
+    }
+
+    _updateAltitude() {
+    }
+
+    _updateVerticalSpeed() {
     }
 
     /**
@@ -227,6 +278,17 @@ class WT_G3x5_UnitsControllerModelAdapter {
         this._updateDistance();
         this._updateSpeed();
     }
+
+    /**
+     *
+     * @param {WT_G3x5_AltitudeUnitsSetting} setting
+     * @param {WT_G3x5_AltitudeUnitsSetting.Value} newValue
+     * @param {WT_G3x5_AltitudeUnitsSetting.Value} oldValue
+     */
+    _onAltitudeSettingChanged(setting, newValue, oldValue) {
+        this._updateAltitude();
+        this._updateVerticalSpeed();
+    }
 }
 
 class WT_G3x5_UnitsControllerMapModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
@@ -244,7 +306,6 @@ class WT_G3x5_UnitsControllerMapModelAdapter extends WT_G3x5_UnitsControllerMode
 
     /**
      * @readonly
-     * @property {WT_MapModel} mapModel
      * @type {WT_MapModel}
      */
     get mapModel() {
@@ -279,7 +340,6 @@ class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsControl
 
     /**
      * @readonly
-     * @property {WT_NavDataBarModel} navDataBarModel
      * @type {WT_NavDataBarModel}
      */
     get navDataBarModel() {
