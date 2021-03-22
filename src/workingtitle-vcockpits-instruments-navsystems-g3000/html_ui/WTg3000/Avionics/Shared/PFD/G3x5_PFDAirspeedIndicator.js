@@ -179,6 +179,8 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         this._tapeTranslate = 0;
 
         this._speedBugEntries = [];
+
+        this._tempKnot = WT_Unit.KNOT.createNumber(0);
     }
 
     connectedCallback() {
@@ -445,7 +447,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
             this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
             this._showRefSpeed(true);
         } else if (refMach !== null) {
-            let refSpeedKnots = this._context.model.airplane.dynamics.machToIAS(refMach);
+            let refSpeedKnots = this._context.model.airplane.dynamics.machToIAS(refMach, this._tempKnot).number;
             this._setRefSpeedDisplay(refMach, true);
             this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
             this._showRefSpeed(true);
