@@ -46,8 +46,22 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         return this._icaoWaypointFactory;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCAirportInfoUnitsModel}
+     */
+    get unitsModel() {
+        return this._unitsModel;
+    }
+
+    _initUnitsModel() {
+        this._unitsModel = new WT_G3x5_TSCAirportInfoUnitsModel(this.instrument.unitsController);
+    }
+
     init(root) {
         this.container.title = "Airport Info";
+
+        this._initUnitsModel();
 
         /**
          * @type {WT_G3x5_TSCAirportInfoHTMLElement}
@@ -77,6 +91,68 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
         this._htmlElement.close();
 
         super.onExit();
+    }
+}
+
+class WT_G3x5_TSCAirportInfoUnitsModel extends WT_G3x5_UnitsControllerModelAdapter {
+    /**
+     * @param {WT_G3x5_UnitsController} controller
+     */
+    constructor(controller) {
+        super(controller);
+
+        this._initListeners();
+        this._initModel();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NavAngleUnit}
+     */
+    get bearingUnit() {
+        return this._bearingUnit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_Unit}
+     */
+    get distanceUnit() {
+        return this._distanceUnit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_Unit}
+     */
+    get lengthUnit() {
+        return this._lengthUnit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_Unit}
+     */
+    get altitudeUnit() {
+        return this._altitudeUnit;
+    }
+
+    _updateBearing() {
+        this._bearingUnit = this.controller.navAngleSetting.getNavAngleUnit();
+    }
+
+    _updateDistance() {
+        if (this.controller.distanceSpeedSetting.getValue() === WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL) {
+            this._distanceUnit = WT_Unit.NMILE;
+            this._lengthUnit = WT_Unit.FOOT;
+        } else {
+            this._distanceUnit = WT_Unit.KILOMETER;
+            this._lengthUnit = WT_Unit.METER;
+        }
+    }
+
+    _updateAltitude() {
+        this._altitudeUnit = this.controller.altitudeSetting.getAltitudeUnit();
     }
 }
 
@@ -375,7 +451,9 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
                 let airport = await this.parentPage.icaoWaypointFactory.getAirport(icao);
                 this.setAirport(airport);
                 return;
-            } catch (e) {}
+            } catch (e) {
+                console.log(e);
+            }
         }
         this.setAirport(null);
     }
@@ -497,7 +575,11 @@ class WT_G3x5_TSCAirportInfoInfoTab extends WT_G3x5_TSCAirportInfoTab {
     }
 
     _createHTMLElement() {
-        return new WT_G3x5_TSCAirportInfoTabHTMLElement();
+        let htmlElement = new WT_G3x5_TSCAirportInfoTabHTMLElement();
+        htmlElement.setContext({
+            unitsModel: this.parentPage.unitsModel
+        });
+        return htmlElement;
     }
 
     setAirport(airport) {
@@ -518,11 +600,26 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.content.cloneNode(true));
 
         /**
+         * @type {{unitsModel:WT_G3x5_TSCAirportInfoUnitsModel}}
+         */
+        this._context = null;
+
+        /**
          * @type {WT_Airport}
          */
         this._airport = null;
+        this._lastAltitudeUnit = null;
 
-        let distanceFormatterOpts = {
+        this._initFormatters();
+
+        this._tempGARad = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
+        this._tempAngle = new WT_NumberUnit(0, WT_Unit.DEGREE);
+        this._tempTrueBearing = new WT_NavAngleUnit(false).createNumber(0);
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
+    }
+
+    _initDistanceFormatter() {
+        let formatterOpts = {
             precision: 0.01,
             forceDecimalZeroes: false,
             maxDigits: 3,
@@ -539,27 +636,52 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
                 }
             }
         };
-        this._distanceFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(distanceFormatterOpts), htmlFormatterOpts);
+        this._distanceFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
+    }
 
-        this._coordinateFormatter = new WT_CoordinateFormatter();
+    _initBearingFormatter() {
+        this._bearingFormatter = new WT_NumberFormatter({
+            precision: 1,
+            unitSpaceBefore: false
+        });
+    }
 
+    _initElevationFormatter() {
         let elevationFormatterOpts = {
             precision: 1,
             unitCaps: true
         };
+        let htmlFormatterOpts = {
+            numberUnitDelim: "",
+            classGetter: {
+                getNumberClassList() {
+                    return ["number"];
+                },
+                getUnitClassList() {
+                    return ["unit"];
+                }
+            }
+        };
         this._elevationFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(elevationFormatterOpts), htmlFormatterOpts);
+    }
 
-        this._tempGARad = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
-        this._tempAngle = new WT_NumberUnit(0, WT_Unit.DEGREE);
-        this._tempGeoPoint = new WT_GeoPoint(0, 0);
+    _initCoordinateFormatter() {
+        this._coordinateFormatter = new WT_CoordinateFormatter();
+    }
+
+    _initFormatters() {
+        this._initDistanceFormatter();
+        this._initBearingFormatter();
+        this._initElevationFormatter();
+        this._initCoordinateFormatter();
     }
 
     _defineChildren() {
         this._city = this.shadowRoot.querySelector(`#city`);
         this._region = this.shadowRoot.querySelector(`#region`);
-        this._brgValue = this.shadowRoot.querySelector(`#brg .value`);
+        this._brgValue = new WT_CachedElement(this.shadowRoot.querySelector(`#brg .value`));
         this._brgArrow = this.shadowRoot.querySelector(`#brg .arrow`);
-        this._disValue = this.shadowRoot.querySelector(`#dis .value`);
+        this._disValue = new WT_CachedElement(this.shadowRoot.querySelector(`#dis .value`));
         this._latLong = this.shadowRoot.querySelector(`#latlong`);
         this._elevationValue = this.shadowRoot.querySelector(`#elevation .value`);
         this._privacyValue = this.shadowRoot.querySelector(`#privacy .value`);
@@ -567,6 +689,10 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
 
     connectedCallback() {
         this._defineChildren();
+    }
+
+    setContext(context) {
+        this._context = context;
     }
 
     _updateCityRegion() {
@@ -584,13 +710,13 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
             let airplane = WT_PlayerAirplane.INSTANCE;
             let ppos = airplane.navigation.position(this._tempGeoPoint);
             let heading = airplane.navigation.headingTrue();
-            let bearing = ppos.bearingTo(this._airport.location);
-            let magBearing = bearing - airplane.navigation.magVar();
-            this._brgValue.innerHTML = magBearing.toFixed(0) + "°";
-            this._brgArrow.setBearing(bearing - heading);
+            let bearing = this._tempTrueBearing.set(ppos.bearingTo(this._airport.location));
+            bearing.unit.setLocation(ppos);
+            this._brgValue.innerHTML = this._bearingFormatter.getFormattedString(bearing, this._context.unitsModel.bearingUnit);
+            this._brgArrow.setBearing(bearing.number - heading);
 
             let distance = this._tempGARad.set(ppos.distance(this._airport.location));
-            this._disValue.innerHTML = this._distanceFormatter.getFormattedHTML(distance, WT_Unit.NMILE);
+            this._disValue.innerHTML = this._distanceFormatter.getFormattedHTML(distance, this._context.unitsModel.distanceUnit);
 
             if (this._brgArrow.style.display !== "block") {
                 this._brgArrow.style.display = "block";
@@ -624,7 +750,9 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
 
     _updateElevation() {
         if (this._airport) {
-            this._elevationValue.innerHTML = this._elevationFormatter.getFormattedHTML(this._airport.elevation, WT_Unit.FOOT);
+            let unit = this._context.unitsModel.altitudeUnit;
+            this._elevationValue.innerHTML = this._elevationFormatter.getFormattedHTML(this._airport.elevation, unit);
+            this._lastAltitudeUnit = unit;
         } else {
             this._elevationValue.innerHTML = "";
         }
@@ -651,9 +779,17 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         this._updatePrivacy();
     }
 
+    _updateAltitudeUnit() {
+        let unit = this._context.unitsModel.altitudeUnit;
+        if (!unit.equals(this._lastAltitudeUnit)) {
+            this._updateElevation();
+        }
+    }
+
     update() {
         if (this._airport) {
             this._updateBearingDistance();
+            this._updateAltitudeUnit();
         }
     }
 }
@@ -684,7 +820,7 @@ WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.innerHTML = `
             height: 96%;
             background-color: gray;
             display: grid;
-            grid-template-columns: auto;
+            grid-template-columns: 100%;
             grid-template-rows: 20% 40% 20% 20%;
             grid-gap: 1px 0;
         }
@@ -1214,7 +1350,11 @@ class WT_G3x5_TSCAirportRunwayTab extends WT_G3x5_TSCAirportInfoScrollTab {
     }
 
     _createHTMLElement() {
-        return new WT_G3x5_TSCAirportRunwaysTabHTMLElement();
+        let htmlElement = new WT_G3x5_TSCAirportRunwaysTabHTMLElement();
+        htmlElement.setContext({
+            unitsModel: this.parentPage.unitsModel
+        });
+        return htmlElement;
     }
 
     setAirport(airport) {
@@ -1251,26 +1391,15 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
     constructor() {
         super();
 
+        /**
+         * @type {{unitsModel:WT_G3x5_TSCAirportInfoUnitsModel}}
+         */
+        this._context = null;
         this._runway = null;
-
-        let distanceFormatterOpts = {
-            precision: 1,
-            unitCaps: true
-        };
-        let htmlFormatterOpts = {
-            numberUnitDelim: "",
-            classGetter: {
-                getNumberClassList() {
-                    return ["number"];
-                },
-                getUnitClassList() {
-                    return ["unit"];
-                }
-            }
-        };
-        this._distanceFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(distanceFormatterOpts), htmlFormatterOpts);
-
+        this._lastLengthUnit = null;
         this._isInit = false;
+
+        this._initFormatter();
     }
 
     _initWrapperStyle() {
@@ -1330,6 +1459,25 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
         `;
     }
 
+    _initFormatter() {
+        let formatterOpts = {
+            precision: 1,
+            unitCaps: true
+        };
+        let htmlFormatterOpts = {
+            numberUnitDelim: "",
+            classGetter: {
+                getNumberClassList() {
+                    return ["number"];
+                },
+                getUnitClassList() {
+                    return ["unit"];
+                }
+            }
+        };
+        this._lengthFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
+    }
+
     _appendChildren() {
         this._designation = document.createElement("div");
         this._designation.id = "designation";
@@ -1361,6 +1509,10 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
         this._isInit = true;
     }
 
+    setContext(context) {
+        this._context = context;
+    }
+
     /**
      *
      * @param {WT_Runway} runway
@@ -1374,9 +1526,11 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
      * @param {WT_Runway} runway
      */
     _updateSize(runway) {
-        let lengthText = this._distanceFormatter.getFormattedHTML(runway.length, WT_Unit.FOOT);
-        let widthText = this._distanceFormatter.getFormattedHTML(runway.width, WT_Unit.FOOT);
+        let unit = this._context.unitsModel.lengthUnit;
+        let lengthText = this._lengthFormatter.getFormattedHTML(runway.length, unit);
+        let widthText = this._lengthFormatter.getFormattedHTML(runway.width, unit);
         this._size.innerHTML = `${lengthText} x ${widthText}`;
+        this._lastLengthUnit = unit;
     }
 
     /**
@@ -1452,6 +1606,17 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
             this._updateRunway();
         }
     }
+
+    _updateLengthUnit() {
+        let unit = this._context.unitsModel.lengthUnit;
+        if (!unit.equals(this._lastLengthUnit)) {
+            this._updateSize(this._runway);
+        }
+    }
+
+    update() {
+        this._updateLengthUnit();
+    }
 }
 WT_G3x5_TSCRunwayButton.LIGHTING_TEXT = [
     "Unknown",
@@ -1480,10 +1645,19 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(WT_G3x5_TSCAirportRunwaysTabHTMLElement.TEMPLATE.content.cloneNode(true));
 
         /**
+         * @type {{unitsModel:WT_G3x5_TSCAirportInfoUnitsModel}}
+         */
+        this._context = null;
+        /**
          * @type {WT_Airport}
          */
         this._airport = null;
         this._isInit = false;
+
+        /**
+         * @type {WT_G3x5_TSCRunwayButton[]}
+         */
+        this._buttons = [];
     }
 
     /**
@@ -1516,22 +1690,24 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
         this._isInit = true;
     }
 
+    setContext(context) {
+        this._context = context;
+    }
+
     _updateRunways() {
         this._buttonRecycler.recycleAll();
+        this._buttons = [];
         if (!this.airport) {
             return;
         }
 
-        /**
-         * @type {WT_Runway[]}
-         */
-        let added = [];
         this.airport.runways.array.forEach(runway => {
-            let existing = added.find(compare => compare.pairDesignation === runway.pairDesignation);
+            let existing = this._buttons.find(compare => compare.runway.pairDesignation === runway.pairDesignation);
             if (!existing) {
                 let button = this._buttonRecycler.request();
+                button.setContext(this._context);
                 button.setRunway(runway);
-                added.push(runway);
+                this._buttons.push(button);
             }
         }, this);
     }
@@ -1574,6 +1750,7 @@ class WT_G3x5_TSCAirportRunwaysTabHTMLElement extends HTMLElement {
         }
 
         this._scrollList.scrollManager.update();
+        this._buttons.forEach(button => button.update());
     }
 
     close() {
