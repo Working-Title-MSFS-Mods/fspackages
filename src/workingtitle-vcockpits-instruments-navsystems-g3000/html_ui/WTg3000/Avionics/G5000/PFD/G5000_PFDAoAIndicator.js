@@ -8,44 +8,47 @@ class WT_G5000_PFDAoAIndicator extends WT_G3x5_PFDAoAIndicator {
         return this._htmlElement;
     }
 
+    _createModel() {
+        return new WT_G5000_AoAIndicatorModel(this.instrument.airplane, {
+            zeroLiftAngle: -3,
+            criticalAngle: 13
+        }, this.aoaModeSetting);
+    }
+
     _createHTMLElement() {
         let htmlElement = new WT_G5000_PFDAoAIndicatorHTMLElement();
         htmlElement.setContext({
+            model: this._model,
             yellowFraction: 0.7,
-            redFraction: 0.9,
-            criticalAngle: 11,
-            airplane: this.instrument.airplane,
-            modeSetting: this.aoaModeSetting
+            redFraction: 0.9
         });
         return htmlElement;
     }
+}
 
-    init(root) {
-        let container = root.querySelector(`#InstrumentsContainer`);
-        this._htmlElement = this._createHTMLElement();
-        container.appendChild(this.htmlElement);
+class WT_G5000_AoAIndicatorModel extends WT_G3x5_AoAIndicatorModel {
+    _calculateShowFromAuto() {
+        let controls = this._airplane.controls;
+        return controls.isGearHandleDown() || controls.flapsPosition() !== WT_CitationLongitudeControls.FlapsPosition.UP;
     }
 
-    onUpdate(deltaTime) {
-        this.htmlElement.update();
+    _updateShow() {
+        switch (this._aoaMode) {
+            case WT_G3x5_PFDAoAModeSetting.Mode.ON:
+                this._show = true;
+                break;
+            case WT_G3x5_PFDAoAModeSetting.Mode.AUTO:
+                this._show = this._calculateShowFromAuto();
+                break;
+            default:
+                this._show = false;
+        }
     }
 }
 
-class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
+class WT_G5000_PFDAoAIndicatorHTMLElement extends WT_G3x5_PFDAoAIndicatorHTMLElement {
     constructor() {
         super();
-
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G5000_PFDAoAIndicatorHTMLElement.TEMPLATE.content.cloneNode(true));
-
-        this._modeListener = this._onModeSettingChanged.bind(this);
-
-        /**
-         * @type {WT_G5000_PFDAoAIndicatorContext}
-         */
-        this._context = null;
-        this._oldContext = null;
-        this._isInit = false;
 
         this._mode = WT_G3x5_PFDAoAModeSetting.Mode.OFF;
 
@@ -53,17 +56,15 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
         this._tempVector2 = new WT_GVector2(0, 0);
     }
 
+    _getTemplate() {
+        return WT_G5000_PFDAoAIndicatorHTMLElement.TEMPLATE;
+    }
+
     _defineChildren() {
         this._yellowArc = this.shadowRoot.querySelector(`#yellowarc`);
         this._redArc = this.shadowRoot.querySelector(`#redarc`);
         this._ticks = this.shadowRoot.querySelectorAll(`#ticks line`);
-        this._needle = this.shadowRoot.querySelector(`#needle`);
-    }
-
-    connectedCallback() {
-        this._defineChildren();
-        this._isInit = true;
-        this._updateFromContext();
+        this._needle = new WT_CachedElement(this.shadowRoot.querySelector(`#needle`));
     }
 
     _calculateAngle(fraction) {
@@ -78,16 +79,6 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
             return WT_G5000_PFDAoAIndicatorHTMLElement.Color.YELLOW;
         } else {
             return WT_G5000_PFDAoAIndicatorHTMLElement.Color.WHITE;
-        }
-    }
-
-    _updateModeListener() {
-        if (this._oldContext) {
-            this._oldContext.modeSetting.removeListener(this._modeListener);
-        }
-
-        if (this._context) {
-            this._context.modeSetting.addListener(this._modeListener);
         }
     }
 
@@ -117,66 +108,22 @@ class WT_G5000_PFDAoAIndicatorHTMLElement extends HTMLElement {
     }
 
     _updateFromContext() {
-        this._updateModeListener();
-        this._updateMode();
         this._updateYellowArc();
         this._updateRedArc();
         this._updateTicks();
     }
 
-    /**
-     *
-     * @param {WT_G5000_PFDAoAIndicatorContext} context
-     */
-    setContext(context) {
-        if (this._context === context) {
-            return;
-        }
-
-        this._oldContext = this._context;
-        this._context = context;
-
-        if (this._isInit) {
-            this._updateFromContext();
-        }
+    _setVisibility(value) {
+        this.setAttribute("show", `${value}`);
     }
 
-    _rotateNeedle(fraction) {
-        let angle = this._calculateAngle(fraction);
+    _setNeedlePosition(normalizedAoA) {
+        let angle = this._calculateAngle(normalizedAoA);
         this._needle.setAttribute("transform", `rotate(${Math.max(0, Math.min(180, angle))} 50 50)`);
     }
 
-    _setNeedleColor(fraction) {
-        this._needle.setAttribute("color", this._selectColor(fraction));
-    }
-
-    _updateNeedle() {
-        let aoa = this._context.airplane.dynamics.aoa();
-        let fraction = aoa / this._context.criticalAngle;
-        this._rotateNeedle(fraction);
-        this._setNeedleColor(fraction);
-    }
-
-    update() {
-        if (!this._isInit || !this._context) {
-            return;
-        }
-
-        this._updateNeedle();
-    }
-
-    _updateMode() {
-        let mode = this._context ? this._context.modeSetting.getValue() : WT_G3x5_PFDAoAModeSetting.Mode.OFF;
-        if (mode === this._mode) {
-            return;
-        }
-
-        this.setAttribute("show", `${mode !== WT_G3x5_PFDAoAModeSetting.Mode.OFF}`);
-        this._mode = mode;
-    }
-
-    _onModeSettingChanged(setting, newValue, oldValue) {
-        this._updateMode();
+    _setNeedleColor(normalizedAoA) {
+        this._needle.setAttribute("color", this._selectColor(normalizedAoA));
     }
 }
 /**
