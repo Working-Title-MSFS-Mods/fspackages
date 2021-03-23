@@ -8,7 +8,11 @@
  * @property {Number} rotation - the rotation of the map in degrees. A value of 0 indicates North up, with increasing values proceeding clockwise.
  */
 class WT_MapModel {
-    constructor() {
+    /**
+     * @param {WT_PlayerAirplane} airplane - the player airplane.
+     */
+    constructor(airplane) {
+        this._airplane = airplane;
         this._target = new WT_GeoPoint(0, 0);
         this._range = new WT_NumberUnit(5, WT_Unit.NMILE);
 
@@ -18,7 +22,7 @@ class WT_MapModel {
     }
 
     /**
-     * @property {WT_GeoPoint} target - the target point of the map.
+     * The target point of the map.
      * @type {WT_GeoPoint}
      */
     get target() {
@@ -30,7 +34,7 @@ class WT_MapModel {
     }
 
     /**
-     * @property {WT_NumberUnit} range - the nominal range of the map.
+     * The nominal range of the map.
      * @type {WT_NumberUnit}
      */
     get range() {
@@ -42,12 +46,12 @@ class WT_MapModel {
     }
 
     /**
+     * The player airplane.
      * @readonly
-     * @property {WT_AirplaneModel} airplane - a model object that allows access to properties of the player airplane.
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
-        return WT_PlayerAirplane.INSTANCE;
+        return this._airplane;
     }
 
     /**

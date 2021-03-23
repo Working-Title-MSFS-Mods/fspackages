@@ -6,7 +6,8 @@ class WT_NavDataBarModel {
     /**
      * @param {WT_FlightPlanManager} flightPlanManager
      */
-    constructor(flightPlanManager) {
+    constructor(airplane, flightPlanManager) {
+        this._airplane = airplane;
         this._fpm = flightPlanManager;
 
         this._dataFieldCount = 0;
@@ -17,7 +18,7 @@ class WT_NavDataBarModel {
 
     _initInfos() {
         let flightPlanManager = this._fpm;
-        let airplaneModel = WT_PlayerAirplane.INSTANCE;
+        let airplaneModel = this._airplane;
 
         this._infos = {
             BRG: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.BRG, new WT_NavAngleModelSimVar(true, {

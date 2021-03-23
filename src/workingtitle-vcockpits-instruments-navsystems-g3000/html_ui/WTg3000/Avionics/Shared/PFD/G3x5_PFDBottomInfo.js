@@ -17,6 +17,10 @@ class WT_G3x5_PFDBottomInfo extends WT_G3x5_PFDElement {
         return this._htmlElement;
     }
 
+    _initBearingInfos() {
+        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(this.instrument.airplane, this.instrument.unitsController);
+    }
+
     _createHTMLElement() {
         let htmlElement = new WT_G3x5_PFDBottomInfoHTMLElement();
         return htmlElement;
@@ -36,6 +40,8 @@ class WT_G3x5_PFDBottomInfo extends WT_G3x5_PFDElement {
     }
 
     init(root) {
+        this._initBearingInfos();
+
         let container = root.querySelector(`#InstrumentsContainer`);
         this._htmlElement = this._createHTMLElement();
         this._initInfoCells();

@@ -5,7 +5,7 @@ class WT_G5000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
         //this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoNAVDMECell(this.instrument.airplane, this.instrument.unitsController));
         this.addCell(new WT_G5000_PFDBottomInfoNavStatusCell(this.instrument.airplane, this.instrument.unitsController));
-        this.addCell(new WT_G5000_PFDBottomInfoBearingContainerCell(this.instrument.bearingInfos));
+        this.addCell(new WT_G5000_PFDBottomInfoBearingContainerCell(this._bearingInfos));
         this.addCell(new WT_G3x5_PFDBottomInfoTimeCell());
     }
 }

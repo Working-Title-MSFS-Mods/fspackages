@@ -1,10 +1,8 @@
-class WT_G3x5_MFDNavDataBar extends NavSystemElement {
-    constructor(instrumentID, flightPlanManager, unitsController) {
+class WT_G3x5_MFDNavDataBar extends WT_G3x5_MFDElement {
+    constructor(instrumentID) {
         super();
 
         this._instrumentID = instrumentID;
-        this._flightPlanManager = flightPlanManager;
-        this._unitsController = unitsController;
     }
 
     /**
@@ -53,10 +51,10 @@ class WT_G3x5_MFDNavDataBar extends NavSystemElement {
     }
 
     _initModel() {
-        this._model = new WT_NavDataBarModel(this._flightPlanManager);
+        this._model = new WT_NavDataBarModel(this.instrument.airplane, this.instrument.flightPlanManagerWT);
         this.model.setDataFieldCount(WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT);
 
-        this._unitsAdapter = new WT_G3x5_UnitsControllerNavDataBarModelAdapter(this._unitsController, this.model);
+        this._unitsAdapter = new WT_G3x5_UnitsControllerNavDataBarModelAdapter(this.instrument.unitsController, this.model);
     }
 
     _initView() {

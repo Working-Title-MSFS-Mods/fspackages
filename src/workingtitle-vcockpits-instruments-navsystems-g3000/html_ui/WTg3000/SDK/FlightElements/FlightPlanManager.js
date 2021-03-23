@@ -1,9 +1,10 @@
 class WT_FlightPlanManager {
-    constructor(icaoWaypointFactory) {
+    constructor(airplane, icaoWaypointFactory) {
+        this._airplane = airplane;
+
         this._active = new WT_FlightPlan(icaoWaypointFactory);
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
         this._directTo = new WT_DirectTo();
-        this._airplane = WT_PlayerAirplane.INSTANCE;
 
         this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
 
