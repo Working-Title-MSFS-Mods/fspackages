@@ -5,8 +5,10 @@ class WT_TSCSettingValueButtonManager {
      * @param {WT_DataStoreSetting} setting
      * @param {NavSystemElementContainer} selectionListWindow
      * @param {WT_TSCSelectionListContext} context
+     * @param {(value:Number) => String} valueTextMapper
+     * @param {Number[]} [selectionValues]
      */
-    constructor(instrument, button, setting, selectionListWindow, context, valueTextMapper) {
+    constructor(instrument, button, setting, selectionListWindow, context, valueTextMapper, selectionValues) {
         this._instrument = instrument;
         this._button = button;
         this._setting = setting;
@@ -15,6 +17,7 @@ class WT_TSCSettingValueButtonManager {
         this._context.callback = this._onSelectionMade.bind(this);
         this._context.currentIndexGetter = {getCurrentIndex: this._setting.getValue.bind(this._setting)};
         this._valueTextMapper = valueTextMapper;
+        this._selectionValues = selectionValues;
 
         this._setting.addListener(this._onSettingChanged.bind(this));
         this._button.addButtonListener(this._onButtonPressed.bind(this));
@@ -69,7 +72,8 @@ class WT_TSCSettingValueButtonManager {
         this.instrument.switchToPopUpPage(this._selectionListWindow);
     }
 
-    _onSelectionMade(value) {
+    _onSelectionMade(index) {
+        let value = this._selectionValues ? this._selectionValues[index] : index;
         this.setting.setValue(value);
     }
 
