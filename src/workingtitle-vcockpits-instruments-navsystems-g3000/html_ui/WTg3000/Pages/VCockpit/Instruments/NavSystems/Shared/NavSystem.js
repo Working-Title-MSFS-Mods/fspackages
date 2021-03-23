@@ -467,8 +467,6 @@ class NavSystem extends WT_G3x5_BaseInstrument {
     }
     onEvent(_event) {
     }
-    onUpdate(_deltaTime) {
-    }
     GetComActiveFreq() {
         return this.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), 3);
     }

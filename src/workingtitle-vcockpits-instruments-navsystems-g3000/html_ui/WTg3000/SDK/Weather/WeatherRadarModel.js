@@ -1,5 +1,7 @@
 class WT_WeatherRadarModel {
-    constructor() {
+    constructor(airplane) {
+        this._airplane = airplane;
+
         this._optsManager = new WT_OptionsManager(this, WT_WeatherRadarModel.OPTIONS_DEF);
 
         this._range = new WT_NumberUnit(20, WT_Unit.NMILE);
@@ -15,11 +17,10 @@ class WT_WeatherRadarModel {
 
     /**
      * @readonly
-     * @property {WT_AirplaneModel} airplane
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
-        return WT_PlayerAirplane.INSTANCE;
+        return this._airplane;
     }
 }
 /**

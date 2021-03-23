@@ -3,23 +3,7 @@ class WT_G3x5_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
 
-        this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
-        this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
-        };
-
-        this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
-        this._lastFPMSyncTime = 0;
-        this.airplane.fms.setFlightPlanManager(this._fpm);
-
         this._citySearcher = new WT_CitySearcher();
-
-        this._unitsController = new WT_G3x5_UnitsController();
-
-        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(this.airplane, this.unitsController);
     }
 
     get IsGlassCockpit() { return true; }
@@ -30,65 +14,10 @@ class WT_G3x5_PFD extends NavSystem {
 
     /**
      * @readonly
-     * @property {WT_PlayerAirplane} airplane
-     * @type {WT_PlayerAirplane}
-     */
-    get airplane() {
-        return WT_PlayerAirplane.INSTANCE;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @type {WT_ICAOWaypointFactory}
-     */
-    get icaoWaypointFactory() {
-        return this._icaoWaypointFactory;
-    }
-
-    /**
-     * @readonly
-     * @property {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}} icaoSearchers
-     * @type {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}
-     */
-    get icaoSearchers() {
-        return this._icaoSearchers;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_FlightPlanManager} flightPlanManagerWT
-     * @type {WT_FlightPlanManager}
-     */
-    get flightPlanManagerWT() {
-        return this._fpm;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_CitySearcher} citySearcher
      * @type {WT_CitySearcher}
      */
     get citySearcher() {
         return this._citySearcher;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_UnitsController} unitsController
-     * @type {WT_G3x5_UnitsController}
-     */
-    get unitsController() {
-        return this._unitsController;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_PFDBearingInfoContainer} bearingInfos
-     * @type {WT_G3x5_PFDBearingInfoContainer}
-     */
-    get bearingInfos() {
-        return this._bearingInfos;
     }
 
     _createMainPage() {
@@ -104,7 +33,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _initInsetMap() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", new WT_G3x5_PFDInsetMap("PFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManagerWT, this.unitsController, this.citySearcher)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", new WT_G3x5_PFDInsetMap("PFD", this.citySearcher)));
     }
 
     _initWarnings() {
@@ -112,18 +41,11 @@ class WT_G3x5_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this._warnings));
     }
 
-    _createApproachNavLoader() {
-    }
-
-    _initApproachNavLoader() {
-        this._approachNavLoader = this._createApproachNavLoader();
-    }
-
     _initComponents() {
         this._initMainPage();
         this._initWarnings();
         this._initInsetMap();
-        this._initApproachNavLoader();
+
     }
 
     connectedCallback() {
@@ -135,6 +57,19 @@ class WT_G3x5_PFD extends NavSystem {
 
     disconnectedCallback() {
         super.disconnectedCallback();
+    }
+
+    _createApproachNavLoader() {
+    }
+
+    _initApproachNavLoader() {
+        this._approachNavLoader = this._createApproachNavLoader();
+    }
+
+    Init() {
+        super.Init();
+
+        this._initApproachNavLoader();
     }
 
     parseXMLConfig() {
@@ -161,18 +96,6 @@ class WT_G3x5_PFD extends NavSystem {
         }
     }
 
-    _updateICAOWaypointFactory() {
-        this.icaoWaypointFactory.update();
-    }
-
-    _updateFlightPlanManager() {
-        let currentTime = Date.now() / 1000;
-        if (currentTime - this._lastFPMSyncTime >= WT_G3x5_PFD.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this.flightPlanManagerWT.syncActiveFromGame();
-            this._lastFPMSyncTime = currentTime;
-        }
-    }
-
     _updateApproachNavLoader() {
         this._approachNavLoader.update();
     }
@@ -181,8 +104,6 @@ class WT_G3x5_PFD extends NavSystem {
         super.onUpdate(_deltaTime);
 
         this._updateReversionaryMode();
-        this._updateICAOWaypointFactory();
-        this._updateFlightPlanManager();
         this._updateApproachNavLoader();
     }
 
@@ -202,7 +123,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     static selectAvionics() {
-        switch (WT_PlayerAirplane.INSTANCE.type) {
+        switch (WT_PlayerAirplane.getAircraftType()) {
             case WT_PlayerAirplane.Type.TBM930:
                 WT_G3x5_PFD._loadTemplate("/WTg3000/Avionics/G3000/PFD/Main/G3000_PFD.html");
                 break;
@@ -212,17 +133,12 @@ class WT_G3x5_PFD extends NavSystem {
         }
     }
 }
-WT_G3x5_PFD.FLIGHT_PLAN_SYNC_INTERVAL = 2;
 
-class WT_G3x5_PFDInsetMap extends NavSystemElement {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher) {
+class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
+    constructor(instrumentID, citySearcher) {
         super();
 
         this._instrumentID = instrumentID;
-        this._icaoWaypointFactory = icaoWaypointFactory;
-        this._icaoSearchers = icaoSearchers;
-        this._fpm = flightPlanManager;
-        this._unitsController = unitsController;
         this._citySearcher = citySearcher;
 
         this._isEnabled = false;
@@ -238,6 +154,15 @@ class WT_G3x5_PFDInsetMap extends NavSystemElement {
         this.showSetting.addListener(this._onShowSettingChanged.bind(this));
 
         this._controller.init();
+    }
+
+    /**
+     * @readonly
+     * @property {String} instrumentID
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
     }
 
     /**
@@ -273,7 +198,7 @@ class WT_G3x5_PFDInsetMap extends NavSystemElement {
     }
 
     _initNavMap(root) {
-        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this._icaoWaypointFactory, this._icaoSearchers, this._fpm, this._unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 

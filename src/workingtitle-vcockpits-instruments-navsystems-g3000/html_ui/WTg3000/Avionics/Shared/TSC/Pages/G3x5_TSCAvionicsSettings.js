@@ -247,8 +247,9 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
         this._initButtonRow(this._navAngleRow, "Nav Angle", this.unitsController.navAngleSetting, ["Magnetic", "True"], this.unitsController.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._magVarRow = new WT_G3x5_TSCUnitsDisplayRow();
+        let airplane = this.parentPage.instrument.airplane;
         this._initDisplayRow(this._magVarRow, "Magnetic Variance", function() {
-            let magVar = Math.round(WT_PlayerAirplane.INSTANCE.navigation.magVar());
+            let magVar = Math.round(airplane.navigation.magVar());
             let direction = "E";
             if (magVar < 0) {
                 magVar = -magVar;
@@ -644,7 +645,7 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
     }
 
     _initModel() {
-        this._model = new WT_NavDataBarModel(null);
+        this._model = new WT_NavDataBarModel(this.parentPage.instrument.airplane, null);
         this._model.setDataFieldCount(WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT);
     }
 

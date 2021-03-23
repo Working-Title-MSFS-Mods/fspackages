@@ -54,14 +54,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.history = [];
         this.initDuration = 4000;
 
-        this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
-        this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.INT)
-        };
-
         this._initUnitsController();
 
         this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
@@ -85,8 +77,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _initUnitsController() {
-        this._unitsController = new WT_G3x5_UnitsController();
-        this._unitsController.init();
+        this.unitsController.init();
     }
 
     _initHalfPaneController(paneSettings) {
@@ -101,42 +92,6 @@ class AS3000_TSC extends NavSystemTouch {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
         }
-    }
-
-    /**
-     * @readonly
-     * @property {WT_PlayerAirplane} airplane
-     * @type {WT_PlayerAirplane}
-     */
-    get airplane() {
-        return WT_PlayerAirplane.INSTANCE;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @type {WT_ICAOWaypointFactory}
-     */
-    get icaoWaypointFactory() {
-        return this._icaoWaypointFactory;
-    }
-
-    /**
-     * @readonly
-     * @property {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}} icaoSearchers
-     * @type {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}
-     */
-    get icaoSearchers() {
-        return this._icaoSearchers;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_UnitsController} unitsController
-     * @type {WT_G3x5_UnitsController}
-     */
-    get unitsController() {
-        return this._unitsController;
     }
 
     get mfdPaneControlID() {
@@ -351,8 +306,8 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    onUpdate() {
-        this.icaoWaypointFactory.update();
+    onUpdate(deltaTime) {
+        super.onUpdate(deltaTime);
 
         this._updatePageTitle();
         this._updateSoftkeyLabels();

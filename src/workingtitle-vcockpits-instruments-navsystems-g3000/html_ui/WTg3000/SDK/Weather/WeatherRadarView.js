@@ -351,7 +351,7 @@ class WT_WeatherRadarView extends HTMLElement {
 
     _updateCenterAndRange() {
         let range = this.model.range.asUnit(WT_Unit.METER);
-        let target = this.model.airplane.position(this._tempGeoPoint);
+        let target = this.model.airplane.navigation.position(this._tempGeoPoint);
         if (isNaN(range) || !target) {
             return;
         }

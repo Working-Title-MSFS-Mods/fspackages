@@ -1,6 +1,6 @@
 class WT_PlayerAirplane {
     constructor() {
-        this._type = this._getAircraftType();
+        this._type = WT_PlayerAirplane.getAircraftType();
         this._dynamics = this._createDynamics();
         this._environment = this._createEnvironment();
         this._navigation = this._createNavigation();
@@ -12,7 +12,7 @@ class WT_PlayerAirplane {
         this._references = this._createReferences();
     }
 
-    _getAircraftType() {
+    static getAircraftType() {
         switch (SimVar.GetSimVarValue("ATC MODEL", "string")) {
             case "TT:ATCCOM.AC_MODEL_TBM9.0.text":
                 return WT_PlayerAirplane.Type.TBM930;
@@ -63,14 +63,19 @@ class WT_PlayerAirplane {
     }
 
     _createReferences() {
+        let cfg = WT_g3000_ModConfig.INSTANCE;
+        let data;
         switch (this.type) {
             case WT_PlayerAirplane.Type.TBM930:
-                return new WT_AirplaneReferences(this, WT_AirplaneReferences.TBM930_DATA);
+                data = cfg.tbm930References;
+                break;
             case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                return new WT_AirplaneReferences(this, WT_AirplaneReferences.CITATION_LONGITUDE_DATA);
+                data = cfg.longitudeReferences;
+                break;
             default:
-                return null;
+                data = {};
         }
+        return new WT_AirplaneReferences(this, data);
     }
 
     /**
@@ -161,17 +166,6 @@ class WT_PlayerAirplane {
      */
     get references() {
         return this._references;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_PlayerAirplane}
-     */
-    static get INSTANCE() {
-        if (!WT_PlayerAirplane._instance) {
-            WT_PlayerAirplane._instance = new WT_PlayerAirplane();
-        }
-        return WT_PlayerAirplane._instance;
     }
 }
 WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH);
@@ -1218,18 +1212,18 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     _initFromData(data) {
-        this._vmo = data.vmo ? WT_Unit.KNOT.createNumber(data.vmo) : undefined;
-        this._mmo = data.mmo ? data.mmo : undefined;
-        this._crossover = data.crossover ? WT_Unit.FOOT.createNumber(data.crossover) : undefined;
-        this._v1 = data.v1 ? WT_Unit.KNOT.createNumber(data.v1) : undefined;
-        this._vr = data.vr ? WT_Unit.KNOT.createNumber(data.vr) : undefined;
-        this._v2 = data.v2 ? WT_Unit.KNOT.createNumber(data.v2) : undefined;
-        this._vfto = data.vfto ? WT_Unit.KNOT.createNumber(data.vfto) : undefined;
-        this._vy = data.vy ? WT_Unit.KNOT.createNumber(data.vy) : undefined;
-        this._vx = data.vx ? WT_Unit.KNOT.createNumber(data.vx) : undefined;
-        this._vapp = data.vapp ? WT_Unit.KNOT.createNumber(data.vapp) : undefined;
-        this._vref = data.vref ? WT_Unit.KNOT.createNumber(data.vref) : undefined;
-        this._vglide = data.vglide ? WT_Unit.KNOT.createNumber(data.vglide) : undefined;
+        this._vmo = data.vmo !== undefined ? WT_Unit.KNOT.createNumber(data.vmo) : undefined;
+        this._mmo = data.mmo;
+        this._crossover = data.crossover !== undefined ? WT_Unit.FOOT.createNumber(data.crossover) : undefined;
+        this._v1 = data.v1 !== undefined ? WT_Unit.KNOT.createNumber(data.v1) : undefined;
+        this._vr = data.vr !== undefined ? WT_Unit.KNOT.createNumber(data.vr) : undefined;
+        this._v2 = data.v2 !== undefined ? WT_Unit.KNOT.createNumber(data.v2) : undefined;
+        this._vfto = data.vfto !== undefined ? WT_Unit.KNOT.createNumber(data.vfto) : undefined;
+        this._vy = data.vy !== undefined ? WT_Unit.KNOT.createNumber(data.vy) : undefined;
+        this._vx = data.vx !== undefined ? WT_Unit.KNOT.createNumber(data.vx) : undefined;
+        this._vapp = data.vapp !== undefined ? WT_Unit.KNOT.createNumber(data.vapp) : undefined;
+        this._vref = data.vref !== undefined ? WT_Unit.KNOT.createNumber(data.vref) : undefined;
+        this._vglide = data.vglide !== undefined ? WT_Unit.KNOT.createNumber(data.vglide) : undefined;
     }
 
     /**
@@ -1341,30 +1335,3 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
         return this._vglide ? this._vglide.readonly() : undefined;
     }
 }
-
-WT_AirplaneReferences.TBM930_DATA = {
-    vmo: 266,
-    vr: 90,
-    vy: 124,
-    vx: 100,
-    vapp: 85,
-    vglide: 120,
-    vle: 178,
-    vfe: [178, 122]
-};
-
-WT_AirplaneReferences.CITATION_LONGITUDE_DATA = {
-    vmo: 325,
-    mmo: 0.84,
-    crossover: 29375,
-    v1: 110,
-    vr: 120,
-    v2: 137,
-    vfto: 180,
-    vapp: 115,
-    vref: 108,
-    vno: 235,
-    mno: 0.75,
-    vle: 230,
-    vfe: [250, 230, 180]
-};
