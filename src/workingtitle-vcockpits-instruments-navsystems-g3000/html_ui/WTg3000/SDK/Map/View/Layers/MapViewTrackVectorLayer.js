@@ -100,7 +100,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state - the current map view state.
      */
     _calculateDynamicTimeStep(state) {
-        let tas = state.model.airplane.dynamics.tas(this._tempKnot);
+        let tas = state.model.airplane.sensors.tas(this._tempKnot);
         let resolution = state.projection.viewResolution;
 
         let targetResolutionDistance = this.dynamicTargetResolution * resolution.asUnit(WT_Unit.METER);
@@ -120,7 +120,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let resolution = state.projection.viewResolution.asUnit(WT_Unit.METER);
 
         let trackRad = (airplane.navigation.trackTrue() + state.projection.rotation) * Avionics.Utils.DEG2RAD;
-        let tasPx = airplane.dynamics.tas(this._tempKnot).asUnit(WT_Unit.MPS) / resolution;
+        let tasPx = airplane.sensors.tas(this._tempKnot).asUnit(WT_Unit.MPS) / resolution;
         let headingRad = (airplane.navigation.headingTrue() + state.projection.rotation) * Avionics.Utils.DEG2RAD;
         let turnSpeedRad = airplane.navigation.turnSpeed() * Avionics.Utils.DEG2RAD;
         let windSpeedPx = airplane.environment.windSpeed(this._tempKnot).asUnit(WT_Unit.MPS) / resolution;
@@ -254,7 +254,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (state.model.airplane.dynamics.isOnGround()) {
+        if (state.model.airplane.sensors.isOnGround()) {
             return;
         }
 
