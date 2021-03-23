@@ -2992,7 +2992,7 @@ class AS3000_TSC_FrequencyKeyboard extends NavSystemTouch_FrequencyKeyboard {
         }
     }
 
-    onBackSpacePress() {
+    onBackSpacePress(_digit) {
         if (this.adf) {
             if (this.inputIndex > 0) {
                 this.inputIndex--;
