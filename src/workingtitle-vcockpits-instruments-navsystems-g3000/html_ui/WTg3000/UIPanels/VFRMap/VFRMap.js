@@ -43,7 +43,7 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initMap() {
-        switch (WT_PlayerAirplane.INSTANCE.type) {
+        switch (WT_PlayerAirplane.getAircraftType()) {
             case WT_PlayerAirplane.Type.TBM930:
             case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
                 this._initWTMap();
@@ -82,20 +82,6 @@ class WT_VFRMapPanel extends HTMLElement {
         this._updateLoop();
     }
 
-    _waitUntilReadyLoop(resolve) {
-        if (window["simvar"] && this._modConfigLoaded) {
-            resolve();
-        } else {
-            requestAnimationFrame(this._waitUntilReadyLoop.bind(this, resolve));
-        }
-    }
-
-    _waitUntilReady() {
-        return new Promise(resolve => {
-            this._waitUntilReadyLoop(resolve);
-        });
-    }
-
     _doInit() {
         this._initMap();
         this._initFooter();
@@ -107,7 +93,7 @@ class WT_VFRMapPanel extends HTMLElement {
     connectedCallback() {
         this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
         this._loadModConfig();
-        this._waitUntilReady().then(this._doInit.bind(this));
+        WT_Wait.wait(() => window["simvar"] && this._modConfigLoaded).then(this._doInit.bind(this));
     }
 
     _onVFRMapRegistered() {
@@ -305,6 +291,8 @@ class WT_VFRMapWT extends WT_VFRMap {
     constructor(htmlElement) {
         super(htmlElement);
 
+        this._airplane = new WT_PlayerAirplane();
+
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._icaoSearchers = {
             airport: new WT_ICAOSearcher("VFRMap", WT_ICAOSearcher.Keys.AIRPORT),
@@ -313,7 +301,7 @@ class WT_VFRMapWT extends WT_VFRMap {
             int: new WT_ICAOSearcher("VFRMap", WT_ICAOSearcher.Keys.INT)
         };
 
-        this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
+        this._fpm = new WT_FlightPlanManager(this._airplane, this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
@@ -329,8 +317,17 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     /**
+     * The player airplane.
      * @readonly
-     * @property {WT_MapModel} model - the model associated with this map.
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return this._airplane;
+    }
+
+    /**
+     * The model associated with this map.
+     * @readonly
      * @type {WT_MapModel}
      */
     get model() {
@@ -338,8 +335,8 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     /**
+     * The view associated with this map.
      * @readonly
-     * @property {WT_MapView} view - the view associated with this map.
      * @type {WT_MapView}
      */
     get view() {
@@ -483,7 +480,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _init() {
         let modConfig = WT_g3000_ModConfig.INSTANCE;
-        this._model = new WT_MapModel();
+        this._model = new WT_MapModel(this.airplane);
         this.view.setModel(this.model);
         this._initModel(modConfig);
         this._initView(modConfig);
@@ -563,6 +560,18 @@ class WT_VFRMapWT extends WT_VFRMap {
     _changeRange(delta) {
         let newIndex = Math.max(0, Math.min(WT_VFRMapWT.MAP_RANGE_LEVELS.length, this._rangeIndex + delta));
         this._rangeIndex = newIndex;
+    }
+
+    _updateICAOWaypointFactory() {
+        this._icaoWaypointFactory.update();
+    }
+
+    _updateFlightPlanManager() {
+        let currentTime = Date.now() / 1000;
+        if (currentTime - this._lastFPMSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
+            this._fpm.syncActiveFromGame();
+            this._lastFPMSyncTime = currentTime;
+        }
     }
 
     _updateScrollInputs() {
@@ -652,13 +661,8 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     onUpdate(deltaTime) {
-        this._icaoWaypointFactory.update();
-        let currentTime = Date.now() / 1000;
-        if (currentTime - this._lastFPMSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this._fpm.syncActiveFromGame();
-            this._lastFPMSyncTime = currentTime;
-        }
-
+        this._updateICAOWaypointFactory();
+        this._updateFlightPlanManager();
         this._updateInputs();
         this._updateRange();
         this._updateTarget();

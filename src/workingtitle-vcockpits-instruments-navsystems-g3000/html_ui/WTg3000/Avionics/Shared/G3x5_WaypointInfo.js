@@ -1,8 +1,9 @@
 class WT_G3x5_WaypointInfo {
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers) {
+    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers) {
         this._instrumentID = instrumentID;
         this._controllerID = `${instrumentID}-WaypointInfo`;
 
+        this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
     }
@@ -109,7 +110,7 @@ class WT_G3x5_WaypointInfo {
     }
 
     init(viewElement) {
-        this._model = new WT_MapModel();
+        this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
         this._controller = new WT_MapController(this.controllerID, this.model, this.view);

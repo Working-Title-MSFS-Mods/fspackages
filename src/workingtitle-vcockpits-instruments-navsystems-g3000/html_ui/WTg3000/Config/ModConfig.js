@@ -51,6 +51,35 @@ WT_g3000_ModConfig.SECTIONS = [
         loadAE: {default: true, auto: true},
         loadAS: {default: true, auto: true},
         loadOC: {default: true, auto: true}
+    }},
+    {cfgName: "TBM 930 REFERENCES", objName: "tbm930References", options: {
+        aoaZeroLift: {default: -3.6, auto: true},
+        aoaStall: {default: 15, auto: true},
+        vmo: {default: 266, auto: true},
+        vr: {default: 90, auto: true},
+        vy: {default: 124, auto: true},
+        vx: {default: 100, auto: true},
+        vapp: {default: 85, auto: true},
+        vglide: {default: 120, auto: true},
+        vle: {default: 178, auto: true},
+        vfe: {default: [178, 122], auto: true}
+    }},
+    {cfgName: "CITATION LONGITUDE REFERENCES", objName: "longitudeReferences", options: {
+        aoaZeroLift: {default: -3, auto: true},
+        aoaStall: {default: 13, auto: true},
+        vmo: {default: 325, auto: true},
+        mmo: {default: 0.84, auto: true},
+        crossover: {default: 29375, auto: true},
+        v1: {default: 110, auto: true},
+        vr: {default: 120, auto: true},
+        v2: {default: 137, auto: true},
+        vfto: {default: 180, auto: true},
+        vapp: {default: 115, auto: true},
+        vref: {default: 108, auto: true},
+        vno: {default: 235, auto: true},
+        mno: {default: 0.75, auto: true},
+        vle: {default: 230, auto: true},
+        vfe: {default: [250, 230, 180], auto: true}
     }}
 ];
 

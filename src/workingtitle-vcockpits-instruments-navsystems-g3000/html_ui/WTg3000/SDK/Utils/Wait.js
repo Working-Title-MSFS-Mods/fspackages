@@ -18,9 +18,9 @@ class WT_Wait {
 
     /**
      * Waits until a condition has been met.
-     * @param {Function} callback - a function which is called with no arguments on every update frame. The
-     *                              function should return true if the wait condition has been met and false
-     *                              otherwise.
+     * @param {() => Boolean} callback - a function which is called with no arguments on every update frame. The
+     *                                   function should return true if the wait condition has been met and false
+     *                                   otherwise.
      * @param {Number} [timeout] - the maximum amount of time to wait. If the wait condition has not been met when
      *                           this much time has elapsed, the wait will time out. Defaults to infinity.
      * @returns {Promise} a Promise which resolves when the wait condition is met or is rejected when the wait times
