@@ -98,9 +98,10 @@ class WT_G3x5_PFDAltimeterModel {
      * @param {WT_G3x5_PFD} instrument
      * @param {Number} index
      */
-    constructor(instrument, index) {
+    constructor(instrument, index, radarAltitude) {
         this._instrument = instrument;
         this._index = index;
+        this._radarAltitude = radarAltitude;
 
         this._showMeters = false;
         this._baroPressureModel = new WT_NumberUnitModelSimVar(WT_Unit.HPA, `KOHLSMAN SETTING MB:${this._index}`, "millibars", undefined, true);
@@ -290,7 +291,7 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateGroundAltitude() {
-        this.airplane.navigation.radarAltitude(this._groundAltitude).scale(-1, true).add(this.indicatedAltitude);
+        this._radarAltitude.altitude(this._groundAltitude).scale(-1, true).add(this.indicatedAltitude);
     }
 
     _updateVSpeed() {
@@ -353,8 +354,11 @@ class WT_G3x5_PFDAltimeterModel {
 
     _updateMinimums() {
         let mode = this._minimums.getMode();
-        if (mode === WT_G3x5_Minimums.Mode.BARO && !this.airplane.dynamics.isOnGround()) {
+        if (!this.airplane.dynamics.isOnGround() && (mode === WT_G3x5_Minimums.Mode.BARO || mode === WT_G3x5_Minimums.Mode.RADAR)) {
             this._minimums.getAltitude(this._minimumsAltitude);
+            if (mode === WT_G3x5_Minimums.Mode.RADAR) {
+                this._minimumsAltitude.add(this.groundAltitude);
+            }
             this._showMinimums = true;
             this._updateMinimumsState();
         } else {
