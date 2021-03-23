@@ -32,8 +32,12 @@ class WT_G3x5_PFD extends NavSystem {
         ];
     }
 
+    _createInsetMap() {
+        return new WT_G3x5_PFDInsetMap("PFD", this.citySearcher);
+    }
+
     _initInsetMap() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", new WT_G3x5_PFDInsetMap("PFD", this.citySearcher)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", this._createInsetMap()));
     }
 
     _initWarnings() {
@@ -100,8 +104,8 @@ class WT_G3x5_PFD extends NavSystem {
         this._approachNavLoader.update();
     }
 
-    onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
+    onUpdate(deltaTime) {
+        super.onUpdate(deltaTime);
 
         this._updateReversionaryMode();
         this._updateApproachNavLoader();
