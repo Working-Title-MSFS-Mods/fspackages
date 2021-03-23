@@ -174,6 +174,9 @@ class AS3000_TSC extends NavSystemTouch {
     _createSpeedBugsPage() {
     }
 
+    _createPFDSettingsPage() {
+    }
+
     get templateID() { return "AS3000_TSC"; }
 
     _initMFDPaneControlID() {
@@ -205,7 +208,7 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD Home", "PFD", "Generic")),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
                 this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
-                new NavSystemPage("PFD Settings", "PFDSettings", new WT_G3000_TSCPFDSettings("PFD", "PFD Home", "PFD")),
+                new NavSystemPage("PFD Settings", "PFDSettings", this._createPFDSettingsPage()),
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
