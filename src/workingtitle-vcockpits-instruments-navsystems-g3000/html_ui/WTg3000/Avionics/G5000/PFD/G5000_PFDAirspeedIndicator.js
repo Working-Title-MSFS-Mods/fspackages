@@ -85,7 +85,7 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
      * @returns {WT_NumberUnit}
      */
     aoaToIAS(aoa, reference) {
-        if (this.airplane.dynamics.isOnGround()) {
+        if (this.airplane.sensors.isOnGround()) {
             return null;
         }
 
@@ -94,12 +94,12 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
     }
 
     _updateAoACoef() {
-        if (!this.airplane.dynamics.isOnGround()) {
+        if (!this.airplane.sensors.isOnGround()) {
             let time = Date.now() / 1000;
             let dt = time - this._lastAoACoefTime;
             let ias = this.ias.asUnit(WT_Unit.KNOT);
             let vSquared = ias * ias;
-            let aoa = this.airplane.dynamics.aoa();
+            let aoa = this.airplane.sensors.aoa();
             let coef = (aoa - WT_G5000_PFDAirspeedIndicatorModel.AOA_ZERO_LIFT) * vSquared;
             this._aoaCoef = this._aoaCoefSmoother.next(coef, dt);
             this._lastAoACoefTime = time;
@@ -119,7 +119,7 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
         } else if (feet < this._airplane.references.crossover.asUnit(WT_Unit.FOOT)) {
             this._maxSpeed.set(this._airplane.references.Vmo);
         } else {
-            this._airplane.dynamics.machToIAS(this._airplane.references.Mmo, this._maxSpeed);
+            this._airplane.sensors.machToIAS(this._airplane.references.Mmo, this._maxSpeed);
         }
     }
 

@@ -138,14 +138,14 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (state.model.airplane.dynamics.isOnGround()) {
+        if (state.model.airplane.sensors.isOnGround()) {
             return;
         }
 
         this._arcLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        let vSpeed = state.model.airplane.navigation.verticalSpeed(this._tempFPM).number;
-        let currentAlt = state.model.airplane.navigation.altitudeIndicated(this._tempFoot).number;
+        let vSpeed = state.model.airplane.sensors.verticalSpeed(this._tempFPM).number;
+        let currentAlt = state.model.airplane.sensors.altitudeIndicated(this._tempFoot).number;
         let targetAlt = state.model.airplane.autopilot.selectedAltitude(this._tempFoot).number;
         let deltaAlt = targetAlt - currentAlt;
         let time = deltaAlt / vSpeed / 60; // hours

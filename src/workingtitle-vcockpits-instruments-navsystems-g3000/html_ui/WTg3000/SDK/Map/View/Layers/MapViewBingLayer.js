@@ -118,7 +118,7 @@ class WT_MapViewBingLayer extends WT_MapViewLayer {
     _updateTerrainColors(state) {
         let mode = state.model.terrain.mode;
 
-        if (state.model.airplane.dynamics.isOnGround() && mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
+        if (state.model.airplane.sensors.isOnGround() && mode === WT_MapModelTerrainModule.TerrainMode.RELATIVE) {
             mode = WT_MapModelTerrainModule.TerrainMode.OFF;
         }
         this._bingMap.setConfig(mode);

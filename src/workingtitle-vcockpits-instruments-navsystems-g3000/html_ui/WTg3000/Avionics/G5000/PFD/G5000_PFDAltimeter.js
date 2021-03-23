@@ -14,7 +14,7 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
                 precision: WT_Unit.FOOT.createNumber(50)
             }
         ]);
-        return new WT_G3x5_PFDAltimeterModel(this.instrument, 1, radarAltitude);
+        return new WT_G3x5_PFDAltimeterModel(this.instrument, this.altimeterIndex, radarAltitude);
     }
 
     _createHTMLElement() {
@@ -36,6 +36,21 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
             vSpeedThreshold: WT_G5000_PFDAltimeter.VS_THRESHOLD
         });
         return htmlElement;
+    }
+
+    _handleBaroEvent(event) {
+        switch (event) {
+            case "BARO_DEC":
+                this.instrument.airplane.sensors.decrementBaroSetting(this.altimeterIndex);
+                break;
+            case "BARO_INC":
+                this.instrument.airplane.sensors.incrementBaroSetting(this.altimeterIndex);
+                break;
+        }
+    }
+
+    onEvent(event) {
+        this._handleBaroEvent(event);
     }
 }
 WT_G5000_PFDAltimeter.ALT_TAPE_WINDOW = 1000;

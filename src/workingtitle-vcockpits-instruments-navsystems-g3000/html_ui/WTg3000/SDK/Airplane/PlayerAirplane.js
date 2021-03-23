@@ -1,7 +1,7 @@
 class WT_PlayerAirplane {
     constructor() {
         this._type = WT_PlayerAirplane.getAircraftType();
-        this._dynamics = this._createDynamics();
+        this._sensors = this._createSensors();
         this._environment = this._createEnvironment();
         this._navigation = this._createNavigation();
         this._fms = this._createFMS();
@@ -23,8 +23,8 @@ class WT_PlayerAirplane {
         }
     }
 
-    _createDynamics() {
-        return new WT_AirplaneDynamics(this);
+    _createSensors() {
+        return new WT_AirplaneSensors(this);
     }
 
     _createEnvironment() {
@@ -88,12 +88,12 @@ class WT_PlayerAirplane {
     }
 
     /**
-     * The dynamics component of this airplane.
+     * The sensors component of this airplane.
      * @readonly
-     * @type {WT_AirplaneDynamics}
+     * @type {WT_AirplaneSensors}
      */
-    get dynamics() {
-        return this._dynamics;
+    get sensors() {
+        return this._sensors;
     }
 
     /**
@@ -192,7 +192,7 @@ class WT_AirplaneComponent {
     }
 }
 
-class WT_AirplaneDynamics extends WT_AirplaneComponent {
+class WT_AirplaneSensors extends WT_AirplaneComponent {
     /**
      * Gets the airplane's current indicated airspeed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
@@ -253,6 +253,68 @@ class WT_AirplaneDynamics extends WT_AirplaneComponent {
      */
     isOnGround() {
         return SimVar.GetSimVarValue("SIM ON GROUND", "bool");
+    }
+
+    /**
+     * Gets the current indicated altitude.
+     * @param {Number} [index] - the index of the altimeter to use to get the indicated altitude. Defaults to 1.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the current indicated altitude.
+     */
+    altitudeIndicated(index = 1, reference) {
+        let value = SimVar.GetSimVarValue(`INDICATED ALTITUDE:${index}`, "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
+    }
+
+    /**
+     * Gets the current altimeter baro setting.
+     * @param {Number} [index] - the index of the altimeter. Defaults to 1.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of hectopascals.
+     * @returns {WT_NumberUnit} the current altimeter baro setting.
+     */
+    baroSetting(index = 1, reference) {
+        let value = SimVar.GetSimVarValue(`KOHLSMAN SETTING MB:${index}`, "millibars");
+        return reference ? reference.set(value, WT_Unit.HPA) : new WT_NumberUnit(value, WT_Unit.HPA);
+    }
+
+    /**
+     * Increments the altimeter baro setting.
+     * @param {Number} [index] - the index of the altimeter. Defaults to 1.
+     */
+    decrementBaroSetting(index = 1) {
+        SimVar.SetSimVarValue(`K:KOHLSMAN_DEC`, "number", index);
+    }
+
+    /**
+     * Decrements the altimeter baro setting.
+     * @param {Number} [index] - the index of the altimeter. Defaults to 1.
+     */
+    incrementBaroSetting(index = 1) {
+        SimVar.SetSimVarValue(`K:KOHLSMAN_INC`, "number", index);
+    }
+
+    /**
+     * Gets the airplane's current vertical speed.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created.
+     * @returns {WT_NumberUnit} the current vertical speed of the airplane. Default unit is feet per minute.
+     */
+    verticalSpeed(reference) {
+        let vs = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
+        return reference ? reference.set(vs, WT_Unit.FPM) : new WT_NumberUnit(vs, WT_Unit.FPM);
+    }
+
+    /**
+     * Gets the airplane's current radar altitude.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the current radar altitude of the airplane.
+     */
+    radarAltitude(reference) {
+        let value = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
     }
 
     /**
@@ -419,28 +481,6 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets the airplane's current indicated altitude.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created with units of feet.
-     * @returns {WT_NumberUnit} the current indicated altitude of the airplane.
-     */
-    altitudeIndicated(reference) {
-        let value = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
-        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
-    }
-
-    /**
-     * Gets the airplane's current radar altitude.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created with units of feet.
-     * @returns {WT_NumberUnit} the current radar altitude of the airplane.
-     */
-    radarAltitude(reference) {
-        let value = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
-        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
-    }
-
-    /**
      * Gets the airplane's current ground speed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
@@ -449,17 +489,6 @@ class WT_AirplaneNavigation extends WT_AirplaneComponent {
     groundSpeed(reference) {
         let gs = SimVar.GetSimVarValue("GPS GROUND SPEED", "knots");
         return reference ? reference.set(gs, WT_Unit.KNOT) : new WT_NumberUnit(gs, WT_Unit.KNOT);
-    }
-
-    /**
-     * Gets the airplane's current vertical speed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created.
-     * @returns {WT_NumberUnit} the current vertical speed of the airplane. Default unit is feet per minute.
-     */
-    verticalSpeed(reference) {
-        let vs = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
-        return reference ? reference.set(vs, WT_Unit.FPM) : new WT_NumberUnit(vs, WT_Unit.FPM);
     }
 }
 WT_AirplaneNavigation._tempGeoPoint = new WT_GeoPoint(0, 0);

@@ -100,7 +100,7 @@ class WT_G3x5_AoAIndicatorModel {
     }
 
     _updateAoA() {
-        this._normalizedAoA = this._calculateNormalizedAoA(this._airplane.dynamics.aoa());
+        this._normalizedAoA = this._calculateNormalizedAoA(this._airplane.sensors.aoa());
     }
 
     update() {
