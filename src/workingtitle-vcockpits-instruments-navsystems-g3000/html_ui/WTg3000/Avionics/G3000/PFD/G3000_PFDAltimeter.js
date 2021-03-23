@@ -1,6 +1,20 @@
 class WT_G3000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
     _createModel() {
-        return new WT_G3x5_PFDAltimeterModel(this.instrument, 1);
+        let radarAltitude = new WT_G3x5_RadarAltitude(this.instrument.airplane, [
+            {
+                maxAltitude: WT_Unit.FOOT.createNumber(200),
+                precision: WT_Unit.FOOT.createNumber(5)
+            },
+            {
+                maxAltitude: WT_Unit.FOOT.createNumber(1500),
+                precision: WT_Unit.FOOT.createNumber(10)
+            },
+            {
+                maxAltitude: WT_Unit.FOOT.createNumber(Infinity),
+                precision: WT_Unit.FOOT.createNumber(50)
+            }
+        ]);
+        return new WT_G3x5_PFDAltimeterModel(this.instrument, 1, radarAltitude);
     }
 
     _createHTMLElement() {

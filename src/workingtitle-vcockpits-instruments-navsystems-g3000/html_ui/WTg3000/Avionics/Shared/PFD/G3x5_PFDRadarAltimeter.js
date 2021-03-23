@@ -9,7 +9,21 @@ class WT_G3x5_PFDRadarAltimeter extends WT_G3x5_PFDElement {
     }
 
     _createModel() {
-        return new WT_G3x5_PFDRadarAltimeterModel(this.instrument.airplane, new WT_G3x5_Minimums());
+        let radarAltitude = new WT_G3x5_RadarAltitude(this.instrument.airplane, [
+            {
+                maxAltitude: WT_Unit.FOOT.createNumber(200),
+                precision: WT_Unit.FOOT.createNumber(5)
+            },
+            {
+                maxAltitude: WT_Unit.FOOT.createNumber(1500),
+                precision: WT_Unit.FOOT.createNumber(10)
+            },
+            {
+                maxAltitude: WT_Unit.FOOT.createNumber(Infinity),
+                precision: WT_Unit.FOOT.createNumber(50)
+            }
+        ]);
+        return new WT_G3x5_PFDRadarAltimeterModel(this.instrument.airplane, radarAltitude, new WT_G3x5_Minimums());
     }
 
     _createHTMLElement() {
@@ -17,20 +31,6 @@ class WT_G3x5_PFDRadarAltimeter extends WT_G3x5_PFDElement {
         htmlElement.setContext({
             model: this._model,
             displayMaximum: WT_Unit.FOOT.createNumber(2500),
-            precisions: [
-                {
-                    maxAltitude: WT_Unit.FOOT.createNumber(200),
-                    precision: WT_Unit.FOOT.createNumber(5)
-                },
-                {
-                    maxAltitude: WT_Unit.FOOT.createNumber(1500),
-                    precision: WT_Unit.FOOT.createNumber(10)
-                },
-                {
-                    maxAltitude: WT_Unit.FOOT.createNumber(Infinity),
-                    precision: WT_Unit.FOOT.createNumber(50)
-                }
-            ]
         });
         return htmlElement;
     }
@@ -50,12 +50,13 @@ class WT_G3x5_PFDRadarAltimeter extends WT_G3x5_PFDElement {
 
 class WT_G3x5_PFDRadarAltimeterModel {
     /**
-     *
      * @param {WT_PlayerAirplane} airplane
+     * @param {WT_G3x5_RadarAltitude} radarAltitude
      * @param {WT_G3x5_Minimums} minimums
      */
-    constructor(airplane, minimums) {
+    constructor(airplane, radarAltitude, minimums) {
         this._airplane = airplane;
+        this._radarAltitude = radarAltitude;
         this._minimums = minimums;
 
         this._altitude = WT_Unit.FOOT.createNumber(0);
@@ -81,8 +82,13 @@ class WT_G3x5_PFDRadarAltimeterModel {
         return this._alertState;
     }
 
+    _selectPrecision(altitude) {
+        let entry = this._precisions.find(entry => altitude.compare(entry.maxAltitude) <= 0);
+        return entry ? entry.precision : null;
+    }
+
     _updateAltitude() {
-        this._airplane.navigation.radarAltitude(this._altitude);
+        this._radarAltitude.altitude(this._altitude);
     }
 
     _updateRadarMinimums() {
@@ -95,10 +101,10 @@ class WT_G3x5_PFDRadarAltimeterModel {
 
     _updateAlertState() {
         this._updateRadarMinimums();
-        if (isNaN(this._radarMinimumsAltitude.number)) {
-            this._alertState = WT_G3x5_PFDRadarAltimeterModel.AlertState.NONE;
-        } else if (this._radarMinimumsAltitude.compare(this.altitude) >= 0) {
+        if (!isNaN(this._radarMinimumsAltitude.number) && this._radarMinimumsAltitude.compare(this.altitude) >= 0) {
             this._alertState = WT_G3x5_PFDRadarAltimeterModel.AlertState.BELOW_MINIMUMS;
+        } else {
+            this._alertState = WT_G3x5_PFDRadarAltimeterModel.AlertState.NONE;
         }
     }
 
@@ -169,17 +175,8 @@ class WT_G3x5_PFDRadarAltimeterHTMLElement extends HTMLElement {
         this._setVisibility(this._context.model.altitude.compare(this._context.displayMaximum) <= 0);
     }
 
-    _selectPrecision(altitude) {
-        let precisions = this._context.precisions;
-        let entry = precisions.find(entry => altitude.compare(entry.maxAltitude) <= 0);
-        return entry ? entry.precision : null;
-    }
-
     _setAltitudeDisplay(altitude) {
-        let precision = this._selectPrecision(altitude);
-        let altitudeFeet = altitude.asUnit(WT_Unit.FOOT);
-        let precisionFeet = precision ? precision.asUnit(WT_Unit.FOOT) : 1;
-        this._alt.innerHTML = (Math.round(altitudeFeet / precisionFeet) * precisionFeet).toFixed(0);
+        this._alt.innerHTML = altitude.asUnit(WT_Unit.FOOT).toFixed(0);
     }
 
     _updateAltitude() {
@@ -261,5 +258,4 @@ customElements.define(WT_G3x5_PFDRadarAltimeterHTMLElement.NAME, WT_G3x5_PFDRada
  * @typedef WT_G3x5_PFDRadarAltimeterContext
  * @property {WT_G3x5_PFDRadarAltimeterModel} model
  * @property {WT_NumberUnit} displayMaximum
- * @property {{maxAltitude:WT_NumberUnit, precision:WT_NumberUnit}[]} precisions
  */
