@@ -279,9 +279,13 @@ class WT_G3x5_PFDWindDataHTMLElement extends HTMLElement {
      * @param {Number} relativeDirection
      */
     _setOption1Speed(speed, relativeDirection) {
-        let speedKnots = (speed.compare(WT_G3x5_PFDWindDataHTMLElement.DIRECTION_MINIMUM_SPEED) >= 0) ? speed.asUnit(WT_Unit.KNOT) : 0;
+        let speedKnots = speed.asUnit(WT_Unit.KNOT);
         let headwind = this._calculateHeadwind(speedKnots, relativeDirection);
         let crosswind = this._calculateCrosswind(speedKnots, relativeDirection);
+
+        let directionMinimumKnots = WT_G3x5_PFDWindDataHTMLElement.DIRECTION_MINIMUM_SPEED.asUnit(WT_Unit.KNOT);
+        headwind = Math.abs(headwind) > directionMinimumKnots ? headwind : 0;
+        crosswind = Math.abs(crosswind) > directionMinimumKnots ? crosswind : 0;
 
         this._option1Headwind.innerHTML = Math.abs(headwind).toFixed(0);
         this._option1Crosswind.innerHTML = Math.abs(crosswind).toFixed(0);
