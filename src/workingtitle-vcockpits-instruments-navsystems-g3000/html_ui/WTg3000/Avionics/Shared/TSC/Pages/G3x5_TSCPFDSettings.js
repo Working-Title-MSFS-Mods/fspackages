@@ -302,12 +302,13 @@ class WT_G3x5_TSCPFDSettingsTitledToggleRow extends WT_G3x5_TSCPFDSettingsTitled
 }
 
 class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTitledRow {
-    constructor(title, setting, selectionWindowTitle, valueText) {
+    constructor(title, setting, selectionWindowTitle, valueText, selectionValues) {
         super(title);
 
         this._setting = setting;
         this._selectionWindowTitle = selectionWindowTitle;
         this._valueText = valueText;
+        this._selectionValues = selectionValues;
     }
 
     _initRight() {
@@ -322,7 +323,8 @@ class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTit
     }
 
     _mapValue(value) {
-        return this._valueText[value];
+        let index = this._selectionValues ? this._selectionValues.indexOf(value) : value;
+        return this._valueText[index];
     }
 
     onAttached() {
@@ -336,21 +338,10 @@ class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTit
             homePageGroup: this.parentPage.homePageGroup,
             homePageName: this.parentPage.homePageName
         };
-        this._manager = new WT_TSCSettingLabeledButtonManager(this.parentPage.instrument, this.htmlElement.right, this._setting, this.parentPage.instrument.selectionListWindow1, context, this._mapValue.bind(this));
+        this._manager = new WT_TSCSettingLabeledButtonManager(this.parentPage.instrument, this.htmlElement.right, this._setting, this.parentPage.instrument.selectionListWindow1, context, this._mapValue.bind(this), this._selectionValues);
         this._manager.init();
     }
 }
-
-class WT_G3x5_TSCPFDSettingsAoAModeRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
-    constructor(setting) {
-        super("AOA", setting, "AOA Settings", WT_G3x5_TSCPFDSettingsAoAModeRow.VALUE_TEXT);
-    }
-}
-WT_G3x5_TSCPFDSettingsAoAModeRow.VALUE_TEXT = [
-    "Off",
-    "On",
-    "Auto"
-];
 
 class WT_G3x5_TSCPFDSettingsBaroUnitsRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
     constructor(setting) {

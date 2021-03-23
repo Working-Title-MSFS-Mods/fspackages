@@ -1,6 +1,6 @@
-class WT_G3000_TSCPFDSettings extends WT_G3x5_TSCPFDSettings {
+class WT_G5000_TSCPFDSettings extends WT_G3x5_TSCPFDSettings {
     _createHTMLElement() {
-        let element = new WT_G3000_TSCPFDSettingsHTMLElement();
+        let element = new WT_G5000_TSCPFDSettingsHTMLElement();
         element.setParentPage(this);
         element.init();
         return element;
@@ -33,21 +33,21 @@ class WT_G3000_TSCPFDSettings extends WT_G3x5_TSCPFDSettings {
     }
 }
 
-class WT_G3000_TSCPFDSettingsHTMLElement extends HTMLElement {
+class WT_G5000_TSCPFDSettingsHTMLElement extends HTMLElement {
     constructor() {
         super();
 
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3000_TSCPFDSettingsHTMLElement.TEMPLATE.content.cloneNode(true));
+        this.shadowRoot.appendChild(WT_G5000_TSCPFDSettingsHTMLElement.TEMPLATE.content.cloneNode(true));
     }
 
     _initTable() {
         this._table = new WT_G3x5_TSCPFDSettingsTable(this._parentPage);
-        this._table.attachRow(new WT_G3000_TSCPFDSettingsAoAModeRow(this._parentPage.aoaModeSetting));
-        this._table.attachRow(new WT_G3000_TSCPFDSettingsSVTShowRow(this._parentPage.svtShowSetting));
-        this._table.attachRow(new WT_G3000_TSCPFDSettingsWindModeRow(this._parentPage.windModeSetting));
+        this._table.attachRow(new WT_G5000_TSCPFDSettingsAoAModeRow(this._parentPage.aoaModeSetting));
+        this._table.attachRow(new WT_G5000_TSCPFDSettingsSVTShowRow(this._parentPage.svtShowSetting));
+        this._table.attachRow(new WT_G5000_TSCPFDSettingsWindModeRow(this._parentPage.windModeSetting));
         this._table.attachRow(new WT_G3x5_TSCPFDSettingsBaroUnitsRow(this._parentPage.baroUnitsSetting));
-        this._table.attachRow(new WT_G3000_TSCPFDSettingsAltimeterMetersRow(this._parentPage.altimeterMetersSetting));
+        this._table.attachRow(new WT_G5000_TSCPFDSettingsAltimeterMetersRow(this._parentPage.altimeterMetersSetting));
     }
 
     init() {
@@ -83,8 +83,8 @@ class WT_G3000_TSCPFDSettingsHTMLElement extends HTMLElement {
         this._table.update();
     }
 }
-WT_G3000_TSCPFDSettingsHTMLElement.TEMPLATE = document.createElement("template");
-WT_G3000_TSCPFDSettingsHTMLElement.TEMPLATE.innerHTML = `
+WT_G5000_TSCPFDSettingsHTMLElement.TEMPLATE = document.createElement("template");
+WT_G5000_TSCPFDSettingsHTMLElement.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
@@ -95,41 +95,38 @@ WT_G3000_TSCPFDSettingsHTMLElement.TEMPLATE.innerHTML = `
     </div>
 `;
 
-customElements.define("tsc-pfdsettings-g3000", WT_G3000_TSCPFDSettingsHTMLElement);
+customElements.define("tsc-pfdsettings-g5000", WT_G5000_TSCPFDSettingsHTMLElement);
 
-class WT_G3000_TSCPFDSettingsAoAModeRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
+class WT_G5000_TSCPFDSettingsAoAModeRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
     constructor(setting) {
-        super("AOA", setting, "AOA Settings", WT_G3000_TSCPFDSettingsAoAModeRow.VALUE_TEXT, WT_G3000_TSCPFDSettingsAoAModeRow.SELECTION_VALUES);
+        super("AOA", setting, "AOA Settings", WT_G5000_TSCPFDSettingsAoAModeRow.VALUE_TEXT);
     }
 }
-WT_G3000_TSCPFDSettingsAoAModeRow.VALUE_TEXT = [
+WT_G5000_TSCPFDSettingsAoAModeRow.VALUE_TEXT = [
     "Off",
-    "On"
-];
-WT_G3000_TSCPFDSettingsAoAModeRow.SELECTION_VALUES = [
-    0,
-    1
+    "On",
+    "Auto"
 ];
 
-class WT_G3000_TSCPFDSettingsSVTShowRow extends WT_G3x5_TSCPFDSettingsTitledToggleRow {
+class WT_G5000_TSCPFDSettingsSVTShowRow extends WT_G3x5_TSCPFDSettingsTitledToggleRow {
     constructor(setting) {
         super("SVT<br>Terrain", setting, "Enable");
     }
 }
 
-class WT_G3000_TSCPFDSettingsWindModeRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
+class WT_G5000_TSCPFDSettingsWindModeRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
     constructor(setting) {
-        super("Wind", setting, "Wind Data Settings", WT_G3000_TSCPFDSettingsWindModeRow.VALUE_TEXT);
+        super("Wind", setting, "Wind Data Settings", WT_G5000_TSCPFDSettingsWindModeRow.VALUE_TEXT);
     }
 }
-WT_G3000_TSCPFDSettingsWindModeRow.VALUE_TEXT = [
+WT_G5000_TSCPFDSettingsWindModeRow.VALUE_TEXT = [
     "Off",
     "Option 1",
     "Option 2",
     "Option 3"
 ];
 
-class WT_G3000_TSCPFDSettingsAltimeterMetersRow extends WT_G3x5_TSCPFDSettingsTitledToggleRow {
+class WT_G5000_TSCPFDSettingsAltimeterMetersRow extends WT_G3x5_TSCPFDSettingsTitledToggleRow {
     constructor(setting) {
         super("Meters Overlay", setting, "Enable");
     }
