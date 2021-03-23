@@ -2,6 +2,6 @@
 	<OutputDirectory>.</OutputDirectory>
 	<TemporaryOutputDirectory>_PackageInt</TemporaryOutputDirectory>
 	<Packages>
-		<Package>PackageDefinitions\workingtitle-g3000-tbm.xml</Package>
+		<Package>PackageDefinitions\workingtitle-g3000-metapackage.xml</Package>
 	</Packages>
 </Project>
