@@ -19,7 +19,7 @@ class WT_G3x5_RadarAltitude {
      * @returns {WT_NumberUnit}
      */
     altitude(reference) {
-        let altitude = this._airplane.navigation.radarAltitude(reference);
+        let altitude = this._airplane.sensors.radarAltitude(reference);
         let precision = this._selectPrecision(altitude);
         let altitudeFeet = altitude.asUnit(WT_Unit.FOOT);
         let precisionFeet = precision ? precision.asUnit(WT_Unit.FOOT) : 1;

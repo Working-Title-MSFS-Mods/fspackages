@@ -165,7 +165,7 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
      */
     update(state) {
         let airplane = state.model.airplane;
-        if (airplane.dynamics.isOnGround()) {
+        if (airplane.sensors.isOnGround()) {
             this._setNoData(true);
         } else {
             this._setNoData(false);

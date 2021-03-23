@@ -15,7 +15,14 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAltimeterHTMLElement} htmlElement
+     * @type {Number}
+     */
+    get altimeterIndex() {
+        return this._altimeterIndex;
+    }
+
+    /**
+     * @readonly
      * @type {WT_G3x5_PFDAltimeterHTMLElement}
      */
     get htmlElement() {
@@ -24,7 +31,6 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDBaroUnitsSetting} baroUnitsSetting
      * @type {WT_G3x5_PFDBaroUnitsSetting}
      */
     get baroUnitsSetting() {
@@ -33,11 +39,22 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAltimeterMetersSetting} metersSetting
      * @type {WT_G3x5_PFDAltimeterMetersSetting}
      */
      get metersSetting() {
         return this._metersSetting;
+    }
+
+    _getAltimeterIndex() {
+        /*
+        if (this.instrument.instrumentXmlConfig) {
+            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
+            if (altimeterIndexElems.length > 0) {
+                return parseInt(altimeterIndexElems[0].textContent) + 1;
+            }
+        }
+        */
+        return 1;
     }
 
     /**
@@ -56,6 +73,7 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
     }
 
     init(root) {
+        this._altimeterIndex = this._getAltimeterIndex();
         this._model = this._createModel();
 
         let container = root.querySelector(`#InstrumentsContainer`);
@@ -138,7 +156,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFD} instrument
      * @type {WT_G3x5_PFD}
      */
     get instrument() {
@@ -147,7 +164,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_PlayerAirplane} autopilot
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
@@ -156,7 +172,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} indicatedAltitude
      * @type {WT_NumberUnitReadOnly}
      */
     get indicatedAltitude() {
@@ -165,7 +180,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} groundAltitude
      * @type {WT_NumberUnitReadOnly}
      */
     get groundAltitude() {
@@ -174,7 +188,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} verticalSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get verticalSpeed() {
@@ -183,7 +196,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} selectedAltitude
      * @type {WT_NumberUnitReadOnly}
      */
     get selectedAltitude() {
@@ -192,7 +204,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAltimeterModel.AltitudeAlertState} altitudeAlertState
      * @type {WT_G3x5_PFDAltimeterModel.AltitudeAlertState}
      */
     get altitudeAlertState() {
@@ -201,7 +212,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} minimums
      * @type {WT_NumberUnitReadOnly}
      */
     get minimumsAltitude() {
@@ -210,7 +220,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAltimeterModel.MinimumsState} minimumsState
      * @type {WT_G3x5_PFDAltimeterModel.MinimumsState}
      */
     get minimumsState() {
@@ -219,7 +228,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} referenceVSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get referenceVSpeed() {
@@ -228,7 +236,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAltimeterModel.VDeviationMode} verticalDeviationMode
      * @type {WT_G3x5_PFDAltimeterModel.VTrackMode}
      */
     get verticalTrackMode() {
@@ -237,7 +244,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {Number} glideError
      * @type {Number}
      */
     get verticalTrackDeflection() {
@@ -246,7 +252,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {Boolean} isGlidePreviewActive
      * @type {Boolean}
      */
     get isGlidePreviewActive() {
@@ -255,7 +260,6 @@ class WT_G3x5_PFDAltimeterModel {
 
     /**
      * @readonly
-     * @property {Number} glidePreviewError
      * @type {Number}
      */
     get glidePreviewDeflection() {
@@ -287,7 +291,7 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateAltitude() {
-        this.airplane.navigation.altitudeIndicated(this._indicatedAltitude);
+        this.airplane.sensors.altitudeIndicated(this._index, this._indicatedAltitude);
     }
 
     _updateGroundAltitude() {
@@ -295,7 +299,7 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateVSpeed() {
-        this.airplane.navigation.verticalSpeed(this._verticalSpeed);
+        this.airplane.sensors.verticalSpeed(this._verticalSpeed);
     }
 
     _updateSelectedAltitude() {
@@ -354,7 +358,7 @@ class WT_G3x5_PFDAltimeterModel {
 
     _updateMinimums() {
         let mode = this._minimums.getMode();
-        if (!this.airplane.dynamics.isOnGround() && (mode === WT_G3x5_Minimums.Mode.BARO || mode === WT_G3x5_Minimums.Mode.RADAR)) {
+        if (!this.airplane.sensors.isOnGround() && (mode === WT_G3x5_Minimums.Mode.BARO || mode === WT_G3x5_Minimums.Mode.RADAR)) {
             this._minimums.getAltitude(this._minimumsAltitude);
             if (mode === WT_G3x5_Minimums.Mode.RADAR) {
                 this._minimumsAltitude.add(this.groundAltitude);

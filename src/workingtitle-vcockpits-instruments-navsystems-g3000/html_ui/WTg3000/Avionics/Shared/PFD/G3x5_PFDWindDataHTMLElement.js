@@ -116,7 +116,7 @@ class WT_G3x5_PFDWindDataModel {
     }
 
     _updateMode() {
-        if (this._airplane.dynamics.isOnGround()) {
+        if (this._airplane.sensors.isOnGround()) {
             this._mode = WT_G3x5_PFDWindDataModel.Mode.NO_DATA;
         } else {
             switch (this._settingMode) {

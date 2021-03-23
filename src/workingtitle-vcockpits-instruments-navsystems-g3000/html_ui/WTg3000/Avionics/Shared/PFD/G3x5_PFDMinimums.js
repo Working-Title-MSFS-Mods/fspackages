@@ -93,7 +93,7 @@ class WT_G3x5_PFDMinimumsModel {
     }
 
     _updateState() {
-        if (this.instrument.airplane.dynamics.isOnGround()) {
+        if (this.instrument.airplane.sensors.isOnGround()) {
             this._state = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;
             return;
         }
@@ -101,10 +101,10 @@ class WT_G3x5_PFDMinimumsModel {
         let currentAlt = this._tempFoot;
         switch (this.mode) {
             case WT_G3x5_Minimums.Mode.BARO:
-                this.instrument.airplane.navigation.altitudeIndicated(currentAlt);
+                this.instrument.airplane.sensors.altitudeIndicated(currentAlt);
                 break;
             case WT_G3x5_Minimums.Mode.RADAR:
-                this.instrument.airplane.navigation.radarAltitude(currentAlt);
+                this.instrument.airplane.sensors.radarAltitude(currentAlt);
                 break;
             default:
                 this._state = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;

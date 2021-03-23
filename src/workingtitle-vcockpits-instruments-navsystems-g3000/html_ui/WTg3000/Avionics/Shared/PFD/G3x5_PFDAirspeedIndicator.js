@@ -81,7 +81,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {Number}
      */
     get mach() {
-        return this._airplane.dynamics.mach();
+        return this._airplane.sensors.mach();
     }
 
     /**
@@ -128,7 +128,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
     }
 
     _updateIAS() {
-        this._airplane.dynamics.ias(this._ias);
+        this._airplane.sensors.ias(this._ias);
     }
 
     _updateTrend() {
@@ -447,7 +447,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
             this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
             this._showRefSpeed(true);
         } else if (refMach !== null) {
-            let refSpeedKnots = this._context.model.airplane.dynamics.machToIAS(refMach, this._tempKnot).number;
+            let refSpeedKnots = this._context.model.airplane.sensors.machToIAS(refMach, this._tempKnot).number;
             this._setRefSpeedDisplay(refMach, true);
             this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
             this._showRefSpeed(true);
@@ -492,7 +492,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} trend
      */
     _updateMinSpeed(ias, trend) {
-        if (this._context.model.airplane.dynamics.isOnGround()) {
+        if (this._context.model.airplane.sensors.isOnGround()) {
             this._setMinSpeedWarning(false);
             return;
         }
