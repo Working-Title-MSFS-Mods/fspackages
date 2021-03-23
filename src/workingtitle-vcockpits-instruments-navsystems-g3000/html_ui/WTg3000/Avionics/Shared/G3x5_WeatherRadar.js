@@ -1,6 +1,7 @@
 class WT_G3x5_WeatherRadar {
-    constructor(instrumentID) {
+    constructor(instrumentID, airplane) {
         this._instrumentID = instrumentID;
+        this._airplane = airplane;
     }
 
     /**
@@ -32,7 +33,7 @@ class WT_G3x5_WeatherRadar {
 
     init(root) {
         this._radarView = root.querySelector(`weatherradar-view`);
-        this._model = new WT_WeatherRadarModel();
+        this._model = new WT_WeatherRadarModel(this._airplane);
         this._radarView.setModel(this.model);
         this._radarView.setBingMapID(`${this.instrumentID}`);
 

@@ -1,6 +1,7 @@
 class WT_G3x5_NavMap {
     /**
      * @param {String} instrumentID
+     * @param {WT_PlayerAirplane} airplane
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {{{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}} icaoSearchers
      * @param {WT_FlightPlanManager} flightPlanManager
@@ -11,10 +12,10 @@ class WT_G3x5_NavMap {
      * @param {WT_MapViewRoadLabelCollection} roadLabelData
      * @param {*} layerOptions
      */
-    constructor(instrumentID, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
-        this._layerOptions = layerOptions;
+        this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
@@ -23,11 +24,12 @@ class WT_G3x5_NavMap {
         this._borderData = borderData;
         this._roadFeatureData = roadFeatureData;
         this._roadLabelData = roadLabelData;
+
+        this._layerOptions = layerOptions;
     }
 
     /**
      * @readonly
-     * @property {String} map
      * @type {String}
      */
     get instrumentID() {
@@ -35,8 +37,8 @@ class WT_G3x5_NavMap {
     }
 
     /**
+     * The model associated with this map.
      * @readonly
-     * @property {WT_MapModel} model - the model associated with this map.
      * @type {WT_MapModel}
      */
     get model() {
@@ -44,8 +46,8 @@ class WT_G3x5_NavMap {
     }
 
     /**
+     * The view associated with this map.
      * @readonly
-     * @property {WT_MapView} view - the view associated with this map.
      * @type {WT_MapView}
      */
     get view() {
@@ -53,8 +55,8 @@ class WT_G3x5_NavMap {
     }
 
     /**
+     * The controller associated with this map.
      * @readonly
-     * @property {WT_MapController} controller - the controller associated with this map.
      * @type {WT_MapController}
      */
     get controller() {
@@ -63,7 +65,6 @@ class WT_G3x5_NavMap {
 
     /**
      * @readonly
-     * @property {WT_MapRangeSetting} rangeSetting
      * @type {WT_MapRangeSetting}
      */
     get rangeSetting() {
@@ -72,7 +73,6 @@ class WT_G3x5_NavMap {
 
     /**
      * @readonly
-     * @property {WT_MapTerrainModeSetting} terrainSetting
      * @type {WT_MapTerrainModeSetting}
      */
     get terrainSetting() {
@@ -81,7 +81,6 @@ class WT_G3x5_NavMap {
 
     /**
      * @readonly
-     * @property {WT_MapDCLTRSetting} dcltrSetting
      * @type {WT_MapDCLTRSetting}
      */
     get dcltrSetting() {
@@ -90,7 +89,6 @@ class WT_G3x5_NavMap {
 
     /**
      * @readonly
-     * @property {WT_MapSymbolShowSetting} dcltrSetting
      * @type {WT_MapSymbolShowSetting}
      */
     get nexradShowSetting() {
@@ -249,7 +247,7 @@ class WT_G3x5_NavMap {
     }
 
     init(viewElement) {
-        this._model = new WT_MapModel();
+        this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
         this._controller = new WT_MapController(this.instrumentID, this.model, this.view);

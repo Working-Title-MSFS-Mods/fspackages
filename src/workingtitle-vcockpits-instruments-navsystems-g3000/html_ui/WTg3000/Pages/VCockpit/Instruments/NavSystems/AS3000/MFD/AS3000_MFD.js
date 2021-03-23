@@ -4,20 +4,7 @@ class AS3000_MFD extends NavSystem {
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
 
-        this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
-        this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
-        };
-
-        this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
-        this._lastFPMSyncTime = 0;
-
         this._citySearcher = new WT_CitySearcher();
-
-        this._unitsController = new WT_G3x5_UnitsController();
     }
 
     get IsGlassCockpit() { return true; }
@@ -30,47 +17,11 @@ class AS3000_MFD extends NavSystem {
 
     /**
      * @readonly
-     * @property {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @type {WT_ICAOWaypointFactory}
-     */
-    get icaoWaypointFactory() {
-        return this._icaoWaypointFactory;
-    }
-
-    /**
-     * @readonly
-     * @property {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}} icaoSearchers
-     * @type {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}
-     */
-    get icaoSearchers() {
-        return this._icaoSearchers;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_FlightPlanManager} flightPlanManager
-     * @type {WT_FlightPlanManager}
-     */
-    get flightPlanManager() {
-        return this._fpm;
-    }
-
-    /**
-     * @readonly
      * @property {WT_CitySearcher} citySearcher
      * @type {WT_CitySearcher}
      */
     get citySearcher() {
         return this._citySearcher;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5_UnitsController} unitsController
-     * @type {WT_G3x5_UnitsController}
-     */
-    get unitsController() {
-        return this._unitsController;
     }
 
     connectedCallback() {
@@ -80,10 +31,10 @@ class AS3000_MFD extends NavSystem {
         this.engines = new AS3000_Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engines);
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManager, this.unitsController)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManagerWT, this.unitsController)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
-                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.icaoWaypointFactory, this.icaoSearchers, this.flightPlanManager, this.unitsController, this.citySearcher))
+                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.citySearcher))
             ]),
         ];
     }
@@ -98,23 +49,12 @@ class AS3000_MFD extends NavSystem {
         }
     }
 
-    onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-        this.icaoWaypointFactory.update();
-        let currentTime = Date.now() / 1000;
-        if (currentTime - this._lastFPMSyncTime >= AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this.flightPlanManager.syncActiveFromGame();
-            this._lastFPMSyncTime = currentTime;
-        }
-    }
-
     reboot() {
         super.reboot();
         if (this.engines)
             this.engines.reset();
     }
 }
-AS3000_MFD.FLIGHT_PLAN_SYNC_INTERVAL = 2; // seconds
 
 class AS3000_Engine extends NavSystemElementContainer {
     constructor(_name, _root) {

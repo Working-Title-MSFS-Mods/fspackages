@@ -577,6 +577,7 @@ class WT_G3x5_TSCAirportInfoInfoTab extends WT_G3x5_TSCAirportInfoTab {
     _createHTMLElement() {
         let htmlElement = new WT_G3x5_TSCAirportInfoTabHTMLElement();
         htmlElement.setContext({
+            airplane: this.parentPage.instrument.airplane,
             unitsModel: this.parentPage.unitsModel
         });
         return htmlElement;
@@ -600,7 +601,7 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.content.cloneNode(true));
 
         /**
-         * @type {{unitsModel:WT_G3x5_TSCAirportInfoUnitsModel}}
+         * @type {{airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCAirportInfoUnitsModel}}
          */
         this._context = null;
 
@@ -707,7 +708,7 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
 
     _updateBearingDistance() {
         if (this._airport) {
-            let airplane = WT_PlayerAirplane.INSTANCE;
+            let airplane = this._context.airplane;
             let ppos = airplane.navigation.position(this._tempGeoPoint);
             let heading = airplane.navigation.headingTrue();
             let bearing = this._tempTrueBearing.set(ppos.bearingTo(this._airport.location));
