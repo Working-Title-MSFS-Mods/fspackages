@@ -10,8 +10,8 @@ class WT_G5000_PFDAoAIndicator extends WT_G3x5_PFDAoAIndicator {
 
     _createModel() {
         return new WT_G5000_AoAIndicatorModel(this.instrument.airplane, {
-            zeroLiftAngle: -3,
-            criticalAngle: 13
+            zeroLiftAngle: this.instrument.airplane.references.aoaZeroLift,
+            criticalAngle: this.instrument.airplane.references.aoaCritical
         }, this.aoaModeSetting);
     }
 
