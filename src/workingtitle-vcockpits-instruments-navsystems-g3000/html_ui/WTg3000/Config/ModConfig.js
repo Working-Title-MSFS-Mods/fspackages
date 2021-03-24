@@ -52,9 +52,7 @@ WT_g3000_ModConfig.SECTIONS = [
         loadAS: {default: true, auto: true},
         loadOC: {default: true, auto: true}
     }},
-    {cfgName: "TBM 930 REFERENCES", objName: "tbm930References", options: {
-        aoaZeroLift: {default: -3.6, auto: true},
-        aoaStall: {default: 15, auto: true},
+    {cfgName: "TBM_930_REFERENCES", objName: "tbm930References", options: {
         vmo: {default: 266, auto: true},
         vr: {default: 90, auto: true},
         vy: {default: 124, auto: true},
@@ -62,11 +60,11 @@ WT_g3000_ModConfig.SECTIONS = [
         vapp: {default: 85, auto: true},
         vglide: {default: 120, auto: true},
         vle: {default: 178, auto: true},
-        vfe: {default: [178, 122], auto: true}
+        vfe: {default: [178, 122], auto: true},
+        aoaZeroLift: {default: -3.6, auto: true},
+        aoaCritical: {default: 15, auto: true}
     }},
-    {cfgName: "CITATION LONGITUDE REFERENCES", objName: "longitudeReferences", options: {
-        aoaZeroLift: {default: -3, auto: true},
-        aoaStall: {default: 13, auto: true},
+    {cfgName: "CITATION_LONGITUDE_REFERENCES", objName: "longitudeReferences", options: {
         vmo: {default: 325, auto: true},
         mmo: {default: 0.84, auto: true},
         crossover: {default: 29375, auto: true},
@@ -79,7 +77,9 @@ WT_g3000_ModConfig.SECTIONS = [
         vno: {default: 235, auto: true},
         mno: {default: 0.75, auto: true},
         vle: {default: 230, auto: true},
-        vfe: {default: [250, 230, 180], auto: true}
+        vfe: {default: [250, 230, 180], auto: true},
+        aoaZeroLift: {default: -3, auto: true},
+        aoaCritical: {default: 13, auto: true}
     }}
 ];
 
