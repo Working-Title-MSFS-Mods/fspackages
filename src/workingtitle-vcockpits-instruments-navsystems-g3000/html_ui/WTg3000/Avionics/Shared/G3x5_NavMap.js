@@ -2,6 +2,7 @@ class WT_G3x5_NavMap {
     /**
      * @param {String} instrumentID
      * @param {WT_PlayerAirplane} airplane
+     * @param {Number} altimeterIndex
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {{{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}} icaoSearchers
      * @param {WT_FlightPlanManager} flightPlanManager
@@ -12,10 +13,11 @@ class WT_G3x5_NavMap {
      * @param {WT_MapViewRoadLabelCollection} roadLabelData
      * @param {*} layerOptions
      */
-    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, airplane, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._airplane = airplane;
+        this._altimeterIndex = altimeterIndex;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
@@ -136,7 +138,7 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
-        this.view.addLayer(new WT_MapViewAltitudeInterceptLayer());
+        this.view.addLayer(new WT_MapViewAltitudeInterceptLayer(this._altimeterIndex));
         this.view.addLayer(new WT_MapViewTrackVectorLayer());
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
