@@ -105,10 +105,10 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         let minus = container.querySelector(`.minusDigit`);
         return {
             digit: container.querySelector(`.indicatedAltDigitGroup`),
-            top: new WT_CachedSVGTextElement(container.querySelector(`.topDigit tspan`)),
-            middle: new WT_CachedSVGTextElement(container.querySelector(`.middleDigit tspan`)),
-            bottom: new WT_CachedSVGTextElement(container.querySelector(`.bottomDigit tspan`)),
-            minus: minus ? new WT_CachedSVGTextElement(minus) : undefined
+            top: new WT_CachedElement(container.querySelector(`.topDigit tspan`)),
+            middle: new WT_CachedElement(container.querySelector(`.middleDigit tspan`)),
+            bottom: new WT_CachedElement(container.querySelector(`.bottomDigit tspan`)),
+            minus: minus ? new WT_CachedElement(minus) : undefined
         };
     }
 

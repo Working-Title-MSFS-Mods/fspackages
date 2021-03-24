@@ -11,12 +11,13 @@ class WT_CachedElement {
     constructor(element) {
         this._element = element;
         this._cachedHTML = element.innerHTML;
+        this._cachedText = element.textContent;
         this._attributes = new Map();
     }
 
     /**
+     * The DOM element wrapped by this wrapper.
      * @readonly
-     * @property {Element} element - the DOM element wrapped by this wrapper.
      * @type {Element}
      */
     get element() {
@@ -24,7 +25,7 @@ class WT_CachedElement {
     }
 
     /**
-     * @property {String} innerHTML - the innerHTML string of the DOM element wrapped by this wrapper.
+     * The innerHTML string of the DOM element wrapped by this wrapper.
      * @type {String}
      */
     get innerHTML() {
@@ -38,6 +39,23 @@ class WT_CachedElement {
 
         this._cachedHTML = html;
         this.element.innerHTML = html;
+    }
+
+    /**
+     * The text content of the DOM element wrapped by this wrapper.
+     * @type {String}
+     */
+    get textContent() {
+        return this._cachedText;
+    }
+
+    set textContent(text) {
+        if (text === this._cachedText) {
+            return;
+        }
+
+        this._cachedText = text;
+        this.element.textContent = text;
     }
 
     /**
@@ -64,29 +82,5 @@ class WT_CachedElement {
     setAttribute(name, value) {
         this._attributes.set(name, value);
         this.element.setAttribute(name, value);
-    }
-}
-
-class WT_CachedSVGTextElement extends WT_CachedElement {
-    /**
-     * @param {SVGTextElement} element
-     */
-    constructor(element) {
-        super(element);
-
-        this._cachedText = element.textContent;
-    }
-
-    get textContent() {
-        return this._cachedText;
-    }
-
-    set textContent(text) {
-        if (text === this._cachedText) {
-            return;
-        }
-
-        this._cachedText = text;
-        this.element.textContent = text;
     }
 }
