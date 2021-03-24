@@ -1062,7 +1062,15 @@ class WT_AirplaneAutopilot {
      * @returns {Boolean} whether Flight Level Change Mode is active.
      */
     isFLCActive() {
-        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean");
+        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether Airspeed Hold Mode is active.
+     * @returns {Boolean} whether Airspeed Hold Mode is active.
+     */
+    isAirspeedHoldActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") !== 0;
     }
 
     /**
@@ -1070,7 +1078,7 @@ class WT_AirplaneAutopilot {
      * @returns {Boolean} whether the current reference airspeed units is Mach.
      */
     isAirspeedReferenceMach() {
-        return SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") || SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MANAGED SPEED IN MACH", "Boolean");
+        return SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") !== 0 || SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean") !== 0 || SimVar.GetSimVarValue("AUTOPILOT MANAGED SPEED IN MACH", "Boolean") !== 0;
     }
 
     /**
@@ -1135,7 +1143,7 @@ class WT_AirplaneAutopilot {
      *                                      object will be created with units of feet.
      * @returns {WT_NumberUnit} - the autopilot's altitude hold setting.
      */
-    holdAltitude(reference) {
+    referenceAltitude(reference) {
         let value = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet");
         return reference ? reference.set(value, WT_Unit.FOOT) : WT_Unit.FOOT.createNumber(value);
     }
@@ -1147,7 +1155,7 @@ class WT_AirplaneAutopilot {
      * @returns {WT_NumberUnit} - the autopilot's selected altitude setting.
      */
     selectedAltitude(reference) {
-        let value = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
+        let value = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
         return reference ? reference.set(value, WT_Unit.FOOT) : WT_Unit.FOOT.createNumber(value);
     }
 
