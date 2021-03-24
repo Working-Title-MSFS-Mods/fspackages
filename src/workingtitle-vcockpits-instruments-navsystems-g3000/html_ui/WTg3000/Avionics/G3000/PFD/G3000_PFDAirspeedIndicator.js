@@ -112,9 +112,9 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
     _createIASDigitEntry(container) {
         return {
             digit: container.querySelector(`.digit`),
-            top: new WT_CachedSVGTextElement(container.querySelector(`.topDigit`)),
-            middle: new WT_CachedSVGTextElement(container.querySelector(`.middleDigit`)),
-            bottom: new WT_CachedSVGTextElement(container.querySelector(`.bottomDigit`))
+            top: new WT_CachedElement(container.querySelector(`.topDigit`)),
+            middle: new WT_CachedElement(container.querySelector(`.middleDigit`)),
+            bottom: new WT_CachedElement(container.querySelector(`.bottomDigit`))
         };
     }
 
