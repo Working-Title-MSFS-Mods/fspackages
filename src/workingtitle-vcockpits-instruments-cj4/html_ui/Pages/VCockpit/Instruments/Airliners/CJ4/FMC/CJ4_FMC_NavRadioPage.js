@@ -154,7 +154,11 @@ class CJ4_FMC_NavRadioPageOne {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                this._fmc._navigationService.showPage(CJ4_FMC_ComControlPage, 1);
+            } else {    
             this.enterVhfFreq(this._fmc.inOut, 1);
+            }
         };
 
         this._fmc.onRightInput[0] = () => {
@@ -264,13 +268,13 @@ class CJ4_FMC_NavRadioPage {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue]", "TUNE[blue]"],
             ["", "FLIGHT ID"],
-            ["", flightId + "[green]"],
-            ["LEFT ONLY[disabled]"],
+            ["", flightId + " " + "[green]"],
+            [" LEFT ONLY[disabled]"],
             ["<SELCAL[disabled]"],
             [""],
             [""],
             [" HF1[disabled]"],
-            ["10.0000[d-text disabled]   UV[s-text disabled]"],
+            ["10.0000[d-text disabled]  UV[s-text disabled]"],
             [""],
             ["↑"],
             ["HF1 SQ[disabled]3[d-text disabled]"],
@@ -512,13 +516,13 @@ class CJ4_FMC_NavRadioDispatch {
         fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue]", "TUNE[blue]"],
             ["", "FLIGHT ID"],
-            ["", flightId + "[green]"],
-            ["LEFT ONLY[disabled]"],
+            ["", flightId + " " + "[green]"],
+            [" LEFT ONLY[disabled]"],
             ["<SELCAL[disabled]"],
             [""],
             [""],
             [" HF1[disabled]"],
-            ["10.0000[d-text disabled]   UV[s-text disabled]"],
+            ["10.0000[d-text disabled]  UV[s-text disabled]"],
             [""],
             ["↑"],
             ["HF1 SQ[disabled]3[d-text disabled]"],
@@ -703,16 +707,20 @@ class CJ4_FMC_NavRadioDispatch {
         this._fmc.onLeftInput[4] = () => {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
-            this._fmc.clearUserInput();
-            if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
-                this._fmc.atc1Frequency;
-                SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
-                    this._fmc.requestCall(() => {
-                        this.update();
-                    });
-                });
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                CJ4_FMC_NavRadioPage.ShowPage4(this._fmc);
             } else {
-                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+                this._fmc.clearUserInput();
+                if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
+                    this._fmc.atc1Frequency = numValue;
+                    SimVar.SetSimVarValue("K:XPNDR_SET", "Frequency BCD16", Avionics.Utils.make_xpndr_bcd16(numValue)).then(() => {
+                        this._fmc.requestCall(() => {
+                            this.update();
+                        });
+                    });
+                } else {
+                    this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+                }
             }
         };
 
