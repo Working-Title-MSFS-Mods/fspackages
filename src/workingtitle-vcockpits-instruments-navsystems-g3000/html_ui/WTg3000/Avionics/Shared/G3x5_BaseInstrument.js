@@ -55,8 +55,17 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         return this._unitsController;
     }
 
+    _createAirplane() {
+        switch (WT_PlayerAirplane.getAircraftType()) {
+            case WT_PlayerAirplane.Type.TBM930:
+                return new WT_TBM930Airplane();
+            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                return new WT_CitationLongitudeAirplane();
+        }
+    }
+
     _initAirplane() {
-        this._airplane = new WT_PlayerAirplane();
+        this._airplane = this._createAirplane();
     }
 
     _initFlightPlanManager() {
