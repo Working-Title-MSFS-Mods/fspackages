@@ -1,15 +1,34 @@
 class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
     /**
      * @readonly
-     * @property {WT_G3x5_PFDBottomInfoHTMLElement} htmlElement
+     * @type {Number}
+     */
+    get altimeterIndex() {
+        return this._altimeterIndex;
+    }
+
+    /**
+     * @readonly
      * @type {WT_G3x5_PFDBottomInfoHTMLElement}
      */
     get htmlElement() {
         return this._htmlElement;
     }
 
+    _getAltimeterIndex() {
+        /*
+        if (this.instrument.instrumentXmlConfig) {
+            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
+            if (altimeterIndexElems.length > 0) {
+                return parseInt(altimeterIndexElems[0].textContent) + 1;
+            }
+        }
+        */
+        return 1;
+    }
+
     _createModel() {
-        return new WT_G3x5_PFDMinimumsModel(this.instrument, new WT_G3x5_Minimums());
+        return new WT_G3x5_PFDMinimumsModel(this.instrument, new WT_G3x5_Minimums(), this.altimeterIndex);
     }
 
     _createHTMLElement() {
@@ -21,8 +40,10 @@ class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
     }
 
     init(root) {
-        let container = root.querySelector(`#InstrumentsContainer`);
+        this._altimeterIndex = this._getAltimeterIndex();
         this._model = this._createModel();
+
+        let container = root.querySelector(`#InstrumentsContainer`);
         this._htmlElement = this._createHTMLElement();
         container.appendChild(this.htmlElement);
     }
@@ -37,10 +58,13 @@ class WT_G3x5_PFDMinimumsModel {
     /**
      * @param {WT_G3x5_PFD} instrument
      * @param {WT_G3x5_Minimums} minimums
+     * @param {Number} altimeterIndex
      */
-    constructor(instrument, minimums) {
+    constructor(instrument, minimums, altimeterIndex) {
         this._instrument = instrument;
         this._minimums = minimums;
+        this._altimeterIndex = altimeterIndex;
+
         this._mode = WT_G3x5_Minimums.Mode.NONE;
         this._altitude = WT_Unit.FOOT.createNumber(0);
         this._state = WT_G3x5_PFDMinimumsModel.State.UNKNOWN;
@@ -50,7 +74,6 @@ class WT_G3x5_PFDMinimumsModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFD} mode
      * @type {WT_G3x5_PFD}
      */
     get instrument() {
@@ -59,7 +82,6 @@ class WT_G3x5_PFDMinimumsModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_Minimums.Mode} mode
      * @type {WT_G3x5_Minimums.Mode}
      */
     get mode() {
@@ -68,7 +90,6 @@ class WT_G3x5_PFDMinimumsModel {
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} altitude
      * @type {WT_NumberUnitReadOnly}
      */
     get altitude() {
@@ -77,7 +98,6 @@ class WT_G3x5_PFDMinimumsModel {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDMinimumsModel.State} mode
      * @type {WT_G3x5_PFDMinimumsModel.State}
      */
     get state() {
@@ -101,7 +121,7 @@ class WT_G3x5_PFDMinimumsModel {
         let currentAlt = this._tempFoot;
         switch (this.mode) {
             case WT_G3x5_Minimums.Mode.BARO:
-                this.instrument.airplane.sensors.altitudeIndicated(currentAlt);
+                this.instrument.airplane.sensors.altitudeIndicated(this._altimeterIndex, currentAlt);
                 break;
             case WT_G3x5_Minimums.Mode.RADAR:
                 this.instrument.airplane.sensors.radarAltitude(currentAlt);
