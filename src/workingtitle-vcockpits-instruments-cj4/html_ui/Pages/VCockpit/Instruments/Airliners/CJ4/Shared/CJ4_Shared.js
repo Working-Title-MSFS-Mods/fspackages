@@ -2818,7 +2818,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 let todText = "TOD";
                                 let fpmText = "FPM";
                                 let nmText = "NM";
-                                let slashText = "/";
+                                let slashText = "/ ";
                                 let nmText2 = "NM";
                                 let slashText2 = "/";
                                 if (todDistance < .1) {
@@ -2830,7 +2830,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                                 } else {
                                     todText = "TOD";
                                     nmText = "NM";
-                                    slashText = "/";
+                                    slashText = "/ ";
                                 }
 
                                 if (descentAngle === 0) {
@@ -2853,7 +2853,7 @@ class CJ4_SystemFMS extends NavSystemElement {
                                     slashText2 = "";
                                 } else {
                                     nmText2 = "NM";
-                                    slashText2 = "/";
+                                    slashText2 = "/ ";
                                 }
 
                                 this._previousWaypointContainer // PREVIOUS ETA SHOULD BE  BLANK
