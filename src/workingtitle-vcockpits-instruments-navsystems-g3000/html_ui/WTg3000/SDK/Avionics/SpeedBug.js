@@ -1,40 +1,69 @@
+/**
+ * A collection of speed bugs.
+ */
 class WT_SpeedBugCollection {
+    /**
+     * @param {String} id - a unique ID to assign to the new collection.
+     */
     constructor(id) {
         this._bugs = [];
+        this._bugsReadOnly = new WT_ReadOnlyArray(this._bugs);
         this._controller = new WT_DataStoreController(id, null);
     }
 
     /**
+     * This collection's unique ID.
      * @readonly
-     * @property {String} id
      * @type {String}
      */
     get id() {
         return this._controller.id;
     }
 
+    /**
+     * A read-only array of the speed bugs in this collection.
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_SpeedBug>}
+     */
+    get array() {
+        return this._bugsReadOnly;
+    }
+
+    /**
+     * Counts the number of speed bugs in this collection.
+     * @returns {Number} the number of speed bugs in this collection.
+     */
     countBugs() {
         return this._bugs.length;
     }
 
+    /**
+     * Finds a speed bug in this collection by name.
+     * @param {String} name - the name of the speed bug for which to search.
+     * @returns {WT_SpeedBug} the
+     */
     getBug(name) {
         return this._bugs.find(bug => bug.name === name);
     }
 
+    /**
+     * Adds a speed bug to this collection.
+     * @param {String} name - the name of the new speed bug.
+     * @param {WT_NumberUnit} defaultSpeed - the default speed of the new speed bug.
+     */
     addBug(name, defaultSpeed) {
         this._bugs.push(new WT_SpeedBug(name, defaultSpeed, this._controller));
     }
-
-    forEachBug(func) {
-        this._bugs.forEach(func);
-    }
 }
 
+/**
+ * A speed bug.
+ */
 class WT_SpeedBug {
     /**
-     * @param {String} name
-     * @param {WT_NumberUnit} defaultSpeed
-     * @param {WT_DataStoreController} controller
+     * @param {String} name - the name of the new speed bug.
+     * @param {WT_NumberUnit} defaultSpeed - the default speed of the new speed bug.
+     * @param {WT_DataStoreController} controller - the data store controller to use for the new speed bug's settings.
      */
     constructor(name, defaultSpeed, controller) {
         this._name = name;
@@ -65,8 +94,8 @@ class WT_SpeedBug {
     }
 
     /**
+     * The name of this speed bug.
      * @readonly
-     * @property {String} name
      * @type {String}
      */
     get name() {
@@ -74,8 +103,8 @@ class WT_SpeedBug {
     }
 
     /**
+     * The default speed of this speed bug.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} defaultSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get defaultSpeed() {
@@ -83,8 +112,8 @@ class WT_SpeedBug {
     }
 
     /**
+     * The current set speed of this speed bug.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} speed
      * @type {WT_NumberUnitReadOnly}
      */
     get speed() {
@@ -92,18 +121,26 @@ class WT_SpeedBug {
     }
 
     /**
+     * Whether this speed bug should be shown.
      * @readonly
-     * @property {Boolean} show
      * @type {Boolean}
      */
     get show() {
         return this._show;
     }
 
+    /**
+     * Sets this speed bug's speed.
+     * @param {WT_NumberUnit} speed - the new speed.
+     */
     setSpeed(speed) {
         this._speedSetting.setValue(speed.asUnit(WT_Unit.KNOT));
     }
 
+    /**
+     * Sets whether this speed bug should be shown.
+     * @param {Boolean} value - whether this speed bug should be shown.
+     */
     setShow(value) {
         this._showSetting.setValue(value);
     }
