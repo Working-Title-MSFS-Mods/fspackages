@@ -3164,27 +3164,43 @@ class CJ4_MapContainer extends NavSystemElementContainer {
 
         this.lastTerrainUpdate += _deltaTime;
 
-        if (this.lastTerrainUpdate > 1000) {
+        if (this.lastTerrainUpdate > 2000) {
             const curve = new Avionics.Curve();
             const altitude = Math.min(Simplane.getAltitude(), 15000);
             const AGL = SimVar.GetSimVarValue("RADIO HEIGHT", "feet");
+            const gear = SimVar.GetSimVarValue("GEAR HANDLE POSITION", "boolean");
 
             curve.interpolationFunction = Avionics.CurveTool.StringColorRGBInterpolation;
             curve.add(0, '#000000');
-            if (AGL <= 1000) {
-                curve.add(altitude - 1, '#ffe017');             
-                curve.add(altitude - 250, '#ffe017');
-                curve.add(altitude - 500, '#000000');
-            } else if ((AGL > 1000) && (AGL <= 2000)) {
+            if (AGL <= 250) {
+                if (gear) {
+                curve.add(altitude, '#000000');
+                } else {
+                    curve.add(altitude - 250, '#000000');
+                }
+            } else if ((AGL <= 1000) && (AGL > 250)) {
+                curve.add(altitude - 1, '#ffe017');
+                if (gear) {
+                    curve.add(altitude - 250, '#000000');
+                } else {
+                    curve.add(altitude - 250, '#ffe017');
+                    curve.add(altitude - 500, '#000000');
+                }
+            } else if ((AGL > 1000) && (AGL <= 1500)) {
                 curve.add(altitude - 1, '#5cdb37');
-                curve.add(altitude - 500, '#5cdb37');
-                curve.add(altitude - 1000, '#000000');
-            } else if (AGL > 2000) {
+                if (gear) {
+                    curve.add(altitude - 499, '#5cdb37');
+                    curve.add(altitude - 500, '#000000');
+                } else {
+                    curve.add(altitude - 500, '#5cdb37');
+                    curve.add(altitude - 1000, '#000000');
+                }
+            } else if (AGL > 1500) {
                 curve.add(altitude - 1, '#5cdb37');
                 curve.add(altitude - 500, '#5cdb37');
                 curve.add(altitude - 1000, '#000000');
             }
-            curve.add(altitude, '#ffe017');
+            curve.add(altitude + 5 , '#ffe017');
             curve.add(altitude + 500, '#ffe017');
             curve.add(altitude + 1999, '#ffe017');
             curve.add(altitude + 2000, '#ff0000');
@@ -3378,6 +3394,17 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             if (this.isTerrainVisible || this.isGwxVisible) {
                 this.map.instrument.mapConfigId = 1;
                 this.map.instrument.bingMapRef = EBingReference.SEA;
+                
+                let mask = document.createElementNS(Avionics.SVG.NS, "rect");
+                mask.setAttribute('x', '0');
+                mask.setAttribute('y', '50.5%');
+                mask.setAttribute('height', '50%');
+                mask.setAttribute('width', '100%');
+                mask.setAttribute('fill', 'black');
+                
+                let instr = this.root.querySelector("#MapSVG");
+                let firstChild = instr.firstChild;
+                instr.insertBefore(mask, firstChild);
             }
             else {
                 this.map.instrument.mapConfigId = 0;
