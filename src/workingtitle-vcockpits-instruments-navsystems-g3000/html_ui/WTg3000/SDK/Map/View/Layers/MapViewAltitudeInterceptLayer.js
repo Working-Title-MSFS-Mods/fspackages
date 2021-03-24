@@ -4,15 +4,17 @@
  */
 class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
     /**
+     * @param {Number} altimeterIndex - the index of the altimeter from which to obtain indicated altitude.
      * @param {{getFacingAngle(state:WT_MapViewState):Number}} [facingAngleGetter] - defines the facing angle (in viewing window space) of the arc by implementing the
      *                                                                               getFacingAngle() method. If this argument is not supplied, by default the arc will
      *                                                                               face the current true ground track of the plane.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.navigation.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
+    constructor(altimeterIndex, facingAngleGetter = {getFacingAngle: state => state.model.airplane.navigation.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
+        this._altimeterIndex = altimeterIndex;
         this.facingAngleGetter = facingAngleGetter;
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewAltitudeInterceptLayer.OPTIONS_DEF);
@@ -145,7 +147,7 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this._arcLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
         let vSpeed = state.model.airplane.sensors.verticalSpeed(this._tempFPM).number;
-        let currentAlt = state.model.airplane.sensors.altitudeIndicated(this._tempFoot).number;
+        let currentAlt = state.model.airplane.sensors.altitudeIndicated(this._altimeterIndex, this._tempFoot).number;
         let targetAlt = state.model.airplane.autopilot.selectedAltitude(this._tempFoot).number;
         let deltaAlt = targetAlt - currentAlt;
         let time = deltaAlt / vSpeed / 60; // hours
