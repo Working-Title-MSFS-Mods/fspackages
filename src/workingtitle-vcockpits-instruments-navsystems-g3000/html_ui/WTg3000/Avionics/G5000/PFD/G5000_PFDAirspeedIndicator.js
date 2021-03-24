@@ -14,6 +14,18 @@ class WT_G5000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
         return new WT_G5000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._createSpeedBugCollection());
     }
 
+    _getYellowStripMin() {
+        let references = this.instrument.airplane.references;
+        let range = references.aoaCritical - references.aoaZeroLift;
+        return range * WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_NORM_MIN + references.aoaZeroLift;
+    }
+
+    _getRedStripMin() {
+        let references = this.instrument.airplane.references;
+        let range = references.aoaCritical - references.aoaZeroLift;
+        return range * WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_NORM_MIN + references.aoaZeroLift;
+    }
+
     _createHTMLElement() {
         let htmlElement = new WT_G5000_PFDAirspeedIndicatorHTMLElement();
         htmlElement.setContext({
@@ -29,8 +41,8 @@ class WT_G5000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
             machDisplayThreshold: WT_G5000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD,
             //redStrip: new WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition(this.instrument.airplane, [40, 40, 40, 40], [140, 128, 120, 104]),
             //yellowStrip: new WT_G5000_PFDAirspeedIndicatorFlapsStripDefinition(this.instrument.airplane, [140, 128, 120, 104], [148, 135, 127, 110]),
-            redStrip: new WT_G5000_PFDAirspeedIndicatorAoAStripDefinition(this._model, WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MIN, WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MAX),
-            yellowStrip: new WT_G5000_PFDAirspeedIndicatorAoAStripDefinition(this._model, WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MIN, WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MAX),
+            redStrip: new WT_G5000_PFDAirspeedIndicatorAoAStripDefinition(this._model, this._getRedStripMin(), Infinity),
+            yellowStrip: new WT_G5000_PFDAirspeedIndicatorAoAStripDefinition(this._model, this._getYellowStripMin(), this._getRedStripMin()),
             barberStrip: new WT_G5000_PFDAirspeedIndicatorBarberStripDefinition(this._model)
         });
         return htmlElement;
@@ -43,10 +55,8 @@ WT_G5000_PFDAirspeedIndicator.TAPE_MINOR_TICK_FACTOR = 1;
 WT_G5000_PFDAirspeedIndicator.TREND_LOOKAHEAD = 10;
 WT_G5000_PFDAirspeedIndicator.TREND_THRESHOLD = 1;
 WT_G5000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD = 0.4;
-WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MIN = 8.2;
-WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_MAX = 11.4;
-WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MIN = 11.4;
-WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_MAX = Infinity;
+WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_NORM_MIN = 0.7;
+WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_NORM_MIN = 0.9;
 
 class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
     constructor(airplane, speedBugCollection) {
