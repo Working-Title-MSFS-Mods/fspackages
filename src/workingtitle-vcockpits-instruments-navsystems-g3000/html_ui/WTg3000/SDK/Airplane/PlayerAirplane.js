@@ -1253,11 +1253,14 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
         this._vapp = data.vapp !== undefined ? WT_Unit.KNOT.createNumber(data.vapp) : undefined;
         this._vref = data.vref !== undefined ? WT_Unit.KNOT.createNumber(data.vref) : undefined;
         this._vglide = data.vglide !== undefined ? WT_Unit.KNOT.createNumber(data.vglide) : undefined;
+
+        this._aoaZeroLift = data.aoaZeroLift;
+        this._aoaCritical = data.aoaCritical;
     }
 
     /**
+     * The airplane's maximum indicated operating speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vmo - the airplane's maximum indicated operating speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vmo() {
@@ -1265,8 +1268,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's maximum mach operating speed.
      * @readonly
-     * @property {Number} Mmo - the airplane's maximum mach operating speed.
      * @type {Number}
      */
     get Mmo() {
@@ -1274,9 +1277,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's crossover pressure altitude, at which Vmo and Mmo are equal.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} crossover - the airplane's crossover pressure altitude, the pressure altitude
-     *                                               at which Vmo and Mmo are equal.
      * @type {WT_NumberUnitReadOnly}
      */
     get crossover() {
@@ -1284,8 +1286,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's decision speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} V1 - the airplane's decision speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get V1() {
@@ -1293,8 +1295,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's rotation speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vr - the airplane's rotation speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vr() {
@@ -1302,8 +1304,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's takeoff safety speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} V2 - the airplane's takeoff safety speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get V2() {
@@ -1311,8 +1313,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's final takeoff speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vfto - the airplane's final takeoff speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vfto() {
@@ -1320,8 +1322,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's best rate of climb speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vy - the airplane's best rate of climb speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vy() {
@@ -1329,8 +1331,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's best angle of climb speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vx - the airplane's best angle of climb speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vx() {
@@ -1338,8 +1340,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's approach speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vapp - the airplane's approach speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vapp() {
@@ -1347,8 +1349,8 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's reference landing speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vref - the airplane's reference landing speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vref() {
@@ -1356,11 +1358,29 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
+     * The airplane's best glide speed.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} Vglide - the airplane's best glide speed.
      * @type {WT_NumberUnitReadOnly}
      */
     get Vglide() {
         return this._vglide ? this._vglide.readonly() : undefined;
+    }
+
+    /**
+     * The airplane's zero-lift angle of attack.
+     * @readonly
+     * @type {Number}
+     */
+    get aoaZeroLift() {
+        return this._aoaZeroLift;
+    }
+
+    /**
+     * The airplane's critical (stall) angle of attack.
+     * @readonly
+     * @type {Number}
+     */
+    get aoaCritical() {
+        return this._aoaCritical;
     }
 }
