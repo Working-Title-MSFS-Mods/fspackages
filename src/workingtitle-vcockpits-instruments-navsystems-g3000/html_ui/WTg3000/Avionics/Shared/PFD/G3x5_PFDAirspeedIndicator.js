@@ -268,7 +268,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
 
     _initSpeedBugs() {
         this._speedBugEntries = [];
-        this._context.model.speedBugCollection.forEachBug(this._initSpeedBug.bind(this));
+        this._context.model.speedBugCollection.array.forEach(this._initSpeedBug.bind(this));
     }
 
     _updateFromContext() {
