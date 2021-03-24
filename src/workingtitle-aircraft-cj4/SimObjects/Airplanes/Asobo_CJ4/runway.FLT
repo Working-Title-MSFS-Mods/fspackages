@@ -113,7 +113,6 @@ WingLights=False
 CabinLights=False
 GlareshieldLights=False
 PedestalLights=False
-potentiometer.3=0.7
 
 [AutoPilot.0]
 MasterSwitch=False
@@ -174,3 +173,4 @@ WT_CJ4_FLC_ON=0
 WT_CJ4_VS_ON=0
 WT_CJ4_LNAV_MODE=0
 WT_CJ4_EMER_LIGHT_ARMED=1
+LIGHTING_Knob_Master=100
