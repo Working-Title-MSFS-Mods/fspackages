@@ -90,7 +90,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {WT_NumberUnitReadOnly}
      */
     get refSpeed() {
-        return (this._airplane.autopilot.isFLCActive() && !this._airplane.autopilot.isAirspeedReferenceMach()) ? this._refSpeed.readonly() : null;
+        return ((this._airplane.autopilot.isFLCActive() || this._airplane.autopilot.isAirspeedHoldActive()) && !this._airplane.autopilot.isAirspeedReferenceMach()) ? this._refSpeed.readonly() : null;
     }
 
     /**
@@ -99,7 +99,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {WT_NumberUnitReadOnly}
      */
     get refMach() {
-        return (this._airplane.autopilot.isFLCActive() && this._airplane.autopilot.isAirspeedReferenceMach()) ? this._refMach : null;
+        return ((this._airplane.autopilot.isFLCActive() || this._airplane.autopilot.isAirspeedHoldActive()) && this._airplane.autopilot.isAirspeedReferenceMach()) ? this._refMach : null;
     }
 
     /**
