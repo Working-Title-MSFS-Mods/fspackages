@@ -162,7 +162,6 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @property {String} instrumentID
      * @type {String}
      */
     get instrumentID() {
@@ -171,16 +170,6 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @property {String} instrumentID
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_G3x5NavMap} navMap
      * @type {WT_G3x5_NavMap}
      */
     get navMap() {
@@ -189,7 +178,6 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDInsetMapShowSetting} showSetting
      * @type {WT_G3x5_PFDInsetMapShowSetting}
      */
     get showSetting() {
@@ -201,13 +189,26 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
         this._mapContainer.style.display = "none";
     }
 
+    _getAltimeterIndex() {
+        /*
+        if (this.instrument.instrumentXmlConfig) {
+            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
+            if (altimeterIndexElems.length > 0) {
+                return parseInt(altimeterIndexElems[0].textContent) + 1;
+            }
+        }
+        */
+        return 1;
+    }
+
     _initNavMap(root) {
-        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this._altimeterIndex, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 
     init(root) {
         this._defineChildren(root);
+        this._altimeterIndex = this._getAltimeterIndex();
         this._initNavMap(root);
         this._setEnabled(this.showSetting.getValue());
         this._isInit = true;
