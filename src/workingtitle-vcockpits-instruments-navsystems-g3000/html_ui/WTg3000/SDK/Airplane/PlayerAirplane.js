@@ -48,14 +48,7 @@ class WT_PlayerAirplane {
     }
 
     _createControls() {
-        switch (this.type) {
-            case WT_PlayerAirplane.Type.TBM930:
-                return new WT_TBM930Controls(this);
-            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                return new WT_CitationLongitudeControls(this);
-            default:
-                return null;
-        }
+        return new WT_AirplaneControls(this);
     }
 
     _createAutopilot() {
@@ -63,19 +56,7 @@ class WT_PlayerAirplane {
     }
 
     _createReferences() {
-        let cfg = WT_g3000_ModConfig.INSTANCE;
-        let data;
-        switch (this.type) {
-            case WT_PlayerAirplane.Type.TBM930:
-                data = cfg.tbm930References;
-                break;
-            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                data = cfg.longitudeReferences;
-                break;
-            default:
-                data = {};
-        }
-        return new WT_AirplaneReferences(this, data);
+        return undefined;
     }
 
     /**
@@ -1028,29 +1009,6 @@ WT_AirplaneControls.GearPosition = {
     UNKNOWN: 0,
     UP: 1,
     DOWN: 2
-}
-
-class WT_TBM930Controls extends WT_AirplaneControls {
-}
-/**
- * @enum {Number}
- */
-WT_TBM930Controls.FlapsPosition = {
-    UP: 0,
-    TAKEOFF: 1,
-    LANDING: 2
-}
-
-class WT_CitationLongitudeControls extends WT_AirplaneControls {
-}
-/**
- * @enum {Number}
- */
- WT_CitationLongitudeControls.FlapsPosition = {
-    UP: 0,
-    FLAPS_1: 1,
-    FLAPS_2: 2,
-    FLAPS_3: 3
 }
 
 class WT_AirplaneAutopilot {
