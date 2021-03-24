@@ -22,8 +22,8 @@ class WT_ExponentialSmoother {
     }
 
     /**
+     * This smoother's smoothing constant.
      * @readonly
-     * @property {Number} constant - this smoother's smoothing constant.
      * @type {Number}
      */
     get constant() {
@@ -31,9 +31,8 @@ class WT_ExponentialSmoother {
     }
 
     /**
+     * The elapsed time threshold above which this smoother will not smooth a new raw value.
      * @readonly
-     * @property {Number} dtThreshold - the elapsed time threshold above which this smoother will not smooth a new raw
-     *                                  value.
      *
      * @type {Number}
      */

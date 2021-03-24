@@ -1,7 +1,11 @@
+/**
+ * A unit of navigational bearing, referenced to either magnetic or true north.
+ */
 class WT_NavAngleUnit extends WT_Unit {
     /**
-     * @param {Boolean} isMagnetic
-     * @param {{lat:Number, long:Number}} [location]
+     * @param {Boolean} isMagnetic - whether the new unit is referenced to magnetic north.
+     * @param {{lat:Number, long:Number}} [location] - the initial reference location of the new unit. Equal to 0 N, 0E
+     *                                                 by default.
      */
     constructor(isMagnetic, location) {
         super(isMagnetic ? "degree" : "degree true", isMagnetic ? "degrees" : "degrees true", isMagnetic ? "°" : "°ᵀ");
@@ -15,8 +19,8 @@ class WT_NavAngleUnit extends WT_Unit {
     }
 
     /**
+     * Whether this unit is referenced to magnetic north.
      * @readonly
-     * @property {Boolean} isMagnetic
      * @type {Boolean}
      */
     get isMagnetic() {
@@ -24,8 +28,8 @@ class WT_NavAngleUnit extends WT_Unit {
     }
 
     /**
+     * The reference geographic location of this unit.
      * @readonly
-     * @property {WT_GeoPointReadOnly} location
      * @type {WT_GeoPointReadOnly}
      */
     get location() {
