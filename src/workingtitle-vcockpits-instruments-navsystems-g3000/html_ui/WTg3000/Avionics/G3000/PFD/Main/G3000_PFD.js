@@ -104,6 +104,10 @@ class WT_G3000_PFDSoftKey {
 }
 
 class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
+    _createAutopilotDisplay() {
+        return new WT_G3000_PFDAutopilotDisplay();
+    }
+
     _createAirspeedIndicator() {
         return new WT_G3000_PFDAirspeedIndicator();
     }

@@ -256,6 +256,13 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
 
     /**
      *
+     * @returns {WT_G3x5_PFDAutopilotDisplay}
+     */
+    _createAutopilotDisplay() {
+    }
+
+    /**
+     *
      * @returns {WT_G3x5_PFDAirspeedIndicator}
      */
     _createAirspeedIndicator() {
@@ -300,6 +307,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
 
     _createElements() {
         return [
+            this._autopilotDisplay = this._createAutopilotDisplay(),
             this._attitude = new AS3000_PFD_Attitude("PFD"),
             this._airspeed = this._createAirspeedIndicator(),
             this._altimeter = this._createAltimeter(),
@@ -310,7 +318,6 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
             this._mapInstrument = new MapInstrumentElement(),
-            new PFD_AutopilotDisplay(),
             this._radarAltimeter = this._createRadarAltimeter(),
             new PFD_MarkerBeacon()
         ];

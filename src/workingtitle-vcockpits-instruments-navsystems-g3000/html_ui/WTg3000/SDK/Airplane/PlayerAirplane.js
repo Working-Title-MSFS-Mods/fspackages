@@ -836,7 +836,7 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
      * @returns {Boolean} whether the tuned navigation station is equipped with DME.
      */
     hasDME() {
-        return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "Bool") !== 0;
+        return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "Boolean") !== 0;
     }
 
     /**
@@ -856,11 +856,19 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
     }
 
     /**
+     * Checks whether the tuned navigation station is equipped with a localizer.
+     * @returns {Boolean} whether the tuned navigation station is equipped with a localizer.
+     */
+    hasLOC() {
+        return SimVar.GetSimVarValue(`NAV HAS LOCALIZER:${this.index}`, "Boolean") !== 0;
+    }
+
+    /**
      * Checks whether the tuned navigation station is equipped with a glideslope.
      * @returns {Boolean} whether the tuned navigation station is equipped with a glideslope.
      */
     hasGS() {
-        return SimVar.GetSimVarValue(`NAV HAS GLIDE SLOPE:${this.index}`, "Bool") !== 0;
+        return SimVar.GetSimVarValue(`NAV HAS GLIDE SLOPE:${this.index}`, "Boolean") !== 0;
     }
 
     /**
@@ -1021,6 +1029,54 @@ class WT_AirplaneAutopilot {
     }
 
     /**
+     * Checks whether the flight director is active.
+     * @returns {Boolean} whether the flight director is active.
+     */
+    isFlightDirectorActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether the yaw damper is active.
+     * @returns {Boolean} whether the yaw damper is active.
+     */
+    isYawDamperActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether Wing Leveler Mode is active.
+     * @returns {Boolean} whether Wing Leveler Mode is active.
+     */
+    isWingLevelerActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether Bank Hold Mode is active.
+     * @returns {Boolean} whether Bank Hold Mode is active.
+     */
+    isBankHoldActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT BANK HOLD", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether Heading Hold Mode is active.
+     * @returns {Boolean} whether Heading Hold Mode is active.
+     */
+    isHeadingHoldActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether Lateral Navigation Mode is active.
+     * @returns {Boolean} whether Lateral Navigation Mode is active.
+     */
+    isNAVActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") !== 0 || this.isApproachActive();
+    }
+
+    /**
      * Gets the current navigation source of the autopilot.
      * @returns {WT_AirplaneAutopilot.NavSource} the current navigation souce of the autopilot.
      */
@@ -1050,15 +1106,15 @@ class WT_AirplaneAutopilot {
     }
 
     /**
-     * Checks whether Pitch Hold Mode (PIT) is active.
+     * Checks whether Pitch Hold Mode is active.
      * @returns {Boolean} whether Pitch Hold Mode is active.
      */
     isPitchHoldActive() {
-        return SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") === 1;
+        return SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") !== 0;
     }
 
     /**
-     * Checks whether Flight Level Change Mode (FLC) is active.
+     * Checks whether Flight Level Change Mode is active.
      * @returns {Boolean} whether Flight Level Change Mode is active.
      */
     isFLCActive() {
@@ -1077,20 +1133,20 @@ class WT_AirplaneAutopilot {
      * Checks whether the current reference airspeed units is Mach.
      * @returns {Boolean} whether the current reference airspeed units is Mach.
      */
-    isAirspeedReferenceMach() {
+    isSpeedReferenceMach() {
         return SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") !== 0 || SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean") !== 0 || SimVar.GetSimVarValue("AUTOPILOT MANAGED SPEED IN MACH", "Boolean") !== 0;
     }
 
     /**
-     * Checks whether Vertical Speed Mode (VS) is active.
+     * Checks whether Vertical Speed Mode is active.
      * @returns {Boolean} whether Vertical Speed Mode is active.
      */
     isVSActive() {
-        return SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") === 1;
+        return SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Boolean") !== 0;
     }
 
     /**
-     * Checks whether Altitude Hold (ALT) mode is active.
+     * Checks whether Altitude Hold mode is active.
      * @returns {Boolean} whether Altitude Hold Mode is active.
      */
     isAltHoldActive() {
@@ -1098,7 +1154,7 @@ class WT_AirplaneAutopilot {
     }
 
     /**
-     * Checks whether Altitude Hold Mode (ALT) is armed.
+     * Checks whether Altitude Hold Mode is armed.
      * @returns {Boolean} whether Altitude Hold Mode is armed.
      */
     isAltHoldArmed() {
@@ -1106,7 +1162,7 @@ class WT_AirplaneAutopilot {
     }
 
     /**
-     * Checks whether Selected Altitude Capture Mode (ALTS) is active.
+     * Checks whether Selected Altitude Capture Mode is active.
      * @returns {Boolean} whether Selected Altitude Capture Mode is active.
      */
     isALTSActive() {
@@ -1114,7 +1170,7 @@ class WT_AirplaneAutopilot {
     }
 
     /**
-     * Checks whether Selected Altitude Capture Mode (ALTS) is armed.
+     * Checks whether Selected Altitude Capture Mode is armed.
      * @returns {Boolean} whether Selected Altitude Capture Mode is armed.
      */
     isALTSArmed() {
@@ -1135,6 +1191,22 @@ class WT_AirplaneAutopilot {
      */
     isApproachCaptured() {
         return SimVar.GetSimVarValue("AUTOPILOT APPROACH CAPTURED", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether glideslope capture is armed.
+     * @returns {Boolean} whether glideslope capture is armed.
+     */
+    isGSArmed() {
+        return this.isApproachActive() && SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ARM", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether the autopilot has captured a glideslope.
+     * @returns {Boolean} whether the autopilot has captured a glideslope.
+     */
+    isGSCaptured() {
+        return SimVar.GetSimVarValue("AUTOPILOT GLIDESLOPE ACTIVE", "Boolean") !== 0;
     }
 
     /**
