@@ -1019,21 +1019,32 @@ WT_AirplaneControls.GearPosition = {
     DOWN: 2
 }
 
-class WT_AirplaneAutopilot {
+class WT_AirplaneAutopilot extends WT_AirplaneComponent {
+    constructor(airplane) {
+        super(airplane);
+
+        this._flightDirector = this._createFlightDirector();
+    }
+
+    _createFlightDirector() {
+        return new WT_AirplaneFlightDirector();
+    }
+
+    /**
+     * The flight director.
+     * @readonly
+     * @type {WT_AirplaneFlightDirector}
+     */
+    get flightDirector() {
+        return this._flightDirector;
+    }
+
     /**
      * Checks whether the autopilot is active.
      * @returns {Boolean} whether the autopilot is active.
      */
-    isActive() {
+    isMasterActive() {
         return SimVar.GetSimVarValue("AUTOPILOT MASTER", "Boolean") === 1;
-    }
-
-    /**
-     * Checks whether the flight director is active.
-     * @returns {Boolean} whether the flight director is active.
-     */
-    isFlightDirectorActive() {
-        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") !== 0;
     }
 
     /**
@@ -1270,6 +1281,16 @@ WT_AirplaneAutopilot.NavSource = {
     NAV2: 2,
     NAV3: 3
 };
+
+class WT_AirplaneFlightDirector {
+    /**
+     * Checks whether the flight director is active.
+     * @returns {Boolean} whether the flight director is active.
+     */
+    isActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean") !== 0;
+    }
+}
 
 class WT_AirplaneReferences extends WT_AirplaneComponent {
     constructor(airplane, data) {
