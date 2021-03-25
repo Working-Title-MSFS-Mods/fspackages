@@ -513,7 +513,11 @@ class CJ4NavModeSelector {
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", this.isVNAVOn ? 1 : 0);
 
       if (!this.isVNAVOn) {
+        if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV) {
+          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+        } else {
         SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+        }
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {
           this.engagePitch();

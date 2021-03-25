@@ -532,7 +532,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     toggleDCLTR() {
-        if (this.innerMap.isEnabled()) {
+        if (this.innerMap.showSetting.getValue()) {
             let currentValue = this.innerMap.navMap.dcltrSetting.getValue();
             let newValue = (currentValue + 1) % WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS.length;
             this.innerMap.navMap.dcltrSetting.setValue(newValue);
@@ -544,7 +544,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     toggleTerrain() {
-        if (this.innerMap.isEnabled()) {
+        if (this.innerMap.showSetting.getValue()) {
             let currentValue = this.innerMap.navMap.terrainSetting.getValue();
             let newValue = (currentValue + 1) % WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
             this.innerMap.navMap.terrainSetting.setValue(newValue);
@@ -556,7 +556,7 @@ class AS3000_PFD_MainPage extends NavSystemPage {
     }
 
     toggleWX() {
-        if (this.innerMap.isEnabled()) {
+        if (this.innerMap.showSetting.getValue()) {
             this.innerMap.navMap.nexradShowSetting.setValue(!this.innerMap.navMap.nexradShowSetting.getValue());
         }
     }

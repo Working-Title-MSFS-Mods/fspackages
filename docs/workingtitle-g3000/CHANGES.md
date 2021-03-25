@@ -1,5 +1,10 @@
 # Changelog
 
+### v0.4.2
+**Fixes**
+- \[Compatibility\] Now compatible with game patch 1.14.5.0 (Sim Update 3).
+- \[PFD\] PFD softkey functions related to changing inset map settings now work as intended.
+
 ### v0.4.1
 **New Features**
 - \[General\] Added mod .cfg file. It can be found at `workingtitle-g3000\html_ui\WTg3000.cfg`.

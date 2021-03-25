@@ -899,8 +899,10 @@ export class FlightPlanManager {
    */
   public async setDepartureRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
+    const airportInfo = currentFlightPlan.originAirfield.infos as AirportInfo;
+    const runwayTransition = airportInfo.departures[currentFlightPlan.procedureDetails.departureIndex].runwayTransitions[index];
 
-    if (currentFlightPlan.procedureDetails.departureRunwayIndex !== index) {
+    if (currentFlightPlan.procedureDetails.departureRunwayIndex !== index && !runwayTransition) {
       currentFlightPlan.procedureDetails.departureRunwayIndex = index;
       await currentFlightPlan.buildDeparture();
 

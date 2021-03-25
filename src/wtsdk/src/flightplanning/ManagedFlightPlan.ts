@@ -565,7 +565,9 @@ export class ManagedFlightPlan {
 
     if (departureIndex !== -1 && runwayIndex !== -1) {
       const runwayTransition = airportInfo.departures[departureIndex].runwayTransitions[runwayIndex];
-      legs.push(...runwayTransition.legs);
+      if (!runwayTransition) { 
+        legs.push(...runwayTransition.legs);
+      }
     }
 
     if (departureIndex !== -1) {

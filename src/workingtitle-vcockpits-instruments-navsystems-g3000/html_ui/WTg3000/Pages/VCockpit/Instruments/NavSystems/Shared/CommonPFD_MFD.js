@@ -72,9 +72,17 @@ class PFD_Airspeed extends NavSystemElement {
             this.airspeedElement.setAttribute("true-airspeed", trueSpeed.toString());
             this.lastTrueSpeed = trueSpeed;
         }
-        if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") || this.alwaysDisplaySpeed) {
-            this.airspeedElement.setAttribute("display-ref-speed", "True");
-            this.airspeedElement.setAttribute("ref-speed", SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"));
+        if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") || this.alwaysDisplaySpeed) {
+            if (SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MANAGED SPEED IN MACH", "Boolean")) {
+                Avionics.Utils.diffAndSetAttribute(this.airspeedElement, "display-ref-speed", "Mach");
+                let refMach = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
+                Avionics.Utils.diffAndSetAttribute(this.airspeedElement, "ref-speed-mach", "M" + (refMach < 1 ? refMach.toFixed(3).slice(1) : refMach.toFixed(3)));
+                Avionics.Utils.diffAndSetAttribute(this.airspeedElement, "ref-speed", SimVar.GetGameVarValue("FROM MACH TO KIAS", "number", refMach));
+            }
+            else {
+                this.airspeedElement.setAttribute("display-ref-speed", "True");
+                this.airspeedElement.setAttribute("ref-speed", fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0));
+            }
         }
         else {
             this.airspeedElement.setAttribute("display-ref-speed", "False");
@@ -97,11 +105,25 @@ class PFD_Airspeed extends NavSystemElement {
         this.acceleration = ((Math.max((smoothFactor - _deltaTime), 0) * this.acceleration) + (Math.min(_deltaTime, smoothFactor) * instantAcceleration)) / smoothFactor;
         this.lastSpeed = indicatedSpeed;
         this.airspeedElement.setAttribute("airspeed-trend", (this.acceleration).toString());
+        let speedMach = -1;
         let crossSpeed = SimVar.GetGameVarValue("AIRCRAFT CROSSOVER SPEED", "Knots");
-        let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
-        let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
         if (crossSpeed != 0) {
+            let cruiseMach = SimVar.GetGameVarValue("AIRCRAFT CRUISE MACH", "mach");
+            let crossAltitude = Simplane.getCrossoverAltitude(crossSpeed, cruiseMach);
+            let crossSpeedFactor = Simplane.getCrossoverSpeedFactor(this.maxSpeed, cruiseMach);
             this.airspeedElement.setAttribute("max-speed", (Math.min(crossSpeedFactor, 1) * this.maxSpeed).toString());
+            let mach = Simplane.getMachSpeed();
+            let altitude = Simplane.getAltitude();
+            if (mach >= cruiseMach && altitude >= crossAltitude) {
+                speedMach = mach;
+            }
+        }
+        if (speedMach > 0) {
+            Avionics.Utils.diffAndSetAttribute(this.airspeedElement, "display-mach", "True");
+            Avionics.Utils.diffAndSetAttribute(this.airspeedElement, "mach-speed", "M " + (speedMach < 1 ? speedMach.toFixed(3).slice(1) : speedMach.toFixed(3)));
+        }
+        else {
+            Avionics.Utils.diffAndSetAttribute(this.airspeedElement, "display-mach", "False");
         }
     }
     onExit() {
@@ -218,7 +240,7 @@ class PFD_Altimeter extends NavSystemElement {
             Avionics.Utils.diffAndSetAttribute(this.altimeterElement, "reference-altitude", "----");
             Avionics.Utils.diffAndSetAttribute(this.altimeterElement, "selected-altitude-alert", "BlueText");
         }
-        let cdiSource = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number");
+        let cdiSource = SimVar.GetSimVarValue("GPS DRIVES NAV1", "Bool") ? 3 : Simplane.getAutoPilotSelectedNav();
         switch (cdiSource) {
             case 1:
                 if (SimVar.GetSimVarValue("NAV HAS GLIDE SLOPE:1", "Bool")) {
@@ -239,7 +261,7 @@ class PFD_Altimeter extends NavSystemElement {
                 }
                 break;
             case 3:
-                if (this.gps.currFlightPlanManager.isActiveApproach() && Simplane.getAutoPilotApproachType() == 10) {
+                if (this.gps.currFlightPlanManager.isActiveApproach() && Simplane.getAutoPilotApproachType() == ApproachType.APPROACH_TYPE_RNAV) {
                     this.altimeterElement.setAttribute("vertical-deviation-mode", "GP");
                     this.altimeterElement.setAttribute("vertical-deviation-value", (SimVar.GetSimVarValue("GPS VERTICAL ERROR", "meters") / 150).toString());
                 }
@@ -419,17 +441,18 @@ class PFD_Compass extends NavSystemElement {
         else {
             this.ifTimer -= this.gps.deltaTime;
         }
-        if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == 4) {
+        if (this.gps.currFlightPlanManager.isActiveApproach() && this.gps.currFlightPlanManager.getActiveWaypointIndex() != -1 && Simplane.getAutoPilotApproachType() == ApproachType.APPROACH_TYPE_ILS) {
             let approachWPNb = this.gps.currFlightPlanManager.getApproachWaypoints().length;
             let activeWP = this.gps.currFlightPlanManager.getActiveWaypoint();
             if (((this.ifIcao && this.ifIcao != "" && activeWP && this.ifIcao == activeWP.icao) || (approachWPNb > 0 && this.gps.currFlightPlanManager.getActiveWaypointIndex() >= approachWPNb - 2)) && !this.hasLocBeenEntered) {
-                    let approachFrequency = this.gps.currFlightPlanManager.getApproachNavFrequency();
-                    if (!isNaN(approachFrequency)) {
-                        SimVar.SetSimVarValue("K:NAV1_RADIO_SWAP", "number", 0);
-                        SimVar.SetSimVarValue("K:NAV1_RADIO_SET_HZ", "hertz", approachFrequency * 1000000);
-                    }
-                    this.hasLocBeenEntered = true;
-            } else {
+                let approachFrequency = this.gps.currFlightPlanManager.getApproachNavFrequency();
+                if (!isNaN(approachFrequency)) {
+                    SimVar.SetSimVarValue("K:NAV1_RADIO_SWAP", "number", 0);
+                    SimVar.SetSimVarValue("K:NAV1_RADIO_SET_HZ", "hertz", approachFrequency * 1000000);
+                }
+                this.hasLocBeenEntered = true;
+            }
+            else {
                 let approachWP;
                 let wpIndex = this.gps.currFlightPlanManager.getActiveWaypointIndex() - 1;
                 if (wpIndex >= 0 && wpIndex < approachWPNb) {
@@ -439,7 +462,7 @@ class PFD_Compass extends NavSystemElement {
                     if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "boolean")) {
                         SimVar.SetSimVarValue("K:TOGGLE_GPS_DRIVES_NAV1", "number", 0);
                     }
-                    SimVar.SetSimVarValue("K:AP_NAV_SELECT_SET", "number", 1);
+                    Simplane.setAutoPilotSelectedNav(1);
                     this.hasLocBeenActivated = true;
                 }
             }
@@ -554,12 +577,7 @@ class PFD_NavStatus extends NavSystemElement {
                     this.legSymbol = 2;
                 }
             }
-
-            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1);
-            if (rawCurrentLegDistance.indexOf(".") == -1) {
-                rawCurrentLegDistance = rawCurrentLegDistance + ".0"
-            }
-            var currentLegDistance = rawCurrentLegDistance + "NM";
+            var currentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1) + "NM";
             if (this.currentLegDistanceValue != currentLegDistance) {
                 if (this.currentLegDistance)
                     this.currentLegDistance.textContent = currentLegDistance;
@@ -1107,19 +1125,17 @@ class AS1000_Alerts extends NavSystemElement {
 class PFD_WindData extends NavSystemElement {
     constructor() {
         super(...arguments);
+        this.mode = 0;
     }
-
     init(root) {
         this.svg = root;
+        SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
     }
-
     getCurrentMode() {
         return this.mode;
     }
-
     onEnter() {
     }
-
     onUpdate(_deltaTime) {
         let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "boolean");
         if (onGround) {
@@ -1141,10 +1157,8 @@ class PFD_WindData extends NavSystemElement {
             }
         }
     }
-
     onExit() {
     }
-
     onEvent(_event) {
         switch (_event) {
             case "SoftKeys_Wind_Off":
@@ -1164,6 +1178,7 @@ class PFD_WindData extends NavSystemElement {
                 this.mode = 3;
                 break;
         }
+        SimVar.SetSimVarValue("L:Glasscockpit_Wind_Mode", "number", this.mode);
     }
 }
 class MFD_WindData extends NavSystemElement {
@@ -1178,24 +1193,22 @@ class MFD_WindData extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        let windSpd = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
-        if (SimVar.GetSimVarValue("SIM ON GROUND", "boolean") || windSpd < 1) {
-            this.svg.setAttribute("wind-mode", "0");
-        } else {
-            let windDir = SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
-            let planeHdg = this.gps.trackup ? SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree") : 0;
-            let adjustedDir = ((windDir + 180) % 360 - planeHdg).toString();
-
-            if (adjustedDir != this.windValue) {
-                this.svg.setAttribute("wind-direction", adjustedDir);
-                this.windValue = adjustedDir;
+        let windStrength = SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots");
+        if (windStrength >= 1) {
+            var wind = fastToFixed((SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree") + 180) % 360 - (this.relatedMap ? this.relatedMap.getMapUpDirection() : 0), 0);
+            if (wind != this.windValue) {
+                this.svg.setAttribute("wind-direction", wind);
+                this.windValue = wind;
             }
-            var strength = fastToFixed(windSpd, 0);
+            var strength = fastToFixed(windStrength, 0);
             if (strength != this.strengthValue) {
                 this.svg.setAttribute("wind-strength", strength);
                 this.strengthValue = strength;
             }
             this.svg.setAttribute("wind-mode", "2");
+        }
+        else {
+            this.svg.setAttribute("wind-mode", "4");
         }
     }
     onExit() {
@@ -1375,29 +1388,7 @@ class PFD_MarkerBeacon extends NavSystemElement {
     onEvent(_event) {
     }
 }
-class MFD_MapElement extends MapInstrumentElement {
-    constructor() {
-        super(...arguments);
-    }
-    init(_root) {
-        super.init(_root);
-        this.trackUp = false;
-    }
-    onUpdate(_deltaTime) {
-        super.onUpdate(_deltaTime);
-        if (SimVar.GetSimVarValue("L:GPS_TRACK_UP", "boolean") != this.trackUp) {
-            this.trackUp = !this.trackUp;
-            this.instrument.rotateWithPlane(this.trackUp);
-            this.instrument.roadNetwork._lastRange = -1; // force canvas to redraw (SvgRoadNetworkElement.js:297)
-            let orientationEl = document.querySelector("#MapOrientation");
-            if (orientationEl) {
-                orientationEl.innerText = this.trackUp ? "TRACK UP" : "NORTH UP";
-            }
-        }
-    }
-}
-
-class PFD_InnerMap extends MFD_MapElement {
+class PFD_InnerMap extends MapInstrumentElement {
     constructor() {
         super(...arguments);
         this.gpsWasInReversionaryMode = false;
@@ -1495,8 +1486,9 @@ class PFD_AutopilotDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
-            if (SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean")) {
-                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 3));
+            if (SimVar.GetSimVarValue("L:XMLVAR_AirSpeedIsInMach", "Boolean") || SimVar.GetSimVarValue("AUTOPILOT MANAGED SPEED IN MACH", "Boolean")) {
+                let refMach = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
+                Avionics.Utils.diffAndSet(this.AP_ModeReference, "M " + (refMach < 1 ? refMach.toFixed(3).slice(1) : refMach.toFixed(3)));
             }
             else {
                 Avionics.Utils.diffAndSet(this.AP_ModeReference, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT AIRSPEED HOLD VAR", "knots"), 0) + "KT");
@@ -1504,7 +1496,8 @@ class PFD_AutopilotDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT MACH HOLD", "Boolean")) {
             Avionics.Utils.diffAndSet(this.AP_VerticalActive, "FLC");
-            Avionics.Utils.diffAndSet(this.AP_ModeReference, "M" + fastToFixed(SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach"), 3));
+            let refMach = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
+            Avionics.Utils.diffAndSet(this.AP_ModeReference, "M " + (refMach < 1 ? refMach.toFixed(3).slice(1) : refMach.toFixed(3)));
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean")) {
             if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE ARM", "Boolean")) {
@@ -1565,10 +1558,10 @@ class PFD_AutopilotDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
             if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-                Avionics.Utils.diffAndSet(this.AP_LateralActive, "FMS");
+                Avionics.Utils.diffAndSet(this.AP_LateralActive, "GPS");
             }
             else {
-                if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
+                if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + Simplane.getAutoPilotSelectedNav(), "Boolean")) {
                     Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC");
                 }
                 else {
@@ -1581,10 +1574,10 @@ class PFD_AutopilotDisplay extends NavSystemElement {
         }
         else if (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean")) {
             if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-                Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+                Avionics.Utils.diffAndSet(this.AP_LateralArmed, "GPS");
             }
             else {
-                if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
+                if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + Simplane.getAutoPilotSelectedNav(), "Boolean")) {
                     Avionics.Utils.diffAndSet(this.AP_LateralActive, "LOC");
                 }
                 else {
@@ -1598,10 +1591,10 @@ class PFD_AutopilotDisplay extends NavSystemElement {
         if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") || SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool")) {
             if (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean")) {
                 if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-                    Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+                    Avionics.Utils.diffAndSet(this.AP_LateralArmed, "GPS");
                 }
                 else {
-                    if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
+                    if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + Simplane.getAutoPilotSelectedNav(), "Boolean")) {
                         Avionics.Utils.diffAndSet(this.AP_LateralArmed, "LOC");
                     }
                     else {
@@ -1614,10 +1607,10 @@ class PFD_AutopilotDisplay extends NavSystemElement {
             }
             else if (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Boolean")) {
                 if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
-                    Avionics.Utils.diffAndSet(this.AP_LateralArmed, "FMS");
+                    Avionics.Utils.diffAndSet(this.AP_LateralArmed, "GPS");
                 }
                 else {
-                    if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "Number"), "Boolean")) {
+                    if (SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + Simplane.getAutoPilotSelectedNav(), "Boolean")) {
                         Avionics.Utils.diffAndSet(this.AP_LateralArmed, "LOC");
                     }
                     else {
@@ -1764,6 +1757,12 @@ class MFD_WaypointLine extends MFD_FlightPlanLine {
     onEvent(_subIndex, _event) {
         if (this.element.gps.popUpElement == null) {
             switch (_event) {
+                case "NavigationLargeInc":
+                case "NavigationLargeDec":
+                    if (_subIndex === 0 && this.waypoint) {
+                        this.element.gps.lastRelevantICAO = this.waypoint.icao;
+                    }
+                    break;
                 case "NavigationSmallInc":
                 case "NavigationSmallDec":
                     switch (_subIndex) {
@@ -2070,6 +2069,12 @@ class MFD_ActiveFlightPlan_Element extends NavSystemElement {
     }
     fplLineAltitudeEvent(_event, _index) {
         if (!this.gps.popUpElement || this.isPopup) {
+            if (_event === "NavigationLargeInc" && _index + 1 < this.lines.length) {
+                this.lines[_index + 1].onEvent(0, _event);
+            }
+            if (_event === "NavigationLargeDec" && _index > 0) {
+                this.lines[_index].onEvent(0, _event);
+            }
             return this.lines[_index].onEvent(1, _event);
         }
     }
@@ -2674,16 +2679,15 @@ class MFD_NearestAirport_Element extends NavSystemElement {
                 if (this.runwayIndex >= infos.runways.length) {
                     this.runwayIndex = 0;
                 }
-                const currentRunway = infos.runways[this.runwayIndex];
-                Avionics.Utils.diffAndSet(this.runwayDesignation, currentRunway.designation);
-                Avionics.Utils.diffAndSet(this.runwaySurface, currentRunway.getSurfaceString());
-                Avionics.Utils.diffAndSet(this.runwayLength, Math.round(WT_Unit.METER.convert(currentRunway.length, WT_Unit.FOOT)) + "FT");
-                Avionics.Utils.diffAndSet(this.runwayWidth, Math.round(WT_Unit.METER.convert(currentRunway.width, WT_Unit.FOOT)) + "FT");
+                Avionics.Utils.diffAndSet(this.runwayDesignation, infos.runways[this.runwayIndex].designation);
+                Avionics.Utils.diffAndSet(this.runwaySurface, infos.runways[this.runwayIndex].getSurfaceString());
+                Avionics.Utils.diffAndSet(this.runwayLength, fastToFixed(infos.runways[this.runwayIndex].length, 0) + "FT");
+                Avionics.Utils.diffAndSet(this.runwayWidth, fastToFixed(infos.runways[this.runwayIndex].width, 0) + "FT");
             }
             if (infos.frequencies) {
                 let elems = [];
                 for (let i = 0; i < infos.frequencies.length; i++) {
-                    elems.push("<td>" + infos.frequencies[i].name + "</td><td class=SelectableElement>" + infos.frequencies[i].mhValue.toFixed(2) + '</td>');
+                    elems.push("<td>" + infos.frequencies[i].getTypeName() + "</td><td class=SelectableElement>" + infos.frequencies[i].mhValue.toFixed(2) + '</td>');
                 }
                 this.frequenciesList.setStringElements(elems);
             }
@@ -3169,33 +3173,7 @@ class MFD_ApproachSelection extends NavSystemElement {
                         elem.updateWaypoints();
                     }
                 }, this.selectedTransition);
-                //CWB add removal of enroute waypoints
-
-                let removeWaypointForApproachMethod = (callback = EmptyCallback.Void) => {
-                    let i = 1;
-                    let destinationIndex = this.gps.currFlightPlanManager.getWaypoints().findIndex(w => {
-                        return w.icao === this.gps.currFlightPlanManager.getDestination().icao;
-                    });
-
-                    if (i < destinationIndex) {
-                        this.gps.currFlightPlanManager.removeWaypoint(1, i === destinationIndex, () => {
-                            //i++;
-                            removeWaypointForApproachMethod(callback);
-                        });
-                    }
-                    else {
-                        callback();
-                    }
-                };
-
-                removeWaypointForApproachMethod(() => {
-                    this.gps.currFlightPlanManager.activateApproach();
-                });
-
-
-
-                //end of enroute waypoint deletion
-                //this.gps.currFlightPlanManager.activateApproach();
+                this.gps.currFlightPlanManager.activateApproach();
             }
             this.gps.closePopUpElement();
         }
@@ -4039,15 +4017,4 @@ class MFD_DepartureSelection extends NavSystemElement {
         }
     }
 }
-
-function fastToFixed(num, p) {
-    if (p <= 0)
-        return Math.round(num).toString();
-
-    r  = Math.round(num * Math.pow(10, p)).toString();
-    l = r.length;
-
-    return r.substring(0, l - p) + "." + r.substring(l - p, l);
-}
-
 //# sourceMappingURL=CommonPFD_MFD.js.map

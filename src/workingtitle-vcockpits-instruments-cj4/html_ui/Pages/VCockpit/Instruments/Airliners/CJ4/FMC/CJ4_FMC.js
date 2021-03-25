@@ -509,7 +509,10 @@ class CJ4_FMC extends FMCMainDisplay {
     //function added to set arrival and runway transition
     setArrivalAndRunwayIndex(arrivalIndex, enrouteTransitionIndex, callback = EmptyCallback.Boolean) {
         this.ensureCurrentFlightPlanIsTemporary(() => {
-            const landingRunway = this.flightPlanManager.getApproachRunway();
+            let landingRunway = this.vfrLandingRunway;
+            if (landingRunway === undefined) {
+                landingRunway = this.flightPlanManager.getApproachRunway();
+            }
             this.flightPlanManager.setArrivalProcIndex(arrivalIndex, () => {
                 this.flightPlanManager.setArrivalEnRouteTransitionIndex(enrouteTransitionIndex, () => {
                     if (landingRunway) {
@@ -560,14 +563,22 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._vnav = new WT_BaseVnav(this.flightPlanManager, this);
                 this._vnav.activate();
             } else {
-                this._vnav.update();
+                try {
+                    this._vnav.update();
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             //RUN LNAV ALWAYS
             if (this._lnav === undefined) {
                 this._lnav = new LNavDirector(this.flightPlanManager, this._navModeSelector);
             } else {
-                this._lnav.update();
+                try {
+                    this._lnav.update();
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             this._navModeSelector.generateInputDataEvents();
@@ -578,14 +589,22 @@ class CJ4_FMC extends FMCMainDisplay {
                 this._currentVerticalAutopilot = new WT_VerticalAutopilot(this._vnav, this._navModeSelector);
                 this._currentVerticalAutopilot.activate();
             } else {
-                this._currentVerticalAutopilot.update();
+                try {
+                    this._currentVerticalAutopilot.update();
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             // RUN SPEED RESTRICTION OBSERVER
             if (this._speedObs === undefined) {
                 this._speedObs = new CJ4_SpeedObserver(this.flightPlanManager);
             } else {
-                this._speedObs.update();
+                try {
+                    this._speedObs.update();
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
             SimVar.SetSimVarValue("SIMVAR_AUTOPILOT_AIRSPEED_MIN_CALCULATED", "knots", Simplane.getStallProtectionMinSpeed());
