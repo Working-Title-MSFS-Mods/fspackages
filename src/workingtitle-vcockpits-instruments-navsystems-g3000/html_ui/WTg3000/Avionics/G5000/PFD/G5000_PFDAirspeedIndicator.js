@@ -387,7 +387,7 @@ class WT_G5000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
     _isAutopilotOverspeedProtectionActive() {
         let autopilot = this._context.model.airplane.autopilot;
-        return autopilot.isActive() && (autopilot.isFLCActive() || autopilot.isVSActive() || autopilot.isPitchHoldActive());
+        return autopilot.isMasterActive() && (autopilot.isFLCActive() || autopilot.isVSActive() || autopilot.isPitchHoldActive());
     }
 
     _setMaxSpeedWarning(value) {
