@@ -3397,7 +3397,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 
                 let mask = document.createElementNS(Avionics.SVG.NS, "rect");
                 mask.setAttribute('x', '0');
-                mask.setAttribute('y', '50.5%');
+                mask.setAttribute('y', '49.5%');
                 mask.setAttribute('height', '50%');
                 mask.setAttribute('width', '100%');
                 mask.setAttribute('fill', 'black');
@@ -3574,6 +3574,17 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         if (this.isGwxVisible) {
             this.compass.show(false);
             this.root.setAttribute("extended", "off");
+
+            let mask = document.createElementNS(Avionics.SVG.NS, "rect");
+            mask.setAttribute('x', '0');
+            mask.setAttribute('y', '50.5%');
+            mask.setAttribute('height', '50%');
+            mask.setAttribute('width', '100%');
+            mask.setAttribute('fill', 'black');
+            
+            let instr = this.root.querySelector("#MapSVG");
+            let firstChild = instr.firstChild;
+            instr.insertBefore(mask, firstChild);
         }
         else {
             this.compass.show(true);
