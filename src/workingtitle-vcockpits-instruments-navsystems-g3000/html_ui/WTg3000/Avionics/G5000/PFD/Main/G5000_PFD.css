@@ -54,6 +54,19 @@ as3000-pfd-element #Mainframe #InstrumentsContainer #InsetMap {
     border: solid 1px white;
 }
 
+as3000-pfd-element wt-pfd-autopilotdisplay {
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    width: 40%;
+    height: 7.5%;
+    transform: translateX(-50%);
+    border-radius: 0 0 5px 5px;
+    font-family: "Roboto-Condensed";
+    font-weight: bold;
+    font-size: 3vh;
+}
+
 as3000-pfd-element wt-pfd-airspeedindicator {
     position: absolute;
     right: 70%;
@@ -352,108 +365,7 @@ as3000-pfd-element wt-pfd-aoaindicator {
               position: absolute;
               background-color: white;
               width: 100%; }
-    as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos {
-      position: absolute;
-      width: 34%;
-      height: 8%;
-      top: 0%;
-      left: 33%;
-      background-color: #1a1d21;
-      border-radius: 0% 0% 1.5vh 1.5vh; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Left {
-        position: absolute;
-        width: 24%;
-        height: 100%;
-        left: 0%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Left #AP_LateralActive {
-          position: absolute;
-          width: 100%;
-          color: green;
-          font-size: 3.5vh;
-          top: 1%;
-          text-align: center; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Left #AP_LateralArmed {
-          position: absolute;
-          width: 100%;
-          color: white;
-          font-size: 3vh;
-          bottom: 8%;
-          text-align: center; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center {
-        border-left: 0.4vh solid white;
-        border-right: 0.4vh solid white;
-        width: 24%;
-        height: 100%;
-        position: absolute;
-        left: 25%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status {
-          position: absolute;
-          width: 50%;
-          color: green;
-          font-size: 3.5vh;
-          top: 1%;
-          left: 0%;
-          text-align: center; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=Yellow] {
-            color: yellow; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=Red] {
-            color: red; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=YellowFlash] {
-            animation: FlashYellow 1s infinite; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_Status[Display=RedFlash] {
-            animation: FlashRed 1s infinite; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_YDStatus {
-          position: absolute;
-          width: 50%;
-          color: green;
-          font-size: 3.5vh;
-          top: 1%;
-          right: 0%;
-          text-align: center; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow {
-          position: absolute;
-          width: 50%;
-          left: 25%;
-          bottom: 10%; }
-          as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Center #AP_FDIndicatorArrow[state=Inactive] {
-            display: none; }
-      as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Right {
-        width: 52%;
-        height: 100%;
-        position: absolute;
-        right: 0%; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Right #AP_VerticalActive {
-          position: absolute;
-          width: 50%;
-          color: green;
-          font-size: 3.5vh;
-          top: 1%;
-          left: 0%;
-          text-align: center; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Right #AP_ModeReference {
-          position: absolute;
-          width: 50%;
-          color: green;
-          font-size: 3vh;
-          top: 1%;
-          right: 0%;
-          text-align: center; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Right #AP_Armed {
-          position: absolute;
-          width: 50%;
-          color: white;
-          font-size: 3vh;
-          bottom: 8%;
-          left: 0%;
-          text-align: center; }
-        as3000-pfd-element #Mainframe #InstrumentsContainer #AutopilotInfos .Right #AP_ArmedReference {
-          position: absolute;
-          width: 50%;
-          color: white;
-          font-size: 3vh;
-          bottom: 8%;
-          right: 0%;
-          text-align: center; }
+
     as3000-pfd-element #Mainframe #InstrumentsContainer #ComInfos {
       position: absolute;
       right: 0%;

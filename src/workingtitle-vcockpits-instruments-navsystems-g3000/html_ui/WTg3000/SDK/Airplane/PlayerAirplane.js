@@ -1048,6 +1048,14 @@ class WT_AirplaneAutopilot extends WT_AirplaneComponent {
     }
 
     /**
+     * Checks whether the auto throttle is active.
+     * @returns {Boolean} whether the auto throttle is active.
+     */
+    isAutoThrottleActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT MANAGED THROTTLE ACTIVE", "Boolean") !== 0;
+    }
+
+    /**
      * Checks whether the yaw damper is active.
      * @returns {Boolean} whether the yaw damper is active.
      */
