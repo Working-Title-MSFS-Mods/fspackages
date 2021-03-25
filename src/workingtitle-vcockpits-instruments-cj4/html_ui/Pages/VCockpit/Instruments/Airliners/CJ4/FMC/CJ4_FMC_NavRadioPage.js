@@ -2,6 +2,7 @@
 let NavRadioPage1Instance = undefined;
 let AtcControlPageInstance = undefined;
 let NavRadioPageDispatchInstance = undefined;
+let ComControlPageInstance = undefined;
 
 //NAV RADIO MAIN PAGE
 
@@ -155,7 +156,7 @@ class CJ4_FMC_NavRadioPageOne {
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
-                this._fmc._navigationService.showPage(CJ4_FMC_ComControlPage, 1);
+                CJ4_FMC_NavRadioPage.ShowPage5(this._fmc);
             } else {    
             this.enterVhfFreq(this._fmc.inOut, 1);
             }
@@ -319,6 +320,18 @@ class CJ4_FMC_NavRadioPage {
             AtcControlPageInstance.update();
             return true;
         }, 2000, true);
+    }
+
+    static ShowPage5(fmc) {
+        fmc.clearDisplay();
+
+        ComControlPageInstance = new CJ4_FMC_ComControlPage(fmc);
+        ComControlPageInstance.update();
+
+        fmc.registerPeriodicPageRefresh(() => {
+            ComControlPageInstance.update();
+            return true;
+        }, 1000, true);
     }
 
     /**
@@ -736,6 +749,126 @@ class CJ4_FMC_NavRadioDispatch {
         };
         this._fmc.onNextPage = () => {
             CJ4_FMC_NavRadioDispatch.ShowPage2(this._fmc);
+        };
+        this._fmc.updateSideButtonActiveStatus();
+    }
+
+    invalidate() {
+        this._isDirty = true;
+        this._fmc.clearDisplay();
+        this.render();
+        this.bindEvents(); // TODO could only call this once on init, but fmc.clearDisplay() clears events
+        this._isDirty = false;
+    }
+}
+
+// COM CONTROL PAGE
+
+class CJ4_FMC_ComControlPage {
+        constructor(fmc) {
+        this._fmc = fmc;
+        this._isDirty = true;
+
+        this._freqMap = {
+            vhf1: "[]",
+            vhf2: "[]",
+            rcl1: "[]",
+            pre2: "[]",
+        };
+
+        this._freqProxy = new Proxy(this._freqMap, {
+            set: function (target, key, value) {
+                if (target[key] !== value) {
+                    this._isDirty = true;
+                    target[key] = value;
+                    // console.log("FREQ CHANGED! " + key + " = " + value);
+                }
+                return true;
+            }.bind(this)
+        });
+    }
+
+    prepare() {
+        // NOOP
+    }
+
+    update() {
+        // console.log("navradio.update()");
+        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
+
+        this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
+        this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
+        this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
+        this._freqProxy.pre2 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 2);
+
+        if (this._isDirty) {
+            this.invalidate();
+        }
+        // register refresh and bind to update which will only render on changes
+        this._fmc.registerPeriodicPageRefresh(() => {
+            return true;
+        }, 1000, false);
+    }
+
+    render() {
+        // console.log("Render Nav");
+
+        this._fmc._templateRenderer.setTemplateRaw([
+            ["", "1/5 [blue]", "COM CONTROL [blue]"],
+            [" COM1", "SQUELCH "],
+            [this._freqMap.vhf1.toFixed(3) + "[green]", "ON[blue]/OFF[s-text]"],
+            [" RECALL"],
+            [this._freqMap.rcl1.toFixed(3), "TEST[s-text disabled]"],
+            ["-----[blue] ", " ------[blue]", "COM PRESETS"],
+            ["","1"],
+            [""],
+            ["","2"],
+            [""],
+            ["","3"],
+            [""],
+            ["","4"],
+        ]);
+    }
+
+    enterVhfFreq(value, index, isStandby = false) {
+        const numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
+        this._fmc.clearUserInput();
+        if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
+            this._fmc.radioNav.setVHFStandbyFrequency(this._fmc.instrumentIndex, index, numValue).then(() => {
+                if (!isStandby) {
+                    this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
+                }
+                this._fmc.requestCall(() => {
+                    this.update();
+                });
+            });
+        } else if (value.length === 0) {
+            this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
+            this._fmc.requestCall(() => {
+                this.update();
+            });
+        } else {
+            this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+        }
+    }
+
+    bindEvents() {
+        this._fmc.onLeftInput[0] = () => {
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+            } else {    
+            this.enterVhfFreq(this._fmc.inOut, 1);
+            }
+        };
+
+        this._fmc.onLeftInput[1] = () => {
+            this.enterVhfFreq(this._fmc.inOut, 1, true);
+        };
+        this._fmc.onPrevPage = () => {
+            CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
+        };
+        this._fmc.onNextPage = () => {
+            CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
         };
         this._fmc.updateSideButtonActiveStatus();
     }
