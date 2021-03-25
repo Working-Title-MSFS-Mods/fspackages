@@ -1084,7 +1084,15 @@ class WT_AirplaneAutopilot extends WT_AirplaneComponent {
      * @returns {Boolean} whether Lateral Navigation Mode is active.
      */
     isNAVActive() {
-        return SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") !== 0 || this.isApproachActive();
+        return !this.isWingLevelerActive() && !this.isBankHoldActive() && !this.isHeadingHoldActive() && (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") !== 0 || this.isApproachActive()) && !this.isBackCourseActive();
+    }
+
+    /**
+     * Checks whether Lateral Navigation Mode is armed.
+     * @returns {Boolean} whether Lateral Navigation Mode is armed.
+     */
+    isNAVArmed() {
+        return (this.isWingLevelerActive() || this.isBankHoldActive() || this.isHeadingHoldActive()) && (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") !== 0 || this.isApproachActive()) && !this.isBackCourseArmed();
     }
 
     /**
@@ -1202,6 +1210,41 @@ class WT_AirplaneAutopilot extends WT_AirplaneComponent {
      */
     isApproachCaptured() {
         return SimVar.GetSimVarValue("AUTOPILOT APPROACH CAPTURED", "Boolean") !== 0;
+    }
+
+    /**
+     * Checks whether Back Course Mode is active.
+     * @returns {Boolean} whether Back Course Mode is active.
+     */
+    isBackCourseActive() {
+        if (SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") !== 0 && (this.isApproachActive() || SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Boolean") !== 0)) {
+            let navIndex;
+            switch (this.navigationSource()) {
+                case WT_AirplaneAutopilot.NavSource.FMS:
+                    return false;
+                case WT_AirplaneAutopilot.NavSource.NAV1:
+                    navIndex = 1;
+                    break;
+                case WT_AirplaneAutopilot.NavSource.NAV2:
+                    navIndex = 2;
+                    break;
+                case WT_AirplaneAutopilot.NavSource.NAV3:
+                    navIndex = 3;
+                    break;
+            }
+            let bcFlags = SimVar.GetSimVarValue(`NAV BACK COURSE FLAGS:${navIndex}`, "number");
+            return (bcFlags & 131) !== 0;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks whether Back Course Mode is armed.
+     * @returns {Boolean} whether Back Course Mode is armed.
+     */
+    isBackCourseArmed() {
+        return !this.isBackCourseActive() && SimVar.GetSimVarValue("AUTOPILOT BACKCOURSE HOLD", "Boolean") !== 0;
     }
 
     /**
