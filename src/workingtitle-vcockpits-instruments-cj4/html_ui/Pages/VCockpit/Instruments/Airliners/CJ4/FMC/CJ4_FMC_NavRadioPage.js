@@ -21,7 +21,7 @@ class CJ4_FMC_NavRadioPageOne {
             vhf1: "[]",
             vhf2: "[]",
             rcl1: "[]",
-            pre2: "[]",
+            rcl2: "[]",
             vor1: "[]",
             vor2: "[]",
             atc1: "[]",
@@ -71,7 +71,7 @@ class CJ4_FMC_NavRadioPageOne {
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
-        this._freqProxy.pre2 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 2);
+        this._freqProxy.rcl2 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 2);
 
         this._freqProxy.vor1 = this._fmc._navRadioSystem.radioStates[1].frequency;
         this._freqProxy.vor2 = this._fmc._navRadioSystem.radioStates[2].frequency;
@@ -106,7 +106,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" COM1", "COM2 "],
             [this._freqMap.vhf1.toFixed(3) + "[green]", this._freqMap.vhf2.toFixed(3) + "[green]"],
             [" RECALL", "RECALL "],
-            [this._freqMap.rcl1.toFixed(3) + "", this._freqMap.pre2.toFixed(3) + ""],
+            [this._freqMap.rcl1.toFixed(3) + "", this._freqMap.rcl2.toFixed(3) + ""],
             [" NAV1", "NAV2 "],
             [`${this._freqMap.vor1.toFixed(2)}[green] ${this._freqMap.vor1Mode}[blue s-text]`, `${this._freqMap.vor2Mode}[blue s-text] ${this._freqMap.vor2.toFixed(2)}[green]`],
             [" DME1", "DME2 "],
@@ -777,7 +777,6 @@ class CJ4_FMC_NavRadioDispatch {
 
 class CJ4_FMC_ComControlPage {
     constructor(fmc, radioIndex) {
-        this.radioIndex = radioIndex;
         this.currentPageNumber = 1;
         this._fmc = fmc;
         this._isDirty = true;
@@ -788,7 +787,7 @@ class CJ4_FMC_ComControlPage {
             vhf1: "[]",
             vhf2: "[]",
             rcl1: "[]",
-            pre2: "[]",
+            rcl2: "[]",
         };
 
         this._freqProxy = new Proxy(this._freqMap, {
@@ -807,16 +806,9 @@ class CJ4_FMC_ComControlPage {
         // NOOP
     }
 
-    initialize() {
-        this.frequency = WTDataStore.get(`WT_CJ4_LAST_COM_FREQ:${this.radioIndex}`, 118.0);
-        SimVar.SetSimVarValue(`K:COM${this.radioIndex}_RADIO_SET_HZ`, 'Hz', this.frequency * 1000000);
-    }
-
     update() {
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
-        this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
-        this._freqProxy.pre2 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 2);
 
         if (this._isDirty) {
             this.invalidate();
@@ -826,28 +818,60 @@ class CJ4_FMC_ComControlPage {
             return true;
         }, 1000, false);
     }
-
+    initialize() {
+        const presetsString = WTDataStore.get(`WT_CJ4_COM_RADIO_PRESETS`, '[]');
+        this.presets = JSON.parse(presetsString);
+        setInterval(() => {
+        }, 1000);
+    }
+    setPreset(index, frequency) {
+        this.presets[index] = frequency;
+        WTDataStore.set(`WT_CJ4_COM_RADIO_PRESETS`, JSON.stringify(this.presets));
+    }
+    parseFrequencyInput(value) {
+        let frequency = parseFloat(value);
+        if (isFinite(frequency)) {
+            frequency = Math.round(frequency * 100) / 100;
+            if (frequency >= 118 && frequency <= 135.95) {
+                return frequency;
+            }
+            if (frequency >= 18 && frequency <= 35.95) {
+                return frequency + 100;
+            }
+            if (frequency >= 118 && frequency <= 359) {
+                return (frequency / 10) + 100;
+            }
+            if (frequency >= 1800 && frequency <= 3595) {
+                return (frequency / 100) + 1000;
+            }
+        }
+        return NaN;
+    }
     render() {
         const rows = [];
-        rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM${this.radioIndex} 'CONTROL [blue]'`]);
-        rows.push([ `COM${this.radioIndex}`, 'SQUELCH ']);
+        rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM1 CONTROL[blue]`]);
+        rows.push([ ` COM1`, 'SQUELCH ']);
         rows.push([this._freqMap.vhf1.toFixed(3) + '[green]', 'ON[blue]/OFF[s-text disabled]']);
         rows.push([' RECALL']);
         rows.push([this._freqMap.rcl1.toFixed(3), 'TEST[s-text disabled]']);
         rows.push(['-----[blue] ', ' ------[blue]', 'COM PRESETS']);
         const presetStart = ((this.currentPageNumber * 4) - 4) + 1;
-        rows.push(['',`${presetStart}`]);
+        rows.push([`${this.displayPreset(presetStart - 1)}`,`${presetStart}`]);
         rows.push(['']);
-        rows.push(['',`${presetStart + 1}`]);
+        rows.push([`${this.displayPreset(presetStart)}`,`${presetStart + 1}`]);
         rows.push(['']);
-        rows.push(['',`${presetStart + 2}`]);
+        rows.push([`${this.displayPreset(presetStart + 1)}`,`${presetStart + 2}`]);
         rows.push(['']);
         if (this.currentPageNumber !== 6) {
-            rows.push(['', `${presetStart + 3}`]);
+            rows.push([`${this.displayPreset(presetStart + 2)}`, `${presetStart + 3}`]);
         }
         this.templateRenderer.setTemplateRaw(rows);
     }
-
+    displayPreset(preset) {
+        var _a;
+        const presetFrequency = this.presets[preset];
+        return (_a = presetFrequency === null || presetFrequency === void 0 ? void 0 : presetFrequency.toFixed(2)) !== null && _a !== void 0 ? _a : '';
+    }
     enterVhfFreq(value, index, isStandby = false) {
         const numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
         this._fmc.clearUserInput();
@@ -869,7 +893,6 @@ class CJ4_FMC_ComControlPage {
             this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
         }
     }
-
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
             const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
@@ -885,7 +908,7 @@ class CJ4_FMC_ComControlPage {
         this._fmc.onLeftInput[1] = () => {
             this.enterVhfFreq(this._fmc.inOut, 1, true);
         };
-        this.bindPresets(this.currentPageNumber === 5 ? 2 : 4, 4, (this.currentPageNumber * 4) - 4);
+        this.bindPresets(this.currentPageNumber === 5 ? 2 : 4, 2, (this.currentPageNumber * 2) - 2);
         this._fmc.onNextPage = () => {
             this.currentPageNumber = Math.min(this.currentPageNumber + 1, 5);
             this.render();
@@ -898,18 +921,29 @@ class CJ4_FMC_ComControlPage {
         };
         this._fmc.updateSideButtonActiveStatus();
     }
+    /**
+    * Binds the buttons for the preset LSKs.
+    * @param totalPresets The total number of presets on the page.
+    * @param startLSK The starting LSK for the preset bindings.
+    * @param startPreset The starting index for the presets.
+    */
     bindPresets(totalPresets, startLSK, startPreset) {
         for (let i = 0; i < totalPresets; i++) {
             this._fmc.onLeftInput[startLSK + i] = () => {
-                //this.handleFreqPressed(() => this.radioSystem.presets[startPreset + i], value => this.radioSystem.setPreset(startPreset + i, value));
+                this.handleFreqPressed(() => this.presets[startPreset + i], value => this.setPreset(startPreset + i, value));
                 this.render();
                 this.bindEvents();
             };
         }
     }
+    /**
+    * Handles when a frequency button is pressed on the page.
+    * @param getter A function that gets the frequency value to copy to the scratchpad.
+    * @param setter A function that sets the frequency value into the radio state from the parsed input.
+    */
     handleFreqPressed(getter, setter) {
         if (this._fmc.inOut !== undefined && this._fmc.inOut !== '') {
-            const numValue = this.radioSystem.parseFrequencyInput(this._fmc.inOut);
+            const numValue = this.parseFrequencyInput(this._fmc.inOut);
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
                 setter(numValue);
                 this._fmc.inOut = '';
