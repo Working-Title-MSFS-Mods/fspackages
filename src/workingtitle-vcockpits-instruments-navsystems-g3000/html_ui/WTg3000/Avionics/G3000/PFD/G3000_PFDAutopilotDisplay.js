@@ -20,9 +20,6 @@ class WT_G3000_PFDAutopilotDisplayModel extends WT_G3x5_PFDAutopilotDisplayModel
         super(airplane);
 
         this._isYawDamperActive = false;
-
-        this._lastYawDamperActive = false;
-        this._yawDamperDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF;
     }
 
     /**
@@ -33,37 +30,25 @@ class WT_G3000_PFDAutopilotDisplayModel extends WT_G3x5_PFDAutopilotDisplayModel
         return this._isYawDamperActive;
     }
 
-    /**
-     * @readonly
-     * @type {WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState}
-     */
-    get yawDamperDisconnectAlertState() {
-        return this._yawDamperDisconnectAlertState;
-    }
-
     _updateYawDamper() {
         this._isYawDamperActive = this._autopilot.isYawDamperActive();
-    }
-
-    _updateYawDamperDisconnectAlert() {
-        if (this.isYawDamperActive) {
-            this._yawDamperDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF;
-        } else if (this._lastYawDamperActive && this.yawDamperDisconnectAlertState === WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF) {
-            this._yawDamperDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.CAUTION;
-        }
-
-        this._lastYawDamperActive = this.isYawDamperActive;
     }
 
     update() {
         super.update();
 
         this._updateYawDamper();
-        this._updateYawDamperDisconnectAlert();
     }
 }
 
 class WT_G3000_PFDAutopilotDisplayHTMLElement extends WT_G3x5_PFDAutopilotDisplayHTMLElement {
+    constructor() {
+        super();
+
+        this._lastYawDamperActive = false;
+        this._lastYawDamperAlertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.OFF;
+    }
+
     _getTemplate() {
         return WT_G3000_PFDAutopilotDisplayHTMLElement.TEMPLATE;
     }
@@ -135,7 +120,15 @@ class WT_G3000_PFDAutopilotDisplayHTMLElement extends WT_G3x5_PFDAutopilotDispla
     }
 
     _updateYawDamperDisconnectAlert() {
-        this._setYawDamperDisconnectAlertState(this._context.model.yawDamperDisconnectAlertState);
+        let isActive = this._context.model.isYawDamperActive;
+        let alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.OFF;
+        if (!isActive && (this._lastYawDamperActive || this._lastYawDamperAlertState === WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.CAUTION)) {
+            alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.CAUTION;
+        }
+
+        this._setYawDamperDisconnectAlertState(alertState);
+        this._lastYawDamperActive = isActive;
+        this._lastYawDamperAlertState = alertState;
     }
 
     _updateAlerts() {

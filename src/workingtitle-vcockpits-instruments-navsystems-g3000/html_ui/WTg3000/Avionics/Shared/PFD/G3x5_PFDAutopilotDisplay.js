@@ -50,7 +50,8 @@ class WT_G3x5_PFDAutopilotDisplayModel {
         this._airplane = airplane;
         this._autopilot = airplane.autopilot;
 
-        this._isMasterActive = false;
+        this._lastMasterActive = false;
+        this._masterState = WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF;
         this._isFlightDirectorActive = false;
         this._navSource = WT_AirplaneAutopilot.NavSource.FMS;
         this._isApproachActive = false;
@@ -68,17 +69,14 @@ class WT_G3x5_PFDAutopilotDisplayModel {
         this._referenceVerticalSpeed = WT_Unit.FPM.createNumber(0);
         this._referenceAirspeed = WT_Unit.KNOT.createNumber(0);
         this._referenceMach = 0;
-
-        this._lastMasterActive = false;
-        this._masterDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF;
     }
 
     /**
      * @readonly
-     * @type {Boolean}
+     * @type {WT_G3x5_PFDAutopilotDisplayModel.MasterState}
      */
-    get isMasterActive() {
-        return this._isMasterActive;
+    get masterState() {
+        return this._masterState;
     }
 
     /**
@@ -177,36 +175,32 @@ class WT_G3x5_PFDAutopilotDisplayModel {
         return this._referenceMach;
     }
 
-    /**
-     * @readonly
-     * @type {WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState}
-     */
-    get masterDisconnectAlertState() {
-        return this._masterDisconnectAlertState;
-    }
-
-    _disableMasterDisconnectAlert() {
-        this._masterDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF;
-    }
-
     onAutopilotManualDisengaged() {
-        this._masterDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.CAUTION;
+        this._masterState = WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_MANUAL_DISCONNECT;
     }
 
     onAutopilotDisconnected() {
-        if (this.masterDisconnectAlertState === WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF) {
-            this._masterDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.CAUTION;
+        if (this._masterState === WT_G3x5_PFDAutopilotDisplayModel.MasterState.ON) {
+            this._masterState = WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_MANUAL_DISCONNECT;
         } else {
-            this._disableMasterDisconnectAlert();
+            this._masterState = WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF;
         }
     }
 
-    _updateMaster() {
-        this._isMasterActive = this._autopilot.isActive();
+    _updateMasterState() {
+        if (this._autopilot.isMasterActive()) {
+            this._masterState = WT_G3x5_PFDAutopilotDisplayModel.MasterState.ON;
+            this._lastMasterActive = true;
+        } else {
+            if (this._lastMasterActive && this.masterState === WT_G3x5_PFDAutopilotDisplayModel.MasterState.ON) {
+                WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_AUTO_DISCONNECT;
+            }
+            this._lastMasterActive = false;
+        }
     }
 
     _updateFlightDirector() {
-        this._isFlightDirectorActive = this._autopilot.isFlightDirectorActive();
+        this._isFlightDirectorActive = this._autopilot.flightDirector.isActive();
     }
 
     _updateNavSource() {
@@ -373,18 +367,8 @@ class WT_G3x5_PFDAutopilotDisplayModel {
         this._referenceMach = this._autopilot.referenceMach();
     }
 
-    _updateDisconnectAlert() {
-        if (this.isMasterActive) {
-            this._disableMasterDisconnectAlert();
-        } else if (this._lastMasterActive && this.masterDisconnectAlertState === WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.OFF) {
-            this._masterDisconnectAlertState = WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState.WARNING;
-        }
-
-        this._lastMasterActive = this.isMasterActive;
-    }
-
     update() {
-        this._updateMaster();
+        this._updateMasterState();
         this._updateFlightDirector();
         this._updateNavSource();
         this._updateApproachMode();
@@ -396,9 +380,17 @@ class WT_G3x5_PFDAutopilotDisplayModel {
         this._updateReferenceVerticalSpeed();
         this._updateReferenceAirspeed();
         this._updateReferenceMach();
-        this._updateDisconnectAlert();
     }
 }
+/**
+ * @enum {Number}
+ */
+WT_G3x5_PFDAutopilotDisplayModel.MasterState = {
+    OFF: 0,
+    OFF_MANUAL_DISCONNECT: 1,
+    OFF_AUTO_DISCONNECT: 2,
+    ON: 3
+};
 /**
  * @enum {Number}
  */
@@ -426,14 +418,6 @@ WT_G3x5_PFDAutopilotDisplayModel.VerticalMode = {
     GS: 7,
     GP: 8
 };
-/**
- * @enum {Number}
- */
-WT_G3x5_PFDAutopilotDisplayModel.DisconnectAlertState = {
-    OFF: 0,
-    CAUTION: 1,
-    WARNING: 2
-}
 
 class WT_G3x5_PFDAutopilotDisplayHTMLElement extends HTMLElement {
     constructor() {
@@ -530,7 +514,7 @@ class WT_G3x5_PFDAutopilotDisplayHTMLElement extends HTMLElement {
     }
 
     _updateMaster() {
-        this._setMasterShow(this._context.model.isMasterActive);
+        this._setMasterShow(this._context.model.masterState === WT_G3x5_PFDAutopilotDisplayModel.MasterState.ON);
     }
 
     _setFlightDirectorShow(value) {
@@ -604,7 +588,18 @@ class WT_G3x5_PFDAutopilotDisplayHTMLElement extends HTMLElement {
     }
 
     _updateMasterDisconnectAlert() {
-        this._setMasterDisconnectAlertState(this._context.model.masterDisconnectAlertState);
+        let alertState;
+        switch (this._context.model.masterState) {
+            case WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_MANUAL_DISCONNECT:
+                alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.CAUTION;
+                break;
+            case WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_AUTO_DISCONNECT:
+                alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.WARNING;
+                break;
+            default:
+                alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.OFF;
+        }
+        this._setMasterDisconnectAlertState(alertState);
     }
 
     _setAltitudeHoldAlert(value) {
@@ -650,6 +645,14 @@ class WT_G3x5_PFDAutopilotDisplayHTMLElement extends HTMLElement {
 
         this._updateDisplay();
     }
+}
+/**
+ * @enum {Number}
+ */
+WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState = {
+    OFF: 0,
+    CAUTION: 1,
+    WARNING: 2
 }
 WT_G3x5_PFDAutopilotDisplayHTMLElement.LATERAL_MODE_TEXTS = [
     "",
