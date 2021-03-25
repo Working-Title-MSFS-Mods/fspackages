@@ -156,14 +156,18 @@ class CJ4_FMC_NavRadioPageOne {
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
-                CJ4_FMC_NavRadioPage.ShowPage5(this._fmc);
+                CJ4_FMC_NavRadioPage.ShowPage5(this._fmc, 1);
             } else {    
             this.enterVhfFreq(this._fmc.inOut, 1);
             }
         };
 
         this._fmc.onRightInput[0] = () => {
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                CJ4_FMC_NavRadioPage.ShowPage5(this._fmc, 2);
+            } else {    
             this.enterVhfFreq(this._fmc.inOut, 2);
+            }
         };
 
         this._fmc.onLeftInput[1] = () => {
@@ -475,7 +479,10 @@ class CJ4_FMC_AtcControlPage {
         this._fmc.onLeftInput[0] = () => {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
-            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+            const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
+            if (AvionicsComp === 2) {
+                CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
+            } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
             } else {
                 this._fmc.clearUserInput();
@@ -687,7 +694,11 @@ class CJ4_FMC_NavRadioDispatch {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                CJ4_FMC_NavRadioPage.ShowPage5(this._fmc, 1);
+            } else {    
             this.enterVhfFreq(this._fmc.inOut, 1);
+            }
         };
 
         this._fmc.onLeftInput[1] = () => {
@@ -765,9 +776,13 @@ class CJ4_FMC_NavRadioDispatch {
 // COM CONTROL PAGE
 
 class CJ4_FMC_ComControlPage {
-        constructor(fmc) {
+    constructor(fmc, radioIndex) {
+        this.radioIndex = radioIndex;
+        this.currentPageNumber = 1;
         this._fmc = fmc;
         this._isDirty = true;
+        this.templateRenderer = fmc._templateRenderer;
+        this.presets = [];
 
         this._freqMap = {
             vhf1: "[]",
@@ -792,10 +807,12 @@ class CJ4_FMC_ComControlPage {
         // NOOP
     }
 
-    update() {
-        // console.log("navradio.update()");
-        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
+    initialize() {
+        this.frequency = WTDataStore.get(`WT_CJ4_LAST_COM_FREQ:${this.radioIndex}`, 118.0);
+        SimVar.SetSimVarValue(`K:COM${this.radioIndex}_RADIO_SET_HZ`, 'Hz', this.frequency * 1000000);
+    }
 
+    update() {
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -811,23 +828,24 @@ class CJ4_FMC_ComControlPage {
     }
 
     render() {
-        // console.log("Render Nav");
-
-        this._fmc._templateRenderer.setTemplateRaw([
-            ["", "1/5 [blue]", "COM CONTROL [blue]"],
-            [" COM1", "SQUELCH "],
-            [this._freqMap.vhf1.toFixed(3) + "[green]", "ON[blue]/OFF[s-text]"],
-            [" RECALL"],
-            [this._freqMap.rcl1.toFixed(3), "TEST[s-text disabled]"],
-            ["-----[blue] ", " ------[blue]", "COM PRESETS"],
-            ["","1"],
-            [""],
-            ["","2"],
-            [""],
-            ["","3"],
-            [""],
-            ["","4"],
-        ]);
+        const rows = [];
+        rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM${this.radioIndex} 'CONTROL [blue]'`]);
+        rows.push([ `COM${this.radioIndex}`, 'SQUELCH ']);
+        rows.push([this._freqMap.vhf1.toFixed(3) + '[green]', 'ON[blue]/OFF[s-text disabled]']);
+        rows.push([' RECALL']);
+        rows.push([this._freqMap.rcl1.toFixed(3), 'TEST[s-text disabled]']);
+        rows.push(['-----[blue] ', ' ------[blue]', 'COM PRESETS']);
+        const presetStart = ((this.currentPageNumber * 4) - 4) + 1;
+        rows.push(['',`${presetStart}`]);
+        rows.push(['']);
+        rows.push(['',`${presetStart + 1}`]);
+        rows.push(['']);
+        rows.push(['',`${presetStart + 2}`]);
+        rows.push(['']);
+        if (this.currentPageNumber !== 6) {
+            rows.push(['', `${presetStart + 3}`]);
+        }
+        this.templateRenderer.setTemplateRaw(rows);
     }
 
     enterVhfFreq(value, index, isStandby = false) {
@@ -854,9 +872,12 @@ class CJ4_FMC_ComControlPage {
 
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
-            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+            const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
+            if (AvionicsComp === 2) {
+                CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
+            } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
-            } else {    
+            } else {   
             this.enterVhfFreq(this._fmc.inOut, 1);
             }
         };
@@ -864,13 +885,42 @@ class CJ4_FMC_ComControlPage {
         this._fmc.onLeftInput[1] = () => {
             this.enterVhfFreq(this._fmc.inOut, 1, true);
         };
-        this._fmc.onPrevPage = () => {
-            CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
-        };
+        this.bindPresets(this.currentPageNumber === 5 ? 2 : 4, 4, (this.currentPageNumber * 4) - 4);
         this._fmc.onNextPage = () => {
-            CJ4_FMC_NavRadioPage.ShowPage2(this._fmc);
+            this.currentPageNumber = Math.min(this.currentPageNumber + 1, 5);
+            this.render();
+            this.bindEvents();
+        };
+        this._fmc.onPrevPage = () => {
+            this.currentPageNumber = Math.max(this.currentPageNumber - 1, 1);
+            this.render();
+            this.bindEvents();
         };
         this._fmc.updateSideButtonActiveStatus();
+    }
+    bindPresets(totalPresets, startLSK, startPreset) {
+        for (let i = 0; i < totalPresets; i++) {
+            this._fmc.onLeftInput[startLSK + i] = () => {
+                //this.handleFreqPressed(() => this.radioSystem.presets[startPreset + i], value => this.radioSystem.setPreset(startPreset + i, value));
+                this.render();
+                this.bindEvents();
+            };
+        }
+    }
+    handleFreqPressed(getter, setter) {
+        if (this._fmc.inOut !== undefined && this._fmc.inOut !== '') {
+            const numValue = this.radioSystem.parseFrequencyInput(this._fmc.inOut);
+            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
+                setter(numValue);
+                this._fmc.inOut = '';
+            }
+            else {
+                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+            }
+        }
+        else {
+            this._fmc.inOut = getter().toFixed(2);
+        }
     }
 
     invalidate() {
