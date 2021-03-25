@@ -42,6 +42,10 @@ class WT_G5000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
 }
 
 class WT_G5000_PFDMainPage extends WT_G3x5_PFDMainPage {
+    _createAutopilotDisplay() {
+        return new WT_G5000_PFDAutopilotDisplay();
+    }
+
     _createAirspeedIndicator() {
         return new WT_G5000_PFDAirspeedIndicator();
     }
