@@ -235,6 +235,8 @@ class WT_G3x5_PFDAutopilotDisplayModel {
             this._lateralModeActive = WT_G3x5_PFDAutopilotDisplayModel.LateralMode.ROLL;
         } else if (this._autopilot.isHeadingHoldActive()) {
             this._lateralModeActive = WT_G3x5_PFDAutopilotDisplayModel.LateralMode.HEADING;
+        } else if (this._autopilot.isBackCourseActive()) {
+            this._lateralModeActive = WT_G3x5_PFDAutopilotDisplayModel.LateralMode.BC;
         } else if (this._autopilot.isNAVActive()) {
             switch (this._navSource) {
                 case WT_AirplaneAutopilot.NavSource.FMS:
@@ -253,22 +255,20 @@ class WT_G3x5_PFDAutopilotDisplayModel {
     }
 
     _updateArmedLateralMode() {
-        if (this.lateralModeActive === WT_G3x5_PFDAutopilotDisplayModel.LateralMode.LEVEL ||
-            this.lateralModeActive === WT_G3x5_PFDAutopilotDisplayModel.LateralMode.ROLL ||
-            this.lateralModeActive === WT_G3x5_PFDAutopilotDisplayModel.LateralMode.HEADING) {
-
-            if (this._autopilot.isNAVActive()) {
-                switch (this._navSource) {
-                    case WT_AirplaneAutopilot.NavSource.FMS:
-                        this._lateralModeArmed = WT_G3x5_PFDAutopilotDisplayModel.LateralMode.FMS;
-                        return;
-                    case WT_AirplaneAutopilot.NavSource.NAV1:
-                        this._lateralModeArmed = this._getLateralModeFromNav(this._airplane.navCom.getNav(1));
-                        return;
-                    case WT_AirplaneAutopilot.NavSource.NAV2:
-                        this._lateralModeArmed = this._getLateralModeFromNav(this._airplane.navCom.getNav(2));
-                        return;
-                }
+        if (this._autopilot.isBackCourseArmed()) {
+            this._lateralModeArmed = WT_G3x5_PFDAutopilotDisplayModel.LateralMode.BC;
+            return;
+        } else if (this._autopilot.isNAVArmed()) {
+            switch (this._navSource) {
+                case WT_AirplaneAutopilot.NavSource.FMS:
+                    this._lateralModeArmed = WT_G3x5_PFDAutopilotDisplayModel.LateralMode.FMS;
+                    return;
+                case WT_AirplaneAutopilot.NavSource.NAV1:
+                    this._lateralModeArmed = this._getLateralModeFromNav(this._airplane.navCom.getNav(1));
+                    return;
+                case WT_AirplaneAutopilot.NavSource.NAV2:
+                    this._lateralModeArmed = this._getLateralModeFromNav(this._airplane.navCom.getNav(2));
+                    return;
             }
         }
 
@@ -402,7 +402,8 @@ WT_G3x5_PFDAutopilotDisplayModel.LateralMode = {
     FMS: 4,
     VOR: 5,
     LOC: 6,
-    VAPP: 7
+    VAPP: 7,
+    BC: 8
 };
 /**
  * @enum {Number}
@@ -662,7 +663,8 @@ WT_G3x5_PFDAutopilotDisplayHTMLElement.LATERAL_MODE_TEXTS = [
     "FMS",
     "VOR",
     "LOC",
-    "VAPP"
+    "VAPP",
+    "BC"
 ];
 WT_G3x5_PFDAutopilotDisplayHTMLElement.VERTICAL_MODE_TEXTS = [
     "",
