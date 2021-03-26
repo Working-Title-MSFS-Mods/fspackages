@@ -475,7 +475,7 @@ class LNavDirector {
       if (finalApproachFixDistance < 3 && approach.length >= 3) {
         finalApproachFix = approach[approach.length - 3];
       }
-      let finalApproachFixDistance = 100;
+      finalApproachFixDistance = 100;
       if (finalApproachFix && finalApproachFix.infos && finalApproachFix.infos.coordinates) {
         finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
       }
