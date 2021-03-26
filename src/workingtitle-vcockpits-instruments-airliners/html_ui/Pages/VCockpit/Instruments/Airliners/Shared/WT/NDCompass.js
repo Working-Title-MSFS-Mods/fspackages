@@ -2807,14 +2807,15 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                     this.courseFROMLine.setAttribute("stroke-width", "8");
                     this.course.appendChild(this.courseFROMLine);
 
-                    let circlePosition = [-166, -55, 55, 166];
+                    let circlePosition = [-150, -75, 75, 150];
                     for (let i = 0; i < circlePosition.length; i++) {
                         let CDICircle = document.createElementNS(Avionics.SVG.NS, "circle");
                         CDICircle.setAttribute("cx", (500 + circlePosition[i]).toString());
                         CDICircle.setAttribute("cy", "500");
-                        CDICircle.setAttribute("r", "5");
+                        CDICircle.setAttribute("r", "6.8");
                         CDICircle.setAttribute("stroke", "white");
                         CDICircle.setAttribute("stroke-width", "2");
+                        CDICircle.setAttribute("fill", "none");
                         this.course.appendChild(CDICircle);
                     }
                 }
@@ -2956,7 +2957,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         }*/
 
 
-        let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        /*let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");
         innerCircleGroup.setAttribute("id", "innerCircle");
         this.root.appendChild(innerCircleGroup);
         {
@@ -2992,7 +2993,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             let vec = new Vec2(1, 0.45);
             vec.SetNorm(smallCircleRadius * 0.82);
             this.addMapRange(innerCircleGroup, 500 - vec.x, 500 - vec.y, "white", "30", false, 0.5, false);
-        }
+        }*/
 
         this.currentRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.currentRefGroup.setAttribute("id", "currentRefGroup");

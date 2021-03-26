@@ -782,9 +782,19 @@ class WT_BaseVnav {
                 const verticalDistance = (altitude - elevation) - 1500;
                 const horizontalDescentDistance = ((verticalDistance / Math.tan(3 * Math.PI / 180)) / 6076.12) + 10;
                 const distanceToTod = (this.destination.cumulativeDistanceInFP - horizontalDescentDistance) - this._currentDistanceInFP;
-                SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", horizontalDescentDistance);
-                SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", distanceToTod);
-                SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 1);
+                const WT_CJ4_TOD_DISTANCE = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
+                const WT_CJ4_TOD_REMAINING = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
+                const WT_CJ4_ADV_DES_ACTIVE = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number");
+                if (WT_CJ4_TOD_DISTANCE < horizontalDescentDistance - .1 || WT_CJ4_TOD_DISTANCE > horizontalDescentDistance + .1) {
+                    SimVar.SetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number", horizontalDescentDistance);
+                }
+                if (WT_CJ4_TOD_REMAINING < distanceToTod - .1 || WT_CJ4_TOD_REMAINING > distanceToTod + .1) {
+                    SimVar.SetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number", distanceToTod);
+                }
+                const desActive = distanceToTod > .1 ? 1 : 0;
+                if (WT_CJ4_ADV_DES_ACTIVE != desActive) {
+                    SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", distanceToTod > .1 ? 1 : 0);
+                }
             }
         } else {
             SimVar.SetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number", 0);
