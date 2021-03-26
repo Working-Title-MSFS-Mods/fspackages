@@ -51,10 +51,10 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
     }
 
     _clearDisplay() {
-        this._navTitle.innerHTML = "";
-        this._ident.innerHTML = "";
-        this._frequency.innerHTML = "";
-        this._dmeTitle.innerHTML = "";
+        this._navTitle.textContent = "";
+        this._ident.textContent = "";
+        this._frequency.textContent = "";
+        this._dmeTitle.textContent = "";
         this._dme.innerHTML = "";
     }
 
@@ -63,7 +63,7 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
      * @param {WT_AirplaneNavSlot} nav
      */
     _updateNavTitle(nav) {
-        this._navTitle.innerHTML = nav.name;
+        this._navTitle.textContent = nav.name;
     }
 
     /**
@@ -71,7 +71,7 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
      * @param {WT_AirplaneNavSlot} nav
      */
     _updateIdent(nav) {
-        this._ident.innerHTML = nav.isReceiving() ? nav.ident() : "";
+        this._ident.textContent = nav.isReceiving() ? nav.ident() : "";
     }
 
     /**
@@ -79,7 +79,7 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
      * @param {WT_AirplaneNavSlot} nav
      */
     _updateFrequency(nav) {
-        this._frequency.innerHTML = nav.activeFrequency().hertz(WT_Frequency.Prefix.MHz).toFixed(2);
+        this._frequency.textContent = nav.activeFrequency().hertz(WT_Frequency.Prefix.MHz).toFixed(2);
     }
 
     /**
@@ -87,7 +87,7 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
      * @param {WT_AirplaneNavSlot} nav
      */
     _updateDMETitle(nav, hasDME) {
-        this._dmeTitle.innerHTML = `DME${nav.index}`;
+        this._dmeTitle.textContent = `DME${nav.index}`;
     }
 
     /**

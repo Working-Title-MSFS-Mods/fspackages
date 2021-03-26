@@ -227,7 +227,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
     }
 
     _setMachDisplay(mach) {
-        this._mach.innerHTML = `M ${mach.toFixed(3).replace(/^0\./, ".")}`;
+        this._mach.textContent = `M ${mach.toFixed(3).replace(/^0\./, ".")}`;
     }
 
     _setTrendWarning(value) {
