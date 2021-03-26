@@ -1101,11 +1101,11 @@ class CJ4_FMC_ComControlPageTwo {
             } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
             } else {   
-            this.enterVhfFreq(this._fmc.inOut, 1);
+            this.enterVhfFreq(this._fmc.inOut, 2);
             }
         };
         this._fmc.onLeftInput[1] = () => {
-            this.enterVhfFreq(this._fmc.inOut, 1, true);
+            this.enterVhfFreq(this._fmc.inOut, 2, true);
         };
         this.bindPresets(this.currentPageNumber === 6 ? 2 : 5, 2, (this.currentPageNumber * 4) - 4);
         this._fmc.onNextPage = () => {
