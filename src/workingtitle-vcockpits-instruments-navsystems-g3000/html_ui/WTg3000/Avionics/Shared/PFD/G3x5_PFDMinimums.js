@@ -215,7 +215,7 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
     }
 
     _updateMode() {
-        this._mode.innerHTML = WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXT[this._context.model.mode];
+        this._mode.innerHTML = WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXTS[this._context.model.mode];
     }
 
     _setAltitudeDisplay(altitude) {
@@ -227,7 +227,7 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
     }
 
     _setState(state) {
-        this._wrapper.setAttribute("state", WT_G3x5_PFDMinimumsHTMLElement.STATE_ATTRIBUTE[state]);
+        this._wrapper.setAttribute("state", WT_G3x5_PFDMinimumsHTMLElement.STATE_ATTRIBUTES[state]);
     }
 
     _updateState() {
@@ -256,13 +256,13 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
         this._updateDisplay();
     }
 }
-WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXT = [
+WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXTS = [
     "NONE",
     "BARO",
     "COMP",
     "RA"
 ];
-WT_G3x5_PFDMinimumsHTMLElement.STATE_ATTRIBUTE = [
+WT_G3x5_PFDMinimumsHTMLElement.STATE_ATTRIBUTES = [
     "unknown",
     "above",
     "100",
