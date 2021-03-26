@@ -66,7 +66,6 @@ class CJ4_FMC_NavRadioPageOne {
 
     update() {
         // console.log("navradio.update()");
-        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.vhf2 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 2);
@@ -87,8 +86,8 @@ class CJ4_FMC_NavRadioPageOne {
         }
         // register refresh and bind to update which will only render on changes
         this._fmc.registerPeriodicPageRefresh(() => {
-            const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
-            if (AvionicsComp === 2) {
+            const avionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
+            if (avionicsComp === 2) {
                 CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
             } else {
                 this.update();
@@ -380,7 +379,7 @@ class CJ4_FMC_AtcControlPage {
     constructor(fmc) {
         this._fmc = fmc;
         this._isDirty = true;
-        this._pressalt = 0;
+        this._pressAlt = 0;
         fmc.clearDisplay();
 
         this._transponderMode = 1;
@@ -430,11 +429,11 @@ class CJ4_FMC_AtcControlPage {
 
         this._freqProxy.atc1 = SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number").toFixed(0).padStart(4, "0");
 
-        const pressalt = SimVar.GetSimVarValue("PRESSURE ALTITUDE", "feet");
+        const pressAlt = SimVar.GetSimVarValue("PRESSURE ALTITUDE", "feet");
 
-        if (pressalt !== this._pressalt) {
+        if (pressAlt !== this._pressAlt) {
             this._isDirty = true;
-            this._pressalt = " " + pressalt.toFixed(0).padStart(4);
+            this._pressAlt = " " + pressAlt.toFixed(0).padStart(4);
         }
 
         if (this._isDirty) {
@@ -450,37 +449,38 @@ class CJ4_FMC_AtcControlPage {
 
     render() {
 
-        const ModeSwitch = this._fmc._templateRenderer.renderSwitch(["ON", "STBY"], this.transponderMode, "blue");
+        const modeSwitch = this._fmc._templateRenderer.renderSwitch(["ON", "STBY"], this.transponderMode, "blue");
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
             ["ATC1", "ALT REPORT "],
             [this._freqMap.atc1 + "[green]", "ON[blue]/OFF[s-text disabled]"],
-            ["", "", " ALT[white]" + this._pressalt + "FT[green]"],
+            ["", "", " ALT[white]" + this._pressAlt + "FT[green]"],
             ["IDENT[s-text disabled]", "TEST[s-text disabled]", "ADC2     [blue s-text]"],
             [""],
             [""],
             [" SELECT"],
             ["ATC1[blue]/[white]ATC2[s-text disabled]"],
             ["MODE"],
-            [ModeSwitch],
+            [modeSwitch],
             [""],
             [""],
             [""]
         ]);
     }
-    // TODO - IDENT BUTTON
-    // this._fmc.onLeftInput[1] = () => {
-    // Ident here eventually......
-    // };
-
+    /**
+     *TODO - IDENT BUTTON
+     *   this._fmc.onLeftInput[1] = () => {
+     *       Ident here eventually......
+     *   };
+     */
     bindEvents() {
 
         this._fmc.onLeftInput[0] = () => {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
-            const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
-            if (AvionicsComp === 2) {
+            const avionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
+            if (avionicsComp === 2) {
                 CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
             } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
@@ -610,7 +610,6 @@ class CJ4_FMC_NavRadioDispatch {
 
     update() {
         // console.log("navradio.update()");
-        //console.log(SimVar.GetSimVarValue("L:XMLVAR_AVIONICS_IsComposite", "number"));
 
         this._freqProxy.vhf1 = this._fmc.radioNav.getVHFActiveFrequency(this._fmc.instrumentIndex, 1);
         this._freqProxy.rcl1 = this._fmc.radioNav.getVHFStandbyFrequency(this._fmc.instrumentIndex, 1);
@@ -625,8 +624,8 @@ class CJ4_FMC_NavRadioDispatch {
         }
         // register refresh and bind to update which will only render on changes
         this._fmc.registerPeriodicPageRefresh(() => {
-            const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
-            if (AvionicsComp === 2) {
+            const avionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
+            if (avionicsComp === 2) {
                 this.update();
             } else {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
@@ -751,10 +750,6 @@ class CJ4_FMC_NavRadioDispatch {
         this._fmc.onRightInput[4] = () => {
             this.transponderMode = this.transponderMode + 1;
         };
-
-        //       this._fmc.onRightInput[5] = () => {
-        //           CJ4_FMC_NavRadioPage.ShowPage3(this._fmc);
-        //       };
         this._fmc.onPrevPage = () => {
             CJ4_FMC_NavRadioDispatch.ShowPage2(this._fmc);
         };
@@ -776,7 +771,7 @@ class CJ4_FMC_NavRadioDispatch {
 // COM CONTROL PAGE
 
 class CJ4_FMC_ComControlPage {
-    constructor(fmc, radioIndex) {
+    constructor(fmc) {
         this.currentPageNumber = 1;
         this._fmc = fmc;
         this._isDirty = true;
@@ -818,31 +813,35 @@ class CJ4_FMC_ComControlPage {
             return true;
         }, 1000, false);
     }
+
     initialize() {
         const presetsString = WTDataStore.get(`WT_CJ4_COM_RADIO_PRESETS`, '[]');
         this.presets = JSON.parse(presetsString);
-        setInterval(() => {
-        }, 1000);
     }
+    /**
+    * Sets a com radio preset.
+    * @param index The index of the preset to set.
+    * @param frequency The frequency to set the preset to.
+    */
     setPreset(index, frequency) {
         this.presets[index] = frequency;
         WTDataStore.set(`WT_CJ4_COM_RADIO_PRESETS`, JSON.stringify(this.presets));
     }
+
     parseFrequencyInput(value) {
         let frequency = parseFloat(value);
         if (isFinite(frequency)) {
-            frequency = Math.round(frequency * 100) / 100;
-            if (frequency >= 118 && frequency <= 135.95) {
+            if (frequency >= 118 && frequency <= 135.950) {
                 return frequency;
             }
             if (frequency >= 18 && frequency <= 35.95) {
                 return frequency + 100;
             }
-            if (frequency >= 118 && frequency <= 359) {
+            if (frequency >= 180 && frequency <= 359) {
                 return (frequency / 10) + 100;
             }
             if (frequency >= 1800 && frequency <= 3595) {
-                return (frequency / 100) + 1000;
+                return (frequency / 100) + 100;
             }
         }
         return NaN;
@@ -867,15 +866,17 @@ class CJ4_FMC_ComControlPage {
         }
         this.templateRenderer.setTemplateRaw(rows);
     }
+
     displayPreset(preset) {
         var _a;
         const presetFrequency = this.presets[preset];
-        return (_a = presetFrequency === null || presetFrequency === void 0 ? void 0 : presetFrequency.toFixed(2)) !== null && _a !== void 0 ? _a : '';
+        return (_a = presetFrequency === null || presetFrequency === void 0 ? void 0 : presetFrequency.toFixed(3)) !== null && _a !== void 0 ? _a : '';
     }
+
     enterVhfFreq(value, index, isStandby = false) {
         const numValue = CJ4_FMC_NavRadioPage.parseRadioInput(value);
         this._fmc.clearUserInput();
-        if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
+        if (isFinite(numValue) && numValue >= 118 && numValue <= 136.950 && RadioNav.isHz833Compliant(numValue)) {
             this._fmc.radioNav.setVHFStandbyFrequency(this._fmc.instrumentIndex, index, numValue).then(() => {
                 if (!isStandby) {
                     this._fmc.radioNav.swapVHFFrequencies(this._fmc.instrumentIndex, index);
@@ -893,10 +894,11 @@ class CJ4_FMC_ComControlPage {
             this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
         }
     }
+    
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
-            const AvionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
-            if (AvionicsComp === 2) {
+            const avionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
+            if (avionicsComp === 2) {
                 CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
             } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
@@ -908,7 +910,7 @@ class CJ4_FMC_ComControlPage {
         this._fmc.onLeftInput[1] = () => {
             this.enterVhfFreq(this._fmc.inOut, 1, true);
         };
-        this.bindPresets(this.currentPageNumber === 5 ? 2 : 4, 2, (this.currentPageNumber * 2) - 2);
+        this.bindPresets(this.currentPageNumber === 6 ? 2 : 5, 2, (this.currentPageNumber * 4) - 4);
         this._fmc.onNextPage = () => {
             this.currentPageNumber = Math.min(this.currentPageNumber + 1, 5);
             this.render();
@@ -944,7 +946,7 @@ class CJ4_FMC_ComControlPage {
     handleFreqPressed(getter, setter) {
         if (this._fmc.inOut !== undefined && this._fmc.inOut !== '') {
             const numValue = this.parseFrequencyInput(this._fmc.inOut);
-            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.9 && RadioNav.isHz833Compliant(numValue)) {
+            if (isFinite(numValue) && numValue >= 118 && numValue <= 136.950 && RadioNav.isHz833Compliant(numValue)) {
                 setter(numValue);
                 this._fmc.inOut = '';
             }
@@ -953,7 +955,7 @@ class CJ4_FMC_ComControlPage {
             }
         }
         else {
-            this._fmc.inOut = getter().toFixed(2);
+            this._fmc.inOut = getter().toFixed(3);
         }
     }
 
