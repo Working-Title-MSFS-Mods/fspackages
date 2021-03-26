@@ -287,8 +287,8 @@ class WT_G3x5_PFDWindDataHTMLElement extends HTMLElement {
         headwind = Math.abs(headwind) > directionMinimumKnots ? headwind : 0;
         crosswind = Math.abs(crosswind) > directionMinimumKnots ? crosswind : 0;
 
-        this._option1Headwind.innerHTML = Math.abs(headwind).toFixed(0);
-        this._option1Crosswind.innerHTML = Math.abs(crosswind).toFixed(0);
+        this._option1Headwind.textContent = Math.abs(headwind).toFixed(0);
+        this._option1Crosswind.textContent = Math.abs(crosswind).toFixed(0);
 
         this._option1ArrowVertical.setAttribute("style", `transform: rotate(${headwind >= 0 ? 0 : 180}deg);`);
         this._option1ArrowHorizontal.setAttribute("style", `transform: rotate(${crosswind >= 0 ? 0 : 180}deg);`);
@@ -299,7 +299,7 @@ class WT_G3x5_PFDWindDataHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} speed
      */
     _setOption2Speed(speed) {
-        this._option2Speed.innerHTML = speed.asUnit(WT_Unit.KNOT).toFixed(0);
+        this._option2Speed.textContent = speed.asUnit(WT_Unit.KNOT).toFixed(0);
     }
 
     /**

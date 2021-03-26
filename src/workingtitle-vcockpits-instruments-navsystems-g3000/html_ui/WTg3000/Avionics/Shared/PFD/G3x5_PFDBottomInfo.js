@@ -529,7 +529,7 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
         } else {
             text = "";
         }
-        this._identValue.innerHTML = text;
+        this._identValue.textContent = text;
     }
 
     _updateDistance(source, hasData) {
@@ -551,7 +551,7 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
         } else {
             text = "";
         }
-        this._bearingValue.innerHTML = text;
+        this._bearingValue.textContent = text;
     }
 
     _updateDisplay() {
