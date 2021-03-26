@@ -42,7 +42,7 @@ class WT_ExponentialSmoother {
 
     _calculateFactor(dt) {
         if (dt > this.dtThreshold) {
-            return 1;
+            return 0;
         } else {
             return Math.pow(0.5, dt / this.constant);
         }
