@@ -15,14 +15,6 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
 
     /**
      * @readonly
-     * @type {Number}
-     */
-    get altimeterIndex() {
-        return this._altimeterIndex;
-    }
-
-    /**
-     * @readonly
      * @type {WT_G3x5_PFDAltimeterHTMLElement}
      */
     get htmlElement() {
@@ -45,16 +37,15 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
         return this._metersSetting;
     }
 
-    _getAltimeterIndex() {
-        /*
+    _getAltimeter() {
+        let index = 1;
         if (this.instrument.instrumentXmlConfig) {
             let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
             if (altimeterIndexElems.length > 0) {
-                return parseInt(altimeterIndexElems[0].textContent) + 1;
+                index = parseInt(altimeterIndexElems[0].textContent) + 1;
             }
         }
-        */
-        return 1;
+        return this.instrument.airplane.sensors.getAltimeter(index);
     }
 
     /**
@@ -73,7 +64,7 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
     }
 
     init(root) {
-        this._altimeterIndex = this._getAltimeterIndex();
+        this._altimeter = this._getAltimeter();
         this._model = this._createModel();
 
         let container = root.querySelector(`#InstrumentsContainer`);
@@ -114,15 +105,15 @@ WT_G3x5_PFDAltimeter.BARO_UNITS = [
 class WT_G3x5_PFDAltimeterModel {
     /**
      * @param {WT_G3x5_PFD} instrument
-     * @param {Number} index
+     * @param {WT_AirplaneAltimeter} altimeter
      */
-    constructor(instrument, index, radarAltitude) {
+    constructor(instrument, altimeter, radarAltitude) {
         this._instrument = instrument;
-        this._index = index;
+        this._altimeter = altimeter;
         this._radarAltitude = radarAltitude;
 
         this._showMeters = false;
-        this._baroPressureModel = new WT_NumberUnitModelSimVar(WT_Unit.HPA, `KOHLSMAN SETTING MB:${this._index}`, "millibars", undefined, true);
+        this._baroPressureModel = new WT_NumberUnitModelSimVar(WT_Unit.HPA, `KOHLSMAN SETTING MB:${this._altimeter.index}`, "millibars", undefined, true);
 
         this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR);
         this._lastIASKnot = 0;
@@ -291,7 +282,7 @@ class WT_G3x5_PFDAltimeterModel {
     }
 
     _updateAltitude() {
-        this.airplane.sensors.altitudeIndicated(this._index, this._indicatedAltitude);
+        this._altimeter.altitudeIndicated(this._indicatedAltitude);
     }
 
     _updateGroundAltitude() {
