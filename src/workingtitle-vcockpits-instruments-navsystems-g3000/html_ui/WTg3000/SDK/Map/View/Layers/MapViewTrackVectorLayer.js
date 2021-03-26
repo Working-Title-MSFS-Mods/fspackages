@@ -15,7 +15,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewTrackVectorLayer.OPTIONS_DEF);
 
         this._vectorLayer = new WT_MapViewCanvas(false, true);
-
         this.addSubLayer(this._vectorLayer);
 
         this._lastTime = 0;
@@ -65,18 +64,14 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         }
     }
 
-    /**
-     * Calculates an appropriate exponential smoothing factor to use.
-     * @param {WT_MapViewState} state - the current map view state.
-     * @returns {Number} - a smoothing factor.
-     */
-    _calculateSmoothingFactor(state) {
-        let dt = state.currentTime / 1000 - this._lastTime;
-        if (dt > WT_MapViewTrackVectorLayer.SMOOTHING_MAX_TIME_DELTA) {
-            return 1;
-        } else {
-            return Math.pow(0.5, dt * this.smoothingConstant);
-        }
+    _initTurnSpeedSmoother() {
+        this._turnSpeedSmoother = new WT_ExponentialSmoother(this.smoothingConstant, 0, WT_MapViewTrackVectorLayer.SMOOTHING_MAX_TIME_DELTA);
+    }
+
+    onAttached(state) {
+        super.onAttached(state);
+
+        this._initTurnSpeedSmoother(state);
     }
 
     _setLastDrawnBounds(left, top, width, height) {
@@ -84,16 +79,6 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         this._lastDrawnBounds.top = top;
         this._lastDrawnBounds.width = width;
         this._lastDrawnBounds.height = height;
-    }
-
-    /**
-     * Applies exponential smoothing (i.e. exponential moving average) to a turn speed value.
-     * @param {Number} turnSpeed - the value to smooth.
-     * @param {Number} factor - the smoothing factor to use.
-     * @returns {Number} - the smoothed value.
-     */
-    _smoothTurnSpeed(turnSpeed, factor) {
-        return turnSpeed * factor + this._lastTurnSpeed * (1 - factor);
     }
 
     /**
@@ -117,7 +102,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
     _calculateDynamicVector(state) {
         let airplane = state.model.airplane;
         let timeStep = this._calculateDynamicTimeStep(state);
-        let smoothingFactor = this._calculateSmoothingFactor(state);
+        let dt = state.currentTime / 1000 - this._lastTime;
 
         let resolution = state.projection.viewResolution.asUnit(WT_Unit.METER);
 
@@ -129,8 +114,7 @@ class WT_MapViewTrackVectorLayer extends WT_MapViewMultiLayer {
         let windDirectionRad = (airplane.environment.windDirection(this._tempTrueBearing).number + state.projection.rotation + 180) * Avionics.Utils.DEG2RAD;
         let dynamicHeadingDeltaMaxRad = this.dynamicHeadingDeltaMax * Avionics.Utils.DEG2RAD;
 
-        turnSpeedRad = this._smoothTurnSpeed(turnSpeedRad, smoothingFactor);
-        this._lastTurnSpeed = turnSpeedRad;
+        turnSpeedRad = this._turnSpeedSmoother.next(turnSpeedRad, dt);
 
         let lookahead = state.model.trackVector.lookahead.asUnit(WT_Unit.SECOND);
         let planeVelocityPx = new WT_GVector2(0, 0);
@@ -276,7 +260,7 @@ WT_MapViewTrackVectorLayer.OPTIONS_DEF = {
     dynamicLookaheadMax: {default: WT_Unit.SECOND.createNumber(60)},
     dynamicTargetResolution: {default: 5, auto: true},
     dynamicHeadingDeltaMax: {default: 90, auto: true},
-    smoothingConstant: {default: 50, auto: true},
+    smoothingConstant: {default: 1, auto: true},
 
     strokeWidth: {default: 4, auto: true},
     strokeColor: {default: "cyan", auto: true},
