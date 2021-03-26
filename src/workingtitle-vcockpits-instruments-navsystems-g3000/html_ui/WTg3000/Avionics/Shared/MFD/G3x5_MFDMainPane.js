@@ -37,15 +37,17 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
         return this._controller;
     }
 
+    _getAirspeedSensorIndex() {
+        return 1;
+    }
+
     _getAltimeterIndex() {
-        /*
         if (this.instrument.instrumentXmlConfig) {
             let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
             if (altimeterIndexElems.length > 0) {
                 return parseInt(altimeterIndexElems[0].textContent) + 1;
             }
         }
-        */
         return 1;
     }
 
@@ -133,8 +135,8 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
     }
 
     _initHalfPanes() {
-        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this.instrument.airplane, this._altimeterIndex, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
-        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this.instrument.airplane, this._altimeterIndex, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this.instrument.airplane, this._airspeedSensorIndex, this._altimeterIndex, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this.instrument.airplane, this._airspeedSensorIndex, this._altimeterIndex, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
     }
 
     /**
@@ -145,6 +147,7 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
         this._htmlElement = root;
 
         this._altimeterIndex = this._getAltimeterIndex();
+        this._airspeedSensorIndex = this._getAirspeedSensorIndex();
         this._initBorderData();
         this._initRoadData();
         this._initHalfPanes();
@@ -259,7 +262,7 @@ WT_G3000MFDMainPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
 customElements.define("mfd-mainpane", WT_G3000MFDMainPaneHTMLElement);
 
 class WT_G3x5_MFDHalfPane {
-    constructor(htmlElement, instrumentID, halfPaneID, airplane, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData) {
+    constructor(htmlElement, instrumentID, halfPaneID, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData) {
         this._htmlElement = htmlElement;
 
         let id = `${instrumentID}-${halfPaneID}`;
@@ -280,7 +283,7 @@ class WT_G3x5_MFDHalfPane {
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
         this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
 
-        this._navMap = new WT_G3x5_NavMap(id, airplane, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData);
+        this._navMap = new WT_G3x5_NavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData);
         this._weatherRadar = new WT_G3x5_WeatherRadar(id, airplane);
         this._waypointInfo = new WT_G3x5_WaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers);
 

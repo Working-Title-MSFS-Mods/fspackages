@@ -11,7 +11,7 @@ class WT_G5000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
     }
 
     _createModel() {
-        return new WT_G5000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._createSpeedBugCollection());
+        return new WT_G5000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._airspeedSensor, this._createSpeedBugCollection());
     }
 
     _getYellowStripMin() {
@@ -59,8 +59,8 @@ WT_G5000_PFDAirspeedIndicator.STRIP_YELLOW_AOA_NORM_MIN = 0.7;
 WT_G5000_PFDAirspeedIndicator.STRIP_RED_AOA_NORM_MIN = 0.9;
 
 class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
-    constructor(airplane, speedBugCollection) {
-        super(airplane, speedBugCollection);
+    constructor(airplane, airspeedSensor, speedBugCollection) {
+        super(airplane, airspeedSensor, speedBugCollection);
 
         this._aoaCoefSmoother = new WT_ExponentialSmoother(WT_G5000_PFDAirspeedIndicatorModel.AOA_SMOOTHING_CONSTANT);
         this._aoaCoef = 0;

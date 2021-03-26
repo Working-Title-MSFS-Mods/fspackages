@@ -9,7 +9,7 @@ class WT_G3000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
     }
 
     _createModel() {
-        return new WT_G3000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._createSpeedBugCollection());
+        return new WT_G3000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._airspeedSensor, this._createSpeedBugCollection());
     }
 
     _createHTMLElement() {
@@ -42,8 +42,8 @@ WT_G3000_PFDAirspeedIndicator.TREND_THRESHOLD = 1;
 WT_G3000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD = 0.3;
 
 class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorModel {
-    constructor(airplane, speedBugCollection) {
-        super(airplane, speedBugCollection);
+    constructor(airplane, airspeedSensor, speedBugCollection) {
+        super(airplane, airspeedSensor, speedBugCollection);
 
         this._minSpeed = WT_Unit.KNOT.createNumber(0);
     }

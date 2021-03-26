@@ -174,11 +174,20 @@ class WT_AirplaneComponent {
 }
 
 class WT_AirplaneSensors extends WT_AirplaneComponent {
-    constructor(airplane, airspeedIndicatorCount = 2, altimeterCount = 2) {
+    constructor(airplane, airspeedSensorCount = 2, altimeterCount = 2) {
         super(airplane);
 
-        //this._airspeedIndicators = [...Array(airspeedIndicatorCount)].map((value, index) => new WT_AirplaneAirspeedIndicator(index));
+        this._airspeedSensors = [...Array(airspeedSensorCount)].map((value, index) => new WT_AirplaneAirspeedSensor(index));
         this._altimeters = [...Array(altimeterCount)].map((value, index) => new WT_AirplaneAltimeter(index + 1));
+    }
+
+    /**
+     * Gets an indexed airspeed sensor.
+     * @param {Number} index - the index of the airspeed sensor.
+     * @returns {WT_AirplaneAirspeedSensor} an airspeed sensor.
+     */
+    getAirspeedSensor(index) {
+        return this._airspeedSensors[index - 1];
     }
 
     /**
@@ -196,7 +205,7 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      *                                      object will be created with units of knots.
      * @returns {WT_NumberUnit} the current indicated airspeed of the airplane.
      */
-    ias(reference) {
+    ias2(reference) {
         let value = SimVar.GetSimVarValue("AIRSPEED INDICATED", "knots");
         return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
     }
@@ -207,7 +216,7 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      *                                      object will be created with units of knots.
      * @returns {WT_NumberUnit} the current true airspeed of the airplane.
      */
-    tas(reference) {
+    tas2(reference) {
         let value = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
         return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
     }
@@ -216,7 +225,7 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      * Gets the airplane's current true airspeed in mach units.
      * @returns {Number} the airplane's current true airspeed in mach units.
      */
-    mach() {
+    mach2() {
         return SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
     }
 
@@ -293,6 +302,51 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      */
     iasToMach(ias) {
         return SimVar.GetGameVarValue("FROM KIAS TO MACH", "number", ias.asUnit(WT_Unit.KNOT));
+    }
+}
+
+class WT_AirplaneAirspeedSensor {
+    constructor(index) {
+        this._index = index;
+    }
+
+    /**
+     * The index of this airspeed sensor.
+     * @readonly
+     * @type {Number}
+     */
+    get index() {
+        return this._index;
+    }
+
+    /**
+     * Gets this sensor's current calculated indicated airspeed.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} this sensor's current calculated indicated airspeed.
+     */
+    ias(reference) {
+        let value = SimVar.GetSimVarValue(`AIRSPEED INDICATED:${this.index}`, "knots");
+        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+    }
+
+    /**
+     * Gets this sensor's current calculated true airspeed.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of knots.
+     * @returns {WT_NumberUnit} this sensor's current calculated true airspeed.
+     */
+    tas(reference) {
+        let value = SimVar.GetSimVarValue(`AIRSPEED TRUE:${this.index}`, "knots");
+        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
+    }
+
+    /**
+     * Gets this sensor's current calculated true airspeed in mach units.
+     * @returns {Number} this sensor's current calculated true airspeed in mach units.
+     */
+    mach() {
+        return SimVar.GetSimVarValue(`AIRSPEED MACH:${this.index}`, "mach");
     }
 }
 
