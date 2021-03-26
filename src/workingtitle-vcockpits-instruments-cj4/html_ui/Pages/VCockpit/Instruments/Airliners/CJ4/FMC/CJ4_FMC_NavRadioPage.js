@@ -1046,8 +1046,8 @@ class CJ4_FMC_ComControlPageTwo {
     }
     render() {
         const rows = [];
-        rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM1 CONTROL[blue]`]);
-        rows.push([ ` COM1`, 'SQUELCH ']);
+        rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM2 CONTROL[blue]`]);
+        rows.push([ ` COM2`, 'SQUELCH ']);
         rows.push([this._freqMap.vhf2.toFixed(3) + '[green]', 'ON[blue]/OFF[s-text disabled]']);
         rows.push([' RECALL']);
         rows.push([this._freqMap.rcl2.toFixed(3), 'TEST[s-text disabled]']);
