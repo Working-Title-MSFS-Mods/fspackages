@@ -13,10 +13,11 @@ class WT_G3x5_NavMap {
      * @param {WT_MapViewRoadLabelCollection} roadLabelData
      * @param {*} layerOptions
      */
-    constructor(instrumentID, airplane, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
 
         this._airplane = airplane;
+        this._airspeedSensorIndex = airspeedSensorIndex;
         this._altimeterIndex = altimeterIndex;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
@@ -139,7 +140,7 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer(this._altimeterIndex));
-        this.view.addLayer(new WT_MapViewTrackVectorLayer());
+        this.view.addLayer(new WT_MapViewTrackVectorLayer(this._airspeedSensorIndex));
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(state) {

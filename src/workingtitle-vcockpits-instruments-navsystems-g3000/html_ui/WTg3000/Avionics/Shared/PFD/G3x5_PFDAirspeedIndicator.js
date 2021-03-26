@@ -8,6 +8,10 @@ class WT_G3x5_PFDAirspeedIndicator extends WT_G3x5_PFDElement {
         return this._htmlElement;
     }
 
+    _getAirspeedSensor() {
+        return this.instrument.airplane.sensors.getAirspeedSensor(1);
+    }
+
     _createModel() {
     }
 
@@ -15,6 +19,7 @@ class WT_G3x5_PFDAirspeedIndicator extends WT_G3x5_PFDElement {
     }
 
     init(root) {
+        this._airspeedSensor = this._getAirspeedSensor();
         this._model = this._createModel();
 
         let container = root.querySelector(`#InstrumentsContainer`);
@@ -33,8 +38,9 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_SpeedBugCollection} speedBugCollection
      */
-    constructor(airplane, speedBugCollection) {
+    constructor(airplane, airspeedSensor, speedBugCollection) {
         this._airplane = airplane;
+        this._airspeedSensor = airspeedSensor;
 
         this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR);
         this._lastIASKnot = 0;
@@ -42,6 +48,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
 
         this._ias = WT_Unit.KNOT.createNumber(0);
         this._iasTrend = new WT_CompoundUnit([WT_Unit.KNOT], [WT_Unit.SECOND]).createNumber(0);
+        this._mach = 0;
         this._refSpeed = WT_Unit.KNOT.createNumber(0);
         this._refMach = 0;
 
@@ -81,7 +88,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
      * @type {Number}
      */
     get mach() {
-        return this._airplane.sensors.mach();
+        return this._mach;
     }
 
     /**
@@ -128,7 +135,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
     }
 
     _updateIAS() {
-        this._airplane.sensors.ias(this._ias);
+        this._airspeedSensor.ias(this._ias);
     }
 
     _updateTrend() {
@@ -142,6 +149,10 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
         this._lastTrendTime = time;
     }
 
+    _updateMach() {
+        this._mach = this._airspeedSensor.mach();
+    }
+
     _updateRefSpeed() {
         this._airplane.autopilot.referenceAirspeed(this._refSpeed);
     }
@@ -153,6 +164,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
     update() {
         this._updateIAS();
         this._updateTrend();
+        this._updateMach();
         this._updateRefSpeed();
         this._updateRefMach();
     }
