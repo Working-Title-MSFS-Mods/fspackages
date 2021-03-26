@@ -469,22 +469,18 @@ class LNavDirector {
     const approach = this.fpm.getApproachWaypoints();
     if (approach.length > 1) {
       let finalApproachFix = approach[approach.length - 2];
-      //let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
-
-      // THERE IS SOMETHING WRONG HERE BECAUSE the finalApproachFix.cumulativeDistanceInFp will never be under 3;
-      // THIS SHOULD BE LOOKING TO SEE WHETHER the FAF selected is < 3 nm from the arrival runway and, if so, the FAF is
-      // ONE FURTHER FIX BACK. TO FIX LATER.
-      // if (finalApproachFixDistance < 3 && approach.length >= 3) {
-      //   finalApproachFix = approach[approach.length - 3];
-      // }
+      const runwayFix = approach[approach.length - 1];
+      let finalApproachFixDistance = runwayFix.cumulativeDistanceInFp - finalApproachFix.cumulativeDistanceInFp;
+            
+      if (finalApproachFixDistance < 3 && approach.length >= 3) {
+        finalApproachFix = approach[approach.length - 3];
+      }
       let finalApproachFixDistance = 100;
       if (finalApproachFix && finalApproachFix.infos && finalApproachFix.infos.coordinates) {
         finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
       }
-
       return finalApproachFixDistance;
     }
-
     return NaN;
   }
 
