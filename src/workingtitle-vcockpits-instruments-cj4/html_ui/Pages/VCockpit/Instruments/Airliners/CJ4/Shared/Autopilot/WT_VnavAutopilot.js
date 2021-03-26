@@ -532,7 +532,7 @@ class WT_VerticalAutopilot {
     checkVnavState() {
         switch (this.vnavState) {
             case this._vnavState:
-                if (this._vnavState === VnavState.PATH && this._vnavPathStatus === VnavPathStatus.NONE) {
+                if ((this._vnavState === VnavState.PATH || this._vnavState === VnavState.DIRECT) && this._vnavPathStatus === VnavPathStatus.NONE) {
                     this._vnavPathStatus = VnavPathStatus.PATH_EXISTS;
                 }
                 break;

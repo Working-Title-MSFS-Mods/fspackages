@@ -1023,6 +1023,11 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
+                } else if (verticalMode == "PTCH" || verticalMode == "VPTCH") {
+                    const pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
+                    this.AP_VerticalActive.setDisplayValue(verticalMode);
+                    this.AP_ModeReference_Icon.style.display = "none";
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, (pitchRef < 0 ? "&emsp;+" : "&emsp;") + fastToFixed(-1 * pitchRef, 1));
                 } else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";

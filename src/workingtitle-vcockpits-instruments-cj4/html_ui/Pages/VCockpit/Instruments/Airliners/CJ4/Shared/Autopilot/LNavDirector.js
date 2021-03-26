@@ -345,7 +345,9 @@ class LNavDirector {
    */
   tryActivateIfArmed(legStart, legEnd, planeState, navSensitivity) {
     const armedState = this.navModeSelector.currentLateralArmedState;
-    if (armedState === LateralNavModeState.LNAV || (armedState === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV)) {
+    const agl = Simplane.getAltitudeAboveGround();
+    if ((armedState === LateralNavModeState.LNAV || (armedState === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV))
+      && !planeState.onGround && agl > 400) {
       const xtk = AutopilotMath.crossTrack(legStart, legEnd, planeState.position);
       let activationXtk = 1.9;
 
