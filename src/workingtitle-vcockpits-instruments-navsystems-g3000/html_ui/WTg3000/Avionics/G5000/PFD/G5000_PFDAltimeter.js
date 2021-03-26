@@ -1,4 +1,11 @@
 class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
+    constructor() {
+        super();
+
+        this._pfdBaroSetting = WT_Unit.HPA.createNumber(0);
+        this._skipBaroSync = false;
+    }
+
     _createModel() {
         let radarAltitude = new WT_G3x5_RadarAltitude(this.instrument.airplane, [
             {
@@ -14,7 +21,7 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
                 precision: WT_Unit.FOOT.createNumber(50)
             }
         ]);
-        return new WT_G3x5_PFDAltimeterModel(this.instrument, this.altimeterIndex, radarAltitude);
+        return new WT_G3x5_PFDAltimeterModel(this.instrument, this._altimeter, radarAltitude);
     }
 
     _createHTMLElement() {
@@ -38,13 +45,43 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
         return htmlElement;
     }
 
+    _defineAutopilotAltimeter() {
+        this._autopilotAltimeter = this.instrument.airplane.sensors.getAltimeter(1);
+    }
+
+    init(root) {
+        super.init(root);
+
+        this._defineAutopilotAltimeter();
+    }
+
+    _syncBaroSettings() {
+        if (this._skipBaroSync) {
+            this._skipBaroSync = false;
+            return;
+        }
+
+        this._altimeter.baroPressure(this._pfdBaroSetting);
+        this._autopilotAltimeter.setBaroPressure(this._pfdBaroSetting);
+    }
+
+    onUpdate(deltaTime) {
+        this._syncBaroSettings();
+
+        super.onUpdate(deltaTime);
+    }
+
     _handleBaroEvent(event) {
         switch (event) {
             case "BARO_DEC":
-                this.instrument.airplane.sensors.decrementBaroSetting(this.altimeterIndex);
+                this._altimeter.decrementBaroPressure();
+                this._autopilotAltimeter.decrementBaroPressure();
+                this._skipBaroSync = true;
                 break;
             case "BARO_INC":
-                this.instrument.airplane.sensors.incrementBaroSetting(this.altimeterIndex);
+                this._altimeter.incrementBaroPressure();
+                this._autopilotAltimeter.decrementBaroPressure();
+                this._skipBaroSync = true;
                 break;
         }
     }
