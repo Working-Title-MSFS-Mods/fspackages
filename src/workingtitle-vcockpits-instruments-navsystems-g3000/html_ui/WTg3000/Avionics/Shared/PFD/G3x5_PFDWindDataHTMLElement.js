@@ -258,7 +258,7 @@ class WT_G3x5_PFDWindDataHTMLElement extends HTMLElement {
     }
 
     _setMode(mode) {
-        this._wrapper.setAttribute("mode", WT_G3x5_PFDWindDataHTMLElement.MODE_ATTRIBUTE[mode]);
+        this._wrapper.setAttribute("mode", WT_G3x5_PFDWindDataHTMLElement.MODE_ATTRIBUTES[mode]);
     }
 
     _updateMode() {
@@ -367,7 +367,7 @@ class WT_G3x5_PFDWindDataHTMLElement extends HTMLElement {
     }
 }
 WT_G3x5_PFDWindDataHTMLElement.DIRECTION_MINIMUM_SPEED = WT_Unit.KNOT.createNumber(1);
-WT_G3x5_PFDWindDataHTMLElement.MODE_ATTRIBUTE = [
+WT_G3x5_PFDWindDataHTMLElement.MODE_ATTRIBUTES = [
     "off",
     "option1",
     "option2",

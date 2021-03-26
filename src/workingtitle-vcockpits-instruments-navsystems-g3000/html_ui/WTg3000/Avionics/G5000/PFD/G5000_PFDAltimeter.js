@@ -208,7 +208,7 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
     }
 
     _setMinimumsState(state) {
-        this._wrapper.setAttribute("minimums-state", WT_G5000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTE[state]);
+        this._wrapper.setAttribute("minimums-state", WT_G5000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTES[state]);
     }
 
     _setBaroNumberText(text) {
@@ -232,17 +232,17 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
     }
 
     _setAlertState(state) {
-        this._wrapper.setAttribute("alert", WT_G5000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTE[state]);
+        this._wrapper.setAttribute("alert", WT_G5000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTES[state]);
     }
 }
-WT_G5000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTE = [
+WT_G5000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTES = [
     "none",
     "1000",
     "200",
     "captured",
     "deviation"
 ];
-WT_G5000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTE = [
+WT_G5000_PFDAltimeterAltitudeHTMLElement.MINIMUMS_STATE_ATTRIBUTES = [
     "unknown",
     "above",
     "100",

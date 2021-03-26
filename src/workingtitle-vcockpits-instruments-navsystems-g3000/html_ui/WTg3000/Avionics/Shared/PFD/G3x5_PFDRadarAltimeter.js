@@ -184,7 +184,7 @@ class WT_G3x5_PFDRadarAltimeterHTMLElement extends HTMLElement {
     }
 
     _setAlert(state) {
-        this._wrapper.setAttribute("alert", WT_G3x5_PFDRadarAltimeterHTMLElement.ALERT_ATTRIBUTE[state]);
+        this._wrapper.setAttribute("alert", WT_G3x5_PFDRadarAltimeterHTMLElement.ALERT_ATTRIBUTES[state]);
     }
 
     _updateAlert() {
@@ -205,7 +205,7 @@ class WT_G3x5_PFDRadarAltimeterHTMLElement extends HTMLElement {
         this._updateDisplay();
     }
 }
-WT_G3x5_PFDRadarAltimeterHTMLElement.ALERT_ATTRIBUTE = [
+WT_G3x5_PFDRadarAltimeterHTMLElement.ALERT_ATTRIBUTES = [
     "none",
     "belowminimums"
 ];
