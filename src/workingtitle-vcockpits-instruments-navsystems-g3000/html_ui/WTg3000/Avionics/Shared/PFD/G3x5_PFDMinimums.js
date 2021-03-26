@@ -215,11 +215,11 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
     }
 
     _updateMode() {
-        this._mode.innerHTML = WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXTS[this._context.model.mode];
+        this._mode.textContent = WT_G3x5_PFDMinimumsHTMLElement.MODE_TEXTS[this._context.model.mode];
     }
 
     _setAltitudeDisplay(altitude) {
-        this._alt.innerHTML = altitude.asUnit(WT_Unit.FOOT).toFixed(0);
+        this._alt.textContent = altitude.asUnit(WT_Unit.FOOT).toFixed(0);
     }
 
     _updateAltitude() {

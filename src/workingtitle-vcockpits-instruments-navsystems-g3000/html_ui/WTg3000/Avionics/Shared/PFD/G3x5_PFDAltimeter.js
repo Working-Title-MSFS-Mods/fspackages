@@ -1232,7 +1232,7 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
 
     _setPointerDisplay(fpm) {
         let text = `${Math.round(Math.abs(fpm) / 50) * 50}`;
-        this._pointerNumber.innerHTML = text;
+        this._pointerNumber.textContent = text;
         this._pointerSign.setAttribute("show", `${fpm < 0}`);
     }
 
@@ -1256,7 +1256,7 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
     }
 
     _setReferenceNumber(fpm) {
-        this._reference.innerHTML = `${fpm.toFixed(0)}`;
+        this._reference.textContent = `${fpm.toFixed(0)}`;
     }
 
     _moveReferenceBug(pos) {
@@ -1581,9 +1581,9 @@ class WT_G3x5_PFDAltimeterVerticalTrackHTMLElement extends HTMLElement {
         let isPreviewActive = this._context.model.isGlidePreviewActive;
 
         if (mode === WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDESLOPE || mode === WT_G3x5_PFDAltimeterModel.VTrackMode.GLIDEPATH || isPreviewActive) {
-            this._label.innerHTML = "G";
+            this._label.textContent = "G";
         } else if (mode === WT_G3x5_PFDAltimeterModel.VTrackMode.VERTICAL_DEVIATION) {
-            this._label.innerHTML = "V";
+            this._label.textContent = "V";
         }
     }
 

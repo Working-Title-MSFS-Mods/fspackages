@@ -644,7 +644,7 @@ class WT_G3x5_PFDAirspeedIndicatorSpeedBug extends HTMLElement {
     }
 
     _updateLabel() {
-        this._label.innerHTML = this._labelText;
+        this._label.textContent = this._labelText;
     }
 
     _updateShow() {

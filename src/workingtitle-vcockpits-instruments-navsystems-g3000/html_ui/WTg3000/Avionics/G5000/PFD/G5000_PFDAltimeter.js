@@ -189,8 +189,8 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         let string = this._getAltString(number);
         let big = string.substring(0, string.length - 2);
         let small = string.substring(string.length - 2);
-        this._selectedAltBig.innerHTML = big;
-        this._selectedAltSmall.innerHTML = small;
+        this._selectedAltBig.textContent = big;
+        this._selectedAltSmall.textContent = small;
     }
 
     _moveSelectedAltitudeBug(tapePos) {
@@ -212,11 +212,11 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
     }
 
     _setBaroNumberText(text) {
-        this._baroNumber.innerHTML = text;
+        this._baroNumber.textContent = text;
     }
 
     _setBaroUnitText(text) {
-        this._baroUnit.innerHTML = text;
+        this._baroUnit.textContent = text;
     }
 
     _showMeters(value) {

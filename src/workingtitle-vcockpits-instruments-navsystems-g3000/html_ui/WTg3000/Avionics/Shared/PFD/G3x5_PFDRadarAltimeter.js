@@ -176,7 +176,7 @@ class WT_G3x5_PFDRadarAltimeterHTMLElement extends HTMLElement {
     }
 
     _setAltitudeDisplay(altitude) {
-        this._alt.innerHTML = altitude.asUnit(WT_Unit.FOOT).toFixed(0);
+        this._alt.textContent = altitude.asUnit(WT_Unit.FOOT).toFixed(0);
     }
 
     _updateAltitude() {
