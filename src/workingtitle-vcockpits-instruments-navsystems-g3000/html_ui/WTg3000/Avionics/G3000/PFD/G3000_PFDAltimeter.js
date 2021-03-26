@@ -14,7 +14,7 @@ class WT_G3000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
                 precision: WT_Unit.FOOT.createNumber(50)
             }
         ]);
-        return new WT_G3x5_PFDAltimeterModel(this.instrument, this.altimeterIndex, radarAltitude);
+        return new WT_G3x5_PFDAltimeterModel(this.instrument, this._altimeter, radarAltitude);
     }
 
     _createHTMLElement() {

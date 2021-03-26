@@ -174,6 +174,22 @@ class WT_AirplaneComponent {
 }
 
 class WT_AirplaneSensors extends WT_AirplaneComponent {
+    constructor(airplane, airspeedIndicatorCount = 2, altimeterCount = 2) {
+        super(airplane);
+
+        //this._airspeedIndicators = [...Array(airspeedIndicatorCount)].map((value, index) => new WT_AirplaneAirspeedIndicator(index));
+        this._altimeters = [...Array(altimeterCount)].map((value, index) => new WT_AirplaneAltimeter(index + 1));
+    }
+
+    /**
+     * Gets an indexed altimeter.
+     * @param {Number} index - the index of the altimeter.
+     * @returns {WT_AirplaneAltimeter} an altimeter.
+     */
+    getAltimeter(index) {
+        return this._altimeters[index - 1];
+    }
+
     /**
      * Gets the airplane's current indicated airspeed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
@@ -237,46 +253,6 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets the current indicated altitude.
-     * @param {Number} [index] - the index of the altimeter to use to get the indicated altitude. Defaults to 1.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created with units of feet.
-     * @returns {WT_NumberUnit} the current indicated altitude.
-     */
-    altitudeIndicated(index = 1, reference) {
-        let value = SimVar.GetSimVarValue(`INDICATED ALTITUDE:${index}`, "feet");
-        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
-    }
-
-    /**
-     * Gets the current altimeter baro setting.
-     * @param {Number} [index] - the index of the altimeter. Defaults to 1.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created with units of hectopascals.
-     * @returns {WT_NumberUnit} the current altimeter baro setting.
-     */
-    baroSetting(index = 1, reference) {
-        let value = SimVar.GetSimVarValue(`KOHLSMAN SETTING MB:${index}`, "millibars");
-        return reference ? reference.set(value, WT_Unit.HPA) : new WT_NumberUnit(value, WT_Unit.HPA);
-    }
-
-    /**
-     * Increments the altimeter baro setting.
-     * @param {Number} [index] - the index of the altimeter. Defaults to 1.
-     */
-    decrementBaroSetting(index = 1) {
-        SimVar.SetSimVarValue(`K:KOHLSMAN_DEC`, "number", index);
-    }
-
-    /**
-     * Decrements the altimeter baro setting.
-     * @param {Number} [index] - the index of the altimeter. Defaults to 1.
-     */
-    incrementBaroSetting(index = 1) {
-        SimVar.SetSimVarValue(`K:KOHLSMAN_INC`, "number", index);
-    }
-
-    /**
      * Gets the airplane's current vertical speed.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created.
@@ -317,6 +293,61 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
      */
     iasToMach(ias) {
         return SimVar.GetGameVarValue("FROM KIAS TO MACH", "number", ias.asUnit(WT_Unit.KNOT));
+    }
+}
+
+class WT_AirplaneAltimeter {
+    constructor(index) {
+        this._index = index;
+    }
+
+    /**
+     * The index of this altimeter.
+     * @readonly
+     * @type {Number}
+     */
+    get index() {
+        return this._index;
+    }
+
+    /**
+     * Gets the current indicated altitude.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of feet.
+     * @returns {WT_NumberUnit} the current indicated altitude.
+     */
+    altitudeIndicated(reference) {
+        let value = SimVar.GetSimVarValue(`INDICATED ALTITUDE:${this.index}`, "feet");
+        return reference ? reference.set(value, WT_Unit.FOOT) : new WT_NumberUnit(value, WT_Unit.FOOT);
+    }
+
+    /**
+     * Gets this altimeter's current baro pressure setting.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of hectopascals.
+     * @returns {WT_NumberUnit} this altimeter's current baro pressure setting.
+     */
+    baroPressure(reference) {
+        let value = SimVar.GetSimVarValue(`KOHLSMAN SETTING MB:${this.index}`, "millibars");
+        return reference ? reference.set(value, WT_Unit.HPA) : new WT_NumberUnit(value, WT_Unit.HPA);
+    }
+
+    /**
+     * Increments this altimeter's baro pressure setting.
+     */
+    decrementBaroPressure() {
+        SimVar.SetSimVarValue(`K:KOHLSMAN_DEC`, "number", this.index);
+    }
+
+    /**
+     * Decrements this altimeter's baro pressure setting.
+     */
+    incrementBaroPressure() {
+        SimVar.SetSimVarValue(`K:KOHLSMAN_INC`, "number", this.index);
+    }
+
+    setBaroPressure(pressure) {
+        SimVar.SetSimVarValue(`K:${this.index}:KOHLSMAN_SET`, "number", pressure.asUnit(WT_Unit.HPA) * 16);
     }
 }
 
