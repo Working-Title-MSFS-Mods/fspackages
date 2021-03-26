@@ -1,3 +1,4 @@
+
 class Jet_MFD_NDCompass extends Jet_NDCompass {
     constructor() {
         super();
@@ -140,7 +141,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         }
                     }, 30);
 
-                    if (this._displayMode === Jet_NDCompass_Display.ARC){
+                    /*if (this._displayMode === Jet_NDCompass_Display.ARC){   //This is commented out for now as these clock tick marks are for when TCAS is enabled and it currently isn't enabled
                         dashSpacing = 12;
                         let radians = 0;
                         for (let i = 0; i < dashSpacing; i++) {
@@ -154,7 +155,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             line.setAttribute("x2", "50");
                             line.setAttribute("y2", lineEnd.toString());
                             line.setAttribute("transform", "rotate(" + (-degrees + 180) + " 50 50)");
-                            line.setAttribute("stroke", "#cccac8");
+                            line.setAttribute("stroke", "red");
                             line.setAttribute("stroke-width", "3");
                             line.setAttribute("stroke-opacity", "0.8");
                             fixedGroup.appendChild(line);
@@ -175,7 +176,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             // smallLine.setAttribute("stroke-width", "2");
                             // fixedGroup.appendChild(smallLine);
                         }
-                    }
+                    } */ 
                 }
                 let clipRect = document.createElementNS(Avionics.SVG.NS, "rect");
                 clipRect.setAttribute("x", (50 - circleRadius).toString());
@@ -333,7 +334,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         this.courseFROMLine.setAttribute("stroke-width", "6");
                         this.course.appendChild(this.courseFROMLine);
 
-                        let circlePosition = [-80, -40, 40, 80];
+                        let circlePosition = [-100, -50, 50, 100];
                         for (let i = 0; i < circlePosition.length; i++) {
                             let CDICircle = document.createElementNS(Avionics.SVG.NS, "circle");
                             CDICircle.setAttribute("cx", (50 + circlePosition[i]).toString());
@@ -2811,7 +2812,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         let CDICircle = document.createElementNS(Avionics.SVG.NS, "circle");
                         CDICircle.setAttribute("cx", (500 + circlePosition[i]).toString());
                         CDICircle.setAttribute("cy", "500");
-                        CDICircle.setAttribute("r", "10");
+                        CDICircle.setAttribute("r", "5");
                         CDICircle.setAttribute("stroke", "white");
                         CDICircle.setAttribute("stroke-width", "2");
                         this.course.appendChild(CDICircle);
@@ -2940,6 +2941,20 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.discoFplnGroup.setAttribute("visibility", "hidden");
         this.root.appendChild(this.discoFplnGroup);
 
+        /*this.outerTickMarks = document.createElementNS(Avionics.SVG.NS, "g"); //COMMENTED OUT FOR NOW, WILL FIX LATER
+        this.root.appendChild(this.outerTickMarks);
+        for (let i = 0; i < 72; i++) {
+            let line = document.createElementNS(Avionics.SVG.NS, "rect");
+            let startY = 500 - (circleRadius + 10);
+            line.setAttribute("x", "498");
+            line.setAttribute("y", startY.toString());
+            line.setAttribute("width", "4");
+            line.setAttribute("height", "20");
+            line.setAttribute("transform", "rotate(" + fastToFixed(i * 5, 0) + " 500 500)");
+            line.setAttribute("fill", "red");
+            this.outerTickMarks.appendChild(line);
+        }*/
+
 
         let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");
         innerCircleGroup.setAttribute("id", "innerCircle");
@@ -2978,6 +2993,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             vec.SetNorm(smallCircleRadius * 0.82);
             this.addMapRange(innerCircleGroup, 500 - vec.x, 500 - vec.y, "white", "30", false, 0.5, false);
         }
+
         this.currentRefGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.currentRefGroup.setAttribute("id", "currentRefGroup");
         this.currentRefGroup.setAttribute("transform", "scale(1.5)");

@@ -407,7 +407,7 @@ class WT_VerticalAutopilot {
         this.setArmedApproachVerticalState();
         this.setArmedVnavVerticalState();
         this.setSnowflake();
-        this.monitorValues();
+        this.fmsTextValues();
 
         if (this._vnavPathStatus !== VnavPathStatus.PATH_ACTIVE && this.distanceToTod > 0.1 && this.vnavState !== VnavState.NONE) {
             const todAlertDistance = AutopilotMath.calculateDescentDistance(this.path.fpa, 250) + (0.017 * this.groundSpeed);
@@ -1012,7 +1012,13 @@ class WT_VerticalAutopilot {
                 } else {
                     this.currentAltitudeTracking = AltitudeState.SELECTED;
                 }
-            } else {
+            }
+            else if (this.indicatedAltitude + 100 < this.selectedAltitude) {
+                this.setManagedAltitude(50000);
+                this.currentAltitudeTracking = AltitudeState.SELECTED;
+                this._constraintStatus = ConstraintStatus.NONE;
+            }
+            else {
                 this._constraintStatus = ConstraintStatus.OBSERVING_DESCENT;
                 this.setManagedAltitude();
                 if (this.selectedAltitude < this.targetAltitude - 100) {
@@ -1073,7 +1079,7 @@ class WT_VerticalAutopilot {
 
     setDonut(donutValue = 0, calculate = false) {
         if (calculate) {
-            if (this.constraint.index !== undefined && this._glideslopeStatus !== GlideslopeStatus.GS_ACTIVE) {
+            if (this.constraint.index !== undefined && this._glideslopeStatus !== GlideslopeStatus.GS_ACTIVE && this.distanceToTod < 50) {
                 const index = this.constraint.index;
                 const lDistance = this._vnav.allWaypoints[index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP;
                 const vDistance = this.indicatedAltitude - this.targetAltitude;
@@ -1144,21 +1150,35 @@ class WT_VerticalAutopilot {
         return constraintText;
     }
 
-    monitorValues() {
+    fmsTextValues() {
         //Datastore for VNAV Window in FMS TEXT
         let vnavWindowData = {};
         const vnavstate = this.checkVnavState();
         let vnavDirectTo = (vnavstate == VnavState.DIRECT) ? true : false;
+        let constraintIndex = undefined;
+        let isClimb = false;
         if (vnavstate == VnavState.PATH || vnavstate == VnavState.DIRECT) {
+            if (this._vnav._activeConstraint.index === undefined && this.distanceToTod && this.distanceToTod > 0) {
+                for (let i = this._vnav._firstPossibleDescentIndex; i < this._vnav.allWaypoints.length; i++) {
+                    if (this._vnav._verticalFlightPlan[i].hasConstraint) {
+                        constraintIndex = this._vnav._verticalFlightPlan[i].indexInFlightPlan;
+                        break;
+                    }
+                }
+            } else {
+                constraintIndex = this._vnav._activeConstraint.index;
+                isClimb = this._vnav._activeConstraint.isClimb;
+            }
+
             vnavWindowData = {
                 toddistance: this.distanceToTod,
                 fpa: this.path.fpa,
                 descentrate: this.donut,
-                constraintreal: this._vnav._activeConstraint.index ? this._vnav.allWaypoints[this._vnav._activeConstraint.index].ident : "",
-                constraintrealaltitude: this._vnav._activeConstraint.index ? this.buildConstraintText(this._vnav.allWaypoints[this._vnav._activeConstraint.index]) : "",
-                fptaDistance: this._vnav._activeConstraint.index ? this._vnav.allWaypoints[this._vnav._activeConstraint.index].cumulativeDistanceInFP - this._vnav._currentDistanceInFP : "",
+                constraintreal: constraintIndex ? this._vnav.allWaypoints[constraintIndex].ident : "",
+                constraintrealaltitude: constraintIndex ? this.buildConstraintText(this._vnav.allWaypoints[constraintIndex]) : "",
+                fptaDistance: constraintIndex ? this._vnav.allWaypoints[constraintIndex].cumulativeDistanceInFP - this._vnav._currentDistanceInFP : "",
                 isdirect: vnavDirectTo,
-                isclimb: this._vnav._activeConstraint.isClimb
+                isclimb: isClimb
             };
         }
         localStorage.setItem("VNAVWINDOWDATA", JSON.stringify(vnavWindowData));
