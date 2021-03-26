@@ -706,7 +706,7 @@ class CJ4_FMC_NavRadioDispatch {
     bindEvents() {
         this._fmc.onLeftInput[0] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
-                CJ4_FMC_NavRadioPage.ShowPage5(this._fmc, 1);
+                CJ4_FMC_NavRadioPage.com1Control(this._fmc, 1);
             } else {    
             this.enterVhfFreq(this._fmc.inOut, 1);
             }
