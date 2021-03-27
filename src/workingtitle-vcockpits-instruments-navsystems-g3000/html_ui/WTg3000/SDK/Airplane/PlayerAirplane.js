@@ -200,36 +200,6 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets the airplane's current indicated airspeed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created with units of knots.
-     * @returns {WT_NumberUnit} the current indicated airspeed of the airplane.
-     */
-    ias2(reference) {
-        let value = SimVar.GetSimVarValue("AIRSPEED INDICATED", "knots");
-        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
-    }
-
-    /**
-     * Gets the airplane's current true airspeed.
-     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
-     *                                      object will be created with units of knots.
-     * @returns {WT_NumberUnit} the current true airspeed of the airplane.
-     */
-    tas2(reference) {
-        let value = SimVar.GetSimVarValue("AIRSPEED TRUE", "knots");
-        return reference ? reference.set(value, WT_Unit.KNOT) : new WT_NumberUnit(value, WT_Unit.KNOT);
-    }
-
-    /**
-     * Gets the airplane's current true airspeed in mach units.
-     * @returns {Number} the airplane's current true airspeed in mach units.
-     */
-    mach2() {
-        return SimVar.GetSimVarValue("AIRSPEED MACH", "mach");
-    }
-
-    /**
      * Gets the airplane's current pitch.
      * @returns {Number} the airplane's current pitch, in degrees.
      */
