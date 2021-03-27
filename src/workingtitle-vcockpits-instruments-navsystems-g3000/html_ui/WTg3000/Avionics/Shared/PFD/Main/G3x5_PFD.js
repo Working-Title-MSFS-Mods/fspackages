@@ -65,7 +65,6 @@ class WT_G3x5_PFD extends NavSystem {
         this._initMainPage();
         this._initWarnings();
         this._initInsetMap();
-
     }
 
     connectedCallback() {
@@ -226,29 +225,13 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
         this._mapContainer.style.display = "none";
     }
 
-    _getAirspeedSensorIndex() {
-        return 1;
-    }
-
-    _getAltimeterIndex() {
-        if (this.instrument.instrumentXmlConfig) {
-            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
-            if (altimeterIndexElems.length > 0) {
-                return parseInt(altimeterIndexElems[0].textContent) + 1;
-            }
-        }
-        return 1;
-    }
-
     _initNavMap(root) {
-        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this._airspeedSensorIndex, this._altimeterIndex, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 
     init(root) {
         this._defineChildren(root);
-        this._airspeedSensorIndex = this._getAirspeedSensorIndex();
-        this._altimeterIndex = this._getAltimeterIndex();
         this._initNavMap(root);
         this._setEnabled(this.showSetting.getValue());
         this._isInit = true;
