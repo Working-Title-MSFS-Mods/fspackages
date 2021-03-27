@@ -1207,28 +1207,28 @@ class WT_AirplaneAutopilot extends WT_AirplaneComponent {
     }
 
     /**
-     * Checks whether the auto throttle is active.
-     * @returns {Boolean} whether the auto throttle is active.
+     * Checks whether the autothrottle is active.
+     * @returns {Boolean} whether the autothrottle is active.
      */
     isAutoThrottleActive() {
         return SimVar.GetSimVarValue("AUTOPILOT MANAGED THROTTLE ACTIVE", "Boolean") !== 0;
     }
 
     /**
-     * Gets the auto throttle's thrust limit. This value represents a throttle lever position, expressed as a
+     * Gets the autothrottle's throttle limit. This value represents a throttle lever position, expressed as a
      * fraction between 0 and 1.
-     * @returns {Number} the auto throttle's thrust limit.
+     * @returns {Number} the autothrottle's throttle limit.
      */
-    autoThrottleThrustLimit() {
+    autoThrottleThrottleLimit() {
         return SimVar.GetSimVarValue("AUTOPILOT THROTTLE MAX THRUST", "number");
     }
 
     /**
-     * Sets the auto throttle's thrust limit.
-     * @param {Number} limit - the new thrust limit. The value should represent a throttle lever position, expressed
+     * Sets the autothrottle's throttle limit.
+     * @param {Number} limit - the new throttle limit. The value should represent a throttle lever position, expressed
      * as a fraction between 0 and 1.
      */
-    setAutoThrottleThrustLimit(limit) {
+    setAutoThrottleThrottleLimit(limit) {
         SimVar.SetSimVarValue("AUTOPILOT THROTTLE MAX THRUST", "number", Math.max(0, Math.min(1, limit)));
     }
 

@@ -18,7 +18,7 @@ class WT_G5000_AutoThrottle {
         this._mode = WT_G5000_AutoThrottle.Mode.OFF;
         this._lastMode = WT_G5000_AutoThrottle.Mode.OFF;
         this._thrustLimitMode = WT_G5000_AutoThrottle.ThrustLimitMode.OFF;
-        this._thrustLimit = airplane.autopilot.autoThrottleThrustLimit();
+        this._throttleLimit = airplane.autopilot.autoThrottleThrottleLimit();
 
         this._isAtMaxThrust = false;
     }
@@ -99,18 +99,18 @@ class WT_G5000_AutoThrottle {
         }
     }
 
-    _setThrustLimit(limit) {
-        if (limit === this._thrustLimit) {
+    _setThrottleLimit(limit) {
+        if (limit === this._throttleLimit) {
             return;
         }
 
-        this._airplane.autopilot.setAutoThrottleThrustLimit(limit);
-        this._thrustLimit = limit;
+        this._airplane.autopilot.setAutoThrottleThrottleLimit(limit);
+        this._throttleLimit = limit;
     }
 
     _updateThrustLimit() {
         let isAtMaxThrust = false;
-        let limit = this._thrustLimit;
+        let throttleLimit = this._throttleLimit;
         let n1Limit = this._calculateN1Limit(this.thrustLimitMode);
         if (n1Limit < 1) {
             let commandedN1 = this._refEngine.commandedN1();
@@ -118,20 +118,20 @@ class WT_G5000_AutoThrottle {
             let throttle = this._airplane.controls.throttlePosition(this._refEngine.index);
             if (diff > WT_G5000_AutoThrottle.N1_LIMIT_TOLERANCE) {
                 let adjustment = Math.max(WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_MIN, diff * WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_FACTOR);
-                limit = throttle - adjustment;
+                throttleLimit = throttle - adjustment;
                 isAtMaxThrust = true;
             } else if (diff < -WT_G5000_AutoThrottle.N1_LIMIT_TOLERANCE) {
-                if (throttle > this._thrustLimit - WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE) {
+                if (throttle > this._throttleLimit - WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE) {
                     let adjustment = Math.max(WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_MIN, -diff * WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_FACTOR);
-                    limit = throttle + adjustment;
+                    throttleLimit = throttle + adjustment;
                 }
             } else {
-                isAtMaxThrust = throttle > this._thrustLimit - WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE;
+                isAtMaxThrust = throttle > this._throttleLimit - WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE;
             }
         } else {
-            limit = 1;
+            throttleLimit = 1;
         }
-        this._setThrustLimit(limit);
+        this._setThrottleLimit(throttleLimit);
         this._isAtMaxThrust = isAtMaxThrust;
     }
 
