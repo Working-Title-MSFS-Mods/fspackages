@@ -177,7 +177,7 @@ class WT_AirplaneSensors extends WT_AirplaneComponent {
     constructor(airplane, airspeedSensorCount = 2, altimeterCount = 2) {
         super(airplane);
 
-        this._airspeedSensors = [...Array(airspeedSensorCount)].map((value, index) => new WT_AirplaneAirspeedSensor(index));
+        this._airspeedSensors = [...Array(airspeedSensorCount)].map((value, index) => new WT_AirplaneAirspeedSensor(index + 1));
         this._altimeters = [...Array(altimeterCount)].map((value, index) => new WT_AirplaneAltimeter(index + 1));
     }
 
@@ -1001,6 +1001,31 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
 }
 
 class WT_AirplaneEngineering extends WT_AirplaneComponent {
+    constructor(airplane) {
+        super(airplane);
+
+        this._engineCount = SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
+        this._engines = [...Array(this._engineCount)].map((value, index) => new WT_AirplaneEngine(index + 1));
+    }
+
+    /**
+     * The number of engines on this airplane.
+     * @readonly
+     * @type {Number}
+     */
+    get engineCount() {
+        return this._engineCount;
+    }
+
+    /**
+     * Gets an indexed engine.
+     * @param {Number} index - the index of the engine.
+     * @returns {WT_AirplaneEngine} an indexed engine.
+     */
+    getEngine(index) {
+        return this._engines[index - 1];
+    }
+
     /**
      * Gets the current amount of fuel remaining on the airplane.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
@@ -1013,24 +1038,15 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
     }
 
     /**
-     * Gets the number of engines on board this airplane.
-     * @returns {Number} the number of engines on board this airplane.
-     */
-    engineCount() {
-        return SimVar.GetSimVarValue("NUMBER OF ENGINES", "number");
-    }
-
-    /**
      * Gets the total fuel consumption of the airplane, which is the sum of the fuel consumption of all engines.
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of gallons per hour.
      * @returns {WT_NumberUnit} the current total fuel consumption of the airplane.
      */
     fuelFlowTotal(reference) {
-        let numEngines = this.engineCount();
         let fuelFlow = reference ? reference.set(0) : WT_Unit.GPH.createNumber(0);
-        for (let i = 0; i < numEngines; i++) {
-            fuelFlow.add(this.fuelFlow(i, WT_PlayerAirplane._tempGPH));
+        for (let i = 0; i < this.engineCount; i++) {
+            fuelFlow.add(this.getEngine(i + 1).fuelFlow(WT_PlayerAirplane._tempGPH));
         }
         return fuelFlow;
     }
@@ -1048,7 +1064,95 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
     }
 }
 
+class WT_AirplaneEngine {
+    constructor(index) {
+        this._index = index;
+        this._type = SimVar.GetSimVarValue(`ENGINE TYPE:${index}`, "Enum");
+    }
+
+    /**
+     * The index of this engine.
+     * @readonly
+     * @type {Number}
+     */
+    get index() {
+        return this._index;
+    }
+
+    /**
+     * The type of this engine.
+     * @readonly
+     * @type {WT_AirplaneEngine.Type}
+     */
+    get type() {
+        return this._type;
+    }
+
+    /**
+     * Checks whether this engine is running.
+     * @returns {Boolean} whether this engine is running.
+     */
+    isRunning() {
+        return SimVar.GetSimVarValue(`ENG COMBUSTION:${this.index}`, "Boolean") !== 0;
+    }
+
+    /**
+     * Gets the fuel consumption of this engine.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of gallons per hour.
+     * @returns {WT_NumberUnit} the current fuel consumption of this engine.
+     */
+    fuelFlow(reference) {
+        let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${this.index}`, "gallons per hour");
+        return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
+    }
+
+    /**
+     * Gets this engine's current N1 speed expressed as a fraction between 0 and 1.
+     * @returns {Number} this engine's current N1 speed.
+     */
+    n1() {
+        return SimVar.GetSimVarValue(`ENG N1 RPM:${this.index}`, "number");
+    }
+
+    /**
+     * Gets this engine's current N2 speed expressed as a fraction between 0 and 1.
+     * @returns this engine's current N2 speed.
+     */
+    n2() {
+        return SimVar.GetSimVarValue(`ENG N2 RPM:${this.index}`, "number");
+    }
+
+    /**
+     * Gets the target N1 speed currently commanded for this engine expressed as a fraction between 0 and 1.
+     * @returns {Number} the target N1 speed currently commanded for this engine.
+     */
+    commandedN1() {
+        return SimVar.GetSimVarValue(`TURB ENG THROTTLE COMMANDED N1:${this.index}`, "Number");
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_AirplaneEngine.Type = {
+    PISTON: 0,
+    JET: 1,
+    NONE: 2,
+    HELO_TURBINE: 3,
+    UNSUPPORTED: 4,
+    TURBOPROP: 5
+};
+
 class WT_AirplaneControls extends WT_AirplaneComponent {
+    /**
+     * Gets this airplane's current throttle position expressed as a fraction between 0 and 1.
+     * @param {Number} index - the index of the throttle.
+     * @returns {Number} this airplane's current throttle position.
+     */
+    throttlePosition(index) {
+        return SimVar.GetSimVarValue(`GENERAL ENG THROTTLE LEVER POSITION:${index}`, "Number");
+    }
+
     /**
      * Gets this airplane's current flaps position.
      * @returns {Number} this airplane's current flaps position.
@@ -1108,6 +1212,24 @@ class WT_AirplaneAutopilot extends WT_AirplaneComponent {
      */
     isAutoThrottleActive() {
         return SimVar.GetSimVarValue("AUTOPILOT MANAGED THROTTLE ACTIVE", "Boolean") !== 0;
+    }
+
+    /**
+     * Gets the auto throttle's thrust limit. This value represents a throttle lever position, expressed as a
+     * fraction between 0 and 1.
+     * @returns {Number} the auto throttle's thrust limit.
+     */
+    autoThrottleThrustLimit() {
+        return SimVar.GetSimVarValue("AUTOPILOT THROTTLE MAX THRUST", "number");
+    }
+
+    /**
+     * Sets the auto throttle's thrust limit.
+     * @param {Number} limit - the new thrust limit. The value should represent a throttle lever position, expressed
+     * as a fraction between 0 and 1.
+     */
+    setAutoThrottleThrustLimit(limit) {
+        SimVar.SetSimVarValue("AUTOPILOT THROTTLE MAX THRUST", "number", Math.max(0, Math.min(1, limit)));
     }
 
     /**
