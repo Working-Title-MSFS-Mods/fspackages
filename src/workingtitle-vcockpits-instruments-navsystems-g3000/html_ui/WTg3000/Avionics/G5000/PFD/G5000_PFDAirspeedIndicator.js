@@ -11,7 +11,7 @@ class WT_G5000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
     }
 
     _createModel() {
-        return new WT_G5000_PFDAirspeedIndicatorModel(this.instrument.airplane, this._airspeedSensor, this._createSpeedBugCollection());
+        return new WT_G5000_PFDAirspeedIndicatorModel(this.instrument.airplane, this.instrument.referenceAirspeedSensor, this._createSpeedBugCollection());
     }
 
     _getYellowStripMin() {

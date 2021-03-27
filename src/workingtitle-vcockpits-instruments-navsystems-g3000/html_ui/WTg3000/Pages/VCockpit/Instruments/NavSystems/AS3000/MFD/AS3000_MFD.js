@@ -17,6 +17,22 @@ class AS3000_MFD extends NavSystem {
 
     /**
      * @readonly
+     * @type {WT_AirplaneAirspeedSensor}
+     */
+    get referenceAirspeedSensor() {
+        return this._referenceAirspeedSensor;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_AirplaneAltimeter}
+     */
+    get referenceAltimeter() {
+        return this._referenceAltimeter;
+    }
+
+    /**
+     * @readonly
      * @property {WT_CitySearcher} citySearcher
      * @type {WT_CitySearcher}
      */
@@ -40,6 +56,32 @@ class AS3000_MFD extends NavSystem {
     }
 
     disconnectedCallback() {
+    }
+
+    _getReferenceAirspeedSensor() {
+        return this.airplane.sensors.getAirspeedSensor(1);
+    }
+
+    _getReferenceAltimeter() {
+        let index = 1;
+        if (this.instrumentXmlConfig) {
+            let altimeterIndexElems = this.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
+            if (altimeterIndexElems.length > 0) {
+                index = parseInt(altimeterIndexElems[0].textContent) + 1;
+            }
+        }
+        return this.airplane.sensors.getAltimeter(index);
+    }
+
+    _initReferenceSensors() {
+        this._referenceAirspeedSensor = this._getReferenceAirspeedSensor();
+        this._referenceAltimeter = this._getReferenceAltimeter();
+    }
+
+    Init() {
+        super.Init();
+
+        this._initReferenceSensors();
     }
 
     onEvent(_event) {
