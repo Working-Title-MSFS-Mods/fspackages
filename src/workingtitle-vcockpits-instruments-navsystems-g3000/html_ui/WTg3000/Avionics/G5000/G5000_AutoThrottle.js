@@ -2,11 +2,15 @@ class WT_G5000_AutoThrottle {
     /**
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_AirplaneAltimeter} altimeter
+     * @param {WT_InterpolatedLookupTable} clbN1Table
+     * @param {WT_InterpolatedLookupTable} cruN1Table
      * @param {Number} [referenceEngineIndex]
      */
-    constructor(airplane, altimeter, referenceEngineIndex = 1) {
+    constructor(airplane, altimeter, clbN1Table, cruN1Table, referenceEngineIndex = 1) {
         this._airplane = airplane;
         this._altimeter = altimeter;
+        this._clbN1Table = clbN1Table;
+        this._cruN1Table = cruN1Table;
         this._refEngine = airplane.engineering.getEngine(referenceEngineIndex);
 
         this._selectedAltitude = WT_Unit.FOOT.createNumber(0);
@@ -21,6 +25,10 @@ class WT_G5000_AutoThrottle {
         this._throttleLimit = airplane.autopilot.autoThrottleThrottleLimit();
 
         this._isAtMaxThrust = false;
+
+        this._n1LookupKey = [0, 0];
+        this._pressureAltitude = WT_Unit.FOOT.createNumber(0);
+        this._isaDeltaTemp = WT_Unit.CELSIUS.createNumber(0);
     }
 
     /**
@@ -85,13 +93,19 @@ class WT_G5000_AutoThrottle {
         }
     }
 
+    _updateN1LookupKey() {
+        this._n1LookupKey[0] = this._airplane.environment.pressureAltitude(this._pressureAltitude).number;
+        this._n1LookupKey[1] = this._airplane.environment.isaTemperatureDelta(this._isaDeltaTemp).number;
+    }
+
     _calculateN1Limit(thrustLimitMode) {
-        // TODO: find some real references
         switch (thrustLimitMode) {
             case WT_G5000_AutoThrottle.ThrustLimitMode.CLB:
-                return 0.9;
+                this._updateN1LookupKey();
+                return this._clbN1Table.get(this._n1LookupKey);
             case WT_G5000_AutoThrottle.ThrustLimitMode.CRU:
-                return 0.75;
+                this._updateN1LookupKey();
+                return this._cruN1Table.get(this._n1LookupKey);
             case WT_G5000_AutoThrottle.ThrustLimitMode.GA:
                 return 1;
             default:
@@ -117,16 +131,16 @@ class WT_G5000_AutoThrottle {
             let diff = commandedN1 - n1Limit;
             let throttle = this._airplane.controls.throttlePosition(this._refEngine.index);
             if (diff > WT_G5000_AutoThrottle.N1_LIMIT_TOLERANCE) {
-                let adjustment = Math.max(WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_MIN, diff * WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_FACTOR);
-                throttleLimit = throttle - adjustment;
+                let adjustment = Math.max(WT_G5000_AutoThrottle.THROTTLE_LIMIT_ADJUST_MIN, diff * WT_G5000_AutoThrottle.THROTTLE_LIMIT_ADJUST_FACTOR);
+                throttleLimit -= adjustment;
                 isAtMaxThrust = true;
             } else if (diff < -WT_G5000_AutoThrottle.N1_LIMIT_TOLERANCE) {
-                if (throttle > this._throttleLimit - WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE) {
-                    let adjustment = Math.max(WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_MIN, -diff * WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_FACTOR);
-                    throttleLimit = throttle + adjustment;
+                if (throttle > this._throttleLimit - WT_G5000_AutoThrottle.THROTTLE_LIMIT_TOLERANCE) {
+                    let adjustment = Math.max(WT_G5000_AutoThrottle.THROTTLE_LIMIT_ADJUST_MIN, -diff * WT_G5000_AutoThrottle.THROTTLE_LIMIT_ADJUST_FACTOR);
+                    throttleLimit += adjustment;
                 }
             } else {
-                isAtMaxThrust = throttle > this._throttleLimit - WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE;
+                isAtMaxThrust = throttle > this._throttleLimit - WT_G5000_AutoThrottle.THROTTLE_LIMIT_TOLERANCE;
             }
         } else {
             throttleLimit = 1;
@@ -143,9 +157,9 @@ class WT_G5000_AutoThrottle {
 }
 WT_G5000_AutoThrottle.CRU_ARM_DELAY = 600; // seconds
 WT_G5000_AutoThrottle.N1_LIMIT_TOLERANCE = 0.005;
-WT_G5000_AutoThrottle.THRUST_LIMIT_TOLERANCE = 0.001;
-WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_FACTOR = 0.5;
-WT_G5000_AutoThrottle.THRUST_LIMIT_ADJUST_MIN = 0.001;
+WT_G5000_AutoThrottle.THROTTLE_LIMIT_TOLERANCE = 0.01;
+WT_G5000_AutoThrottle.THROTTLE_LIMIT_ADJUST_FACTOR = 0.5;
+WT_G5000_AutoThrottle.THROTTLE_LIMIT_ADJUST_MIN = 0.001;
 /**
  * @enum {Number}
  */

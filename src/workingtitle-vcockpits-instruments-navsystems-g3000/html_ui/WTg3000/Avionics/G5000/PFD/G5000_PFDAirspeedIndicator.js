@@ -70,6 +70,7 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
         this._maxSpeed = WT_Unit.KNOT.createNumber(0);
 
         this._tempFoot = WT_Unit.FOOT.createNumber(0);
+        this._vmoKey = [0];
     }
 
     /**
@@ -123,11 +124,9 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
     _updateMaxSpeed() {
         let pressureAlt = this._airplane.environment.pressureAltitude(this._tempFoot);
         let feet = pressureAlt.number;
-        if (feet < 8000) {
-            let knots = feet / 8000 * 35 + 290;
-            this._maxSpeed.set(knots);
-        } else if (feet < this._airplane.references.crossover.asUnit(WT_Unit.FOOT)) {
-            this._maxSpeed.set(this._airplane.references.Vmo);
+        if (feet < this._airplane.references.crossover.asUnit(WT_Unit.FOOT)) {
+            this._vmoKey[0] = feet;
+            this._airplane.references.Vmo.get(this._vmoKey, this._maxSpeed);
         } else {
             this._airplane.sensors.machToIAS(this._airplane.references.Mmo, this._maxSpeed);
         }

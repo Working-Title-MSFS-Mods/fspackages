@@ -395,7 +395,29 @@ class WT_AirplaneEnvironment extends WT_AirplaneComponent {
      */
     oat(reference) {
         let value = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius");
-        return reference ? reference.set(value, WT_Unit.CELSIUS) : new WT_NumberUnit(value, WT_Unit.CELSIUS);
+        return reference ? reference.set(value, WT_Unit.CELSIUS) : WT_Unit.CELSIUS.createNumber(value);
+    }
+
+    /**
+     * Gets the ISA temperature at the airplane's current position.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of degrees Celsius.
+     * @returns the ISA temperature at the airplane's current position.
+     */
+    isaTemperature(reference) {
+        let value = SimVar.GetSimVarValue("STANDARD ATM TEMPERATURE", "Celsius");
+        return reference ? reference.set(value, WT_Unit.CELSIUS) : WT_Unit.CELSIUS.createNumber(value);
+    }
+
+    /**
+     * Gets the difference between the outside air temperature at the airplane's current position and ISA temperature.
+     * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
+     *                                      object will be created with units of degrees Celsius.
+     * @returns the difference between the outside air temperature at the airplane's current position and ISA temperature.
+     */
+    isaTemperatureDelta(reference) {
+        let value = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius") - SimVar.GetSimVarValue("STANDARD ATM TEMPERATURE", "Celsius");
+        return reference ? reference.set(value, WT_Unit.CELSIUS) : WT_Unit.CELSIUS.createNumber(value);
     }
 
     /**
@@ -1528,7 +1550,7 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     _initFromData(data) {
-        this._vmo = data.vmo !== undefined ? WT_Unit.KNOT.createNumber(data.vmo) : undefined;
+        this._vmo = data.vmo !== undefined ? new WT_InterpolatedNumberUnitLookupTable(data.vmo, WT_Unit.KNOT) : undefined;
         this._mmo = data.mmo;
         this._crossover = data.crossover !== undefined ? WT_Unit.FOOT.createNumber(data.crossover) : undefined;
         this._v1 = data.v1 !== undefined ? WT_Unit.KNOT.createNumber(data.v1) : undefined;
@@ -1546,12 +1568,12 @@ class WT_AirplaneReferences extends WT_AirplaneComponent {
     }
 
     /**
-     * The airplane's maximum indicated operating speed.
+     * A lookup table for the airplane's maximum indicated operating speed.
      * @readonly
-     * @type {WT_NumberUnitReadOnly}
+     * @type {WT_InterpolatedNumberUnitLookupTable}
      */
     get Vmo() {
-        return this._vmo ? this._vmo.readonly() : undefined;
+        return this._vmo;
     }
 
     /**
