@@ -8,10 +8,6 @@ class WT_G3x5_PFDAirspeedIndicator extends WT_G3x5_PFDElement {
         return this._htmlElement;
     }
 
-    _getAirspeedSensor() {
-        return this.instrument.airplane.sensors.getAirspeedSensor(1);
-    }
-
     _createModel() {
     }
 
@@ -19,7 +15,6 @@ class WT_G3x5_PFDAirspeedIndicator extends WT_G3x5_PFDElement {
     }
 
     init(root) {
-        this._airspeedSensor = this._getAirspeedSensor();
         this._model = this._createModel();
 
         let container = root.querySelector(`#InstrumentsContainer`);

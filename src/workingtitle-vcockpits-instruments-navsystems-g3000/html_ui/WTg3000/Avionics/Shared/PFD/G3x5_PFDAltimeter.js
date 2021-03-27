@@ -37,17 +37,6 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
         return this._metersSetting;
     }
 
-    _getAltimeter() {
-        let index = 1;
-        if (this.instrument.instrumentXmlConfig) {
-            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
-            if (altimeterIndexElems.length > 0) {
-                index = parseInt(altimeterIndexElems[0].textContent) + 1;
-            }
-        }
-        return this.instrument.airplane.sensors.getAltimeter(index);
-    }
-
     /**
      *
      * @returns {WT_G3x5_PFDAltimeterModel}
@@ -64,7 +53,7 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
     }
 
     init(root) {
-        this._altimeter = this._getAltimeter();
+        this._altimeter = this.instrument.referenceAltimeter;
         this._model = this._createModel();
 
         let container = root.querySelector(`#InstrumentsContainer`);

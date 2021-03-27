@@ -15,19 +15,8 @@ class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
         return this._htmlElement;
     }
 
-    _getAltimeter() {
-        let index = 1;
-        if (this.instrument.instrumentXmlConfig) {
-            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
-            if (altimeterIndexElems.length > 0) {
-                index = parseInt(altimeterIndexElems[0].textContent) + 1;
-            }
-        }
-        return this.instrument.airplane.sensors.getAltimeter(index);
-    }
-
     _createModel() {
-        return new WT_G3x5_PFDMinimumsModel(this.instrument, new WT_G3x5_Minimums(), this.altimeter);
+        return new WT_G3x5_PFDMinimumsModel(this.instrument, new WT_G3x5_Minimums(), this.instrument.referenceAltimeter);
     }
 
     _createHTMLElement() {
@@ -39,7 +28,6 @@ class WT_G3x5_PFDMinimums extends WT_G3x5_PFDElement {
     }
 
     init(root) {
-        this._altimeter = this._getAltimeter();
         this._model = this._createModel();
 
         let container = root.querySelector(`#InstrumentsContainer`);
