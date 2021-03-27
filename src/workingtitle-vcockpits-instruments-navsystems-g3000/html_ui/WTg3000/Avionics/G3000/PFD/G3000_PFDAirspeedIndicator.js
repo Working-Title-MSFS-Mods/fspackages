@@ -14,6 +14,8 @@ class WT_G3000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
 
     _createHTMLElement() {
         let htmlElement = new WT_G3000_PFDAirspeedIndicatorHTMLElement();
+
+        let vmo = this.instrument.airplane.references.Vmo.get([0]).asUnit(WT_Unit.KNOT);
         htmlElement.setContext({
             model: this._model,
             scale: {
@@ -27,9 +29,10 @@ class WT_G3000_PFDAirspeedIndicator extends WT_G3x5_PFDAirspeedIndicator {
             machDisplayThreshold: WT_G3000_PFDAirspeedIndicator.MACH_DISPLAY_THRESHOLD,
             redStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(20, 65),
             whiteStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(65, 122),
-            greenStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(122, 266),
-            barberStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(266, Infinity)
+            greenStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(122, vmo),
+            barberStrip: new WT_G3x5_PFDAirspeedIndicatorConstantStripDefinition(vmo, Infinity)
         });
+
         return htmlElement;
     }
 }
@@ -45,12 +48,12 @@ class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
     constructor(airplane, airspeedSensor, speedBugCollection) {
         super(airplane, airspeedSensor, speedBugCollection);
 
+        this._maxSpeed = airplane.references.Vmo.get([0]);
         this._minSpeed = WT_Unit.KNOT.createNumber(0);
     }
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} minSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get minSpeed() {
@@ -59,11 +62,10 @@ class WT_G3000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
 
     /**
      * @readonly
-     * @property {WT_NumberUnitReadOnly} maxSpeed
      * @type {WT_NumberUnitReadOnly}
      */
     get maxSpeed() {
-        return this.airplane.references.Vmo;
+        return this._maxSpeed;
     }
 
     _updateMinSpeed() {

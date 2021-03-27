@@ -17,6 +17,14 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     /**
      * @readonly
+     * @type {WT_g3000_ModConfig}
+     */
+    get modConfig() {
+        return this._isModConfig;
+    }
+
+    /**
+     * @readonly
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
@@ -75,7 +83,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     async _loadModConfig() {
-        await WT_g3000_ModConfig.initialize();
+        this._modConfig = await WT_g3000_ModConfig.initialize();
         this._initAirplane();
         this._initFlightPlanManager();
         this._isModConfigLoaded = true;
