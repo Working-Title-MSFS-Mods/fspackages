@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.4.2
+### Latest version: v0.5.0
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.4.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.5.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -17,16 +17,42 @@ If you want to enable the road display for the navigation map, you must also dow
 ### Configuration File
 Certain mod settings can be customized via a configuration file which is located at `workingtitle-g3000\html_ui\WTg3000.cfg`. Documentation for the various settings can be found in the file itself. If you make changes to the file while the game is running, you must restart the game for the changes to take effect.
 
-#### Release Highlights for v0.4.2
+### Release Highlights for v0.5.0
 
-Now compatible with game patch 1.14.5.0 (Sim Update 3).
+- Enabled measurement unit selection. You may now choose between different sets of measurement units in several categories, which affects how various on-screen values are displayed.
+- Overhauled the following PFD elements:
+  - Autopilot Display
+  - Airspeed Indicator
+  - Altimeter
+  - Radar Altimeter
+  - Minimums Display
+  - Wind Data Display
+  - Angle of Attack Indicator
+  - Navigation Status Bar
+  - NAV/DME Information Bar
+  - Bearing Information Bar
 
 **Fixes**
-- \[PFD\] Fixed regression where PFD softkey functions related to changing inset map settings were not working as intended.
+- \[PFD\] The "barber pole" speed strip on the airspeed indicator now appears at the correct speeds.
+- \[PFD\] Fixed a regression in v0.4.2/Sim Update 3 that caused the altimeter's baro setting display to not always display all four significant digits in "IN HG" mode.
+- \[PFD\] Fixed the scale of the Angle of Attack Indicator. Zero AoA is no longer in the middle of the scale. The top of the scale now theoretically represents the critical (stall) AoA, and zero on the scale represents the zero-lift AoA.
+  - The scale for the TBM930 is based on the values found in the targetperformance.cfg file.
+  - The scale for the Longitude is somewhat arbitrary since no references could be found, but should be at least in the ballpark of a "correct" scale based on empiric performance data gathered from within the sim.
+  - The scale is not adjusted for differences in configuration (e.g. flaps) or mach speed.
+- \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator in the G5000 now functions properly: when selected, the AoA indicator will be displayed if the landing gear are down or if flaps are set to any setting other than fully retracted.
+- \[PFD\] For the Longitude: The PFD altimeter is now synced with the same altimeter used by the autopilot (which is also synced to the standby altimeter). This will fix the issue of the autopilot appearing to hold at an altitude different from the selected altitude if the PFD and standby altimeter baro settings are not the same. This change has the side effect of rendering the standby altimeter baro knob unusable, since the standby altimeter is now slaved to the PFD altimeter.
+- \[PFD\] For the Longitude: the joystick above the PFD displays can now be used to increase/decrease the range of the PFD Inset Map.
+- \[NavMap\] The flight plan renderer now correctly draws the turning "transitions" into approaches which the sim's default autopilot flies when directly sequencing from the last leg before an approach into the first leg of the approach would result in a greater than 90-degree angle turn.
+- \[GTC\] The backspace button in the frequency entry pop-up window is no longer broken.
+- \[GTC\] Speed Bug settings are now properly synchronized across different touchscreen controllers.
+- \[Misc\] Loading/activating an ILS/LOC approach will automatically load the approach frequency into the nav radio. The exact behavior of this function depends on whether the G3000 or G5000 is being used, whether the selected autopilot/CDI nav source is FMS or NAV, and whether the approach frequency was already loaded into the nav radio.
+- \[Misc\] When flying an ILS/LOC approach, the selected autopilot/CDI nav source is FMS, and the approach frequency is loaded into the active frequency field of NAV1 or NAV2, the system will automatically switch the nav source to NAV1/NAV2 when the following conditions are first met: the next active waypoint is the FAF and the plane is within 15 NM of the FAF, OR the next active waypoint is past the FAF.
+- \[Misc\] Added the missing default reference Vspeeds for the Longitude. Note that these speeds are the published real-life values; performance in the sim may differ.
 
 ### Known Issues
 - \[Compatibility\] Using this mod with the WorkingTitle GX mod may result in various flight planning bugs, such as blank waypoint entries in the GTC active flight plan page and avionics freeze when initiating a Direct To to an approach waypoint.
-- \[PFD\] (Vanilla issue) Co-pilot PFD softkeys are nonfunctional in the TBM 930.
+- \[PFD\] Citation Longitude: the standby altimeter baro knob does not function properly. The standby altimeter is now slaved to the PFD altimeter (so changing the PFD altimeter baro setting automatically changes the standby altimeter's as well).
+- \[PFD\] TBM 930: Co-pilot PFD softkeys are nonfunctional.
 - \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
 - \[NavMap\] The flight plan renderer currently does not draw turn anticipation arcs or turn to intercept legs. These will be added later.
 - \[NavMap\] All airport waypoints are shown as if they are serviced, regardless of whether they actually are. This is because waypoint data from the game is currently missing this information.
@@ -50,5 +76,5 @@ Now compatible with game patch 1.14.5.0 (Sim Update 3).
 - Custom city database is sourced from simplemaps (simplemaps.com/data/world-cities) under the CC Attribution 4.0 license.
 - Border data is sourced from Natural Earth (www.naturalearthdata.com).
 - Thank you to StuTozer/ElectrikKar for allowing us to integrate his Touchscreen Restyled Mod.
-- This mod uses the Roboto font (designed by Christian Robertson), licensed under Apache 2.0.
+- This mod uses the Roboto family of fonts (designed by Christian Robertson), licensed under Apache 2.0.
 - This mod uses the d3-array, d3-geo, and topojson libraries.

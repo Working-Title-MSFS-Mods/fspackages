@@ -1,5 +1,63 @@
 # Changelog
 
+### v0.5.0
+**New Features**
+- \[General\] Enabled measurement unit selection. You may now choose between different sets of measurement units in several categories, which affects how various on-screen values are displayed. Note that some on-screen values are not affected by these settings (e.g. the PFD airspeed indicator will always display airspeed in knots).
+  - These settings can be changed by using the GTC and navigating to MFD Home -> Utilities -> Setup -> Avionics Settings -> Units tab.
+  - The following categories are customizable:
+    - Nav Angle (magnetic or true)
+    - Distance/Speed (nautical or metric)
+    - Altitude/Vertical Speed (feet or meters)
+    - External Temperature (Celsius or Fahrenheit)
+- \[Misc\] Certain aircraft reference values are now configurable via the mod config file (located at `workingtitle-g3000\html_ui\WTg3000.cfg`).
+
+**Changed Features**
+- \[PFD\] Overhauled the autopilot display to more closely match the real Garmin units.
+  - For the Longitude: the display now supports annunciations for auto-throttle modes. It will also display the reference speed when auto-throttle is active and in SPD mode.
+- \[PFD\] Overhauled the airspeed indicator to more closely match the real Garmin units.
+  - The airspeed indicator now displays mach units at the bottom instead of TAS. The mach display is disabled below M0.3 for the TBM930 and M0.4 for the Longitude.
+  - The airspeed indicator will now display an overspeed caution/warning by turning the IAS/mach displays yellow/red.
+  - When mach units are used for FLC mode, the reference speed display at the top of the airspeed indicator changes from knots to mach units. Moreover, the reference speed bug on the airspeed tape will be placed at the IAS value that is equivalent to the reference mach speed.
+  - For the Longitude only:
+    - The overspeed ("barber pole") speed strip will dynamically change based on pressure altitude to reflect true Vmo/Mmo:
+      - Vmo increases linearly from 290 knots at sea level to 325 knots at 8000 feet.
+      - Vmo = 325 knots from 8000 feet to the crossover altitude (29375 feet).
+      - Mmo = 0.84 above the crossover altitude.
+    - The underspeed (solid yellow/red) speed strips will dynamically change based on the angle of attack to correspond to the yellow/red ranges on the Angle of Attack Indicator.
+- \[PFD\] Overhauled the altimeter to more closely match the real Garmin units.
+  - Enabled meters overlay. This setting can be changed by using the GTC and navigating to PFD Home -> PFD Settings. Alternatively, for the G3000 only, use the PFD softkey menu and navigate to PFD Settings -> Other PFD Settings -> Altitude Units -> Meters.
+- \[PFD\] Changed the style/positioning of the following displays to more closely match the real Garmin units:
+  - Radar Altimeter
+  - Minimums Display
+  - Wind Data Display
+  - Angle of Attack Indicator
+  - Navigation Status Bar
+  - NAV/DME Information Bar
+  - Bearing Information Bar
+- \[PFD\] Changed the style of the G3000 PFD softkey menus to more closely match the real-life unit.
+- \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator is no longer available in the G3000.
+- \[NavMap\] The high-latitude behavior of the map has been changed to take into account the range of the map. At smaller map ranges, the map can be centered at higher latitudes up to +/- 85 degrees (previously the map was restricted to 70 degrees at all ranges).
+- \[GTC\] Added the ability to drag-to-scroll in various pages. These pages also now have scroll-up/scroll-down buttons enabled in the button bar.
+- \[Misc\] For the Longitude: In autothrottle CLIMB mode, thrust is limited to 90% N1 (CLB thrust). After leveling off (switching from CLIMB to any other autothrottle mode), CLB thrust is available for another 10 minutes, after which the autothrottle will be limited to 75% N1 (CRU thrust). Engaging CLIMB mode again will reset the autothrottle limit to CLB thrust.
+  - The default CLB and CRU values are arbitrary since no references could be found. If so desired, these values can be customized in the mod config file (located at `workingtitle-g3000\html_ui\WTg3000.cfg`). Both support lookup tables keyed to pressure altitude and delta ISA temperature.
+
+**Fixes**
+- \[PFD\] The "barber pole" speed strip on the airspeed indicator now appears at the correct speeds.
+- \[PFD\] Fixed a regression in v0.4.2/Sim Update 3 that caused the altimeter's baro setting display to not always display all four significant digits in "IN HG" mode.
+- \[PFD\] Fixed the scale of the Angle of Attack Indicator. Zero AoA is no longer in the middle of the scale. The top of the scale now theoretically represents the critical (stall) AoA, and zero on the scale represents the zero-lift AoA.
+  - The scale for the TBM930 is based on the values found in the targetperformance.cfg file.
+  - The scale for the Longitude is somewhat arbitrary since no references could be found, but should be at least in the ballpark of a "correct" scale based on empiric performance data gathered from within the sim.
+  - The scale is not adjusted for differences in configuration (e.g. flaps) or mach speed.
+- \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator in the G5000 now functions properly: when selected, the AoA indicator will be displayed if the landing gear are down or if flaps are set to any setting other than fully retracted.
+- \[PFD\] For the Longitude: The PFD altimeter is now synced with the same altimeter used by the autopilot (which is also synced to the standby altimeter). This will fix the issue of the autopilot appearing to hold at an altitude different from the selected altitude if the PFD and standby altimeter baro settings are not the same. This change has the side effect of rendering the standby altimeter baro knob unusable, since the standby altimeter is now slaved to the PFD altimeter.
+- \[PFD\] For the Longitude: the joystick above the PFD displays can now be used to increase/decrease the range of the PFD Inset Map.
+- \[NavMap\] The flight plan renderer now correctly draws the turning "transitions" into approaches which the sim's default autopilot flies when directly sequencing from the last leg before an approach into the first leg of the approach would result in a greater than 90-degree angle turn.
+- \[GTC\] The backspace button in the frequency entry pop-up window is no longer broken.
+- \[GTC\] Speed Bug settings are now properly synchronized across different touchscreen controllers.
+- \[Misc\] Loading/activating an ILS/LOC approach will automatically load the approach frequency into the nav radio. The exact behavior of this function depends on whether the G3000 or G5000 is being used, whether the selected autopilot/CDI nav source is FMS or NAV, and whether the approach frequency was already loaded into the nav radio.
+- \[Misc\] When flying an ILS/LOC approach, the selected autopilot/CDI nav source is FMS, and the approach frequency is loaded into the active frequency field of NAV1 or NAV2, the system will automatically switch the nav source to NAV1/NAV2 when the following conditions are first met: the next active waypoint is the FAF and the plane is within 15 NM of the FAF, OR the next active waypoint is past the FAF.
+- \[Misc\] Added the missing default reference Vspeeds for the Longitude. Note that these speeds are the published real-life values; performance in the sim may differ.
+
 ### v0.4.2
 **Fixes**
 - \[Compatibility\] Now compatible with game patch 1.14.5.0 (Sim Update 3).
