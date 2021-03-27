@@ -1,6 +1,6 @@
 class WT_G5000_PFDAutopilotDisplay extends WT_G3x5_PFDAutopilotDisplay {
     _createModel() {
-        return new WT_G5000_PFDAutopilotDisplayModel(this.instrument.airplane);
+        return new WT_G5000_PFDAutopilotDisplayModel(this.instrument.airplane, this._altimeter);
     }
 
     _createHTMLElement() {
@@ -10,16 +10,36 @@ class WT_G5000_PFDAutopilotDisplay extends WT_G3x5_PFDAutopilotDisplay {
         });
         return htmlElement;
     }
+
+    _getAltimeter() {
+        let index = 1;
+        if (this.instrument.instrumentXmlConfig) {
+            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
+            if (altimeterIndexElems.length > 0) {
+                index = parseInt(altimeterIndexElems[0].textContent) + 1;
+            }
+        }
+        return this.instrument.airplane.sensors.getAltimeter(index);
+    }
+
+    init(root) {
+        this._altimeter = this._getAltimeter();
+
+        super.init(root);
+    }
 }
 
 class WT_G5000_PFDAutopilotDisplayModel extends WT_G3x5_PFDAutopilotDisplayModel {
     /**
      * @param {WT_PlayerAirplane} airplane
+     * @param {WT_AirplaneAltimeter} altimeter
      */
-    constructor(airplane) {
+    constructor(airplane, altimeter) {
         super(airplane);
 
-        this._indicatedAltitude = WT_Unit.KNOT.createNumber(0);
+        this._altimeter = altimeter;
+
+        this._indicatedAltitude = WT_Unit.FOOT.createNumber(0);
         this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.OFF;
     }
 
@@ -35,7 +55,7 @@ class WT_G5000_PFDAutopilotDisplayModel extends WT_G3x5_PFDAutopilotDisplayModel
         let isActive = this._autopilot.isAutoThrottleActive();
         if (isActive) {
             if (this.verticalModeActive === WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.FLC) {
-                let indicatedAlt = this._airplane.sensors.altitudeIndicated(this._indicatedAltitude);
+                let indicatedAlt = this._altimeter.altitudeIndicated(this._indicatedAltitude);
                 if (indicatedAlt.compare(this._selectedAltitude) < 0) {
                     this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.CLIMB;
                 } else {
