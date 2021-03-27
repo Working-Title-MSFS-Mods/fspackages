@@ -115,7 +115,7 @@ class WT_G3x5_PFDAltimeterModel {
         this._showMeters = false;
         this._baroPressureModel = new WT_NumberUnitModelSimVar(WT_Unit.HPA, `KOHLSMAN SETTING MB:${this._altimeter.index}`, "millibars", undefined, true);
 
-        this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR);
+        this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_CONSTANT);
         this._lastIASKnot = 0;
         this._lastTrendTime = 0;
 
@@ -1009,14 +1009,14 @@ class WT_G3x5_PFDAltimeterAltitudeHTMLElement extends HTMLElement {
         }
     }
 
-    _setAlertState(state) {
+    _setAlertState(state, flash) {
     }
 
     _updateAlertState() {
         let alertState = this._context.model.altitudeAlertState;
-        this._setAlertState(alertState);
 
         if (alertState !== this._lastAlertState) {
+            this._setAlertState(alertState, alertState > this._lastAlertState);
             if (alertState === WT_G3x5_PFDAltimeterModel.AltitudeAlertState.DEVIATION) {
                 this._context.model.instrument.playInstrumentSound("tone_altitude_alert_default");
             }

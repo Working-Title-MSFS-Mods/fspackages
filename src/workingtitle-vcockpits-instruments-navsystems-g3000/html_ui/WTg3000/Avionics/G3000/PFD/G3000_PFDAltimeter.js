@@ -219,8 +219,9 @@ class WT_G3000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
         this._selectedAltMeters.innerHTML = this._metersFormatter.getFormattedHTML(altitude, WT_Unit.METER);
     }
 
-    _setAlertState(state) {
+    _setAlertState(state, flash) {
         this._wrapper.setAttribute("alert", WT_G3000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTES[state]);
+        this._wrapper.setAttribute("alert-flash", `${flash}`);
     }
 }
 WT_G3000_PFDAltimeterAltitudeHTMLElement.ALTITUDE_ALERT_STATE_ATTRIBUTES = [
@@ -305,13 +306,19 @@ WT_G3000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                     color: var(--wt-g3x5-lightblue);
                 }
                 #wrapper[alert="1000"] #selectedalt {
-                    animation: alert-1000 1s step-end 5 forwards;
-                }
-                #wrapper[alert="200"] #selectedalt {
-                    animation: alert-200 1s step-end 5 forwards;
+                    color: black;
                 }
                 #wrapper[alert="deviation"] #selectedalt {
-                    animation: alert-deviation 1s step-end 5 forwards;
+                    color: var(--wt-g3x5-amber);
+                }
+                #wrapper[alert="1000"][alert-flash="true"] #selectedalt {
+                    animation: alert-1000 1s step-end 5;
+                }
+                #wrapper[alert="200"][alert-flash="true"] #selectedalt {
+                    animation: alert-200 1s step-end 5;
+                }
+                #wrapper[alert="deviation"][alert-flash="true"] #selectedalt {
+                    animation: alert-deviation 1s step-end 5;
                 }
             #tapecontainer {
                 position: absolute;
