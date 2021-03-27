@@ -45,27 +45,27 @@ class WT_SortedArray {
         return this._equals;
     }
 
-    _findIndex(element, first = true) {
+    _findIndex(element, comparator, first = true) {
         let min = 0;
         let max = this.array.length;
         let index = Math.floor((min + max) / 2);
 
         while (min < max) {
-            let compare = this.comparator(element, this.array[index]);
+            let compare = comparator(element, this.array[index]);
             if (compare < 0) {
                 max = index;
             } else if (compare > 0) {
                 min = index + 1;
             } else {
-                break;
+                let delta = first ? -1 : 1;
+                while (index + delta >= 0 && index + delta < this.array.length && comparator(element, this.array[index + delta]) === 0) {
+                    index += delta;
+                }
+                return index;
             }
             index = Math.floor((min + max) / 2);
         }
-        let delta = first ? -1 : 1;
-        while (index + delta < this.array.length && this.comparator(element, this.array[index + delta]) === 0) {
-            index += delta;
-        }
-        return index;
+        return -(index + 1);
     }
 
     _searchEquals(element, first) {
@@ -119,19 +119,22 @@ class WT_SortedArray {
      * @returns {Boolean} whether this array contains the element.
      */
     has(element) {
-        return this._searchEquals(this._findIndex(element)) >= 0;
+        return this._searchEquals(this._findIndex(element, this.comparator)) >= 0;
     }
 
     /**
-     * Inserts an element into this array. The element will be inserted at the lowest index such that it is located
-     * after all the existing elements in the array sorted before it according to this array's sorting function. All
+     * Inserts an element into this array. The element will be inserted at the greatest index such that it is located
+     * before all the existing elements in the array sorted after it according to this array's sorting function. All
      * existing elements located at indexes greater than or equal to the index at which the element was inserted are
      * shifted to the right.
      * @param {T} element - the element to insert.
      * @returns {Number} the index at which the element was placed.
      */
     insert(element) {
-        let index = this._findIndex(element, false);
+        let index = this._findIndex(element, this.comparator, false);
+        if (index < 0) {
+            index = -index - 1;
+        }
         this.array.splice(index, 0, element);
         return index;
     }
@@ -144,7 +147,7 @@ class WT_SortedArray {
      * @returns {Number} the (former) index of the removed element, or -1 if no element was removed.
      */
     remove(element) {
-        let index = this._searchEquals(this._findIndex(element));
+        let index = this._searchEquals(this._findIndex(element, this.comparator));
         if (index >= 0) {
             this.array.splice(index, 1);
         }
@@ -155,11 +158,53 @@ class WT_SortedArray {
      * Finds the index of the first occurrence of an element in this array. This array is searched for the first element
      * which is equal to the specified element according to this array's equality function, and its index is returned.
      * @param {T} element - the element for which to search.
-     * @returns {Number} the index of the first occurrence of the specified element, or -1 if no such element was
-     *                   found.
+     * @returns {Number} the index of the first occurrence of the specified element, or -1 if no such element was found.
      */
     indexOf(element) {
-        return this._searchEquals(element, this._findIndex(element));
+        return this._searchEquals(this._findIndex(element, this.comparator))
+    }
+
+    /**
+     * Searches this array for the first element which is equivalent to a query according to an optional comparator
+     * function. If no such element is found, then undefined is returned instead.
+     * @param {*} query - the query.
+     * @param {(query:*, element:T) => Number} comparator - the function to use to determine equivalence and ordering
+     *                                                        of the query with respect to the elements in this array.
+     *                                                        The function should return a negative number if the query
+     *                                                        is ordered before the specified element, a positive
+     *                                                        number if the query is ordered after the specified
+     *                                                        element, and 0 if the query is equivalent to the
+     *                                                        specified element. If this argument is not supplied, this
+     *                                                        array's sorting function is used instead.
+     * @returns {T} the first element in the array which is equivalent to the query.
+     */
+    match(query, comparator) {
+        let index = this.matchIndex(query, comparator);
+        return this.array[index];
+    }
+
+    /**
+     * Searches this array for the index of the first element which is equivalent to a query according to an optional
+     * comparator function. If no such element is found, then -(index + 1) is returned instead, where index is the
+     * position in the array at which a hypothetical element that is equivalent to the query would be placed if it
+     * were inserted into this array.
+     * @param {*} query - the query.
+     * @param {(query:*, element:T) => Number} [comparator] - the function to use to determine equivalence and ordering
+     *                                                        of the query with respect to the elements in this array.
+     *                                                        The function should return a negative number if the query
+     *                                                        is ordered before the specified element, a positive
+     *                                                        number if the query is ordered after the specified
+     *                                                        element, and 0 if the query is equivalent to the
+     *                                                        specified element. If this argument is not supplied, this
+     *                                                        array's sorting function is used instead.
+     * @returns {Number} the index of the first element in the array which is equivalent to the query.
+     */
+    matchIndex(query, comparator) {
+        if (!comparator) {
+            comparator = this.comparator;
+        }
+
+        return this._findIndex(query, comparator);
     }
 
     /**
