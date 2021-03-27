@@ -465,7 +465,7 @@ class CJ4_FMC_AtcControlPage {
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "", "ATC CONTROL[blue]"],
-            ["ATC1", "ALT REPORT "],
+            [" ATC1", "ALT REPORT "],
             [this._freqMap.atc1 + "[green]", "ON[blue]/OFF[s-text disabled]"],
             ["", "", " ALT[white]" + this._pressAlt + "FT[green]"],
             ["IDENT[s-text disabled]", "TEST[s-text disabled]", "ADC2     [blue s-text]"],
@@ -473,7 +473,7 @@ class CJ4_FMC_AtcControlPage {
             [""],
             [" SELECT"],
             ["ATC1[blue]/[white]ATC2[s-text disabled]"],
-            ["MODE"],
+            [" MODE"],
             [modeSwitch],
             [""],
             [""],
