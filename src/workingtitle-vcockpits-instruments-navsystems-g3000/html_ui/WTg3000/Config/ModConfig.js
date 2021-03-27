@@ -30,6 +30,7 @@ class WT_g3000_ModConfig {
     static async initialize() {
         let config = await new WT_g3000_ModConfigLoader().load();
         WT_g3000_ModConfig._INSTANCE = config;
+        return config;
     }
 }
 WT_g3000_ModConfig.SECTIONS = [
@@ -53,7 +54,7 @@ WT_g3000_ModConfig.SECTIONS = [
         loadOC: {default: true, auto: true}
     }},
     {cfgName: "TBM_930_REFERENCES", objName: "tbm930References", options: {
-        vmo: {default: 266, auto: true},
+        vmo: {default: [[0, 266]], auto: true},
         vr: {default: 90, auto: true},
         vy: {default: 124, auto: true},
         vx: {default: 100, auto: true},
@@ -65,7 +66,7 @@ WT_g3000_ModConfig.SECTIONS = [
         aoaCritical: {default: 15, auto: true}
     }},
     {cfgName: "CITATION_LONGITUDE_REFERENCES", objName: "longitudeReferences", options: {
-        vmo: {default: 325, auto: true},
+        vmo: {default: [[0, 290], [8000, 325]], auto: true},
         mmo: {default: 0.84, auto: true},
         crossover: {default: 29375, auto: true},
         v1: {default: 110, auto: true},
@@ -79,7 +80,9 @@ WT_g3000_ModConfig.SECTIONS = [
         vle: {default: 230, auto: true},
         vfe: {default: [250, 230, 180], auto: true},
         aoaZeroLift: {default: -3, auto: true},
-        aoaCritical: {default: 13, auto: true}
+        aoaCritical: {default: 13, auto: true},
+        clbN1: {default: [[0, 0, 0.9]], auto: true},
+        cruN1: {default: [[0, 0, 0.75]], auto: true}
     }}
 ];
 

@@ -22,7 +22,7 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
     }
 
     _initAutoThrottle() {
-        this._autoThrottle = new WT_G5000_AutoThrottle(this.airplane, this.referenceAltimeter);
+        this._autoThrottle = new WT_G5000_AutoThrottle(this.airplane, this.referenceAltimeter, this.airplane.references.clbN1Table, this.airplane.references.cruN1Table);
     }
 
     Init() {
