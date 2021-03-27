@@ -14,6 +14,22 @@ class WT_G3x5_PFD extends NavSystem {
 
     /**
      * @readonly
+     * @type {WT_AirplaneAirspeedSensor}
+     */
+    get referenceAirspeedSensor() {
+        return this._referenceAirspeedSensor;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_AirplaneAltimeter}
+     */
+    get referenceAltimeter() {
+        return this._referenceAltimeter;
+    }
+
+    /**
+     * @readonly
      * @type {WT_CitySearcher}
      */
     get citySearcher() {
@@ -63,6 +79,26 @@ class WT_G3x5_PFD extends NavSystem {
         super.disconnectedCallback();
     }
 
+    _getReferenceAirspeedSensor() {
+        return this.airplane.sensors.getAirspeedSensor(1);
+    }
+
+    _getReferenceAltimeter() {
+        let index = 1;
+        if (this.instrumentXmlConfig) {
+            let altimeterIndexElems = this.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
+            if (altimeterIndexElems.length > 0) {
+                index = parseInt(altimeterIndexElems[0].textContent) + 1;
+            }
+        }
+        return this.airplane.sensors.getAltimeter(index);
+    }
+
+    _initReferenceSensors() {
+        this._referenceAirspeedSensor = this._getReferenceAirspeedSensor();
+        this._referenceAltimeter = this._getReferenceAltimeter();
+    }
+
     _createApproachNavLoader() {
     }
 
@@ -73,6 +109,7 @@ class WT_G3x5_PFD extends NavSystem {
     Init() {
         super.Init();
 
+        this._initReferenceSensors();
         this._initApproachNavLoader();
     }
 
