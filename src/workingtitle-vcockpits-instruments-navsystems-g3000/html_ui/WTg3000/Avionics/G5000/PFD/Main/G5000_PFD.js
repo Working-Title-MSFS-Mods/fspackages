@@ -1,6 +1,14 @@
 class WT_G5000_PFD extends WT_G3x5_PFD {
     get templateID() { return "AS3000_PFD"; }
 
+    /**
+     * @readonly
+     * @type {WT_G5000_AutoThrottle}
+     */
+    get autoThrottle() {
+        return this._autoThrottle;
+    }
+
     _createInsetMap() {
         return new WT_G5000_PFDInsetMap("PFD", this.citySearcher);
     }
@@ -11,6 +19,26 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
 
     _createApproachNavLoader() {
         return new WT_G5000_ApproachNavLoader(this.airplane);
+    }
+
+    _initAutoThrottle() {
+        this._autoThrottle = new WT_G5000_AutoThrottle(this.airplane, this.referenceAltimeter);
+    }
+
+    Init() {
+        super.Init();
+
+        this._initAutoThrottle();
+    }
+
+    _updateAutoThrottle() {
+        this.autoThrottle.update();
+    }
+
+    onUpdate(deltaTime) {
+        super.onUpdate(deltaTime);
+
+        this._updateAutoThrottle();
     }
 }
 

@@ -1,6 +1,6 @@
 class WT_G5000_PFDAutopilotDisplay extends WT_G3x5_PFDAutopilotDisplay {
     _createModel() {
-        return new WT_G5000_PFDAutopilotDisplayModel(this.instrument.airplane, this._altimeter);
+        return new WT_G5000_PFDAutopilotDisplayModel(this.instrument.airplane, this.instrument.referenceAltimeter, this.instrument.autoThrottle);
     }
 
     _createHTMLElement() {
@@ -10,80 +10,29 @@ class WT_G5000_PFDAutopilotDisplay extends WT_G3x5_PFDAutopilotDisplay {
         });
         return htmlElement;
     }
-
-    _getAltimeter() {
-        let index = 1;
-        if (this.instrument.instrumentXmlConfig) {
-            let altimeterIndexElems = this.instrument.instrumentXmlConfig.getElementsByTagName("AltimeterIndex");
-            if (altimeterIndexElems.length > 0) {
-                index = parseInt(altimeterIndexElems[0].textContent) + 1;
-            }
-        }
-        return this.instrument.airplane.sensors.getAltimeter(index);
-    }
-
-    init(root) {
-        this._altimeter = this._getAltimeter();
-
-        super.init(root);
-    }
 }
 
 class WT_G5000_PFDAutopilotDisplayModel extends WT_G3x5_PFDAutopilotDisplayModel {
     /**
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_AirplaneAltimeter} altimeter
+     * @param {WT_G5000_AutoThrottle} autoThrottle
      */
-    constructor(airplane, altimeter) {
+    constructor(airplane, altimeter, autoThrottle) {
         super(airplane);
 
         this._altimeter = altimeter;
-
-        this._indicatedAltitude = WT_Unit.FOOT.createNumber(0);
-        this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.OFF;
+        this._autoThrottle = autoThrottle;
     }
 
     /**
      * @readonly
-     * @type {WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode}
+     * @type {WT_G5000_AutoThrottle.Mode}
      */
     get autoThrottleMode() {
-        return this._autoThrottleMode;
-    }
-
-    _updateAutoThrottle() {
-        let isActive = this._autopilot.isAutoThrottleActive();
-        if (isActive) {
-            if (this.verticalModeActive === WT_G3x5_PFDAutopilotDisplayModel.VerticalMode.FLC) {
-                let indicatedAlt = this._altimeter.altitudeIndicated(this._indicatedAltitude);
-                if (indicatedAlt.compare(this._selectedAltitude) < 0) {
-                    this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.CLIMB;
-                } else {
-                    this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.DESC;
-                }
-            } else {
-                this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.SPD;
-            }
-        } else {
-            this._autoThrottleMode = WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.OFF;
-        }
-    }
-
-    update() {
-        super.update();
-
-        this._updateAutoThrottle();
+        return this._autoThrottle.mode;
     }
 }
-/**
- * @enum {Number}
- */
-WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode = {
-    OFF: 0,
-    SPD: 1,
-    CLIMB: 2,
-    DESC: 3
-};
 
 class WT_G5000_PFDAutopilotDisplayHTMLElement extends WT_G3x5_PFDAutopilotDisplayHTMLElement {
     constructor() {
@@ -168,9 +117,9 @@ class WT_G5000_PFDAutopilotDisplayHTMLElement extends WT_G3x5_PFDAutopilotDispla
 
     _updateAutoThrottle() {
         let mode = this._context.model.autoThrottleMode;
-        this._setAutoThrottleShow(mode !== WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.OFF);
+        this._setAutoThrottleShow(mode !== WT_G5000_AutoThrottle.Mode.OFF);
         this._setAutoThrottleModeText(WT_G5000_PFDAutopilotDisplayHTMLElement.AUTOTHROTTLE_MODE_TEXTS[mode]);
-        if (mode === WT_G5000_PFDAutopilotDisplayModel.AutoThrottleMode.SPD) {
+        if (mode === WT_G5000_AutoThrottle.Mode.SPD) {
             if (this._context.model.isSpeedReferenceMach) {
                 this._setAutoThrottleReferenceHTML(`M ${this._context.model.referenceMach.toFixed(3).replace(/^0\./, ".")}`);
             } else {
