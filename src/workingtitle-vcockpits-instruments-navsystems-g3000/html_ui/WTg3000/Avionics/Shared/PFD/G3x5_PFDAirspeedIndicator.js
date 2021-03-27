@@ -42,7 +42,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
         this._airplane = airplane;
         this._airspeedSensor = airspeedSensor;
 
-        this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR);
+        this._trendSmoother = new WT_ExponentialSmoother(WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_CONSTANT);
         this._lastIASKnot = 0;
         this._lastTrendTime = 0;
 
@@ -169,7 +169,7 @@ class WT_G3x5_PFDAirspeedIndicatorModel {
         this._updateRefMach();
     }
 }
-WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_FACTOR = 3;
+WT_G3x5_PFDAirspeedIndicatorModel.TREND_SMOOTHING_CONSTANT = 2;
 
 class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     constructor() {
