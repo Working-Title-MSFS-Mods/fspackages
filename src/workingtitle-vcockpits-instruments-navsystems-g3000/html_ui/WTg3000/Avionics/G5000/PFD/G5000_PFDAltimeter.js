@@ -56,6 +56,10 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
     }
 
     _syncBaroSettings() {
+        if (this._altimeter.index === this._autopilotAltimeter.index) {
+            return;
+        }
+
         if (this._skipBaroSync) {
             this._skipBaroSync = false;
             return;
