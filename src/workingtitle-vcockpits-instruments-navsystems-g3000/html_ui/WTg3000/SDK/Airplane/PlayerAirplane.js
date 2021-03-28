@@ -17,6 +17,7 @@ class WT_PlayerAirplane {
             case "TT:ATCCOM.AC_MODEL_TBM9.0.text":
                 return WT_PlayerAirplane.Type.TBM930;
             case "TT:ATCCOM.AC_MODEL_C700.0.text":
+            case "TT:ATCCOM.AC_MODEL_LONGITUDE.0.text":
                 return WT_PlayerAirplane.Type.CITATION_LONGITUDE;
             default:
                 return WT_PlayerAirplane.Type.UNKNOWN;
