@@ -77,6 +77,22 @@ class WT_G5000_PFDAirspeedIndicatorModel extends WT_G3x5_PFDAirspeedIndicatorMod
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
+    get refSpeed() {
+        return !this._airplane.autopilot.isSpeedReferenceMach() ? this._refSpeed.readonly() : null;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get refMach() {
+        return this._airplane.autopilot.isSpeedReferenceMach() ? this._refMach : null;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
     get minSpeed() {
         return this._minSpeed.readonly();
     }
