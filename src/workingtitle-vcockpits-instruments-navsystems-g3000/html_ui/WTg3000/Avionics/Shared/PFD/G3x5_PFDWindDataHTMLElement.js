@@ -513,7 +513,7 @@ WT_G3x5_PFDWindDataHTMLElement.TEMPLATE.innerHTML = `
                     width: 100%;
                     transform: translateY(-50%);
                     text-align: center;
-                    font-size: var(--winddata-nodata-font-size, 1em);
+                    font-size: var(--winddata-nodata-font-size, 0.9em);
                 }
     </style>
     <div id="wrapper">
