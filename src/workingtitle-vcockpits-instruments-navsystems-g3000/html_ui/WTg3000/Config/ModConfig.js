@@ -81,8 +81,8 @@ WT_g3000_ModConfig.SECTIONS = [
         vfe: {default: [250, 230, 180], auto: true},
         aoaZeroLift: {default: -3, auto: true},
         aoaCritical: {default: 13, auto: true},
-        clbN1: {default: [[0, 0, 0.9]], auto: true},
-        cruN1: {default: [[0, 0, 0.75]], auto: true}
+        clbN1: {default: [[0, 0, 0.95]], auto: true},
+        cruN1: {default: [[0, 0, 0.85]], auto: true}
     }}
 ];
 
