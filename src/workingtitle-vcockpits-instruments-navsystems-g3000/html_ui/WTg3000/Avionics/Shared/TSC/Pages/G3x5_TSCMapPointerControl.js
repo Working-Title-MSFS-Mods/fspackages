@@ -67,9 +67,6 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
             case "TopKnob_Push":
                 this.gps.goBack();
                 break;
-            case "BottomKnob_Push":
-                this.gps.goBack();
-                break;
         }
     }
 

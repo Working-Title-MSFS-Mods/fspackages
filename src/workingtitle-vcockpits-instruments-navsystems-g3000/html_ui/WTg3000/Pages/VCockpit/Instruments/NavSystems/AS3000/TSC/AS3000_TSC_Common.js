@@ -324,14 +324,14 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage) {
-        if (currentPageGroup.name === "MFD" && currentPage.name === "Map Settings" && currentPage.title === "Map Pointer Control") {
+        if (currentPageGroup.name === "MFD" && (currentPage.name === "Map Settings" || currentPage.title === "Map Pointer Control")) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
     }
 
     _onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage) {
-        if (currentPageGroup.name === "MFD" && currentPage.title === "Weather Selection" && currentPage.title === "Weather Radar Settings") {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Weather Selection" || currentPage.title === "Weather Radar Settings")) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
@@ -479,9 +479,13 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _handleMapPointerEvent(event) {
-        if (event === "BottomKnob_Push" && this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
-            this.closePopUpElement();
-            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
+        if (event === "BottomKnob_Push") {
+            if (this.getCurrentPage().title === "Map Pointer Control") {
+                this.goBack();
+            } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+                this.closePopUpElement();
+                this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
+            }
         }
     }
 
