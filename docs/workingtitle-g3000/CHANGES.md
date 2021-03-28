@@ -38,7 +38,7 @@
 - \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator is no longer available in the G3000.
 - \[NavMap\] The high-latitude behavior of the map has been changed to take into account the range of the map. At smaller map ranges, the map can be centered at higher latitudes up to +/- 85 degrees (previously the map was restricted to 70 degrees at all ranges).
 - \[GTC\] Added the ability to drag-to-scroll in various pages. These pages also now have scroll-up/scroll-down buttons enabled in the button bar.
-- \[Misc\] For the Longitude: In autothrottle CLIMB mode, thrust is limited to 90% N1 (CLB thrust). After leveling off (switching from CLIMB to any other autothrottle mode), CLB thrust is available for another 10 minutes, after which the autothrottle will be limited to 75% N1 (CRU thrust). Engaging CLIMB mode again will reset the autothrottle limit to CLB thrust.
+- \[Misc\] For the Longitude: In autothrottle CLIMB mode, thrust is limited to 95% N1 (CLB thrust). After leveling off (switching from CLIMB to any other autothrottle mode), CLB thrust is available for another 10 minutes, after which the autothrottle will be limited to 85% N1 (CRU thrust). Engaging CLIMB mode again will reset the autothrottle limit to CLB thrust.
   - The default CLB and CRU values are arbitrary since no references could be found. If so desired, these values can be customized in the mod config file (located at `workingtitle-g3000\html_ui\WTg3000.cfg`). Both support lookup tables keyed to pressure altitude and delta ISA temperature.
 
 **Fixes**
