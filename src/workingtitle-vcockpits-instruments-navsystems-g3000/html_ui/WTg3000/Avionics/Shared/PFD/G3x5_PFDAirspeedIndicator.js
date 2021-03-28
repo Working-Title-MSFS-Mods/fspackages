@@ -374,7 +374,15 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
     _updateStrips() {
     }
 
-    _updateIASDigit(index, knots) {
+    _setIASDigitToNoData(index) {
+        let entry = this._iasDigits[index];
+        entry.top.textContent = "";
+        entry.middle.textContent = "-";
+        entry.bottom.textContent = "";
+        entry.digit.setAttribute("style", `transform: translateY(-50%);`);
+    }
+
+    _setIASDigitToSpeed(index, knots) {
         let entry = this._iasDigits[index];
 
         let place = Math.pow(10, index);
@@ -397,7 +405,15 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         entry.middle.textContent = (pivot < place) ? "" : `${middle}`;
         entry.bottom.textContent = (pivot - place < place) ? "" : `${bottom}`;
 
-        entry.digit.style.transform = `translateY(${translate * 33.33 - 50}%)`;
+        entry.digit.setAttribute("style", `transform: translateY(${translate * 33.33 - 50}%);`);
+    }
+
+    _updateIASDigit(index, knots) {
+        if (knots < this._context.scale.min) {
+            this._setIASDigitToNoData(index);
+        } else {
+            this._setIASDigitToSpeed(index, knots);
+        }
     }
 
     /**
@@ -405,7 +421,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} ias
      */
     _updateIAS(ias) {
-        let knots = Math.max(this._context.scale.min, ias.asUnit(WT_Unit.KNOT));
+        let knots = ias.asUnit(WT_Unit.KNOT);
         for (let i = 0; i < 3; i++) {
             this._updateIASDigit(i, knots);
         }
