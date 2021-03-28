@@ -160,7 +160,7 @@ class AS3000_TSC extends NavSystemTouch {
             new NavSystemPageGroup("PFD", this, [
                 new NavSystemPage("PFD Home", "PFDHome", new AS3000_TSC_PFDHome()),
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
-                new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD Home", "PFD", "Generic")),
+                new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD", "PFD Home", "Generic")),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
                 this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
                 new NavSystemPage("PFD Settings", "PFDSettings", this._createPFDSettingsPage()),
