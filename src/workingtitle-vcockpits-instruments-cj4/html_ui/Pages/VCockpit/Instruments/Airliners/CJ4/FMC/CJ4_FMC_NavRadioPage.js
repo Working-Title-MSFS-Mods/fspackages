@@ -492,10 +492,12 @@ class CJ4_FMC_AtcControlPage {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
             const avionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
-            if (avionicsComp === 2) {
+            if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                if (avionicsComp === 2) {
                 CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
-            } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+                } else {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+                }
             } else {
                 this._fmc.clearUserInput();
                 if (isFinite(numValue) && RadioNav.isXPDRCompliant(numValue)) {
