@@ -442,7 +442,14 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} trend
      */
     _updateTrend(ias, trend) {
-        let trendEnd = ias.asUnit(WT_Unit.KNOT) + trend;
+        let iasKnot = ias.asUnit(WT_Unit.KNOT);
+
+        if (iasKnot < this._context.scale.min) {
+            this._showTrend(false);
+            return;
+        }
+
+        let trendEnd = iasKnot + trend;
         this._setTrendWarning(trendEnd >= this._context.model.maxSpeed.asUnit(WT_Unit.KNOT));
         if (Math.abs(trend) < this._context.trendThreshold) {
             this._showTrend(false);
