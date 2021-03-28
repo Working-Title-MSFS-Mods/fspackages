@@ -397,22 +397,26 @@ class WT_G3x5_PFDNavStatusETEModel extends WT_G3x5_PFDNavStatusNumberUnitModel {
     }
 
     _updateValue() {
-        let fpm = this._airplane.fms.flightPlanManager;
-        let distance = null;
-        if (fpm.directTo.isActive()) {
-            distance = fpm.distanceToDirectTo(true, this._tempNM);
-        } else {
-            let activeLeg = fpm.getActiveLeg(true);
-            if (activeLeg) {
-                distance = fpm.distanceToActiveFix(true, this._tempNM);
+        let value = NaN;
+        if (!this._airplane.sensors.isOnGround()) {
+            let fpm = this._airplane.fms.flightPlanManager;
+            let distance = null;
+            if (fpm.directTo.isActive()) {
+                distance = fpm.distanceToDirectTo(true, this._tempNM);
+            } else {
+                let activeLeg = fpm.getActiveLeg(true);
+                if (activeLeg) {
+                    distance = fpm.distanceToActiveFix(true, this._tempNM);
+                }
+            }
+
+            if (distance) {
+                let gs = this._airplane.navigation.groundSpeed(this._tempKnot);
+                if (gs.number > 0) {
+                    value = WT_Unit.HOUR.convert(distance.number / gs.number, this._value.unit);
+                }
             }
         }
-
-        if (distance) {
-            let gs = this._airplane.navigation.groundSpeed(this._tempKnot);
-            this._value.set(distance.number / gs.number, WT_Unit.HOUR);
-        } else {
-            this._value.set(NaN);
-        }
+        this._value.set(value);
     }
 }
