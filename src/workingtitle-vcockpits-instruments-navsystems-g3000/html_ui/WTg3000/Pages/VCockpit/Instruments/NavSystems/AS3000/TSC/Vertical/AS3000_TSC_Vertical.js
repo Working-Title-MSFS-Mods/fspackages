@@ -12,10 +12,6 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCPFDSettings("PFD", "PFD Home", "PFD");
     }
 
-    createAudioRadioWindow() {
-        return new AS3000_TSC_Vertical_AudioRadios();
-    }
-
     get templateID() { return "AS3000_TSC_Vertical"; }
 
     connectedCallback() {
