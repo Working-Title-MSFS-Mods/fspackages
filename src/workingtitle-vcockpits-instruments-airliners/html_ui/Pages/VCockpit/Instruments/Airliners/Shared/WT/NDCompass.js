@@ -2942,19 +2942,28 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
         this.discoFplnGroup.setAttribute("visibility", "hidden");
         this.root.appendChild(this.discoFplnGroup);
 
-        /*this.outerTickMarks = document.createElementNS(Avionics.SVG.NS, "g"); //COMMENTED OUT FOR NOW, WILL FIX LATER
+        this.outerTickMarks = document.createElementNS(Avionics.SVG.NS, "g"); //Arrows go on 45, 135, 215, 345, lines go on 0, 90, 180, 270
         this.root.appendChild(this.outerTickMarks);
-        for (let i = 0; i < 72; i++) {
-            let line = document.createElementNS(Avionics.SVG.NS, "rect");
-            let startY = 500 - (circleRadius + 10);
-            line.setAttribute("x", "498");
-            line.setAttribute("y", startY.toString());
-            line.setAttribute("width", "4");
-            line.setAttribute("height", "20");
-            line.setAttribute("transform", "rotate(" + fastToFixed(i * 5, 0) + " 500 500)");
-            line.setAttribute("fill", "red");
-            this.outerTickMarks.appendChild(line);
-        }*/
+        for (let i = 9; i < 72; i += 9) {
+            if (i % 18 == 0 ) {
+                let line = document.createElementNS(Avionics.SVG.NS, "rect");
+                let startY = 500 - (circleRadius + 33);
+                line.setAttribute("x", "496");
+                line.setAttribute("y", startY.toString());
+                line.setAttribute("width", "5");
+                line.setAttribute("height", "25");
+                line.setAttribute("transform", "rotate(" + fastToFixed(i * 5, 0) + " 500 500)");
+                line.setAttribute("fill", "white");
+                this.outerTickMarks.appendChild(line);
+            } else {
+                let arrow = document.createElementNS(Avionics.SVG.NS, "path");
+                arrow.setAttribute("d", "M 498 155 l 10 -18 l -10 0 l -10 0 z");
+                arrow.setAttribute("stroke", "white");
+                arrow.setAttribute("stroke-width", "4.0");
+                arrow.setAttribute("transform", "rotate(" + fastToFixed(i * 5, 0) + " 500 500)");
+                this.outerTickMarks.appendChild(arrow);
+            }
+        }
 
 
         /*let innerCircleGroup = document.createElementNS(Avionics.SVG.NS, "g");
