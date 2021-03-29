@@ -38,8 +38,8 @@ class WT_G5000_PFDAutopilotDisplayHTMLElement extends WT_G3x5_PFDAutopilotDispla
     constructor() {
         super();
 
-        this._lastYawDamperActive = false;
-        this._lastYawDamperAlertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.OFF;
+        this._lastAutoThrottleActive = false;
+        this._lastAutoThrottleAlertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.OFF;
     }
 
     _getTemplate() {
@@ -128,6 +128,28 @@ class WT_G5000_PFDAutopilotDisplayHTMLElement extends WT_G3x5_PFDAutopilotDispla
         } else {
             this._setAutoThrottleReferenceHTML("");
         }
+    }
+
+    _setAutoThrottleDisconnectAlertState(state) {
+        this._wrapper.setAttribute("autothrottledisconnect-alert", `${WT_G5000_PFDAutopilotDisplayHTMLElement.DISCONNECT_ALERT_ATTRIBUTES[state]}`);
+    }
+
+    _updateAutoThrottleDisconnectAlert() {
+        let isActive = this._context.model.autoThrottleMode !== WT_G5000_AutoThrottle.Mode.OFF;
+        let alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.OFF;
+        if (!isActive && (this._lastAutoThrottleActive || this._lastAutoThrottleAlertState === WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.CAUTION)) {
+            alertState = WT_G3x5_PFDAutopilotDisplayHTMLElement.DisconnectAlertState.CAUTION;
+        }
+
+        this._setAutoThrottleDisconnectAlertState(alertState);
+        this._lastAutoThrottleActive = isActive;
+        this._lastAutoThrottleAlertState = alertState;
+    }
+
+    _updateAlerts() {
+        super._updateAlerts();
+
+        this._updateAutoThrottleDisconnectAlert();
     }
 
     _updateDisplay() {
@@ -318,6 +340,9 @@ WT_G5000_PFDAutopilotDisplayHTMLElement.TEMPLATE.innerHTML = `
                 }
                 #wrapper[show-autothrottle="true"] #autothrottle {
                     color: var(--wt-g3x5-lightgreen);
+                }
+                #wrapper[autothrottledisconnect-alert="caution"] #autothrottle {
+                    animation: alert-caution 1s step-end 5;
                 }
             #divider3 {
                 left: 57.5%;
