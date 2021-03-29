@@ -65,7 +65,16 @@ class CJ4_FMC_DirectToPage {
                         const constraintText = constraints.isAtConstraint ? formatConstraints(constraints.lowerConstraint)
                             : lowerConstraint + upperConstraint;
                         waypointsAltCell[i] = constraintText;
-                        if (constraints.isAtConstraint) {
+                        if (!waypoint.isClimb && constraints.isAtConstraint) {
+                            const distanceToConstraint = waypoint.cumulativeDistanceInFP - fmc._vnav._currentDistanceInFP;
+                            const altitudeDifference = fmc._vnav.indicatedAltitude - constraints.lowerConstraint;
+                            if (altitudeDifference > 0) {
+                                const fpa = AutopilotMath.calculateFPA(altitudeDifference, distanceToConstraint);
+                                const vs = AutopilotMath.calculateVerticaSpeed(fpa, Simplane.getGroundSpeed());
+                                waypointsFpaCell[i] = fpa.toFixed(1).padStart(3, " ") + "°" + vs.toFixed(0).padStart(4, " ");
+                            }
+                        }
+                        else if (!waypoint.isClimb && constraints.hasConstraint && constraints.lowerConstraint > 0) {
                             const distanceToConstraint = waypoint.cumulativeDistanceInFP - fmc._vnav._currentDistanceInFP;
                             const altitudeDifference = fmc._vnav.indicatedAltitude - constraints.lowerConstraint;
                             if (altitudeDifference > 0) {
@@ -82,7 +91,7 @@ class CJ4_FMC_DirectToPage {
                             if (value <= 450) {
                                 value = value * 100;
                             }
-                        } else if (constraints.isAtConstraint) {
+                        } else if (!waypoint.isClimb && constraints.hasConstraint && constraints.lowerConstraint > 0) {
                             value = constraints.lowerConstraint;
                         } else {
                             value = undefined;
