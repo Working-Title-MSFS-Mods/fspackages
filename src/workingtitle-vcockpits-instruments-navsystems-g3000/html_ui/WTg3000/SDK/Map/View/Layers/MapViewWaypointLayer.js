@@ -31,9 +31,15 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._showINT = false;
         this._showAirway = false;
 
+        /**
+         * @type {Set<WT_Waypoint>}
+         */
         this._standaloneWaypoints = new Set();
 
         this._airwaySegmentLabelCache = new WT_MapViewAirwaySegmentLabelCache(WT_MapViewWaypointLayer.AIRWAY_LABEL_CACHE_SIZE);
+        /**
+         * @type {Set<WT_MapViewAirwaySegmentLabel>}
+         */
         this._airwayLabelsToShow = new Set();
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewWaypointLayer.OPTIONS_DEF);
@@ -428,10 +434,10 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     async _doUpdateSearch(search) {
         await search.update();
-        for (let waypoint of search.results) {
+        search.results.forEach(waypoint => {
             this._waypointRenderer.register(waypoint, WT_MapViewWaypointCanvasRenderer.Context.NORMAL);
             this._standaloneWaypoints.add(waypoint);
-        }
+        }, this);
     }
 
     /**
@@ -502,7 +508,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * Searches a list of waypoints for airways containing those waypoints, then filters and returns a subset of those airways that
      * should be drawn on the map.
      * @param {WT_MapViewState} state - the current map view state.
-     * @param {WT_Waypoint[]} waypoints - the waypoints from which to get airways.
+     * @param {WT_ICAOWaypoint[]} waypoints - the waypoints from which to get airways.
      * @returns {WT_Airway[]} - an array of airways that should be drawn on the map.
      */
     _getAirwaysToDraw(state, waypoints) {
@@ -515,11 +521,11 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         let boundTop = -this._airwayLayer.height * 0.05;
         let boundBottom = this._airwayLayer.height * 1.05;
 
-        for (let waypoint of waypoints) {
+        waypoints.forEach(waypoint => {
             if (waypoint.icao !== undefined) {
                 let show = waypoint.airways && waypoint.airways.length > 0;
                 if (!show) {
-                    continue;
+                    return;
                 }
             }
 
@@ -528,13 +534,11 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
                 viewPosition.x > boundRight ||
                 viewPosition.y < boundTop ||
                 viewPosition.y > boundBottom) {
-                continue;
+                    return;
             }
 
-            for (let airway of waypoint.airways) {
-                airways.set(airway.name, airway);
-            }
-        }
+            waypoint.airways.forEach(airway => airways.set(airway.name, airway))
+        }, this);
         return Array.from(airways.values());
     }
 
@@ -542,9 +546,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * De-registers all waypoints associated with the most recently drawn airway segments.
      */
     _clearAirwayWaypoints() {
-        for (let waypoint of this._airwayWaypoints) {
-            this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY);
-        }
+        this._airwayWaypoints.forEach(waypoint => this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY), this);
         this._airwayWaypoints = [];
     }
 
@@ -715,9 +717,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
             }
         }
 
-        for (let waypoint of toRemove) {
-            this._standaloneWaypoints.delete(waypoint);
-        }
+        toRemove.forEach(waypoint => this._standaloneWaypoints.delete(waypoint), this);
     }
 
     /**
