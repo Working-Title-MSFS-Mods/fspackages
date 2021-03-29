@@ -7,6 +7,7 @@ class CJ4_FMC_DsplMenuPage {
         const intersectionsActive = fmc._templateRenderer.renderSwitch(["INTERS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.INTERSECTS) - 1));
         const airportsActive = fmc._templateRenderer.renderSwitch(["APTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.AIRPORTS) - 1));
         const altitudeActive = fmc._templateRenderer.renderSwitch(["ALTITUDE"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.CONSTRAINTS) - 1));
+        //console.log("altitudeActive " + CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.CONSTRAINTS));
         const termWptsActive = fmc._templateRenderer.renderSwitch(["TERM WPTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.TERMWPTS) - 1));
         const vnavWindowSwitch = fmc._templateRenderer.renderSwitch(["OFF", "ON", "VNAV"], WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1));
         const missedActive = fmc._templateRenderer.renderSwitch(["MISSEDAPPR"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.MISSEDAPPR) - 1));
@@ -30,11 +31,11 @@ class CJ4_FMC_DsplMenuPage {
         };
 
         // TODO: disabled because of errors with mapinstrument
-        // fmc.onRightInput[2] = () => {
-        //     this.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
-        //         CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
-        //     });
-        // };
+        fmc.onRightInput[2] = () => {
+            CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.CONSTRAINTS).then(() => {
+                CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
+            });
+        };
 
         fmc.onRightInput[3] = () => {
             CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.AIRPORTS).then(() => {
@@ -65,7 +66,7 @@ class CJ4_FMC_DsplMenuPage {
             [""],
             ["HI NAVAIDS[s-text disabled]", "SPEED[s-text disabled]"],
             [""],
-            [loNavaidsActive, altitudeActive + "[disabled s-text]"],
+            [loNavaidsActive, altitudeActive],
             [""],
             [intersectionsActive, airportsActive],
             [""],
