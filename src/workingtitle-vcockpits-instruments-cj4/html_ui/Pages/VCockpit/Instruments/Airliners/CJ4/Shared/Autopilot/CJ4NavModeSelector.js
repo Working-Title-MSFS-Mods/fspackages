@@ -509,7 +509,7 @@ class CJ4NavModeSelector {
    * Handles when the VNAV button is pressed.
    */
   handleVNAVPressed() {
-    if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
+    if (this.currentVerticalActiveState !== VerticalNavModeState.GP || this.currentVerticalActiveState !== VerticalNavModeState.GS) {
       this.isVNAVOn = !this.isVNAVOn;
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", this.isVNAVOn ? 1 : 0);
 
