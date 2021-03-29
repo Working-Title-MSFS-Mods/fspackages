@@ -291,7 +291,11 @@ WT_G5000_PFDAutopilotDisplayHTMLElement.TEMPLATE.innerHTML = `
                     animation: alert-caution 1s step-end 5;
                 }
                 #wrapper[masterdisconnect-alert="warning"] #master {
-                    animation: alert-warning 1s step-end Infinite;
+                    /*
+                     * Longitude AP disconnect button does not send the correct event to JS, so we will limit warning
+                     * to 5 seconds so as to not have an un-acknowledgeable warning flashing forever.
+                     */
+                    animation: alert-warning 1s step-end 5;
                 }
                 #flightdirector {
                     position: absolute;
