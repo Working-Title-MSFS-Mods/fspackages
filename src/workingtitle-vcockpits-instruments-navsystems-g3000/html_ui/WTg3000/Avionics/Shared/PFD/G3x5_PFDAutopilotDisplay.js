@@ -193,7 +193,7 @@ class WT_G3x5_PFDAutopilotDisplayModel {
             this._lastMasterActive = true;
         } else {
             if (this._lastMasterActive && this.masterState === WT_G3x5_PFDAutopilotDisplayModel.MasterState.ON) {
-                WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_AUTO_DISCONNECT;
+                this._masterState = WT_G3x5_PFDAutopilotDisplayModel.MasterState.OFF_AUTO_DISCONNECT;
             }
             this._lastMasterActive = false;
         }
