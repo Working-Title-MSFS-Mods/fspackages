@@ -320,10 +320,12 @@ class WT_BaseVnav {
                 console.log("setting " + vwp.ident + " as first approach waypoint AT constraint " + constraints.lowerConstraint + "FT");
             }
             if (vwp.isAtConstraint || (vwp.hasConstraint && vwp.upperConstraintAltitude < Infinity)) {
-                vwp.waypointFPTA = vwp.upperConstraintAltitude;
+                if (vwp.isAtConstraint) {
+                    vwp.waypointFPTA = vwp.upperConstraintAltitude;
+                }
                 const atConstraint = {
                     index: i,
-                    altitude: vwp.waypointFPTA
+                    altitude: vwp.upperConstraintAltitude
                 };
                 console.log("at constraint " + atConstraint.index + " " + vwp.ident);
                 this._atConstraints.push(atConstraint);
