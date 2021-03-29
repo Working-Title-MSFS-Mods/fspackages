@@ -134,13 +134,14 @@
             <WRAP>False</WRAP>
         </DefaultTemplateParameters>
         <UseTemplate Name="ASOBO_GT_Update">
-            <FREQUENCY>5</FREQUENCY>
+            <FREQUENCY>2</FREQUENCY>
             <UPDATE_CODE>
                 (L:LIGHTING_Knob_Master, number) 90 &gt; if{
-                    0 3 (&gt;K:2:LIGHT_POTENTIOMETER_SET)
+                    0 (&gt;K:PANEL_LIGHTS_SET)
                 } els{
-                    (L:LIGHTING_Knob_Master, number) 10 max 3 (&gt;K:2:LIGHT_POTENTIOMETER_SET)
+                    1 (&gt;K:PANEL_LIGHTS_SET)
                 }
+                (L:LIGHTING_Knob_Master, number) 10 max (&gt;K:LIGHT_POTENTIOMETER_3_SET)
             </UPDATE_CODE>
         </UseTemplate>
         <Component ID="#NODE_ID#" Node="#NODE_ID#">
@@ -150,10 +151,5 @@
                 <COUNT>15</COUNT>
             </UseTemplate>
         </Component>
-        <Condition Check="HIGHLIGHT_NODE_ID">
-            <UseTemplate Name="ASOBO_GT_ComponentWith_PART_ID">
-                <NODE_ID>#HIGHLIGHT_NODE_ID#</NODE_ID>
-            </UseTemplate>
-        </Condition>
     </Template>
 </ModelBehaviors>
