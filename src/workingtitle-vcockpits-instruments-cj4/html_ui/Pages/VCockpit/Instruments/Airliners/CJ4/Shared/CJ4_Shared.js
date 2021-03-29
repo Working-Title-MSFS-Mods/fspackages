@@ -3394,6 +3394,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             if (this.isTerrainVisible || this.isGwxVisible) {
                 this.map.instrument.mapConfigId = 1;
                 this.map.instrument.bingMapRef = EBingReference.SEA;
+
                 // let mask = document.createElementNS(Avionics.SVG.NS, "rect");
                 // mask.setAttribute('x', '0');
                 // mask.setAttribute('y', '50.5%');
