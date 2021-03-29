@@ -159,16 +159,16 @@ class SvgConstraintElement extends SvgMapElement {
         console.log(waypoint.ident + " " + waypoint.legAltitudeDescription);
         switch (waypoint.legAltitudeDescription) {
             case 1:
-                constraintText = formatConstraints(Math.floor(waypoint.legAltitude1)) + "";
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "";
                 break;
             case 2:
-                constraintText = formatConstraints(Math.floor(waypoint.legAltitude1)) + "A";
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "A";
                 break;
             case 3:
-                constraintText = formatConstraints(Math.floor(waypoint.legAltitude1)) + "B";
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "B";
                 break;
             case 4:
-                constraintText = formatConstraints(Math.floor(waypoint.legAltitude2)) + "A" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "B";
+                constraintText = "/" + formatConstraints(Math.floor(waypoint.legAltitude2)) + "A" + formatConstraints(Math.floor(waypoint.legAltitude1)) + "B";
                 break;
         }
         return constraintText;
