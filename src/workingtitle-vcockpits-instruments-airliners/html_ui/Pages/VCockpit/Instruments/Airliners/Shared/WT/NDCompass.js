@@ -404,13 +404,13 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 this.trackingGroup = document.createElementNS(Avionics.SVG.NS, "g");
                 this.trackingGroup.setAttribute("id", "trackingGroup");
                 {
-                    let rad = 5;
+                    let rad = 7;
                     this.trackingBug = document.createElementNS(Avionics.SVG.NS, "circle");
                     this.trackingBug.setAttribute("id", "trackingBug");
                     this.trackingBug.setAttribute("cx", "50");
-                    this.trackingBug.setAttribute("cy", (50 + circleRadius + rad).toString());
+                    this.trackingBug.setAttribute("cy", (50 + circleRadius + (rad * 1.2)).toString());
                     this.trackingBug.setAttribute("r", rad.toString());
-                    this.trackingBug.setAttribute("fill", "none");
+                    this.trackingBug.setAttribute("fill", "black");
                     this.trackingBug.setAttribute("stroke", "#ff00e0");
                     this.trackingBug.setAttribute("stroke-width", "4");
                     this.trackingGroup.appendChild(this.trackingBug);
@@ -497,7 +497,7 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                 d += " l0 " + (-rectHeight);
                 let path = document.createElementNS(Avionics.SVG.NS, "path");
                 path.setAttribute("d", d);
-                path.setAttribute("fill", "none");
+                path.setAttribute("fill", "black");
                 path.setAttribute("stroke", "white");
                 path.setAttribute("stroke-width", "2");
                 this.currentRefGroup.appendChild(path);
@@ -2876,13 +2876,13 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
             this.rotatingCircle.appendChild(this.selectedHeadingGroup);
             this.rotatingCircle.appendChild(this.trackingGroup);
             {
-                let rad = 6;
+                let rad = 9;
                 this.trackingBug = document.createElementNS(Avionics.SVG.NS, "circle");
                 this.trackingBug.setAttribute("id", "trackingBug");
                 this.trackingBug.setAttribute("cx", "500");
-                this.trackingBug.setAttribute("cy", (500 - circleRadius - rad).toString());
+                this.trackingBug.setAttribute("cy", (500 - circleRadius + rad).toString());
                 this.trackingBug.setAttribute("r", rad.toString());
-                this.trackingBug.setAttribute("fill", "none");
+                this.trackingBug.setAttribute("fill", "black");
                 this.trackingBug.setAttribute("stroke", "#ff00e0");
                 this.trackingBug.setAttribute("stroke-width", "5");
                 this.trackingGroup.appendChild(this.trackingBug);
