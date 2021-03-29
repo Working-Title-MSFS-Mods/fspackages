@@ -54,7 +54,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
             onPaused: this._onAirwayRenderPaused.bind(this),
             onFinished: this._onAirwayRenderFinished.bind(this),
             onAborted: this._onAirwayRenderAborted.bind(this)
-        }
+        };
         this._airwayRenderer = new WT_MapViewAirwayCanvasRenderer(airwayRendererEventHandler, this._airwayLayer.buffer.context, 300);
         this._shouldDrawUnfinishedAirways = false;
 
@@ -334,12 +334,17 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._lastSearchParams.center.set(center);
         this._lastSearchParams.radius.set(radius);
         if (this._searchRequestsOpened) {
-            await Promise.all([
-                this._airportSearch.request.setParameters(center, radius, airportSearchSize),
-                this._vorSearch.request.setParameters(center, radius, vorSearchSize),
-                this._ndbSearch.request.setParameters(center, radius, ndbSearchSize),
-                this._intSearch.request.setParameters(center, radius, intSearchSize),
-            ]);
+            try {
+                await Promise.all([
+                    this._airportSearch.request.setParameters(center, radius, airportSearchSize),
+                    this._vorSearch.request.setParameters(center, radius, vorSearchSize),
+                    this._ndbSearch.request.setParameters(center, radius, ndbSearchSize),
+                    this._intSearch.request.setParameters(center, radius, intSearchSize),
+                ]);
+            } catch (e) {
+                // a newer search parameter update superceded this one.
+                return;
+            }
         } else {
             this._airportSearch.setRequest(this._icaoSearchers.airport.openRequest(center, radius, airportSearchSize));
             this._vorSearch.setRequest(this._icaoSearchers.vor.openRequest(center, radius, vorSearchSize));
@@ -843,7 +848,19 @@ WT_MapViewWaypointLayer.CONFIG_PROPERTIES = [
     "airwayLabelPriority",
 ];
 
+/**
+ * A periodic search for ICAO waypoints.
+ */
 class WT_MapViewWaypointSearch {
+    /**
+     * @param {(icaos:String[]) => Promise<WT_Waypoint[]>} factoryMethod - the WT_ICAOWaypointFactory method the new
+     *                                                                     search should use to create WT_Waypoint
+     *                                                                     objects from ICAO strings.
+     * @param {Number} minDelay - the minimum amount of time between two successive search updates, in seconds.
+     * @param {Number} maxDelay - the maximum amount of time between two successive search updates, in seconds.
+     * @param {Number} delayIncThreshold - the number of searches updates required before the delay between updates
+     *                                     automatically increases.
+     */
     constructor(factoryMethod, minDelay, maxDelay, delayIncThreshold) {
         this._request = null;
         this._factoryMethod = factoryMethod;
@@ -859,8 +876,8 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
+     * The ICAO search request associated with this search.
      * @readonly
-     * @property {WT_ICAOSearchRequest} request
      * @type {WT_ICAOSearchRequest}
      */
     get request() {
@@ -868,8 +885,8 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
+     * The results of the most recent update from this search.
      * @readonly
-     * @property {WT_ICAOWaypoint[]} results
      * @type {WT_ICAOWaypoint[]}
      */
     get results() {
@@ -877,8 +894,8 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
+     * Whether this search is currently updating.
      * @readonly
-     * @property {Boolean} isBusy
      * @type {Boolean}
      */
     get isBusy() {
@@ -886,30 +903,45 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
-     *
-     * @param {WT_ICAOSearchRequest} request
+     * Sets this search's ICAO search request.
+     * @param {WT_ICAOSearchRequest} request - an ICAO search request.
      */
     setRequest(request) {
         this._request = request;
     }
 
     /**
-     * @returns {Number}
+     * Gets the amount of time remaining on this search's update delay timer.
+     * @returns {Number} the amount of time remaining on this search's update delay timer, in seconds.
      */
     timeRemaining() {
         return this._timer;
     }
 
+    /**
+     * Advances this search's update delay timer.
+     * @param {Number} dt - the amount of time to advance, in seconds.
+     */
     advanceTimer(dt) {
         this._timer -= dt;
     }
 
+    /**
+     * Resets this search's update delay timer and counter to 0, and resets the delay to the minimum value.
+     */
     reset() {
         this._timer = 0;
         this._delay = this._minDelay;
         this._updateCount = 0;
     }
 
+    /**
+     * Executes a search update and stores the results in an array accessible through the results property. This will
+     * automatically increase this search's update delay if the number of updates since the last delay increase is
+     * greater than or equal to the threshold, and set the time remaining on the update delay timer to the delay value.
+     * @returns {Promise<void>} a Promise that resolves when the search update is complete and the results have been
+     *                          stored in the results array.
+     */
     async update() {
         this._isBusy = true;
         await this.request.update();
