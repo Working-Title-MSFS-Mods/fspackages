@@ -1238,6 +1238,14 @@ class WT_AirplaneAutopilot extends WT_AirplaneComponent {
     }
 
     /**
+     * Checks whether Take-off/Go-around (TOGA) Mode is active.
+     * @returns {Boolean} whether Take-off/Go-around Mode is active.
+     */
+    isTOGAActive() {
+        return SimVar.GetSimVarValue("AUTOPILOT TAKEOFF POWER ACTIVE", "Boolean") !== 0;
+    }
+
+    /**
      * Gets the autothrottle's throttle limit. This value represents a throttle lever position, expressed as a
      * fraction between 0 and 1.
      * @returns {Number} the autothrottle's throttle limit.
