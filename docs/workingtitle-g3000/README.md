@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.5.0
+### Latest version: v0.5.1
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.5.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.5.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -17,40 +17,24 @@ If you want to enable the road display for the navigation map, you must also dow
 ### Configuration File
 Certain mod settings can be customized via a configuration file which is located at `workingtitle-g3000\html_ui\WTg3000.cfg`. Documentation for the various settings can be found in the file itself. If you make changes to the file while the game is running, you must restart the game for the changes to take effect.
 
-### Release Highlights for v0.5.0
-
-- Enabled measurement unit selection. You may now choose between different sets of measurement units in several categories, which affects how various on-screen values are displayed.
-- Overhauled the following PFD elements:
-  - Autopilot Display
-  - Airspeed Indicator
-  - Altimeter
-  - Radar Altimeter
-  - Minimums Display
-  - Wind Data Display
-  - Angle of Attack Indicator
-  - Navigation Status Bar
-  - NAV/DME Information Bar
-  - Bearing Information Bar
+### Release Highlights for v0.5.1
 
 **Fixes**
-- \[PFD\] The "barber pole" speed strip on the airspeed indicator now appears at the correct speeds.
-- \[PFD\] Fixed a regression in v0.4.2/Sim Update 3 that caused the altimeter's baro setting display to not always display all four significant digits in "IN HG" mode.
-- \[PFD\] Fixed the scale of the Angle of Attack Indicator. Zero AoA is no longer in the middle of the scale. The top of the scale now theoretically represents the critical (stall) AoA, and zero on the scale represents the zero-lift AoA.
-  - The scale for the TBM930 is based on the values found in the targetperformance.cfg file.
-  - The scale for the Longitude is somewhat arbitrary since no references could be found, but should be at least in the ballpark of a "correct" scale based on empiric performance data gathered from within the sim.
-  - The scale is not adjusted for differences in configuration (e.g. flaps) or mach speed.
-- \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator in the G5000 now functions properly: when selected, the AoA indicator will be displayed if the landing gear are down or if flaps are set to any setting other than fully retracted.
-- \[PFD\] For the Longitude: The PFD altimeter is now synced with the same altimeter used by the autopilot (which is also synced to the standby altimeter). This will fix the issue of the autopilot appearing to hold at an altitude different from the selected altitude if the PFD and standby altimeter baro settings are not the same. This change has the side effect of rendering the standby altimeter baro knob unusable, since the standby altimeter is now slaved to the PFD altimeter.
-- \[PFD\] For the Longitude: the joystick above the PFD displays can now be used to increase/decrease the range of the PFD Inset Map.
-- \[NavMap\] The flight plan renderer now correctly draws the turning "transitions" into approaches which the sim's default autopilot flies when directly sequencing from the last leg before an approach into the first leg of the approach would result in a greater than 90-degree angle turn.
-- \[GTC\] The backspace button in the frequency entry pop-up window is no longer broken.
-- \[GTC\] Speed Bug settings are now properly synchronized across different touchscreen controllers.
-- \[Misc\] Loading/activating an ILS/LOC approach will automatically load the approach frequency into the nav radio. The exact behavior of this function depends on whether the G3000 or G5000 is being used, whether the selected autopilot/CDI nav source is FMS or NAV, and whether the approach frequency was already loaded into the nav radio.
-- \[Misc\] When flying an ILS/LOC approach, the selected autopilot/CDI nav source is FMS, and the approach frequency is loaded into the active frequency field of NAV1 or NAV2, the system will automatically switch the nav source to NAV1/NAV2 when the following conditions are first met: the next active waypoint is the FAF and the plane is within 15 NM of the FAF, OR the next active waypoint is past the FAF.
-- \[Misc\] Added the missing default reference Vspeeds for the Longitude. Note that these speeds are the published real-life values; performance in the sim may differ.
+- \[Compatibility\] Fixed compatibility issue with darkfly's Longitude performance mod.
+- \[PFD\] The autopilot display will now correctly flash an autopilot disconnect warning when the autopilot is disconnected through means other than pressing the AP key.
+  - For the TBM 930: the warning will flash indefinitely until it is acknowledged by pressing the AP/Trim disconnect switch on the control wheel.
+  - For the Longitude: the warning will flash for 5 seconds, then stop.
+- \[PFD\] Fixed airspeed indicator behavior when IAS is below the minimum reportable speed (20 KIAS for the TBM930, 40 KIAS for the Longitude):
+  - The IAS display shows "---" instead of the minimum speed.
+  - The trend vector is hidden.
+- \[PFD\] For the Longitude: the autopilot display will now flash an autothrottle disconnect caution alert when the autothrottle is turned off.
+- \[PFD\] For the Longitude: fixed erroneous display in the navigation status display ETE field when ground speed is 0.
+- \[PFD\] For the Longitude: the airspeed indicator now always shows the reference speed (and bug).
+- \[PFD\] For the Longitude: 'NO WIND DATA' annunciation no longer overflows its container.
+- \[GTC\] The "Home" button in the Timers page now works properly.
+- \[GTC\] When in the Map Pointer Control page, pressing the bottom knob will now exit the page as intended.
 
 ### Known Issues
-- \[Compatibility\] Using this mod with the WorkingTitle GX mod may result in various flight planning bugs, such as blank waypoint entries in the GTC active flight plan page and avionics freeze when initiating a Direct To to an approach waypoint.
 - \[PFD\] Citation Longitude: the standby altimeter baro knob does not function properly. The standby altimeter is now slaved to the PFD altimeter (so changing the PFD altimeter baro setting automatically changes the standby altimeter's as well).
 - \[PFD\] TBM 930: Co-pilot PFD softkeys are nonfunctional.
 - \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.

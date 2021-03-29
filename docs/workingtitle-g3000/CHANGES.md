@@ -1,5 +1,21 @@
 # Changelog
 
+### v0.5.1
+**Fixes**
+- \[Compatibility\] Fixed compatibility issue with darkfly's Longitude performance mod.
+- \[PFD\] The autopilot display will now correctly flash an autopilot disconnect warning when the autopilot is disconnected through means other than pressing the AP key.
+  - For the TBM 930: the warning will flash indefinitely until it is acknowledged by pressing the AP/Trim disconnect switch on the control wheel.
+  - For the Longitude: the warning will flash for 5 seconds, then stop.
+- \[PFD\] Fixed airspeed indicator behavior when IAS is below the minimum reportable speed (20 KIAS for the TBM930, 40 KIAS for the Longitude):
+  - The IAS display shows "---" instead of the minimum speed.
+  - The trend vector is hidden.
+- \[PFD\] For the Longitude: the autopilot display will now flash an autothrottle disconnect caution alert when the autothrottle is turned off.
+- \[PFD\] For the Longitude: fixed erroneous display in the navigation status display ETE field when ground speed is 0.
+- \[PFD\] For the Longitude: the airspeed indicator now always shows the reference speed (and bug).
+- \[PFD\] For the Longitude: 'NO WIND DATA' annunciation no longer overflows its container.
+- \[GTC\] The "Home" button in the Timers page now works properly.
+- \[GTC\] When in the Map Pointer Control page, pressing the bottom knob will now exit the page as intended.
+
 ### v0.5.0
 **New Features**
 - \[General\] Enabled measurement unit selection. You may now choose between different sets of measurement units in several categories, which affects how various on-screen values are displayed. Note that some on-screen values are not affected by these settings (e.g. the PFD airspeed indicator will always display airspeed in knots).
