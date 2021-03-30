@@ -550,7 +550,7 @@ class WT_BaseVnav {
             return bestFPA;
         } else {
             const maxDifference = Math.abs(Math.abs(bestFPA) - Math.abs(maxFPA));
-            const minDifference = MAth.abs(Math.abs(bestFPA) - Math.abs(minFPA));
+            const minDifference = Math.abs(Math.abs(bestFPA) - Math.abs(minFPA));
             if (maxDifference < minDifference) {
                 return maxFPA;
             } else if (maxDifference > minDifference) {
