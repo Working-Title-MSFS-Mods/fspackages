@@ -9,50 +9,76 @@ class WT_CrossInstrumentEvent {
     /**
      * Adds a listener to be called when an event is fired with a specified key.
      * @param {String} key - the key of the events to which the listener will respond.
-     * @param {(key:String, data:*) => void} listener - the listener.
+     * @param {(key:String, data:String) => void} listener - the listener.
      */
     static addListener(key, listener) {
-        const windowListener = event => {
-            let storagePrefix = WT_CrossInstrumentEvent._getPrefix(key);
+        let storagePrefix = WT_CrossInstrumentEvent._getPrefix(key);
+        const storageListener = event => {
             if (event.key === storagePrefix) {
-                listener(key, JSON.parse(event.newValue));
+                let data = event.newValue.substring(event.newValue.indexOf("#") + 1);
+                listener(key, data);
             }
         };
-        window.addEventListener("storage", windowListener);
-        WT_CrossInstrumentEvent._listeners.push({key: key, windowListener: windowListener, listener: listener});
+        window.addEventListener("storage", storageListener);
+
+        let listeners = WT_CrossInstrumentEvent._listeners.get(key);
+        if (!listeners) {
+            listeners = [];
+            WT_CrossInstrumentEvent._listeners.set(key, listeners);
+        }
+        listeners.push({storageListener: storageListener, listener: listener});
     }
 
     /**
      * Remove a previously added listener.
-     * @param {(key:String, data:*) => void} listener - the listener to remove.
+     * @param {String} key - the event key to which the listener is registered.
+     * @param {(key:String, data:String) => void} listener - the listener to remove.
      */
-    static removeListener(listener) {
-        let index = WT_CrossInstrumentEvent._listeners.findIndex(entry => entry.listener === listener);
+    static removeListener(key, listener) {
+        let listeners = WT_CrossInstrumentEvent._listeners.get(key);
+        if (!listeners) {
+            return;
+        }
+
+        let index = listeners.findIndex(entry => entry.listener === listener);
         if (index < 0) {
             return;
         }
 
-        window.removeEventListener("storage", WT_CrossInstrumentEvent._listeners[index].windowListener);
-        WT_CrossInstrumentEvent._listeners.splice(index, 1);
+        window.removeEventListener("storage", listeners[index].storageListener);
+        listeners.splice(index, 1);
     }
 
     static _notifyListeners(key, data) {
-        WT_CrossInstrumentEvent._listeners.forEach(entry => {
-            if (key === entry.key) {
-                entry.listener(key, data);
-            }
+        let listeners = WT_CrossInstrumentEvent._listeners.get(key);
+        if (!listeners) {
+            return;
+        }
+
+        listeners.forEach(entry => {
+            entry.listener(key, data);
         });
     }
 
     /**
      * Fires an event.
      * @param {String} key - the key of the event.
-     * @param {*} data - data to send with the event. The data will be passed as an argument to event listeners.
+     * @param {String} data - data to send with the event. The data will be passed as an argument to event listeners.
      */
     static fireEvent(key, data) {
         let storagePrefix = WT_CrossInstrumentEvent._getPrefix(key);
-        window.localStorage.setItem(storagePrefix, JSON.stringify(data));
+        window.localStorage.setItem(storagePrefix, `${WT_CrossInstrumentEvent._uniqueId++}#${data}`);
         WT_CrossInstrumentEvent._notifyListeners(key, data);
     }
 }
-WT_CrossInstrumentEvent._listeners = [];
+WT_CrossInstrumentEvent._uniqueId = 0;
+/**
+ * @type {Map<String,WT_CrossInstrumentListenerEntry[]>}
+ */
+WT_CrossInstrumentEvent._listeners = new Map();
+
+/**
+ * @typedef WT_CrossInstrumentListenerEntry
+ * @property {(event:StorageEvent) => void} storageListener
+ * @property {(key:String, data:String) => void} listener
+ */
