@@ -110,6 +110,12 @@ class WT_BaseVnav {
         this._atConstraints = [];
 
         /**
+         * The flight plan index of the waypoint with the first descent constraint.
+         * @type {number}
+         */
+        this._firstDescentConstraintIndex = undefined;
+
+        /**
          * The checksum to compare against the flight plan.
          * @type {number}
          */
@@ -292,6 +298,7 @@ class WT_BaseVnav {
         this._verticalFlightPlan = [];
         this._atConstraints = [];
         this._activeConstraint = {};
+        this._firstDescentConstraintIndex = undefined;
         const waypointCount = this.allWaypoints.length;
         let lastClimbIndex = 0;
         let firstPossibleDescentIndex = 0;
@@ -313,6 +320,9 @@ class WT_BaseVnav {
             vwp.lowerConstraintAltitude = constraints.lowerConstraint;
             vwp.isAtConstraint = constraints.isAtConstraint;
             vwp.hasConstraint = constraints.hasConstraint;
+            if (this._firstDescentConstraintIndex === undefined && !isClimb && constraints.hasConstraint) {
+                this._firstDescentConstraintIndex = i;
+            }
             if (firstApproachWaypointIndex !== undefined && i >= firstApproachWaypointIndex && vwp.lowerConstraintAltitude > 0) {
                 vwp.upperConstraintAltitude = constraints.lowerConstraint;
                 vwp.isAtConstraint = true;
@@ -482,8 +492,22 @@ class WT_BaseVnav {
                         console.log(wptToEvaluate.ident + " breaks path ABOVE; segment FPA to segmentMaxFPA " + bestFPA);
                         break;
                     }
+                    if (this._firstDescentConstraintIndex !== undefined && k === this._firstDescentConstraintIndex) {
+                        console.log("segment breaks at first descent constraint " + wptToEvaluate.ident + " at index " + k);
+                        segmentMaxFPA = maxFPA < segmentMaxFPA ? maxFPA : segmentMaxFPA;
+                        segmentMinFPA = minFPA > segmentMinFPA ? minFPA : segmentMinFPA;
+                        segmentBreakIndex = k;
+                        bestFPA = this.setBestFpa(bestFPA, segmentMaxFPA, segmentMinFPA); 
+                        console.log("bestFPA set to: " + bestFPA);
+                        lateralDistance = lateralDistance + wptToEvaluate.legDistanceTo;
+                        console.log("segmentMaxFPA updated to " + segmentMaxFPA + "; segmentMinFPA updated to " + segmentMinFPA);
+                        console.log(wptToEvaluate.ident + " added to segment " + segment);
+                        break;
+                    }
                     segmentMaxFPA = maxFPA < segmentMaxFPA ? maxFPA : segmentMaxFPA;
                     segmentMinFPA = minFPA > segmentMinFPA ? minFPA : segmentMinFPA;
+                    bestFPA = this.setBestFpa(bestFPA, segmentMaxFPA, segmentMinFPA);
+                    console.log("bestFPA set to: " + bestFPA);
                     segmentBreakIndex = k;
                     lateralDistance = lateralDistance + wptToEvaluate.legDistanceTo;
                     console.log("segmentMaxFPA updated to " + segmentMaxFPA + "; segmentMinFPA updated to " + segmentMinFPA);
@@ -519,6 +543,22 @@ class WT_BaseVnav {
         console.log("writing segment " + segment + "; Start: " + segmentStartIndex + " " + this._verticalFlightPlan[segmentStartIndex].ident + "; Target: " + endingIndex + " " + this._verticalFlightPlan[endingIndex].ident
             + "; FPA: " + bestFPA + "; distanceToNextTod " + distanceToNextTod);
         return new PathSegment(segmentStartIndex, endingIndex, bestFPA, distanceToNextTod, segmentStartsLevel, segmentEndsLevel);
+    }
+
+    setBestFpa(bestFPA, maxFPA, minFPA) {
+        if (bestFPA > minFPA && bestFPA < maxFPA) {
+            return bestFPA;
+        } else {
+            const maxDifference = Math.abs(Math.abs(bestFPA) - Math.abs(maxFPA));
+            const minDifference = MAth.abs(Math.abs(bestFPA) - Math.abs(minFPA));
+            if (maxDifference < minDifference) {
+                return maxFPA;
+            } else if (maxDifference > minDifference) {
+                return minFPA;
+            } else {
+                return bestFPA;
+            }
+        }
     }
 
     checkIfSegmentEndsLevel(segment, endingIndex, fpta) {
