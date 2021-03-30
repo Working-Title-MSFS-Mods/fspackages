@@ -1,4 +1,4 @@
-class AS3000_MFD extends NavSystem {
+class WT_G3x5_MFD extends NavSystem {
     constructor() {
         super();
         this.initDuration = 5500;
@@ -95,6 +95,17 @@ class AS3000_MFD extends NavSystem {
         super.reboot();
         if (this.engines)
             this.engines.reset();
+    }
+
+    static selectAvionics() {
+        switch (WT_PlayerAirplane.getAircraftType()) {
+            case WT_PlayerAirplane.Type.TBM930:
+                WT_TemplateLoader.load("/WTg3000/Avionics/G3000/MFD/Main/G3000_MFD.html");
+                break;
+            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                WT_TemplateLoader.load("/WTg3000/Avionics/G5000/MFD/Main/G5000_MFD.html");
+                break;
+        }
     }
 }
 
@@ -554,5 +565,5 @@ class AS3000_MFD_ComFrequencies extends NavSystemElement {
     onEvent(_event) {
     }
 }
-registerInstrument("as3000-mfd-element", AS3000_MFD);
-//# sourceMappingURL=AS3000_MFD.js.map
+
+WT_G3x5_MFD.selectAvionics();
