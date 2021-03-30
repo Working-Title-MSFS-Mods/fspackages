@@ -211,6 +211,14 @@ class WT_NumberUnit {
     }
 
     /**
+     * Checks whether this NumberUnit has a numeric value of NaN.
+     * @returns {Boolean} whether this NumberUnit has a numeric value of NaN.
+     */
+    isNaN() {
+        return isNaN(this.number);
+    }
+
+    /**
      * Copies this NumberUnit.
      * @returns {WT_NumberUnit} a copy of this NumberUnit.
      */
@@ -299,6 +307,10 @@ class WT_NumberUnitReadOnly {
 
     equals(other) {
         return this._source.equals(other);
+    }
+
+    isNaN() {
+        return this._source.isNaN();
     }
 
     copy() {

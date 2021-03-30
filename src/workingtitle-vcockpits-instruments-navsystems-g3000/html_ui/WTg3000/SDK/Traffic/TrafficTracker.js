@@ -1,0 +1,330 @@
+class WT_TrafficTracker {
+    /**
+     *
+     * @param {Object} [options]
+     */
+    constructor(options) {
+        /**
+         * @type {Map<String,WT_TrafficContact>}
+         */
+        this._tracked = new Map();
+        /**
+         * @type {WT_TrafficContact[]}
+         */
+        this._trackedArray = [];
+        this._trackedArrayReadOnly = new WT_ReadOnlyArray(this._trackedArray);
+
+        /**
+         * @type {((eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void)[][]}
+         */
+        this._listeners = [[], [], []];
+
+        this._optsManager = new WT_OptionsManager(this, WT_TrafficTracker.OPTION_DEFS);
+        this._optsManager.setOptions(options);
+
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
+        this._tempFeet = WT_Unit.FOOT.createNumber(0);
+        this._tempBearingTrue = new WT_NavAngleUnit(false).createNumber(0);
+    }
+
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_TrafficContact>}
+     */
+    get contacts() {
+        return this._trackedArrayReadOnly;
+    }
+
+    /**
+     *
+     * @param {Object} entry
+     */
+    _createContact(entry) {
+        let id = `${entry.uId}`;
+        let position = this._tempGeoPoint.set(entry.lat, entry.lon);
+        let altitude = this._tempFeet.set(entry.alt);
+        let heading = this._tempBearingTrue.set(entry.heading);
+        let contact = new WT_TrafficContact(id, position, altitude, heading, this.contactOptions);
+        this._tracked.set(id, contact);
+        this._trackedArray.push(contact);
+        this._listeners[WT_TrafficTracker.EventType.CONTACT_CREATED].forEach(listener => listener(WT_TrafficTracker.EventType.CONTACT_CREATED, contact));
+    }
+
+    /**
+     *
+     * @param {WT_TrafficContact} contact
+     * @param {Object} entry
+     */
+    _updateContact(contact, entry) {
+        let position = this._tempGeoPoint.set(entry.lat, entry.lon);
+        let altitude = this._tempFeet.set(entry.alt);
+        let heading = this._tempBearingTrue.set(entry.heading);
+        contact.update(position, altitude, heading);
+        this._listeners[WT_TrafficTracker.EventType.CONTACT_UPDATED].forEach(listener => listener(WT_TrafficTracker.EventType.CONTACT_UPDATED, contact));
+    }
+
+    _updateContacts(data) {
+        data.forEach(entry => {
+            let contact = this._tracked.get(`${entry.uId}`);
+            if (contact) {
+                this._updateContact(contact, entry);
+            } else {
+                this._createContact(entry);
+            }
+        }, this);
+    }
+
+    _deprecateContacts() {
+        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+        for (let i = 0; i < this._trackedArray.length; i++) {
+            let contact = this._trackedArray[i];
+            let dt = currentTime - contact.lastContactTime.asUnit(WT_Unit.SECOND);
+            if (dt >= this.contactDeprecateTime) {
+                this._tracked.delete(contact.id);
+                this._trackedArray.splice(i, 1);
+                i--;
+                this._listeners[WT_TrafficTracker.EventType.CONTACT_REMOVED].forEach(listener => listener(WT_TrafficTracker.EventType.CONTACT_REMOVED, contact));
+            }
+        }
+    }
+
+    /**
+     *
+     * @param {WT_TrafficTracker.EventType} eventType
+     * @param {(eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void} listener
+     */
+    addListener(eventType, listener) {
+        this._listeners[eventType].push(listener);
+    }
+
+    /**
+     *
+     * @param {WT_TrafficTracker.EventType} eventType
+     * @param {(eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void} listener
+     */
+    removeListener(eventType, listener) {
+        let array = this._listeners[eventType];
+        let index = array.indexOf(listener);
+        if (index >= 0) {
+            array.splice(index, 1);
+        }
+    }
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+    async update() {
+        let data = await Coherent.call("GET_AIR_TRAFFIC");
+        this._updateContacts(data);
+        this._deprecateContacts();
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_TrafficTracker.EventType = {
+    CONTACT_CREATED: 0,
+    CONTACT_UPDATED: 1,
+    CONTACT_REMOVED: 2
+};
+WT_TrafficTracker.OPTION_DEFS = {
+    contactDeprecateTime: {default: 10, auto: true},
+    contactOptions: {default: {}, auto: true}
+};
+
+class WT_TrafficContact {
+    /**
+     * @param {String} id
+     * @param {WT_GeoPoint} position
+     * @param {WT_NumberUnit} altitude
+     * @param {WT_NumberUnit} heading
+     * @param {Object} [options]
+     */
+    constructor(id, position, altitude, heading, options) {
+        this._id = id;
+        this._lastPosition = new WT_GeoPoint(position.lat, position.long);
+        this._lastAltitude = WT_Unit.FOOT.createNumber(altitude.asUnit(WT_Unit.FOOT));
+
+        let headingUnit = new WT_NavAngleUnit(false, this._lastPosition);
+        this._lastHeading = headingUnit.createNumber(heading.asUnit(headingUnit));
+
+        this._lastContactTime = WT_Unit.SECOND.createNumber(SimVar.GetSimVarValue("E:ZULU TIME", "seconds"));
+
+        this._computedGroundSpeed = WT_Unit.KNOT.createNumber(NaN);
+        this._computedGroundTrack = NaN;
+        this._computedVerticalSpeed = WT_Unit.FPM.createNumber(NaN);
+
+        this._optsManager = new WT_OptionsManager(this, WT_TrafficContact.OPTION_DEFS);
+        this._optsManager.setOptions(options);
+
+        this._groundSpeedSmoother = new WT_ExponentialSmoother(this.groundSpeedSmoothingConstant, null, this.contactTimeResetThreshold);
+        this._groundTrackSmoother = new WT_ExponentialSmoother(this.groundTrackSmoothingConstant, null, this.contactTimeResetThreshold);
+        this._verticalSpeedSmoother = new WT_ExponentialSmoother(this.verticalSpeedSmoothingConstant, null, this.contactTimeResetThreshold);
+    }
+
+    /**
+     * @readonly
+     * @type {String}
+     */
+    get id() {
+        return this._id;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get lastContactTime() {
+        return this._lastContactTime.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_GeoPointReadOnly}
+     */
+    get lastPosition() {
+        return this._lastPosition.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get lastAltitude() {
+        return this._lastAltitude.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get lastHeading() {
+        return this._lastHeading.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get computedGroundSpeed() {
+        return this._computedGroundSpeed.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get computedGroundTrack() {
+        return this._computedGroundTrack;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get computedVerticalSpeed() {
+        return this._computedVerticalSpeed.readonly();
+    }
+
+    /**
+     *
+     * @param {NumberUnit} elapsedTime
+     * @param {{position:WT_GeoPoint, altitude:WT_NumberUnit}} [reference]
+     */
+    predict(elapsedTime, reference) {
+        if (this.computedGroundSpeed.isNaN()) {
+            return null;
+        }
+
+        if (!reference) {
+            reference = {
+                position: new WT_GeoPoint(0, 0),
+                altitude: WT_Unit.FOOT.createNumber(0)
+            };
+        }
+
+        let distance = WT_Unit.NMILE.convert(this._computedGroundSpeed.number * elapsedTime.asUnit(WT_Unit.HOUR), WT_Unit.GA_RADIAN);
+        reference.position.set(this.lastPosition).offset(this.computedGroundTrack, distance, true);
+
+        let deltaAlt = this.computedVerticalSpeed.number * elapsedTime.asUnit(WT_Unit.MINUTE);
+        reference.altitude.set(this.lastAltitude, WT_Unit.FOOT).add(deltaAlt, WT_Unit.FOOT);
+    }
+
+    /**
+     *
+     * @param {Number} dt
+     * @param {WT_GeoPoint} newPosition
+     */
+     _updateGroundSpeed(dt, newPosition) {
+        let dtHours = dt / 3600;
+        let distanceNM = WT_Unit.GA_RADIAN.convert(newPosition.distance(this.lastPosition), WT_Unit.NMILE);
+        let speedKnots = distanceNM / dtHours;
+        this._computedGroundSpeed.set(this._groundSpeedSmoother.next(speedKnots, dt));
+    }
+
+    /**
+     *
+     * @param {Number} dt
+     * @param {WT_GeoPoint} newPosition
+     */
+    _updateGroundTrack(dt, newPosition) {
+        let track = (newPosition.bearingFrom(this._lastPosition) + 180) % 360;
+        this._computedGroundTrack = this._groundTrackSmoother.next(track, dt);
+    }
+
+    /**
+     *
+     * @param {Number} dt
+     * @param {WT_GeoPoint} newPosition
+     * @param {WT_NumberUnit} newAltitude
+     */
+    _updateVerticalSpeed(dt, newAltitude) {
+        let dtMin = dt / 60;
+        let deltaAltFeet = newAltitude.asUnit(WT_Unit.FOOT) - this._lastAltitude.number;
+        let vsFPM = deltaAltFeet / dtMin;
+        this._computedVerticalSpeed.set(this._verticalSpeedSmoother.next(vsFPM, dt));
+    }
+
+    _setReportedValues(position, altitude, heading) {
+        this._lastPosition.set(position);
+        this._lastAltitude.set(altitude);
+        this._lastHeading.unit.setLocation(position);
+        this._lastHeading.set(heading);
+    }
+
+    update(position, altitude, heading) {
+        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+        let dt = currentTime - this._lastContactTime.number;
+        if (dt < 0 || dt > this.contactTimeResetThreshold) {
+            this.reset(position, altitude, heading);
+            return;
+        }
+
+        if (dt > 0) {
+            this._updateGroundSpeed(dt, position);
+            this._updateGroundTrack(dt, position);
+            this._updateVerticalSpeed(dt, altitude);
+        }
+
+        this._setReportedValues(position, altitude, heading);
+        this._lastContactTime.set(currentTime);
+    }
+
+    reset(position, altitude, heading) {
+        this._setReportedValues(position, altitude, heading);
+        this._computedGroundSpeed.set(NaN);
+        this._computedGroundTrack = NaN;
+        this._computedVerticalSpeed.set(NaN);
+        this._groundSpeedSmoother.reset();
+        this._groundTrackSmoother.reset();
+        this._verticalSpeedSmoother.reset();
+        this._lastContactTime.set(SimVar.GetSimVarValue("E:ZULU TIME", "seconds"));
+    }
+}
+WT_TrafficContact.OPTION_DEFS = {
+    groundSpeedSmoothingConstant: {default: 2, auto: true},
+    groundTrackSmoothingConstant: {default: 2, auto: true},
+    verticalSpeedSmoothingConstant: {default: 2, auto: true},
+    contactTimeResetThreshold: {default: 5, auto: true}
+};
