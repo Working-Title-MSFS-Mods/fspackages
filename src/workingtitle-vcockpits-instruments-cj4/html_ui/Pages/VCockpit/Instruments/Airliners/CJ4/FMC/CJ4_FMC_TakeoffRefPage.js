@@ -133,9 +133,9 @@ class CJ4_FMC_TakeoffRefPage {
                     const slopeDirection = slopeMatch[1] == "-" || slopeMatch[1] == "D" || slopeMatch[5] == "D" ? -1 : 1;
                     let slopeValue = 0;
                     console.log("slopeValue = " + slopeValue);
-                    slopeValue += parseInt(slopeMatch[2]);
+                    slopeValue += parseInt(slopeMatch[2]) > 0 ? parseInt(slopeMatch[2]) : 0;
                     console.log("slopeValue = " + slopeValue);
-                    slopeValue += (parseInt(slopeMatch[4]) / 10);
+                    slopeValue += parseInt(slopeMatch[4]) > 0 ? (parseInt(slopeMatch[4]) / 10) : 0;
                     console.log("slopeValue = " + slopeValue);
                     slopeValue = slopeValue * slopeDirection;
                     console.log("slopeValue = " + slopeValue);
