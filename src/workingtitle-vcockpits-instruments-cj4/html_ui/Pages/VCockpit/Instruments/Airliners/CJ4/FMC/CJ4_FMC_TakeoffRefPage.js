@@ -62,7 +62,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY LENGTH[blue]", "QNH[blue] "],
             [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
-            [fmc.takeoffRwySlope + "%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
+            [fmc.takeoffRwySlope.toFixed(1) + "%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
