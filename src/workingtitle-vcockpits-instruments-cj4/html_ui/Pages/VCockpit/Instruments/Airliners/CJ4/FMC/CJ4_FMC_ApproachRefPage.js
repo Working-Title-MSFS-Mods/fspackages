@@ -285,7 +285,20 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = CJ4_FMC_ApproachRefPage.LandingSlopeAdjustment(ldgFieldLength, fmc.landingRwySlope);
         }
 
-        ldgFieldLength = ldgFieldLength * fmc.landingFactor;
+        switch(fmc.landingFactor) {
+            case 0:
+                ldgFieldLength = ldgFieldLength * 1;
+                break;
+            case 1:
+                ldgFieldLength = ldgFieldLength * 1.25;
+                break;
+            case 2:
+                ldgFieldLength = ldgFieldLength * 1.67;
+                break;
+            case 3:
+                ldgFieldLength = ldgFieldLength * 1.92;
+                break;                
+        }
 
         let vspeedSendMsg = "";
         if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
@@ -319,6 +332,8 @@ class CJ4_FMC_ApproachRefPage {
 
         const vAppText = vApp == null ? "   " : Math.ceil(vApp);
 
+        const landingFactorSwitch = fmc._templateRenderer.renderSwitch(["1.0", "1.25", "1.67", "1.92"], fmc.landingFactor);
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
@@ -330,7 +345,7 @@ class CJ4_FMC_ApproachRefPage {
             [" LFL/" + arrRunwayOutput + "[blue]"],
             [landingDistText + "/" + arrRunwayLengthText + "[s-text]"],
             [" LDG FACTOR[blue]"],
-            ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
+            [landingFactorSwitch],
             ["", vspeedSendMsg + " [s-text]"],
             ["", "SEND>[s-text]"]
         ]);
@@ -364,6 +379,12 @@ class CJ4_FMC_ApproachRefPage {
             fmc.clearUserInput();
             { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); }
         };
+
+        fmc.onLeftInput[4] = () => {
+            fmc.landingFactor = fmc.landingFactor == 3 ? 0 : fmc.landingFactor + 1;
+            { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); }
+        };
+        
 
         fmc.onPrevPage = () => {
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
