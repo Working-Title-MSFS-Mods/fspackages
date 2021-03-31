@@ -280,6 +280,7 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = CJ4_FMC_ApproachRefPage.LandingSlopeAdjustment(ldgFieldLength, fmc.landingRwySlope);
             console.log("Adjusted LFL = " + ldgFieldLength);
         }
+        
         ldgFieldLength = ldgFieldLength * fmc.landingFactor;
 
         let vspeedSendMsg = "";
