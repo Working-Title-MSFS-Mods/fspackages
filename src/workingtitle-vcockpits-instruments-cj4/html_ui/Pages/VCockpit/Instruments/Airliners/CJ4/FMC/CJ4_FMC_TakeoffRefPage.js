@@ -131,7 +131,8 @@ class CJ4_FMC_TakeoffRefPage {
             if (slopeMatch) {
                 if (slopeMatch[1] == "" || slopeMatch[5] == "") {
                     const slopeDirection = slopeMatch[1] == "-" || slopeMatch[1] == "D" || slopeMatch[5] == "D" ? -1 : 1;
-                    let slopeValue = parseInt(slopeMatch[2]) + (parseInt(slopeMatch[4]) / 10);
+                    let slopeValue = 0;
+                    slopeValue = parseInt(slopeMatch[2]) + (parseInt(slopeMatch[4]) / 10);
                     slopeValue = slopeValue * slopeDirection;
                     fmc.takeoffRwySlope = slopeValue;
                 } else {
