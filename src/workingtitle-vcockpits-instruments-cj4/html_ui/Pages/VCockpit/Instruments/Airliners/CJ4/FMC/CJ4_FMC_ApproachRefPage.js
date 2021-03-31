@@ -260,21 +260,23 @@ class CJ4_FMC_ApproachRefPage {
             vspeedColor = "blue";
         }
 
+        function formatNumber(num, pad = 3) {
+            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
+        }
+
         if (!arrRunway || fmc.landingOat === "□□□") {
             ldgFieldLength = 0;
             vRef = null;
             vApp = null;
             vspeedSendMsg = "";
         }
-
-        function formatNumber(num, pad = 3) {
-            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
-        }
-
+    
         const ldgWtText = ldgWt < 10300 ? "-----" : formatNumber(WT_ConvertUnit.getWeight(ldgWt).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (ldgWt > 15660 ? "[yellow]" : "");
         const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(grossWeightValue).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (WT_ConvertUnit.isMetric() ? "/7103[s-text]" : "/15660[s-text]");
         const landingDistText = WT_ConvertUnit.isMetric() ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
-        const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength / 3.28).getString(0, " ", "[s-text]");
+        const arrRunwayLengthText = arrRunwayLength > 0 ? WT_ConvertUnit.getLength(arrRunwayLength / 3.28).getString(0, " ", "[s-text]") : "";
+
+        const vAppText = vApp == null ? "   " : Math.ceil(vApp);
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
@@ -282,7 +284,7 @@ class CJ4_FMC_ApproachRefPage {
             ["OFF[green]/[white]ON[s-text]"],
             ["", "V[d-text blue]REF:[s-text blue] " + formatNumber(vRef) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + Math.ceil(vApp) + "[s-text + " + vspeedColor + "]"],
+            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vAppText + "[s-text + " + vspeedColor + "]"],
             [ldgWtText + "/" + grossWeightText + "[s-text]"],
             [" LFL/" + arrRunwayOutput + "[blue]"],
             [landingDistText + "/" + arrRunwayLengthText + "[s-text]"],
