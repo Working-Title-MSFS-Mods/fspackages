@@ -134,7 +134,7 @@ class CJ4_FMC_ApproachRefPage {
             fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
-        fmc.onLeftInput[3] = () => {
+        fmc.onLeftInput[4] = () => {
             const slope = /([UD-]?)([\d{1}]?)(\.?)([\d{1}]?)([UD]?)/;
             let input = fmc.inOut;
             const slopeMatch = input.match(slope);
