@@ -5,35 +5,21 @@ class WT_MapViewRangeDisplay extends HTMLElement {
     constructor() {
         super();
 
-        let template = document.createElement("template");
-        template.innerHTML = `
-            <style>
-                :host {
-                    display: block;
-                    background-color: black;
-                    border: solid 1px white;
-                    border-radius: 3px;
-                    text-align: center;
-                    font-size: 2.5vh;
-                    line-height: 2vh;
-                    color: white;
-                }
-                    div {
-                        margin: 0 0.5vh;
-                    }
-                    #auto {
-                        display: none;
-                    }
-                    .rangeUnit {
-                        font-size: 0.75em;
-                    }
-            </style>
-            <div id="auto">Auto</div>
-            <div id="range"></div>
-        `;
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
+        this._initFormatter();
+
+        this._range = WT_Unit.NMILE.createNumber(0);
+        this._auto = false;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_MapViewRangeDisplay.TEMPLATE;
+    }
+
+    _initFormatter() {
         let formatterOpts = {
             precision: 0.01,
             forceDecimalZeroes: false,
@@ -54,12 +40,17 @@ class WT_MapViewRangeDisplay extends HTMLElement {
         this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
     }
 
-    connectedCallback() {
+    _defineChildren() {
         this._autoElement = this.shadowRoot.querySelector(`#auto`);
         this._rangeElement = new WT_CachedElement(this.shadowRoot.querySelector(`#range`));
     }
 
-    _updateAutoElement(state) {
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+    }
+
+    _updateAuto(state) {
     }
 
     _selectDisplayUnit(range, distanceUnit) {
@@ -76,12 +67,23 @@ class WT_MapViewRangeDisplay extends HTMLElement {
      *
      * @param {WT_MapViewState} state
      */
-    _updateRangeElement(state) {
-        let range = state.model.range;
+    _updateRange(state) {
         let distanceUnit = state.model.units.distance;
 
-        let displayUnit = this._selectDisplayUnit(range, distanceUnit);
-        this._rangeElement.innerHTML = this._formatter.getFormattedHTML(range, displayUnit);
+        let displayUnit = this._selectDisplayUnit(this._range, distanceUnit);
+        this._rangeElement.innerHTML = this._formatter.getFormattedHTML(this._range, displayUnit);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnit} range
+     */
+    setRange(range) {
+        this._range.set(range);
+    }
+
+    setAuto(value) {
+        this._auto = value;
     }
 
     /**
@@ -89,9 +91,40 @@ class WT_MapViewRangeDisplay extends HTMLElement {
      * @param {WT_MapViewState} state
      */
     update(state) {
-        this._updateAutoElement(state);
-        this._updateRangeElement(state);
+        if (!this._isInit) {
+            return;
+        }
+
+        this._updateAuto(state);
+        this._updateRange(state);
     }
 }
+WT_MapViewRangeDisplay.NAME = "map-view-rangedisplay";
+WT_MapViewRangeDisplay.TEMPLATE = document.createElement("template");
+WT_MapViewRangeDisplay.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 3px;
+            text-align: center;
+            font-size: 2.5vh;
+            line-height: 2vh;
+            color: white;
+        }
+            div {
+                margin: 0 0.5vh;
+            }
+            #auto {
+                display: none;
+            }
+            .rangeUnit {
+                font-size: 0.75em;
+            }
+    </style>
+    <div id="auto">Auto</div>
+    <div id="range"></div>
+`;
 
-customElements.define("map-view-rangedisplay", WT_MapViewRangeDisplay);
+customElements.define(WT_MapViewRangeDisplay.NAME, WT_MapViewRangeDisplay);

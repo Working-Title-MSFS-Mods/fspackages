@@ -157,7 +157,6 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         }
 
         this._subLayers.push(subLayer);
-        subLayer.container.style.zIndex = this._subLayers.length;
         subLayer.parentHTMLElement = parentHTMLElement;
         parentHTMLElement.appendChild(subLayer.container);
         this._toAttach.push(subLayer);

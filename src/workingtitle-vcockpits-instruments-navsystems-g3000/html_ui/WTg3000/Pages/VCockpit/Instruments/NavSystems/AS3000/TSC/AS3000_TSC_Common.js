@@ -306,8 +306,8 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    onUpdate(deltaTime) {
-        super.onUpdate(deltaTime);
+    _doUpdates(currentTime) {
+        super._doUpdates(currentTime);
 
         this._updatePageTitle();
         this._updateSoftkeyLabels();
@@ -674,6 +674,8 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     init(root) {
         this._mapButton = this.gps.getChildById("MapButton");
         this._mapButtonTitle = this._mapButton.getElementsByClassName("label")[0];
+        this._trafficButton = this.gps.getChildById("TrafficButton");
+        this._trafficButtonTitle = this._trafficButton.getElementsByClassName("label")[0];
         this._weatherButton = this.gps.getChildById("WeatherButton");
         this._weatherButtonTitle = this._weatherButton.getElementsByClassName("label")[0];
         this.directToButton = this.gps.getChildById("DirectToButton");
@@ -685,6 +687,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.aircraftSystemsButton = this.gps.getChildById("AircraftSystemsButton");
         this.utilitiesButton = this.gps.getChildById("UtilitiesButton");
         this.gps.makeButton(this._mapButton, this._onMapButtonPressed.bind(this));
+        this.gps.makeButton(this._trafficButton, this._onTrafficButtonPressed.bind(this));
         this.gps.makeButton(this._weatherButton, this._onWeatherButtonPressed.bind(this));
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
         this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
@@ -701,7 +704,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.mfdLeftPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
         this.gps.mfdRightPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
 
-        this._updateMapWeatherButtons();
+        this._updatePaneDisplayButtons();
     }
 
     _openWeatherSelectPage() {
@@ -721,6 +724,15 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         }
     }
 
+    _onTrafficButtonPressed() {
+        let settings = this.gps.getSelectedMFDPaneSettings();
+        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC) {
+            //this._openMapSettingsPage();
+        } else {
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC);
+        }
+    }
+
     _onWeatherButtonPressed() {
         let settings = this.gps.getSelectedMFDPaneSettings();
         if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
@@ -730,45 +742,59 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         }
     }
 
-    _updateMapWeatherButtons() {
+    _updatePaneDisplayButtons() {
         let display = this.gps.getSelectedMFDPaneSettings().display.getValue();
         switch (display) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._mapButton.setAttribute("state", "Active");
-                this._mapButtonTitle.innerHTML = "Map Settings";
+                this._mapButtonTitle.textContent = "Map Settings";
+                this._trafficButton.setAttribute("state", "");
+                this._trafficButtonTitle.textContent = "Traffic";
                 this._weatherButton.setAttribute("state", "");
-                this._weatherButtonTitle.innerHTML = "Weather";
+                this._weatherButtonTitle.textContent = "Weather";
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._mapButton.setAttribute("state", "");
+                this._mapButtonTitle.textContent = "Map";
+                this._trafficButton.setAttribute("state", "Active");
+                this._trafficButtonTitle.textContent = "Traffic Settings";
+                this._weatherButton.setAttribute("state", "");
+                this._weatherButtonTitle.textContent = "Weather";
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
-                this._weatherButton.setAttribute("state", "Active");
-                this._weatherButtonTitle.innerHTML = "Weather<br>Selection";
                 this._mapButton.setAttribute("state", "");
-                this._mapButtonTitle.innerHTML = "Map";
+                this._mapButtonTitle.textContent = "Map";
+                this._trafficButton.setAttribute("state", "");
+                this._trafficButtonTitle.textContent = "Traffic";
+                this._weatherButton.setAttribute("state", "Active");
+                this._weatherButtonTitle.textContent = "Weather Selection";
                 break;
             default:
-                this._weatherButton.setAttribute("state", "");
-                this._weatherButtonTitle.innerHTML = "Weather";
                 this._mapButton.setAttribute("state", "");
-                this._mapButtonTitle.innerHTML = "Map";
+                this._mapButtonTitle.textContent = "Map";
+                this._trafficButton.setAttribute("state", "");
+                this._trafficButtonTitle.textContent = "Traffic";
+                this._weatherButton.setAttribute("state", "");
+                this._weatherButtonTitle.textContent = "Weather";
         }
     }
 
     _onPaneControlChanged(setting, newValue, oldValue) {
         if (this.gps.mfdPaneControlID !== undefined && ((newValue & this.gps.mfdPaneControlID) !== (oldValue & this.gps.mfdPaneControlID))) {
-            this._updateMapWeatherButtons();
+            this._updatePaneDisplayButtons();
         }
     }
 
     _onPaneDisplayChanged(setting, newValue, oldValue) {
         if (setting === this.gps.getSelectedMFDPaneSettings().display) {
-            this._updateMapWeatherButtons();
+            this._updatePaneDisplayButtons();
         }
     }
 
     _onMainPaneModeChanged(setting, newValue, oldValue) {
         if (this.gps && this.gps.getCurrentPage().name === "MFD Home") {
             this._updateNavButtons();
-            this._updateMapWeatherButtons();
+            this._updatePaneDisplayButtons();
         }
     }
 

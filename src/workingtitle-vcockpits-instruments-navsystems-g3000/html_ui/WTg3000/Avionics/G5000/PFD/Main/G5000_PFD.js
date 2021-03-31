@@ -35,8 +35,8 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
         this.autoThrottle.update();
     }
 
-    onUpdate(deltaTime) {
-        super.onUpdate(deltaTime);
+    _doUpdates(currentTime) {
+        super._doUpdates(currentTime);
 
         this._updateAutoThrottle();
     }

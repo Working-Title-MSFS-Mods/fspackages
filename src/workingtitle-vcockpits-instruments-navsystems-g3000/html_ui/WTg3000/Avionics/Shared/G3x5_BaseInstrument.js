@@ -121,21 +121,25 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         requestAnimationFrame(updateLoop);
     }
 
-    _updateICAOWaypointFactory() {
+    _updateICAOWaypointFactory(currentTime) {
         this.icaoWaypointFactory.update();
     }
 
-    _updateFlightPlanManager() {
-        let currentTime = Date.now() / 1000;
+    _updateFlightPlanManager(currentTime) {
         if (currentTime - this._lastFPMSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
             this.flightPlanManagerWT.syncActiveFromGame();
             this._lastFPMSyncTime = currentTime;
         }
     }
 
+    _doUpdates(currentTime) {
+        this._updateICAOWaypointFactory(currentTime);
+        this._updateFlightPlanManager(currentTime);
+    }
+
     onUpdate(deltaTime) {
-        this._updateICAOWaypointFactory();
-        this._updateFlightPlanManager();
+        let currentTime = Date.now();
+        this._doUpdates(currentTime);
     }
 }
-WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL = 2;
+WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL = 2000; // ms
