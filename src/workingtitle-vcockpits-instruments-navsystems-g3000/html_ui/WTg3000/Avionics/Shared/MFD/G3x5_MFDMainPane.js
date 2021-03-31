@@ -268,6 +268,7 @@ class WT_G3x5_MFDHalfPane {
         this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
 
         this._navMap = new WT_G3x5_NavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData);
+        this._trafficMap = new WT_G3x5_TrafficMap(id, airplane);
         this._weatherRadar = new WT_G3x5_WeatherRadar(id, airplane);
         this._waypointInfo = new WT_G3x5_WaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers);
 
@@ -289,6 +290,7 @@ class WT_G3x5_MFDHalfPane {
 
     _initChildren() {
         this._navMap.init(this.htmlElement.querySelector(`.navMap`));
+        this._trafficMap.init(this.htmlElement.querySelector(`.trafficMap`));
         this._weatherRadar.init(this.htmlElement.querySelector(`.weatherRadar`));
         this._waypointInfo.init(this.htmlElement.querySelector(`.waypointInfo`));
     }
@@ -346,6 +348,9 @@ class WT_G3x5_MFDHalfPane {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._navMap.sleep();
                 break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._trafficMap.sleep();
+                break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
                 this._weatherRadar.sleep();
                 break;
@@ -366,6 +371,9 @@ class WT_G3x5_MFDHalfPane {
         switch (displayMode) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._navMap.wake();
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._trafficMap.wake();
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
                 this._weatherRadar.wake();
@@ -435,6 +443,9 @@ class WT_G3x5_MFDHalfPane {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._navMap.update();
                 break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._trafficMap.update();
+                break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_NRST:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_NRST:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_NRST:
@@ -502,10 +513,12 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
         this._titledPane = this.shadowRoot.querySelector(`#titledpane`);
-        this._navMap = this.shadowRoot.querySelector(`#navMap`);
-        this._weatherRadar = this.shadowRoot.querySelector(`#weatherRadar`);
-        this._waypointInfo = this.shadowRoot.querySelector(`#waypointInfo`);
+        this._navMap = this.shadowRoot.querySelector(`#navmap`);
+        this._trafficMap = this.shadowRoot.querySelector(`#trafficmap`);
+        this._weatherRadar = this.shadowRoot.querySelector(`#weatherradar`);
+        this._waypointInfo = this.shadowRoot.querySelector(`#waypointinfo`);
     }
 
     connectedCallback() {
@@ -537,6 +550,9 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._setTitle("Navigation Map");
                 break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._setTitle("Traffic Map");
+                break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
                 this._setTitle("Weather Radar");
                 break;
@@ -567,12 +583,17 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
         }
     }
 
+    _setActiveView(view) {
+        this._wrapper.setAttribute("active-view", view);
+    }
+
     _updateView(display) {
         switch (display) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
-                this._navMap.style.display = "block";
-                this._weatherRadar.style.display = "none";
-                this._waypointInfo.style.display = "none";
+                this._setActiveView("navmap");
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._setActiveView("trafficmap");
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_NRST:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_NRST:
@@ -580,17 +601,13 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_NRST:
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
-                this._navMap.style.display = "none";
-                this._weatherRadar.style.display = "block";
-                this._waypointInfo.style.display = "none";
+                this._setActiveView("weatherradar");
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
-                this._navMap.style.display = "none";
-                this._weatherRadar.style.display = "none";
-                this._waypointInfo.style.display = "block";
+                this._setActiveView("waypointinfo");
                 break;
         }
     }
@@ -624,12 +641,24 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                 border: solid 1px white;
                 border-radius: 3px;
             }
-                slot {
-                    display: block;
+                .content {
+                    display: none;
                     position: relative;
                     width: 100%;
                     height: 100%;
                 }
+                    #wrapper[active-view="navmap"] #navmap {
+                        display: block;
+                    }
+                    #wrapper[active-view="trafficmap"] #trafficmap {
+                        display: block;
+                    }
+                    #wrapper[active-view="weatherradar"] #weatherradar {
+                        display: block;
+                    }
+                    #wrapper[active-view="waypointinfo"] #waypointinfo {
+                        display: block;
+                    }
             #titledpane[control=left] {
                 position: absolute;
                 background-color: ${WT_G3x5_MFDMainPane.LEFT_TSC_COLOR};
@@ -651,9 +680,10 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
     </style>
     <div id="wrapper">
         <pane-titled id="titledpane" titletext="">
-            <slot slot="content" id="navMap" class="content" name="navMap"></slot>
-            <slot slot="content" id="weatherRadar" class="content" name="weatherRadar"></slot>
-            <slot slot="content" id="waypointInfo" class="content" name="waypointInfo"></slot>
+            <slot slot="content" id="navmap" class="content" name="navmap"></slot>
+            <slot slot="content" id="trafficmap" class="content" name="trafficmap"></slot>
+            <slot slot="content" id="weatherradar" class="content" name="weatherradar"></slot>
+            <slot slot="content" id="waypointinfo" class="content" name="waypointinfo"></slot>
         </pane-titled>
     </div>
 `;
@@ -716,15 +746,16 @@ WT_G3x5_MFDHalfPaneDisplaySetting.KEY = "WT_MFDHalfPane_Display"
  */
 WT_G3x5_MFDHalfPaneDisplaySetting.Display = {
     NAVMAP: 0,
-    WEATHER: 1,
-    AIRPORT_INFO: 2,
-    VOR_INFO: 3,
-    NDB_INFO: 4,
-    INT_INFO: 5,
-    AIRPORT_NRST: 6,
-    VOR_NRST: 7,
-    NDB_NRST: 8,
-    INT_NRST: 9,
+    TRAFFIC: 1,
+    WEATHER: 2,
+    AIRPORT_INFO: 3,
+    VOR_INFO: 4,
+    NDB_INFO: 5,
+    INT_INFO: 6,
+    AIRPORT_NRST: 7,
+    VOR_NRST: 8,
+    NDB_NRST: 9,
+    INT_NRST: 10,
 }
 
 class WT_G3x5_MFDHalfPaneWaypointSetting extends WT_DataStoreSetting {

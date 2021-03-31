@@ -707,6 +707,7 @@ class WT_MapViewRangeCompassArcLayer extends WT_MapViewMultiLayer {
             return;
         }
 
+        this._rangeLabel.setRange(state.model.range);
         this._rangeLabel.update(state);
 
         if (!this._needRepositionLabel) {

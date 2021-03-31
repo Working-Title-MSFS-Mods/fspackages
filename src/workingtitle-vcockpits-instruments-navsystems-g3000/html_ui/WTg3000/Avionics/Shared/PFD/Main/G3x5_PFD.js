@@ -3,6 +3,9 @@ class WT_G3x5_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
 
+        this._trafficTracker = new WT_TrafficTracker();
+        this._lastTrafficUpdateTime = 0;
+
         this._citySearcher = new WT_CitySearcher();
     }
 
@@ -105,11 +108,23 @@ class WT_G3x5_PFD extends NavSystem {
         this._approachNavLoader = this._createApproachNavLoader();
     }
 
+    /**
+     *
+     * @returns {WT_G3x5_TrafficSystem}
+     */
+    _createTrafficSystem() {
+    }
+
+    _initTrafficSystem() {
+        this._trafficSystem = this._createTrafficSystem();
+    }
+
     Init() {
         super.Init();
 
         this._initReferenceSensors();
         this._initApproachNavLoader();
+        this._initTrafficSystem();
     }
 
     parseXMLConfig() {
@@ -140,11 +155,24 @@ class WT_G3x5_PFD extends NavSystem {
         this._approachNavLoader.update();
     }
 
-    onUpdate(deltaTime) {
-        super.onUpdate(deltaTime);
+    _updateTrafficTracker(currentTime) {
+        if (currentTime - this._lastTrafficUpdateTime >= 1000) {
+            this._trafficTracker.update();
+            this._lastTrafficUpdateTime = currentTime;
+        }
+    }
+
+    _updateTrafficSystem() {
+        this._trafficSystem.update();
+    }
+
+    _doUpdates(currentTime) {
+        super._doUpdates(currentTime);
 
         this._updateReversionaryMode();
         this._updateApproachNavLoader();
+        this._updateTrafficTracker(currentTime);
+        this._updateTrafficSystem();
     }
 
     reboot() {
@@ -155,20 +183,13 @@ class WT_G3x5_PFD extends NavSystem {
             this._mainPage.reset();
     }
 
-    static _loadTemplate(path) {
-        let link = document.createElement("link");
-        link.rel = "import";
-        link.href = path;
-        document.head.appendChild(link);
-    }
-
     static selectAvionics() {
         switch (WT_PlayerAirplane.getAircraftType()) {
             case WT_PlayerAirplane.Type.TBM930:
-                WT_G3x5_PFD._loadTemplate("/WTg3000/Avionics/G3000/PFD/Main/G3000_PFD.html");
+                WT_TemplateLoader.load("/WTg3000/Avionics/G3000/PFD/Main/G3000_PFD.html");
                 break;
             case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                WT_G3x5_PFD._loadTemplate("/WTg3000/Avionics/G5000/PFD/Main/G5000_PFD.html");
+                WT_TemplateLoader.load("/WTg3000/Avionics/G5000/PFD/Main/G5000_PFD.html");
                 break;
         }
     }

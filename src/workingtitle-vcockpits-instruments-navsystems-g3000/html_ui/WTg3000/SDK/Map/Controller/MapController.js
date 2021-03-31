@@ -292,15 +292,45 @@ WT_MapTargetSetting.Mode = {
 };
 
 class WT_MapRangeSetting extends WT_MapSetting {
+    /**
+     *
+     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_NumberUnit[]} ranges - an array of possible range values of the new setting.
+     * @param {WT_NumberUnit} defaultRange - the default range of the new setting.
+     * @param {Boolean} [isSyncable] - whether the fuel ring settings are sync-able. True by default.
+     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically update its associated model/view whenever the value
+     *                                 of any of its consituent settings changes. True by default.
+     * @param {Boolean} [isPersistent] - whether the fuel ring settings persist across sessions. True by default.
+     * @param {String} [key] - the data store key of the new setting.
+     */
     constructor(controller, ranges, defaultRange, isSyncable = true, autoUpdate = true, isPersistent = false, key = WT_MapRangeSetting.KEY_DEFAULT) {
         super(controller, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, autoUpdate, isPersistent);
-        this._ranges = ranges;
+
+        this._ranges = Array.from(ranges);
+        this._rangesReadOnly = new WT_ReadOnlyArray(this._ranges);
     }
 
+    /**
+     * An array of this setting's possible range values.
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_NumberUnit>}
+     */
+    get ranges() {
+        return this._rangesReadOnly;
+    }
+
+    /**
+     * Gets this setting's current range value.
+     * @returns {WT_NumberUnitReadOnly} this setting's current range value.
+     */
     getRange() {
-        return this._ranges[this.getValue()];
+        return this._ranges[this.getValue()].readonly();
     }
 
+    /**
+     * Sets this setting's range value.
+     * @param {WT_NumberUnit} newRange - the new range.
+     */
     setRange(newRange) {
         let index = this._ranges.findIndex(range => range.equals(newRange));
         if (index >= 0) {
