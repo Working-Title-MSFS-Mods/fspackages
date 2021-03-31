@@ -276,7 +276,7 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
 
-        if (fmc.landingRwySlope != 0) {
+        if (fmc.landingRwySlope < 0) {
             console.log("ldgFieldLength before we touch it = " + ldgFieldLength);
             ldgFieldLength = CJ4_FMC_ApproachRefPage.LandingSlopeAdjustment(ldgFieldLength, fmc.landingRwySlope);
             console.log("Adjusted LFL = " + ldgFieldLength);
