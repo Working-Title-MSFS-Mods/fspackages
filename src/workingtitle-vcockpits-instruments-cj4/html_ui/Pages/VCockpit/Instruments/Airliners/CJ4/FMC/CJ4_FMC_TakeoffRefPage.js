@@ -132,13 +132,9 @@ class CJ4_FMC_TakeoffRefPage {
                 if (slopeMatch[1] == "" || slopeMatch[5] == "") {
                     const slopeDirection = slopeMatch[1] == "-" || slopeMatch[1] == "D" || slopeMatch[5] == "D" ? -1 : 1;
                     let slopeValue = 0;
-                    console.log("slopeValue = " + slopeValue);
                     slopeValue += parseInt(slopeMatch[2]) > 0 ? parseInt(slopeMatch[2]) : 0;
-                    console.log("slopeValue = " + slopeValue);
                     slopeValue += parseInt(slopeMatch[4]) > 0 ? (parseInt(slopeMatch[4]) / 10) : 0;
-                    console.log("slopeValue = " + slopeValue);
                     slopeValue = slopeValue * slopeDirection;
-                    console.log("slopeValue = " + slopeValue);
                     fmc.takeoffRwySlope = slopeValue > 2 ? 2 : slopeValue < -2 ? -2 : slopeValue;
                 } else {
                     fmc.showErrorMessage("INVALID SLOPE");
@@ -258,7 +254,6 @@ class CJ4_FMC_TakeoffRefPage {
 
         if (fmc.takeoffRwySlope != 0) {
             fmc.endTakeoffDist = CJ4_FMC_TakeoffRefPage.TakeoffSlopeAdjustment(fmc.endTakeoffDist, fmc.takeoffRwySlope);
-            console.log("Adjusted TOFL = " + fmc.endTakeoffDist);
         }
 
 

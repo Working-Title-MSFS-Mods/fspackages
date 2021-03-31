@@ -81,7 +81,7 @@ class CJ4_FMC_ApproachRefPage {
             [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
             [arrRunwayLengthText + "[s-text]", fmc.landingPressAlt + " FT[s-text]"],
             [" RWY SLOPE[blue]"],
-            ["--.-%"],
+            [fmc.landingRwySlope.toFixed(1) + "%[s-text]"],
             [" RWY COND[blue]"],
             [arrRunwayConditionActive]
         ]);
@@ -132,6 +132,33 @@ class CJ4_FMC_ApproachRefPage {
             }
             fmc.clearUserInput();
             fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+        };
+        fmc.onLeftInput[3] = () => {
+            const slope = /([UD-]?)([\d{1}]?)(\.?)([\d{1}]?)([UD]?)/;
+            let input = fmc.inOut;
+            const slopeMatch = input.match(slope);
+            // 1 = U or D or -
+            // 2 = Integer
+            // 3 = Decimal Point
+            // 4 = Tenths Value
+            // 5 = U or D
+            // over 2 degrees out of range
+            if (slopeMatch) {
+                if (slopeMatch[1] == "" || slopeMatch[5] == "") {
+                    const slopeDirection = slopeMatch[1] == "-" || slopeMatch[1] == "D" || slopeMatch[5] == "D" ? -1 : 1;
+                    let slopeValue = 0;
+                    slopeValue += parseInt(slopeMatch[2]) > 0 ? parseInt(slopeMatch[2]) : 0;
+                    slopeValue += parseInt(slopeMatch[4]) > 0 ? (parseInt(slopeMatch[4]) / 10) : 0;
+                    slopeValue = slopeValue * slopeDirection;
+                    fmc.landingRwySlope = slopeValue > 2 ? 2 : slopeValue < -2 ? -2 : slopeValue;
+                } else {
+                    fmc.showErrorMessage("INVALID SLOPE");
+                }
+            } else {
+                fmc.showErrorMessage("INVALID SLOPE");
+            }
+            fmc.clearUserInput();
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
         fmc.onLeftInput[5] = () => {
@@ -247,6 +274,11 @@ class CJ4_FMC_ApproachRefPage {
 
         if (fmc.arrRunwayCondition == 1) { // If the runway is wet
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
+        }
+
+        if (fmc.landingRwySlope != 0) {
+            ldgFieldLength = CJ4_FMC_ApproachRefPage.LandingSlopeAdjustment(ldgFieldLength, fmc.landingRwySlope);
+            console.log("Adjusted LFL = " + ldgFieldLength);
         }
 
         let vspeedSendMsg = "";
@@ -399,5 +431,17 @@ class CJ4_FMC_ApproachRefPage {
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
         fmc.updateSideButtonActiveStatus();
+    }
+
+    static LandingSlopeAdjustment(tofl, slope) {
+        console.log("LandingSlopeAdjustment: lfl = " + tofl + " slope = " + slope);
+        if (slope > 0) {
+            return tofl;
+        } else if (slope < 0) {
+            const factor = 0.365;
+            return tofl * (1 + (-1 * factor * slope));
+        } else {
+            return tofl;
+        }
     }
 }
