@@ -277,9 +277,7 @@ class CJ4_FMC_ApproachRefPage {
         }
 
         if (fmc.landingRwySlope < 0) {
-            console.log("ldgFieldLength before we touch it = " + ldgFieldLength);
             ldgFieldLength = CJ4_FMC_ApproachRefPage.LandingSlopeAdjustment(ldgFieldLength, fmc.landingRwySlope);
-            console.log("Adjusted LFL = " + ldgFieldLength);
         }
 
         ldgFieldLength = ldgFieldLength * fmc.landingFactor;
@@ -437,7 +435,6 @@ class CJ4_FMC_ApproachRefPage {
     }
 
     static LandingSlopeAdjustment(tofl, slope) {
-        console.log("LandingSlopeAdjustment: lfl = " + tofl + " slope = " + slope);
         if (slope > 0) {
             return tofl;
         } else if (slope < 0) {
