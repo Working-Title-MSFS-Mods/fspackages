@@ -38,7 +38,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.takeoffFlaps = 15;
         this.takeoffAntiIce = 0;
         this.landingAntiIce = 0;
-        this.landingFactor = 0;
+        this.landingFactor = 1;
         this.endTakeoffDist = 0;
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;

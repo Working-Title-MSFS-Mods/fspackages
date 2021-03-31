@@ -249,6 +249,8 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
 
+        ldgFieldLength = ldgFieldLength * fmc.landingFactor;
+
         let vspeedSendMsg = "";
         if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
             vspeedSendMsg = "IN PROGRESS";
