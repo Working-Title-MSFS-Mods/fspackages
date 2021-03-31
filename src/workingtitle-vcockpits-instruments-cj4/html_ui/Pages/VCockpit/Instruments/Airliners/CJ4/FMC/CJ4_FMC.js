@@ -52,6 +52,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.vfrRunwayExtension = undefined;
         this.modVfrRunway = false;
         this.deletedVfrLandingRunway = undefined;
+        this.takeoffRwySlope = 0;
         this.selectedWaypoint = undefined;
         this.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", 1);
