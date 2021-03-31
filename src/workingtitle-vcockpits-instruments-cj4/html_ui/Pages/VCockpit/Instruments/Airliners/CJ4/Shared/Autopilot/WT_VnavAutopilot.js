@@ -305,10 +305,11 @@ class WT_VerticalAutopilot {
                     break;
                 }
                 if (!this.canPathActivate()) {
-                    this.setVerticalNavModeState(VerticalNavModeState.ALT);
+                    this.setVerticalNavModeState(VerticalNavModeState.PTCH);
                     this._vnavPathStatus = VnavPathStatus.NONE;
-                    Coherent.call("AP_ALT_VAR_SET_ENGLISH", 3, this.indicatedAltitude, true);
-                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, false, false);
+                    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+                    this.setAltitudeAndSlot(AltitudeSlot.SELECTED, false, true);
+                    this._navModeSelector.engagePitch();
                 }
                 this.checkAndSetTrackedAltitude(this._vnavPathStatus);
                 this.followPath();
