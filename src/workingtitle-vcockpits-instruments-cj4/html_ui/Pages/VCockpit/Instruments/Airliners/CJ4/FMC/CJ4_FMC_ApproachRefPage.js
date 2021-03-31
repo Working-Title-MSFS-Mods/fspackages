@@ -70,6 +70,8 @@ class CJ4_FMC_ApproachRefPage {
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
         const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.landingQnh.toFixed(2);
 
+        const slopeText = fmc.landingRwySlope == 0 ? "--.-" : fmc.landingRwySlope.toFixed(1);
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
             [" SEL APT[blue]", "WIND [blue]"],
@@ -81,7 +83,7 @@ class CJ4_FMC_ApproachRefPage {
             [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
             [arrRunwayLengthText + "[s-text]", fmc.landingPressAlt + " FT[s-text]"],
             [" RWY SLOPE[blue]"],
-            [fmc.landingRwySlope.toFixed(1) + "%[s-text]"],
+            [slopeText + "%[s-text]"],
             [" RWY COND[blue]"],
             [arrRunwayConditionActive]
         ]);
@@ -155,6 +157,9 @@ class CJ4_FMC_ApproachRefPage {
                 } else {
                     fmc.showErrorMessage("INVALID SLOPE");
                 }
+            } else if (input == "DELETE") {
+                fmc.landingRwySlope = 0;
+                CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
             } else {
                 fmc.showErrorMessage("INVALID SLOPE");
             }

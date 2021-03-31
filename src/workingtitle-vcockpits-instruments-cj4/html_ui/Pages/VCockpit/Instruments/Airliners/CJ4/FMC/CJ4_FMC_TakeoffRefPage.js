@@ -52,6 +52,7 @@ class CJ4_FMC_TakeoffRefPage {
 
         const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength).getString(0, " ", "[s-text]");
         const takeoffQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
+        const slopeText = fmc.takeoffRwySlope == 0 ? "--.-" : fmc.takeoffRwySlope.toFixed(1);
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
@@ -62,7 +63,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY LENGTH[blue]", "QNH[blue] "],
             [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
-            [fmc.takeoffRwySlope.toFixed(1) + "%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
+            [slopeText + "%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
@@ -139,6 +140,9 @@ class CJ4_FMC_TakeoffRefPage {
                 } else {
                     fmc.showErrorMessage("INVALID SLOPE");
                 }
+            } else if (input == "DELETE") {
+                fmc.takeoffRwySlope = 0;
+                CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
             } else {
                 fmc.showErrorMessage("INVALID SLOPE");
             }
