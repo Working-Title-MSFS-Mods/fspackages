@@ -270,7 +270,10 @@ class CJ4_FMC_ApproachRefPage {
             vApp = null;
             vspeedSendMsg = "";
         }
-    
+
+        let landingAntiIceActive = fmc.landingAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
+            : "OFF[s-text]/[white]ON[green]";
+
         const ldgWtText = ldgWt < 10300 ? "-----" : formatNumber(WT_ConvertUnit.getWeight(ldgWt).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (ldgWt > 15660 ? "[yellow]" : "");
         const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(grossWeightValue).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (WT_ConvertUnit.isMetric() ? "/7103[s-text]" : "/15660[s-text]");
         const landingDistText = WT_ConvertUnit.isMetric() ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
@@ -281,7 +284,7 @@ class CJ4_FMC_ApproachRefPage {
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
-            ["OFF[green]/[white]ON[s-text]"],
+            [landingAntiIceActive],
             ["", "V[d-text blue]REF:[s-text blue] " + formatNumber(vRef) + "[s-text + " + vspeedColor + "]"],
             [""],
             [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vAppText + "[s-text + " + vspeedColor + "]"],
@@ -311,6 +314,18 @@ class CJ4_FMC_ApproachRefPage {
                 CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
             };
         }
+
+        fmc.onLeftInput[0] = () => {
+            if (fmc.landingAntiIce == 0) {
+                fmc.landingAntiIce = 1;
+            } else if (fmc.landingAntiIce == 1) {
+                fmc.landingAntiIce = 0;
+            }
+            landingAntiIceActive = fmc.landingAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
+                : "OFF[s-text]/[white]ON[green]";
+            fmc.clearUserInput();
+            { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); }
+        };
 
         fmc.onPrevPage = () => {
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
