@@ -139,7 +139,7 @@ class CJ4_FMC_TakeoffRefPage {
                     console.log("slopeValue = " + slopeValue);
                     slopeValue = slopeValue * slopeDirection;
                     console.log("slopeValue = " + slopeValue);
-                    fmc.takeoffRwySlope = slopeValue;
+                    fmc.takeoffRwySlope = slopeValue > 2 ? 2 : slopeValue < -2 ? -2 : slopeValue;
                 } else {
                     fmc.showErrorMessage("INVALID SLOPE");
                 }
@@ -255,6 +255,13 @@ class CJ4_FMC_TakeoffRefPage {
                 fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * tailWindFactor);
             }
         }
+
+        if (fmc.takeoffRwySlope != 0) {
+            fmc.endTakeoffDist = CJ4_FMC_TakeoffRefPage.TakeoffSlopeAdjustment(fmc.endTakeoffDist, fmc.takeoffRwySlope);
+            console.log("Adjusted TOFL = " + fmc.endTakeoffDist);
+        }
+
+
         let takeoffFlapsActive = fmc.takeoffFlaps == 15 ? "0[s-text]/[white]15[green]"
             : "0[green]/[white]15[s-text]";
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
@@ -401,5 +408,20 @@ class CJ4_FMC_TakeoffRefPage {
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
         };
         fmc.updateSideButtonActiveStatus();
+    }
+
+    static TakeoffSlopeAdjustment(tofl, slope) {
+        console.log("TakeoffSlopeAdjustment: tofl = " + tofl + " slope = " + slope);
+        if (slope > 0) {
+            const constfactor = 0.0045;
+            const expFactor = 0.00044;
+            return tofl + (((constfactor * Math.exp(expFactor * tofl)) * slope) * tofl * 10);
+        } else if (slope < 0) {
+            const stdDev = 0.4;
+            const meanVal = 1;
+            return (((3 * (tofl / 100)) * (1 / (stdDev * Math.sqrt(6.283185))) * Math.exp(-0.5 * Math.pow((((-1 * slope) - meanVal) / stdDev), 2))) + tofl) - Math.min(-1 * slope,1) * ((Math.max(3200, tofl) - 3200) / 8);
+        } else {
+            return tofl;
+        }
     }
 }
