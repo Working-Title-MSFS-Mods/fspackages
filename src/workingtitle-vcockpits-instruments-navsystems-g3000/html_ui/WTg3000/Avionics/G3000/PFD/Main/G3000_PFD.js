@@ -18,6 +18,14 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
 
         this._initSoftkeyContainer();
     }
+
+    /**
+     *
+     * @returns {WT_G3000_TrafficAdvisorySystem}
+     */
+    _createTrafficSystem() {
+        return new WT_G3000_TrafficAdvisorySystem(this.airplane, this._trafficTracker);
+    }
 }
 
 class WT_G3000_PFDSoftKeyElement extends SoftKeyElement {

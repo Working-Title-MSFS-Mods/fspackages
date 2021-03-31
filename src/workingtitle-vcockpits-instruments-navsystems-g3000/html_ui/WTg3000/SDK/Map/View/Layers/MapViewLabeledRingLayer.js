@@ -52,12 +52,10 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         this._ringContainer.style.position = "absolute";
         this._ringContainer.style.width = "100%";
         this._ringContainer.style.height = "100%";
-        this._ringContainer.style.zIndex = 1;
         this._labelContainer = document.createElement("div");
         this._labelContainer.style.position = "absolute";
         this._labelContainer.style.width = "100%";
         this._labelContainer.style.height = "100%";
-        this._labelContainer.style.zIndex = 2;
 
         topLevel.appendChild(this._ringContainer);
         topLevel.appendChild(this._labelContainer);

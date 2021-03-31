@@ -225,6 +225,7 @@ as3000-mfd-element #Electricity map-view {
     height: 100%;
     width: 100%;
     display: block;
+    background-color: black;
 }
     as3000-mfd-element #Electricity map-view map-view-rangedisplay {
         color: var(--wt-g3x5-lightblue);

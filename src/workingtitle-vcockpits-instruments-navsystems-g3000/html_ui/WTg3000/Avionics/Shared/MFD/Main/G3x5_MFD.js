@@ -1,8 +1,12 @@
 class WT_G3x5_MFD extends NavSystem {
     constructor() {
         super();
+
         this.initDuration = 5500;
         this.needValidationAfterInit = true;
+
+        this._trafficTracker = new WT_TrafficTracker();
+        this._lastTrafficUpdateTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
     }
@@ -29,6 +33,14 @@ class WT_G3x5_MFD extends NavSystem {
      */
     get referenceAltimeter() {
         return this._referenceAltimeter;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TrafficTracker}
+     */
+    get trafficTracker() {
+        return this._trafficTracker;
     }
 
     /**
@@ -78,10 +90,40 @@ class WT_G3x5_MFD extends NavSystem {
         this._referenceAltimeter = this._getReferenceAltimeter();
     }
 
+    /**
+     *
+     * @returns {WT_G3x5_TrafficSystem}
+     */
+    _createTrafficSystem() {
+    }
+
+    _initTrafficSystem() {
+        this._trafficSystem = this._createTrafficSystem();
+    }
+
     Init() {
         super.Init();
 
         this._initReferenceSensors();
+        this._initTrafficSystem();
+    }
+
+    _updateTrafficTracker(currentTime) {
+        if (currentTime - this._lastTrafficUpdateTime >= WT_G3x5_MFD.TRAFFIC_UPDATE_INTERVAL) {
+            this.trafficTracker.update();
+            this._lastTrafficUpdateTime = currentTime;
+        }
+    }
+
+    _updateTrafficSystem() {
+        this._trafficSystem.update();
+    }
+
+    _doUpdates(currentTime) {
+        super._doUpdates(currentTime);
+
+        this._updateTrafficTracker(currentTime);
+        this._updateTrafficSystem();
     }
 
     onEvent(_event) {
@@ -108,6 +150,7 @@ class WT_G3x5_MFD extends NavSystem {
         }
     }
 }
+WT_G3x5_MFD.TRAFFIC_UPDATE_INTERVAL = 1000; // ms
 
 class AS3000_Engine extends NavSystemElementContainer {
     constructor(_name, _root) {
