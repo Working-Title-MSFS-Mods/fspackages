@@ -12,7 +12,6 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
 
     /**
      * @readonly
-     * @property {String} instrumentID
      * @type {String}
      */
     get instrumentID() {
@@ -21,7 +20,6 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
 
     /**
      * @readonly
-     * @property {WT_G3000MFDMainPaneHTMLElement} htmlElement
      * @type {WT_G3000MFDMainPaneHTMLElement}
      */
     get htmlElement() {
@@ -30,11 +28,10 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
 
     /**
      * @readonly
-     * @property {WT_DataStoreController} controller
-     * @type {WT_DataStoreController}
+     * @type {WT_DataStoreSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     _initBorderData() {
@@ -111,18 +108,18 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
         }
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._controller));
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID);
+        this._settingModel.addSetting(this._modeSetting = new WT_G3x5_MFDMainPaneModeSetting(this._settingModel));
         this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
 
-        this._controller.init();
-        this._controller.update();
+        this._settingModel.init();
+        this._settingModel.update();
     }
 
     _initHalfPanes() {
-        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.trafficSystem, this.instrument.unitsController, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
-        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.trafficSystem, this.instrument.unitsController, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+        this._left = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="left"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.LEFT, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.trafficSystem, this.instrument.unitsSettingModel, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+        this._right = new WT_G3x5_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="right"]`), this.instrumentID, WT_G3x5_MFDHalfPane.ID.RIGHT, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.trafficSystem, this.instrument.unitsSettingModel, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
     }
 
     /**
@@ -135,7 +132,7 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
         this._initBorderData();
         this._initRoadData();
         this._initHalfPanes();
-        this._initController();
+        this._initSettingModel();
     }
 
     _onModeSettingChanged(setting, newValue, oldValue) {
@@ -259,10 +256,10 @@ class WT_G3x5_MFDHalfPane {
             defaultControl = 0;
         }
 
-        this._controller = new WT_DataStoreController(id, null);
-        this._controller.addSetting(this._controlSetting = new WT_G3x5_MFDHalfPaneControlSetting(this._controller, defaultControl));
-        this._controller.addSetting(this._displaySetting = new WT_G3x5_MFDHalfPaneDisplaySetting(this._controller));
-        this._controller.addSetting(this._waypointSetting = new WT_G3x5_MFDHalfPaneWaypointSetting(this._controller));
+        this._settingModel = new WT_DataStoreSettingModel(id, null);
+        this._settingModel.addSetting(this._controlSetting = new WT_G3x5_MFDHalfPaneControlSetting(this._settingModel, defaultControl));
+        this._settingModel.addSetting(this._displaySetting = new WT_G3x5_MFDHalfPaneDisplaySetting(this._settingModel));
+        this._settingModel.addSetting(this._waypointSetting = new WT_G3x5_MFDHalfPaneWaypointSetting(this._settingModel));
         this._controlSetting.addListener(this._onControlSettingChanged.bind(this));
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
         this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
@@ -284,8 +281,8 @@ class WT_G3x5_MFDHalfPane {
         this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
         this._setControl(defaultControl);
 
-        this._controller.init();
-        this._controller.update();
+        this._settingModel.init();
+        this._settingModel.update();
     }
 
     _initChildren() {
@@ -297,7 +294,6 @@ class WT_G3x5_MFDHalfPane {
 
     /**
      * @readonly
-     * @property {WT_G3x5_MFDHalfPaneHTMLElement} htmlElement
      * @type {WT_G3x5_MFDHalfPaneHTMLElement}
      */
     get htmlElement() {
@@ -306,11 +302,10 @@ class WT_G3x5_MFDHalfPane {
 
     /**
      * @readonly
-     * @property {WT_DataStoreController} controller
-     * @type {WT_DataStoreController}
+     * @type {WT_DataStoreSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     _onControlSettingChanged(setting, newValue, oldValue) {
@@ -487,7 +482,6 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} navMapContainer
      * @type {HTMLElement}
      */
     get navMapContainer() {
@@ -496,7 +490,6 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} weatherRadarContainer
      * @type {HTMLElement}
      */
     get weatherRadarContainer() {
@@ -505,7 +498,6 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} waypointInfoContainer
      * @type {HTMLElement}
      */
     get waypointInfoContainer() {
@@ -691,8 +683,8 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
 customElements.define("mfd-halfpane", WT_G3x5_MFDHalfPaneHTMLElement);
 
 class WT_G3x5_MFDMainPaneModeSetting extends WT_DataStoreSetting {
-    constructor(controller, defaultValue = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDMainPaneModeSetting.KEY) {
-        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    constructor(model, defaultValue = WT_G3x5_MFDMainPaneModeSetting.Mode.FULL, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDMainPaneModeSetting.KEY) {
+        super(model, key, defaultValue, autoUpdate, isPersistent);
     }
 }
 WT_G3x5_MFDMainPaneModeSetting.KEY = "WT_MFDMainPane_Mode"
@@ -705,8 +697,8 @@ WT_G3x5_MFDMainPaneModeSetting.Mode = {
 }
 
 class WT_G3x5_MFDHalfPaneControlSetting extends WT_DataStoreSetting {
-    constructor(controller, defaultValue = 0, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
-        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    constructor(model, defaultValue = 0, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneControlSetting.KEY) {
+        super(model, key, defaultValue, autoUpdate, isPersistent);
     }
 
     hasControl(touchscreen, all = false) {
@@ -736,8 +728,8 @@ WT_G3x5_MFDHalfPaneControlSetting.Touchscreen = {
 }
 
 class WT_G3x5_MFDHalfPaneDisplaySetting extends WT_DataStoreSetting {
-    constructor(controller, defaultValue = WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneDisplaySetting.KEY) {
-        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    constructor(model, defaultValue = WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneDisplaySetting.KEY) {
+        super(model, key, defaultValue, autoUpdate, isPersistent);
     }
 }
 WT_G3x5_MFDHalfPaneDisplaySetting.KEY = "WT_MFDHalfPane_Display"
@@ -759,8 +751,8 @@ WT_G3x5_MFDHalfPaneDisplaySetting.Display = {
 }
 
 class WT_G3x5_MFDHalfPaneWaypointSetting extends WT_DataStoreSetting {
-    constructor(controller, defaultValue = "", autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneWaypointSetting.KEY) {
-        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    constructor(model, defaultValue = "", autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneWaypointSetting.KEY) {
+        super(model, key, defaultValue, autoUpdate, isPersistent);
     }
 }
 WT_G3x5_MFDHalfPaneWaypointSetting.KEY = "WT_MFDHalfPane_Waypoint"

@@ -4,12 +4,11 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
 
         this._instrumentID = instrumentID;
 
-        this._allControllerIDs = ["PFD", "MFD-LEFT", "MFD-RIGHT"];
+        this._allSettingModelIDs = ["PFD", "MFD-LEFT", "MFD-RIGHT"];
     }
 
     /**
      * @readonly
-     * @property {String} instrumentID
      * @type {String}
      */
     get instrumentID() {
@@ -18,7 +17,6 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCMapSettingsHTMLElement} htmlElement
      * @type {WT_G3x5_TSCMapSettingsHTMLElement}
      */
     get htmlElement() {
@@ -27,14 +25,13 @@ class WT_G3x5_TSCMapSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {String[]} allControllerIDs
      * @type {String[]}
      */
-    get allControllerIDs() {
-        return this._allControllerIDs;
+    get allSettingModelIDs() {
+        return this._allSettingModelIDs;
     }
 
-    getControllerID() {
+    getSettingModelID() {
         return this.instrumentID;
     }
 
@@ -57,17 +54,16 @@ class WT_G3x5_TSCPFDMapSettings extends WT_G3x5_TSCMapSettings {
     constructor(homePageGroup, homePageName, instrumentID) {
         super(homePageGroup, homePageName, instrumentID);
 
-        this._initInsetMapController();
+        this._initInsetMapSettingModel();
     }
 
-    _initInsetMapController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._insetMapShowSetting = new WT_G3x5_PFDInsetMapShowSetting(this._controller));
+    _initInsetMapSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel.addSetting(this._insetMapShowSetting = new WT_G3x5_PFDInsetMapShowSetting(this._settingModel));
     }
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDInsetMapShowSetting} showSetting
      * @type {WT_G3x5_PFDInsetMapShowSetting}
      */
     get insetMapShowSetting() {
@@ -81,7 +77,7 @@ class WT_G3x5_TSCPFDMapSettings extends WT_G3x5_TSCMapSettings {
 }
 
 class WT_G3x5_TSCMFDMapSettings extends WT_G3x5_TSCMapSettings {
-    getControllerID() {
+    getSettingModelID() {
         return `${this.instrumentID}-${this.gps.getSelectedMFDPane()}`;
     }
 
@@ -101,7 +97,6 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCMapSettings} settingsPage
      * @type {WT_G3x5_TSCMapSettings}
      */
     get parentPage() {
@@ -121,7 +116,7 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
             callback: callback,
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.parentPage.getControllerID.bind(this.parentPage), key),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.parentPage.getSettingModelID.bind(this.parentPage), key),
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName
         };
@@ -140,7 +135,7 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     }
 
     _initSyncButton() {
-        this._syncWindowContext = this._createWindowContext("Map Sync", WT_G3x5_TSCMapSettingsHTMLElement.SYNC_TEXTS, this._onSyncSelected.bind(this), WT_MapController.SYNC_MODE_KEY);
+        this._syncWindowContext = this._createWindowContext("Map Sync", WT_G3x5_TSCMapSettingsHTMLElement.SYNC_TEXTS, this._onSyncSelected.bind(this), WT_MapSettingModel.SYNC_MODE_KEY);
 
         this._syncButton = new WT_TSCValueButton();
         this._syncButton.classList.add(WT_G3x5_TSCMapSettingsHTMLElement.LEFT_BUTTON_CLASS);
@@ -284,27 +279,27 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     }
 
     _onDetailButtonPressed() {
-        this.parentPage.instrument.mapDetailSelect.element.setContext(this.parentPage.getControllerID(), this.parentPage.homePageGroup, this.parentPage.homePageName);
+        this.parentPage.instrument.mapDetailSelect.element.setContext(this.parentPage.getSettingModelID(), this.parentPage.homePageGroup, this.parentPage.homePageName);
         this.parentPage.instrument.switchToPopUpPage(this.parentPage.instrument.mapDetailSelect);
     }
 
     _onOrientationSelected(value) {
-        WT_MapController.setSettingValue(this.parentPage.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY, value, true);
+        WT_MapSettingModel.setSettingValue(this.parentPage.getSettingModelID(), WT_G3x5_NavMap.ORIENTATION_KEY, value, true);
         this._updateOrientationButton();
     }
 
     _onSyncSelected(value) {
-        let oldValue = WT_MapController.getSyncMode(this.parentPage.getControllerID());
+        let oldValue = WT_MapSettingModel.getSyncMode(this.parentPage.getSettingModelID());
         if (value !== oldValue) {
             switch (value) {
-                case WT_MapController.SyncMode.ALL:
-                    for (let id of this.parentPage.allControllerIDs) {
-                        WT_MapController.setSyncMode(id, value, this.parentPage.getControllerID());
+                case WT_MapSettingModel.SyncMode.ALL:
+                    for (let id of this.parentPage.allSettingModelIDs) {
+                        WT_MapSettingModel.setSyncMode(id, value, this.parentPage.getSettingModelID());
                     }
                     break;
-                case WT_MapController.SyncMode.OFF:
-                    for (let id of this.parentPage.allControllerIDs) {
-                        WT_MapController.setSyncMode(id, value, this.parentPage.getControllerID());
+                case WT_MapSettingModel.SyncMode.OFF:
+                    for (let id of this.parentPage.allSettingModelIDs) {
+                        WT_MapSettingModel.setSyncMode(id, value, this.parentPage.getSettingModelID());
                     }
                     break;
             }
@@ -313,17 +308,17 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     }
 
     _updateOrientationButton() {
-        let value = WT_MapController.getSettingValue(this.parentPage.getControllerID(), WT_G3x5_NavMap.ORIENTATION_KEY, 0);
+        let value = WT_MapSettingModel.getSettingValue(this.parentPage.getSettingModelID(), WT_G3x5_NavMap.ORIENTATION_KEY, 0);
         this._orientationButton.valueText = WT_G3x5_TSCMapSettingsHTMLElement.ORIENTATION_TEXTS[value];
     }
 
     _updateSyncButton() {
-        let value = WT_MapController.getSyncMode(this.parentPage.getControllerID());
+        let value = WT_MapSettingModel.getSyncMode(this.parentPage.getSettingModelID());
         this._syncButton.valueText = WT_G3x5_TSCMapSettingsHTMLElement.SYNC_TEXTS[value];
     }
 
     _updateDetailButton() {
-        let value = WT_MapController.getSettingValue(this.parentPage.getControllerID(), WT_MapDCLTRSetting.KEY_DEFAULT);
+        let value = WT_MapSettingModel.getSettingValue(this.parentPage.getSettingModelID(), WT_MapDCLTRSetting.KEY_DEFAULT);
         this._detailButton.setValue(value);
     }
 
@@ -607,14 +602,14 @@ class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
     onEvent(_event) {
     }
 
-    setContext(controllerID, homePageGroup, homePageName) {
-        this._controllerID = controllerID;
+    setContext(settingModelID, homePageGroup, homePageName) {
+        this._settingModelID = settingModelID;
         this._homePageGroup = homePageGroup;
         this._homePageName = homePageName;
     }
 
     updateSlider() {
-        let currentDetail = 3 - WT_MapController.getSettingValue(this._controllerID, WT_MapDCLTRSetting.KEY_DEFAULT);
+        let currentDetail = 3 - WT_MapSettingModel.getSettingValue(this._settingModelID, WT_MapDCLTRSetting.KEY_DEFAULT);
         let currentClip = Math.min(100 * (1 - currentDetail / 3), 99);
         this.slider.value = currentDetail;
         this.sliderBackground.style.webkitClipPath = "polygon(0 " + fastToFixed(currentClip, 0) + "%, 100% " + fastToFixed(currentClip, 0) + "%, 100% 100%, 0 100%)"; // update the range slider's track background to only show below the thumb
@@ -622,12 +617,12 @@ class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
 
     syncDetailToSlider() {
         let value = 3 - parseInt(this.slider.value);
-        WT_MapController.setSettingValue(this._controllerID, WT_MapDCLTRSetting.KEY_DEFAULT, value, true);
+        WT_MapSettingModel.setSettingValue(this._settingModelID, WT_MapDCLTRSetting.KEY_DEFAULT, value, true);
     }
 
     changeDetail(delta) {
-        let newValue = Math.min(Math.max(WT_MapController.getSettingValue(this._controllerID, WT_MapDCLTRSetting.KEY_DEFAULT) + delta, 0), 3);
-        WT_MapController.setSettingValue(this._controllerID, WT_MapDCLTRSetting.KEY_DEFAULT, newValue, true);
+        let newValue = Math.min(Math.max(WT_MapSettingModel.getSettingValue(this._settingModelID, WT_MapDCLTRSetting.KEY_DEFAULT) + delta, 0), 3);
+        WT_MapSettingModel.setSettingValue(this._settingModelID, WT_MapDCLTRSetting.KEY_DEFAULT, newValue, true);
     }
 
     _onBackPressed() {
@@ -641,6 +636,10 @@ class WT_G3x5_TSCMapDetailSelect extends NavSystemElement {
 }
 
 class WT_G3x5_TSCMapSettingsTab extends WT_G3x5_TSCTabContent {
+    /**
+     * @param {String} title
+     * @param {WT_G3x5_TSCMapSettings} settingsPage
+     */
     constructor(title, settingsPage) {
         super(title);
 
@@ -656,7 +655,6 @@ class WT_G3x5_TSCMapSettingsTab extends WT_G3x5_TSCTabContent {
 
     /**
      * @readonly
-     * @property {WT_TSCMapSettingsTabElement} htmlElement
      * @type {WT_G3x5_TSCMapSettingsTabElement}
      */
     get htmlElement() {
@@ -666,7 +664,7 @@ class WT_G3x5_TSCMapSettingsTab extends WT_G3x5_TSCTabContent {
     _createContext() {
         return {
             instrument: this._settingsPage.gps,
-            getControllerID: this._settingsPage.getControllerID.bind(this._settingsPage),
+            getSettingModelID: this._settingsPage.getSettingModelID.bind(this._settingsPage),
             homePageGroup: this._settingsPage.homePageGroup,
             homePageName: this._settingsPage.homePageName
         };
@@ -714,7 +712,6 @@ class WT_G3x5_TSCMapSettingsTabRowElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} left
      * @type {HTMLElement}
      */
     get left() {
@@ -723,7 +720,6 @@ class WT_G3x5_TSCMapSettingsTabRowElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} right
      * @type {HTMLElement}
      */
     get right() {
@@ -789,7 +785,6 @@ class WT_G3x5_TSCMapSettingsTabRow {
 
     /**
      * @readonly
-     * @property {WT_TSCMapSettingsTabRowElement} htmlElement
      * @type {WT_G3x5_TSCMapSettingsTabRowElement}
      */
     get htmlElement() {
@@ -806,8 +801,7 @@ class WT_G3x5_TSCMapSettingsTabRow {
 
     /**
      * @readonly
-     * @property {{instrument:AS3000_TSC, getControllerID:Function, homePageGroup:String, homePageName:String}} context
-     * @type {{instrument:AS3000_TSC, getControllerID:Function, homePageGroup:String, homePageName:String}}
+     * @type {WT_G3x5_TSCMapSettingsTabRowContext}
      */
     get context() {
         return this._context;
@@ -820,6 +814,14 @@ class WT_G3x5_TSCMapSettingsTabRow {
     onUpdate() {
     }
 }
+
+/**
+ * @typedef WT_G3x5_TSCMapSettingsTabRowContext
+ * @property {AS3000_TSC} instrument
+ * @property {() => String} getSettingModelID
+ * @property {String} homePageGroup
+ * @property {String} homePageName
+ */
 
 class WT_G3x5_TSCMapSettingsToggleTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     /**
@@ -840,11 +842,11 @@ class WT_G3x5_TSCMapSettingsToggleTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 
     _onToggleButtonPressed() {
-        WT_MapController.setSettingValue(this.context.getControllerID(), this._toggleSettingKey, !WT_MapController.getSettingValue(this.context.getControllerID(), this._toggleSettingKey, false), true);
+        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._toggleSettingKey, !WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._toggleSettingKey, false), true);
     }
 
     _updateToggleButton() {
-        this._toggleButton.toggle = WT_MapController.getSettingValue(this.context.getControllerID(), this._toggleSettingKey, false) ? "on" : "off";
+        this._toggleButton.toggle = WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._toggleSettingKey, false) ? "on" : "off";
     }
 
     onUpdate() {
@@ -874,22 +876,22 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _initWindowContext() {
-        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesToMax(this._rangeMax), this.context.instrument.unitsController);
+        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesToMax(this._rangeMax), this.context.instrument.unitsSettingModel);
         this._rangeWindowContext = {
             title: this._rangeWindowTitleText,
             subclass: "standardDynamicSelectionListWindow",
             closeOnSelect: true,
-            callback: this._setRangeSetting.bind(this, this.context.getControllerID()),
+            callback: this._setRangeSetting.bind(this, this.context.getSettingModelID()),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._rangeKey),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getSettingModelID, this._rangeKey),
             homePageGroup: this.context.homePageGroup,
             homePageName: this.context.homePageName
         };
     }
 
     _setRangeSetting(controllerID, value) {
-        WT_MapController.setSettingValue(controllerID, this._rangeKey, value, true);
+        WT_MapSettingModel.setSettingValue(controllerID, this._rangeKey, value, true);
     }
 
     _onRangeButtonPressed() {
@@ -903,8 +905,8 @@ class WT_G3x5_TSCMapSettingsRangeTabRow extends WT_G3x5_TSCMapSettingsToggleTabR
     }
 
     _updateRangeButton() {
-        let range = WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this.context.getControllerID(), this._rangeKey)];
-        let unit = this.context.instrument.unitsController.distanceSpeedSetting.getDistanceUnit();
+        let range = WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._rangeKey)];
+        let unit = this.context.instrument.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
         this._rangeButton.setRange(range);
         this._rangeButton.setUnit(unit);
     }
@@ -947,13 +949,13 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
 
     _initTypeWindowContext() {
         let rangeGetter = {
-            _getControllerID: this.context.getControllerID,
+            _getSettingModelID: this.context.getSettingModelID,
             _rangeKeys: this._rangeKeys,
             getRange(index) {
-                return WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapController.getSettingValue(this._getControllerID(), this._rangeKeys[index])];
+                return WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapSettingModel.getSettingValue(this._getSettingModelID(), this._rangeKeys[index])];
             }
         }
-        let elementHandler = new WT_G3x5_TSCRangeTypeSelectionElementHandler(this._rangeTypeNames, rangeGetter, this.context.instrument.unitsController);
+        let elementHandler = new WT_G3x5_TSCRangeTypeSelectionElementHandler(this._rangeTypeNames, rangeGetter, this.context.instrument.unitsSettingModel);
         this._typeWindowContext = {
             title: this._typeWindowTitleText,
             subclass: "standardDynamicSelectionListWindow",
@@ -970,7 +972,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     _initRangeWindowContexts() {
         this._rangeWindowContexts = [];
         for (let i = 0; i < this._rangeKeys.length; i++) {
-            let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesToMax(this._rangesMax[i]), this.context.instrument.unitsController);
+            let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_TSCMapSettingsRangeTabRow.getRangeValuesToMax(this._rangesMax[i]), this.context.instrument.unitsSettingModel);
             this._rangeWindowContexts[i] = {
                 title: this._rangeWindowTitleTexts[i],
                 subclass: "standardDynamicSelectionListWindow",
@@ -978,7 +980,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
                 callback: this._setRangeSetting.bind(this, i),
                 elementConstructor: elementHandler,
                 elementUpdater: elementHandler,
-                currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._rangeKeys[i]),
+                currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getSettingModelID, this._rangeKeys[i]),
                 homePageGroup: this.context.homePageGroup,
                 homePageName: this.context.homePageName
             };
@@ -991,7 +993,7 @@ class WT_G3x5_TSCMapSettingsMultiRangeTabRow extends WT_G3x5_TSCMapSettingsToggl
     }
 
     _setRangeSetting(index, value) {
-        WT_MapController.setSettingValue(this.context.getControllerID(), this._rangeKeys[index], value, true);
+        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._rangeKeys[index], value, true);
     }
 
     _onRangeTypeButtonPressed() {
@@ -1030,14 +1032,14 @@ class WT_G3x5_TSCMapSettingsTrackVectorTabRow extends WT_G3x5_TSCMapSettingsTogg
             callback: this._setLookaheadSetting.bind(this),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._lookaheadSettingKey),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getSettingModelID, this._lookaheadSettingKey),
             homePageGroup: this.context.homePageGroup,
             homePageName: this.context.homePageName
         };
     }
 
     _setLookaheadSetting(value) {
-        WT_MapController.setSettingValue(this.context.getControllerID(), this._lookaheadSettingKey, value, true);
+        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._lookaheadSettingKey, value, true);
     }
 
     _onLookaheadButtonPressed() {
@@ -1051,7 +1053,7 @@ class WT_G3x5_TSCMapSettingsTrackVectorTabRow extends WT_G3x5_TSCMapSettingsTogg
     }
 
     _updateLookaheadButton() {
-        this._lookaheadButton.labelText = WT_G3x5_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText(this._lookaheadValues[WT_MapController.getSettingValue(this.context.getControllerID(), this._lookaheadSettingKey)]);
+        this._lookaheadButton.labelText = WT_G3x5_TSCMapSettingsTrackVectorTabRow.getTrackVectorLookaheadText(this._lookaheadValues[WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._lookaheadSettingKey)]);
     }
 
     onUpdate() {
@@ -1084,18 +1086,18 @@ class WT_G3x5_TSCMapSettingsFuelRingTabRow extends WT_G3x5_TSCMapSettingsToggleT
     }
 
     _onReserveButtonPressed() {
-        let currentSettingValue = WT_MapController.getSettingValue(this.context.getControllerID(), this._reserveTimeSettingKey) * 60000;
+        let currentSettingValue = WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey) * 60000;
         this.context.instrument.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
         this.context.instrument.switchToPopUpPage(this.context.instrument.timeKeyboard);
     }
 
     _setReserveTimeSetting(value) {
         let reserveTime = Math.max(1, Math.round(value / 60000));
-        WT_MapController.setSettingValue(this.context.getControllerID(), this._reserveTimeSettingKey, reserveTime, true);
+        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey, reserveTime, true);
     }
 
     _updateReserveButton() {
-        this._reserveButton.labelText = WT_G3x5_TSCMapSettingsFuelRingTabRow.getFuelRingReserveTimeText(WT_MapController.getSettingValue(this.context.getControllerID(), this._reserveTimeSettingKey));
+        this._reserveButton.labelText = WT_G3x5_TSCMapSettingsFuelRingTabRow.getFuelRingReserveTimeText(WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey));
     }
 
     onUpdate() {
@@ -1146,14 +1148,14 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
             callback: this._setModeSetting.bind(this),
             elementConstructor: elementHandler,
             elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getControllerID, this._modeSettingKey),
+            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this.context.getSettingModelID, this._modeSettingKey),
             homePageGroup: this.context.homePageGroup,
             homePageName: this.context.homePageName
         };
     }
 
     _setModeSetting(value) {
-        WT_MapController.setSettingValue(this.context.getControllerID(), this._modeSettingKey, value, true);
+        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._modeSettingKey, value, true);
     }
 
     _onModeButtonPressed() {
@@ -1167,7 +1169,7 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     }
 
     _updateModeButton() {
-        this._modeButton.valueText = WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapController.getSettingValue(this.context.getControllerID(), this._modeSettingKey)];
+        this._modeButton.valueText = WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._modeSettingKey)];
     }
 
     onUpdate() {
@@ -1177,12 +1179,12 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
 }
 
 class WT_G3x5_TSCMapSettingIndexGetter {
-    constructor(getControllerID, key) {
-        this._getControllerID = getControllerID;
+    constructor(getSettingModelID, key) {
+        this._getSettingModelID = getSettingModelID;
         this._key = key;
     }
 
     getCurrentIndex() {
-        return WT_MapController.getSettingValue(this._getControllerID(), this._key);
+        return WT_MapSettingModel.getSettingValue(this._getSettingModelID(), this._key);
     }
 }

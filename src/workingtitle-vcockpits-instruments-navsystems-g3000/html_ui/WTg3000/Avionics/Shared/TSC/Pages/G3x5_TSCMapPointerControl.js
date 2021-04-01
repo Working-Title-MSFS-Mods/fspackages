@@ -4,7 +4,7 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
 
         this._instrumentID = instrumentID;
         this._halfPaneID = halfPaneID;
-        this._controllerID = `${instrumentID}-${halfPaneID}`;
+        this._settingModelID = `${instrumentID}-${halfPaneID}`;
 
         this._tempVector = new WT_GVector2(0, 0);
         this._lastMousePos = new WT_GVector2(0, 0);
@@ -12,7 +12,6 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCMapPointerControlHTMLElement} htmlElement
      * @type {WT_G3x5_TSCMapPointerControlHTMLElement}
      */
     get htmlElement() {
@@ -36,7 +35,7 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
         this.gps.setTopKnobText("Pan/Point Push: Pan Off");
         this.gps.setBottomKnobText("-Range+ Push: Pan Off");
 
-        WT_MapController.setSettingValue(this._controllerID, WT_MapPointerSettingGroup.SHOW_KEY, true);
+        WT_MapSettingModel.setSettingValue(this._settingModelID, WT_MapPointerSettingGroup.SHOW_KEY, true);
     }
 
     onExit() {
@@ -47,7 +46,7 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+ Push: Pan");
 
-        WT_MapController.setSettingValue(this._controllerID, WT_MapPointerSettingGroup.SHOW_KEY, false);
+        WT_MapSettingModel.setSettingValue(this._settingModelID, WT_MapPointerSettingGroup.SHOW_KEY, false);
     }
 
     onEvent(event) {
@@ -78,10 +77,10 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
         if (this._isMouseDown) {
             let delta = this._tempVector.set(event.clientX, event.clientY).subtract(this._lastMousePos);
             if (delta.length > 5) {
-                let deltaX = WT_MapController.getSettingValue(this._controllerID, WT_MapPointerSettingGroup.DELTA_X_KEY, 0) + delta.x;
-                let deltaY = WT_MapController.getSettingValue(this._controllerID, WT_MapPointerSettingGroup.DELTA_Y_KEY, 0) + delta.y;
-                WT_MapController.setSettingValue(this._controllerID, WT_MapPointerSettingGroup.DELTA_X_KEY, deltaX);
-                WT_MapController.setSettingValue(this._controllerID, WT_MapPointerSettingGroup.DELTA_Y_KEY, deltaY);
+                let deltaX = WT_MapSettingModel.getSettingValue(this._settingModelID, WT_MapPointerSettingGroup.DELTA_X_KEY, 0) + delta.x;
+                let deltaY = WT_MapSettingModel.getSettingValue(this._settingModelID, WT_MapPointerSettingGroup.DELTA_Y_KEY, 0) + delta.y;
+                WT_MapSettingModel.setSettingValue(this._settingModelID, WT_MapPointerSettingGroup.DELTA_X_KEY, deltaX);
+                WT_MapSettingModel.setSettingValue(this._settingModelID, WT_MapPointerSettingGroup.DELTA_Y_KEY, deltaY);
                 this._lastMousePos.set(event.clientX, event.clientY);
             }
         }
@@ -110,7 +109,6 @@ class WT_G3x5_TSCMapPointerControlHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLDivElement} touchPad
      * @type {HTMLDivElement}
      */
     get touchPad() {

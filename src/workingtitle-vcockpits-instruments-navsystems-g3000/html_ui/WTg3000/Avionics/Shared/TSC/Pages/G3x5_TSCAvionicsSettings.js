@@ -212,11 +212,10 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
 
     /**
      * @readonly
-     * @property {WT_G3x5_UnitsController} unitsController
-     * @type {WT_G3x5_UnitsController}
+     * @type {WT_G3x5_UnitsSettingModel}
      */
-    get unitsController() {
-        return this.parentPage.instrument.unitsController;
+    get unitsSettingModel() {
+        return this.parentPage.instrument.unitsSettingModel;
     }
 
     _initButtonRow(row, title, setting, valueTexts, unitSymbols) {
@@ -244,7 +243,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
 
     _initRows() {
         this._navAngleRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._navAngleRow, "Nav Angle", this.unitsController.navAngleSetting, ["Magnetic", "True"], this.unitsController.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._navAngleRow, "Nav Angle", this.unitsSettingModel.navAngleSetting, ["Magnetic", "True"], this.unitsSettingModel.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._magVarRow = new WT_G3x5_TSCUnitsDisplayRow();
         let airplane = this.parentPage.instrument.airplane;
@@ -259,13 +258,13 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
         });
 
         this._distanceSpeedRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._distanceSpeedRow, "Distance/Speed", this.unitsController.distanceSpeedSetting, ["Nautical", "Metric"], this.unitsController.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._distanceSpeedRow, "Distance/Speed", this.unitsSettingModel.distanceSpeedSetting, ["Nautical", "Metric"], this.unitsSettingModel.distanceSpeedSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._altitudeRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._altitudeRow, "Altitude/Vertical Speed", this.unitsController.altitudeSetting, ["Feet", "Meters"], this.unitsController.altitudeSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._altitudeRow, "Altitude/Vertical Speed", this.unitsSettingModel.altitudeSetting, ["Feet", "Meters"], this.unitsSettingModel.altitudeSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
         this._extTemperatureRow = new WT_G3x5_TSCUnitsButtonRow();
-        this._initButtonRow(this._extTemperatureRow, "External Temperature", this.unitsController.extTemperatureSetting, ["Celsius", "Fahrenheit"], this.unitsController.extTemperatureSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+        this._initButtonRow(this._extTemperatureRow, "External Temperature", this.unitsSettingModel.extTemperatureSetting, ["Celsius", "Fahrenheit"], this.unitsSettingModel.extTemperatureSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
     }
 
     onAttached() {
@@ -649,13 +648,13 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
         this._model.setDataFieldCount(WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT);
     }
 
-    _initController() {
-        this._controller = new WT_NavDataBarController(this._instrumentID, this._model);
+    _initSettingModel() {
+        this._settingModel = new WT_NavDataBarSettingModel(this._instrumentID, this._model);
         for (let i = 0; i < WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT; i++) {
-            this._controller.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
+            this._settingModel.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
         }
 
-        this._controller.update();
+        this._settingModel.update();
     }
 
     _initRows() {
@@ -665,7 +664,7 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
                 instrument: this.parentPage.instrument,
                 index: i,
                 model: this._model,
-                controller: this._controller,
+                controller: this._settingModel,
                 homePageGroup: this.parentPage.homePageGroup,
                 homePageName: this.parentPage.homePageName
             });
@@ -678,7 +677,7 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
         super.onAttached();
 
         this._initModel();
-        this._initController();
+        this._initSettingModel();
         this._initRows();
     }
 

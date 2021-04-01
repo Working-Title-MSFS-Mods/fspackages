@@ -2,15 +2,15 @@ class WT_G3x5_PFDAltimeter extends WT_G3x5_PFDElement {
     constructor() {
         super();
 
-        this._initController();
+        this._initSettingModel();
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController("PFD", null);
-        this._controller.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this._controller));
-        this._controller.addSetting(this._metersSetting = new WT_G3x5_PFDAltimeterMetersSetting(this._controller));
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel("PFD", null);
+        this._settingModel.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this._settingModel));
+        this._settingModel.addSetting(this._metersSetting = new WT_G3x5_PFDAltimeterMetersSetting(this._settingModel));
 
-        this._controller.init();
+        this._settingModel.init();
     }
 
     /**

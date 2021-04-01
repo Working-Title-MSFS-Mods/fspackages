@@ -1,6 +1,6 @@
-class WT_G3x5_UnitsController extends WT_DataStoreController {
+class WT_G3x5_UnitsSettingModel extends WT_DataStoreSettingModel {
     constructor() {
-        super("ALL", null);
+        super("ALL");
 
         this._initSettings();
     }
@@ -47,12 +47,12 @@ class WT_G3x5_UnitsController extends WT_DataStoreController {
 
 class WT_G3x5_UnitsSetting extends WT_DataStoreSetting {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} model
      * @param {String} key
      * @param {Number} defaultValue
      */
-    constructor(controller, key, defaultValue) {
-        super(controller, key, defaultValue, false, true);
+    constructor(model, key, defaultValue) {
+        super(model, key, defaultValue, false, true);
     }
 
     _getAllUnitsHelper(valueEnum, categories) {
@@ -73,8 +73,8 @@ class WT_G3x5_UnitsSetting extends WT_DataStoreSetting {
 }
 
 class WT_G3x5_NavAngleUnitsSetting extends WT_G3x5_UnitsSetting {
-    constructor(controller, defaultValue = WT_G3x5_NavAngleUnitsSetting.DEFAULT, key = WT_G3x5_NavAngleUnitsSetting.KEY) {
-        super(controller, key, defaultValue);
+    constructor(model, defaultValue = WT_G3x5_NavAngleUnitsSetting.DEFAULT, key = WT_G3x5_NavAngleUnitsSetting.KEY) {
+        super(model, key, defaultValue);
 
         this._allUnits = this._getAllUnitsHelper(WT_G3x5_NavAngleUnitsSetting.Value, [WT_G3x5_NavAngleUnitsSetting.UNITS.navAngle]);
     }
@@ -105,8 +105,8 @@ WT_G3x5_NavAngleUnitsSetting.KEY = "WT_Units_NavAngle";
 WT_G3x5_NavAngleUnitsSetting.DEFAULT = WT_G3x5_NavAngleUnitsSetting.Value.MAGNETIC;
 
 class WT_G3x5_DistanceSpeedUnitsSetting extends WT_G3x5_UnitsSetting {
-    constructor(controller, defaultOption = WT_G3x5_DistanceSpeedUnitsSetting.DEFAULT, key = WT_G3x5_DistanceSpeedUnitsSetting.KEY) {
-        super(controller, key, defaultOption);
+    constructor(model, defaultOption = WT_G3x5_DistanceSpeedUnitsSetting.DEFAULT, key = WT_G3x5_DistanceSpeedUnitsSetting.KEY) {
+        super(model, key, defaultOption);
 
         this._allUnits = this._getAllUnitsHelper(WT_G3x5_DistanceSpeedUnitsSetting.Value, [WT_G3x5_DistanceSpeedUnitsSetting.UNITS.distance, WT_G3x5_DistanceSpeedUnitsSetting.UNITS.speed]);
     }
@@ -142,8 +142,8 @@ WT_G3x5_DistanceSpeedUnitsSetting.KEY = "WT_Units_DistanceSpeed";
 WT_G3x5_DistanceSpeedUnitsSetting.DEFAULT = WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL;
 
 class WT_G3x5_AltitudeUnitsSetting extends WT_G3x5_UnitsSetting {
-    constructor(controller, defaultOption = WT_G3x5_AltitudeUnitsSetting.DEFAULT, key = WT_G3x5_AltitudeUnitsSetting.KEY) {
-        super(controller, key, defaultOption);
+    constructor(model, defaultOption = WT_G3x5_AltitudeUnitsSetting.DEFAULT, key = WT_G3x5_AltitudeUnitsSetting.KEY) {
+        super(model, key, defaultOption);
 
         this._allUnits = this._getAllUnitsHelper(WT_G3x5_AltitudeUnitsSetting.Value, [WT_G3x5_AltitudeUnitsSetting.UNITS.altitude, WT_G3x5_AltitudeUnitsSetting.UNITS.verticalSpeed]);
     }
@@ -179,8 +179,8 @@ WT_G3x5_AltitudeUnitsSetting.KEY = "WT_Units_Altitude";
 WT_G3x5_AltitudeUnitsSetting.DEFAULT = WT_G3x5_AltitudeUnitsSetting.Value.FEET;
 
 class WT_G3x5_ExtTemperatureUnitsSetting extends WT_G3x5_UnitsSetting {
-    constructor(controller, defaultValue = WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT, key = WT_G3x5_ExtTemperatureUnitsSetting.KEY) {
-        super(controller, key, defaultValue);
+    constructor(model, defaultValue = WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT, key = WT_G3x5_ExtTemperatureUnitsSetting.KEY) {
+        super(model, key, defaultValue);
 
         this._allUnits = this._getAllUnitsHelper(WT_G3x5_ExtTemperatureUnitsSetting.Value, [WT_G3x5_ExtTemperatureUnitsSetting.UNITS.temperature]);
     }
@@ -215,17 +215,17 @@ WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT = WT_G3x5_ExtTemperatureUnitsSetting.
  */
 class WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(controller) {
-        this._controller = controller;
+    constructor(unitsSettingModel) {
+        this._unitsSettingModel = unitsSettingModel;
     }
 
     _initListeners() {
-        this.controller.navAngleSetting.addListener(this._onNavAngleSettingChanged.bind(this));
-        this.controller.distanceSpeedSetting.addListener(this._onDistanceSpeedSettingChanged.bind(this));
-        this.controller.altitudeSetting.addListener(this._onAltitudeSettingChanged.bind(this));
-        this.controller.extTemperatureSetting.addListener(this._onExtTemperatureSettingChanged.bind(this));
+        this.unitsSettingModel.navAngleSetting.addListener(this._onNavAngleSettingChanged.bind(this));
+        this.unitsSettingModel.distanceSpeedSetting.addListener(this._onDistanceSpeedSettingChanged.bind(this));
+        this.unitsSettingModel.altitudeSetting.addListener(this._onAltitudeSettingChanged.bind(this));
+        this.unitsSettingModel.extTemperatureSetting.addListener(this._onExtTemperatureSettingChanged.bind(this));
     }
 
     _initModel() {
@@ -239,10 +239,10 @@ class WT_G3x5_UnitsControllerModelAdapter {
 
     /**
      * @readonly
-     * @type {WT_G3x5_UnitsController}
+     * @type {WT_G3x5_UnitsSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get unitsSettingModel() {
+        return this._unitsSettingModel;
     }
 
     _updateBearing() {
@@ -308,11 +308,11 @@ class WT_G3x5_UnitsControllerModelAdapter {
 
 class WT_G3x5_UnitsControllerMapModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_MapModel} mapModel
      */
-    constructor(controller, mapModel) {
-        super(controller);
+    constructor(unitsSettingModel, mapModel) {
+        super(unitsSettingModel);
 
         this._mapModel = mapModel;
         this._initListeners();
@@ -328,25 +328,25 @@ class WT_G3x5_UnitsControllerMapModelAdapter extends WT_G3x5_UnitsControllerMode
     }
 
     _updateBearing() {
-        this.mapModel.units.bearing = this.controller.navAngleSetting.getNavAngleUnit();
+        this.mapModel.units.bearing = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
     }
 
     _updateDistance() {
-        this.mapModel.units.distance = this.controller.distanceSpeedSetting.getDistanceUnit();
+        this.mapModel.units.distance = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
     }
 
     _updateSpeed() {
-        this.mapModel.units.speed = this.controller.distanceSpeedSetting.getSpeedUnit();
+        this.mapModel.units.speed = this.unitsSettingModel.distanceSpeedSetting.getSpeedUnit();
     }
 }
 
 class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_NavDataBarModel} navDataBarModel
      */
-    constructor(controller, navDataBarModel) {
-        super(controller);
+    constructor(unitsSettingModel, navDataBarModel) {
+        super(unitsSettingModel);
 
         this._navDataBarModel = navDataBarModel;
         this._initListeners();
@@ -362,21 +362,21 @@ class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsControl
     }
 
     _updateBearing() {
-        let unit = this.controller.navAngleSetting.getNavAngleUnit();
+        let unit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
         this.navDataBarModel.getNavDataInfo("BRG").setDisplayUnit(unit);
         this.navDataBarModel.getNavDataInfo("DTK").setDisplayUnit(unit);
         this.navDataBarModel.getNavDataInfo("TRK").setDisplayUnit(unit);
     }
 
     _updateDistance() {
-        let unit = this.controller.distanceSpeedSetting.getDistanceUnit();
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
         this.navDataBarModel.getNavDataInfo("DIS").setDisplayUnit(unit);
         this.navDataBarModel.getNavDataInfo("DTG").setDisplayUnit(unit);
         this.navDataBarModel.getNavDataInfo("XTK").setDisplayUnit(unit);
     }
 
     _updateSpeed() {
-        let unit = this.controller.distanceSpeedSetting.getSpeedUnit();
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getSpeedUnit();
         this.navDataBarModel.getNavDataInfo("GS").setDisplayUnit(unit);
         this.navDataBarModel.getNavDataInfo("TAS").setDisplayUnit(unit);
     }

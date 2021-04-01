@@ -12,7 +12,7 @@ class WT_G3000_PFDNavDMEInfo extends WT_G3x5_PFDElement {
         let htmlElement = new WT_G3000_PFDNavDMEInfoHTMLElement();
         htmlElement.setContext({
             airplane: this.instrument.airplane,
-            unitsController: this.instrument.unitsController
+            unitsSettingModel: this.instrument.unitsSettingModel
         });
         return htmlElement;
     }

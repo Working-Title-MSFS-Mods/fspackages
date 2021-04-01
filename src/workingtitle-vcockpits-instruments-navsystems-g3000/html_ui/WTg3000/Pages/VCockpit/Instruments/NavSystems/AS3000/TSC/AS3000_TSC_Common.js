@@ -54,21 +54,21 @@ class AS3000_TSC extends NavSystemTouch {
         this.history = [];
         this.initDuration = 4000;
 
-        this._initUnitsController();
+        this._initUnitsSettingModel();
 
-        this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
-        this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
+        this._mfdMainPaneSettings = {settingModel: new WT_DataStoreSettingModel("MFD", null)};
+        this._mfdMainPaneSettings.settingModel.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.settingModel));
         this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
 
-        this._mfdLeftPaneSettings = {controller: new WT_DataStoreController(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
-        this._mfdRightPaneSettings = {controller: new WT_DataStoreController(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
+        this._mfdLeftPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
+        this._mfdRightPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
         this._initHalfPaneController(this._mfdLeftPaneSettings);
         this._initHalfPaneController(this._mfdRightPaneSettings);
 
         this._mfdLeftPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
         this._mfdRightPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
 
-        this._mfdMainPaneSettings.controller.update();
+        this._mfdMainPaneSettings.settingModel.update();
 
         this._initLightingControl();
 
@@ -76,15 +76,15 @@ class AS3000_TSC extends NavSystemTouch {
         this._mfdPaneControlID;
     }
 
-    _initUnitsController() {
-        this.unitsController.init();
+    _initUnitsSettingModel() {
+        this.unitsSettingModel.init();
     }
 
     _initHalfPaneController(paneSettings) {
-        paneSettings.controller.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.controller));
-        paneSettings.controller.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.controller));
-        paneSettings.controller.addSetting(paneSettings.waypoint = new WT_G3x5_MFDHalfPaneWaypointSetting(paneSettings.controller));
-        paneSettings.controller.update();
+        paneSettings.settingModel.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.settingModel));
+        paneSettings.settingModel.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.settingModel));
+        paneSettings.settingModel.addSetting(paneSettings.waypoint = new WT_G3x5_MFDHalfPaneWaypointSetting(paneSettings.settingModel));
+        paneSettings.settingModel.update();
     }
 
     _initLightingControl() {
@@ -373,17 +373,17 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _changeMFDMapRange(delta) {
-        let controllerID = `MFD-${this.getSelectedMFDPane()}`;
-        let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
+        let settingModelID = `MFD-${this.getSelectedMFDPane()}`;
+        let currentIndex = WT_MapSettingModel.getSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
+        WT_MapSettingModel.setSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
     _changePFDMapRange(delta) {
-        let controllerID = "PFD";
-        let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
+        let settingModelID = "PFD";
+        let currentIndex = WT_MapSettingModel.getSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
+        WT_MapSettingModel.setSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
     _handleZoomEventPFD(event) {

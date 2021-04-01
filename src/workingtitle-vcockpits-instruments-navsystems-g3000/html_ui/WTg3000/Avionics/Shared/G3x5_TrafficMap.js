@@ -6,7 +6,7 @@ class WT_G3x5_TrafficMap {
      */
     constructor(instrumentID, airplane, trafficSystem) {
         this._instrumentID = instrumentID;
-        this._controllerID = `${instrumentID}-TrafficMap`;
+        this._settingModelID = `${instrumentID}-${WT_G3x5_TrafficMap.CONTROLLER_ID_SUFFIX}`;
 
         this._airplane = airplane;
         this._trafficSystem = trafficSystem;
@@ -14,7 +14,6 @@ class WT_G3x5_TrafficMap {
 
     /**
      * @readonly
-     * @property {String} instrumentID
      * @type {String}
      */
     get instrumentID() {
@@ -23,16 +22,15 @@ class WT_G3x5_TrafficMap {
 
     /**
      * @readonly
-     * @property {String} controllerID
      * @type {String}
      */
-    get controllerID() {
-        return this._controllerID;
+    get settingModelID() {
+        return this._settingModelID;
     }
 
     /**
+     * The model associated with this map.
      * @readonly
-     * @property {WT_MapModel} model - the model associated with this map.
      * @type {WT_MapModel}
      */
     get model() {
@@ -40,8 +38,8 @@ class WT_G3x5_TrafficMap {
     }
 
     /**
+     * The view associated with this map.
      * @readonly
-     * @property {WT_MapView} view - the view associated with this map.
      * @type {WT_MapView}
      */
     get view() {
@@ -49,12 +47,12 @@ class WT_G3x5_TrafficMap {
     }
 
     /**
+     * The setting model associated with this map.
      * @readonly
-     * @property {WT_MapController} controller - the controller associated with this map.
-     * @type {WT_MapController}
+     * @type {WT_MapSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     _initModel() {
@@ -75,22 +73,22 @@ class WT_G3x5_TrafficMap {
         this.view.addLayer(new WT_MapViewMiniCompassLayer());
     }
 
-    _initController() {
-        this.controller.addSetting(this._rangeTargetController = new WT_G3x5_TrafficMapRangeTargetController(this.controller));
+    _initSettingModel() {
+        this.settingModel.addSetting(this._rangeTargetController = new WT_G3x5_TrafficMapRangeTargetController(this.settingModel));
 
-        this.controller.init();
-        this.controller.update();
+        this.settingModel.init();
+        this.settingModel.update();
     }
 
     init(viewElement) {
         this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
-        this._controller = new WT_MapController(this.controllerID, this.model, this.view);
+        this._settingModel = new WT_MapSettingModel(this.settingModelID, this.model, this.view);
 
         this._initModel();
         this._initView();
-        this._initController();
+        this._initSettingModel();
     }
 
     sleep() {
@@ -104,6 +102,7 @@ class WT_G3x5_TrafficMap {
         this.view.update();
     }
 }
+WT_G3x5_TrafficMap.CONTROLLER_ID_SUFFIX = "TrafficMap";
 
 WT_G3x5_TrafficMap.MAP_RANGE_LEVELS =
     [750, 1500].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
@@ -460,19 +459,19 @@ class WT_G3x5_MapViewTrafficRangeLabel extends WT_MapViewRingLabel {
 class WT_G3x5_TrafficMapRangeTargetController extends WT_MapSettingGroup {
     /**
      *
-     * @param {WT_MapController} controller
+     * @param {WT_MapSettingModel} model
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      */
-    constructor(controller, icaoWaypointFactory) {
-        super(controller, [], false, false);
+    constructor(model, icaoWaypointFactory) {
+        super(model, [], false, false);
 
         this._icaoWaypointFactory = icaoWaypointFactory;
 
-        this._rangeSetting = new WT_G3x5_TrafficMapRangeSetting(controller, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS, WT_G3x5_TrafficMap.MAP_RANGE_DEFAULT);
+        this._rangeSetting = new WT_G3x5_TrafficMapRangeSetting(model, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS, WT_G3x5_TrafficMap.MAP_RANGE_DEFAULT);
         this.addSetting(this._rangeSetting);
 
-        controller.view.setTargetOffsetHandler(this);
-        controller.view.setRangeInterpreter(this);
+        model.mapView.setTargetOffsetHandler(this);
+        model.mapView.setRangeInterpreter(this);
 
         this._target = new WT_GeoPoint(0, 0);
         /**
@@ -513,15 +512,15 @@ class WT_G3x5_TrafficMapRangeTargetController extends WT_MapSettingGroup {
     }
 
     _updateTarget() {
-        this.model.target = this.model.airplane.navigation.position(this._target);
+        this.mapModel.target = this.mapModel.airplane.navigation.position(this._target);
     }
 
     _updateRotation() {
-        this.model.rotation = -this.model.airplane.navigation.headingTrue();
+        this.mapModel.rotation = -this.mapModel.airplane.navigation.headingTrue();
     }
 
     update() {
-        let aspectRatio = this.view.projection.viewWidth / this.view.projection.viewHeight;
+        let aspectRatio = this.mapView.projection.viewWidth / this.mapView.projection.viewHeight;
         if (aspectRatio !== this._aspectRatio) {
             this._aspectRatio = aspectRatio;
         }
@@ -535,12 +534,12 @@ class WT_G3x5_TrafficMapRangeTargetController extends WT_MapSettingGroup {
 class WT_G3x5_TrafficMapRangeSetting extends WT_MapRangeSetting {
     /**
      *
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {WT_NumberUnit[]} ranges - an array of possible range values of the new setting.
      * @param {WT_NumberUnit} defaultRange - the default range of the new setting.
      */
-    constructor(controller, ranges, defaultRange) {
-        super(controller, ranges, defaultRange, false, false);
+    constructor(model, ranges, defaultRange) {
+        super(model, ranges, defaultRange, false, false);
     }
 
     getInnerRange() {
@@ -551,8 +550,8 @@ class WT_G3x5_TrafficMapRangeSetting extends WT_MapRangeSetting {
     update() {
         super.update();
 
-        this.model.traffic.outerRange = this.getRange();
-        this.model.traffic.innerRange = this.getInnerRange();
+        this.mapModel.traffic.outerRange = this.getRange();
+        this.mapModel.traffic.innerRange = this.getInnerRange();
     }
 }
 WT_G3x5_TrafficMapRangeSetting.ZERO_RANGE = WT_Unit.NMILE.createNumber(0);

@@ -1,12 +1,12 @@
 class WT_G3x5_PFDBearingInfoContainer {
-    constructor(airplane, unitsController) {
-        this._models = this._createModels(airplane, unitsController);
+    constructor(airplane, unitsSettingModel) {
+        this._models = this._createModels(airplane, unitsSettingModel);
     }
 
-    _createModels(airplane, unitsController) {
+    _createModels(airplane, unitsSettingModel) {
         let models = [];
-        models[WT_G3x5_PFDBearingInfoContainer.Slot.ONE] = new WT_G3x5_PFDBearingInfoModel(airplane, WT_G3x5_PFDBearingInfoContainer.Slot.ONE, unitsController);
-        models[WT_G3x5_PFDBearingInfoContainer.Slot.TWO] = new WT_G3x5_PFDBearingInfoModel(airplane, WT_G3x5_PFDBearingInfoContainer.Slot.TWO, unitsController);
+        models[WT_G3x5_PFDBearingInfoContainer.Slot.ONE] = new WT_G3x5_PFDBearingInfoModel(airplane, WT_G3x5_PFDBearingInfoContainer.Slot.ONE, unitsSettingModel);
+        models[WT_G3x5_PFDBearingInfoContainer.Slot.TWO] = new WT_G3x5_PFDBearingInfoModel(airplane, WT_G3x5_PFDBearingInfoContainer.Slot.TWO, unitsSettingModel);
         return models;
     }
 
@@ -32,9 +32,9 @@ class WT_G3x5_PFDBearingInfoModel {
      *
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_G3x5_PFDBearingInfoContainer.Slot} slot
-     * @param {WT_G3x5_UnitsController} unitsController
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(airplane, slot, unitsController) {
+    constructor(airplane, slot, unitsSettingModel) {
         this._airplane = airplane;
         this._slot = slot;
 
@@ -45,7 +45,7 @@ class WT_G3x5_PFDBearingInfoModel {
             updateValue: this._updateBearing.bind(this)
         });
 
-        this._unitsControllerAdapter = new WT_G3x5_UnitsControllerPFDBearingInfoModelAdapter(unitsController, this);
+        this._unitsControllerAdapter = new WT_G3x5_UnitsSettingsModelPFDBearingInfoModelAdapter(unitsSettingModel, this);
 
         this._initAdapters();
     }
@@ -291,13 +291,13 @@ class WT_G3x5_PFDBearingInfoModelADFAdapter extends WT_G3x5_PFDBearingInfoModelS
     }
 }
 
-class WT_G3x5_UnitsControllerPFDBearingInfoModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsSettingsModelPFDBearingInfoModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_G3x5_PFDBearingInfoModel} bearingInfoModel
      */
-    constructor(controller, bearingInfoModel) {
-        super(controller);
+    constructor(unitsSettingModel, bearingInfoModel) {
+        super(unitsSettingModel);
 
         this._bearingInfoModel = bearingInfoModel;
         this._initListeners();
@@ -314,12 +314,12 @@ class WT_G3x5_UnitsControllerPFDBearingInfoModelAdapter extends WT_G3x5_UnitsCon
     }
 
     _updateBearing() {
-        let unit = this.controller.navAngleSetting.getNavAngleUnit();
+        let unit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
         this.bearingInfoModel.getBearing().setUnit(unit);
     }
 
     _updateDistance() {
-        let unit = this.controller.distanceSpeedSetting.getDistanceUnit();
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
         this.bearingInfoModel.getDistance().setUnit(unit);
     }
 }

@@ -1,25 +1,25 @@
 class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, controllerID) {
+    constructor(homePageGroup, homePageName, settingModelID) {
         super(homePageGroup, homePageName);
 
-        this._initController(controllerID);
+        this._initSettingModel(settingModelID);
     }
 
-    _initController(controllerID) {
-        this._controller = new WT_DataStoreController(controllerID, null);
-        this.controller.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this.controller));
-        this.controller.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this.controller));
-        this.controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this.controller));
-        this.controller.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this.controller));
-        this.controller.addSetting(this._altimeterMetersSetting = new WT_G3x5_PFDAltimeterMetersSetting(this.controller));
+    _initSettingModel(settingModelID) {
+        this._settingModel = new WT_DataStoreSettingModel(settingModelID, null);
+        this.settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this.settingModel));
+        this.settingModel.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this.settingModel));
+        this.settingModel.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this.settingModel));
+        this.settingModel.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this.settingModel));
+        this.settingModel.addSetting(this._altimeterMetersSetting = new WT_G3x5_PFDAltimeterMetersSetting(this.settingModel));
     }
 
     /**
      * @readonly
-     * @type {WT_DataStoreController}
+     * @type {WT_DataStoreSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     /**

@@ -1,10 +1,10 @@
 class WT_G5000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
     _initInfoCells() {
-        this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsController));
-        this.addCell(new WT_G5000_PFDBottomInfoWindDataCell(this.instrument.airplane, this.instrument.unitsController));
+        this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsSettingModel));
+        this.addCell(new WT_G5000_PFDBottomInfoWindDataCell(this.instrument.airplane, this.instrument.unitsSettingModel));
         //this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
-        this.addCell(new WT_G5000_PFDBottomInfoNAVDMECell(this.instrument.airplane, this.instrument.unitsController));
-        this.addCell(new WT_G5000_PFDBottomInfoNavStatusCell(this.instrument.airplane, this.instrument.unitsController));
+        this.addCell(new WT_G5000_PFDBottomInfoNAVDMECell(this.instrument.airplane, this.instrument.unitsSettingModel));
+        this.addCell(new WT_G5000_PFDBottomInfoNavStatusCell(this.instrument.airplane, this.instrument.unitsSettingModel));
         this.addCell(new WT_G5000_PFDBottomInfoBearingContainerCell(this._bearingInfos));
         this.addCell(new WT_G3x5_PFDBottomInfoTimeCell());
     }
@@ -156,7 +156,7 @@ customElements.define(WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.NAME, WT_G5
 
 class WT_G5000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} controller
      * @param {WT_NavDataBarModel} navDataBarModel
      */
     constructor(controller, disInfo, eteInfo) {
@@ -169,7 +169,7 @@ class WT_G5000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerMo
     }
 
     _updateDistance() {
-        let unit = this.controller.distanceSpeedSetting.getDistanceUnit();
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
         this._disInfo.setDisplayUnit(unit);
     }
 }
@@ -471,7 +471,7 @@ class WT_G5000_PFDBottomInfoWindDataCell extends WT_G3x5_PFDBottomInfoCell {
     constructor(airplane, unitsController) {
         super();
 
-        this._initController();
+        this._initSettingModel();
         this._model = this._createModel(airplane, unitsController);
         this._setHTMLElementContext();
     }
@@ -490,10 +490,10 @@ class WT_G5000_PFDBottomInfoWindDataCell extends WT_G3x5_PFDBottomInfoCell {
         });
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController("PFD", null);
-        this._controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._controller));
-        this._controller.init();
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel("PFD", null);
+        this._settingModel.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._settingModel));
+        this._settingModel.init();
     }
 
     update() {

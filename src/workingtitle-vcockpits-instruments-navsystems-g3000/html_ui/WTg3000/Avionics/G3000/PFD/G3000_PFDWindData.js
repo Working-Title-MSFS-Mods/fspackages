@@ -2,13 +2,13 @@ class WT_G3000_PFDWindData extends WT_G3x5_PFDElement {
     constructor() {
         super();
 
-        this._initController();
+        this._initSettingModel();
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController("PFD", null);
-        this._controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._controller));
-        this._controller.init();
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel("PFD");
+        this._settingModel.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this._settingModel));
+        this._settingModel.init();
     }
 
     /**
@@ -30,7 +30,7 @@ class WT_G3000_PFDWindData extends WT_G3x5_PFDElement {
     }
 
     _createModel() {
-        return new WT_G3x5_PFDWindDataModel(this.instrument.airplane, this.windModeSetting, this.instrument.unitsController);
+        return new WT_G3x5_PFDWindDataModel(this.instrument.airplane, this.windModeSetting, this.instrument.unitsSettingModel);
     }
 
     _createHTMLElement() {

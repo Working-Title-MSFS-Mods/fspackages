@@ -29,8 +29,8 @@ class WT_G3x5_PFDWindDataModel {
         this._modeSetting.addListener(this._onModeSettingChanged.bind(this));
     }
 
-    _initUnitsControllerAdapter(unitsController) {
-        this._unitsControllerAdapter = new WT_G3x5_UnitsControllerPFDWindDataModelAdapter(unitsController, this);
+    _initUnitsControllerAdapter(unitsSettingModel) {
+        this._unitsControllerAdapter = new WT_G3x5_UnitsSettingModelPFDWindDataModelAdapter(unitsSettingModel, this);
     }
 
     /**
@@ -152,13 +152,13 @@ WT_G3x5_PFDWindDataModel.Mode = {
     NO_DATA: 4
 };
 
-class WT_G3x5_UnitsControllerPFDWindDataModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsSettingModelPFDWindDataModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_G3x5_PFDWindDataModel} windDataModel
      */
-     constructor(controller, windDataModel) {
-        super(controller);
+     constructor(unitsSettingModel, windDataModel) {
+        super(unitsSettingModel);
 
         this._windDataModel = windDataModel;
         this._initListeners();
@@ -174,12 +174,12 @@ class WT_G3x5_UnitsControllerPFDWindDataModelAdapter extends WT_G3x5_UnitsContro
     }
 
     _updateBearing() {
-        let unit = this.controller.navAngleSetting.getNavAngleUnit();
+        let unit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
         this.windDataModel.setWindDirectionUnit(unit);
     }
 
     _updateSpeed() {
-        let unit = this.controller.distanceSpeedSetting.getSpeedUnit();
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getSpeedUnit();
         this.windDataModel.setWindSpeedUnit(unit);
     }
 }
