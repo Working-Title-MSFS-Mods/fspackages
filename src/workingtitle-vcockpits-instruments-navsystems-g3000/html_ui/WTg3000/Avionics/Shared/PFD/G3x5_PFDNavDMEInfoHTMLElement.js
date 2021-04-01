@@ -44,7 +44,7 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
 
     /**
      *
-     * @param {{airplane:WT_PlayerAirplane, unitsController:WT_G3x5_UnitsController}} context
+     * @param {{airplane:WT_PlayerAirplane, unitsSettingModel:WT_G3x5_UnitsSettingModel}} context
      */
     setContext(context) {
         this._context = context;
@@ -98,9 +98,9 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
         let dme = nav.dme(this._tempNM);
         let text;
         if (dme) {
-            text = this._distanceFormatter.getFormattedHTML(dme, this._context.unitsController.distanceSpeedSetting.getDistanceUnit());
+            text = this._distanceFormatter.getFormattedHTML(dme, this._context.unitsSettingModel.distanceSpeedSetting.getDistanceUnit());
         } else {
-            text = `___${this._distanceFormatter.getFormattedUnitHTML(this._tempNM, this._context.unitsController.distanceSpeedSetting.getDistanceUnit())}`;
+            text = `___${this._distanceFormatter.getFormattedUnitHTML(this._tempNM, this._context.unitsSettingModel.distanceSpeedSetting.getDistanceUnit())}`;
         }
         this._dme.innerHTML = text;
     }

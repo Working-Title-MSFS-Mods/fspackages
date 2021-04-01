@@ -1,7 +1,7 @@
 class WT_G3x5_WaypointInfo {
     constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers) {
         this._instrumentID = instrumentID;
-        this._controllerID = `${instrumentID}-WaypointInfo`;
+        this._settingModelID = `${instrumentID}-WaypointInfo`;
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
@@ -10,7 +10,6 @@ class WT_G3x5_WaypointInfo {
 
     /**
      * @readonly
-     * @property {String} instrumentID
      * @type {String}
      */
     get instrumentID() {
@@ -19,16 +18,15 @@ class WT_G3x5_WaypointInfo {
 
     /**
      * @readonly
-     * @property {String} controllerID
      * @type {String}
      */
     get controllerID() {
-        return this._controllerID;
+        return this._settingModelID;
     }
 
     /**
+     * The model associated with this map.
      * @readonly
-     * @property {WT_MapModel} model - the model associated with this map.
      * @type {WT_MapModel}
      */
     get model() {
@@ -36,8 +34,8 @@ class WT_G3x5_WaypointInfo {
     }
 
     /**
+     * The view associated with this map.
      * @readonly
-     * @property {WT_MapView} view - the view associated with this map.
      * @type {WT_MapView}
      */
     get view() {
@@ -45,12 +43,12 @@ class WT_G3x5_WaypointInfo {
     }
 
     /**
+     * The setting model associated with this map.
      * @readonly
-     * @property {WT_MapController} controller - the controller associated with this map.
-     * @type {WT_MapController}
+     * @type {WT_MapSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     /**
@@ -102,22 +100,22 @@ class WT_G3x5_WaypointInfo {
         this.view.addLayer(new WT_MapViewMiniCompassLayer());
     }
 
-    _initController() {
-        this.controller.addSetting(this._rangeTargetController = new WT_G3x5_WaypointInfoRangeTargetController(this.controller));
+    _initSettingModel() {
+        this.settingModel.addSetting(this._rangeTargetController = new WT_G3x5_WaypointInfoRangeTargetController(this.settingModel));
 
-        this.controller.init();
-        this.controller.update();
+        this.settingModel.init();
+        this.settingModel.update();
     }
 
     init(viewElement) {
         this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
-        this._controller = new WT_MapController(this.controllerID, this.model, this.view);
+        this._settingModel = new WT_MapSettingModel(this.controllerID, this.model, this.view);
 
         this._initModel();
         this._initView();
-        this._initController();
+        this._initSettingModel();
     }
 
     sleep() {
@@ -152,19 +150,19 @@ WT_G3x5_WaypointInfo.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
 class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
     /**
      *
-     * @param {WT_MapController} controller
+     * @param {WT_MapSettingModel} settingModel
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      */
-    constructor(controller, icaoWaypointFactory) {
-        super(controller, [], false, false);
+    constructor(settingModel, icaoWaypointFactory) {
+        super(settingModel, [], false, false);
 
         this._icaoWaypointFactory = icaoWaypointFactory;
 
-        this._rangeSetting = new WT_MapRangeSetting(controller, WT_G3x5_WaypointInfo.MAP_RANGE_LEVELS, WT_G3x5_WaypointInfo.MAP_RANGE_DEFAULT, false, false);
+        this._rangeSetting = new WT_MapRangeSetting(settingModel, WT_G3x5_WaypointInfo.MAP_RANGE_LEVELS, WT_G3x5_WaypointInfo.MAP_RANGE_DEFAULT, false, false);
         this.addSetting(this._rangeSetting);
 
-        controller.view.setTargetOffsetHandler(this);
-        controller.view.setRangeInterpreter(this);
+        settingModel.mapView.setTargetOffsetHandler(this);
+        settingModel.mapView.setRangeInterpreter(this);
 
         this._target = new WT_GeoPoint(0, 0);
         /**
@@ -203,7 +201,7 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
     }
 
     _updateRange() {
-        this.model.range = this._rangeSetting.getRange();
+        this.mapModel.range = this._rangeSetting.getRange();
     }
 
     /**
@@ -241,12 +239,12 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
             this._target.set(0, 0);
         }
         this._setInitialRange(waypoint);
-        this.model.waypointHighlight.waypoint = waypoint;
+        this.mapModel.waypointHighlight.waypoint = waypoint;
         this._waypoint = waypoint;
     }
 
     _updateWaypoint() {
-        let waypoint = this.model.waypointInfo.waypoint;
+        let waypoint = this.mapModel.waypointInfo.waypoint;
         if (this._waypoint === null && waypoint === null || (this._waypoint && waypoint && this._waypoint.uniqueID === waypoint.uniqueID)) {
             return;
         }
@@ -255,11 +253,11 @@ class WT_G3x5_WaypointInfoRangeTargetController extends WT_MapSettingGroup {
     }
 
     _updateTarget() {
-        this.model.target = this._target;
+        this.mapModel.target = this._target;
     }
 
     update() {
-        let aspectRatio = this.view.projection.viewWidth / this.view.projection.viewHeight;
+        let aspectRatio = this.mapView.projection.viewWidth / this.mapView.projection.viewHeight;
         if (aspectRatio !== this._aspectRatio) {
             this._aspectRatio = aspectRatio;
             this._setInitialRange(this._waypoint);

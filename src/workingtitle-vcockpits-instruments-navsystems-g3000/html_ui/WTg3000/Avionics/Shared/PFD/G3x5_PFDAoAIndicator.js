@@ -2,14 +2,14 @@ class WT_G3x5_PFDAoAIndicator extends WT_G3x5_PFDElement {
     constructor() {
         super();
 
-        this._initController();
+        this._initSettingModel();
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController("PFD", null);
-        this._controller.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this._controller));
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel("PFD", null);
+        this._settingModel.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this._settingModel));
 
-        this._controller.init();
+        this._settingModel.init();
         this._mode = this.aoaModeSetting.getValue();
     }
 

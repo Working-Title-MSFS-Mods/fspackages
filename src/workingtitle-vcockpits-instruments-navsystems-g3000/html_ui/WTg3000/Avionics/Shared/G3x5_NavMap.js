@@ -6,7 +6,7 @@ class WT_G3x5_NavMap {
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {{{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}} icaoSearchers
      * @param {WT_FlightPlanManager} flightPlanManager
-     * @param {WT_G3x5_UnitsController} unitsController
+     * @param {WT_G3x5_UnitsSettingModel} unitsController
      * @param {WT_CitySearchHandler} citySearcher
      * @param {WT_MapViewBorderData} borderData
      * @param {WT_MapViewRoadFeatureCollection} roadFeatureData
@@ -58,12 +58,12 @@ class WT_G3x5_NavMap {
     }
 
     /**
-     * The controller associated with this map.
+     * The setting model associated with this map.
      * @readonly
-     * @type {WT_MapController}
+     * @type {WT_MapSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     /**
@@ -164,17 +164,17 @@ class WT_G3x5_NavMap {
     }
 
     _initController() {
-        this.controller.addSetting(this._rangeTargetRotationController = new WT_G3000MapRangeTargetRotationController(this.controller));
-        this.controller.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.controller));
-        this.controller.addSetting(new WT_MapTrackVectorSettingGroup(this.controller));
-        this.controller.addSetting(new WT_MapFuelRingSettingGroup(this.controller));
-        this.controller.addSetting(new WT_MapAltitudeInterceptSetting(this.controller));
+        this.settingModel.addSetting(this._rangeTargetRotationController = new WT_G3x5_MapRangeTargetRotationController(this.settingModel));
+        this.settingModel.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.settingModel));
+        this.settingModel.addSetting(new WT_MapTrackVectorSettingGroup(this.settingModel));
+        this.settingModel.addSetting(new WT_MapFuelRingSettingGroup(this.settingModel));
+        this.settingModel.addSetting(new WT_MapAltitudeInterceptSetting(this.settingModel));
 
         if (this._layerOptions.windData) {
-            this.controller.addSetting(new WT_MapWindDataShowSetting(this.controller));
+            this.settingModel.addSetting(new WT_MapWindDataShowSetting(this.settingModel));
         }
 
-        this._dcltrSetting = new WT_MapDCLTRSetting(this.controller, [
+        this._dcltrSetting = new WT_MapDCLTRSetting(this.settingModel, [
             // OFF
             {},
 
@@ -209,51 +209,51 @@ class WT_G3x5_NavMap {
                 airport: true
             }
         ]);
-        this.controller.addSetting(this._dcltrSetting);
+        this.settingModel.addSetting(this._dcltrSetting);
 
-        this.controller.addSetting(this._nexradShowSetting = new WT_MapSymbolShowSetting(this.controller, "nexrad", "weatherDisplay", "nexradShow", WT_G3x5_NavMap.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.NEXRAD_RANGE_KEY, "weatherDisplay", "nexradRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NEXRAD_RANGE_DEFAULT));
+        this.settingModel.addSetting(this._nexradShowSetting = new WT_MapSymbolShowSetting(this.settingModel, "nexrad", "weatherDisplay", "nexradShow", WT_G3x5_NavMap.NEXRAD_SHOW_KEY, this._dcltrSetting, false));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.NEXRAD_RANGE_KEY, "weatherDisplay", "nexradRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NEXRAD_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "airway", "waypoints", "airwayShow", WT_G3x5_NavMap.AIRWAY_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.AIRWAY_RANGE_KEY, "waypoints", "airwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRWAY_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "airway", "waypoints", "airwayShow", WT_G3x5_NavMap.AIRWAY_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.AIRWAY_RANGE_KEY, "waypoints", "airwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRWAY_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "airport", "waypoints", "airportShow", WT_G3x5_NavMap.AIRPORT_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.AIRPORT_LARGE_RANGE_KEY, "waypoints", "airportLargeRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRPORT_LARGE_RANGE_DEFAULT));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.AIRPORT_MEDIUM_RANGE_KEY, "waypoints", "airportMediumRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRPORT_MEDIUM_RANGE_DEFAULT));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.AIRPORT_SMALL_RANGE_KEY, "waypoints", "airportSmallRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRPORT_SMALL_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "airport", "waypoints", "airportShow", WT_G3x5_NavMap.AIRPORT_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.AIRPORT_LARGE_RANGE_KEY, "waypoints", "airportLargeRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRPORT_LARGE_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.AIRPORT_MEDIUM_RANGE_KEY, "waypoints", "airportMediumRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRPORT_MEDIUM_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.AIRPORT_SMALL_RANGE_KEY, "waypoints", "airportSmallRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.AIRPORT_SMALL_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "vor", "waypoints", "vorShow", WT_G3x5_NavMap.VOR_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.VOR_RANGE_KEY, "waypoints", "vorRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.VOR_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "vor", "waypoints", "vorShow", WT_G3x5_NavMap.VOR_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.VOR_RANGE_KEY, "waypoints", "vorRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.VOR_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "ndb", "waypoints", "ndbShow", WT_G3x5_NavMap.NDB_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.NDB_RANGE_KEY, "waypoints", "ndbRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NDB_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "ndb", "waypoints", "ndbShow", WT_G3x5_NavMap.NDB_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.NDB_RANGE_KEY, "waypoints", "ndbRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NDB_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "int", "waypoints", "intShow", WT_G3x5_NavMap.INT_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.INT_RANGE_KEY, "waypoints", "intRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.INT_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "int", "waypoints", "intShow", WT_G3x5_NavMap.INT_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.INT_RANGE_KEY, "waypoints", "intRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.INT_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "stateBorder", "borders", "stateBorderShow", WT_G3x5_NavMap.BORDERS_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.BORDERS_RANGE_KEY, "borders", "stateBorderRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.BORDERS_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "stateBorder", "borders", "stateBorderShow", WT_G3x5_NavMap.BORDERS_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.BORDERS_RANGE_KEY, "borders", "stateBorderRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.BORDERS_RANGE_DEFAULT));
 
-        this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "city", "cities", "show", WT_G3x5_NavMap.CITY_SHOW_KEY, this._dcltrSetting));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY, "cities", "largeRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_LARGE_RANGE_DEFAULT));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_KEY, "cities", "mediumRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_DEFAULT));
-        this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY, "cities", "smallRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_SMALL_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "city", "cities", "show", WT_G3x5_NavMap.CITY_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.CITY_LARGE_RANGE_KEY, "cities", "largeRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_LARGE_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_KEY, "cities", "mediumRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_MEDIUM_RANGE_DEFAULT));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.CITY_SMALL_RANGE_KEY, "cities", "smallRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.CITY_SMALL_RANGE_DEFAULT));
 
         if (this._layerOptions.roads) {
-            this.controller.addSetting(new WT_MapSymbolShowSetting(this.controller, "road", "roads", "show", WT_G3x5_NavMap.ROAD_SHOW_KEY, this._dcltrSetting));
-            this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY, "roads", "highwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT));
-            this.controller.addSetting(new WT_MapSymbolRangeSetting(this.controller, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
+            this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "road", "roads", "show", WT_G3x5_NavMap.ROAD_SHOW_KEY, this._dcltrSetting));
+            this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_KEY, "roads", "highwayRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT));
+            this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
         }
 
-        this.controller.init();
-        this.controller.update();
+        this.settingModel.init();
+        this.settingModel.update();
     }
 
     init(viewElement) {
         this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
-        this._controller = new WT_MapController(this.instrumentID, this.model, this.view);
+        this._settingModel = new WT_MapSettingModel(this.instrumentID, this.model, this.view);
 
         this._initModel();
         this._initView();
@@ -397,22 +397,25 @@ WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY = "WT_Map_RoadPrimary_Range";
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX = WT_Unit.NMILE.createNumber(150);
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(15);
 
-class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
-    constructor(controller) {
-        super(controller, [], true, false);
+class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
+    /**
+     * @param {WT_MapSetting} model
+     */
+    constructor(model) {
+        super(model, [], true, false);
 
-        this._rangeSetting = new WT_MapRangeSetting(controller, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.MAP_RANGE_DEFAULT, true, false);
-        this._orientationSetting = new WT_MapSetting(controller, WT_G3x5_NavMap.ORIENTATION_KEY, WT_G3x5_NavMap.Orientation.HDG, true, false, true);
-        this._autoNorthUpSetting = new WT_MapAutoNorthUpSettingGroup(controller, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NORTHUP_RANGE_DEFAULT);
-        this._pointerSetting = new WT_MapPointerSettingGroup(controller);
+        this._rangeSetting = new WT_MapRangeSetting(model, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.MAP_RANGE_DEFAULT, true, false);
+        this._orientationSetting = new WT_MapSetting(model, WT_G3x5_NavMap.ORIENTATION_KEY, WT_G3x5_NavMap.Orientation.HDG, true, false, true);
+        this._autoNorthUpSetting = new WT_MapAutoNorthUpSettingGroup(model, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NORTHUP_RANGE_DEFAULT);
+        this._pointerSetting = new WT_MapPointerSettingGroup(model);
 
         this.addSetting(this._rangeSetting);
         this.addSetting(this._orientationSetting);
         this.addSetting(this._autoNorthUpSetting);
         this.addSetting(this._pointerSetting);
 
-        controller.view.setTargetOffsetHandler(this);
-        controller.view.setRangeInterpreter(this);
+        model.mapView.setTargetOffsetHandler(this);
+        model.mapView.setRangeInterpreter(this);
 
         this._isLatitudeCompensationActive = false;
 
@@ -475,7 +478,7 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
     }
 
     _updateRange() {
-        this.model.range = this._rangeSetting.getRange();
+        this.mapModel.range = this._rangeSetting.getRange();
     }
 
     /**
@@ -483,14 +486,14 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
      * @param {WT_GeoPoint} target
      */
     _handleLatitudeCompensation(target) {
-        let longDimensionFactor = Math.max(1, this.view.viewWidth / this.view.viewHeight);
-        let latDelta = this.model.range.asUnit(WT_Unit.GA_RADIAN) * Avionics.Utils.RAD2DEG * longDimensionFactor * 2;
+        let longDimensionFactor = Math.max(1, this.mapView.viewWidth / this.mapView.viewHeight);
+        let latDelta = this.mapModel.range.asUnit(WT_Unit.GA_RADIAN) * Avionics.Utils.RAD2DEG * longDimensionFactor * 2;
         let edgeLat = target.lat + (target.lat >= 0 ? 1 : -1) * latDelta;
-        if (Math.abs(edgeLat) > WT_G3000MapRangeTargetRotationController.MAX_LATITUDE) {
-            let compensatedLat = Math.max(0, WT_G3000MapRangeTargetRotationController.MAX_LATITUDE - latDelta) * (target.lat >= 0 ? 1 : -1);
+        if (Math.abs(edgeLat) > WT_G3x5_MapRangeTargetRotationController.MAX_LATITUDE) {
+            let compensatedLat = Math.max(0, WT_G3x5_MapRangeTargetRotationController.MAX_LATITUDE - latDelta) * (target.lat >= 0 ? 1 : -1);
             target.set(compensatedLat, target.long);
             this._isLatitudeCompensationActive = true;
-            this.model.crosshair.show = true;
+            this.mapModel.crosshair.show = true;
         } else {
             this._isLatitudeCompensationActive = false;
         }
@@ -500,16 +503,16 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         let target = this._tempGeoPoint;
         if (this._pointerSetting.isPointerActive()) {
             target.set(this._pointerSetting.getTargetLatLong());
-            this.model.crosshair.show = true;
+            this.mapModel.crosshair.show = true;
         } else {
-            this.model.airplane.navigation.position(target);
-            this.model.crosshair.show = false;
+            this.mapModel.airplane.navigation.position(target);
+            this.mapModel.crosshair.show = false;
         }
 
         this._handleLatitudeCompensation(target);
 
         if (target) {
-            this.model.target = target;
+            this.mapModel.target = target;
         }
     }
 
@@ -526,7 +529,7 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
 
         // handle Auto North Up
         if (this._autoNorthUpSetting && this._autoNorthUpSetting.isActive()) {
-            if (this.model.range.compare(this._autoNorthUpSetting.getRange()) >= 0) {
+            if (this.mapModel.range.compare(this._autoNorthUpSetting.getRange()) >= 0) {
                 return true;
             }
         }
@@ -546,24 +549,24 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         switch (orientation) {
             case WT_G3x5_NavMap.Orientation.TRK:
                 if (!SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
-                    rotation = -this.model.airplane.navigation.trackTrue();
-                    this.model.rangeCompass.show = true;
-                    this.model.rangeRing.show = false;
+                    rotation = -this.mapModel.airplane.navigation.trackTrue();
+                    this.mapModel.rangeCompass.show = true;
+                    this.mapModel.rangeRing.show = false;
                     break;
                 }
             case WT_G3x5_NavMap.Orientation.HDG:
-                rotation = -this.model.airplane.navigation.headingTrue();
-                this.model.rangeCompass.show = true;
-                this.model.rangeRing.show = false;
+                rotation = -this.mapModel.airplane.navigation.headingTrue();
+                this.mapModel.rangeCompass.show = true;
+                this.mapModel.rangeRing.show = false;
                 break;
             case WT_G3x5_NavMap.Orientation.NORTH:
                 rotation = 0;
-                this.model.rangeRing.show = true;
-                this.model.rangeCompass.show = false;
+                this.mapModel.rangeRing.show = true;
+                this.mapModel.rangeCompass.show = false;
                 break;
         }
-        this.model.rotation = rotation;
-        this.model.orientation.mode = orientation;
+        this.mapModel.rotation = rotation;
+        this.mapModel.orientation.mode = orientation;
     }
 
     update() {
@@ -573,4 +576,4 @@ class WT_G3000MapRangeTargetRotationController extends WT_MapSettingGroup {
         this._updateRotation();
     }
 }
-WT_G3000MapRangeTargetRotationController.MAX_LATITUDE = 85;
+WT_G3x5_MapRangeTargetRotationController.MAX_LATITUDE = 85;

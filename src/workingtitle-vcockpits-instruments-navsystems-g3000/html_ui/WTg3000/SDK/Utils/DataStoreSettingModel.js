@@ -4,15 +4,12 @@
  * unique string ID such that only controllers with the same ID are synced. In cases where the model is relatively
  * straightforward, the controller itself can trivially double as the model.
  */
-class WT_DataStoreController {
+class WT_DataStoreSettingModel {
     /**
-     * @param {String} id - the unique string ID of the new controller.
-     * @param {*} model - the model controlled by the new controller. If a null value should be used if the new
-     *                    controller is to act as the model as well.
+     * @param {String} id - the unique string ID of the new setting model.
      */
-    constructor(id, model) {
+    constructor(id) {
         this._id = id;
-        this._model = model;
 
         /**
          * @type {WT_DataStoreSettingLike[]}
@@ -22,7 +19,7 @@ class WT_DataStoreController {
 
     /**
      * @readonly
-     * @property {String} id - this controller's unique string ID.
+     * @property {String} id - this setting model's unique string ID.
      * @type {String}
      */
     get id() {
@@ -30,16 +27,7 @@ class WT_DataStoreController {
     }
 
     /**
-     * @readonly
-     * @property {*} model - the model associated with this controller.
-     * @type {*}
-     */
-    get model() {
-        return this._model;
-    }
-
-    /**
-     * Adds a setting to this controller.
+     * Adds a setting to this model.
      * @param {WT_DataStoreSettingLike} setting
      */
     addSetting(setting) {
@@ -47,7 +35,7 @@ class WT_DataStoreController {
     }
 
     /**
-     * Initializes all settings attached to this controller.
+     * Initializes all settings attached to this model.
      */
     init() {
         for (let setting of this._settings) {
@@ -56,7 +44,7 @@ class WT_DataStoreController {
     }
 
     /**
-     * Updates the model and/or view associated with this controller using the current values of all attached settings.
+     * Updates the settings attached to this model.
      */
     update() {
         for (let setting of this._settings) {
@@ -66,7 +54,7 @@ class WT_DataStoreController {
 
     /**
      * Sets the value of a setting.
-     * @param {String} id - the string ID of the controller to which the setting belongs.
+     * @param {String} id - the string ID of the model to which the setting belongs.
      * @param {String} settingKey - the data store key of the setting.
      * @param {*} value - the new value of the setting.
      */
@@ -76,7 +64,7 @@ class WT_DataStoreController {
 
     /**
      * Gets the current value of a setting.
-     * @param {String} id - the string ID of the controller to which the setting belongs.
+     * @param {String} id - the string ID of the model to which the setting belongs.
      * @param {String} settingKey - the data store key of the setting.
      * @param {*} [defaultValue=0] - the default value to return if value can be retrieved from the data store.
      * @returns {*} the current value of the specified setting, or the default value if no current value can be found.
@@ -95,35 +83,26 @@ class WT_DataStoreController {
  */
 class WT_DataStoreSetting {
     /**
-     * @param {WT_DataStoreController} controller - the controller with which to associate the new setting.
+     * @param {WT_DataStoreSettingModel} model - the model with which to associate the new setting.
      * @param {String} key - the data store key of the new setting.
      * @param {*} [defaultValue=0] - the value to which the new setting should default if it is not persistent or if a value cannot be retrieved
      *                               from the data store.
-     * @param {Boolean} [autoUpdate] - whether the new setting should automatically update its associated model/view whenever its value
+     * @param {Boolean} [autoUpdate] - whether the new setting should automatically call its update() method whenever its value
      *                                 changes. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(controller, key, defaultValue = 0, autoUpdate = true, isPersistent = false) {
-        this._controller = controller;
+    constructor(model, key, defaultValue = 0, autoUpdate = true, isPersistent = false) {
+        this._model = model;
         this._key = key;
         this._defaultValue = defaultValue;
         this._autoUpdate = autoUpdate;
         this._isPersistent = isPersistent;
 
-        this._fullDataStoreKey = `${controller.id}.${key}`;
+        this._fullDataStoreKey = `${model.id}.${key}`;
 
         this._listeners = [];
 
         WTDataStore.addListener(this._onDataStoreChanged.bind(this), this._fullDataStoreKey);
-    }
-
-    /**
-     * @readonly
-     * @property {*} model - the model this setting controls.
-     * @type {*}
-     */
-    get model() {
-        return this._controller.model;
     }
 
     /**
@@ -200,7 +179,7 @@ class WT_DataStoreSetting {
     }
 
     /**
-     * Updates the model and/or view controlled by this setting.
+     * Updates this setting.
      */
     update() {
     }
@@ -226,13 +205,13 @@ class WT_DataStoreSetting {
  */
 class WT_DataStoreSettingGroup {
     /**
-     * @param {WT_DataStoreController} controller - the WT_MapElement object to associate the setting group with.
+     * @param {WT_DataStoreSettingModel} model - the model with which to associate the new setting group.
      * @param {Iterable<WT_DataStoreSettingLike>} [settings] - an Iterable of WT_DataStoreSetting or WT_DataStoreSettingGroup objects to be added to this group.
-     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically update its associated model/view whenever the value
+     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically call its update() method whenever the value
      *                                 of any of its consituent settings changes. False by default.
      */
-    constructor(controller, settings = [], autoUpdate = false) {
-        this._controller = controller;
+    constructor(model, settings = [], autoUpdate = false) {
+        this._model = model;
         this._autoUpdate = autoUpdate;
 
         this._listeners = [];
@@ -241,15 +220,6 @@ class WT_DataStoreSettingGroup {
         for (let setting of this._settings) {
             setting.addListener(this._onChildSettingChanged.bind(this));
         }
-    }
-
-    /**
-     * @readonly
-     * @property {*} model - the model this setting group controls.
-     * @type {*}
-     */
-    get model() {
-        return this._controller.model;
     }
 
     /**
@@ -306,7 +276,7 @@ class WT_DataStoreSettingGroup {
     }
 
     /**
-     * Updates the model and/or view controlled by this setting group.
+     * Updates the settings belonging to this setting group.
      */
     update() {
         for (let setting of this._settings) {

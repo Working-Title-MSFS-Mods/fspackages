@@ -12,7 +12,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
             int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
         };
 
-        this._unitsController = new WT_G3x5_UnitsController();
+        this._unitsSettingModel = new WT_G3x5_UnitsSettingModel();
     }
 
     /**
@@ -57,10 +57,10 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     /**
      * @readonly
-     * @type {WT_G3x5_UnitsController}
+     * @type {WT_G3x5_UnitsSettingModel}
      */
-    get unitsController() {
-        return this._unitsController;
+    get unitsSettingModel() {
+        return this._unitsSettingModel;
     }
 
     _createAirplane() {

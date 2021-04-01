@@ -18,7 +18,7 @@ class WT_G3x5_PFDBottomInfo extends WT_G3x5_PFDElement {
     }
 
     _initBearingInfos() {
-        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(this.instrument.airplane, this.instrument.unitsController);
+        this._bearingInfos = new WT_G3x5_PFDBearingInfoContainer(this.instrument.airplane, this.instrument.unitsSettingModel);
     }
 
     _createHTMLElement() {
@@ -99,12 +99,12 @@ class WT_G3x5_PFDBottomInfoCell {
 class WT_G3x5_PFDBottomInfoAirspeedCell extends WT_G3x5_PFDBottomInfoCell {
     /**
      *
-     * @param {WT_G3x5_UnitsController} unitsController
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(unitsController) {
+    constructor(unitsSettingModel) {
         super();
 
-        this._unitsController = unitsController;
+        this._unitsSettingModel = unitsSettingModel;
         this._initModels();
         this._initUnitsListeners();
         this._setHTMLElementContext();
@@ -121,7 +121,7 @@ class WT_G3x5_PFDBottomInfoAirspeedCell extends WT_G3x5_PFDBottomInfoCell {
     }
 
     _initUnitsListeners() {
-        this._unitsController.distanceSpeedSetting.addListener(this._onSpeedUnitsChanged.bind(this));
+        this._unitsSettingModel.distanceSpeedSetting.addListener(this._onSpeedUnitsChanged.bind(this));
     }
 
     _setHTMLElementContext() {
@@ -132,7 +132,7 @@ class WT_G3x5_PFDBottomInfoAirspeedCell extends WT_G3x5_PFDBottomInfoCell {
     }
 
     _updateUnits() {
-        let speedUnit = this._unitsController.distanceSpeedSetting.getSpeedUnit();
+        let speedUnit = this._unitsSettingModel.distanceSpeedSetting.getSpeedUnit();
         this._tasModel.setUnit(speedUnit);
         this._gsModel.setUnit(speedUnit);
     }
@@ -257,12 +257,12 @@ customElements.define(WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.NAME, WT_G3x5
 class WT_G3x5_PFDBottomInfoTemperatureCell extends WT_G3x5_PFDBottomInfoCell {
     /**
      *
-     * @param {WT_G3x5_UnitsController} unitsController
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(unitsController) {
+    constructor(unitsSettingModel) {
         super();
 
-        this._unitsController = unitsController;
+        this._unitsSettingModel = unitsSettingModel;
         this._initModels();
         this._initUnitsListeners();
         this._setHTMLElementContext();
@@ -279,7 +279,7 @@ class WT_G3x5_PFDBottomInfoTemperatureCell extends WT_G3x5_PFDBottomInfoCell {
     }
 
     _initUnitsListeners() {
-        this._unitsController.extTemperatureSetting.addListener(this._onTemperatureUnitsChanged.bind(this));
+        this._unitsSettingModel.extTemperatureSetting.addListener(this._onTemperatureUnitsChanged.bind(this));
     }
 
     _setHTMLElementContext() {
@@ -290,7 +290,7 @@ class WT_G3x5_PFDBottomInfoTemperatureCell extends WT_G3x5_PFDBottomInfoCell {
     }
 
     _updateUnits() {
-        let temperatureUnit = this._unitsController.extTemperatureSetting.getTemperatureUnit();
+        let temperatureUnit = this._unitsSettingModel.extTemperatureSetting.getTemperatureUnit();
         this._oatModel.setUnit(temperatureUnit);
         this._isaModel.setUnit(temperatureUnit);
     }

@@ -2,10 +2,10 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPaneDisplaySetting, mfdPaneWaypointSetting, icaoWaypointFactory) {
         super(homePageGroup, homePageName);
 
-        let controllerID = `${instrumentID}-${halfPaneID}`;
-        this._controller = new WT_DataStoreController(controllerID, null);
-        this._controller.addSetting(this._icaoSetting = new WT_G3x5_TSCAirportInfoICAOSetting(this._controller));
-        this._controller.init();
+        let settingModelID = `${instrumentID}-${halfPaneID}`;
+        this._settingModel = new WT_DataStoreSettingModel(settingModelID, null);
+        this._settingModel.addSetting(this._icaoSetting = new WT_G3x5_TSCAirportInfoICAOSetting(this._settingModel));
+        this._settingModel.init();
 
         this._mfdPaneDisplaySetting = mfdPaneDisplaySetting;
         this._mfdPaneWaypointSetting = mfdPaneWaypointSetting;
@@ -55,7 +55,7 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 
     _initUnitsModel() {
-        this._unitsModel = new WT_G3x5_TSCAirportInfoUnitsModel(this.instrument.unitsController);
+        this._unitsModel = new WT_G3x5_TSCAirportInfoUnitsModel(this.instrument.unitsSettingModel);
     }
 
     init(root) {
@@ -96,10 +96,10 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
 
 class WT_G3x5_TSCAirportInfoUnitsModel extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(controller) {
-        super(controller);
+    constructor(unitsSettingModel) {
+        super(unitsSettingModel);
 
         this._initListeners();
         this._initModel();
@@ -138,11 +138,11 @@ class WT_G3x5_TSCAirportInfoUnitsModel extends WT_G3x5_UnitsControllerModelAdapt
     }
 
     _updateBearing() {
-        this._bearingUnit = this.controller.navAngleSetting.getNavAngleUnit();
+        this._bearingUnit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
     }
 
     _updateDistance() {
-        if (this.controller.distanceSpeedSetting.getValue() === WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL) {
+        if (this.unitsSettingModel.distanceSpeedSetting.getValue() === WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL) {
             this._distanceUnit = WT_Unit.NMILE;
             this._lengthUnit = WT_Unit.FOOT;
         } else {
@@ -152,7 +152,7 @@ class WT_G3x5_TSCAirportInfoUnitsModel extends WT_G3x5_UnitsControllerModelAdapt
     }
 
     _updateAltitude() {
-        this._altitudeUnit = this.controller.altitudeSetting.getAltitudeUnit();
+        this._altitudeUnit = this.unitsSettingModel.altitudeSetting.getAltitudeUnit();
     }
 }
 

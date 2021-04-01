@@ -67,7 +67,7 @@ class WT_G3x5_MFD extends NavSystem {
         this.engines = new AS3000_Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engines);
         this.addIndependentElementContainer(new NavSystemElementContainer("Com Frequencies", "ComFreq", new AS3000_MFD_ComFrequencies()));
-        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManagerWT, this.unitsController)));
+        this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManagerWT, this.unitsSettingModel)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
                 new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.citySearcher))

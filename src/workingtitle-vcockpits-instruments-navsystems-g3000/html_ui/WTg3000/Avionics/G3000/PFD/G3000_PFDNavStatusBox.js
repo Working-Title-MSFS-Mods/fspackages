@@ -39,7 +39,7 @@ class WT_G3000_PFDNavStatusBox extends WT_G3x5_PFDElement {
             }
         ];
 
-        this._unitsControllerAdapter = new WT_G3000_UnitsControllerNavStatusAdapter(this.instrument.unitsController, this._infos[0].model, this._infos[1].model);
+        this._unitsControllerAdapter = new WT_G3000_UnitsControllerNavStatusAdapter(this.instrument.unitsSettingModel, this._infos[0].model, this._infos[1].model);
     }
 
     _createHTMLElement() {
@@ -154,11 +154,11 @@ customElements.define(WT_G3000_PFDNavStatusBoxHTMLElement.NAME, WT_G3000_PFDNavS
 
 class WT_G3000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsController} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_NavDataBarModel} navDataBarModel
      */
-    constructor(controller, disInfo, brgInfo) {
-        super(controller);
+    constructor(unitsSettingModel, disInfo, brgInfo) {
+        super(unitsSettingModel);
 
         this._disInfo = disInfo;
         this._brgInfo = brgInfo;
@@ -167,12 +167,12 @@ class WT_G3000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerMo
     }
 
     _updateBearing() {
-        let unit = this.controller.navAngleSetting.getNavAngleUnit();
+        let unit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
         this._brgInfo.setDisplayUnit(unit);
     }
 
     _updateDistance() {
-        let unit = this.controller.distanceSpeedSetting.getDistanceUnit();
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
         this._disInfo.setDisplayUnit(unit);
     }
 }

@@ -3,7 +3,7 @@
  */
 class WT_MapSymbolShowSetting extends WT_MapSetting {
     /**
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {String} symbolID - the identifier of the map symbol type controlled by this setting.
      * @param {String} moduleName - the name of the map model module where the option controlled by the new setting is located.
      * @param {String} optionName - the name of the option controlled by the new setting.
@@ -14,8 +14,8 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
      * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(controller, symbolID, moduleName, optionName, key, dcltrSetting, defaultValue = true, isSyncable = true, isPersistent = true) {
-        super(controller, key, defaultValue, isSyncable, true, isPersistent);
+    constructor(model, symbolID, moduleName, optionName, key, dcltrSetting, defaultValue = true, isSyncable = true, isPersistent = true) {
+        super(model, key, defaultValue, isSyncable, true, isPersistent);
 
         this._dcltrSetting = dcltrSetting;
         this._dcltrSetting.addListener(this._dcltrSettingChanged.bind(this));
@@ -34,7 +34,7 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
     }
 
     update() {
-        this.model[this._moduleName][this._optionName] =
+        this.mapModel[this._moduleName][this._optionName] =
             this.getValue() &&
             !this.dcltrSetting.isDecluttered(this.symbolID);
     }
@@ -49,15 +49,15 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
  */
 class WT_MapDCLTRSetting extends WT_MapSetting {
     /**
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {WT_NumberUnit[]} dcltrTable - an array of map zoom ranges.
      * @param {WT_NumberUnit} defaultValue - the default maximum range of the new setting.
      * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      * @param {String} [key] - the data store key of the new setting.
      */
-    constructor(controller, dcltrTable, defaultValue = 0, isSyncable = true, isPersistent = true, key = WT_MapDCLTRSetting.KEY_DEFAULT) {
-        super(controller, key, defaultValue, isSyncable, false, isPersistent);
+    constructor(model, dcltrTable, defaultValue = 0, isSyncable = true, isPersistent = true, key = WT_MapDCLTRSetting.KEY_DEFAULT) {
+        super(model, key, defaultValue, isSyncable, false, isPersistent);
         this._dcltrTable = dcltrTable;
     }
 
@@ -73,15 +73,15 @@ WT_MapDCLTRSetting.KEY_DEFAULT = "WT_Map_DCLTR";
  */
 class WT_MapSymbolRangeSetting extends WT_MapSetting {
     /**
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {String} key - the data store key of the new setting.
      * @param {WT_NumberUnit[]} ranges - an array of map zoom ranges.
      * @param {WT_NumberUnit} defaultRange - the default maximum range of the new setting.
      * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(controller, key, componentName, optionName, ranges, defaultRange, isSyncable = true, isPersistent = true) {
-        super(controller, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, true, isPersistent);
+    constructor(model, key, componentName, optionName, ranges, defaultRange, isSyncable = true, isPersistent = true) {
+        super(model, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, true, isPersistent);
 
         this._componentName = componentName;
         this._optionName = optionName;
@@ -97,6 +97,6 @@ class WT_MapSymbolRangeSetting extends WT_MapSetting {
     }
 
     update() {
-        this.model[this._componentName][this._optionName] = this.getRange();
+        this.mapModel[this._componentName][this._optionName] = this.getRange();
     }
 }

@@ -44,17 +44,17 @@ class WT_G3x5_MFDNavDataBar extends WT_G3x5_MFDElement {
     /**
      * @readonly
      * @property {WT_NavDataBarController} controller
-     * @type {WT_NavDataBarController}
+     * @type {WT_NavDataBarSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingsModel() {
+        return this._settingsModel;
     }
 
     _initModel() {
         this._model = new WT_NavDataBarModel(this.instrument.airplane, this.instrument.flightPlanManagerWT);
         this.model.setDataFieldCount(WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT);
 
-        this._unitsAdapter = new WT_G3x5_UnitsControllerNavDataBarModelAdapter(this.instrument.unitsController, this.model);
+        this._unitsAdapter = new WT_G3x5_UnitsControllerNavDataBarModelAdapter(this.instrument.unitsSettingModel, this.model);
     }
 
     _initView() {
@@ -63,14 +63,14 @@ class WT_G3x5_MFDNavDataBar extends WT_G3x5_MFDElement {
         this.htmlElement.appendChild(this.view);
     }
 
-    _initController() {
-        this._controller = new WT_NavDataBarController(this._instrumentID, this.model);
+    _initSettingsModel() {
+        this._settingsModel = new WT_NavDataBarSettingModel(this._instrumentID, this.model);
         for (let i = 0; i < WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT; i++) {
-            this.controller.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
+            this.settingsModel.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
         }
 
-        this.controller.init();
-        this.controller.update();
+        this.settingsModel.init();
+        this.settingsModel.update();
     }
 
     /**
@@ -82,7 +82,7 @@ class WT_G3x5_MFDNavDataBar extends WT_G3x5_MFDElement {
 
         this._initModel();
         this._initView();
-        this._initController();
+        this._initSettingsModel();
     }
 
     onUpdate(deltaTime) {

@@ -95,11 +95,11 @@ customElements.define(WT_G3x5_TSCRangeDisplayButton.NAME, WT_G3x5_TSCRangeDispla
 class WT_G3x5_TSCRangeSelectionElementHandler {
   /**
    * @param {WT_NumberUnit[]} ranges
-   * @param {WT_G3x5_UnitsController} unitsController
+   * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
    */
-  constructor(ranges, unitsController) {
+  constructor(ranges, unitsSettingModel) {
       this._ranges = ranges.map(range => range.copy());
-      this._unitsController = unitsController;
+      this._unitsSettingModel = unitsSettingModel;
   }
 
   nextElement(index) {
@@ -115,7 +115,7 @@ class WT_G3x5_TSCRangeSelectionElementHandler {
   }
 
   update(index, elem) {
-      elem.button.setUnit(this._unitsController.distanceSpeedSetting.getDistanceUnit());
+      elem.button.setUnit(this._unitsSettingModel.distanceSpeedSetting.getDistanceUnit());
   }
 }
 
@@ -227,12 +227,12 @@ class WT_G3x5_TSCRangeTypeSelectionElementHandler {
     /**
      * @param {String[]} typeNames
      * @param {{getRange(index:Number):WT_NumberUnit}} rangeGetter
-     * @param {WT_G3x5_UnitsController} unitsController
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(typeNames, rangeGetter, unitsController) {
+    constructor(typeNames, rangeGetter, unitsSettingModel) {
         this._typeNames = Array.from(typeNames);
         this._rangeGetter = rangeGetter;
-        this._unitsController = unitsController;
+        this._unitsSettingModel = unitsSettingModel;
     }
 
     nextElement(index) {
@@ -249,6 +249,6 @@ class WT_G3x5_TSCRangeTypeSelectionElementHandler {
 
     update(index, elem) {
         elem.button.setRange(this._rangeGetter.getRange(index));
-        elem.button.setUnit(this._unitsController.distanceSpeedSetting.getDistanceUnit());
+        elem.button.setUnit(this._unitsSettingModel.distanceSpeedSetting.getDistanceUnit());
     }
 }

@@ -2,34 +2,44 @@
  * A map model controller that uses the data store to sync a map model across instruments. In addition to syncing a single
  * model across instruments, the map controller also supports syncing user-configurable settings across multiple map models.
  */
-class WT_MapController extends WT_DataStoreController {
+class WT_MapSettingModel extends WT_DataStoreSettingModel {
     /**
-     * @param {String} id - the unique string ID of the new controller.
-     * @param {WT_MapModel} model - the model controlled by the new controller.
-     * @param {WT_MapView} view - the view associated with the new controller's model.
+     * @param {String} id - the unique string ID of the new setting model.
+     * @param {WT_MapModel} mapModel - the map model associated with the new setting model.
+     * @param {WT_MapView} mapView - the map view associated with the new setting model.
      */
-    constructor(id, model, view) {
-        super(id, model);
+    constructor(id, mapModel, mapView) {
+        super(id);
 
-        this._view = view;
+        this._mapModel = mapModel;
+        this._mapView = mapView;
 
-        WTDataStore.addListener(this._onSyncPendingChanged.bind(this), `${this.id}.${WT_MapController.SYNC_ID_PENDING_KEY}`);
-        WTDataStore.addListener(this._onSyncActiveChanged.bind(this), `${this.id}.${WT_MapController.SYNC_ID_ACTIVE_KEY}`);
+        WTDataStore.addListener(this._onSyncPendingChanged.bind(this), `${this.id}.${WT_MapSettingModel.SYNC_ID_PENDING_KEY}`);
+        WTDataStore.addListener(this._onSyncActiveChanged.bind(this), `${this.id}.${WT_MapSettingModel.SYNC_ID_ACTIVE_KEY}`);
     }
 
     /**
+     * The map model associated with this setting model.
      * @readonly
-     * @property {WT_MapView} view - the view associated with this controller.
+     * @type {WT_MapModel}
+     */
+    get mapModel() {
+        return this._mapModel;
+    }
+
+    /**
+     * The map view associated with this setting model.
+     * @readonly
      * @type {WT_MapView}
      */
-    get view() {
-        return this._view;
+    get mapView() {
+        return this._mapView;
     }
 
     _onSyncPendingChanged(key, newValue, oldValue) {
         let syncID = newValue;
         if (syncID) {
-            let source = WT_MapController._getSyncSource(syncID);
+            let source = WT_MapSettingModel._getSyncSource(syncID);
             if (source === this.id) {
                 for (let setting of this._settings) {
                     if (setting.isSyncable) {
@@ -38,13 +48,13 @@ class WT_MapController extends WT_DataStoreController {
                 }
             }
         }
-        WTDataStore.set(`${this.id}.${WT_MapController.SYNC_ID_ACTIVE_KEY}`, syncID);
+        WTDataStore.set(`${this.id}.${WT_MapSettingModel.SYNC_ID_ACTIVE_KEY}`, syncID);
     }
 
     _onSyncActiveChanged(key, newValue, oldValue) {
         let syncID = newValue;
         if (syncID) {
-            let source = WT_MapController._getSyncSource(syncID);
+            let source = WT_MapSettingModel._getSyncSource(syncID);
             if (source !== this.id) {
                 for (let setting of this._settings) {
                     if (setting.isSyncable) {
@@ -56,7 +66,7 @@ class WT_MapController extends WT_DataStoreController {
     }
 
     _onSyncRecordChanged(syncID, setting, key, newValue, oldValue) {
-        if (WT_MapController._getActiveSyncID(this.id) === syncID) {
+        if (WT_MapSettingModel._getActiveSyncID(this.id) === syncID) {
             setting.syncFrom(syncID);
         }
     }
@@ -67,7 +77,7 @@ class WT_MapController extends WT_DataStoreController {
         }
 
         if (current.key) {
-            let syncID = WT_MapController.SyncID[WT_MapController.SyncMode.ALL];
+            let syncID = WT_MapSettingModel.SyncID[WT_MapSettingModel.SyncMode.ALL];
             WTDataStore.addListener(this._onSyncRecordChanged.bind(this, syncID, root), `${syncID}.${current.key}`);
         } else {
             for (let recurse of current.getSettings()) {
@@ -90,11 +100,11 @@ class WT_MapController extends WT_DataStoreController {
     }
 
     static _getSyncSource(syncID) {
-        return WTDataStore.get(`${syncID}.${WT_MapController.SYNC_SOURCE_KEY}`, "");
+        return WTDataStore.get(`${syncID}.${WT_MapSettingModel.SYNC_SOURCE_KEY}`, "");
     }
 
-    static _getActiveSyncID(controllerID) {
-        return WTDataStore.get(`${controllerID}.${WT_MapController.SYNC_ID_ACTIVE_KEY}`, "");
+    static _getActiveSyncID(settingModelID) {
+        return WTDataStore.get(`${settingModelID}.${WT_MapSettingModel.SYNC_ID_ACTIVE_KEY}`, "");
     }
 
     /**
@@ -106,7 +116,7 @@ class WT_MapController extends WT_DataStoreController {
     static setSettingValue(id, settingKey, value, isSyncable) {
         let synced = false;
         if (isSyncable) {
-            let syncID = WT_MapController._getActiveSyncID(id);
+            let syncID = WT_MapSettingModel._getActiveSyncID(id);
             if (syncID) {
                 WTDataStore.set(`${syncID}.${settingKey}`, value);
                 synced = true;
@@ -117,34 +127,34 @@ class WT_MapController extends WT_DataStoreController {
         }
     }
 
-    static getSyncMode(controllerID) {
-        return WTDataStore.get(`${controllerID}.${WT_MapController.SYNC_MODE_KEY}`, WT_MapController.SyncMode.OFF);
+    static getSyncMode(settingModelID) {
+        return WTDataStore.get(`${settingModelID}.${WT_MapSettingModel.SYNC_MODE_KEY}`, WT_MapSettingModel.SyncMode.OFF);
     }
 
-    static setSyncMode(controllerID, syncMode, sourceID) {
-        let syncID = WT_MapController.SyncID[syncMode];
-        WTDataStore.set(`${controllerID}.${WT_MapController.SYNC_MODE_KEY}`, syncMode);
-        if (syncMode !== WT_MapController.SyncMode.OFF) {
-            WTDataStore.set(`${syncID}.${WT_MapController.SYNC_SOURCE_KEY}`, sourceID);
+    static setSyncMode(settingModelID, syncMode, sourceID) {
+        let syncID = WT_MapSettingModel.SyncID[syncMode];
+        WTDataStore.set(`${settingModelID}.${WT_MapSettingModel.SYNC_MODE_KEY}`, syncMode);
+        if (syncMode !== WT_MapSettingModel.SyncMode.OFF) {
+            WTDataStore.set(`${syncID}.${WT_MapSettingModel.SYNC_SOURCE_KEY}`, sourceID);
         }
-        WTDataStore.set(`${controllerID}.${WT_MapController.SYNC_ID_PENDING_KEY}`, syncID);
+        WTDataStore.set(`${settingModelID}.${WT_MapSettingModel.SYNC_ID_PENDING_KEY}`, syncID);
     }
 }
-WT_MapController.SYNC_MODE_KEY = "WT_Map_Sync_Mode";
-WT_MapController.SYNC_ID_ACTIVE_KEY = "WT_Map_Sync_ID_Active";
-WT_MapController.SYNC_ID_PENDING_KEY = "WT_Map_Sync_ID_Pending";
-WT_MapController.SYNC_SOURCE_KEY = "WT_Map_Sync_Source";
+WT_MapSettingModel.SYNC_MODE_KEY = "WT_Map_Sync_Mode";
+WT_MapSettingModel.SYNC_ID_ACTIVE_KEY = "WT_Map_Sync_ID_Active";
+WT_MapSettingModel.SYNC_ID_PENDING_KEY = "WT_Map_Sync_ID_Pending";
+WT_MapSettingModel.SYNC_SOURCE_KEY = "WT_Map_Sync_Source";
 
 /**
  * @enum {Number}
  */
-WT_MapController.SyncMode = {
+WT_MapSettingModel.SyncMode = {
     OFF: 0,
     ALL: 1,
     LEFT: 2,
     RIGHT: 3
 }
-WT_MapController.SyncID = [
+WT_MapSettingModel.SyncID = [
     "",
     "MapSyncAll",
     "MapSyncLeft",
@@ -161,33 +171,42 @@ WT_MapController.SyncID = [
  */
 class WT_MapSetting extends WT_DataStoreSetting {
     /**
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the model with which to associate the new setting.
      * @param {String} key - the data store key of the new setting.
      * @param {*} [defaultValue=0] - the value to which the new setting should default if it is not persistent or if a value cannot be retrieved
      *                               from the data store.
      * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
-     * @param {Boolean} [autoUpdate] - whether the new setting should automatically update its associated model/view whenever its value
+     * @param {Boolean} [autoUpdate] - whether the new setting should automatically call its update() method whenever its value
      *                                 changes. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(controller, key, defaultValue = 0, isSyncable = false, autoUpdate = true, isPersistent = false) {
-        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    constructor(model, key, defaultValue = 0, isSyncable = false, autoUpdate = true, isPersistent = false) {
+        super(model, key, defaultValue, autoUpdate, isPersistent);
 
         this._isSyncable = isSyncable;
     }
 
     /**
+     * The map model associated with this setting.
      * @readonly
-     * @property {WT_MapView} view - the view this setting controls.
-     * @type {WT_MapView}
+     * @type {WT_MapModel}
      */
-    get view() {
-        return this._controller.view;
+    get mapModel() {
+        return this._model.mapModel;
     }
 
     /**
+     * The map view associated with this setting.
      * @readonly
-     * @property {Boolean} isSyncable - whether this setting is sync-able.
+     * @type {WT_MapView}
+     */
+    get mapView() {
+        return this._model.mapView;
+    }
+
+    /**
+     * Whether this setting is sync-able.
+     * @readonly
      * @type {Boolean}
      */
     get isSyncable() {
@@ -199,7 +218,7 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @param {*} value - the new value.
      */
     setValue(value) {
-        WT_MapController.setSettingValue(this._controller.id, this.key, value, this.isSyncable);
+        WT_MapSettingModel.setSettingValue(this._model.id, this.key, value, this.isSyncable);
     }
 
     /**
@@ -207,7 +226,7 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @param {String} syncID - the ID of the sync record from which to copy.
      */
     syncFrom(syncID) {
-        let newValue = WT_DataStoreController.getSettingValue(syncID, this.key, this.defaultValue);
+        let newValue = WT_DataStoreSettingModel.getSettingValue(syncID, this.key, this.defaultValue);
         WTDataStore.set(this._fullDataStoreKey, newValue);
     }
 
@@ -216,7 +235,7 @@ class WT_MapSetting extends WT_DataStoreSetting {
      * @param {String} syncID - the ID of the sync record to which to copy.
      */
     syncTo(syncID) {
-        WT_DataStoreController.setSettingValue(syncID, this.key, this.getValue());
+        WT_DataStoreSettingModel.setSettingValue(syncID, this.key, this.getValue());
     }
 }
 
@@ -225,30 +244,39 @@ class WT_MapSetting extends WT_DataStoreSetting {
  */
 class WT_MapSettingGroup extends WT_DataStoreSettingGroup {
     /**
-     * @param {WT_MapController} controller - the WT_MapElement object to associate the setting group with.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting group.
      * @param {Iterable<WT_MapSettingLike>} [settings] - an Iterable of WT_MapSetting or WT_MapSettingGroup objects to be added to this group.
      * @param {Boolean} [isSyncable] - whether any settings belonging to the new group are sync-able. False by default.
-     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically update its associated model/view whenever the value
-     *                                 of any of its consituent settings changes. False by default.
+     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically call its update() method whenever the value
+     *                                 of any of its constituent settings changes. False by default.
      */
-    constructor(controller, settings = [], isSyncable = false, autoUpdate = false) {
-        super(controller, settings, autoUpdate);
+    constructor(model, settings = [], isSyncable = false, autoUpdate = false) {
+        super(model, settings, autoUpdate);
 
         this._isSyncable = isSyncable;
     }
 
     /**
+     * The map model associated with this setting group.
      * @readonly
-     * @property {WT_MapView} view - the view this setting group controls.
-     * @type {WT_MapView}
+     * @type {WT_MapModel}
      */
-    get view() {
-        return this._controller.view;
+    get mapModel() {
+        return this._model.mapModel;
     }
 
     /**
+     * The map view associated with this setting group.
      * @readonly
-     * @property {Boolean} isSyncable - whether this setting is sync-able.
+     * @type {WT_MapView}
+     */
+    get mapView() {
+        return this._model.mapView;
+    }
+
+    /**
+     * Whether this setting group is sync-able.
+     * @readonly
      * @type {Boolean}
      */
     get isSyncable() {
@@ -281,8 +309,8 @@ class WT_MapSettingGroup extends WT_DataStoreSettingGroup {
 }
 
 class WT_MapTargetSetting extends WT_MapSetting {
-    constructor(controller, defaultValue = WT_MapTargetSetting.Mode.TRACK_PLANE, autoUpdate = false, isPersistent = false, key = WT_MapTargetSetting.KEY_DEFAULT) {
-        super(controller, key, defaultValue, false, autoUpdate, isPersistent);
+    constructor(model, defaultValue = WT_MapTargetSetting.Mode.TRACK_PLANE, autoUpdate = false, isPersistent = false, key = WT_MapTargetSetting.KEY_DEFAULT) {
+        super(model, key, defaultValue, false, autoUpdate, isPersistent);
     }
 }
 WT_MapTargetSetting.KEY_DEFAULT = "WT_Map_Target";
@@ -294,17 +322,17 @@ WT_MapTargetSetting.Mode = {
 class WT_MapRangeSetting extends WT_MapSetting {
     /**
      *
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {WT_NumberUnit[]} ranges - an array of possible range values of the new setting.
      * @param {WT_NumberUnit} defaultRange - the default range of the new setting.
      * @param {Boolean} [isSyncable] - whether the fuel ring settings are sync-able. True by default.
-     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically update its associated model/view whenever the value
-     *                                 of any of its consituent settings changes. True by default.
+     * @param {Boolean} [autoUpdate] - whether the new setting group should automatically call its update() method whenever the value
+     *                                 of any of its constituent settings changes. True by default.
      * @param {Boolean} [isPersistent] - whether the fuel ring settings persist across sessions. True by default.
      * @param {String} [key] - the data store key of the new setting.
      */
-    constructor(controller, ranges, defaultRange, isSyncable = true, autoUpdate = true, isPersistent = false, key = WT_MapRangeSetting.KEY_DEFAULT) {
-        super(controller, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, autoUpdate, isPersistent);
+    constructor(model, ranges, defaultRange, isSyncable = true, autoUpdate = true, isPersistent = false, key = WT_MapRangeSetting.KEY_DEFAULT) {
+        super(model, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, autoUpdate, isPersistent);
 
         this._ranges = Array.from(ranges);
         this._rangesReadOnly = new WT_ReadOnlyArray(this._ranges);
@@ -339,7 +367,7 @@ class WT_MapRangeSetting extends WT_MapSetting {
     }
 
     update() {
-        this.model.range = this.getRange();
+        this.mapModel.range = this.getRange();
     }
 }
 WT_MapRangeSetting.KEY_DEFAULT = "WT_Map_Zoom";

@@ -1,19 +1,19 @@
 class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
     /**
-     * @param {WT_MapController} controller - the controller with which to associate the new setting.
+     * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {Number} [edgeBuffer] - the buffer, in units of relative width/height, around the edges of the viewing window
      *                                that are inaccessible to the cursor.
      * @param {Number} [maxScrollSpeed] - the maximum map scroll speed, in pixels per second.
      */
-    constructor(controller, edgeBuffer = WT_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT, maxScrollSpeed = WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT) {
-        super(controller, [], false, false);
+    constructor(model, edgeBuffer = WT_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT, maxScrollSpeed = WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT) {
+        super(model, [], false, false);
 
         this._edgeBuffer = edgeBuffer;
         this._maxScrollSpeed = maxScrollSpeed;
 
-        this._showSetting = new WT_MapSetting(controller, WT_MapPointerSettingGroup.SHOW_KEY, false, false, false, false);
-        this._deltaXSetting = new WT_MapSetting(controller, WT_MapPointerSettingGroup.DELTA_X_KEY, 0, false, false, false);
-        this._deltaYSetting = new WT_MapSetting(controller, WT_MapPointerSettingGroup.DELTA_Y_KEY, 0, false, false, false);
+        this._showSetting = new WT_MapSetting(model, WT_MapPointerSettingGroup.SHOW_KEY, false, false, false, false);
+        this._deltaXSetting = new WT_MapSetting(model, WT_MapPointerSettingGroup.DELTA_X_KEY, 0, false, false, false);
+        this._deltaYSetting = new WT_MapSetting(model, WT_MapPointerSettingGroup.DELTA_Y_KEY, 0, false, false, false);
 
         this.addSetting(this._showSetting);
         this.addSetting(this._deltaXSetting);
@@ -41,10 +41,10 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
         let dt = currentTime - this._lastTime;
 
         let show = this.isPointerActive();
-        this.model.pointer.show = show;
+        this.mapModel.pointer.show = show;
         if (show) {
             if (!this._lastShow) {
-                this.model.pointer.position = this.view.projection.absXYToRelXY(this.view.projection.viewCenter, this._tempVector1);
+                this.mapModel.pointer.position = this.mapView.projection.absXYToRelXY(this.mapView.projection.viewCenter, this._tempVector1);
             }
 
             let deltaX = this._deltaXSetting.getValue();
@@ -53,8 +53,8 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
             if (delta.length > this._maxScrollSpeed * dt) {
                 delta.scale(this._maxScrollSpeed * dt / delta.length, true);
             }
-            this.view.projection.absXYToRelXY(delta, delta);
-            let currentPosition = this.model.pointer.position;
+            this.mapView.projection.absXYToRelXY(delta, delta);
+            let currentPosition = this.mapModel.pointer.position;
 
             if (deltaX !== 0 || deltaY !== 0) {
                 let targetPosition = delta.add(currentPosition);
@@ -62,15 +62,15 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
                     Math.max(this._edgeBuffer, Math.min(1 - this._edgeBuffer, targetPosition.x)),
                     Math.max(this._edgeBuffer, Math.min(1 - this._edgeBuffer, targetPosition.y))
                 );
-                let translate = this.view.projection.relXYToAbsXY(targetPosition.subtract(clampedPosition), targetPosition);
+                let translate = this.mapView.projection.relXYToAbsXY(targetPosition.subtract(clampedPosition), targetPosition);
 
-                this.model.pointer.position = clampedPosition;
+                this.mapModel.pointer.position = clampedPosition;
                 this._deltaXSetting.setValue(0);
                 this._deltaYSetting.setValue(0);
 
-                this.view.projection.invert(translate.add(this.view.projection.viewTarget), this._targetLatLong);
+                this.mapView.projection.invert(translate.add(this.mapView.projection.viewTarget), this._targetLatLong);
             } else {
-                this._targetLatLong.set(this.view.projection.target);
+                this._targetLatLong.set(this.mapView.projection.target);
             }
         }
 
