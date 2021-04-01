@@ -692,7 +692,7 @@ class WT_VerticalAutopilot {
     }
 
     interceptPath(fpa) {
-        console.log("interceptPath - status: " + this._pathInterceptStatus);
+        //console.log("interceptPath - status: " + this._pathInterceptStatus);
         switch (this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
                 const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
@@ -704,7 +704,7 @@ class WT_VerticalAutopilot {
                 };
                 this._pathInterceptValues = intercept;
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
-                this.vsSlot2Value = this.verticalSpeed;
+                this.vsSlot2Value = intercept.verticalSpeed;
                 this.vsSlot = 2;
                 if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
                     this.modeSelectorPathStatus = VnavPathStatus.PATH_ACTIVE;
