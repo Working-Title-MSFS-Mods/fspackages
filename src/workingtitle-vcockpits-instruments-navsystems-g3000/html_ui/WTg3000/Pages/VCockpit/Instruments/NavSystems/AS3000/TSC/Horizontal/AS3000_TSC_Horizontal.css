@@ -55,6 +55,8 @@ as3000-tsc-horizontal-element {
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=TrafficSettingsLeft] #TrafficSettingsLeft,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=TrafficSettingsRight] #TrafficSettingsRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
       as3000-tsc-horizontal-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
@@ -331,6 +333,27 @@ as3000-tsc-horizontal-element #Electricity .weatherSelection wt-tsc-button-img {
     height: 21vh;
     font-size: 4vh;
 }
+
+as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettings {
+    font-size: 5vh;
+    --trafficsettings-button-height: 15vh;
+    --trafficsettings-button-margin-horizontal: 1vh;
+    --trafficsettings-button-margin-vertical: 1vh;
+}
+    as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettings-altitude {
+        position: absolute;
+        left: 34.3%;
+        top: 1%;
+        width: 31.3%;
+        height: 98%;
+    }
+    as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettings-adsb {
+        position: absolute;
+        left: 67.7%;
+        top: 1%;
+        width: 31.3%;
+        height: 98%;
+    }
 
 as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-mode {
     position: absolute;

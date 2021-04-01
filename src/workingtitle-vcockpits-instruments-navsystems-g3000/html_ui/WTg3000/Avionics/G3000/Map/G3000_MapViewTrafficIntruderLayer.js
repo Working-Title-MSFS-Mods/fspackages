@@ -15,6 +15,12 @@ class WT_G3000_MapViewTrafficIntruderViewHTMLElementRecycler extends WT_HTMLElem
 }
 
 class WT_G3000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficIntruderHTMLElement {
+    constructor() {
+        super();
+
+        this._zIndex = null;
+    }
+
     _getTemplate() {
         return WT_G3000_MapViewTrafficIntruderHTMLElement.TEMPLATE;
     }
@@ -37,7 +43,17 @@ class WT_G3000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficI
     }
 
     _updateVisibility(state) {
-        this._isVisible = !this.intruderView.isOffScale || this.intruderView.intruderEntry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY;
+        let isVisible = false;
+        if (this.intruderView.intruderEntry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
+            isVisible = true;
+        } else {
+            let isOffScale = this.intruderView.isOffScale;
+            let altitudeMeters = this.intruderView.intruderEntry.intruder.relativePositionVector.z;
+            let isWithinAltitude = altitudeMeters <= state.model.traffic.altitudeRestrictionAbove.asUnit(WT_Unit.METER) && altitudeMeters >= -state.model.traffic.altitudeRestrictionBelow.asUnit(WT_Unit.METER);
+            isVisible = !isOffScale && isWithinAltitude;
+        }
+
+        this._isVisible = isVisible;
         this._wrapper.setAttribute("show", `${this._isVisible}`);
     }
 
@@ -48,6 +64,10 @@ class WT_G3000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficI
      */
     _setAlertLevel(state, level) {
         this._wrapper.setAttribute("alert", WT_G3000_MapViewTrafficIntruderHTMLElement.ALERT_ATTRIBUTES[level]);
+        if (this._zIndex !== level) {
+            this.style.zIndex = level;
+            this._zIndex = level;
+        }
     }
 
     /**
@@ -58,7 +78,7 @@ class WT_G3000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficI
     _setOffScale(state, value) {
         this._wrapper.setAttribute("offscale", `${value}`);
         if (value && this.intruderView.intruderEntry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
-            let angle = this._tempVector2.set(this.intruderView.viewPosition).subtract(state.viewPlane).theta;
+            let angle = this._tempVector2.set(this.intruderView.viewPosition).subtract(state.viewPlane).theta * Avionics.Utils.RAD2DEG;
             this._taHalfCircle.setAttribute("transform", `rotate(${angle})`);
         }
     }
@@ -76,17 +96,26 @@ class WT_G3000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficI
     /**
      *
      * @param {WT_MapViewState} state
+     * @param {Boolean} isRelative
      * @param {Number} feet
+     * @param {Boolean} isAbove
      */
-    _setAltitudeDelta(state, feet) {
+    _setAltitudeDisplay(state, isRelative, feet, isAbove) {
         let feetRounded = Math.round(feet / 100);
-        if (feetRounded >= 0) {
+        let feetAbs = Math.abs(feetRounded);
+        let prefix = "";
+        if (isRelative) {
+            prefix = isAbove ? "+" : "−";
+        }
+
+        if (isAbove) {
             this._wrapper.setAttribute("alt", "above");
-            this._altAbove.textContent = `+${feetRounded}`;
+            this._altAbove.textContent = `${prefix}${feetAbs}`;
         } else {
             this._wrapper.setAttribute("alt", "below");
-            this._altBelow.textContent = `−${-feetRounded}`;
+            this._altBelow.textContent = `${prefix}${feetAbs}`;
         }
+
     }
 
     /**

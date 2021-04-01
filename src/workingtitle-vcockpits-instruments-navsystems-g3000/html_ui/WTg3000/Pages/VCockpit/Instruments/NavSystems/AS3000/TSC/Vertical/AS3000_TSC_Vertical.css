@@ -161,6 +161,8 @@
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=TrafficSettingsLeft] #TrafficSettingsLeft,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=TrafficSettingsRight] #TrafficSettingsRight,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
       as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,

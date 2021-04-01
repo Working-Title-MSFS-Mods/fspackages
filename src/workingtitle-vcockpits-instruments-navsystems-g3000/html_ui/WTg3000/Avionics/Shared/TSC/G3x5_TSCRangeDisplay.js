@@ -1,122 +1,122 @@
 class WT_G3x5_TSCRangeDisplayButton extends WT_TSCLabeledButton {
-  constructor() {
-      super();
+    constructor() {
+        super();
 
-      this._range = WT_Unit.NMILE.createNumber(0);
-      this._unit = WT_Unit.NMILE;
+        this._range = WT_Unit.NMILE.createNumber(0);
+        this._unit = WT_Unit.NMILE;
 
-      this._initFormatter();
-  }
+        this._initFormatter();
+    }
 
-  _initUnitStyle() {
-      return `
-          #label .unit {
-              font-size: var(--rangedisplay-unit-font-size, 0.75em);
-          }
-      `;
-  }
+    _initUnitStyle() {
+        return `
+            #label .unit {
+                font-size: var(--rangedisplay-unit-font-size, 0.75em);
+            }
+        `;
+    }
 
-  _createStyle() {
-      let style = super._createStyle();
-      let unitStyle = this._initUnitStyle();
+    _createStyle() {
+        let style = super._createStyle();
+        let unitStyle = this._initUnitStyle();
 
-      return `
-          ${style}
-          ${unitStyle}
-      `;
-  }
+        return `
+            ${style}
+            ${unitStyle}
+        `;
+    }
 
-  _initFormatter() {
-      let formatterOpts = {
-          precision: 0.01,
-          forceDecimalZeroes: false,
-          maxDigits: 3,
-          unitCaps: true
-      };
-      let htmlFormatterOpts = {
-          numberUnitDelim: "",
-          classGetter: {
-              getNumberClassList() {
-                  return [];
-              },
-              getUnitClassList() {
-                  return ["unit"];
-              }
-          }
-      };
-      this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
-  }
+    _initFormatter() {
+        let formatterOpts = {
+            precision: 0.01,
+            forceDecimalZeroes: false,
+            maxDigits: 3,
+            unitCaps: true
+        };
+        let htmlFormatterOpts = {
+            numberUnitDelim: "",
+            classGetter: {
+                getNumberClassList() {
+                    return [];
+                },
+                getUnitClassList() {
+                    return ["unit"];
+                }
+            }
+        };
+        this._formatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
+    }
 
-  _selectDisplayUnit() {
-      if (this._unit.equals(WT_Unit.NMILE) || this._unit.equals(WT_Unit.FOOT)) {
-          return this._range.asUnit(WT_Unit.FOOT) <= 1001 ? WT_Unit.FOOT : WT_Unit.NMILE;
-      } else if (this._unit.equals(WT_Unit.KILOMETER) || this._unit.equals(WT_Unit.METER)) {
-          return this._range.asUnit(WT_Unit.METER) <= 501 ? WT_Unit.METER : WT_Unit.KILOMETER;
-      } else {
-          return this._unit;
-      }
-  }
+    _selectDisplayUnit() {
+        if (this._unit.equals(WT_Unit.NMILE) || this._unit.equals(WT_Unit.FOOT)) {
+            return this._range.asUnit(WT_Unit.FOOT) <= 1001 ? WT_Unit.FOOT : WT_Unit.NMILE;
+        } else if (this._unit.equals(WT_Unit.KILOMETER) || this._unit.equals(WT_Unit.METER)) {
+            return this._range.asUnit(WT_Unit.METER) <= 501 ? WT_Unit.METER : WT_Unit.KILOMETER;
+        } else {
+            return this._unit;
+        }
+    }
 
-  _updateLabel() {
-      let unit = this._selectDisplayUnit();
-      this.labelText = this._formatter.getFormattedHTML(this._range, unit);
-  }
+    _updateLabel() {
+        let unit = this._selectDisplayUnit();
+        this.labelText = this._formatter.getFormattedHTML(this._range, unit);
+    }
 
-  /**
-   *
-   * @param {WT_NumberUnit} range
-   */
-  setRange(range) {
-      if (this._range.equals(range)) {
-          return;
-      }
+    /**
+     *
+     * @param {WT_NumberUnit} range
+     */
+    setRange(range) {
+        if (this._range.equals(range)) {
+            return;
+        }
 
-      this._range.set(range);
-      this._updateLabel();
-  }
+        this._range.set(range);
+        this._updateLabel();
+    }
 
-  /**
-   *
-   * @param {WT_Unit} unit
-   */
-  setUnit(unit) {
-      if ((this._unit === null && unit === null) || (this._unit && this._unit.equals(unit))) {
-          return;
-      }
+    /**
+     *
+     * @param {WT_Unit} unit
+     */
+    setUnit(unit) {
+        if ((this._unit === null && unit === null) || (this._unit && this._unit.equals(unit))) {
+            return;
+        }
 
-      this._unit = unit;
-      this._updateLabel();
-  }
+        this._unit = unit;
+        this._updateLabel();
+    }
 }
 WT_G3x5_TSCRangeDisplayButton.NAME = "wt-tsc-button-rangedisplay";
 
 customElements.define(WT_G3x5_TSCRangeDisplayButton.NAME, WT_G3x5_TSCRangeDisplayButton);
 
 class WT_G3x5_TSCRangeSelectionElementHandler {
-  /**
-   * @param {WT_NumberUnit[]} ranges
-   * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
-   */
-  constructor(ranges, unitsSettingModel) {
-      this._ranges = ranges.map(range => range.copy());
-      this._unitsSettingModel = unitsSettingModel;
-  }
+    /**
+     * @param {WT_NumberUnit[]} ranges
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
+     */
+    constructor(ranges, unitsSettingModel) {
+        this._ranges = ranges.map(range => range.copy());
+        this._unitsSettingModel = unitsSettingModel;
+    }
 
-  nextElement(index) {
-      if (index >= this._ranges.length) {
-          return null;
-      }
+    nextElement(index) {
+        if (index >= this._ranges.length) {
+            return null;
+        }
 
-      let elem = {
-          button: new WT_G3x5_TSCRangeDisplayButton()
-      };
-      elem.button.setRange(this._ranges[index]);
-      return elem;
-  }
+        let elem = {
+            button: new WT_G3x5_TSCRangeDisplayButton()
+        };
+        elem.button.setRange(this._ranges[index]);
+        return elem;
+    }
 
-  update(index, elem) {
-      elem.button.setUnit(this._unitsSettingModel.distanceSpeedSetting.getDistanceUnit());
-  }
+    update(index, elem) {
+        elem.button.setUnit(this._unitsSettingModel.distanceSpeedSetting.getDistanceUnit());
+    }
 }
 
 class WT_G3x5_TSCRangeTypeDisplayButton extends WT_TSCValueButton {
