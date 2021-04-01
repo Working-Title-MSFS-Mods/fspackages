@@ -304,7 +304,7 @@ class WT_VerticalAutopilot {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
-                if (!this.canPathActivate()) {
+                if (!this.canPathActivate() && this._pathInterceptStatus !== PathInterceptStatus.LEVELING && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
                     this.setVerticalNavModeState(VerticalNavModeState.PTCH);
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
@@ -633,7 +633,8 @@ class WT_VerticalAutopilot {
                 }
                 else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
                     if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
-                        console.log("setting PathInterceptStatus.LEVELING");
+                        console.log("setting PathInterceptStatus.LEVELING " + this.path.endsLevel + " " + this.path.fpta);
+                        console.log("setAltitudeAndSlot MANAGED at " + this.targetAltitude);
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, this.targetAltitude);
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
                     }
@@ -664,8 +665,8 @@ class WT_VerticalAutopilot {
                 break;
             case PathInterceptStatus.LEVELING:
                 if (this._navModeSelector.isAltitudeLocked) {
-                    //this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
-                    this.setManagedAltitude();
+                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
+                    //this.setManagedAltitude();
                     this._pathInterceptStatus = PathInterceptStatus.LEVELED;
                     console.log("setting PathInterceptStatus.LEVELED");
                     this.setDonut(0);

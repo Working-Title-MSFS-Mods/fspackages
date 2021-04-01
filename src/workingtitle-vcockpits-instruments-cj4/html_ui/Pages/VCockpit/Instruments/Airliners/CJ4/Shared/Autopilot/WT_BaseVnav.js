@@ -387,7 +387,6 @@ class WT_BaseVnav {
         this._firstPathSegment = this._verticalFlightPlanSegments.length - 1;
         const isPath = segment === 0 & nextSegmentEndIndex === undefined ? false : true;
         const state = verticalDirect ? VnavState.DIRECT : isPath ? VnavState.PATH : VnavState.NONE;
-        //console.log(JSON.stringify(this._verticalFlightPlanSegments));
         return state;
     }
 
@@ -427,6 +426,8 @@ class WT_BaseVnav {
             isFlatSegment = true;
             segmentStartsLevel = true;
             console.log("flat segment detected - segment " + segment + " from " + vwp.ident + " to " + this._verticalFlightPlan[flatPathStartIndex - 1].ident + " at " + maxAltitude + "FT");
+        } else if (segment > 0 && this._verticalFlightPlanSegments[segment - 1].endsLevel) {
+            segmentStartsLevel = true;
         }
         if (!isFlatSegment) {
             for (let k = endingIndex - 1; k >= this.flightplan.activeWaypointIndex; k--) {
@@ -461,8 +462,14 @@ class WT_BaseVnav {
                         break;
                     }
                     if (fpa <= segmentMinFPA) {
-                        bestFPA = segmentMinFPA;
-                        console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to segmentMinFPA " + bestFPA);
+                        if (fpa < 1) {
+                            bestFPA = Math.min(Math.max(this.vnavTargetFPA, segmentMinFPA) , segmentMaxFPA);
+                            segmentStartsLevel = true;
+                            console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to best fit " + bestFPA);
+                        } else {
+                            bestFPA = segmentMinFPA;
+                            console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to segmentMinFPA " + bestFPA);
+                        }
                         break;
                     }
                     segmentMaxFPA = fpa;
@@ -478,13 +485,24 @@ class WT_BaseVnav {
                     console.log("maxFPA " + maxFPA + " minFPA " + minFPA);
                     console.log(wptToEvaluate.ident + " not at constraint " + "lateralDistance " + lateralDistance);
                     if (maxFPA < segmentMinFPA) {
-                        if (segmentMinFPA <= 1) {
-                            bestFPA = Math.min(3, segmentMaxFPA);
+                        bestFPA = Math.min(Math.max(this.vnavTargetFPA, segmentMinFPA) , segmentMaxFPA);
+                        console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to closest to target FPA: " + bestFPA);
+
+                        //get fpa range from break segment to next segment
+                        const priorFPTA = vwp.waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, priorLateralDistance);
+                        const minAltDifference = wptToEvaluate.lowerConstraintAltitude - priorFPTA;
+                        const minFPAto = minAltDifference > 0 ? AutopilotMath.calculateFPA(minAltDifference, lateralDistance) : 0;
+                        if (minFPAto < 2) {
+                            console.log("minFPAto prior wpt: " + minFPAto + " is less than 2 degrees so this segment starts level");
                             segmentStartsLevel = true;
-                        } else {
-                            bestFPA = segmentMinFPA;
                         }
-                        console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to segmentMinFPA " + bestFPA);
+
+                        // if (segmentMinFPA <= 1) {
+                        //     bestFPA = Math.min(Math.max(this.vnavTargetFPA, segmentMinFPA) , segmentMaxFPA);
+                        //     segmentStartsLevel = true;
+                        // } else {
+                        //     bestFPA = segmentMinFPA;
+                        // }
                         break;
                     }
                     if (minFPA > segmentMaxFPA) {
@@ -501,7 +519,6 @@ class WT_BaseVnav {
                         console.log("bestFPA set to: " + bestFPA);
                         lateralDistance = lateralDistance + wptToEvaluate.legDistanceTo;
                         console.log("segmentMaxFPA updated to " + segmentMaxFPA + "; segmentMinFPA updated to " + segmentMinFPA);
-                        console.log(wptToEvaluate.ident + " added to segment " + segment);
                         break;
                     }
                     segmentMaxFPA = maxFPA < segmentMaxFPA ? maxFPA : segmentMaxFPA;
@@ -511,7 +528,7 @@ class WT_BaseVnav {
                     segmentBreakIndex = k;
                     lateralDistance = lateralDistance + wptToEvaluate.legDistanceTo;
                     console.log("segmentMaxFPA updated to " + segmentMaxFPA + "; segmentMinFPA updated to " + segmentMinFPA);
-                    console.log(wptToEvaluate.ident + " added to segment " + segment);
+                    console.log(wptToEvaluate.ident + " added to segment " + segment + " leg distance to: " + wptToEvaluate.legDistanceTo + " lateral distance: " + lateralDistance);
                 }
 
             }
@@ -532,6 +549,7 @@ class WT_BaseVnav {
                 if (segmentBreakIndex != endingIndex && !this._verticalFlightPlan[segmentBreakIndex].waypointFPTA && !isFlatSegment) {
                     const segmentLateralDistance = lateralDistance - this._verticalFlightPlan[segmentBreakIndex].legDistanceTo;
                     const segmentStartFPTA = this._verticalFlightPlan[endingIndex].waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, segmentLateralDistance);
+                    console.log("segment break FPTA: " + "maxAltitude: " + maxAltitude + " segmentStartFPTA: " + segmentStartFPTA);
                     this._verticalFlightPlan[segmentBreakIndex].waypointFPTA = maxAltitude > 0 ? Math.min(segmentStartFPTA, maxAltitude) : segmentStartFPTA;
                     segmentStartsLevel = maxAltitude > 0 && maxAltitude < segmentStartFPTA ? true : segmentStartsLevel;
                     console.log("based on distance: " + segmentLateralDistance + " FPA: " + bestFPA);
@@ -542,6 +560,7 @@ class WT_BaseVnav {
         segmentEndsLevel = distanceToNextTod > 0 ? true : segmentEndsLevel;
         console.log("writing segment " + segment + "; Start: " + segmentStartIndex + " " + this._verticalFlightPlan[segmentStartIndex].ident + "; Target: " + endingIndex + " " + this._verticalFlightPlan[endingIndex].ident
             + "; FPA: " + bestFPA + "; distanceToNextTod " + distanceToNextTod);
+        console.log("segment ends level? " + segmentEndsLevel + " segment starts level? " + segmentStartsLevel);
         return new PathSegment(segmentStartIndex, endingIndex, bestFPA, distanceToNextTod, segmentStartsLevel, segmentEndsLevel);
     }
 
@@ -575,7 +594,7 @@ class WT_BaseVnav {
             const distance = this.allWaypoints[this._verticalFlightPlanSegments[segment - 1].targetIndex].cumulativeDistanceInFP
                 - this.allWaypoints[endingIndex].cumulativeDistanceInFP;
             const descentDistance = AutopilotMath.calculateDescentDistance(nextFPA, fpta - nextFPTA);
-            const distanceToNextTod = distance - descentDistance > 0 ? distance - descentDistance : 0;
+            const distanceToNextTod = distance - descentDistance > .1 ? distance - descentDistance : 0;
             return distanceToNextTod;
         }
         return 0;
