@@ -44,9 +44,55 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
     }
 
     /**
+     *
+     * @param {CanvasRenderingContext2D} context
+     * @param {Number} lineWidth
+     * @param {String|CanvasGradient|CanvasPattern} strokeStyle
+     */
+    _applyStroke(context, lineWidth, strokeStyle) {
+        context.lineWidth = lineWidth;
+        context.strokeStyle = strokeStyle;
+        context.stroke();
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {Number} strokeWidth
+     * @param {String} strokeColor
+     * @param {Number} outlineWidth
+     * @param {String} outlineColor
+     */
+    _strokeMotionVectorsWithStyle(state, strokeWidth, strokeColor, outlineWidth, outlineColor) {
+        if (this.relativeVectorOutlineWidth > 0) {
+            this._applyStroke(this._motionVectorLayer.display.context, (strokeWidth + 2 * outlineWidth) * state.dpiScale, outlineColor);
+        }
+        this._applyStroke(this._motionVectorLayer.display.context, strokeWidth * state.dpiScale, strokeColor);
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     */
+    _strokeMotionVectors(state) {
+        if (state.model.traffic.motionVectorMode === WT_G3x5_MapModelTrafficModule.MotionVectorMode.OFF) {
+            return;
+        }
+
+        if (state.model.traffic.motionVectorMode === WT_G3x5_MapModelTrafficModule.MotionVectorMode.ABSOLUTE) {
+            this._strokeMotionVectorsWithStyle(state, this.absoluteVectorStrokeWidth, this.absoluteVectorStrokeColor, this.absoluteVectorOutlineWidth, this.absoluteVectorOutlineColor);
+        } else {
+            this._strokeMotionVectorsWithStyle(state, this.relativeVectorStrokeWidth, this.relativeVectorStrokeColor, this.relativeVectorOutlineWidth, this.relativeVectorOutlineColor);
+        }
+    }
+
+    /**
      * @param {WT_MapViewState} state
      */
     _updateIntruders(state) {
+        this._motionVectorLayer.display.clear();
+        this._motionVectorLayer.display.context.beginPath();
+
         this._intruderViews.forEach(value => this._intruderViewsToRemove.add(value), this);
         /**
          * @type {WT_ReadOnlyArray<WT_G3x5_TrafficSystemIntruderEntry>}
@@ -60,8 +106,10 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
             } else {
                 this._intruderViewsToRemove.delete(view);
             }
-            view.update(state, this.iconSize, this.fontSize);
+            view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer);
         }, this);
+
+        this._strokeMotionVectors(state);
 
         this._intruderViewsToRemove.forEach(view => {
             view.destroy();
@@ -83,8 +131,28 @@ WT_G3x5_MapViewTrafficIntruderLayer.CLASS_DEFAULT = "trafficIntruderLayer";
 WT_G3x5_MapViewTrafficIntruderLayer.CONFIG_NAME_DEFAULT = "trafficIntruder";
 WT_G3x5_MapViewTrafficIntruderLayer.OPTIONS_DEF = {
     iconSize: {default: 40, auto: true},
-    fontSize: {default: 25, auto: true}
+    fontSize: {default: 25, auto: true},
+    absoluteVectorStrokeWidth: {default: 2, auto: true},
+    absoluteVectorStrokeColor: {default: "white", auto: true},
+    absoluteVectorOutlineWidth: {default: 0, auto: true},
+    absoluteVectorOutlineColor: {default: "black", auto: true},
+    relativeVectorStrokeWidth: {default: 2, auto: true},
+    relativeVectorStrokeColor: {default: "#4ecc3d", auto: true},
+    relativeVectorOutlineWidth: {default: 0, auto: true},
+    relativeVectorOutlineColor: {default: "black", auto: true}
 };
+WT_G3x5_MapViewTrafficIntruderLayer.CONFIG_PROPERTIES = [
+    "iconSize",
+    "fontSize",
+    "absoluteVectorStrokeWidth",
+    "absoluteVectorStrokeColor",
+    "absoluteVectorOutlineWidth",
+    "absoluteVectorOutlineColor",
+    "relativeVectorStrokeWidth",
+    "relativeVectorStrokeColor",
+    "relativeVectorOutlineWidth",
+    "relativeVectorOutlineColor"
+];
 
 class WT_G3x5_MapViewTrafficIntruderView {
     /**
@@ -100,6 +168,8 @@ class WT_G3x5_MapViewTrafficIntruderView {
         this._viewPosition = new WT_GVector2(0, 0);
         this._isOffScale = false;
 
+        this._tempVector2_1 = new WT_GVector2(0, 0);
+        this._tempVector2_2 = new WT_GVector2(0, 0);
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
@@ -158,13 +228,46 @@ class WT_G3x5_MapViewTrafficIntruderView {
         this.htmlElement.update(state);
     }
 
-    _updateMotionVector(state) {
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewCanvas} motionVectorLayer
+     * @param {WT_GVector2} vector
+     */
+    _drawMotionVector(state, motionVectorLayer, vector) {
+        let distance = vector.length * state.model.traffic.motionVectorLookahead.asUnit(WT_Unit.SECOND);
+        let distanceView = distance / state.projection.viewResolution.asUnit(WT_Unit.METER);
+        let track = vector.theta;
+        let angle = track + state.projection.rotation * Avionics.Utils.DEG2RAD;
+        let start = this.viewPosition;
+        let end = this._tempVector2_2.setFromPolar(distanceView, angle).add(start);
+        motionVectorLayer.display.context.moveTo(start.x, start.y);
+        motionVectorLayer.display.context.lineTo(end.x, end.y);
     }
 
-    update(state, iconSize, fontSize) {
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_MapViewCanvas} motionVectorLayer
+     */
+    _updateMotionVector(state, motionVectorLayer) {
+        if (state.model.traffic.motionVectorMode === WT_G3x5_MapModelTrafficModule.MotionVectorMode.OFF || !this.htmlElement.isVisible) {
+            return;
+        }
+
+        let vector;
+        if (state.model.traffic.motionVectorMode === WT_G3x5_MapModelTrafficModule.MotionVectorMode.ABSOLUTE) {
+            vector = this._tempVector2_1.set(this.intruderEntry.intruder.velocityVector);
+        } else {
+            vector = this._tempVector2_1.set(this.intruderEntry.intruder.relativeVelocityVector);
+        }
+        this._drawMotionVector(state, motionVectorLayer, vector);
+    }
+
+    update(state, iconSize, fontSize, motionVectorLayer) {
         this._updatePosition(state);
         this._updateHTMLElement(state, iconSize, fontSize);
-        this._updateMotionVector(state);
+        this._updateMotionVector(state, motionVectorLayer);
     }
 
     destroy() {
@@ -200,6 +303,14 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
      */
     get intruderView() {
         return this._intruderView;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isVisible() {
+        return this._isVisible;
     }
 
     _defineChildren() {
