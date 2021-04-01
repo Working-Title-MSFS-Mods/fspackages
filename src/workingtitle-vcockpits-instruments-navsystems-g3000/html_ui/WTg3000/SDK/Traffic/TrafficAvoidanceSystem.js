@@ -23,10 +23,17 @@ class WT_TrafficAvoidanceSystem {
         this._optsManager = new WT_OptionsManager(this, WT_TrafficAvoidanceSystem.OPTION_DEFS);
         this._optsManager.setOptions(options);
 
-        this._initListeners();
+        /**
+         * @type {((eventType:WT_TrafficAvoidanceSystem.IntruderEventType, intruder:WT_TrafficAvoidanceSystemIntruder) => void)[][]}
+         */
+        this._listeners = [[], [], []];
+
+        this._initTrafficTrackerListeners();
+
+        this._tempSecond = WT_Unit.SECOND.createNumber(0);
     }
 
-    _initListeners() {
+    _initTrafficTrackerListeners() {
         this._trafficTracker.addListener(WT_TrafficTracker.EventType.CONTACT_CREATED, this._onContactCreated.bind(this));
         this._trafficTracker.addListener(WT_TrafficTracker.EventType.CONTACT_REMOVED, this._onContactRemoved.bind(this));
     }
@@ -72,22 +79,56 @@ class WT_TrafficAvoidanceSystem {
     }
 
     _onContactCreated(eventType, contact) {
-        let entry = new WT_TrafficAvoidanceSystemIntruder(contact);
-        this._intruders.push(entry);
+        let intruder = new WT_TrafficAvoidanceSystemIntruder(contact);
+        this._intruders.push(intruder);
+        this._fireIntruderEvent(WT_TrafficAvoidanceSystem.IntruderEventType.CREATE, intruder);
     }
 
     _onContactRemoved(eventType, contact) {
         let index = this._intruders.findIndex(entry => entry.contact === contact);
         if (index >= 0) {
-            this._intruders.splice(index, 1);
+            let removed = this._intruders.splice(index, 1);
+            this._fireIntruderEvent(WT_TrafficAvoidanceSystem.IntruderEventType.REMOVE, removed[0]);
         }
     }
 
+    /**
+     *
+     * @param {eventType:WT_TrafficAvoidanceSystem.IntruderEventType}
+     * @param {(eventType:WT_TrafficAvoidanceSystem.IntruderEventType, intruder:WT_TrafficAvoidanceSystemIntruder) => void} listener
+     */
+    addIntruderListener(eventType, listener) {
+        this._listeners[eventType].push(listener);
+    }
+
+    removeIntruderListener(eventType, listener) {
+        let index = this._listeners[eventType].indexOf(listener);
+        if (index >= 0) {
+            this._listeners[eventType].splice(index, 1);
+        }
+    }
+
+    _fireIntruderEvent(eventType, intruder) {
+        this._listeners[eventType].forEach(listener => listener(eventType, intruder));
+    }
+
     update() {
-        this._ownAirplane.update();
-        this._intruders.forEach(entry => entry.update(this._ownAirplane, this.lookaheadTime, this.minimumGroundSpeed), this);
+        let time = this._tempSecond.set(SimVar.GetSimVarValue("E:ZULU TIME", "seconds")).readonly();
+        this._ownAirplane.update(time);
+        this._intruders.forEach(intruder => {
+            intruder.update(time, this._ownAirplane, this.lookaheadTime, this.minimumGroundSpeed);
+            this._fireIntruderEvent(WT_TrafficAvoidanceSystem.IntruderEventType.UPDATE, intruder);
+        }, this);
     }
 }
+/**
+ * @enum {Number}
+ */
+WT_TrafficAvoidanceSystem.IntruderEventType = {
+    CREATE: 0,
+    UPDATE: 1,
+    REMOVE: 2
+};
 WT_TrafficAvoidanceSystem.OPTION_DEFS = {
     lookaheadTime: {default: WT_Unit.MINUTE.createNumber(20)},
     minimumGroundSpeed: {default: WT_Unit.KNOT.createNumber(30)}
@@ -114,6 +155,8 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
         this._positionVector = new WT_GVector3(0, 0, 0);
         this._velocityVector = new WT_GVector3(0, 0, 0);
 
+        this._lastUpdatedTime = WT_Unit.SECOND.createNumber(0);
+
         this._tempVector2 = new WT_GVector2(0, 0);
     }
 
@@ -139,6 +182,14 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
 
     set protectedHeight(height) {
         this._protectedHeight.set(height);
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get lastUpdatedTime() {
+        return this._lastUpdatedTime.readonly();
     }
 
     /**
@@ -206,14 +257,15 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     _updateVectors() {
-        let horizontalVelocity = this._tempVector2.setFromPolar(this.groundSpeed.asUnit(WT_Unit.MPS), this.groundTrack);
+        let horizontalVelocity = this._tempVector2.setFromPolar(this.groundSpeed.asUnit(WT_Unit.MPS), this.groundTrack * Avionics.Utils.DEG2RAD);
         let verticalVelocity = this.verticalSpeed.asUnit(WT_Unit.MPS);
         this._velocityVector.set(horizontalVelocity.x, horizontalVelocity.y, verticalVelocity);
     }
 
-    update() {
+    update(time) {
         this._updateParameters();
         this._updateVectors();
+        this._lastUpdatedTime.set(time);
     }
 }
 
@@ -224,6 +276,8 @@ class WT_TrafficAvoidanceSystemIntruder {
     constructor(contact) {
         this._contact = contact;
 
+        this._position = new WT_GeoPoint(0, 0);
+        this._altitude = WT_Unit.FOOT.createNumber(0);
         this._positionVector = new WT_GVector3(0, 0, 0);
         this._velocityVector = new WT_GVector3(0, 0, 0);
         this._deltaPosition = new WT_GVector3(0, 0, 0);
@@ -233,6 +287,10 @@ class WT_TrafficAvoidanceSystemIntruder {
         this._tca = WT_Unit.SECOND.createNumber(NaN);
         this._tcaNorm = NaN;
         this._tcaDisplacement = new WT_GVector3(NaN, NaN, NaN);
+        this._tcaHorizontalSeparation = WT_Unit.NMILE.createNumber(0);
+        this._tcaVerticalSeparation = WT_Unit.FOOT.createNumber(0);
+
+        this._lastUpdatedTime = WT_Unit.SECOND.createNumber(0);
 
         this._tempVector2_1 = new WT_GVector2(0, 0);
         this._tempVector2_2 = new WT_GVector2(0, 0);
@@ -249,6 +307,14 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get lastUpdatedTime() {
+        return this._lastUpdatedTime.readonly();
+    }
+
+    /**
      * Whether there is a valid prediction for time of closest approach between this intruder and own airplane.
      * @readonly
      * @type {Boolean}
@@ -258,19 +324,21 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
+     * The most recent calculated position of this intruder.
      * @readonly
-     * @type {WT_GVector3ReadOnly}
+     * @type {WT_GeoPointReadOnly}
      */
-    get positionVector() {
-        return this._positionVector.readonly();
+    get position() {
+        return this._position.readonly();
     }
 
     /**
+     * The most recent calculated altitude of this intruder.
      * @readonly
-     * @type {WT_GVector3ReadOnly}
+     * @type {WT_NumberUnitReadOnly}
      */
-    get velocityVector() {
-        return this._velocityVector.readonly();
+    get altitude() {
+        return this._altitude.readonly();
     }
 
     /**
@@ -339,42 +407,116 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
-     *
-     * @param {WT_TrafficAvoidanceSystemOwnAirplane} self
+     * The predicted horizontal separation between this intruder and own airplane at time of closest approach.
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
      */
-    _updatePosition(self) {
-        let distance = WT_Unit.GA_RADIAN.convert(this.contact.lastPosition.distance(self.position), WT_Unit.METER);
-        let bearing = self.position.bearingTo(this.contact.lastPosition);
+    get tcaHorizontalSeparation() {
+        return this._tcaHorizontalSeparation.readonly();
+    }
+
+    /**
+     * The predicted vertical separation between this intruder and own airplane at time of closest approach.
+     * @readonly
+     * @type {WT_NumberUnitReadOnly}
+     */
+    get tcaVerticalSeparation() {
+        return this._tcaVerticalSeparation.readonly();
+    }
+
+    _displacementToHorizontalSeparation(displacement, reference) {
+        return reference.set(this._tempVector2_1.set(displacement).length, WT_Unit.METER);
+    }
+
+    _displacementToVerticalSeparation(displacement, reference) {
+        return reference.set(Math.abs(displacement.z), WT_Unit.METER);
+    }
+
+    /**
+     * Calculates the predicted displacement vector from own airplane to this intruder at a specified time based on the
+     * most recent available data. The coordinate system is defined in units of meters, with the positive x axis
+     * pointing due east, the positive y axis pointing due south, and the positive z axis pointing upwards. If
+     * insufficient data is available to calculate the prediction, null will be returned.
+     * @param {WT_NumberUnit} time - the time at which to calculate the displacement.
+     * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the result. If not supplied, a new
+     *                                    object will be created.
+     * @returns {WT_GVector3} the predicted displacement vector from own airplane to this intruder at the specified
+     *                        time.
+     */
+    predictDisplacement(time, reference) {
+        if (!this.isPredictionValid) {
+            return null;
+        }
+
+        let dt = time.asUnit(WT_Unit.SECOND) - this.contact.lastContactTime.asUnit(WT_Unit.SECOND);
+        if (!reference) {
+            reference = new WT_GVector3(0, 0, 0);
+        }
+        return reference.set(this.relativeVelocityVector).scale(dt, true).add(this.relativePositionVector);
+    }
+
+    /**
+     * Calculates the predicted separation between this intruder and own airplane at a specified time based on the most
+     * recent available data and stores the results in the supplied WT_NumberUnit objects. If insufficient data is
+     * available to calculate the prediction, the result will be a value of NaN.
+     * @param {WT_NumberUnit} time - the time at which to calculate the separation.
+     * @param {WT_NumberUnit} horizontalReference - a WT_NumberUnit object in which to store the horizontal separation.
+     * @param {WT_NumberUnit} horizontalReference - a WT_NumberUnit object in which to store the vertical separation.
+     */
+    predictSeparation(time, horizontalReference, verticalReference) {
+        if (!this.isPredictionValid) {
+            horizontalReference.set(NaN);
+            verticalReference.set(NaN);
+            return;
+        }
+
+        let displacement = this.predictDisplacement(time, this._tempVector3);
+        this._displacementToHorizontalSeparation(displacement, horizontalReference);
+        this._displacementToVerticalSeparation(displacement, verticalReference);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnitReadOnly} time
+     * @param {WT_TrafficAvoidanceSystemOwnAirplane} ownAirplane
+     */
+    _updatePosition(time, ownAirplane) {
+        this.contact.predict(time, this._position, this._altitude);
+
+        let distance = WT_Unit.GA_RADIAN.convert(this.position.distance(ownAirplane.position), WT_Unit.METER);
+        let bearing = ownAirplane.position.bearingTo(this.position);
         let horizontalPosition = this._tempVector2_1.setFromPolar(distance, bearing);
-        let verticalPosition = this.contact.lastAltitude.asUnit(WT_Unit.METER) - self.altitude.asUnit(WT_Unit.METER);
+        let verticalPosition = this.altitude.asUnit(WT_Unit.METER) - ownAirplane.altitude.asUnit(WT_Unit.METER);
         this._positionVector.set(horizontalPosition.x, horizontalPosition.y, verticalPosition);
     }
 
     /**
      *
-     * @param {WT_TrafficAvoidanceSystemOwnAirplane} self
-     * @param {WT_NumberUnitReadOnly} minimumGroundSpeed
+     * @param {WT_NumberUnitReadOnly} time
+     * @param {WT_TrafficAvoidanceSystemOwnAirplane} ownAirplane
      */
-    _updateVelocity(self, minimumGroundSpeed) {
-        if (isNaN(this.contact.computedGroundTrack) || this.contact.computedGroundSpeed.compare(minimumGroundSpeed) < 0) {
-            this._velocityVector.set(NaN, NaN, NaN);
-            this._isPredictionValid = false;
-        } else {
-            let horizontalVelocity = this._tempVector2_1.setFromPolar(this.contact.computedGroundSpeed.asUnit(WT_Unit.MPS), this.contact.computedGroundTrack);
-            let verticalVelocity = this.contact.computedVerticalSpeed.asUnit(WT_Unit.MPS);
-            this._velocityVector.set(horizontalVelocity.x, horizontalVelocity.y, verticalVelocity);
-            this._isPredictionValid = true;
-        }
+    _updateVelocity(time, ownAirplane) {
+        let horizontalVelocity = this._tempVector2_1.setFromPolar(this.contact.computedGroundSpeed.asUnit(WT_Unit.MPS), this.contact.computedGroundTrack * Avionics.Utils.DEG2RAD);
+        let verticalVelocity = this.contact.computedVerticalSpeed.asUnit(WT_Unit.MPS);
+        this._velocityVector.set(horizontalVelocity.x, horizontalVelocity.y, verticalVelocity);
     }
 
     /**
      *
-     * @param {WT_TrafficAvoidanceSystemOwnAirplane} self
+     * @param {WT_NumberUnitReadOnly} time
+     * @param {WT_TrafficAvoidanceSystemOwnAirplane} ownAirplane
      * @param {WT_NumberUnitReadOnly} minimumGroundSpeed
      */
-    _updateVectors(self, minimumGroundSpeed) {
-        this._updatePosition(self);
-        this._updateVelocity(self, minimumGroundSpeed);
+    _updateVectors(time, ownAirplane, minimumGroundSpeed) {
+        if (isNaN(this.contact.computedGroundTrack) || this.contact.computedGroundSpeed.compare(minimumGroundSpeed) < 0) {
+            this._isPredictionValid = false;
+            this._positionVector.set(NaN, NaN, NaN);
+            this._velocityVector.set(NaN, NaN, NaN);
+        } else {
+            this._updatePosition(time, ownAirplane);
+            this._updateVelocity(time, ownAirplane);
+            this._isPredictionValid = true;
+        }
     }
 
     /**
@@ -425,22 +567,32 @@ class WT_TrafficAvoidanceSystemIntruder {
         this._addSolution(0, s, v, r, h, solutions, norms);
         if (vHoriz.length !== 0) {
             let t = -sHoriz.dot(vHoriz) / vHorizSquared;
-            this._addSolution(t, s, v, r, h, solutions, norms);
+            if (t > 0) {
+                this._addSolution(t, s, v, r, h, solutions, norms);
+            }
         }
         if (v.z !== 0) {
             let t = -s.z / v.z;
-            this._addSolution(t, s, v, r, h, solutions, norms);
+            if (t > 0) {
+                this._addSolution(t, s, v, r, h, solutions, norms);
+            }
         }
         let discriminant = b * b - 4 * a * c;
         if (a !== 0 && discriminant >= 0) {
             let sqrt = Math.sqrt(discriminant);
             let t = (-b + sqrt) / (2 * a);
-            this._addSolution(t, s, v, r, h, solutions, norms);
+            if (t > 0) {
+                this._addSolution(t, s, v, r, h, solutions, norms);
+            }
             t = (-b - sqrt) / (2 * a);
-            this._addSolution(t, s, v, r, h, solutions, norms);
+            if (t > 0) {
+                this._addSolution(t, s, v, r, h, solutions, norms);
+            }
         } else if (a === 0 && b !== 0) {
             let t = -c / b;
-            this._addSolution(t, s, v, r, h, solutions, norms);
+            if (t > 0) {
+                this._addSolution(t, s, v, r, h, solutions, norms);
+            }
         }
 
         let tcaIndex = norms.reduce((candidate, norm, index) => {
@@ -468,26 +620,34 @@ class WT_TrafficAvoidanceSystemIntruder {
         this._tca.set(tca);
         this._tcaNorm = tcaNorm;
         this._tcaDisplacement.set(tcaDisplacement);
+        this._displacementToHorizontalSeparation(tcaDisplacement, this._tcaHorizontalSeparation);
+        this._displacementToVerticalSeparation(tcaDisplacement, this._tcaVerticalSeparation);
     }
 
     _invalidatePrediction() {
+        this._deltaPosition.set(NaN, NaN, NaN);
+        this._deltaVelocity.set(NaN, NaN, NaN);
         this._tca.set(NaN);
         this._tcaNorm = NaN;
         this._tcaDisplacement.set(NaN, NaN, NaN);
+        this._tcaHorizontalSeparation.set(NaN);
+        this._tcaVerticalSeparation.set(NaN);
     }
 
     /**
      *
+     * @param {WT_NumberUnitReadOnly} time
      * @param {WT_TrafficAvoidanceSystemOwnAirplane} ownAirplane
      * @param {WT_NumberUnitReadOnly} lookaheadTime
      * @param {WT_NumberUnitReadOnly} minimumGroundSpeed
      */
-    update(ownAirplane, lookaheadTime, minimumGroundSpeed) {
-        this._updateVectors(ownAirplane, minimumGroundSpeed);
+    update(time, ownAirplane, lookaheadTime, minimumGroundSpeed) {
+        this._updateVectors(time, ownAirplane, minimumGroundSpeed);
         if (this.isPredictionValid) {
             this._updateTCA(ownAirplane, lookaheadTime);
         } else {
             this._invalidatePrediction();
         }
+        this._lastUpdatedTime.set(time);
     }
 }

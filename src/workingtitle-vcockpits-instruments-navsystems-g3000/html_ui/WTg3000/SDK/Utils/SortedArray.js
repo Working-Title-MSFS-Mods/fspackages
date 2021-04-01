@@ -215,6 +215,13 @@ class WT_SortedArray {
     }
 
     /**
+     * Resorts this array using its sorting function.
+     */
+    resort() {
+        this._array.sort(this.comparator);
+    }
+
+    /**
      * Gets an IterableIterator over all elements in this array.
      * @returns {IterableIterator<T>} an IterableIterator over all elements in this array.
      */

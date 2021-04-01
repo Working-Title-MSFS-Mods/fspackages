@@ -23,7 +23,7 @@ class WT_TrafficTracker {
         this._optsManager.setOptions(options);
 
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
-        this._tempFeet = WT_Unit.FOOT.createNumber(0);
+        this._tempMeters = WT_Unit.METER.createNumber(0);
         this._tempBearingTrue = new WT_NavAngleUnit(false).createNumber(0);
     }
 
@@ -42,7 +42,7 @@ class WT_TrafficTracker {
     _createContact(entry) {
         let id = `${entry.uId}`;
         let position = this._tempGeoPoint.set(entry.lat, entry.lon);
-        let altitude = this._tempFeet.set(entry.alt);
+        let altitude = this._tempMeters.set(entry.alt);
         let heading = this._tempBearingTrue.set(entry.heading);
         let contact = new WT_TrafficContact(id, position, altitude, heading, this.contactOptions);
         this._tracked.set(id, contact);
@@ -57,7 +57,7 @@ class WT_TrafficTracker {
      */
     _updateContact(contact, entry) {
         let position = this._tempGeoPoint.set(entry.lat, entry.lon);
-        let altitude = this._tempFeet.set(entry.alt);
+        let altitude = this._tempMeters.set(entry.alt);
         let heading = this._tempBearingTrue.set(entry.heading);
         contact.update(position, altitude, heading);
         this._listeners[WT_TrafficTracker.EventType.CONTACT_UPDATED].forEach(listener => listener(WT_TrafficTracker.EventType.CONTACT_UPDATED, contact));
@@ -228,27 +228,26 @@ class WT_TrafficContact {
     }
 
     /**
-     *
-     * @param {NumberUnit} elapsedTime
-     * @param {{position:WT_GeoPoint, altitude:WT_NumberUnit}} [reference]
+     * Calculates the predicted position and altitude of this contact at a specified time based on the most recent
+     * available data and stores the results in the supplied objects. If insufficient data is available to calculate
+     * the prediction, the result will be a value of NaN.
+     * @param {NumberUnit} time - the time at which to calculate the prediction.
+     * @param {WT_GeoPoint} positionReference - a WT_GeoPoint object in which to store the position.
+     * @param {WT_NumberUnit} altitudeReference - a WT_NumberUnit object in which to store the altitude.
      */
-    predict(elapsedTime, reference) {
+    predict(time, positionReference, altitudeReference) {
         if (this.computedGroundSpeed.isNaN()) {
-            return null;
+            positionReference.set(NaN, NaN);
+            altitudeReference.set(NaN);
         }
 
-        if (!reference) {
-            reference = {
-                position: new WT_GeoPoint(0, 0),
-                altitude: WT_Unit.FOOT.createNumber(0)
-            };
-        }
+        let dt = time.asUnit(WT_Unit.SECOND) - this.lastContactTime.asUnit(WT_Unit.SECOND);
 
-        let distance = WT_Unit.NMILE.convert(this._computedGroundSpeed.number * elapsedTime.asUnit(WT_Unit.HOUR), WT_Unit.GA_RADIAN);
-        reference.position.set(this.lastPosition).offset(this.computedGroundTrack, distance, true);
+        let distance = WT_Unit.NMILE.convert(this.computedGroundSpeed.asUnit(WT_Unit.KNOT) * (dt / 3600), WT_Unit.GA_RADIAN);
+        positionReference.set(this.lastPosition).offset(this.computedGroundTrack, distance, true);
 
-        let deltaAlt = this.computedVerticalSpeed.number * elapsedTime.asUnit(WT_Unit.MINUTE);
-        reference.altitude.set(this.lastAltitude, WT_Unit.FOOT).add(deltaAlt, WT_Unit.FOOT);
+        let deltaAlt = this.computedVerticalSpeed.asUnit(WT_Unit.FPM) * (dt / 60);
+        altitudeReference.set(this.lastAltitude).add(deltaAlt, WT_Unit.FOOT);
     }
 
     /**
@@ -269,7 +268,7 @@ class WT_TrafficContact {
      * @param {WT_GeoPoint} newPosition
      */
     _updateGroundTrack(dt, newPosition) {
-        let track = (newPosition.bearingFrom(this._lastPosition) + 180) % 360;
+        let track = newPosition.bearingFrom(this._lastPosition);
         this._computedGroundTrack = this._groundTrackSmoother.next(track, dt);
     }
 
