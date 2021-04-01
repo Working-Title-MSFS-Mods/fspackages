@@ -45,6 +45,14 @@ class WT_G3x5_MFD extends NavSystem {
 
     /**
      * @readonly
+     * @type {WT_G3x5_TrafficSystem}
+     */
+    get trafficSystem() {
+        return this._trafficSystem;
+    }
+
+    /**
+     * @readonly
      * @property {WT_CitySearcher} citySearcher
      * @type {WT_CitySearcher}
      */
