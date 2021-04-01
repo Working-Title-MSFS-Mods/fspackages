@@ -296,7 +296,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _changeMapRange(delta) {
-        let currentIndex = WT_MapController.getSettingValue(this._innerMap.navMap.instrumentID, WT_MapRangeSetting.KEY_DEFAULT);
+        let currentIndex = WT_MapSettingModel.getSettingValue(this._innerMap.navMap.instrumentID, WT_MapRangeSetting.KEY_DEFAULT);
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
         this._innerMap.navMap.rangeSetting.setValue(newIndex);
     }

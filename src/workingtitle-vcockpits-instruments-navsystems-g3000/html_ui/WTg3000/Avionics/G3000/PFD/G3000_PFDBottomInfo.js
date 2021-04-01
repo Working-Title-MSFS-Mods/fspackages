@@ -1,7 +1,7 @@
 class WT_G3000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
     _initInfoCells() {
-        this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsController));
-        this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsController));
+        this.addCell(new WT_G3x5_PFDBottomInfoAirspeedCell(this.instrument.unitsSettingModel));
+        this.addCell(new WT_G3x5_PFDBottomInfoTemperatureCell(this.instrument.unitsSettingModel));
 
         let bearingCellLeft = new WT_G3000_PFDBottomInfoBearingCell(this._bearingInfos.getModel(WT_G3x5_PFDBearingInfoContainer.Slot.ONE));
         bearingCellLeft.htmlElement.setOrientation(WT_G3000_PFDBottomInfoBearingCellHTMLElement.Orientation.LEFT);

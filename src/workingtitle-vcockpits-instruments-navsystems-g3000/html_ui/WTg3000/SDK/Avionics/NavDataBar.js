@@ -326,10 +326,25 @@ WT_NavDataBarView.TEMPLATE.innerHTML = `
 
 customElements.define(WT_NavDataBarView.NAME, WT_NavDataBarView);
 
-class WT_NavDataBarController extends WT_DataStoreController {
+class WT_NavDataBarSettingModel extends WT_DataStoreSettingModel {
+    constructor(id, navDataBarModel) {
+        super(id);
+
+        this._navDataBarModel = navDataBarModel;
+    }
+
     /**
-     * Creates and adds a data field setting to this controller. The index of the setting is automatically set to the next available
-     * index based on the number of settings already added to this controller.
+     * The nav data bar model associated with this setting model.
+     * @readonly
+     * @type {WT_NavDataBarModel}
+     */
+    get navDataBarModel() {
+        return this._navDataBarModel;
+    }
+
+    /**
+     * Creates and adds a data field setting to this setting model. The index of the setting is automatically set to
+     * the next available index based on the number of settings already added to this model.
      * @param {String} defaultValue - the default value of the setting to add.
      * @returns {WT_NavDataBarFieldSetting} the setting that was added.
      */
@@ -349,16 +364,40 @@ class WT_NavDataBarController extends WT_DataStoreController {
     }
 }
 
-class WT_NavDataBarFieldSetting extends WT_DataStoreSetting {
-    constructor(controller, index, defaultValue, autoUpdate = true, isPersistent = true, keyRoot = WT_NavDataBarFieldSetting.KEY_ROOT) {
-        super(controller, `${keyRoot}_${index}`, defaultValue, autoUpdate, isPersistent);
+class WT_NavDataBarSetting extends WT_DataStoreSetting {
+    /**
+     * @param {WT_NavDataBarSettingModel} model - the model with which to associate the new setting.
+     * @param {String} key - the data store key of the new setting.
+     * @param {*} [defaultValue] - the value to which the new setting should default if it is not persistent or if a value cannot be retrieved
+     *                             from the data store.
+     * @param {Boolean} [autoUpdate] - whether the new setting should automatically call its update() method whenever its value
+     *                                 changes. True by default.
+     * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
+     */
+    constructor(model, key, defaultValue = 0, autoUpdate = true, isPersistent = false) {
+        super(model, key, defaultValue, autoUpdate, isPersistent);
+    }
+
+    /**
+     * The nav data bar model associated with this setting.
+     * @readonly
+     * @type {WT_NavDataBarModel}
+     */
+    get navDataBarModel() {
+        return this._model.navDataBarModel;
+    }
+}
+
+class WT_NavDataBarFieldSetting extends WT_NavDataBarSetting {
+    constructor(model, index, defaultValue, autoUpdate = true, isPersistent = true, keyRoot = WT_NavDataBarFieldSetting.KEY_ROOT) {
+        super(model, `${keyRoot}_${index}`, defaultValue, autoUpdate, isPersistent);
 
         this._index = index;
     }
 
     /**
+     * The index of the nav data field this setting controls.
      * @readonly
-     * @property {Number} index - the index of the nav data field this setting controls.
      * @type {Number}
      */
     get index() {
@@ -366,7 +405,7 @@ class WT_NavDataBarFieldSetting extends WT_DataStoreSetting {
     }
 
     update() {
-        this.model.setDataFieldInfo(this._index, this.model.getNavDataInfo(this.getValue()));
+        this.navDataBarModel.setDataFieldInfo(this._index, this.navDataBarModel.getNavDataInfo(this.getValue()));
     }
 }
 WT_NavDataBarFieldSetting.KEY_ROOT = "WT_NavDataBar_FieldAssignment";

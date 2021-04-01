@@ -5,8 +5,8 @@ class WT_G3x5_WeatherRadar {
     }
 
     /**
+     * The ID of this weather radar.
      * @readonly
-     * @property {String} instrumentID - the ID of this weather radar.
      * @type {String}
      */
     get instrumentID() {
@@ -14,8 +14,8 @@ class WT_G3x5_WeatherRadar {
     }
 
     /**
+     * The model associated with this weather radar.
      * @readonly
-     * @property {WT_WeatherRadarModel} model - the model associated with this weather radar.
      * @type {WT_WeatherRadarModel}
      */
     get model() {
@@ -23,12 +23,12 @@ class WT_G3x5_WeatherRadar {
     }
 
     /**
+     * The setting model for this weather radar.
      * @readonly
-     * @property {WT_DataStoreController} controller - the controller for this weather radar.
-     * @type {WT_DataStoreController}
+     * @type {WT_DataStoreSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     init(root) {
@@ -40,17 +40,17 @@ class WT_G3x5_WeatherRadar {
         this._settingsView = root.querySelector(`weatherradar-view-settings`);
         this._settingsView.setModel(this.model);
 
-        this._controller = new WT_DataStoreController(`${this.instrumentID}`, this.model);
+        this._settingModel = new WT_WeatherRadarSettingModel(`${this.instrumentID}`, this.model);
 
-        this.controller.addSetting(this._showSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5_WeatherRadar.SHOW_KEY, WT_G3x5_WeatherRadar.SHOW_DEFAULT, true, false));
-        this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5_WeatherRadar.MODE_KEY, WT_G3x5_WeatherRadar.MODE_DEFAULT, true, false));
-        this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5_WeatherRadar.DISPLAY_KEY, WT_G3x5_WeatherRadar.DISPLAY_DEFAULT, true, false));
-        this.controller.addSetting(new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5_WeatherRadar.SCAN_MODE_KEY, WT_G3x5_WeatherRadar.SCAN_MODE_DEFAULT, true, false));
-        this.controller.addSetting(new WT_WeatherRadarSetting(this.controller, "showBearingLine", WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
-        this.controller.addSetting(new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5_WeatherRadar.RANGES, WT_G3x5_WeatherRadar.RANGE_DEFAULT));
+        this.settingModel.addSetting(this._showSetting = new WT_WeatherRadarGenericSetting(this.settingModel, "mode", WT_G3x5_WeatherRadar.SHOW_KEY, WT_G3x5_WeatherRadar.SHOW_DEFAULT, true, false));
+        this.settingModel.addSetting(this._modeSetting = new WT_WeatherRadarGenericSetting(this.settingModel, "mode", WT_G3x5_WeatherRadar.MODE_KEY, WT_G3x5_WeatherRadar.MODE_DEFAULT, true, false));
+        this.settingModel.addSetting(this._displaySetting = new WT_WeatherRadarGenericSetting(this.settingModel, "display", WT_G3x5_WeatherRadar.DISPLAY_KEY, WT_G3x5_WeatherRadar.DISPLAY_DEFAULT, true, false));
+        this.settingModel.addSetting(new WT_WeatherRadarGenericSetting(this.settingModel, "scanMode", WT_G3x5_WeatherRadar.SCAN_MODE_KEY, WT_G3x5_WeatherRadar.SCAN_MODE_DEFAULT, true, false));
+        this.settingModel.addSetting(new WT_WeatherRadarGenericSetting(this.settingModel, "showBearingLine", WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
+        this.settingModel.addSetting(new WT_WeatherRadarRangeSetting(this.settingModel, WT_G3x5_WeatherRadar.RANGES, WT_G3x5_WeatherRadar.RANGE_DEFAULT));
 
-        this.controller.init();
-        this.controller.update();
+        this.settingModel.init();
+        this.settingModel.update();
     }
 
     sleep() {

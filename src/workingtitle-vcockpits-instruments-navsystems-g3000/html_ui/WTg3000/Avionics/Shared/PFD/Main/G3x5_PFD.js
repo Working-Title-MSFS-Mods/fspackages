@@ -204,17 +204,17 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
 
         this._isEnabled = false;
 
-        this._initController();
+        this._initSettingModel();
 
         this._isInit = false;
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._showSetting = new WT_G3x5_PFDInsetMapShowSetting(this._controller));
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel.addSetting(this._showSetting = new WT_G3x5_PFDInsetMapShowSetting(this._settingModel));
         this.showSetting.addListener(this._onShowSettingChanged.bind(this));
 
-        this._controller.init();
+        this._settingModel.init();
     }
 
     /**
@@ -247,7 +247,7 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
     }
 
     _initNavMap(root) {
-        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsController, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsSettingModel, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 
@@ -410,15 +410,15 @@ class AS3000_PFD_Attitude extends PFD_Attitude {
 
         this._instrumentID = instrumentID;
 
-        this._initController();
+        this._initSettingModel();
     }
 
-    _initController() {
-        this._controller = new WT_DataStoreController(this.instrumentID, null);
-        this._controller.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._controller));
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this._settingModel));
         this.svtShowSetting.addListener(this._onSVTShowSettingChanged.bind(this));
 
-        this._controller.init();
+        this._settingModel.init();
         this._setSVTShow(this.svtShowSetting.getValue());
     }
 

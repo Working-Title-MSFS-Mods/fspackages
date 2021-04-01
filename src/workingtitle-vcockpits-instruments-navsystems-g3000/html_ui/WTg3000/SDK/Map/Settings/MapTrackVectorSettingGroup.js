@@ -3,18 +3,18 @@
  */
 class WT_MapTrackVectorSettingGroup extends WT_MapSettingGroup {
     /**
-     * @param {WT_MapElement} controller - the controller with which to associate the new setting.
-     * @param {WT_NumberUnit[]} [lookaheadValues=WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT] - an Iterable of the possible lookahead times (in seconds).
-     * @param {number} [lookaheadDefault=WT_MapTrackVectorSettingGroup.LOOKAHEAD_DEFAULT] - the default lookahead time (in seconds).
+     * @param {WT_MapElement} model - the setting model with which to associate the new setting.
+     * @param {WT_NumberUnit[]} [lookaheadValues] - an Iterable of the possible lookahead times (in seconds).
+     * @param {number} [lookaheadDefault] - the default lookahead time (in seconds).
      * @param {Boolean} [isSyncable] - whether the track vector settings are sync-able. True by default.
      * @param {Boolean} [isPersistent] - whether the track vector settings persist across sessions. True by default.
      */
-    constructor(controller, lookaheadValues = WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT, lookaheadDefault = WT_MapTrackVectorSettingGroup.LOOKAHEAD_DEFAULT, isSyncable = true, isPersistent = true) {
-        super(controller, [], isSyncable, true);
+    constructor(model, lookaheadValues = WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT, lookaheadDefault = WT_MapTrackVectorSettingGroup.LOOKAHEAD_DEFAULT, isSyncable = true, isPersistent = true) {
+        super(model, [], isSyncable, true);
 
         this.lookaheadValues = lookaheadValues;
-        this._showSetting = new WT_MapSetting(controller, WT_MapTrackVectorSettingGroup.SHOW_KEY, false, isSyncable, false, isPersistent);
-        this._lookaheadSetting = new WT_MapSetting(controller, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, this.lookaheadValues.findIndex(e => e.equals(lookaheadDefault)), isSyncable, false, isPersistent);
+        this._showSetting = new WT_MapSetting(model, WT_MapTrackVectorSettingGroup.SHOW_KEY, false, isSyncable, false, isPersistent);
+        this._lookaheadSetting = new WT_MapSetting(model, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, this.lookaheadValues.findIndex(e => e.equals(lookaheadDefault)), isSyncable, false, isPersistent);
         this.addSetting(this._showSetting);
         this.addSetting(this._lookaheadSetting);
     }
@@ -23,8 +23,8 @@ class WT_MapTrackVectorSettingGroup extends WT_MapSettingGroup {
         let show = this._showSetting.getValue();
         let lookahead = this.lookaheadValues[this._lookaheadSetting.getValue()];
 
-        this.model.trackVector.show = show;
-        this.model.trackVector.lookahead = lookahead;
+        this.mapModel.trackVector.show = show;
+        this.mapModel.trackVector.lookahead = lookahead;
     }
 }
 WT_MapTrackVectorSettingGroup.SHOW_KEY = "WT_Map_TrackVector_Show";

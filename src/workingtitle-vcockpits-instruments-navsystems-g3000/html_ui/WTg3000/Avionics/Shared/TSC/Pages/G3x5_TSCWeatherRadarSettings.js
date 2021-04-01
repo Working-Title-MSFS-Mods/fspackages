@@ -2,32 +2,32 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
     constructor(homePageGroup, homePageName, instrumentID, halfPaneID) {
         super(homePageGroup, homePageName);
 
-        this._controllerID = `${instrumentID}-${halfPaneID}`;
+        this._settingModelID = `${instrumentID}-${halfPaneID}`;
 
         this._model = new WT_WeatherRadarModel();
-        this._controller = new WT_DataStoreController(this.controllerID, this.model);
+        this._settingModel = new WT_WeatherRadarSettingModel(this.settingModelID, this.model);
 
-        this.controller.addSetting(this._modeSetting = new WT_WeatherRadarSetting(this.controller, "mode", WT_G3x5_WeatherRadar.MODE_KEY, WT_G3x5_WeatherRadar.MODE_DEFAULT, true, false));
-        this.controller.addSetting(this._displaySetting = new WT_WeatherRadarSetting(this.controller, "display", WT_G3x5_WeatherRadar.DISPLAY_KEY, WT_G3x5_WeatherRadar.DISPLAY_DEFAULT, true, false));
-        this.controller.addSetting(this._scanModeSetting = new WT_WeatherRadarSetting(this.controller, "scanMode", WT_G3x5_WeatherRadar.SCAN_MODE_KEY, WT_G3x5_WeatherRadar.SCAN_MODE_DEFAULT, true, false));
-        this.controller.addSetting(this._bearingLineSetting = new WT_WeatherRadarSetting(this.controller, "showBearingLine", WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
-        this.controller.addSetting(this._rangeSetting = new WT_WeatherRadarRangeSetting(this.controller, WT_G3x5_WeatherRadar.RANGES, WT_G3x5_WeatherRadar.RANGE_DEFAULT));
+        this.settingModel.addSetting(this._modeSetting = new WT_WeatherRadarGenericSetting(this.settingModel, "mode", WT_G3x5_WeatherRadar.MODE_KEY, WT_G3x5_WeatherRadar.MODE_DEFAULT, true, false));
+        this.settingModel.addSetting(this._displaySetting = new WT_WeatherRadarGenericSetting(this.settingModel, "display", WT_G3x5_WeatherRadar.DISPLAY_KEY, WT_G3x5_WeatherRadar.DISPLAY_DEFAULT, true, false));
+        this.settingModel.addSetting(this._scanModeSetting = new WT_WeatherRadarGenericSetting(this.settingModel, "scanMode", WT_G3x5_WeatherRadar.SCAN_MODE_KEY, WT_G3x5_WeatherRadar.SCAN_MODE_DEFAULT, true, false));
+        this.settingModel.addSetting(this._bearingLineSetting = new WT_WeatherRadarGenericSetting(this.settingModel, "showBearingLine", WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_KEY, WT_G3x5_WeatherRadar.BEARING_LINE_SHOW_DEFAULT, true, false));
+        this.settingModel.addSetting(this._rangeSetting = new WT_WeatherRadarRangeSetting(this.settingModel, WT_G3x5_WeatherRadar.RANGES, WT_G3x5_WeatherRadar.RANGE_DEFAULT));
 
-        this.controller.update();
+        this.settingModel.update();
     }
 
     /**
+     * The ID of the setting model of the radar this settings page controls.
      * @readonly
-     * @property {String} controllerID - the ID of the radar this settings page controls.
      * @type {String}
      */
-    get controllerID() {
-        return this._controllerID;
+    get settingModelID() {
+        return this._settingModelID;
     }
 
     /**
+     * The model for the radar this settings page controls.
      * @readonly
-     * @property {WT_WeatherRadarModel} model - the model for the radar this settings page controls.
      * @type {WT_WeatherRadarModel}
      */
     get model() {
@@ -35,12 +35,12 @@ class WT_G3x5_TSCWeatherRadarSettings extends WT_G3x5_TSCPageElement {
     }
 
     /**
+     * The setting model for the radar this settings page controls.
      * @readonly
-     * @property {WT_DataStoreController} controller - the controller for the radar this settings page controls.
-     * @type {WT_DataStoreController}
+     * @type {WT_WeatherRadarSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     init(root) {
@@ -80,7 +80,6 @@ class WT_G3x5_TSCWeatherRadarSettingsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCWeatherRadarModeHTMLElement} radarModeElement
      * @type {WT_G3x5_TSCWeatherRadarModeHTMLElement}
      */
     get radarModeElement() {
@@ -89,7 +88,6 @@ class WT_G3x5_TSCWeatherRadarSettingsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCWeatherRadarControlsHTMLElement} controlsElement
      * @type {WT_G3x5_TSCWeatherRadarControlsHTMLElement}
      */
     get controlsElement() {
@@ -98,7 +96,6 @@ class WT_G3x5_TSCWeatherRadarSettingsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCWeatherRadarFeaturesHTMLElement} controlsElement
      * @type {WT_G3x5_TSCWeatherRadarFeaturesHTMLElement}
      */
     get featuresElement() {
@@ -151,8 +148,8 @@ class WT_G3x5_TSCWeatherRadarSettingsSubPage {
     }
 
     /**
+     * The parent page of this sub page.
      * @readonly
-     * @property {WT_G3x5_TSCWeatherRadarSettings} parent - the controller for the radar this sub page controls.
      * @type {WT_G3x5_TSCWeatherRadarSettings}
      */
     get parent() {
@@ -160,8 +157,8 @@ class WT_G3x5_TSCWeatherRadarSettingsSubPage {
     }
 
     /**
+     * The model for the radar this sub page controls.
      * @readonly
-     * @property {WT_WeatherRadarModel} model - the controller for the radar this sub page controls.
      * @type {WT_WeatherRadarModel}
      */
     get model() {
@@ -169,17 +166,16 @@ class WT_G3x5_TSCWeatherRadarSettingsSubPage {
     }
 
     /**
+     * The setting model for the radar this sub page controls.
      * @readonly
-     * @property {WT_DataStoreController} controller - the controller for the radar this sub page controls.
-     * @type {WT_DataStoreController}
+     * @type {WT_WeatherRadarSettingModel}
      */
-    get controller() {
-        return this._parent.controller;
+    get settingModel() {
+        return this._parent.settingModel;
     }
 
     /**
      * @readonly
-     * @property {HTMLElement} htmlElement
      * @type {HTMLElement}
      */
     get htmlElement() {
@@ -196,7 +192,7 @@ class WT_G3x5_TSCWeatherRadarMode extends WT_G3x5_TSCWeatherRadarSettingsSubPage
     /**
      * @param {WT_G3x5_TSCWeatherRadarSettings} parent
      * @param {HTMLElement} htmlElement
-     * @param {WT_DataStoreSetting} modeSetting
+     * @param {WT_WeatherRadarSetting} modeSetting
      */
     constructor(parent, htmlElement, modeSetting) {
         super(parent, htmlElement);
@@ -245,7 +241,6 @@ class WT_G3x5_TSCWeatherRadarModeHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_TSCStatusBarButton} standbyButton
      * @type {WT_TSCStatusBarButton}
      */
     get standbyButton() {
@@ -254,7 +249,6 @@ class WT_G3x5_TSCWeatherRadarModeHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_TSCStatusBarButton} onButton
      * @type {WT_TSCStatusBarButton}
      */
     get onButton() {
@@ -310,9 +304,9 @@ class WT_G3x5_TSCWeatherRadarControls extends WT_G3x5_TSCWeatherRadarSettingsSub
     /**
      * @param {WT_G3x5_TSCWeatherRadarSettings} parent
      * @param {HTMLElement} htmlElement
-     * @param {WT_DataStoreSetting} modeSetting
-     * @param {WT_DataStoreSetting} displaySetting
-     * @param {WT_DataStoreSetting} scanModeSetting
+     * @param {WT_WeatherRadarSetting} modeSetting
+     * @param {WT_WeatherRadarSetting} displaySetting
+     * @param {WT_WeatherRadarSetting} scanModeSetting
      */
     constructor(parent, htmlElement, modeSetting, displaySetting, scanModeSetting) {
         super(parent, htmlElement);
@@ -404,7 +398,6 @@ class WT_G3x5_TSCWeatherRadarControlsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_TSCValueButton} displayButton
      * @type {WT_TSCValueButton}
      */
     get displayButton() {
@@ -413,7 +406,6 @@ class WT_G3x5_TSCWeatherRadarControlsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_TSCValueButton} scanModeButton
      * @type {WT_TSCValueButton}
      */
     get scanModeButton() {
@@ -500,8 +492,8 @@ class WT_G3x5_TSCWeatherRadarFeatures extends WT_G3x5_TSCWeatherRadarSettingsSub
     /**
      * @param {WT_G3x5_TSCWeatherRadarSettings} parent
      * @param {HTMLElement} htmlElement
-     * @param {WT_DataStoreSetting} modeSetting
-     * @param {WT_DataStoreSetting} bearingLineSetting
+     * @param {WT_WeatherRadarSetting} modeSetting
+     * @param {WT_WeatherRadarSetting} bearingLineSetting
      */
     constructor(parent, htmlElement, modeSetting, bearingLineSetting) {
         super(parent, htmlElement);
@@ -581,7 +573,6 @@ class WT_G3x5_TSCWeatherRadarFeaturesHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {WT_TSCStatusBarButton} bearingLineButton
      * @type {WT_TSCStatusBarButton}
      */
     get bearingLineButton() {

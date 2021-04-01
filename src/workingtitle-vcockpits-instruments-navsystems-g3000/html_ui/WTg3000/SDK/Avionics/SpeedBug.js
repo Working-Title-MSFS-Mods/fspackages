@@ -8,7 +8,7 @@ class WT_SpeedBugCollection {
     constructor(id) {
         this._bugs = [];
         this._bugsReadOnly = new WT_ReadOnlyArray(this._bugs);
-        this._controller = new WT_DataStoreController(id, null);
+        this._settingModel = new WT_DataStoreSettingModel(id);
     }
 
     /**
@@ -17,7 +17,7 @@ class WT_SpeedBugCollection {
      * @type {String}
      */
     get id() {
-        return this._controller.id;
+        return this._settingModel.id;
     }
 
     /**
@@ -52,7 +52,7 @@ class WT_SpeedBugCollection {
      * @param {WT_NumberUnit} defaultSpeed - the default speed of the new speed bug.
      */
     addBug(name, defaultSpeed) {
-        this._bugs.push(new WT_SpeedBug(name, defaultSpeed, this._controller));
+        this._bugs.push(new WT_SpeedBug(name, defaultSpeed, this._settingModel));
     }
 }
 
@@ -63,9 +63,9 @@ class WT_SpeedBug {
     /**
      * @param {String} name - the name of the new speed bug.
      * @param {WT_NumberUnit} defaultSpeed - the default speed of the new speed bug.
-     * @param {WT_DataStoreController} controller - the data store controller to use for the new speed bug's settings.
+     * @param {WT_DataStoreSettingModel} settingModel - the setting model to use for the new speed bug's settings.
      */
-    constructor(name, defaultSpeed, controller) {
+    constructor(name, defaultSpeed, settingModel) {
         this._name = name;
         this._defaultSpeed = WT_Unit.KNOT.createNumber(defaultSpeed.asUnit(WT_Unit.KNOT));
         this._speed = this._defaultSpeed.copy();
@@ -73,22 +73,22 @@ class WT_SpeedBug {
 
         this._listeners = [];
 
-        this._initSettings(controller);
+        this._initSettings(settingModel);
     }
 
-    _initSettings(controller) {
-        this._initSpeedSetting(controller);
-        this._initShowSetting(controller);
+    _initSettings(settingModel) {
+        this._initSpeedSetting(settingModel);
+        this._initShowSetting(settingModel);
     }
 
-    _initSpeedSetting(controller) {
-        this._speedSetting = new WT_SpeedBugSpeedSetting(controller, this);
+    _initSpeedSetting(settingModel) {
+        this._speedSetting = new WT_SpeedBugSpeedSetting(settingModel, this);
         this._speedSetting.addListener(this._onSpeedSettingChanged.bind(this));
         this._speedSetting.init();
     }
 
-    _initShowSetting(controller) {
-        this._showSetting = new WT_SpeedBugShowSetting(controller, this);
+    _initShowSetting(settingModel) {
+        this._showSetting = new WT_SpeedBugShowSetting(settingModel, this);
         this._showSetting.addListener(this._onShowSettingChanged.bind(this));
         this._showSetting.init();
     }
@@ -181,11 +181,11 @@ WT_SpeedBug.Event = {
 
 class WT_SpeedBugSpeedSetting extends WT_DataStoreSetting {
     /**
-     * @param {WT_DataStoreController} controller
+     * @param {WT_DataStoreSettingModel} model
      * @param {WT_SpeedBug} bug
      */
-    constructor(controller, bug) {
-        super(controller, `${WT_SpeedBugSpeedSetting.KEY_PREFIX}_${bug.name}_${WT_SpeedBugSpeedSetting.KEY_SUFFIX}`, bug.defaultSpeed.number, false, false);
+    constructor(model, bug) {
+        super(model, `${WT_SpeedBugSpeedSetting.KEY_PREFIX}_${bug.name}_${WT_SpeedBugSpeedSetting.KEY_SUFFIX}`, bug.defaultSpeed.number, false, false);
 
         this._bug = bug;
     }
@@ -194,8 +194,8 @@ WT_SpeedBugSpeedSetting.KEY_PREFIX = "WT_SpeedBug";
 WT_SpeedBugSpeedSetting.KEY_SUFFIX = "Speed";
 
 class WT_SpeedBugShowSetting extends WT_DataStoreSetting {
-    constructor(controller, bug, defaultValue = false) {
-        super(controller, `${WT_SpeedBugShowSetting.KEY_PREFIX}_${bug.name}_${WT_SpeedBugShowSetting.KEY_SUFFIX}`, defaultValue, false, false);
+    constructor(model, bug, defaultValue = false) {
+        super(model, `${WT_SpeedBugShowSetting.KEY_PREFIX}_${bug.name}_${WT_SpeedBugShowSetting.KEY_SUFFIX}`, defaultValue, false, false);
 
         this._bug = bug;
     }
