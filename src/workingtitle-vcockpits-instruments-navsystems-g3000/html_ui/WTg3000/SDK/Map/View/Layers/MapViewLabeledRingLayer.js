@@ -343,7 +343,7 @@ class WT_MapViewRing {
     }
 }
 WT_MapViewRing.OPTIONS_DEF = {
-    show: {default: true, auto: true},
+    show: {default: true, auto: true, observed: true},
     center: {},
     radius: {default: 0, auto: true, observed: true},
     strokeWidth: {default: 1, auto: true, observed: true},
@@ -438,7 +438,7 @@ class WT_MapViewRingLabel {
     }
 }
 WT_MapViewRingLabel.OPTIONS_DEF = {
-    show: {default: true, auto: true},
+    show: {default: true, auto: true, observed: true},
     center: {},
     radius: {default: 0, auto: true, observed: true},
     radialAngle: {default: 0, auto: true, observed: true},

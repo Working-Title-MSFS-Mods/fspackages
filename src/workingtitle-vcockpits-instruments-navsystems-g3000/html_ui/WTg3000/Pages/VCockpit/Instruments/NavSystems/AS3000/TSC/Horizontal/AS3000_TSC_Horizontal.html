@@ -196,6 +196,11 @@
                     <tsc-mappointercontrol></tsc-mappointercontrol>
                 </div>
 
+                <div class="tscPage trafficSettings" id="TrafficSettingsLeft">
+                </div>
+                <div class="tscPage trafficSettings" id="TrafficSettingsRight">
+                </div>
+
                 <div class="tscPage weatherSelection" id="WeatherSelectionLeft">
                     <tsc-weatherselection></tsc-weatherselection>
                 </div>
@@ -2137,12 +2142,12 @@
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCScrollManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCScrollList.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionList.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingStatusBarButtonManager.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingLabeledButtonManager.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/MapModel.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapSettingModel.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapPointerSettingGroup.js"></script>
@@ -2178,8 +2183,12 @@
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
 
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Map/G3x5_MapModelTrafficModule.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Map/G3x5_TrafficMapSettings.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_UnitsSettingModel.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_TrafficMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
@@ -2204,6 +2213,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCSpeedBugs.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapPointerControl.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTrafficSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherRadarSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>

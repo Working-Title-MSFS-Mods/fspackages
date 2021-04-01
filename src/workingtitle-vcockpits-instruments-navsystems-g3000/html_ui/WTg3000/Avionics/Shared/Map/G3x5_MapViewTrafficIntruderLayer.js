@@ -281,12 +281,17 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._setGroundTrack(state, groundTrack);
     }
 
-    _setAltitudeDelta(state, feet) {
+    _setAltitudeDisplay(state, isRelative, feet, isAbove) {
     }
 
-    _updateAltitudeDelta(state) {
+    _updateAltitude(state) {
         let altitudeDeltaFeet = WT_Unit.METER.convert(this.intruderView.intruderEntry.intruder.positionVector.z, WT_Unit.FOOT);
-        this._setAltitudeDelta(state, altitudeDeltaFeet);
+        if (state.model.traffic.altitudeMode === WT_G3x5_MapModelTrafficModule.AltitudeMode.RELATIVE) {
+            this._setAltitudeDisplay(state, true, altitudeDeltaFeet, altitudeDeltaFeet >= 0);
+        } else {
+            let altitudeAbsoluteFeet = this.intruderView.intruderEntry.intruder.altitude.asUnit(WT_Unit.FOOT);
+            this._setAltitudeDisplay(state, false, altitudeAbsoluteFeet, altitudeDeltaFeet >= 0);
+        }
     }
 
     _setVerticalSpeed(state, fpm) {
@@ -307,7 +312,7 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._updateAlertLevel(state);
         this._updateOffScale(state);
         this._updateGroundTrack(state);
-        this._updateAltitudeDelta(state);
+        this._updateAltitude(state);
         this._updateVerticalSpeed(state);
     }
 
