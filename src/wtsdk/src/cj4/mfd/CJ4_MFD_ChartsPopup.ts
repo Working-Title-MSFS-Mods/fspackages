@@ -10,7 +10,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
 
   private _mode: CHARTS_MENU_MODE = CHARTS_MENU_MODE.INDEX;
   private _tableContainer: HTMLElement;
-  private _chartSelectCallback: (url: string, chart: NG_Chart) => void;
+  private _chartSelectCallback: (chart: NG_Chart) => void;
   private _views: Map<CHARTS_MENU_MODE, ICJ4_MFD_ChartsPopupPage> = new Map();
   private _overlayHeader: HTMLElement;
   private _ngApi: NavigraphApi;
@@ -22,7 +22,7 @@ export class CJ4_MFD_ChartsPopup extends HTMLElement {
     return this.style.visibility === "visible";
   }
 
-  public connectedCallback(chartSelectCallback: (url: string, chart: NG_Chart) => void): void {
+  public connectedCallback(chartSelectCallback: (chart: NG_Chart) => void): void {
     this._chartSelectCallback = chartSelectCallback;
     this._tableContainer = this.querySelector("#ChartsTable");
     this._overlayHeader = this.querySelector("#ChartOverlayHeader");
