@@ -490,8 +490,8 @@ class WT_G3x5_TSCTrafficADSBSettingsHTMLElement extends HTMLElement {
 WT_G3x5_TSCTrafficADSBSettingsHTMLElement.VECTOR_MODE_TITLE = "Motion Vector";
 WT_G3x5_TSCTrafficADSBSettingsHTMLElement.VECTOR_MODE_VALUE_TEXT = [
     "Off",
-    "Relative",
-    "Absolute"
+    "Absolute",
+    "Relative"
 ];
 WT_G3x5_TSCTrafficADSBSettingsHTMLElement.VECTOR_LOOKAHEAD_TITLE = "VECT Duration";
 WT_G3x5_TSCTrafficADSBSettingsHTMLElement.UNIT_CLASS = "unit";
