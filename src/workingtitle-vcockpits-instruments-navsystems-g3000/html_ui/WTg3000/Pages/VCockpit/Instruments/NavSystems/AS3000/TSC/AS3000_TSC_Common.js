@@ -170,6 +170,8 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD")),
                 this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.traffic = new NavSystemPage("Traffic Settings Left", "TrafficSettingsLeft", new WT_G3x5_TSCTrafficSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.traffic = new NavSystemPage("Traffic Settings Right", "TrafficSettingsRight", new WT_G3x5_TSCTrafficSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
                 this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
@@ -330,6 +332,13 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _onMFDPaneTrafficDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && currentPage.title === "Traffic Settings") {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
     _onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage) {
         if (currentPageGroup.name === "MFD" && (currentPage.title === "Weather Selection" || currentPage.title === "Weather Radar Settings")) {
             this.closePopUpElement();
@@ -344,6 +353,9 @@ class AS3000_TSC extends NavSystemTouch {
             switch (oldValue) {
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                     this._onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                    this._onMFDPaneTrafficDisplaySwitch(currentPageGroup, currentPage);
                     break;
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
                     this._onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage);
@@ -410,6 +422,16 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                     case "BottomKnob_Small_DEC":
                         this._changeMFDMapRange(-1);
+                        break;
+                }
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this.getSelectedMFDPanePages().traffic.element.changeRange(1);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this.getSelectedMFDPanePages().traffic.element.changeRange(-1);
                         break;
                 }
                 break;
@@ -707,12 +729,16 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this._updatePaneDisplayButtons();
     }
 
+    _openMapSettingsPage() {
+        this.gps.SwitchToPageName("MFD", "Map Settings");
+    }
+
     _openWeatherSelectPage() {
         this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().weatherSelection.name);
     }
 
-    _openMapSettingsPage() {
-        this.gps.SwitchToPageName("MFD", "Map Settings");
+    _openTrafficSettingsPage() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().traffic.name);
     }
 
     _onMapButtonPressed() {
@@ -727,7 +753,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     _onTrafficButtonPressed() {
         let settings = this.gps.getSelectedMFDPaneSettings();
         if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC) {
-            //this._openMapSettingsPage();
+            this._openTrafficSettingsPage();
         } else {
             settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC);
         }
