@@ -52,6 +52,8 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
      */
     onProjectionViewChanged(state) {
         super.onProjectionViewChanged(state);
+
+        this._updateStyles(state.dpiScale);
     }
 
     /**
@@ -59,6 +61,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
      */
     onAttached(state) {
         super.onAttached(state);
+
         this._updateStyles(state.dpiScale);
     }
 

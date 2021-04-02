@@ -73,6 +73,15 @@ class WT_G3x5_MapViewTrafficRangeLayer extends WT_MapViewLabeledRingLayer {
     /**
      * @param {WT_MapViewState} state
      */
+     onProjectionViewChanged(state) {
+        super.onProjectionViewChanged(state);
+
+        this._updateStyles(state.dpiScale);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
     onAttached(state) {
         super.onAttached(state);
         this._updateStyles(state.dpiScale);
@@ -180,13 +189,13 @@ class WT_G3x5_MapViewTrafficRangeLayer extends WT_MapViewLabeledRingLayer {
                 interval: this.outerTickMajorInterval,
                 width: this.outerTickMajorWidth * state.dpiScale,
                 length: this.outerTickMajorLength * state.dpiScale,
-                style: this.outerStrokeColor
+                style: this.outerTickMajorColor
             };
             let minorTickOptions = {
                 factor: this.outerTickMinorFactor,
                 width: this.outerTickMinorWidth * state.dpiScale,
                 length: this.outerTickMinorLength * state.dpiScale,
-                style: this.outerStrokeColor
+                style: this.outerTickMinorColor
             };
             this._setRingTicks(this._outerRingTickLayer, center, radius, majorTickOptions, minorTickOptions);
             this._outerRing.center = center;
@@ -216,13 +225,13 @@ class WT_G3x5_MapViewTrafficRangeLayer extends WT_MapViewLabeledRingLayer {
                 interval: this.innerTickMajorInterval,
                 width: this.innerTickMajorWidth * state.dpiScale,
                 length: this.innerTickMajorLength * state.dpiScale,
-                style: this.innerStrokeColor
+                style: this.innerTickMajorColor
             };
             let minorTickOptions = {
                 factor: this.innerTickMinorFactor,
                 width: this.innerTickMinorWidth * state.dpiScale,
                 length: this.innerTickMinorLength * state.dpiScale,
-                style: this.innerStrokeColor
+                style: this.innerTickMinorColor
             };
             this._setRingTicks(this._innerRingTickLayer, center, radius, majorTickOptions, minorTickOptions);
             this._innerRing.center = center;
@@ -254,10 +263,12 @@ WT_G3x5_MapViewTrafficRangeLayer.OPTIONS_DEF = {
     outerTickMajorInterval: {default: 90, auto: true},
     outerTickMajorLength: {default: 8, auto: true},
     outerTickMajorWidth: {default: 10, auto: true},
+    outerTickMajorColor: {default: "white", auto: true},
 
     outerTickMinorFactor: {default: 3, auto: true},
     outerTickMinorLength: {default: 6, auto: true},
     outerTickMinorWidth: {default: 6, auto: true},
+    outerTickMinorColor: {default: "white", auto: true},
 
     innerStrokeWidth: {default: 2, auto: true},
     innerStrokeColor: {default: "white", auto: true},
@@ -270,10 +281,12 @@ WT_G3x5_MapViewTrafficRangeLayer.OPTIONS_DEF = {
     innerTickMajorInterval: {default: 90, auto: true},
     innerTickMajorLength: {default: 8, auto: true},
     innerTickMajorWidth: {default: 10, auto: true},
+    innerTickMajorColor: {default: "white", auto: true},
 
     innerTickMinorFactor: {default: 1, auto: true},
     innerTickMinorLength: {default: 6, auto: true},
     innerTickMinorWidth: {default: 6, auto: true},
+    innerTickMinorColor: {default: "white", auto: true},
 
     outerLabelShow: {default: true, auto: true},
     outerLabelAngle: {default: -135, auto: true},
@@ -290,12 +303,30 @@ WT_G3x5_MapViewTrafficRangeLayer.CONFIG_PROPERTIES = [
     "outerOutlineWidth",
     "outerOutlineColor",
     "outerOutlineDash",
+    "outerTickMajorStart",
+    "outerTickMajorInterval",
+    "outerTickMajorLength",
+    "outerTickMajorWidth",
+    "outerTickMajorColor",
+    "outerTickMinorFactor",
+    "outerTickMinorLength",
+    "outerTickMinorWidth",
+    "outerTickMinorColor",
     "innerStrokeWidth",
     "innerStrokeColor",
     "innerStrokeDash",
     "innerOutlineWidth",
     "innerOutlineColor",
     "innerOutlineDash",
+    "innerTickMajorStart",
+    "innerTickMajorInterval",
+    "innerTickMajorLength",
+    "innerTickMajorWidth",
+    "innerTickMajorColor",
+    "innerTickMinorFactor",
+    "innerTickMinorLength",
+    "innerTickMinorWidth",
+    "innerTickMinorColor",
     "outerLabelShow",
     "outerLabelAngle",
     "outerLabelOffset",
