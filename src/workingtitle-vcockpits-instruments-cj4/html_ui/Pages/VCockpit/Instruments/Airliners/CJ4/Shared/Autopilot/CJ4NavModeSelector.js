@@ -400,12 +400,12 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.GS:
       case VerticalNavModeState.PATH:
       case VerticalNavModeState.GP:
-        this.engageVerticalSpeed();
         this.currentVerticalActiveState = VerticalNavModeState.VS;
+        this.engageVerticalSpeed();
         break;
       case VerticalNavModeState.VS:
-        this.engagePitch();
         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        this.engagePitch();
         break;
     }
 
@@ -432,12 +432,12 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.GS:
       case VerticalNavModeState.PATH:
       case VerticalNavModeState.GP:
-        this.engageFlightLevelChange();
         this.currentVerticalActiveState = VerticalNavModeState.FLC;
+        this.engageFlightLevelChange();
         break;
       case VerticalNavModeState.FLC:
-        this.engagePitch();
         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        this.engagePitch();
         break;
     }
 
@@ -450,11 +450,12 @@ class CJ4NavModeSelector {
    * @param {number} vs is the starting VS value to set.
    */
   engageVerticalSpeed(vsslot = 1, vs = Simplane.getVerticalSpeed()) {
+    this.checkCorrectAltSlot();
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", vsslot);
     Coherent.call("AP_VS_VAR_SET_ENGLISH", vsslot, vs);
-    this.checkCorrectAltSlot();
+    
     if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1) {
       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
@@ -464,6 +465,7 @@ class CJ4NavModeSelector {
    * Engage Pitch Mode (disengages all other vertical modes).
    */
   engagePitch() {
+    this.checkCorrectAltSlot();
     if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 0) {
       if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1) {
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
@@ -471,7 +473,6 @@ class CJ4NavModeSelector {
         SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_ON", "Number", 0);
       }
     }
-    this.checkCorrectAltSlot();
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
 
@@ -517,7 +518,7 @@ class CJ4NavModeSelector {
         if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV) {
           SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
         } else {
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
         }
         SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {
@@ -583,7 +584,7 @@ class CJ4NavModeSelector {
       const altLockValue = Math.floor(Simplane.getAutoPilotDisplayedAltitudeLockValue());
       if (altLockValue == Math.floor(this.selectedAlt1)) {
         newValue = VerticalNavModeState.ALTS;
-      } else if (altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)) {
+      } else if (altLockValue == Math.floor(this.managedAltitudeTarget)) {
         newValue = VerticalNavModeState.ALTV;
       }
       if (this.currentVerticalActiveState !== newValue) {
@@ -593,9 +594,11 @@ class CJ4NavModeSelector {
   }
 
   checkCorrectAltSlot() {
-    if (!this.isVNAVOn || this.currentVerticalActiveState === VerticalNavModeState.ALTSCAP || this.currentVerticalActiveState === VerticalNavModeState.ALTVCAP 
-      || this.currentVerticalActiveState === VerticalNavModeState.ALTCAP) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+    if (this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV 
+      || this.currentVerticalActiveState === VerticalNavModeState.ALT) {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+    } else {
+      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
     }
   }
 
@@ -626,7 +629,7 @@ class CJ4NavModeSelector {
         if (this.isVNAVOn) {
           this.isVNAVOn = false;
           SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
-          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
           SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         }
         this.currentVerticalActiveState = VerticalNavModeState.GA;
@@ -1125,23 +1128,10 @@ class CJ4NavModeSelector {
    * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
   handleVnavRequestSlot1(force = false) {
-
-    switch (this.currentVerticalActiveState) {
-      case VerticalNavModeState.ALTCAP:
-      case VerticalNavModeState.ALTVCAP:
-      case VerticalNavModeState.ALTSCAP:
-      case VerticalNavModeState.ALTV:
-      case VerticalNavModeState.ALTS:
-      case VerticalNavModeState.ALT:
-        this.vnavRequestedSlot = 1;
-        break;
-      default:
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-        this.vnavRequestedSlot = 1;
-        break;
-    }
+    this.currentAltitudeTracking = AltitudeState.SELECTED;
     if (force) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+      console.log("forcing alt slot 2");
+      this.setSimAltSlot(1);
     }
   }
 
@@ -1150,33 +1140,46 @@ class CJ4NavModeSelector {
    * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
   handleVnavRequestSlot2(force = false) {
-
-    switch (this.currentVerticalActiveState) {
-      case VerticalNavModeState.ALTCAP:
-      case VerticalNavModeState.ALTVCAP:
-      case VerticalNavModeState.ALTSCAP:
-      case VerticalNavModeState.ALTV:
-      case VerticalNavModeState.ALTS:
-      case VerticalNavModeState.ALT:
-        this.vnavRequestedSlot = 2;
-        break;
-      default:
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-        this.vnavRequestedSlot = 2;
-        break;
-    }
+    this.currentAltitudeTracking = AltitudeState.MANAGED;
     if (force) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+      console.log("forcing alt slot 2");
+      this.setSimAltSlot(2);
     }
   }
 
   /**
    * Handles when vnav autopilot requests alt slot 3 in the sim autopilot.
+   * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
-  handleVnavRequestSlot3() {
-    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-    this.vnavRequestedSlot = 3;
+  handleVnavRequestSlot3(force = false) {
+    this.currentAltitudeTracking = AltitudeState.LOCKED;
+    if (force) {
+      console.log("forcing alt slot 3");
+      this.setSimAltSlot(3);
+    }
   }
+
+  /**
+   * Method to actually set the altitude slot (added with WT Altitude Manager).
+   */
+  setSimAltSlot(slot) {
+    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", slot);
+  }
+
+  /**
+   * Method to actually set the altitude slot (added with WT Altitude Manager).
+   */
+  setSimAltitude(slot, altitude) {
+    Coherent.call("AP_ALT_VAR_SET_ENGLISH", slot, altitude, true);
+  }
+
+  /**
+   * Method to actually set the altitude slot (added with WT Altitude Manager).
+   */
+   cancelAltHold() {
+     this.setSimAltitude(2, -1000);
+     this.setSimAltSlot(2);
+  }  
 
   /**
    * Handles when FD is turned off to cancel vertical and lateral modes.
@@ -1310,6 +1313,7 @@ class AltitudeState { }
 AltitudeState.SELECTED = 'SELECTED';
 AltitudeState.MANAGED = 'MANAGED';
 AltitudeState.PRESSURE = 'PRESSURE';
+AltitudeState.LOCKED = 'LOCKED';
 AltitudeState.NONE = 'NONE';
 
 class ValueStateTracker {
