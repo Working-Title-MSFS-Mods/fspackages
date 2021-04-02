@@ -1,6 +1,6 @@
 class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     /**
-     * @returns {WT_G33000_TrafficSystemSensitivity}
+     * @returns {WT_G3000_TrafficSystemSensitivity}
      */
     _createSensitivity() {
         return new WT_G3000_TrafficAdvisorySystemSensitivity(this._airplane);
@@ -9,7 +9,6 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     _initOptionsManager() {
         super._initOptionsManager();
 
-        this._entryUpdateOptions = {};
         this._optsManager.addOptions(WT_G3000_TrafficAdvisorySystem.OPTION_DEFS);
     }
 
@@ -33,15 +32,11 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     }
 
     _onOperatingModeSettingChanged(setting, newValue, oldValue) {
-        this._operatingMode = newValue;
+        this._setOperatingMode(newValue);
     }
 
     _createIntruderEntry(intruder) {
         return new WT_G3000_TrafficAdvisorySystemIntruderEntry(intruder);
-    }
-
-    _updateIntruderEntry(entry) {
-        entry.update(this._entryUpdateOptions);
     }
 
     _doUpdate(currentTime) {
@@ -55,8 +50,6 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
         super._doUpdate(currentTime);
     }
 }
-WT_G3000_TrafficAdvisorySystem.PROTECTED_RADIUS = WT_Unit.NMILE.createNumber(2);
-WT_G3000_TrafficAdvisorySystem.PROTECTED_HEIGHT = WT_Unit.FOOT.createNumber(2000);
 WT_G3000_TrafficAdvisorySystem.OPTION_DEFS = {
     proximityAdvisoryParams: {default: {
         horizontalSeparation: WT_Unit.NMILE.createNumber(6),
@@ -81,7 +74,8 @@ WT_G3000_TrafficAdvisorySystem.AlertLevel = {
 }
 
 /**
- * @typedef WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions
+ * @typedef WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions
+ * @property {WT_G5000_TCASII.OperatingMode} operatingMode
  * @property {{horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} proximityAdvisoryParams
  */
 
@@ -139,7 +133,7 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
 
     /**
      *
-     * @param {WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions} options
+     * @param {WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions} options
      */
     _updateAlertLevel(options) {
         if (!this.intruder.isPredictionValid) {
@@ -161,7 +155,7 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
 
     /**
      *
-     * @param {WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions} options
+     * @param {WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions} options
      */
     update(options) {
         this._updateAlertLevel(options);

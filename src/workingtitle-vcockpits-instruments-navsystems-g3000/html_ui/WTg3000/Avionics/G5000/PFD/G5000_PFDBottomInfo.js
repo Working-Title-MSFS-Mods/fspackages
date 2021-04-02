@@ -11,11 +11,11 @@ class WT_G5000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
 }
 
 class WT_G5000_PFDBottomInfoNavStatusCell extends WT_G3x5_PFDBottomInfoCell {
-    constructor(airplane, unitsController) {
+    constructor(airplane, unitsSettingModel) {
         super();
 
         this._airplane = airplane;
-        this._unitsController = unitsController;
+        this._unitsSettingModel = unitsSettingModel;
         this._initNavDataInfos();
         this._setHTMLElementContext();
     }
@@ -55,7 +55,7 @@ class WT_G5000_PFDBottomInfoNavStatusCell extends WT_G3x5_PFDBottomInfoCell {
             }
         ];
 
-        this._unitsControllerAdapter = new WT_G5000_UnitsControllerNavStatusAdapter(this._unitsController, this._infos[0].model, this._infos[1].model);
+        this._unitsControllerAdapter = new WT_G5000_UnitsSettingModelNavStatusAdapter(this._unitsSettingModel, this._infos[0].model, this._infos[1].model);
     }
 
     _setHTMLElementContext() {
@@ -154,13 +154,13 @@ WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.NAME, WT_G5000_PFDBottomInfoNavStatusCellHTMLElement);
 
-class WT_G5000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G5000_UnitsSettingModelNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
     /**
-     * @param {WT_G3x5_UnitsSettingModel} controller
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_NavDataBarModel} navDataBarModel
      */
-    constructor(controller, disInfo, eteInfo) {
-        super(controller);
+    constructor(unitsSettingModel, disInfo, eteInfo) {
+        super(unitsSettingModel);
 
         this._disInfo = disInfo;
         this._eteInfo = eteInfo;
@@ -175,11 +175,11 @@ class WT_G5000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerMo
 }
 
 class WT_G5000_PFDBottomInfoNAVDMECell extends WT_G3x5_PFDBottomInfoCell {
-    constructor(airplane, unitsController) {
+    constructor(airplane, unitsSettingModel) {
         super();
 
         this._airplane = airplane;
-        this._unitsController = unitsController;
+        this._unitsSettingModel = unitsSettingModel;
         this._setHTMLElementContext();
     }
 
@@ -190,7 +190,7 @@ class WT_G5000_PFDBottomInfoNAVDMECell extends WT_G3x5_PFDBottomInfoCell {
     _setHTMLElementContext() {
         this.htmlElement.setContext({
             airplane: this._airplane,
-            unitsController: this._unitsController
+            unitsSettingModel: this._unitsSettingModel
         })
     }
 
@@ -468,11 +468,11 @@ WT_G5000_PFDBottomInfoBearingCellHTMLElement.TEMPLATE.innerHTML = `
 customElements.define(WT_G5000_PFDBottomInfoBearingCellHTMLElement.NAME, WT_G5000_PFDBottomInfoBearingCellHTMLElement);
 
 class WT_G5000_PFDBottomInfoWindDataCell extends WT_G3x5_PFDBottomInfoCell {
-    constructor(airplane, unitsController) {
+    constructor(airplane, unitsSettingModel) {
         super();
 
         this._initSettingModel();
-        this._model = this._createModel(airplane, unitsController);
+        this._model = this._createModel(airplane, unitsSettingModel);
         this._setHTMLElementContext();
     }
 
@@ -480,8 +480,8 @@ class WT_G5000_PFDBottomInfoWindDataCell extends WT_G3x5_PFDBottomInfoCell {
         return new WT_G5000_PFDBottomInfoWindDataCellHTMLElement();
     }
 
-    _createModel(airplane, unitsController) {
-        return new WT_G3x5_PFDWindDataModel(airplane, this._windModeSetting, unitsController);
+    _createModel(airplane, unitsSettingModel) {
+        return new WT_G3x5_PFDWindDataModel(airplane, this._windModeSetting, unitsSettingModel);
     }
 
     _setHTMLElementContext() {

@@ -328,12 +328,6 @@ as3000-tsc-horizontal-element #Electricity .mapPointerControl tsc-mappointercont
         background-position: center;
     }
 
-as3000-tsc-horizontal-element #Electricity .weatherSelection wt-tsc-button-img {
-    width: 27vh;
-    height: 21vh;
-    font-size: 4vh;
-}
-
 as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettings {
     font-size: 5vh;
     --trafficsettings-button-height: 15vh;
@@ -361,6 +355,12 @@ as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettin
         width: 31.3%;
         height: 98%;
     }
+
+as3000-tsc-horizontal-element #Electricity .weatherSelection wt-tsc-button-img {
+    width: 27vh;
+    height: 21vh;
+    font-size: 4vh;
+}
 
 as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherradarsettings-mode {
     position: absolute;

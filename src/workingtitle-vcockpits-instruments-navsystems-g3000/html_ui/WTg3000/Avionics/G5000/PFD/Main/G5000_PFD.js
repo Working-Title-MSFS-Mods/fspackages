@@ -21,6 +21,14 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
         return new WT_G5000_ApproachNavLoader(this.airplane);
     }
 
+    /**
+     *
+     * @returns {WT_G5000_TCASII}
+     */
+    _createTrafficSystem() {
+        return new WT_G5000_TCASII(this.airplane, this._trafficTracker);
+    }
+
     _initAutoThrottle() {
         this._autoThrottle = new WT_G5000_AutoThrottle(this.airplane, this.referenceAltimeter, this.airplane.references.clbN1Table, this.airplane.references.cruN1Table);
     }

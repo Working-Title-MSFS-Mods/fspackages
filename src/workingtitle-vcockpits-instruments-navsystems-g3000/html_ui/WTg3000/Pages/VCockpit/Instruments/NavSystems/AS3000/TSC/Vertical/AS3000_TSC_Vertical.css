@@ -435,6 +435,34 @@ as3000-tsc-vertical-element #Electricity .mapPointerControl tsc-mappointercontro
         background-position: center;
     }
 
+as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings {
+    font-size: 3vh;
+    --trafficsettings-button-height: 9vh;
+    --trafficsettings-button-margin-horizontal: 0.5vh;
+    --trafficsettings-button-margin-vertical: 0.5vh;
+}
+    as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-operatingmode {
+        position: absolute;
+        left: 0.5%;
+        top: 1%;
+        width: 32.3%;
+        height: 98%;
+    }
+    as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-altitude {
+        position: absolute;
+        left: 33.8%;
+        top: 1%;
+        width: 32.3%;
+        height: 98%;
+    }
+    as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-adsb {
+        position: absolute;
+        left: 67.2%;
+        top: 1%;
+        width: 32.3%;
+        height: 98%;
+    }
+
 as3000-tsc-vertical-element #Electricity .weatherSelection wt-tsc-button-img {
     width: 18vh;
     height: 14vh;
