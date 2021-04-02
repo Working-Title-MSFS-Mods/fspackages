@@ -55,22 +55,41 @@ class WT_G3x5_TrafficMap {
         return this._settingModel;
     }
 
+    /**
+     * @returns {WT_G3x5_MapModelTrafficModule}
+     */
+    _createTrafficModule() {
+        return new WT_G3x5_MapModelTrafficModule(this._trafficSystem);
+    }
+
     _initModel() {
         this.model.addModule(new WT_MapModelUnitsModule());
         this.model.addModule(new WT_MapModelOrientationModule());
-        this.model.addModule(new WT_G3x5_MapModelTrafficModule(this._trafficSystem));
+        this.model.addModule(this._trafficModule = this._createTrafficModule());
+    }
+
+    /**
+     * @returns {WT_G3x5_MapViewTrafficIntruderLayer}
+     */
+    _createTrafficIntruderLayer() {
+    }
+
+    /**
+     * @returns {WT_G3x5_MapViewTrafficStatusLayer}
+     */
+    _createTrafficStatusLayer() {
     }
 
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
 
-        let intruderLayer = (this._airplane.type === WT_PlayerAirplane.Type.TBM930) ? new WT_G3000_MapViewTrafficIntruderLayer() : new WT_G3000_MapViewTrafficIntruderLayer();
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_G3x5_MapViewTrafficRangeLayer());
-        this.view.addLayer(intruderLayer);
+        this.view.addLayer(this._createTrafficIntruderLayer());
         this.view.addLayer(new WT_MapViewAirplaneLayer());
         this.view.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_TrafficMap.ORIENTATION_DISPLAY_TEXT));
         this.view.addLayer(new WT_MapViewMiniCompassLayer());
+        this.view.addLayer(this._createTrafficStatusLayer());
     }
 
     _initSettingModel() {
@@ -115,6 +134,18 @@ WT_G3x5_TrafficMap.MAP_RANGE_LEVELS =
 WT_G3x5_TrafficMap.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(12);
 
 WT_G3x5_TrafficMap.ORIENTATION_DISPLAY_TEXT = ["HDG UP"];
+
+WT_G3x5_TrafficMap.STATUS_ALTITUDE_RESTRICTION_MODE_TEXT = [
+    "UNRESTRICTED",
+    "ABOVE",
+    "NORMAL",
+    "BELOW"
+];
+WT_G3x5_TrafficMap.STATUS_MOTION_VECTOR_MODE_TEXT = [
+    "OFF",
+    "ABS",
+    "REL",
+];
 
 class WT_G3x5_TrafficMapRangeTargetController extends WT_MapSettingGroup {
     /**

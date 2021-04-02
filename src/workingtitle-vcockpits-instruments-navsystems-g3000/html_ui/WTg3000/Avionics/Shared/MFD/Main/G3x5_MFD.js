@@ -60,6 +60,12 @@ class WT_G3x5_MFD extends NavSystem {
         return this._citySearcher;
     }
 
+    /**
+     * @returns {WT_G3x5_MFDMainPane}
+     */
+    _createMainPane() {
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
@@ -70,7 +76,7 @@ class WT_G3x5_MFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "NavDataBar", new WT_G3x5_MFDNavDataBar("MFD", this.flightPlanManagerWT, this.unitsSettingModel)));
         this.pageGroups = [
             new NavSystemPageGroup("MAIN", this, [
-                new NavSystemPage("MAIN PANE", "MainPane", new WT_G3x5_MFDMainPane("MFD", this.citySearcher))
+                new NavSystemPage("MAIN PANE", "MainPane", this._createMainPane())
             ]),
         ];
     }
