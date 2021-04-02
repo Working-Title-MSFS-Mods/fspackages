@@ -47,10 +47,10 @@ class WT_G3x5_TrafficMapAltitudeRestrictionSetting extends WT_MapSetting {
      * @param {WT_MapSettingModel} model
      * @param {Boolean} [autoUpdate]
      * @param {{above:WT_NumberUnit, below:WT_NumberUnit}[]} altitudes
-     * @param {WT_G3x5_TrafficMapAltitudeRestrictionSetting.Mode} [defaultValue]
+     * @param {WT_G3x5_MapModelTrafficModule.AltitudeRestrictionMode} [defaultValue]
      * @param {String} [key]
      */
-    constructor(model, autoUpdate = true, restrictions = WT_G3x5_TrafficMapAltitudeRestrictionSetting.ALTITUDES_DEFAULT, defaultValue = WT_G3x5_TrafficMapAltitudeRestrictionSetting.Mode.UNRESTRICTED, key = WT_G3x5_TrafficMapAltitudeRestrictionSetting.KEY) {
+    constructor(model, autoUpdate = true, restrictions = WT_G3x5_TrafficMapAltitudeRestrictionSetting.ALTITUDES_DEFAULT, defaultValue = WT_G3x5_MapModelTrafficModule.AltitudeRestrictionMode.UNRESTRICTED, key = WT_G3x5_TrafficMapAltitudeRestrictionSetting.KEY) {
         super(model, key, defaultValue, false, autoUpdate, true);
 
         this._restrictions = restrictions;
@@ -74,21 +74,15 @@ class WT_G3x5_TrafficMapAltitudeRestrictionSetting extends WT_MapSetting {
     }
 
     update() {
-        let restriction = this.getRestriction();
+        let index = this.getValue();
+        this.mapModel.traffic.altitudeRestrictionMode = index;
+
+        let restriction = this.restrictions.get(index);
         this.mapModel.traffic.altitudeRestrictionAbove = restriction.above;
         this.mapModel.traffic.altitudeRestrictionBelow = restriction.below;
     }
 }
 WT_G3x5_TrafficMapAltitudeRestrictionSetting.KEY = "WT_Traffic_Altitude_Restriction";
-/**
- * @enum {Number}
- */
-WT_G3x5_TrafficMapAltitudeRestrictionSetting.Mode = {
-    UNRESTRICTED: 0,
-    ABOVE: 1,
-    NORMAL: 2,
-    BELOW: 3
-};
 WT_G3x5_TrafficMapAltitudeRestrictionSetting.ALTITUDES_DEFAULT = [
     {
         above: WT_Unit.FOOT.createNumber(9900),

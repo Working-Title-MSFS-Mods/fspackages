@@ -1,11 +1,23 @@
 class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, instrumentID, halfPaneID) {
+    constructor(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID) {
         super(homePageGroup, homePageName);
+
+        this._trafficSystemID = trafficSystemID;
 
         let prefix = halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
         this._trafficMapSettingModelID = `${prefix}-${WT_G3x5_TrafficMap.CONTROLLER_ID_SUFFIX}`;
 
         this._initSettingModel();
+        this._initMapSettingModel();
+    }
+
+    /**
+     * The traffic system setting model associated with this settings page.
+     * @readonly
+     * @type {WT_DataStoreSettingModel}
+     */
+    get trafficSystemSettingModel() {
+        return this._settingModel;
     }
 
     /**
@@ -14,7 +26,7 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
      * @type {WT_MapSettingModel}
      */
     get trafficMapSettingModel() {
-        return this._settingModel;
+        return this._mapSettingModel;
     }
 
     /**
@@ -26,7 +38,11 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
     }
 
     _initSettingModel() {
-        this._settingModel = new WT_MapSettingModel(this._trafficMapSettingModelID, null, null);
+        this._settingModel = new WT_DataStoreSettingModel(this._trafficSystemID);
+    }
+
+    _initMapSettingModel() {
+        this._mapSettingModel = new WT_MapSettingModel(this._trafficMapSettingModelID, null, null);
 
         this.trafficMapSettingModel.addSetting(this._rangeSetting = new WT_G3x5_TrafficMapRangeSetting(this.trafficMapSettingModel, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS, WT_G3x5_TrafficMap.MAP_RANGE_DEFAULT));
         this.trafficMapSettingModel.addSetting(this._altitudeModeSetting = new WT_G3x5_TrafficMapAltitudeModeSetting(this.trafficMapSettingModel, false));
@@ -39,9 +55,21 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
         return new WT_G3x5_TSCTrafficSettingsHTMLElement();
     }
 
+    _createOperatingModeSubPage() {
+    }
+
+    _createAltitudeSubPage() {
+        return new WT_G3x5_TSCTrafficAltitudeSettings(this, this._altitudeModeSetting, this._altitudeRestrictionSetting);
+    }
+
+    _createADSBSubPage() {
+        return new WT_G3x5_TSCTrafficADSBSettings(this, this._motionVectorModeSetting, this._motionVectorLookaheadSetting);
+    }
+
     _initSubPages() {
-        this._altitudeSubPage = new WT_G3x5_TSCTrafficAltitudeSettings(this, this._altitudeModeSetting, this._altitudeRestrictionSetting);
-        this._adsbSubPage = new WT_G3x5_TSCTrafficADSBSettings(this, this._motionVectorModeSetting, this._motionVectorLookaheadSetting);
+        this._operatingModeSubPage = this._createOperatingModeSubPage();
+        this._altitudeSubPage = this._createAltitudeSubPage();
+        this._adsbSubPage = this._createADSBSubPage();
     }
 
     init(root) {
@@ -98,7 +126,7 @@ WT_G3x5_TSCTrafficSettingsHTMLElement.TEMPLATE.innerHTML = `
         }
     </style>
     <div id="wrapper">
-        <slot name="xpdr"></slot>
+        <slot name="operating"></slot>
         <slot name="altitude"></slot>
         <slot name="adsb"></slot>
     </div>
@@ -147,11 +175,29 @@ class WT_G3x5_TSCTrafficSettingsSubPage {
     }
 }
 
+class WT_G3x5_TSCTrafficOperatingModeSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
+    /**
+     * @param {WT_G3x5_TSCTrafficSettings} parentPage
+     * @param {HTMLElement} htmlElement
+     * @param {WT_G3x5_TrafficSystemOperatingModeSetting} operatingModeSetting
+     */
+    constructor(parentPage, operatingModeSetting) {
+        super(parentPage, WT_G3x5_TSCTrafficOperatingModeSettings.SLOT);
+
+        this.htmlElement.setContext({
+            subPage: this,
+            modeSetting: operatingModeSetting
+        });
+    }
+}
+WT_G3x5_TSCTrafficOperatingModeSettings.SLOT = "operating";
+
 class WT_G3x5_TSCTrafficAltitudeSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
     /**
      * @param {WT_G3x5_TSCTrafficSettings} parentPage
      * @param {HTMLElement} htmlElement
-     * @param {WT_WeatherRadarSetting} modeSetting
+     * @param {WT_G3x5_TrafficMapAltitudeModeSetting} altitudeModeSetting
+     * @param {WT_G3x5_TrafficMapAltitudeRestrictionSetting} altitudeRestrictionSetting
      */
     constructor(parentPage, altitudeModeSetting, altitudeRestrictionSetting) {
         super(parentPage, WT_G3x5_TSCTrafficAltitudeSettings.SLOT);
@@ -339,7 +385,8 @@ class WT_G3x5_TSCTrafficADSBSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
     /**
      * @param {WT_G3x5_TSCTrafficSettings} parentPage
      * @param {HTMLElement} htmlElement
-     * @param {WT_WeatherRadarSetting} modeSetting
+     * @param {WT_G3x5_TrafficMapMotionVectorModeSetting} motionVectorModeSetting
+     * @param {WT_G3x5_TrafficMapMotionVectorLookaheadSetting} motionVectorLookaheadSetting
      */
     constructor(parentPage, motionVectorModeSetting, motionVectorLookaheadSetting) {
         super(parentPage, WT_G3x5_TSCTrafficADSBSettings.SLOT);
