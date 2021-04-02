@@ -596,6 +596,9 @@ class CJ4NavModeSelector {
     if (this._inputDataStates.selectedAlt1.state < 0) {
       this.selectedAlt1 = 0;
       Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 0, true);
+    } else if (this._inputDataStates.selectedAlt1.state > 45000) {
+      this.selectedAlt1 = 45000;
+      Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 45000, true);
     } else {
       this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
     }
