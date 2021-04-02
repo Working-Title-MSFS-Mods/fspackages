@@ -71,6 +71,15 @@ WT_G3x5_MapModelTrafficModule.AltitudeMode = {
 /**
  * @enum {Number}
  */
+WT_G3x5_MapModelTrafficModule.AltitudeRestrictionMode = {
+    UNRESTRICTED: 0,
+    ABOVE: 1,
+    NORMAL: 2,
+    BELOW: 3
+};
+/**
+ * @enum {Number}
+ */
 WT_G3x5_MapModelTrafficModule.MotionVectorMode = {
     OFF: 0,
     ABSOLUTE: 1,
@@ -81,6 +90,7 @@ WT_G3x5_MapModelTrafficModule.OPTION_DEFS = {
     outerRange: {default: WT_Unit.NMILE.createNumber(0)},
     innerRange: {default: WT_Unit.NMILE.createNumber(0)},
     altitudeMode: {default: WT_G3x5_MapModelTrafficModule.AltitudeMode.RELATIVE, auto: true},
+    altitudeRestrictionMode: {default: WT_G3x5_MapModelTrafficModule.AltitudeRestrictionMode.UNRESTRICTED, auto: true},
     altitudeRestrictionAbove: {default: WT_Unit.FOOT.createNumber(0)},
     altitudeRestrictionBelow: {default: WT_Unit.FOOT.createNumber(0)},
     motionVectorMode: {default: WT_G3x5_MapModelTrafficModule.MotionVectorMode.NONE, auto: true},

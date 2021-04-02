@@ -12,6 +12,17 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
         this._optsManager.addOptions(WT_G3000_TrafficAdvisorySystem.OPTION_DEFS);
     }
 
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(WT_G3x5_TrafficSystem.ID);
+
+        let operatingModeSetting = new WT_G3000_TrafficSystemOperatingModeSetting(this._settingModel);
+        this._settingModel.addSetting(operatingModeSetting);
+
+        operatingModeSetting.addListener(this._onOperatingModeSettingChanged.bind(this));
+
+        this._settingModel.init();
+    }
+
     /**
      * @readonly
      * @type {WT_G3000_TrafficAdvisorySystemSensitivity.Level}
@@ -28,6 +39,10 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
                 this._entryUpdateOptions[option] = newValue;
                 break;
         }
+    }
+
+    _onOperatingModeSettingChanged(setting, newValue, oldValue) {
+        this._operatingMode = newValue;
     }
 
     _createIntruderEntry(intruder) {
@@ -51,6 +66,11 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     }
 
     _doUpdate(currentTime) {
+        if (this.operatingMode !== WT_G3000_TrafficAdvisorySystem.OperatingMode.OPERATING) {
+            this._clearEntriesCulled();
+            return;
+        }
+
         this._updateSensitivity();
 
         super._doUpdate(currentTime);
@@ -73,6 +93,13 @@ WT_G3000_TrafficAdvisorySystem.OPTION_DEFS = {
         horizontalSeparation: WT_Unit.NMILE.createNumber(6),
         verticalSeparation: WT_Unit.FOOT.createNumber(1200)
     }, auto: true, observed: true}
+};
+/**
+ * @enum {Number}
+ */
+WT_G3000_TrafficAdvisorySystem.OperatingMode = {
+    STANDBY: 0,
+    OPERATING: 1
 };
 /**
  * @enum {Number}
@@ -193,3 +220,15 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
         this._updateAlertLevel(sensitivity, options);
     }
 }
+
+class WT_G3000_TrafficSystemOperatingModeSetting extends WT_G3x5_TrafficSystemOperatingModeSetting {
+    /**
+     *
+     * @param {WT_DataStoreSettingModel} model
+     * @param {WT_G3000_TrafficAdvisorySystem.OperatingMode} [defaultValue]
+     */
+    constructor(model, defaultValue = WT_G3000_TrafficSystemOperatingModeSetting.DEFAULT) {
+        super(model, defaultValue, false);
+    }
+}
+WT_G3000_TrafficSystemOperatingModeSetting.DEFAULT = WT_G3000_TrafficAdvisorySystem.OperatingMode.STANDBY;

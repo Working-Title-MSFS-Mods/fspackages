@@ -94,6 +94,8 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    get templateID() { return "AS3000_TSC"; }
+
     get mfdPaneControlID() {
         return this._mfdPaneControlID;
     }
@@ -132,7 +134,8 @@ class AS3000_TSC extends NavSystemTouch {
     _createPFDSettingsPage() {
     }
 
-    get templateID() { return "AS3000_TSC"; }
+    _createTrafficSettingsPage(halfPaneID) {
+    }
 
     _initMFDPaneControlID() {
         this._mfdPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
@@ -170,8 +173,8 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD")),
                 this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
-                this._mfdPagesLeft.traffic = new NavSystemPage("Traffic Settings Left", "TrafficSettingsLeft", new WT_G3x5_TSCTrafficSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
-                this._mfdPagesRight.traffic = new NavSystemPage("Traffic Settings Right", "TrafficSettingsRight", new WT_G3x5_TSCTrafficSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.traffic = new NavSystemPage("Traffic Settings Left", "TrafficSettingsLeft", this._createTrafficSettingsPage(WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.traffic = new NavSystemPage("Traffic Settings Right", "TrafficSettingsRight", this._createTrafficSettingsPage(WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
                 this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),

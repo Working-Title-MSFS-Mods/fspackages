@@ -7,6 +7,7 @@ class WT_G3x5_TrafficSystem {
     constructor(airplane, trafficTracker, options) {
         this._airplane = airplane;
 
+        this._operatingMode = 0;
         this._protectedRadius = WT_Unit.NMILE.createNumber(0);
         this._protectedHeight = WT_Unit.FOOT.createNumber(0);
 
@@ -27,6 +28,7 @@ class WT_G3x5_TrafficSystem {
         this._initOptionsManager();
         this._initOptions(options);
 
+        this._initSettingModel();
         this._initIntruderListeners();
 
         this._lastUpdateTime = 0;
@@ -38,6 +40,9 @@ class WT_G3x5_TrafficSystem {
 
     _initOptions(options) {
         this._optsManager.setOptions(options);
+    }
+
+    _initSettingModel() {
     }
 
     _initIntruderListeners() {
@@ -93,6 +98,14 @@ class WT_G3x5_TrafficSystem {
 
     /**
      * @readonly
+     * @type {Number}
+     */
+    get operatingMode() {
+        return this._operatingMode;
+    }
+
+    /**
+     * @readonly
      * @type {WT_ReadOnlyArray<WT_TrafficAvoidanceSystemIntruder>}
      */
     get intruders() {
@@ -136,9 +149,15 @@ class WT_G3x5_TrafficSystem {
         this._tas.update();
     }
 
+    _clearEntriesCulled() {
+        if (this._entriesCulled.length > 0) {
+            this._entriesCulled.splice(0, this._entriesCulled.length);
+        }
+    }
+
     _updateEntriesArray() {
         this._entriesSorted.sort(this._intruderEntryComparator.bind(this));
-        this._entriesCulled.splice(0, this._entriesCulled.length);
+        this._clearEntriesCulled();
         this._entriesSorted.forEach((entry, index) => {
             if (index < this.maxIntruderCount && entry.intruder.isPredictionValid) {
                 this._entriesCulled.push(entry);
@@ -160,7 +179,7 @@ class WT_G3x5_TrafficSystem {
         }
     }
 }
-WT_G3x5_TrafficSystem.ID = "G3x5_TrafficSystem";
+WT_G3x5_TrafficSystem.ID = "WT_TrafficSystem";
 WT_G3x5_TrafficSystem.OPTION_DEFS = {
     updateInterval: {default: 1, auto: true}, // seconds
     maxIntruderCount: {default: Infinity, auto: true}
@@ -195,3 +214,16 @@ class WT_G3x5_TrafficSystemIntruderEntry {
     update() {
     }
 }
+
+class WT_G3x5_TrafficSystemOperatingModeSetting extends WT_DataStoreSetting {
+    /**
+     *
+     * @param {WT_DataStoreSettingModel} model
+     * @param {*} defaultValue
+     * @param {Boolean} autoUpdate
+     */
+    constructor(model, defaultValue, autoUpdate, key = WT_G3x5_TrafficSystemOperatingModeSetting.KEY) {
+        super(model, key, defaultValue, autoUpdate, false);
+    }
+}
+WT_G3x5_TrafficSystemOperatingModeSetting.KEY = "WT_TrafficSystem_OperatingMode";

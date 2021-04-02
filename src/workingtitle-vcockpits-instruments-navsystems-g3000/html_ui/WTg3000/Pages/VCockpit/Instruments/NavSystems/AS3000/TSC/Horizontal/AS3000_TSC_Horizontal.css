@@ -340,6 +340,13 @@ as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettin
     --trafficsettings-button-margin-horizontal: 1vh;
     --trafficsettings-button-margin-vertical: 1vh;
 }
+    as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettings-operatingmode {
+        position: absolute;
+        left: 1%;
+        top: 1%;
+        width: 31.3%;
+        height: 98%;
+    }
     as3000-tsc-horizontal-element #Electricity .trafficSettings wt-tsc-trafficsettings-altitude {
         position: absolute;
         left: 34.3%;
