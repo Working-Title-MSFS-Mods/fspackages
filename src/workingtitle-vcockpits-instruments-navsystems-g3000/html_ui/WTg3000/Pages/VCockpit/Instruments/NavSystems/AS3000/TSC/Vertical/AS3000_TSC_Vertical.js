@@ -4,6 +4,8 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         this.middleKnobText_Save = "";
     }
 
+    get templateID() { return "AS3000_TSC_Vertical"; }
+
     _createSpeedBugsPage() {
         return new WT_G5000_TSCSpeedBugs("PFD");
     }
@@ -12,7 +14,9 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCPFDSettings("PFD", "PFD Home", "PFD");
     }
 
-    get templateID() { return "AS3000_TSC_Vertical"; }
+    _createTrafficSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
+        return new WT_G5000_TSCTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", instrumentID, halfPaneID);
+    }
 
     connectedCallback() {
         super.connectedCallback();
