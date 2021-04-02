@@ -304,7 +304,7 @@ class WT_VerticalAutopilot {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
-                if (!this.canPathActivate()) {
+                if (!this.canPathActivate() && this._pathInterceptStatus !== PathInterceptStatus.LEVELING && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
                     this.setVerticalNavModeState(VerticalNavModeState.PTCH);
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
@@ -497,14 +497,16 @@ class WT_VerticalAutopilot {
     }
 
     canPathActivate() {
-        if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > -250) {
+        const gsBasedDeviation = -1 * (((this.groundSpeed && this.groundSpeed > 100 ? this.groundSpeed : 200) * (4 / 11)) + (750/11));
+        if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > gsBasedDeviation) {
             return true;
         }
         return false;
     }
 
     canGlidepathActivate() {
-        if (this.glidepath.deviation < 100 && this.glidepath.deviation > -250) {
+        const gsBasedDeviation = -1 * (((this.groundSpeed && this.groundSpeed > 100 ? this.groundSpeed : 200) * (4 / 11)) + (750/11));
+        if (this.glidepath.deviation < 100 && this.glidepath.deviation > gsBasedDeviation) {
             return true;
         }
         return false;
@@ -632,13 +634,14 @@ class WT_VerticalAutopilot {
                     }
                 }
                 else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
-                    if (this.indicatedAltitude < this.targetAltitude + 500 && this.path.endsLevel) {
+                    if (this.indicatedAltitude < this.targetAltitude + 1000 && this.path.endsLevel) {
                         console.log("setting PathInterceptStatus.LEVELING");
                         this.setAltitudeAndSlot(AltitudeSlot.MANAGED, this.targetAltitude);
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
+                        break;
                     }
                     else if (!this.path.endsLevel && this._pathInterceptStatus === PathInterceptStatus.INTERCEPTED
-                        && this.indicatedAltitude < this.targetAltitude + 500) {
+                        && this.indicatedAltitude < this.targetAltitude + 1000) {
                         this._pathInterceptStatus = PathInterceptStatus.CONTINUOUS;
                         this._continuousIndex = this._vnav.flightplan.activeWaypointIndex;
                     }
