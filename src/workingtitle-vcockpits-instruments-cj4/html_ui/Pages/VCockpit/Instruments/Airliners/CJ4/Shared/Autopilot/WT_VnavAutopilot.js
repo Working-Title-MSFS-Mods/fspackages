@@ -667,8 +667,8 @@ class WT_VerticalAutopilot {
                 break;
             case PathInterceptStatus.LEVELING:
                 if (this._navModeSelector.isAltitudeLocked) {
-                    //this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
-                    this.setManagedAltitude();
+                    this.setAltitudeAndSlot(AltitudeSlot.LOCK, -1000, true);
+                    //this.setManagedAltitude();
                     this._pathInterceptStatus = PathInterceptStatus.LEVELED;
                     console.log("setting PathInterceptStatus.LEVELED");
                     this.setDonut(0);
@@ -694,7 +694,7 @@ class WT_VerticalAutopilot {
     }
 
     interceptPath(fpa) {
-        console.log("interceptPath - status: " + this._pathInterceptStatus);
+        //console.log("interceptPath - status: " + this._pathInterceptStatus);
         switch (this._pathInterceptStatus) {
             case PathInterceptStatus.NONE:
                 const desiredVerticalSpeed = AutopilotMath.calculateVerticaSpeed(fpa, this.groundSpeed);
@@ -706,7 +706,7 @@ class WT_VerticalAutopilot {
                 };
                 this._pathInterceptValues = intercept;
                 this._pathInterceptStatus = PathInterceptStatus.INTERCEPTING;
-                this.vsSlot2Value = this.verticalSpeed;
+                this.vsSlot2Value = intercept.verticalSpeed;
                 this.vsSlot = 2;
                 if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
                     this.modeSelectorPathStatus = VnavPathStatus.PATH_ACTIVE;
