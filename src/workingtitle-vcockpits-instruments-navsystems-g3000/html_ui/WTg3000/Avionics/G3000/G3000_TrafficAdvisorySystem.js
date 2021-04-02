@@ -172,4 +172,4 @@ class WT_G3000_TrafficSystemOperatingModeSetting extends WT_G3x5_TrafficSystemOp
         super(model, defaultValue, false);
     }
 }
-WT_G3000_TrafficSystemOperatingModeSetting.DEFAULT = WT_G3000_TrafficAdvisorySystem.OperatingMode.STANDBY;
+WT_G3000_TrafficSystemOperatingModeSetting.DEFAULT = WT_G3000_TrafficAdvisorySystem.OperatingMode.OPERATING;
