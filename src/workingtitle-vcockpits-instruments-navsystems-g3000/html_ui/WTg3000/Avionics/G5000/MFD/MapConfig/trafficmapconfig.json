@@ -1,0 +1,16 @@
+﻿{
+    "miniCompass": {
+        "iconPath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_MINI_COMPASS.svg"
+    },
+
+    "airplane": {
+        "iconSize": 60,
+        "imagePath": "/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE.svg"
+    },
+
+    "trafficRange": {
+        "innerStrokeColor": "transparent",
+        "innerStrokeDash": [],
+        "innerTickMinorFactor": 3
+    }
+}
