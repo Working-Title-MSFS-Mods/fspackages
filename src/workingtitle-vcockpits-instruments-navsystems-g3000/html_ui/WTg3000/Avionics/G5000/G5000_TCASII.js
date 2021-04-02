@@ -33,11 +33,11 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
     _initXPDRSettingModel() {
         this._xpdrSettingModel = new WT_DataStoreSettingModel(this._xpdrID);
 
-        let xpdrModeSetting = new WT_G5000_TransponderModeSetting(this._xpdrSettingModel);
-        this._xpdrSettingModel.addSetting(xpdrModeSetting);
+        this._xpdrTCASModeSetting = new WT_G5000_TransponderTCASModeSetting(this._xpdrSettingModel);
+        this._xpdrSettingModel.addSetting(this._xpdrTCASModeSetting);
 
-        xpdrModeSetting.addListener(this._onXPDRModeSettingChanged.bind(this));
-        this._updateFromXPDRMode(xpdrModeSetting.getValue());
+        this._xpdrTCASModeSetting.addListener(this._onXPDRTCASModeSettingChanged.bind(this));
+        this._xpdrTCASMode = this._xpdrTCASModeSetting.getValue();
     }
 
     onOptionChanged(option, oldValue, newValue) {
@@ -52,29 +52,39 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
         this._setOperatingMode(newValue);
     }
 
-    _onXPDRModeSettingChanged(setting, newValue, oldValue) {
-        this._updateFromXPDRMode(newValue);
-    }
-
-    _updateFromXPDRMode(xpdrMode) {
-        let operatingMode;
-        switch (xpdrMode) {
-            case WT_G5000_TransponderModeSetting.Mode.AUTO:
-                // shouldn't be possible to get here, but just in case we will fall through to TA Only mode.
-            case WT_G5000_TransponderModeSetting.Mode.TA_ONLY:
-                operatingMode = WT_G5000_TCASII.OperatingMode.TA_ONLY;
-                break;
-            default:
-                operatingMode = WT_G5000_TCASII.OperatingMode.STANDBY;
-        }
-        this._operatingModeSetting.setValue(operatingMode);
+    _onXPDRTCASModeSettingChanged(setting, newValue, oldValue) {
+        this._xpdrTCASMode = newValue;
     }
 
     _createIntruderEntry(intruder) {
         return new WT_G5000_TCASIIIntruderEntry(intruder);
     }
 
+    _updateOperatingMode() {
+        let xpdrMode = this._airplane.navCom.getTransponder(1).mode();
+        let newOperatingMode;
+        if (xpdrMode !== WT_AirplaneTransponder.Mode.ALT) {
+            newOperatingMode = WT_G5000_TCASII.OperatingMode.STANDBY;
+        } else {
+            switch (this._xpdrTCASMode) {
+                case WT_G5000_TransponderTCASModeSetting.Mode.AUTO:
+                    // shouldn't be possible to get here, but just in case we will fall through to TA Only mode.
+                case WT_G5000_TransponderTCASModeSetting.Mode.TA_ONLY:
+                    newOperatingMode = WT_G5000_TCASII.OperatingMode.TA_ONLY;
+                    break;
+                default:
+                    newOperatingMode = WT_G5000_TCASII.OperatingMode.STANDBY;
+            }
+        }
+
+        if (newOperatingMode !== this.operatingMode) {
+            this._operatingModeSetting.setValue(newOperatingMode);
+        }
+    }
+
     _doUpdate(currentTime) {
+        this._updateOperatingMode();
+
         if (this.operatingMode === WT_G5000_TCASII.OperatingMode.STANDBY) {
             this._clearEntriesCulled();
             return;

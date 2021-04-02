@@ -1,17 +1,15 @@
-class WT_G5000_TransponderModeSetting extends WT_DataStoreSetting {
-    constructor(model, defaultValue = WT_G5000_TransponderModeSetting.DEFAULT, key = WT_G5000_TransponderModeSetting.KEY) {
+class WT_G5000_TransponderTCASModeSetting extends WT_DataStoreSetting {
+    constructor(model, defaultValue = WT_G5000_TransponderTCASModeSetting.DEFAULT, key = WT_G5000_TransponderTCASModeSetting.KEY) {
         super(model, key, defaultValue, false, false);
     }
 }
-WT_G5000_TransponderModeSetting.KEY = "WT_Transponder_Mode";
+WT_G5000_TransponderTCASModeSetting.KEY = "WT_Transponder_Mode";
 /**
  * @enum {Number}
  */
-WT_G5000_TransponderModeSetting.Mode = {
+WT_G5000_TransponderTCASModeSetting.Mode = {
     AUTO: 0,
     TA_ONLY: 1,
-    ALTITUDE_REPORTING: 2,
-    ON: 3,
-    STANDBY: 4
+    STANDBY: 2
 };
-WT_G5000_TransponderModeSetting.DEFAULT = WT_G5000_TransponderModeSetting.Mode.TA_ONLY;
+WT_G5000_TransponderTCASModeSetting.DEFAULT = WT_G5000_TransponderTCASModeSetting.Mode.TA_ONLY;
