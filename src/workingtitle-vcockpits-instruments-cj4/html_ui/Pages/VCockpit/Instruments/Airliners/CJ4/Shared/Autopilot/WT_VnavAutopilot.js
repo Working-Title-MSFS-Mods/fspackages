@@ -72,6 +72,8 @@ class WT_VerticalAutopilot {
         * @type {AltitudeCaptureStatus}
         */
         this._altitudeCaptureStatus = AltitudeCaptureStatus.WATCHING;
+
+        this._altInterceptValues = undefined;
     }
 
     get altitudeCaptureStatus() {
