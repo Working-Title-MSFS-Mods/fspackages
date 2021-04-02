@@ -8,12 +8,9 @@ class WT_G3x5_TrafficSystem {
         this._airplane = airplane;
 
         this._operatingMode = 0;
-        this._protectedRadius = WT_Unit.NMILE.createNumber(0);
-        this._protectedHeight = WT_Unit.FOOT.createNumber(0);
+        this._sensitivity = this._createSensitivity();
 
-        this._updateProtectedZone();
-
-        this._tas = new WT_TrafficAvoidanceSystem(airplane, this._protectedRadius, this._protectedHeight, trafficTracker);
+        this._tas = new WT_TrafficAvoidanceSystem(airplane, this._sensitivity.getProtectedRadius(), this._sensitivity.getProtectedHeight(), trafficTracker);
         /**
          * @type {Map<WT_TrafficAvoidanceSystemIntruder,WT_G3x5_TrafficSystemIntruderEntry>}
          */
@@ -32,6 +29,12 @@ class WT_G3x5_TrafficSystem {
         this._initIntruderListeners();
 
         this._lastUpdateTime = 0;
+    }
+
+    /**
+     * @returns {WT_G3x5_TrafficSystemSensitivity}
+     */
+    _createSensitivity() {
     }
 
     _initOptionsManager() {
@@ -140,7 +143,14 @@ class WT_G3x5_TrafficSystem {
         }
     }
 
+    _updateSensitivity() {
+        this._sensitivity.update();
+    }
+
     _updateProtectedZone() {
+        this._tas.lookaheadTime = this._sensitivity.getLookaheadTime();
+        this._tas.ownAirplane.protectedRadius = this._sensitivity.getProtectedRadius();
+        this._tas.ownAirplane.protectedHeight = this._sensitivity.getProtectedHeight();
     }
 
     _updateTAS() {
@@ -166,6 +176,7 @@ class WT_G3x5_TrafficSystem {
     }
 
     _doUpdate(currentTime) {
+        this._updateSensitivity();
         this._updateProtectedZone();
         this._updateTAS();
         this._updateEntriesArray();
@@ -209,6 +220,60 @@ class WT_G3x5_TrafficSystemIntruderEntry {
      * @type {Number}
      */
     get alertLevel() {
+    }
+
+    update() {
+    }
+}
+
+class WT_G3x5_TrafficSystemSensitivity {
+    /**
+     * @param {WT_PlayerAirplane} airplane
+     * @param {WT_NumberUnit[]} lookaheadTimes
+     * @param {WT_NumberUnit[]} protectedRadii
+     * @param {WT_NumberUnit[]} protectedHeights
+     */
+    constructor(airplane, lookaheadTimes, protectedRadii, protectedHeights) {
+        this._airplane = airplane;
+        this._lookaheadTimes = lookaheadTimes.map(value => value.readonly());
+        this._protectedRadii = protectedRadii.map(value => value.readonly());
+        this._protectedHeights = protectedHeights.map(value => value.readonly());
+        this._level = 0;
+
+        this._tempFeet = WT_Unit.FOOT.createNumber(0);
+    }
+
+    /**
+     * The current sensitivity level.
+     * @readonly
+     * @type {Number}
+     */
+    get level() {
+        return this._level;
+    }
+
+    /**
+     * Gets the lookahead time for the current sensitivity level.
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    getLookaheadTime() {
+        return this._lookaheadTimes[this.level];
+    }
+
+    /**
+     * Gets the radius of the protected zone for the current sensitivity level.
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    getProtectedRadius() {
+        return this._protectedRadii[this.level];
+    }
+
+    /**
+     * Gets the height of the protected zone for the current sensitivity level.
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    getProtectedHeight() {
+        return this._protectedHeights[this.level];
     }
 
     update() {

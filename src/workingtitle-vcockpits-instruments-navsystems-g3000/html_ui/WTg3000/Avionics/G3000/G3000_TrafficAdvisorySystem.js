@@ -1,8 +1,9 @@
 class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
-    constructor(airplane, trafficTracker) {
-        super(airplane, trafficTracker);
-
-        this._sensitivity = new WT_G3000_TrafficAdvisorySystemSensitivity(airplane);
+    /**
+     * @returns {WT_G33000_TrafficSystemSensitivity}
+     */
+    _createSensitivity() {
+        return new WT_G3000_TrafficAdvisorySystemSensitivity(this._airplane);
     }
 
     _initOptionsManager() {
@@ -23,18 +24,8 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
         this._settingModel.init();
     }
 
-    /**
-     * @readonly
-     * @type {WT_G3000_TrafficAdvisorySystemSensitivity.Level}
-     */
-    get sensitivity() {
-        return this._sensitivity.level;
-    }
-
     onOptionChanged(option, oldValue, newValue) {
         switch (option) {
-            case "trafficAdvisorySensAParams":
-            case "trafficAdvisorySensBParams":
             case "proximityAdvisoryParams":
                 this._entryUpdateOptions[option] = newValue;
                 break;
@@ -50,19 +41,7 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     }
 
     _updateIntruderEntry(entry) {
-        entry.update(this.sensitivity, this._entryUpdateOptions);
-    }
-
-    _updateSensitivity() {
-        this._sensitivity.update();
-    }
-
-    _updateProtectedZone() {
-        if (!this._isProtectedZoneInit) {
-            this._protectedRadius.set(WT_G3000_TrafficAdvisorySystem.PROTECTED_RADIUS);
-            this._protectedHeight.set(WT_G3000_TrafficAdvisorySystem.PROTECTED_HEIGHT);
-            this._isProtectedZoneInit = true;
-        }
+        entry.update(this._entryUpdateOptions);
     }
 
     _doUpdate(currentTime) {
@@ -79,16 +58,6 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
 WT_G3000_TrafficAdvisorySystem.PROTECTED_RADIUS = WT_Unit.NMILE.createNumber(2);
 WT_G3000_TrafficAdvisorySystem.PROTECTED_HEIGHT = WT_Unit.FOOT.createNumber(2000);
 WT_G3000_TrafficAdvisorySystem.OPTION_DEFS = {
-    trafficAdvisorySensAParams: {default: {
-        tca: WT_Unit.SECOND.createNumber(20),
-        horizontalSeparation: WT_Unit.NMILE.createNumber(0.2),
-        verticalSeparation: WT_Unit.FOOT.createNumber(600)
-    }, auto: true, observed: true},
-    trafficAdvisorySensBParams: {default: {
-        tca: WT_Unit.SECOND.createNumber(30),
-        horizontalSeparation: WT_Unit.NMILE.createNumber(0.55),
-        verticalSeparation: WT_Unit.FOOT.createNumber(800)
-    }, auto: true, observed: true},
     proximityAdvisoryParams: {default: {
         horizontalSeparation: WT_Unit.NMILE.createNumber(6),
         verticalSeparation: WT_Unit.FOOT.createNumber(1200)
@@ -113,46 +82,40 @@ WT_G3000_TrafficAdvisorySystem.AlertLevel = {
 
 /**
  * @typedef WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions
- * @property {{tca:WT_NumberUnit, horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} trafficAdvisorySensAParams
- * @property {{tca:WT_NumberUnit, horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} trafficAdvisorySensBParams
  * @property {{horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} proximityAdvisoryParams
  */
 
-class WT_G3000_TrafficAdvisorySystemSensitivity {
+class WT_G3000_TrafficAdvisorySystemSensitivity extends WT_G3x5_TrafficSystemSensitivity {
     /**
      * @param {WT_PlayerAirplane} airplane
      */
     constructor(airplane) {
-        this._airplane = airplane;
-        this._level = WT_G3000_TrafficAdvisorySystemSensitivity.Level.B;
+        super(airplane, WT_G3000_TrafficAdvisorySystemSensitivity.LOOKAHEAD_TIMES, WT_G3000_TrafficAdvisorySystemSensitivity.PROTECTED_RADII, WT_G3000_TrafficAdvisorySystemSensitivity.PROTECTED_HEIGHTS)
 
         this._tempFeet = WT_Unit.FOOT.createNumber(0);
     }
 
-    /**
-     * @readonly
-     * @type {WT_G3000_TrafficAdvisorySystemSensitivity.Level}
-     */
-    get level() {
-        return this._level;
-    }
-
     update() {
-        if (this._airplane.controls.isGearHandleDown() || this._airplane.sensors.radarAltitude(this._tempFeet).compare(WT_G3000_TrafficAdvisorySystemSensitivity.LEVEL_A_RA_THRESHOLD) < 0) {
-            this._level = WT_G3000_TrafficAdvisorySystemSensitivity.Level.A;
+        let radarAltitudeFeet = this._airplane.sensors.radarAltitude(this._tempFeet).number;
+        let trueAltitudeFeet = this._airplane.navigation.altitude(this._tempFeet).number;
+        if (radarAltitudeFeet > 1500) {
+            if (trueAltitudeFeet > 20000) {
+                this._level = 4;
+            } else if (trueAltitudeFeet > 10000) {
+                this._level = 3;
+            } else if (trueAltitudeFeet > 5000) {
+                this._level = 2;
+            } else {
+                this._level = 1;
+            }
         } else {
-            this._level = WT_G3000_TrafficAdvisorySystemSensitivity.Level.B;
+            this._level = 0;
         }
     }
 }
-WT_G3000_TrafficAdvisorySystemSensitivity.LEVEL_A_RA_THRESHOLD = WT_Unit.FOOT.createNumber(2000);
-/**
- * @enum {Number}
- */
-WT_G3000_TrafficAdvisorySystemSensitivity.Level = {
-    A: 0,
-    B: 1
-};
+WT_G3000_TrafficAdvisorySystemSensitivity.LOOKAHEAD_TIMES =     [30,    35,     40,     45,     48].map(value => WT_Unit.SECOND.createNumber(value));
+WT_G3000_TrafficAdvisorySystemSensitivity.PROTECTED_RADII =     [0.20,  0.35,   0.55,   0.80,   1.10].map(value => WT_Unit.NMILE.createNumber(value));
+WT_G3000_TrafficAdvisorySystemSensitivity.PROTECTED_HEIGHTS =   [800,   1400,   1400,   1400,   1400].map(value => WT_Unit.FOOT.createNumber(value));
 
 class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemIntruderEntry {
     /**
@@ -176,16 +139,19 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
 
     /**
      *
-     * @param {{tca:WT_NumberUnit, horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} trafficAdvisoryParams
-     * @param {{horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} proximityAdvisoryParams
+     * @param {WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions} options
      */
-    _updateAlertLevelSensitivity(trafficAdvisoryParams, proximityAdvisoryParams) {
+    _updateAlertLevel(options) {
+        if (!this.intruder.isPredictionValid) {
+            this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.UNKNOWN;
+            return;
+        }
+
         this.intruder.predictSeparation(this.intruder.lastUpdatedTime, this._lastHorizontalSeparation, this._lastVerticalSeparation);
-        if (this.intruder.tcaNorm <= 1 && (this.intruder.tca.compare(trafficAdvisoryParams.tca) <= 0 ||
-            (this._lastHorizontalSeparation.compare(trafficAdvisoryParams.horizontalSeparation) <= 0 && this._lastVerticalSeparation.compare(trafficAdvisoryParams.verticalSeparation) <= 0))) {
+        if (this.intruder.tcaNorm <= 1) {
             this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY;
         } else {
-            if (this._lastHorizontalSeparation.compare(proximityAdvisoryParams.horizontalSeparation) <= 0 && this._lastVerticalSeparation.compare(proximityAdvisoryParams.verticalSeparation) <= 0) {
+            if (this._lastHorizontalSeparation.compare(options.proximityAdvisoryParams.horizontalSeparation) <= 0 && this._lastVerticalSeparation.compare(options.proximityAdvisoryParams.verticalSeparation) <= 0) {
                 this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.PROXIMITY_ADVISORY;
             } else {
                 this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.NON_THREAT;
@@ -195,29 +161,10 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
 
     /**
      *
-     * @param {WT_G3000_TrafficAdvisorySystemSensitivity.Level} sensitivity
      * @param {WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions} options
      */
-    _updateAlertLevel(sensitivity, options) {
-        if (!this.intruder.isPredictionValid) {
-            this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.UNKNOWN;
-            return;
-        }
-
-        if (sensitivity === WT_G3000_TrafficAdvisorySystemSensitivity.Level.A) {
-            this._updateAlertLevelSensitivity(options.trafficAdvisorySensAParams, options.proximityAdvisoryParams);
-        } else {
-            this._updateAlertLevelSensitivity(options.trafficAdvisorySensBParams, options.proximityAdvisoryParams);
-        }
-    }
-
-    /**
-     *
-     * @param {WT_G3000_TrafficAdvisorySystemSensitivity.Level} sensitivity
-     * @param {WT_G3000_TrafficAdvisoryIntruderEntryUpdateOptions} options
-     */
-    update(sensitivity, options) {
-        this._updateAlertLevel(sensitivity, options);
+    update(options) {
+        this._updateAlertLevel(options);
     }
 }
 
