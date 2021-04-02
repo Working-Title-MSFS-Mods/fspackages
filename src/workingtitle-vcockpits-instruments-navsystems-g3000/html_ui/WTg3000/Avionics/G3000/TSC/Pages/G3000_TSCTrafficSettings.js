@@ -11,6 +11,19 @@ class WT_G3000_TSCTrafficSettings extends WT_G3x5_TSCTrafficSettings {
 }
 
 class WT_G3000_TSCTrafficOperatingModeSettings extends WT_G3x5_TSCTrafficOperatingModeSettings {
+    /**
+     * @param {WT_G3x5_TSCTrafficSettings} parentPage
+     * @param {WT_G3x5_TrafficSystemOperatingModeSetting} operatingModeSetting
+     */
+    constructor(parentPage, operatingModeSetting) {
+        super(parentPage);
+
+        this.htmlElement.setContext({
+            subPage: this,
+            modeSetting: operatingModeSetting
+        });
+    }
+
     _createHTMLElement() {
         return new WT_G3000_TSCTrafficOperatingModeSettingsHTMLElement();
     }

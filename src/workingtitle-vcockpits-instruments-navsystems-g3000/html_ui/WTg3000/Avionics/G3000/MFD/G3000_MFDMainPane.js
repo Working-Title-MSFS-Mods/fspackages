@@ -2,7 +2,7 @@ class WT_G3000_MFDMainPane extends WT_G3x5_MFDMainPane {
     /**
      *
      * @param {WT_G3x5_MFDHalfPane.ID} side
-     * @returns {WT_G3x5_MFDHalfPane}
+     * @returns {WT_G3000_MFDHalfPane}
      */
      _createHalfPane(paneID) {
          let slot = (paneID === WT_G3x5_MFDHalfPane.ID.LEFT) ? "left" : "right";

@@ -178,16 +178,9 @@ class WT_G3x5_TSCTrafficSettingsSubPage {
 class WT_G3x5_TSCTrafficOperatingModeSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
     /**
      * @param {WT_G3x5_TSCTrafficSettings} parentPage
-     * @param {HTMLElement} htmlElement
-     * @param {WT_G3x5_TrafficSystemOperatingModeSetting} operatingModeSetting
      */
-    constructor(parentPage, operatingModeSetting) {
+    constructor(parentPage) {
         super(parentPage, WT_G3x5_TSCTrafficOperatingModeSettings.SLOT);
-
-        this.htmlElement.setContext({
-            subPage: this,
-            modeSetting: operatingModeSetting
-        });
     }
 }
 WT_G3x5_TSCTrafficOperatingModeSettings.SLOT = "operating";
@@ -195,7 +188,6 @@ WT_G3x5_TSCTrafficOperatingModeSettings.SLOT = "operating";
 class WT_G3x5_TSCTrafficAltitudeSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
     /**
      * @param {WT_G3x5_TSCTrafficSettings} parentPage
-     * @param {HTMLElement} htmlElement
      * @param {WT_G3x5_TrafficMapAltitudeModeSetting} altitudeModeSetting
      * @param {WT_G3x5_TrafficMapAltitudeRestrictionSetting} altitudeRestrictionSetting
      */
@@ -384,7 +376,6 @@ customElements.define(WT_G3x5_TSCTrafficAltitudeSettingsHTMLElement.NAME, WT_G3x
 class WT_G3x5_TSCTrafficADSBSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
     /**
      * @param {WT_G3x5_TSCTrafficSettings} parentPage
-     * @param {HTMLElement} htmlElement
      * @param {WT_G3x5_TrafficMapMotionVectorModeSetting} motionVectorModeSetting
      * @param {WT_G3x5_TrafficMapMotionVectorLookaheadSetting} motionVectorLookaheadSetting
      */
@@ -592,6 +583,7 @@ WT_G3x5_TSCTrafficADSBSettingsHTMLElement.TEMPLATE.innerHTML = `
             <wt-tsc-button-statusbar id="display" class="button" labeltext="Traffic Display" enabled="false" toggle="on"></wt-tsc-button-statusbar>
             <wt-tsc-button-value id="vectormode" class="button" labeltext="Motion Vector"></wt-tsc-button-value>
             <wt-tsc-button-value id="vectorlookahead" class="button" labeltext="VECT Duration"></wt-tsc-button-value>
+            <wt-tsc-button-statusbar id="targetselection" class="button" labeltext="Target Selection" enabled="false" toggle="off"></wt-tsc-button-statusbar>
         </div>
     </div>
 `;

@@ -22,6 +22,8 @@ class WT_G3x5_TrafficSystem {
         this._entriesCulled = [];
         this._entriesCulledReadOnly = new WT_ReadOnlyArray(this._entriesCulled);
 
+        this._entryUpdateOptions = {};
+
         this._initOptionsManager();
         this._initOptions(options);
 
@@ -115,6 +117,11 @@ class WT_G3x5_TrafficSystem {
         return this._entriesCulledReadOnly;
     }
 
+    _setOperatingMode(mode) {
+        this._operatingMode = mode;
+        this._entryUpdateOptions.operatingMode = mode;
+    }
+
     _createIntruderEntry(intruder) {
     }
 
@@ -125,7 +132,7 @@ class WT_G3x5_TrafficSystem {
     }
 
     _updateIntruderEntry(entry) {
-        entry.update();
+        entry.update(this._entryUpdateOptions);
     }
 
     _onIntruderUpdated(eventType, intruder) {
@@ -222,7 +229,7 @@ class WT_G3x5_TrafficSystemIntruderEntry {
     get alertLevel() {
     }
 
-    update() {
+    update(options) {
     }
 }
 
