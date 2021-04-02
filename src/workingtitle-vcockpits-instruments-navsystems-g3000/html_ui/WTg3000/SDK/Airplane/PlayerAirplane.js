@@ -41,7 +41,7 @@ class WT_PlayerAirplane {
     }
 
     _createNavCom() {
-        return new WT_AirplaneNavCom(this, 2, 2, 1);
+        return new WT_AirplaneNavCom(this, 2, 2, 1, 1);
     }
 
     _createEngineering() {
@@ -697,12 +697,13 @@ WT_AirplaneFMS.ApproachType = {
 }
 
 class WT_AirplaneNavCom extends WT_AirplaneComponent {
-    constructor(airplane, numComSlots, numNavSlots, numADFSlots) {
+    constructor(airplane, numComSlots, numNavSlots, numADFSlots, numXPDRs) {
         super(airplane);
 
-        this._comSlots = new Array(numComSlots).fill().map((e, i) => new WT_AirplaneComSlot(airplane, i + 1));
-        this._navSlots = new Array(numNavSlots).fill().map((e, i) => new WT_AirplaneNavSlot(airplane, i + 1));
-        this._adfSlots = new Array(numADFSlots).fill().map((e, i) => new WT_AirplaneADFSlot(airplane, i + 1));
+        this._comSlots = [...Array(numComSlots)].map((e, i) => new WT_AirplaneComSlot(airplane, i + 1));
+        this._navSlots = [...Array(numNavSlots)].map((e, i) => new WT_AirplaneNavSlot(airplane, i + 1));
+        this._adfSlots = [...Array(numADFSlots)].map((e, i) => new WT_AirplaneADFSlot(airplane, i + 1));
+        this._xpdrs = [...Array(numXPDRs)].map((e, i) => new WT_AirplaneTransponder(i + 1));
     }
 
     /**
@@ -730,6 +731,15 @@ class WT_AirplaneNavCom extends WT_AirplaneComponent {
      */
     getADF(index) {
         return this._adfSlots[index - 1];
+    }
+
+    /**
+     *
+     * @param {Number} index
+     * @returns {WT_AirplaneTransponder}
+     */
+    getTransponder(index) {
+        return this._xpdrs[index - 1];
     }
 }
 
@@ -1022,6 +1032,53 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
         return SimVar.GetSimVarValue(`ADF RADIAL:${this.index}`, "degree");
     }
 }
+
+class WT_AirplaneTransponder {
+    constructor(index) {
+        this._index = index;
+    }
+
+    /**
+     * The index of this transponder.
+     * @readonly
+     * @type {Number}
+     */
+    get index() {
+        return this._index;
+    }
+
+    /**
+     * Gets this transponder's current mode.
+     * @returns {WT_AirplaneTransponder.Mode} this transponder's current mode.
+     */
+    mode() {
+        return SimVar.GetSimVarValue(`TRANSPONDER STATE:${this.index}`, "number");
+    }
+
+    /**
+     * Sets this transponder's current mode.
+     * @param {WT_AirplaneTransponder.Mode} mode - the new mode.
+     */
+    setMode(mode) {
+        SimVar.SetSimVarValue(`TRANSPONDER STATE:${this.index}`, "number", mode);
+    }
+
+    /**
+     * Gets this transponder's current code.
+     * @returns {Number} this transponder's current code.
+     */
+    code() {
+        return SimVar.GetSimVarValue(`TRANSPONDER CODE:${this.index}`, "number");
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_AirplaneTransponder.Mode = {
+    STANDBY: 1,
+    ON: 3,
+    ALT: 4
+};
 
 class WT_AirplaneEngineering extends WT_AirplaneComponent {
     constructor(airplane) {

@@ -9,30 +9,39 @@ class WT_G5000_TSCTrafficSettings extends WT_G3x5_TSCTrafficSettings {
 
     _initXPDRSettingModel() {
         this._xpdrSettingModel = new WT_DataStoreSettingModel(this._xpdrID);
-        this._xpdrSettingModel.addSetting(this._xpdrModeSetting = new WT_G5000_TransponderModeSetting(this._xpdrSettingModel, this._xpdrID));
+        this._xpdrSettingModel.addSetting(this._xpdrTCASModeSetting = new WT_G5000_TransponderTCASModeSetting(this._xpdrSettingModel));
     }
 
     _createOperatingModeSubPage() {
-        return new WT_G5000_TSCTrafficOperatingModeSettings(this, this._xpdrModeSetting);
+        return new WT_G5000_TSCTrafficOperatingModeSettings(this, this._xpdrTCASModeSetting);
+    }
+
+    onUpdate(deltaTime) {
+        this._operatingModeSubPage.update();
     }
 }
 
 class WT_G5000_TSCTrafficOperatingModeSettings extends WT_G3x5_TSCTrafficOperatingModeSettings {
     /**
      * @param {WT_G3x5_TSCTrafficSettings} parentPage
-     * @param {WT_G5000_TransponderModeSetting} operatingModeSetting
+     * @param {WT_G5000_TransponderTCASModeSetting} xpdrTCASModeSetting
      */
-    constructor(parentPage, xpdrModeSetting) {
+    constructor(parentPage, xpdrTCASModeSetting) {
         super(parentPage);
 
         this.htmlElement.setContext({
             subPage: this,
-            xpdrModeSetting: xpdrModeSetting
+            xpdr: this.parentPage.instrument.airplane.navCom.getTransponder(1),
+            xpdrTCASModeSetting: xpdrTCASModeSetting
         });
     }
 
     _createHTMLElement() {
         return new WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement();
+    }
+
+    update() {
+        this.htmlElement.update();
     }
 }
 
@@ -44,11 +53,13 @@ class WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
         /**
-         * @type {{subPage:WT_G3x5_TSCTrafficAltitudeSettings, xpdrModeSetting:WT_G5000_TransponderModeSetting}}
+         * @type {{subPage:WT_G3x5_TSCTrafficAltitudeSettings, xpdr:WT_AirplaneTransponder, xpdrTCASModeSetting:WT_G5000_TransponderTCASModeSetting}}
          */
         this._context = null;
         this._oldContext = null;
         this._isInit = false;
+
+        this._xpdrTCASModeSettingListener = this._onXPDRTCASModeSettingChanged.bind(this);
     }
 
     _getTemplate() {
@@ -65,45 +76,26 @@ class WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement extends HTMLElement {
             onButton instanceof WT_TSCStatusBarButton &&
             standbyButton instanceof WT_TSCStatusBarButton) {
 
-            this._taOnlyButton = taOnlyButton;
-            this._altitudeReportingButton = altitudeReportingButton;
-            this._onButton = onButton;
-            this._standbyButton = standbyButton;
+            this._taOnlyButton = new WT_CachedElement(taOnlyButton);
+            this._altitudeReportingButton = new WT_CachedElement(altitudeReportingButton);
+            this._onButton = new WT_CachedElement(onButton);
+            this._standbyButton = new WT_CachedElement(standbyButton);
             return true;
         } else {
             return false;
         }
     }
 
-    _initTAOnlyButtonManager() {
-        this._taOnlyButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this._taOnlyButton, this._context.xpdrModeSetting, WT_G5000_TransponderModeSetting.Mode.TA_ONLY);
-        this._taOnlyButtonManager.init();
-    }
-
-    _initAltitudeReportingButtonManager() {
-        this._altitudeReportingButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this._altitudeReportingButton, this._context.xpdrModeSetting, WT_G5000_TransponderModeSetting.Mode.ALTITUDE_REPORTING);
-        this._altitudeReportingButtonManager.init();
-    }
-
-    _initOnButtonManager() {
-        this._onButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this._onButton, this._context.xpdrModeSetting, WT_G5000_TransponderModeSetting.Mode.ON);
-        this._onButtonManager.init();
-    }
-
-    _initStandbyButtonManager() {
-        this._standbyButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this._standbyButton, this._context.xpdrModeSetting, WT_G5000_TransponderModeSetting.Mode.STANDBY);
-        this._standbyButtonManager.init();
-    }
-
-    _initButtonManagers() {
-        this._initTAOnlyButtonManager();
-        this._initAltitudeReportingButtonManager();
-        this._initOnButtonManager();
-        this._initStandbyButtonManager();
+    _initButtonListeners() {
+        this._taOnlyButton.element.addButtonListener(this._onTAOnlyButtonPressed.bind(this));
+        this._altitudeReportingButton.element.addButtonListener(this._onAltitudeReportingButtonPressed.bind(this));
+        this._onButton.element.addButtonListener(this._onOnButtonPressed.bind(this));
+        this._standbyButton.element.addButtonListener(this._onStandbyButtonPressed.bind(this));
     }
 
     async _connectedCallbackHelper() {
         await WT_Wait.wait(this._defineChildren.bind(this));
+        this._initButtonListeners();
         this._isInit = true;
         if (this._context) {
             this._updateFromContext();
@@ -115,10 +107,12 @@ class WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement extends HTMLElement {
     }
 
     _cleanUpContext() {
-        this._taOnlyButtonManager.destroy();
-        this._altitudeReportingButtonManager.destroy();
-        this._onButtonManager.destroy();
-        this._standbyButtonManager.destroy();
+        this._oldContext.xpdrTCASModeSetting.removeListener(this._xpdrTCASModeSettingListener);
+    }
+
+    _initXPDRTCASModeSettingListener() {
+        this._context.xpdrTCASModeSetting.addListener(this._xpdrTCASModeSettingListener);
+        this._xpdrTCASMode = this._context.xpdrTCASModeSetting.getValue();
     }
 
     _updateFromContext() {
@@ -127,7 +121,7 @@ class WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement extends HTMLElement {
         }
 
         if (this._context) {
-            this._initButtonManagers();
+            this._initXPDRTCASModeSettingListener();
         }
     }
 
@@ -142,6 +136,74 @@ class WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement extends HTMLElement {
             this._oldContext = oldContext;
             this._updateFromContext();
         }
+    }
+
+    _setXPDRMode(mode) {
+        this._context.xpdr.setMode(mode);
+    }
+
+    _setXPDRTCASMode(mode) {
+        this._context.xpdrTCASModeSetting.setValue(mode);
+    }
+
+    _onTAOnlyButtonPressed(button) {
+        this._setXPDRMode(WT_AirplaneTransponder.Mode.ALT);
+        this._setXPDRTCASMode(WT_G5000_TransponderTCASModeSetting.Mode.TA_ONLY);
+    }
+
+    _onAltitudeReportingButtonPressed(button) {
+        this._setXPDRMode(WT_AirplaneTransponder.Mode.ALT);
+        this._setXPDRTCASMode(WT_G5000_TransponderTCASModeSetting.Mode.STANDBY);
+    }
+
+    _onOnButtonPressed(button) {
+        this._setXPDRMode(WT_AirplaneTransponder.Mode.ON);
+        this._setXPDRTCASMode(WT_G5000_TransponderTCASModeSetting.Mode.STANDBY);
+    }
+
+    _onStandbyButtonPressed(button) {
+        this._setXPDRMode(WT_AirplaneTransponder.Mode.STANDBY);
+        this._setXPDRTCASMode(WT_G5000_TransponderTCASModeSetting.Mode.STANDBY);
+    }
+
+    _onXPDRTCASModeSettingChanged(setting, newValue, oldValue) {
+        this._xpdrTCASMode = newValue;
+    }
+
+    _updateTAOnlyButton(xpdrMode) {
+        let isToggleOn = xpdrMode === WT_AirplaneTransponder.Mode.ALT && this._xpdrTCASMode === WT_G5000_TransponderTCASModeSetting.Mode.TA_ONLY;
+        this._taOnlyButton.setAttribute("toggle", `${isToggleOn ? "on" : "off"}`);
+    }
+
+    _updateAltitudeReportingButton(xpdrMode) {
+        let isToggleOn = xpdrMode === WT_AirplaneTransponder.Mode.ALT && this._xpdrTCASMode === WT_G5000_TransponderTCASModeSetting.Mode.STANDBY;
+        this._altitudeReportingButton.setAttribute("toggle", `${isToggleOn ? "on" : "off"}`);
+    }
+
+    _updateOnButton(xpdrMode) {
+        let isToggleOn = xpdrMode === WT_AirplaneTransponder.Mode.ON;
+        this._onButton.setAttribute("toggle", `${isToggleOn ? "on" : "off"}`);
+    }
+
+    _updateStandbyButton(xpdrMode) {
+        let isToggleOn = xpdrMode === WT_AirplaneTransponder.Mode.STANDBY;
+        this._standbyButton.setAttribute("toggle", `${isToggleOn ? "on" : "off"}`);
+    }
+
+    _updateDisplay() {
+        let xpdrMode = this._context.xpdr.mode();
+        this._updateTAOnlyButton(xpdrMode);
+        this._updateAltitudeReportingButton(xpdrMode);
+        this._updateOnButton(xpdrMode);
+        this._updateStandbyButton(xpdrMode);
+    }
+
+    update() {
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        this._updateDisplay();
     }
 }
 WT_G5000_TSCTrafficOperatingModeSettingsHTMLElement.NAME = "wt-tsc-trafficsettings-operatingmode";
