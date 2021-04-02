@@ -489,13 +489,14 @@ class WT_BaseVnav {
                         console.log(wptToEvaluate.ident + " breaks path BELOW; segment FPA to closest to target FPA: " + bestFPA);
 
                         //get fpa range from break segment to next segment
-                        const priorFPTA = vwp.waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, priorLateralDistance);
-                        const minAltDifference = wptToEvaluate.lowerConstraintAltitude - priorFPTA;
-                        const minFPAto = minAltDifference > 0 ? AutopilotMath.calculateFPA(minAltDifference, lateralDistance) : 0;
-                        if (minFPAto < 2) {
-                            console.log("minFPAto prior wpt: " + minFPAto + " is less than 2 degrees so this segment starts level");
-                            segmentStartsLevel = true;
-                        }
+                        // if ()
+                        // const priorFPTA = vwp.waypointFPTA + AutopilotMath.calculateFPTA(bestFPA, priorLateralDistance);
+                        // const minAltDifference = wptToEvaluate.lowerConstraintAltitude - priorFPTA;
+                        // const minFPAto = minAltDifference > 0 ? AutopilotMath.calculateFPA(minAltDifference, lateralDistance) : 0;
+                        // if (minFPAto < 2) {
+                        //     console.log("minFPAto prior wpt: " + minFPAto + " is less than 2 degrees so this segment starts level");
+                        //     segmentStartsLevel = true;
+                        // }
 
                         // if (segmentMinFPA <= 1) {
                         //     bestFPA = Math.min(Math.max(this.vnavTargetFPA, segmentMinFPA) , segmentMaxFPA);
