@@ -1175,12 +1175,6 @@ class WT_VerticalAutopilot {
             case VerticalNavModeState.ALTCAP:
             case VerticalNavModeState.ALTSCAP:
             case VerticalNavModeState.ALTVCAP:
-                const interceptMargin = this._priorVerticalModeState && this._priorVerticalModeState.interceptMargin ? this._priorVerticalModeState.interceptMargin : false;
-                if (interceptMargin && isClimb && Math.abs(targetAltitude - this.indicatedAltitude) < interceptMargin) {
-                    return false;
-                } else if (interceptMargin && !isClimb && Math.abs(this.indicatedAltitude - targetAltitude) < interceptMargin) {
-                    return false;
-                }
                 if (isClimb && this.indicatedAltitude < targetAltitude) {
                     return altCap;
                 } else if (!isClimb && this.indicatedAltitude > targetAltitude) {
@@ -1268,11 +1262,11 @@ class WT_VerticalAutopilot {
         }
     }
 
-    storePriorVerticalModeState(mode, interceptMargin) {
+    storePriorVerticalModeState(mode, altitude) {
         const priorVerticalModeState = {
             mode: mode,
             value: undefined,
-            interceptMargin: interceptMargin
+            altitude: altitude
         };
         switch(mode) {
             case VerticalNavModeState.VS:
@@ -1306,18 +1300,15 @@ class WT_VerticalAutopilot {
                 case VerticalNavModeState.VS:
                     this.verticalMode = VerticalNavModeState.VS;
                     this._navModeSelector.engageVerticalSpeed(1, priorVerticalModeState.value, true);
-                    this._priorVerticalModeState === undefined
                     break;
                 case VerticalNavModeState.FLC:
                     this.verticalMode = VerticalNavModeState.FLC;
                     this._navModeSelector.engageFlightLevelChange(priorVerticalModeState.value);
-                    this._priorVerticalModeState === undefined
                     break;
                 case VerticalNavModeState.PTCH:
                 case VerticalNavModeState.PATH:
                     this.verticalMode = VerticalNavModeState.PTCH;
                     this._navModeSelector.engagePitch();
-                    this._priorVerticalModeState === undefined
                     break;
             }
         }
@@ -1347,6 +1338,9 @@ class WT_VerticalAutopilot {
                 if (this._altInterceptValues !== false) {
                     this._altInterceptValues = false;
                 }
+                if (this._priorVerticalModeState !== undefined) {
+                    this._priorVerticalModeState = undefined;
+                }
                 if (this.altitudeArmedState !== VerticalNavModeState.NONE) {
                     this.altitudeArmedState = VerticalNavModeState.NONE;
                 }
@@ -1358,18 +1352,20 @@ class WT_VerticalAutopilot {
             case VerticalNavModeState.ALTCAP:
             case VerticalNavModeState.ALTSCAP:
             case VerticalNavModeState.ALTVCAP:
+                if (this.verticalMode === VerticalNavModeState.ALTSCAP && this._priorVerticalModeState.altitude !== this.selectedAltitude) {
+                    console.log("altS cap booken");
+                    this.setPriorVerticalModeState();
+                    break;
+                } else if (this.verticalMode === VerticalNavModeState.ALTVCAP && this._priorVerticalModeState.altitude !== this.managedAltitude) {
+                    console.log("altV cap booken");
+                    this.setPriorVerticalModeState();
+                    break;
+                }
                 if (this.altitudeArmedState !== VerticalNavModeState.NONE) {
                     this.altitudeArmedState = VerticalNavModeState.NONE;
                 }
                 if (this._navModeSelector.isAltitudeLocked) {
                     SimVar.SetSimVarValue("L:WT_CJ4_ALT_HOLD", "number", 0);
-                }
-                // console.log("this.altCapArm(isClimb) " + this.altCapArm(isClimb));
-                const altCaptureValidate = this.altCapArm(isClimb);
-                if (altCaptureValidate === false) {
-                    console.log("alt cap booken");
-                    this.setPriorVerticalModeState();
-                    break;
                 }
                 this.captureAltitude(altCaptureValidate.altitude);
                 break;
@@ -1397,10 +1393,10 @@ class WT_VerticalAutopilot {
                                 this.altitudeArmedState = VerticalNavModeState.ALTS;
                             }
                             if (isClimb && Math.abs(altCaptureArmed.altitude - this.indicatedAltitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
+                                this.storePriorVerticalModeState(this.verticalMode, altCaptureArmed.altitude);
                                 this.verticalMode = VerticalNavModeState.ALTSCAP
                             } else if (!isClimb && Math.abs(this.indicatedAltitude - altCaptureArmed.altitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
+                                this.storePriorVerticalModeState(this.verticalMode, altCaptureArmed.altitude);
                                 this.verticalMode = VerticalNavModeState.ALTSCAP
                             }
                             break;
@@ -1409,10 +1405,10 @@ class WT_VerticalAutopilot {
                                 this.altitudeArmedState = VerticalNavModeState.ALTV;
                             }
                             if (isClimb && Math.abs(altCaptureArmed.altitude - this.indicatedAltitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
+                                this.storePriorVerticalModeState(this.verticalMode, altCaptureArmed.altitude);
                                 this.verticalMode = VerticalNavModeState.ALTVCAP
                             } else if (!isClimb && Math.abs(this.indicatedAltitude - altCaptureArmed.altitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
+                                this.storePriorVerticalModeState(this.verticalMode, altCaptureArmed.altitude);
                                 this.verticalMode = VerticalNavModeState.ALTVCAP
                             }
                             break;
