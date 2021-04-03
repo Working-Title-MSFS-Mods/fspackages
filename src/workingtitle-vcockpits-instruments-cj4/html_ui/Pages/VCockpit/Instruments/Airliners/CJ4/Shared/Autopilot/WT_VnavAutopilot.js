@@ -1223,26 +1223,28 @@ class WT_VerticalAutopilot {
         }
         this._navModeSelector.checkVerticalSpeedActive();
         let now = performance.now();
-        let dt = this._lastUpdateTime != undefined ? now - this._lastUpdateTime : 501;
+        let dt = this._lastUpdateTime != undefined ? now - this._lastUpdateTime : 1001;
         this._lastUpdateTime = now;
         
-        if (dt > 500) {
+        if (dt > 1000) {
             const deltaAlt = this.indicatedAltitude - altitude;
             let setVerticalSpeed = 0;
-            const max = Math.abs(this._altInterceptValues.verticalSpeed);
-            const correction = Math.min(Math.max((10 * Math.abs(deltaAlt)), 100), max);
+            //const max = Math.abs(this._altInterceptValues.verticalSpeed);
+            //Math.max((this.verticalSpeed - 800) / 3, 100);
+
+            //const correction = Math.min(Math.max((10 * Math.abs(deltaAlt)), 700), max);
             if (deltaAlt > 10) {
-                setVerticalSpeed = 0 - correction;
+                setVerticalSpeed = this.vsSlot2Value - 100;
             }
             else if (deltaAlt < -10) {
-                setVerticalSpeed = correction;
+                setVerticalSpeed = this.vsSlot2Value + 100;
             }
             else {
                 setVerticalSpeed = 0;
             }
             setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
             this.vsSlot2Value = setVerticalSpeed;
-            if (Math.abs(deltaAlt) < 20) {
+            if (Math.abs(deltaAlt) < 20 || Math.abs(setVerticalSpeed < 300)) {
                 this._altInterceptValues = false;
                 this._lastUpdateTime = undefined;
                 this._navModeSelector.pressureAltitudeTarget = altitude;
@@ -1383,7 +1385,8 @@ class WT_VerticalAutopilot {
                 if (this._altInterceptValues !== false) {
                     this._altInterceptValues = false;
                 }
-                const interceptMargin = 0.18 * Math.abs(this.verticalSpeed);
+                //const interceptMargin = Math.abs(this.verticalSpeed) / 100;
+                const interceptMargin = Math.max((this.verticalSpeed - 800) / 3, 100);
                 const altCaptureArmed = this.altCapArm(isClimb);
                 if (altCaptureArmed) {
                     switch(altCaptureArmed.mode) {
