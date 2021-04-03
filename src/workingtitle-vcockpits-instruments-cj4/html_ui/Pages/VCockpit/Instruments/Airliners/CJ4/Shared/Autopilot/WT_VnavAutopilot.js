@@ -502,7 +502,7 @@ class WT_VerticalAutopilot {
                     const requiredFpa = AutopilotMath.calculateFPA(altitudeDifference, distance);
                     const reqVs = AutopilotMath.calculateVerticaSpeed(requiredFpa, this.groundSpeed);
                     if (this.path.deviation <= 1000 && altitudeDifference > 100 && this.distanceToTod < 20
-                        && this.selectedAltitude < this.indicatedAltitude - 100 && (this.selectedAltitude < this.lockedAltitude - 100) || this.lockedAltitude === undefined) {
+                        && this.selectedAltitude < this.indicatedAltitude - 100 && (this.selectedAltitude < this.lockedAltitude - 100 || this.lockedAltitude === undefined)) {
                         return true;
                     } else if (this.path.deviation > 1000 && this.selectedAltitude < this.indicatedAltitude - 100) {
                         if (this.verticalSpeed < reqVs) {
@@ -659,7 +659,7 @@ class WT_VerticalAutopilot {
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
                     }
                     else if (!this.path.endsLevel && this._pathInterceptStatus === PathInterceptStatus.INTERCEPTED
-                        && this.indicatedAltitude < this.managedAltitude + 1000) {
+                        && this.indicatedAltitude < this.managedAltitude + 1000 && this.nextPath && this.nextPath.fpta) {
                         this._pathInterceptStatus = PathInterceptStatus.CONTINUOUS;
                         this._continuousIndex = this._vnav.flightplan.activeWaypointIndex;
                     } else {
@@ -1211,10 +1211,9 @@ class WT_VerticalAutopilot {
         if (this._altInterceptValues === false) {
             const values = {
                 verticalSpeed: undefined,
-                increments: undefined
+                altitude: altitude
             };
             values.verticalSpeed = this.verticalSpeed > 0 ? 100 * Math.floor(this.verticalSpeed / 100) : 100 * Math.ceil(this.verticalSpeed / 100);
-            values.increments = Math.abs(values.verticalSpeed / 100);
             this._altInterceptValues = values;
             this._lastUpdateTime = undefined;
             this._navModeSelector.engageVerticalSpeed(2, this._altInterceptValues.verticalSpeed, false);
@@ -1299,11 +1298,11 @@ class WT_VerticalAutopilot {
             switch(this._priorVerticalModeState.mode) {
                 case VerticalNavModeState.VS:
                     this.verticalMode = VerticalNavModeState.VS;
-                    this._navModeSelector.engageVerticalSpeed(1, priorVerticalModeState.value, true);
+                    this._navModeSelector.engageVerticalSpeed(1, this._priorVerticalModeState.value, true);
                     break;
                 case VerticalNavModeState.FLC:
                     this.verticalMode = VerticalNavModeState.FLC;
-                    this._navModeSelector.engageFlightLevelChange(priorVerticalModeState.value);
+                    this._navModeSelector.engageFlightLevelChange(this._priorVerticalModeState.value);
                     break;
                 case VerticalNavModeState.PTCH:
                 case VerticalNavModeState.PATH:
@@ -1367,7 +1366,7 @@ class WT_VerticalAutopilot {
                 if (this._navModeSelector.isAltitudeLocked) {
                     SimVar.SetSimVarValue("L:WT_CJ4_ALT_HOLD", "number", 0);
                 }
-                this.captureAltitude(altCaptureValidate.altitude);
+                this.captureAltitude(this._priorVerticalModeState.altitude);
                 break;
             case VerticalNavModeState.VS:
             case VerticalNavModeState.FLC:
@@ -1404,6 +1403,9 @@ class WT_VerticalAutopilot {
                             if (this.altitudeArmedState !== VerticalNavModeState.ALTV) {
                                 this.altitudeArmedState = VerticalNavModeState.ALTV;
                             }
+                            if (this.verticalMode === VerticalNavModeState.PATH && this.PathInterceptStatus === PathInterceptStatus.CONTINUOUS) {
+                                break;
+                            }
                             if (isClimb && Math.abs(altCaptureArmed.altitude - this.indicatedAltitude) < interceptMargin) {
                                 this.storePriorVerticalModeState(this.verticalMode, altCaptureArmed.altitude);
                                 this.verticalMode = VerticalNavModeState.ALTVCAP
@@ -1416,6 +1418,10 @@ class WT_VerticalAutopilot {
                 } else {
                     this.altitudeArmedState = VerticalNavModeState.NONE;
                 }
+            case VerticalNavModeState.GS:
+            case VerticalNavModeState.GP:
+                this.altitudeArmedState = VerticalNavModeState.NONE;
+                break;
         }
     }
 
