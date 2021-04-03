@@ -245,6 +245,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
+
+        this.navMapTrafficMapSettings = new NavSystemElementContainer("Nav Map Traffic Map Settings", "NavMapTrafficMapSettings", new WT_G3x5_TSCNavMapTrafficMapSettings());
+        this.navMapTrafficMapSettings.setGPS(this);
     }
 
     _initNavButtons() {

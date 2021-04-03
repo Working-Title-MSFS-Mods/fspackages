@@ -2,6 +2,7 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
     constructor(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID) {
         super(homePageGroup, homePageName);
 
+        this._instrumentID = instrumentID;
         this._trafficSystemID = trafficSystemID;
 
         this._initSettingModel();
@@ -109,7 +110,8 @@ class WT_G3x5_TSCTrafficMapSettings extends WT_G3x5_TSCTrafficSettings {
 
 class WT_G3x5_TSCNavMapTrafficSettings extends WT_G3x5_TSCTrafficSettings {
     _getMapSettingModelID(instrumentID, halfPaneID) {
-        return halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
+        this._mapSettingModelID = halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
+        return this._mapSettingModelID;
     }
 
     _createADSBSubPage() {
@@ -132,7 +134,19 @@ class WT_G3x5_TSCNavMapTrafficSettings extends WT_G3x5_TSCTrafficSettings {
         this._initMapSettings();
     }
 
+    _openNavMapTrafficMapSettingsWindow() {
+        let settingModelID = this._mapSettingModelID;
+        this.instrument.navMapTrafficMapSettings.element.setContext({
+            instrument: this.instrument,
+            getSettingModelID: () => settingModelID,
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName
+        });
+        this.instrument.switchToPopUpPage(this.instrument.navMapTrafficMapSettings);
+    }
+
     _onMapSettingsButtonPressed(button) {
+        this._openNavMapTrafficMapSettingsWindow();
     }
 }
 
