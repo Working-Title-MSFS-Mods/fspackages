@@ -1211,13 +1211,14 @@ class WT_VerticalAutopilot {
         if (this._altInterceptValues === false) {
             const values = {
                 verticalSpeed: undefined,
-                altitude: altitude
+                altitude: altitude,
+                increments: 0
             };
             values.verticalSpeed = this.verticalSpeed > 0 ? 100 * Math.floor(this.verticalSpeed / 100) : 100 * Math.ceil(this.verticalSpeed / 100);
             this._altInterceptValues = values;
             this._lastUpdateTime = undefined;
             this._navModeSelector.engageVerticalSpeed(2, values.verticalSpeed, false);
-            console.log("values.verticalSpeed " + values.verticalSpeed);
+            console.log("initial set values.verticalSpeed " + values.verticalSpeed);
         }
         if (this.vsSlot != 2) {
             this.vsSlot = 2;
@@ -1232,21 +1233,24 @@ class WT_VerticalAutopilot {
             this._lastUpdateTime = now;
             console.log("dt: " + dt);
             const deltaAlt = this.indicatedAltitude - altitude;
-            const currentSet = this.vsSlot2Value;
-            let setVerticalSpeed = Math.abs(currentSet) > 0 ? 100 * Math.floor(currentSet / 100) : 100 * Math.ceil(currentSet / 100);;
+            //const currentSet = this.vsSlot2Value;
+            //console.log("currentSet " + currentSet);
+            //let setVerticalSpeed = Math.abs(currentSet) > 0 ? 100 * Math.floor(currentSet / 100) : 100 * Math.ceil(currentSet / 100);;
+            let setVerticalSpeed = 0;
             //const max = Math.abs(this._altInterceptValues.verticalSpeed);
             //Math.max((this.verticalSpeed - 800) / 3, 100);
 
             //const correction = Math.min(Math.max((10 * Math.abs(deltaAlt)), 700), max);
             if (deltaAlt > 10) {
-                setVerticalSpeed = setVerticalSpeed + 100;
+                setVerticalSpeed = this._altInterceptValues.verticalSpeed + (this._altInterceptValues.increments * 100);
             }
             else if (deltaAlt < -10) {
-                setVerticalSpeed = setVerticalSpeed - 100;
+                setVerticalSpeed = this._altInterceptValues.verticalSpeed - (this._altInterceptValues.increments * 100);
             }
             else {
                 setVerticalSpeed = 0;
             }
+            this._altInterceptValues.increments += 1;
             //setVerticalSpeed = 100 * Math.ceil(setVerticalSpeed / 100);
             this.vsSlot2Value = setVerticalSpeed;
             if (Math.abs(deltaAlt) < 20 || Math.abs(setVerticalSpeed) < 300) {
