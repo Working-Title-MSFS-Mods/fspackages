@@ -1,6 +1,8 @@
 class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
-    constructor(className = WT_G3x5_MapViewTrafficIntruderLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewTrafficIntruderLayer.CONFIG_NAME_DEFAULT) {
+    constructor(useOuterRangeMaxScale, className = WT_G3x5_MapViewTrafficIntruderLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewTrafficIntruderLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
+
+        this._useOuterRangeMaxScale = useOuterRangeMaxScale;
 
         this._motionVectorLayer = new WT_MapViewCanvas(false, true);
         this._iconLayer = new WT_MapViewSubLayer(true);
@@ -87,6 +89,14 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
     }
 
     /**
+     *
+     * @param {WT_G3x5_TrafficSystemIntruderEntry} intruderEntry
+     * @returns {WT_G3x5_MapViewTrafficIntruderView}
+     */
+    _createIntruderView(intruderEntry) {
+    }
+
+    /**
      * @param {WT_MapViewState} state
      */
     _updateIntruders(state) {
@@ -101,12 +111,12 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
         intruderEntries.forEach(intruderEntry => {
             let view = this._intruderViews.get(intruderEntry);
             if (!view) {
-                view = new WT_G3x5_MapViewTrafficIntruderView(intruderEntry, this._intruderViewHTMLElementRecycler);
+                view = this._createIntruderView(intruderEntry);
                 this._intruderViews.set(intruderEntry, view);
             } else {
                 this._intruderViewsToRemove.delete(view);
             }
-            view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer);
+            view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer, this._useOuterRangeMaxScale);
         }, this);
 
         this._strokeMotionVectors(state);
@@ -167,6 +177,7 @@ class WT_G3x5_MapViewTrafficIntruderView {
 
         this._viewPosition = new WT_GVector2(0, 0);
         this._isOffScale = false;
+        this._isVisible = false;
 
         this._tempVector2_1 = new WT_GVector2(0, 0);
         this._tempVector2_2 = new WT_GVector2(0, 0);
@@ -199,6 +210,14 @@ class WT_G3x5_MapViewTrafficIntruderView {
 
     /**
      * @readonly
+     * @type {Boolean}
+     */
+    get isVisible() {
+        return this._isVisible;
+    }
+
+    /**
+     * @readonly
      * @type {WT_GVector2ReadOnly}
      */
     get viewPosition() {
@@ -208,24 +227,57 @@ class WT_G3x5_MapViewTrafficIntruderView {
     /**
      *
      * @param {WT_MapViewState} state
+     * @param {WT_GeoPoint} ownAirplanePos
+     * @param {WT_GeoPoint} intruderPos
      */
-    _updatePosition(state) {
-        let intruderPos = this.intruderEntry.intruder.position;
-        let airplanePos = state.model.airplane.navigation.position(this._tempGeoPoint);
-        let horizontalSeparation = intruderPos.distance(airplanePos);
+    _handleOffScaleMapView(state, ownAirplanePos, intruderPos) {
+        state.projection.project(intruderPos, this._viewPosition);
+        if (state.projection.isInView(this.viewPosition)) {
+            this._isOffScale = false;
+        } else {
+            this._isOffScale = true;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_GeoPoint} ownAirplanePos
+     * @param {WT_GeoPoint} intruderPos
+     */
+    _handleOffScaleOuterRange(state, ownAirplanePos, intruderPos) {
+        let horizontalSeparation = intruderPos.distance(ownAirplanePos);
         if (horizontalSeparation > state.model.traffic.outerRange.asUnit(WT_Unit.GA_RADIAN)) {
             this._isOffScale = true;
-            state.projection.project(airplanePos.offset(airplanePos.bearingTo(intruderPos), state.model.traffic.outerRange.asUnit(WT_Unit.GA_RADIAN), true), this._viewPosition);
+            state.projection.project(ownAirplanePos.offset(ownAirplanePos.bearingTo(intruderPos), state.model.traffic.outerRange.asUnit(WT_Unit.GA_RADIAN), true), this._viewPosition);
         } else {
             this._isOffScale = false;
-            state.projection.project(this.intruderEntry.intruder.position, this._viewPosition);
+            state.projection.project(intruderPos, this._viewPosition);
         }
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {Boolean} useOuterRangeMaxScale
+     */
+    _updatePosition(state, useOuterRangeMaxScale) {
+        let intruderPos = this.intruderEntry.intruder.position;
+        let ownAirplanePos = state.model.airplane.navigation.position(this._tempGeoPoint);
+        if (useOuterRangeMaxScale) {
+            this._handleOffScaleOuterRange(state, ownAirplanePos, intruderPos);
+        } else {
+            this._handleOffScaleMapView(state, ownAirplanePos, intruderPos);
+        }
+    }
+
+    _updateVisibility(state, useOuterRangeMaxScale) {
     }
 
     _updateHTMLElement(state, iconSize, fontSize) {
         this.htmlElement.setIconSize(iconSize * state.dpiScale);
         this.htmlElement.setFontSize(fontSize * state.dpiScale);
-        this.htmlElement.update(state);
+        this.htmlElement.update(state, this.isVisible);
     }
 
     /**
@@ -251,7 +303,7 @@ class WT_G3x5_MapViewTrafficIntruderView {
      * @param {WT_MapViewCanvas} motionVectorLayer
      */
     _updateMotionVector(state, motionVectorLayer) {
-        if (state.model.traffic.motionVectorMode === WT_G3x5_MapModelTrafficModule.MotionVectorMode.OFF || !this.htmlElement.isVisible) {
+        if (state.model.traffic.motionVectorMode === WT_G3x5_MapModelTrafficModule.MotionVectorMode.OFF || !this.isVisible) {
             return;
         }
 
@@ -264,8 +316,9 @@ class WT_G3x5_MapViewTrafficIntruderView {
         this._drawMotionVector(state, motionVectorLayer, vector);
     }
 
-    update(state, iconSize, fontSize, motionVectorLayer) {
-        this._updatePosition(state);
+    update(state, iconSize, fontSize, motionVectorLayer, useOuterRangeMaxScale) {
+        this._updatePosition(state, useOuterRangeMaxScale);
+        this._updateVisibility(state, useOuterRangeMaxScale);
         this._updateHTMLElement(state, iconSize, fontSize);
         this._updateMotionVector(state, motionVectorLayer);
     }
@@ -288,7 +341,6 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._fontSize = null;
         this._isInit = false;
 
-        this._isVisible = false;
         this._position = new WT_GVector2(0, 0);
 
         this._tempVector2 = new WT_GVector2(0, 0);
@@ -303,14 +355,6 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
      */
     get intruderView() {
         return this._intruderView;
-    }
-
-    /**
-     * @readonly
-     * @type {Boolean}
-     */
-    get isVisible() {
-        return this._isVisible;
     }
 
     _defineChildren() {
@@ -357,7 +401,7 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._fontSize = size;
     }
 
-    _updateVisibility(state) {
+    _updateVisibility(state, isVisible) {
     }
 
     _updatePosition(state) {
@@ -413,9 +457,9 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._setVerticalSpeed(state, fpm);
     }
 
-    _updateDisplay(state) {
-        this._updateVisibility(state);
-        if (!this._isVisible) {
+    _updateDisplay(state, isVisible) {
+        this._updateVisibility(state, isVisible);
+        if (!isVisible) {
             return;
         }
 
@@ -427,11 +471,11 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._updateVerticalSpeed(state);
     }
 
-    update(state) {
+    update(state, isVisible) {
         if (!this._isInit || !this.intruderView) {
             return;
         }
 
-        this._updateDisplay(state);
+        this._updateDisplay(state, isVisible);
     }
 }

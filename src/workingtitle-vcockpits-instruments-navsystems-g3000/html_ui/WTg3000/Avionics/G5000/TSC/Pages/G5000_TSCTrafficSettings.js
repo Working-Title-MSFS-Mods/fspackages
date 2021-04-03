@@ -1,14 +1,33 @@
-class WT_G5000_TSCTrafficSettings extends WT_G3x5_TSCTrafficSettings {
+class WT_G5000_TSCTrafficMapSettings extends WT_G3x5_TSCTrafficMapSettings {
     constructor(homePageGroup, homePageName, trafficSystemID, xpdrID, instrumentID, halfPaneID) {
         super(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID);
 
-        this._xpdrID = xpdrID;
-
-        this._initXPDRSettingModel();
+        this._initXPDRSettingModel(xpdrID);
     }
 
-    _initXPDRSettingModel() {
-        this._xpdrSettingModel = new WT_DataStoreSettingModel(this._xpdrID);
+    _initXPDRSettingModel(xpdrID) {
+        this._xpdrSettingModel = new WT_DataStoreSettingModel(xpdrID);
+        this._xpdrSettingModel.addSetting(this._xpdrTCASModeSetting = new WT_G5000_TransponderTCASModeSetting(this._xpdrSettingModel));
+    }
+
+    _createOperatingModeSubPage() {
+        return new WT_G5000_TSCTrafficOperatingModeSettings(this, this._xpdrTCASModeSetting);
+    }
+
+    onUpdate(deltaTime) {
+        this._operatingModeSubPage.update();
+    }
+}
+
+class WT_G5000_TSCNavMapTrafficSettings extends WT_G3x5_TSCNavMapTrafficSettings {
+    constructor(homePageGroup, homePageName, trafficSystemID, xpdrID, instrumentID, halfPaneID) {
+        super(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID);
+
+        this._initXPDRSettingModel(xpdrID);
+    }
+
+    _initXPDRSettingModel(xpdrID) {
+        this._xpdrSettingModel = new WT_DataStoreSettingModel(xpdrID);
         this._xpdrSettingModel.addSetting(this._xpdrTCASModeSetting = new WT_G5000_TransponderTCASModeSetting(this._xpdrSettingModel));
     }
 

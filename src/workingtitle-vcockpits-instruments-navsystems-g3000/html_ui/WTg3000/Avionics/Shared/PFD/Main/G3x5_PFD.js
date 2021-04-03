@@ -39,6 +39,14 @@ class WT_G3x5_PFD extends NavSystem {
         return this._citySearcher;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_TrafficSystem}
+     */
+    get trafficSystem() {
+        return this._trafficSystem;
+    }
+
     _createMainPage() {
     }
 
@@ -52,7 +60,6 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _createInsetMap() {
-        return new WT_G3x5_PFDInsetMap("PFD", this.citySearcher);
     }
 
     _initInsetMap() {
@@ -196,11 +203,10 @@ class WT_G3x5_PFD extends NavSystem {
 }
 
 class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
-    constructor(instrumentID, citySearcher) {
+    constructor(instrumentID) {
         super();
 
         this._instrumentID = instrumentID;
-        this._citySearcher = citySearcher;
 
         this._isEnabled = false;
 
@@ -246,8 +252,11 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
         this._mapContainer.style.display = "none";
     }
 
+    _createNavMap() {
+    }
+
     _initNavMap(root) {
-        this._navMap = new WT_G3x5_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsSettingModel, this._citySearcher, new WT_MapViewBorderData(), null, null, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+        this._navMap = this._createNavMap();
         this._navMap.init(root.querySelector(`.insetMap`));
     }
 

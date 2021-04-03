@@ -5,6 +5,10 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
         return new WT_G3000_PFDMainPage(this);
     }
 
+    _createInsetMap() {
+        return new WT_G3000_PFDInsetMap("PFD");
+    }
+
     _createApproachNavLoader() {
         return new WT_G3000_ApproachNavLoader(this.airplane);
     }
@@ -25,6 +29,12 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
      */
     _createTrafficSystem() {
         return new WT_G3000_TrafficAdvisorySystem(this.airplane, this._trafficTracker);
+    }
+}
+
+class WT_G3000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
+    _createNavMap() {
+        return new WT_G3000_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsSettingModel, this.instrument.citySearcher, new WT_MapViewBorderData(), null, null, this.instrument.trafficSystem, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
     }
 }
 

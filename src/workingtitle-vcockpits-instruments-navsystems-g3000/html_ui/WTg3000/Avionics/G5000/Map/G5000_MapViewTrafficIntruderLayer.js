@@ -2,6 +2,10 @@ class WT_G5000_MapViewTrafficIntruderLayer extends WT_G3x5_MapViewTrafficIntrude
     _createIntruderViewHTMLElementRecycler() {
         return new WT_G5000_MapViewTrafficIntruderViewHTMLElementRecycler(this._iconLayer.container);
     }
+
+    _createIntruderView(intruderEntry) {
+        return new WT_G5000_MapViewTrafficIntruderView(intruderEntry, this._intruderViewHTMLElementRecycler);
+    }
 }
 
 class WT_G5000_MapViewTrafficIntruderViewHTMLElementRecycler extends WT_HTMLElementRecycler {
@@ -11,6 +15,25 @@ class WT_G5000_MapViewTrafficIntruderViewHTMLElementRecycler extends WT_HTMLElem
      */
      _createElement() {
         return new WT_G5000_MapViewTrafficIntruderHTMLElement();
+    }
+}
+
+class WT_G5000_MapViewTrafficIntruderView extends WT_G3x5_MapViewTrafficIntruderView {
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {Boolean} useOuterRangeMaxScale
+     */
+    _updateVisibility(state, useOuterRangeMaxScale) {
+        let isVisible = false;
+        if (this.intruderEntry.alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY && useOuterRangeMaxScale) {
+            isVisible = true;
+        } else {
+            let altitudeMeters = this.intruderEntry.intruder.relativePositionVector.z;
+            let isWithinAltitude = altitudeMeters <= state.model.traffic.altitudeRestrictionAbove.asUnit(WT_Unit.METER) && altitudeMeters >= -state.model.traffic.altitudeRestrictionBelow.asUnit(WT_Unit.METER);
+            isVisible = !this.isOffScale && isWithinAltitude;
+        }
+        this._isVisible = isVisible;
     }
 }
 
@@ -42,19 +65,8 @@ class WT_G5000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficI
         return iconSize * 3;
     }
 
-    _updateVisibility(state) {
-        let isVisible = false;
-        if (this.intruderView.intruderEntry.alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY) {
-            isVisible = true;
-        } else {
-            let isOffScale = this.intruderView.isOffScale;
-            let altitudeMeters = this.intruderView.intruderEntry.intruder.relativePositionVector.z;
-            let isWithinAltitude = altitudeMeters <= state.model.traffic.altitudeRestrictionAbove.asUnit(WT_Unit.METER) && altitudeMeters >= -state.model.traffic.altitudeRestrictionBelow.asUnit(WT_Unit.METER);
-            isVisible = !isOffScale && isWithinAltitude;
-        }
-
-        this._isVisible = isVisible;
-        this._wrapper.setAttribute("show", `${this._isVisible}`);
+    _updateVisibility(state, isVisible) {
+        this._wrapper.setAttribute("show", `${isVisible}`);
     }
 
     /**
