@@ -1024,7 +1024,8 @@ class CJ4_APDisplay extends NavSystemElement {
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
                 } else if (verticalMode == "PTCH" || verticalMode == "VPTCH") {
-                    const pitchRef = pitchRef > 0 ? Math.min(SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees"), 20) : Math.max(SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees"), -20);
+                    let pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
+                    pitchRef = pitchRef > 0 ? Math.min(pitchRef, 20) : Math.max(pitchRef, -20);
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, (pitchRef < 0 ? "&emsp; &emsp; +" : "&emsp; &emsp;") + (-1 * pitchRef).toFixed(1));
