@@ -6,7 +6,7 @@ class WT_G3x5_TrafficMap {
      */
     constructor(instrumentID, airplane, trafficSystem) {
         this._instrumentID = instrumentID;
-        this._settingModelID = `${instrumentID}-${WT_G3x5_TrafficMap.CONTROLLER_ID_SUFFIX}`;
+        this._settingModelID = `${instrumentID}-${WT_G3x5_TrafficMap.SETTING_MODEL_ID_SUFFIX}`;
 
         this._airplane = airplane;
         this._trafficSystem = trafficSystem;
@@ -85,8 +85,8 @@ class WT_G3x5_TrafficMap {
 
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(new WT_G3x5_MapViewTrafficRangeLayer());
-        this.view.addLayer(this._createTrafficIntruderLayer());
         this.view.addLayer(new WT_MapViewAirplaneLayer());
+        this.view.addLayer(this._createTrafficIntruderLayer());
         this.view.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_TrafficMap.ORIENTATION_DISPLAY_TEXT));
         this.view.addLayer(new WT_MapViewMiniCompassLayer());
         this.view.addLayer(this._createTrafficStatusLayer());
@@ -125,7 +125,7 @@ class WT_G3x5_TrafficMap {
         this.view.update();
     }
 }
-WT_G3x5_TrafficMap.CONTROLLER_ID_SUFFIX = "TrafficMap";
+WT_G3x5_TrafficMap.SETTING_MODEL_ID_SUFFIX = "TrafficMap";
 
 WT_G3x5_TrafficMap.MAP_RANGE_LEVELS =
     [750, 1500].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(

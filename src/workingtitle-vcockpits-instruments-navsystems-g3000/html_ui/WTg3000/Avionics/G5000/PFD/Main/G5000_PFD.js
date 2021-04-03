@@ -51,6 +51,10 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
 }
 
 class WT_G5000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
+    _createNavMap() {
+        return new WT_G5000_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsSettingModel, this.instrument.citySearcher, new WT_MapViewBorderData(), null, null, this.instrument.trafficSystem, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+    }
+
     _changeMapRange(delta) {
         let currentIndex = this.navMap.rangeSetting.getValue();
         let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);

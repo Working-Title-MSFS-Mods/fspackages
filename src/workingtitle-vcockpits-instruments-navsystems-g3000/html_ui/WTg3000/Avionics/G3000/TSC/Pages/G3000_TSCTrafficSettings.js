@@ -1,4 +1,16 @@
-class WT_G3000_TSCTrafficSettings extends WT_G3x5_TSCTrafficSettings {
+class WT_G3000_TSCTrafficMapSettings extends WT_G3x5_TSCTrafficMapSettings {
+    _initSettingModel() {
+        super._initSettingModel();
+
+        this._settingModel.addSetting(this._operatingModeSetting = new WT_G3000_TrafficSystemOperatingModeSetting(this._settingModel));
+    }
+
+    _createOperatingModeSubPage() {
+        return new WT_G3000_TSCTrafficOperatingModeSettings(this, this._operatingModeSetting);
+    }
+}
+
+class WT_G3000_TSCNavMapTrafficSettings extends WT_G3x5_TSCNavMapTrafficSettings {
     _initSettingModel() {
         super._initSettingModel();
 

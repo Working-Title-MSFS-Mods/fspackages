@@ -4,11 +4,8 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
 
         this._trafficSystemID = trafficSystemID;
 
-        let prefix = halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
-        this._trafficMapSettingModelID = `${prefix}-${WT_G3x5_TrafficMap.CONTROLLER_ID_SUFFIX}`;
-
         this._initSettingModel();
-        this._initMapSettingModel();
+        this._initMapSettingModel(instrumentID, halfPaneID);
     }
 
     /**
@@ -41,8 +38,11 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
         this._settingModel = new WT_DataStoreSettingModel(this._trafficSystemID);
     }
 
-    _initMapSettingModel() {
-        this._mapSettingModel = new WT_MapSettingModel(this._trafficMapSettingModelID, null, null);
+    _getMapSettingModelID(instrumentID, halfPaneID) {
+    }
+
+    _initMapSettingModel(instrumentID, halfPaneID) {
+        this._mapSettingModel = new WT_MapSettingModel(this._getMapSettingModelID(instrumentID, halfPaneID), null, null);
 
         this.trafficMapSettingModel.addSetting(this._rangeSetting = new WT_G3x5_TrafficMapRangeSetting(this.trafficMapSettingModel, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS, WT_G3x5_TrafficMap.MAP_RANGE_DEFAULT));
         this.trafficMapSettingModel.addSetting(this._altitudeModeSetting = new WT_G3x5_TrafficMapAltitudeModeSetting(this.trafficMapSettingModel, false));
@@ -63,13 +63,16 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
     }
 
     _createADSBSubPage() {
-        return new WT_G3x5_TSCTrafficADSBSettings(this, this._motionVectorModeSetting, this._motionVectorLookaheadSetting);
     }
 
     _initSubPages() {
         this._operatingModeSubPage = this._createOperatingModeSubPage();
         this._altitudeSubPage = this._createAltitudeSubPage();
         this._adsbSubPage = this._createADSBSubPage();
+    }
+
+    _initChildren() {
+        this._initSubPages();
     }
 
     init(root) {
@@ -81,7 +84,7 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
 
-        this._initSubPages();
+        this._initChildren();
     }
 
     onUpdate(deltaTime) {
@@ -90,6 +93,46 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
     changeRange(delta) {
         let target = Math.max(0, Math.min(this._rangeSetting.ranges.length - 1, this._rangeSetting.getValue() + delta));
         this._rangeSetting.setValue(target);
+    }
+}
+
+class WT_G3x5_TSCTrafficMapSettings extends WT_G3x5_TSCTrafficSettings {
+    _getMapSettingModelID(instrumentID, halfPaneID) {
+        let prefix = halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
+        return `${prefix}-${WT_G3x5_TrafficMap.SETTING_MODEL_ID_SUFFIX}`;
+    }
+
+    _createADSBSubPage() {
+        return new WT_G3x5_TSCTrafficADSBSettings(this, this._motionVectorModeSetting, this._motionVectorLookaheadSetting, true);
+    }
+}
+
+class WT_G3x5_TSCNavMapTrafficSettings extends WT_G3x5_TSCTrafficSettings {
+    _getMapSettingModelID(instrumentID, halfPaneID) {
+        return halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
+    }
+
+    _createADSBSubPage() {
+        return new WT_G3x5_TSCTrafficADSBSettings(this, this._motionVectorModeSetting, this._motionVectorLookaheadSetting, false);
+    }
+
+    _initMapSettings() {
+        let button = new WT_TSCLabeledButton();
+        button.classList.add("trafficNavMapSettingsButton");
+        button.slot = "mapsettings";
+        button.labelText = "Map Settings";
+        this.htmlElement.appendChild(button);
+
+        button.addButtonListener(this._onMapSettingsButtonPressed.bind(this));
+    }
+
+    _initChildren() {
+        super._initChildren();
+
+        this._initMapSettings();
+    }
+
+    _onMapSettingsButtonPressed(button) {
     }
 }
 
@@ -129,6 +172,7 @@ WT_G3x5_TSCTrafficSettingsHTMLElement.TEMPLATE.innerHTML = `
         <slot name="operating"></slot>
         <slot name="altitude"></slot>
         <slot name="adsb"></slot>
+        <slot name="mapsettings"></slot>
     </div>
 `;
 
@@ -379,13 +423,14 @@ class WT_G3x5_TSCTrafficADSBSettings extends WT_G3x5_TSCTrafficSettingsSubPage {
      * @param {WT_G3x5_TrafficMapMotionVectorModeSetting} motionVectorModeSetting
      * @param {WT_G3x5_TrafficMapMotionVectorLookaheadSetting} motionVectorLookaheadSetting
      */
-    constructor(parentPage, motionVectorModeSetting, motionVectorLookaheadSetting) {
+    constructor(parentPage, motionVectorModeSetting, motionVectorLookaheadSetting, showSelectButton) {
         super(parentPage, WT_G3x5_TSCTrafficADSBSettings.SLOT);
 
         this.htmlElement.setContext({
             subPage: this,
             vectorModeSetting: motionVectorModeSetting,
-            vectorLookaheadSetting: motionVectorLookaheadSetting
+            vectorLookaheadSetting: motionVectorLookaheadSetting,
+            showSelectButton: showSelectButton
         });
     }
 
@@ -427,6 +472,7 @@ class WT_G3x5_TSCTrafficADSBSettingsHTMLElement extends HTMLElement {
         let vectorModeButton = this.shadowRoot.querySelector(`#vectormode`);
         let vectorLookaheadButton = this.shadowRoot.querySelector(`#vectorlookahead`);
         if (vectorModeButton instanceof WT_TSCValueButton && vectorLookaheadButton instanceof WT_TSCValueButton) {
+            this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
             this._vectorModeButton = vectorModeButton;
             this._vectorLookaheadButton = vectorLookaheadButton;
             return true;
@@ -474,6 +520,10 @@ class WT_G3x5_TSCTrafficADSBSettingsHTMLElement extends HTMLElement {
         this._initVectorLookaheadButtonManager();
     }
 
+    _updateSelectButtonVisibility() {
+        this._wrapper.setAttribute("show-select", `${this._context.showSelectButton}`);
+    }
+
     async _connectedCallbackHelper() {
         await WT_Wait.wait(this._defineChildren.bind(this));
         this._isInit = true;
@@ -498,6 +548,7 @@ class WT_G3x5_TSCTrafficADSBSettingsHTMLElement extends HTMLElement {
 
         if (this._context) {
             this._initButtonManagers();
+            this._updateSelectButtonVisibility();
         }
     }
 
@@ -569,6 +620,12 @@ WT_G3x5_TSCTrafficADSBSettingsHTMLElement.TEMPLATE.innerHTML = `
                 transform: translateX(-50%);
                 margin-bottom: var(--trafficsettings-button-margin-vertical, 0.1em);
             }
+            #targetselection {
+                visibility: hidden;
+            }
+                #wrapper[show-select="true"] #targetselection {
+                    visibility: inherit;
+                }
             wt-tsc-button-value {
                 --button-value-color: var(--wt-g3x5-lightblue);
             }
