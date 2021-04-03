@@ -46,6 +46,33 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
     }
 
     /**
+     * @param {WT_MapViewState} state
+     * @returns {Boolean}
+     */
+    _getShowSymbol(state) {
+        let range = state.model.traffic.symbolRange;
+        if (range === undefined) {
+            return true;
+        } else {
+            return range.compare(state.model.range) >= 0;
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     * @returns {Boolean}
+     */
+    _getShowLabel(state) {
+        let show = state.model.traffic.labelShow;
+        let range = state.model.traffic.labelRange;
+        if (show === undefined || range === undefined) {
+            return true;
+        } else {
+            return show && range.compare(state.model.range) >= 0;
+        }
+    }
+
+    /**
      *
      * @param {CanvasRenderingContext2D} context
      * @param {Number} lineWidth
@@ -100,6 +127,9 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateIntruders(state) {
+        let showSymbol = this._getShowSymbol(state);
+        let showLabel = this._getShowLabel(state);
+
         this._motionVectorLayer.display.clear();
         this._motionVectorLayer.display.context.beginPath();
 
@@ -116,7 +146,7 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
             } else {
                 this._intruderViewsToRemove.delete(view);
             }
-            view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer, this._useOuterRangeMaxScale);
+            view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer, this._useOuterRangeMaxScale, showSymbol, showLabel);
         }, this);
 
         this._strokeMotionVectors(state);
@@ -271,13 +301,13 @@ class WT_G3x5_MapViewTrafficIntruderView {
         }
     }
 
-    _updateVisibility(state, useOuterRangeMaxScale) {
+    _updateVisibility(state, useOuterRangeMaxScale, showSymbol) {
     }
 
-    _updateHTMLElement(state, iconSize, fontSize) {
+    _updateHTMLElement(state, iconSize, fontSize, showLabel) {
         this.htmlElement.setIconSize(iconSize * state.dpiScale);
         this.htmlElement.setFontSize(fontSize * state.dpiScale);
-        this.htmlElement.update(state, this.isVisible);
+        this.htmlElement.update(state, this.isVisible, showLabel);
     }
 
     /**
@@ -316,10 +346,10 @@ class WT_G3x5_MapViewTrafficIntruderView {
         this._drawMotionVector(state, motionVectorLayer, vector);
     }
 
-    update(state, iconSize, fontSize, motionVectorLayer, useOuterRangeMaxScale) {
+    update(state, iconSize, fontSize, motionVectorLayer, useOuterRangeMaxScale, showSymbol, showLabel) {
         this._updatePosition(state, useOuterRangeMaxScale);
-        this._updateVisibility(state, useOuterRangeMaxScale);
-        this._updateHTMLElement(state, iconSize, fontSize);
+        this._updateVisibility(state, useOuterRangeMaxScale, showSymbol);
+        this._updateHTMLElement(state, iconSize, fontSize, showLabel);
         this._updateMotionVector(state, motionVectorLayer);
     }
 
@@ -457,7 +487,14 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._setVerticalSpeed(state, fpm);
     }
 
-    _updateDisplay(state, isVisible) {
+    _setLabelVisibility(value) {
+    }
+
+    _updateLabelVisibility(state, showLabel) {
+        this._setLabelVisibility(showLabel);
+    }
+
+    _updateDisplay(state, isVisible, showLabel) {
         this._updateVisibility(state, isVisible);
         if (!isVisible) {
             return;
@@ -469,13 +506,14 @@ class WT_G3x5_MapViewTrafficIntruderHTMLElement extends HTMLElement {
         this._updateGroundTrack(state);
         this._updateAltitude(state);
         this._updateVerticalSpeed(state);
+        this._updateLabelVisibility(state, showLabel);
     }
 
-    update(state, isVisible) {
+    update(state, isVisible, showLabel) {
         if (!this._isInit || !this.intruderView) {
             return;
         }
 
-        this._updateDisplay(state, isVisible);
+        this._updateDisplay(state, isVisible, showLabel);
     }
 }
