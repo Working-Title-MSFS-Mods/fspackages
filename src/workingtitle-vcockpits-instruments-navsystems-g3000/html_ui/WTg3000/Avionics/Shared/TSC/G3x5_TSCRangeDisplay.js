@@ -134,7 +134,7 @@ class WT_G3x5_TSCRangeTypeDisplayButton extends WT_TSCValueButton {
         return `
             ${style}
             :host(${WT_G3x5_TSCRangeTypeDisplayButton.NAME}) {
-                --value-color: var(--wt-g3x5-lightblue);
+                --button-value-color: var(--wt-g3x5-lightblue);
             }
         `;
     }
