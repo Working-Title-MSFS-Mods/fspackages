@@ -24,14 +24,16 @@ class WT_G5000_MapViewTrafficIntruderView extends WT_G3x5_MapViewTrafficIntruder
      * @param {WT_MapViewState} state
      * @param {Boolean} useOuterRangeMaxScale
      */
-    _updateVisibility(state, useOuterRangeMaxScale) {
+    _updateVisibility(state, useOuterRangeMaxScale, showSymbol) {
         let isVisible = false;
-        if (this.intruderEntry.alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY && useOuterRangeMaxScale) {
-            isVisible = true;
-        } else {
-            let altitudeMeters = this.intruderEntry.intruder.relativePositionVector.z;
-            let isWithinAltitude = altitudeMeters <= state.model.traffic.altitudeRestrictionAbove.asUnit(WT_Unit.METER) && altitudeMeters >= -state.model.traffic.altitudeRestrictionBelow.asUnit(WT_Unit.METER);
-            isVisible = !this.isOffScale && isWithinAltitude;
+        if (showSymbol) {
+            if (this.intruderEntry.alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY && useOuterRangeMaxScale) {
+                isVisible = true;
+            } else {
+                let altitudeMeters = this.intruderEntry.intruder.relativePositionVector.z;
+                let isWithinAltitude = altitudeMeters <= state.model.traffic.altitudeRestrictionAbove.asUnit(WT_Unit.METER) && altitudeMeters >= -state.model.traffic.altitudeRestrictionBelow.asUnit(WT_Unit.METER);
+                isVisible = !this.isOffScale && isWithinAltitude;
+            }
         }
         this._isVisible = isVisible;
     }
@@ -144,6 +146,10 @@ class WT_G5000_MapViewTrafficIntruderHTMLElement extends WT_G3x5_MapViewTrafficI
             this._wrapper.setAttribute("vs", "none");
         }
     }
+
+    _setLabelVisibility(value) {
+        this._wrapper.setAttribute("show-label", `${value}`);
+    }
 }
 WT_G5000_MapViewTrafficIntruderHTMLElement.VERTICAL_SPEED_THRESHOLD = 500; // FPM
 WT_G5000_MapViewTrafficIntruderHTMLElement.ALERT_ATTRIBUTES = [
@@ -170,6 +176,13 @@ WT_G5000_MapViewTrafficIntruderHTMLElement.TEMPLATE.innerHTML = `
         #wrapper[show="true"] {
             display: block;
         }
+            .label {
+                display: none;
+            }
+            #wrapper[show-label="true"] .label {
+                display: block;
+            }
+
             .alt {
                 position: absolute;
                 left: 50%;
@@ -184,13 +197,13 @@ WT_G5000_MapViewTrafficIntruderHTMLElement.TEMPLATE.innerHTML = `
             #altabove {
                 bottom: 63%;
             }
-            #wrapper[alt="above"] #altabove {
+            #wrapper[show-label="true"][alt="above"] #altabove {
                 display: block;
             }
             #altbelow {
                 top: 63%;
             }
-            #wrapper[alt="below"] #altbelow {
+            #wrapper[show-label="true"][alt="below"] #altbelow {
                 display: block;
             }
             .icon {
@@ -259,8 +272,8 @@ WT_G5000_MapViewTrafficIntruderHTMLElement.TEMPLATE.innerHTML = `
                 }
     </style>
     <div id="wrapper">
-        <div id="altabove" class="alt"></div>
-        <div id="altbelow" class="alt"></div>
+        <div id="altabove" class="label alt"></div>
+        <div id="altbelow" class="label alt"></div>
         <svg id="iconbackground" class="icon" viewBox="-50 -50 100 100">
             <circle id="tacircle" cx="0" cy="0" r="45" />
             <path id="tahalfcircle" d="M -45 0 L 45 0 A 45 45 0 0 0 -45 0" />

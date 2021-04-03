@@ -2008,33 +2008,6 @@
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow1" state="Inactive">
-                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
-            </div>
-            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow2" state="Inactive">
-                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
-            </div>
-            <div class="PopUpWindow Transparent MapDetailSelect" id="MapDetailSelect" state="Inactive">
-                <div class="WindowTitle">Map Detail Settings</div>
-                <div class="Container">
-                    <div class="gradientButton" id="MapDetailIncreaseButton">
-                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_UP_PLUS.png" />
-                    </div>
-                    <div class="MapDetailSliderOuterContainer">
-                        <div class="topText">Most</div>
-                        <div class="MapDetailSliderWrapper">
-                            <img class="sliderBackground" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MapDetailSliderBackground" />
-                            <div class="MapDetailSliderContainer">
-                                <input type="range" min="0" max="3" class="slider" id="MapDetailSlider">
-                            </div>
-                        </div>
-                        <div class="bottomText">Least</div>
-                    </div>
-                    <div class="gradientButton" id="MapDetailDecreaseButton">
-                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_DOWN_MINUS.png" />
-                    </div>
-                </div>
-            </div>
             <div class="PopUpWindow Transparent" id="LoadFrequencyPopup" state="Inactive">
                 <div class="WindowTitle">Load Frequency</div>
                 <div class="content">
@@ -2086,6 +2059,36 @@
                     <div class="content">
                     </div>
                 </div>
+            </div>
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow1" state="Inactive">
+                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+            </div>
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow2" state="Inactive">
+                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+            </div>
+            <div class="PopUpWindow Transparent MapDetailSelect" id="MapDetailSelect" state="Inactive">
+                <div class="WindowTitle">Map Detail Settings</div>
+                <div class="Container">
+                    <div class="gradientButton" id="MapDetailIncreaseButton">
+                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_UP_PLUS.png" />
+                    </div>
+                    <div class="MapDetailSliderOuterContainer">
+                        <div class="topText">Most</div>
+                        <div class="MapDetailSliderWrapper">
+                            <img class="sliderBackground" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MapDetailSliderBackground" />
+                            <div class="MapDetailSliderContainer">
+                                <input type="range" min="0" max="3" class="slider" id="MapDetailSlider">
+                            </div>
+                        </div>
+                        <div class="bottomText">Least</div>
+                    </div>
+                    <div class="gradientButton" id="MapDetailDecreaseButton">
+                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_DOWN_MINUS.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="PopUpWindow Transparent" id="NavMapTrafficMapSettings" state="Inactive">
+                <div class="WindowTitle">Traffic Settings</div>
             </div>
         </div>
     </div>
@@ -2212,6 +2215,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCLoadFrequency.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCWaypointOptions.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCNavMapTrafficMapSettings.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTimer.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCPFDSettings.js"></script>
@@ -2230,5 +2234,5 @@
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCPFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCTrafficSettings.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js?foo=bar"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>
