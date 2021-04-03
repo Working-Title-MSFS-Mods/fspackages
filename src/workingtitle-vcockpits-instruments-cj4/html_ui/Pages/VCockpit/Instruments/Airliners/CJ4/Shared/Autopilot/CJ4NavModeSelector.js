@@ -325,62 +325,62 @@ class CJ4NavModeSelector {
    * Handles when the plane changes from on ground to in air or in air to on ground.
    */
   handleGrounded() {
-    if (this._inputDataStates.grounded.state) {
-      switch (this.currentLateralActiveState) {
-        case LateralNavModeState.NAV:
-          SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-          SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
-          break;
-        case LateralNavModeState.LNAV:
-        case LateralNavModeState.HDG:
-        case LateralNavModeState.TO:
-        case LateralNavModeState.GA:
-          SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
-          break;
-        case LateralNavModeState.APPR:
-          this.cancelApproachMode(true);
-          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-          SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-          break;
-        case LateralNavModeState.ROLL:
-          break;
-      }
-      this.currentLateralActiveState = LateralNavModeState.ROLL;
+    // if (this._inputDataStates.grounded.state) {
+    //   switch (this.currentLateralActiveState) {
+    //     case LateralNavModeState.NAV:
+    //       SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+    //       SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
+    //       break;
+    //     case LateralNavModeState.LNAV:
+    //     case LateralNavModeState.HDG:
+    //     case LateralNavModeState.TO:
+    //     case LateralNavModeState.GA:
+    //       SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+    //       SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+    //       SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+    //       break;
+    //     case LateralNavModeState.APPR:
+    //       this.cancelApproachMode(true);
+    //       SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+    //       SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+    //       break;
+    //     case LateralNavModeState.ROLL:
+    //       break;
+    //   }
+    //   this.currentLateralActiveState = LateralNavModeState.ROLL;
 
-      switch (this.currentVerticalActiveState) {
-        case VerticalNavModeState.FLC:
-          SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 0);
-          break;
-        case VerticalNavModeState.ALTCAP:
-        case VerticalNavModeState.ALTVCAP:
-        case VerticalNavModeState.ALTSCAP:
-        case VerticalNavModeState.ALTV:
-        case VerticalNavModeState.ALTS:
-        case VerticalNavModeState.ALT:
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
-          SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-          Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-          break;
-        case VerticalNavModeState.VS:
-        case VerticalNavModeState.PATH:
-        case VerticalNavModeState.GP:
-          SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-          break;
-        case VerticalNavModeState.PTCH:
-          break;
-      }
-      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
-      if (this.isVNAVOn) {
-        this.isVNAVOn = false;
-        SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
-      }
-      SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+    //   switch (this.currentVerticalActiveState) {
+    //     case VerticalNavModeState.FLC:
+    //       SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 0);
+    //       break;
+    //     case VerticalNavModeState.ALTCAP:
+    //     case VerticalNavModeState.ALTVCAP:
+    //     case VerticalNavModeState.ALTSCAP:
+    //     case VerticalNavModeState.ALTV:
+    //     case VerticalNavModeState.ALTS:
+    //     case VerticalNavModeState.ALT:
+    //       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+    //       SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
+    //       Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
+    //       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+    //       break;
+    //     case VerticalNavModeState.VS:
+    //     case VerticalNavModeState.PATH:
+    //     case VerticalNavModeState.GP:
+    //       SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
+    //       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+    //       break;
+    //     case VerticalNavModeState.PTCH:
+    //       break;
+    //   }
+    //   this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+    //   if (this.isVNAVOn) {
+    //     this.isVNAVOn = false;
+    //     SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
+    //   }
+    //   SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
 
-    }
+    // }
   }
 
   /**
