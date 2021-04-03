@@ -183,44 +183,6 @@
       width: 100%;
       left: 0%;
       bottom: 14%; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDHome] #PFDHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=SpeedBugs] #SpeedBugs,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Timers] #Timers,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Minimums] #Minimums,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDMapSettings] #PFDMapSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDSettings] #PFDSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=TrafficSettingsLeft] #TrafficSettingsLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=TrafficSettingsRight] #TrafficSettingsRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelection] #WeatherSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfoLeft] #AirportInfoLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Nearest] #Nearest,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestAirport] #NearestAirport,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestIntersection] #NearestIntersection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestVOR] #NearestVOR,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestNDB] #NearestNDB,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Procedures] #Procedures,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=DepartureSelection] #DepartureSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ArrivalSelection] #ArrivalSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Utilities] #Utilities,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=UtilitiesSetup] #UtilitiesSetup,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings {
-        display: block; }
 
       as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome {
         position: absolute;
@@ -481,21 +443,25 @@ as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings
         left: 0.5%;
         top: 1%;
         width: 32.3%;
-        height: 98%;
     }
     as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-altitude {
         position: absolute;
         left: 33.8%;
         top: 1%;
         width: 32.3%;
-        height: 98%;
     }
     as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-adsb {
         position: absolute;
         left: 67.2%;
         top: 1%;
         width: 32.3%;
-        height: 98%;
+    }
+    as3000-tsc-vertical-element #Electricity .trafficSettings .trafficNavMapSettingsButton {
+        position: absolute;
+        left: 40%;
+        bottom: 2%;
+        width: 20%;
+        height: 12vh;
     }
 
 as3000-tsc-vertical-element #Electricity .weatherSelection wt-tsc-button-img {

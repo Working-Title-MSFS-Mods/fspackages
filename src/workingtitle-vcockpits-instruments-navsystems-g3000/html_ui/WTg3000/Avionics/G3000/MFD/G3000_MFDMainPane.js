@@ -12,6 +12,13 @@ class WT_G3000_MFDMainPane extends WT_G3x5_MFDMainPane {
 
 class WT_G3000_MFDHalfPane extends WT_G3x5_MFDHalfPane {
     /**
+     * @returns {WT_G3000_NavMap}
+     */
+     _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem) {
+        return new WT_G3000_NavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem);
+    }
+
+    /**
      * @returns {WT_G3000_TrafficMap}
      */
      _createTrafficMap(id, airplane, trafficSystem) {

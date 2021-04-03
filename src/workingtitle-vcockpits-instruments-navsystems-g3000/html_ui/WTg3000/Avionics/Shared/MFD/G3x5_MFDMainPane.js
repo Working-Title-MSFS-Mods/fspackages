@@ -272,7 +272,7 @@ class WT_G3x5_MFDHalfPane {
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
         this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
 
-        this._navMap = this._createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData);
+        this._navMap = this._createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem);
         this._trafficMap = this._createTrafficMap(id, airplane, trafficSystem);
         this._weatherRadar = this._createWeatherRadar(id, airplane);
         this._waypointInfo = this._createWaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers);
@@ -296,8 +296,7 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_NavMap}
      */
-    _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData) {
-        return new WT_G3x5_NavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData);
+    _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem) {
     }
 
     /**

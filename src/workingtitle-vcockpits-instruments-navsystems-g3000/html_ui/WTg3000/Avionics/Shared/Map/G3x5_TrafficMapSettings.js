@@ -145,3 +145,14 @@ class WT_G3x5_TrafficMapMotionVectorLookaheadSetting extends WT_MapSetting {
 WT_G3x5_TrafficMapMotionVectorLookaheadSetting.KEY = "WT_Traffic_MotionVector_Lookahead";
 WT_G3x5_TrafficMapMotionVectorLookaheadSetting.LOOKAHEAD_VALUES_DEFAULT = [30, 60, 120, 300].map(value => WT_Unit.SECOND.createNumber(value));
 WT_G3x5_TrafficMapMotionVectorLookaheadSetting.LOOKAHEAD_DEFAULT = WT_Unit.SECOND.createNumber(60);
+
+class WT_G3x5_NavMapTrafficShowSetting extends WT_MapSetting {
+    constructor(model, defaultValue = false, key = WT_G3x5_NavMapTrafficShowSetting.KEY) {
+        super(model, key, defaultValue, true, true, true);
+    }
+
+    update() {
+        this.mapModel.traffic.show = this.getValue();
+    }
+}
+WT_G3x5_NavMapTrafficShowSetting.KEY = "WT_Map_Traffic_Show";

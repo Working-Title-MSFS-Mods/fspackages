@@ -165,6 +165,7 @@ class WT_G3x5_TSCMapSettingsHTMLElement extends HTMLElement {
     _initSensorTab() {
         this._sensorTab = new WT_G3x5_TSCMapSettingsTab("Sensor", this.parentPage);
 
+        this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsTrafficTabRow());
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsTerrainTabRow(WT_MapTerrainModeSetting.KEY_DEFAULT));
         this._sensorTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("NEXRAD Data", WT_G3x5_NavMap.NEXRAD_SHOW_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_KEY, WT_G3x5_NavMap.NEXRAD_RANGE_MAX, "Map NEXRAD Range"));
 
@@ -1117,6 +1118,34 @@ class WT_G3x5_TSCMapSettingsFuelRingTabRow extends WT_G3x5_TSCMapSettingsToggleT
         return hours + "+" + minutesText;
     }
 }
+
+class WT_G3x5_TSCMapSettingsTrafficTabRow extends WT_G3x5_TSCMapSettingsToggleTabRow {
+    constructor() {
+        super(WT_G3x5_TSCMapSettingsTrafficTabRow.TOGGLE_BUTTON_LABEL, WT_G3x5_NavMapTrafficShowSetting.KEY);
+    }
+
+    _initRight() {
+        this._settingsButton = new WT_TSCLabeledButton();
+        this._settingsButton.labelText = "Settings";
+        this._settingsButton.addButtonListener(this._onSettingsButtonPressed.bind(this));
+        return this._settingsButton;
+    }
+
+    _openTrafficSettingsPage() {
+        let instrument = this.context.instrument;
+        let pageGroup = this.context.homePageGroup;
+        if (pageGroup === "PFD") {
+
+        } else {
+            instrument.SwitchToPageName(pageGroup, instrument.getSelectedMFDPanePages().navMapTraffic.name);
+        }
+    }
+
+    _onSettingsButtonPressed(button) {
+        this._openTrafficSettingsPage();
+    }
+}
+WT_G3x5_TSCMapSettingsTrafficTabRow.TOGGLE_BUTTON_LABEL = "Traffic";
 
 class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
     /**

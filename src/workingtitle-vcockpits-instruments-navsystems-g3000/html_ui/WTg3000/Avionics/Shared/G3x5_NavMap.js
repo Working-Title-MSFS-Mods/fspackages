@@ -11,10 +11,12 @@ class WT_G3x5_NavMap {
      * @param {WT_MapViewBorderData} borderData
      * @param {WT_MapViewRoadFeatureCollection} roadFeatureData
      * @param {WT_MapViewRoadLabelCollection} roadLabelData
+     * @param {WT_G3x5_TrafficSystem} trafficSystem
      * @param {*} layerOptions
      */
-    constructor(instrumentID, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
+        this._settingModelID = instrumentID;
 
         this._airplane = airplane;
         this._airspeedSensorIndex = airspeedSensorIndex;
@@ -27,6 +29,7 @@ class WT_G3x5_NavMap {
         this._borderData = borderData;
         this._roadFeatureData = roadFeatureData;
         this._roadLabelData = roadLabelData;
+        this._trafficSystem = trafficSystem;
 
         this._layerOptions = layerOptions;
     }
@@ -102,6 +105,13 @@ class WT_G3x5_NavMap {
         this._unitsAdapter = new WT_G3x5_UnitsControllerMapModelAdapter(this._unitsController, this.model);
     }
 
+    /**
+     * @returns {WT_G3x5_MapModelNavMapTrafficModule}
+     */
+    _createTrafficModule() {
+        return new WT_G3x5_MapModelNavMapTrafficModule(this._trafficSystem);
+    }
+
     _initModel() {
         this._initUnitsModule();
         this.model.addModule(new WT_MapModelCrosshairModule());
@@ -123,6 +133,19 @@ class WT_G3x5_NavMap {
         if (this._layerOptions.roads) {
             this.model.addModule(new WT_MapModelRoadsModule());
         }
+        this.model.addModule(this._createTrafficModule());
+    }
+
+    /**
+     * @returns {WT_G3x5_MapViewTrafficIntruderLayer}
+     */
+    _createTrafficIntruderLayer() {
+    }
+
+    /**
+     * @returns {WT_G3x5_MapViewTrafficStatusLayer}
+     */
+    _createTrafficStatusLayer() {
     }
 
     _initView() {
@@ -130,6 +153,7 @@ class WT_G3x5_NavMap {
         this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
+        /*
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
         if (this._layerOptions.roads) {
             this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
@@ -141,6 +165,7 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer(this._altimeterIndex));
         this.view.addLayer(new WT_MapViewTrackVectorLayer(this._airspeedSensorIndex));
+        */
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(state) {
@@ -149,6 +174,7 @@ class WT_G3x5_NavMap {
         }));
         this.view.addLayer(new WT_MapViewCrosshairLayer());
         this.view.addLayer(new WT_MapViewAirplaneLayer());
+        this.view.addLayer(this._createTrafficIntruderLayer());
         this.view.addLayer(new WT_MapViewPointerLayer());
         if (this._layerOptions.windData) {
             this.view.addLayer(new WT_MapViewWindDataLayer());
@@ -161,9 +187,10 @@ class WT_G3x5_NavMap {
         if (this._layerOptions.miniCompass) {
             this.view.addLayer(new WT_MapViewMiniCompassLayer());
         }
+        //this.view.addLayer(this._createTrafficStatusLayer());
     }
 
-    _initController() {
+    _initSettingModel() {
         this.settingModel.addSetting(this._rangeTargetRotationController = new WT_G3x5_MapRangeTargetRotationController(this.settingModel));
         this.settingModel.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.settingModel));
         this.settingModel.addSetting(new WT_MapTrackVectorSettingGroup(this.settingModel));
@@ -245,6 +272,18 @@ class WT_G3x5_NavMap {
             this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
         }
 
+        this.settingModel.addSetting(new WT_G3x5_NavMapTrafficShowSetting(this.settingModel));
+
+        this.settingModel.addSetting(new WT_G3x5_TrafficMapAltitudeModeSetting(this.settingModel));
+        this.settingModel.addSetting(new WT_G3x5_TrafficMapAltitudeRestrictionSetting(this.settingModel));
+        this.settingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorModeSetting(this.settingModel));
+        this.settingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorLookaheadSetting(this.settingModel));
+
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_KEY, "traffic", "symbolRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_DEFAULT));
+
+        this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "trafficLabel", "traffic", "labelShow", WT_G3x5_NavMap.TRAFFIC_LABEL_SHOW_KEY, this._dcltrSetting));
+        this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_KEY, "traffic", "labelRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_DEFAULT));
+
         this.settingModel.init();
         this.settingModel.update();
     }
@@ -253,11 +292,11 @@ class WT_G3x5_NavMap {
         this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
-        this._settingModel = new WT_MapSettingModel(this.instrumentID, this.model, this.view);
+        this._settingModel = new WT_MapSettingModel(this._settingModelID, this.model, this.view);
 
         this._initModel();
         this._initView();
-        this._initController();
+        this._initSettingModel();
     }
 
     sleep() {
@@ -273,6 +312,7 @@ class WT_G3x5_NavMap {
         this._waypointRenderer.update(this.view.state);
     }
 }
+WT_G3x5_NavMap.TRAFFIC_SETTING_MODEL_ID_SUFFIX = "TrafficMap";
 WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT = {
     miniCompass: true,
     rangeDisplay: false,
@@ -396,6 +436,15 @@ WT_G3x5_NavMap.ROAD_HIGHWAY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(50);
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY = "WT_Map_RoadPrimary_Range";
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_MAX = WT_Unit.NMILE.createNumber(150);
 WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(15);
+
+WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_KEY = "WT_Map_TrafficSymbol_Range";
+WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_MAX = WT_Unit.NMILE.createNumber(100);
+WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
+
+WT_G3x5_NavMap.TRAFFIC_LABEL_SHOW_KEY = "WT_Map_TrafficLabel_Show";
+WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_KEY = "WT_Map_TrafficLabel_Range";
+WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_MAX = WT_Unit.NMILE.createNumber(100);
+WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
 
 class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
     /**

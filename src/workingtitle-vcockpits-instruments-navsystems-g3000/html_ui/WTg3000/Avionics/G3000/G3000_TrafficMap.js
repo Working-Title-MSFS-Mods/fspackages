@@ -3,7 +3,7 @@ class WT_G3000_TrafficMap extends WT_G3x5_TrafficMap {
      * @returns {WT_G3000_MapViewTrafficIntruderLayer}
      */
     _createTrafficIntruderLayer() {
-        return new WT_G3000_MapViewTrafficIntruderLayer();
+        return new WT_G3000_MapViewTrafficIntruderLayer(true);
     }
 
     /**
