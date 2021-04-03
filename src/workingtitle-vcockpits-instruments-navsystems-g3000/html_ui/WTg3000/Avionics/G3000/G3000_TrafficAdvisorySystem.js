@@ -21,6 +21,7 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
         operatingModeSetting.addListener(this._onOperatingModeSettingChanged.bind(this));
 
         this._settingModel.init();
+        this._setOperatingMode(operatingModeSetting.getValue());
     }
 
     onOptionChanged(option, oldValue, newValue) {

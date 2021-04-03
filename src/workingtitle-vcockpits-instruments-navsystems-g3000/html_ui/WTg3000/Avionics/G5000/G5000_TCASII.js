@@ -28,6 +28,7 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
         this._operatingModeSetting.addListener(this._onOperatingModeSettingChanged.bind(this));
 
         this._settingModel.init();
+        this._setOperatingMode(this._operatingModeSetting.getValue());
     }
 
     _initXPDRSettingModel() {
@@ -223,4 +224,4 @@ class WT_G5000_TrafficSystemOperatingModeSetting extends WT_G3x5_TrafficSystemOp
         super(model, defaultValue, false);
     }
 }
-WT_G5000_TrafficSystemOperatingModeSetting.DEFAULT = WT_G5000_TCASII.OperatingMode.STANDBY;
+WT_G5000_TrafficSystemOperatingModeSetting.DEFAULT = WT_G5000_TCASII.OperatingMode.TA_ONLY;
