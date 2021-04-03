@@ -41,7 +41,7 @@
     color: var(--wt-g3x5-lightblue); } }
 
 wt-tsc-button-value {
-    --value-color: var(--wt-g3x5-lightblue);
+    --button-value-color: var(--wt-g3x5-lightblue);
 }
 
 .line {

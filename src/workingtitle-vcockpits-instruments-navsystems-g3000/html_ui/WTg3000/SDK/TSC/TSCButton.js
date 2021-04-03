@@ -25,13 +25,13 @@ class WT_TSCButton extends HTMLElement {
         return `
             :host {
                 display: block;
-                background: linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh);
-                background-color: black;
-                border: 3px solid #404040;
-                border-radius: 4px;
+                background: var(--button-background, linear-gradient(#5f7283 0.4vh, #1f3445, black 2vh));
+                background-color: var(--button-background-color, black);
+                border: var(--button-border, 3px solid #404040);
+                border-radius: var(--button-border-radius, 4px);
                 position: relative;
-                text-align: center;
-                color: white;
+                text-align: var(--button-text-align, center);
+                color: var(--button-color, white);
                 overflow: hidden;
             }
             :host([highlight=true]) {
@@ -272,11 +272,11 @@ class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
                 height: 10%;
                 left: 25%;
                 bottom: 12%;
-                border-radius: var(--statusbar-border-radius, 0.5vh);
-                background-color: var(--statusbar-color-off, grey);
+                border-radius: var(--button-statusbar-border-radius, 0.5vh);
+                background-color: var(--button-statusbar-color-off, grey);
             }
             #statusbar[state=on] {
-                background-color: var(--statusbar-color-on, lawngreen);
+                background-color: var(--button-statusbar-color-on, lawngreen);
             }
         `));
 
@@ -354,8 +354,8 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
                 width: 100%;
                 top: 50%;
                 transform: translateY(-50%);
-                color: var(--value-color, white);
-                font-size: var(--value-font-size, 1em);
+                color: var(--button-value-color, white);
+                font-size: var(--button-value-font-size, 1em);
             }
         `;
     }
