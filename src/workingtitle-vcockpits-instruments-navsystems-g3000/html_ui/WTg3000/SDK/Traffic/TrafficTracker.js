@@ -1,7 +1,10 @@
+/**
+ * Tracks aircraft traffic. Maintains a list of contacts, periodically updates their position, altitude, and reported
+ * heading, and uses these data to compute ground speed, ground track, and vertical speed.
+ */
 class WT_TrafficTracker {
     /**
-     *
-     * @param {Object} [options]
+     * @param {Object} [options] - optional options to pass to the new tracker.
      */
     constructor(options) {
         /**
@@ -28,6 +31,7 @@ class WT_TrafficTracker {
     }
 
     /**
+     * An array of contacts currently being tracked.
      * @readonly
      * @type {WT_ReadOnlyArray<WT_TrafficContact>}
      */
@@ -89,18 +93,19 @@ class WT_TrafficTracker {
     }
 
     /**
-     *
-     * @param {WT_TrafficTracker.EventType} eventType
-     * @param {(eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void} listener
+     * Adds a listener to be called on certain events. Supported events include creation of a new contact, update of an
+     * existing contact, and removal of a contact.
+     * @param {WT_TrafficTracker.EventType} eventType - the type of event to which the listener should respond.
+     * @param {(eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void} listener - a listener function.
      */
     addListener(eventType, listener) {
         this._listeners[eventType].push(listener);
     }
 
     /**
-     *
-     * @param {WT_TrafficTracker.EventType} eventType
-     * @param {(eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void} listener
+     * Removes a listener from this tracker.
+     * @param {WT_TrafficTracker.EventType} eventType - the type of event to which the listener was bound.
+     * @param {(eventType:WT_TrafficTracker.EventType, contact:WT_TrafficContact) => void} listener - a listener function.
      */
     removeListener(eventType, listener) {
         let array = this._listeners[eventType];
@@ -111,8 +116,9 @@ class WT_TrafficTracker {
     }
 
     /**
-     *
-     * @returns {Promise<void>}
+     * Updates this tracker. This will create new contacts as they are found, update existing contacts based on new
+     * data, and remove contacts which can no longer be found.
+     * @returns {Promise<void>} a Promise which resolves when the update is complete.
      */
     async update() {
         let data = await Coherent.call("GET_AIR_TRAFFIC");
@@ -133,13 +139,19 @@ WT_TrafficTracker.OPTION_DEFS = {
     contactOptions: {default: {}, auto: true}
 };
 
+/**
+ * An aircraft contact that is being tracked. Each contact tracks its last reported position, altitude, and heading.
+ * Successively updating these values will allow ground speed, ground track, and vertical speed to be calculated based
+ * on changes in the values over time. The calculated values are exponentially smoothed to reduce artifacts from
+ * potentially noisy data.
+ */
 class WT_TrafficContact {
     /**
-     * @param {String} id
-     * @param {WT_GeoPoint} position
-     * @param {WT_NumberUnit} altitude
-     * @param {WT_NumberUnit} heading
-     * @param {Object} [options]
+     * @param {String} id - the new contact's unique ID.
+     * @param {{lat:Number, long:Number}} position - the initial reported lat/long coordinates of the new contact.
+     * @param {WT_NumberUnit} altitude - the initial reported altitude of the new contact.
+     * @param {WT_NumberUnit} heading - the initial reported heading of the new contact.
+     * @param {Object} [options] - optional options to pass to the new contact.
      */
     constructor(id, position, altitude, heading, options) {
         this._id = id;
@@ -167,6 +179,7 @@ class WT_TrafficContact {
     }
 
     /**
+     * This contact's unique ID.
      * @readonly
      * @type {String}
      */
@@ -175,6 +188,7 @@ class WT_TrafficContact {
     }
 
     /**
+     * The time at which this contact last reported its position, altitude, and heading.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -183,6 +197,7 @@ class WT_TrafficContact {
     }
 
     /**
+     * The last reported position of this contact.
      * @readonly
      * @type {WT_GeoPointReadOnly}
      */
@@ -191,6 +206,7 @@ class WT_TrafficContact {
     }
 
     /**
+     * The last reported altitude of this contact.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -199,6 +215,7 @@ class WT_TrafficContact {
     }
 
     /**
+     * The last reported heading of this contact.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -207,6 +224,8 @@ class WT_TrafficContact {
     }
 
     /**
+     * The most recent computed ground speed of this contact. If there are insufficient data to calculate ground speed,
+     * the returned value will be equal to NaN.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -215,6 +234,8 @@ class WT_TrafficContact {
     }
 
     /**
+     * The most recent computed true ground track of this contact. If there are insufficient data to calculate the
+     * track, the returned value will be equal to NaN.
      * @readonly
      * @type {Number}
      */
@@ -223,6 +244,8 @@ class WT_TrafficContact {
     }
 
     /**
+     * The most recent computed vertical speed of this contact. If there are insufficient data to calculate vertical
+     * speed, the returned value will be euqal to NaN.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -254,8 +277,8 @@ class WT_TrafficContact {
 
     /**
      * Calculates the predicted position and altitude of this contact at a specified time based on the most recent
-     * available data and stores the results in the supplied objects. If insufficient data is available to calculate
-     * the prediction, the result will be a value of NaN.
+     * available data and stores the results in the supplied objects. If insufficient data are available to calculate
+     * the prediction, the results will be equal to NaN.
      * @param {NumberUnit} time - the time at which to calculate the prediction.
      * @param {WT_GeoPoint} positionReference - a WT_GeoPoint object in which to store the position.
      * @param {WT_NumberUnit} altitudeReference - a WT_NumberUnit object in which to store the altitude.
@@ -323,6 +346,13 @@ class WT_TrafficContact {
         this._lastHeading.set(heading);
     }
 
+    /**
+     * Updates this contact with the current reported position, altitude and heading. Also updates the computed ground
+     * speed, ground track, and vertical speed if there are sufficient data to do so.
+     * @param {WT_GeoPoint} position - the current reported position.
+     * @param {WT_NumberUnit} altitude - the current reported altitude.
+     * @param {WT_NumberUnit} heading - the current reported heading.
+     */
     update(position, altitude, heading) {
         let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
         let dt = currentTime - this._lastContactTime.number;
@@ -345,6 +375,12 @@ class WT_TrafficContact {
         }
     }
 
+    /**
+     * Erases this contact's tracking history and sets the initial reported position, altitude, and heading.
+     * @param {WT_GeoPoint} position - the new initial reported position.
+     * @param {WT_NumberUnit} altitude - the new initial reported altitude.
+     * @param {WT_NumberUnit} heading - the new initial reported heading.
+     */
     reset(position, altitude, heading) {
         this._setReportedValues(position, altitude, heading);
         this._computedGroundSpeed.set(NaN);
