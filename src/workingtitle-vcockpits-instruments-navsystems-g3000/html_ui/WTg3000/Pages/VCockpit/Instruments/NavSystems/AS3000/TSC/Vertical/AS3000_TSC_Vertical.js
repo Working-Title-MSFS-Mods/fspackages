@@ -207,7 +207,7 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     }
 
     _onXPDRModeButtonPressed() {
-        if (this.gps.popUpElement === this.gps.transponderMode.element) {
+        if (this.gps.popUpElement === this.gps.transponderMode) {
             return;
         }
 
@@ -218,7 +218,7 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     }
 
     openTransponder() {
-        if (this.gps.popUpElement === this.gps.transponderWindow.element) {
+        if (this.gps.popUpElement === this.gps.transponderWindow) {
             return;
         }
 
@@ -232,7 +232,7 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     }
 
     openAudioRadios() {
-        if (this.gps.popUpElement === this.gps.audioRadioWindow.element) {
+        if (this.gps.popUpElement === this.gps.audioRadioWindow) {
             return;
         }
 
