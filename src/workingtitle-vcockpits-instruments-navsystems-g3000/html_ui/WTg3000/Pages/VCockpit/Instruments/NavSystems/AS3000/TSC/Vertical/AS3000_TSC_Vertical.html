@@ -7,8 +7,7 @@
                     <tr>
                         <td>
                             <div class="gradient" id="AudioRadio">
-                                <div class="mainText">Audio &</div>
-                                <div class="mainText">Radios</div>
+                                <div class="mainText">Audio & Radios</div>
                             </div>
                         </td>
                         <td class="cutBot">
@@ -41,10 +40,9 @@
                             </div>
                         </td>
                         <td>
-                            <div class="gradient" id="XPDRIdent">
-                                <div class="mainText">XPDR1</div>
-                                <div class="mainText">IDENT</div>
-                                <div class="statusBar"></div>
+                            <div class="gradient" id="XPDRMode">
+                                <div class="mainText" id="XPDRModeXPDR">XPDR1</div>
+                                <div class="mainText" id="XPDRModeMode"></div>
                             </div>
                         </td>
                     </tr>
@@ -82,8 +80,7 @@
                             </div>
                         </td>
                         <td>
-                            <div class="gradient" id="XPDR">
-                                <div class="topText">ALT</div>
+                            <div class="gradient" id="XPDRCode">
                                 <div class="mainNumber">7000</div>
                             </div>
                         </td>
@@ -1200,21 +1197,6 @@
             </div>
             <div class="PopUpWindow" id="TransponderWindow" state="Inactive">
                 <div class="WindowTitle">Transponder</div>
-                <div class="backgroundBox" id="transponder_ModeSelect">
-                    <div id="transponder_ModeSelectTitle">Mode</div>
-                    <div class="gradientButton statusToggleButton" id="transponder_Alt" state="Active">
-                        <div class="mainText">Altitude Reporting</div>
-                        <div class="statusBar"></div>
-                    </div>
-                    <div class="gradientButton statusToggleButton" id="transponder_On">
-                        <div class="mainText">On</div>
-                        <div class="statusBar"></div>
-                    </div>
-                    <div class="gradientButton statusToggleButton" id="transponder_Stby">
-                        <div class="mainText">Standby</div>
-                        <div class="statusBar"></div>
-                    </div>
-                </div>
                 <div id="transponder_CodeDisplay">
                     <span id="transponder_Code">0123</span>
                 </div>
@@ -1231,10 +1213,6 @@
                     <div class="roundButton" id="transponder_5"><div class="mainText">5</div></div>
                     <div class="roundButton" id="transponder_6"><div class="mainText">6</div></div>
                     <div class="roundButton" id="transponder_7"><div class="mainText">7</div></div>
-                </div>
-                <div class="gradientButton" id="transponder_ActiveTransponder" state="Hidden">
-                    <div class="mainText">Active</div>
-                    <div class="statusText">XPDR1</div>
                 </div>
                 <div class="gradientButton" id="transponder_Vfr">
                     <div class="mainText">VFR</div>
@@ -1860,6 +1838,9 @@
                     </div>
                 </div>
             </div>
+            <div class="PopUpWindow" id="TransponderMode" state="Inactive">
+                <div class="WindowTitle">Transponder</div>
+            </div>
         </div>
     </div>
 </script>
@@ -2004,5 +1985,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/G5000/TSC/Pages/G5000_TSCPFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G5000/TSC/Pages/G5000_TSCTrafficSettings.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js?foo=bar"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/TSC/PopUps/G5000_TSCTransponderMode.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Vertical/AS3000_TSC_Vertical.js"></script>
