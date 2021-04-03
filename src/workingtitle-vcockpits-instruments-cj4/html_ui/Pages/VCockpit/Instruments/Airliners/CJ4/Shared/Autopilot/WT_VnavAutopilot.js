@@ -1493,6 +1493,7 @@ class WT_VerticalAutopilot {
                 } else {
                     this.altitudeArmedState = VerticalNavModeState.NONE;
                 }
+                break;
             case VerticalNavModeState.GS:
             case VerticalNavModeState.GP:
                 this.altitudeArmedState = VerticalNavModeState.NONE;
