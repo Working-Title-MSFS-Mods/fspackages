@@ -1838,12 +1838,18 @@ as3000-tsc-vertical-element #Electricity #TransponderMode wt-tsc-transpondermode
     font-size: 3vh;
 }
 
+:root {
+    --button-border: 1px ridge white;
+}
+
   as3000-tsc-vertical-element .gradientButton {
     width: 18vh;
     height: 14vh;
     max-height: 15vh;
     margin: 0.5vh;
-    font-size: 3vh; }
+    font-size: 3vh;
+    border: 1px ridge white;
+  }
     as3000-tsc-vertical-element .gradientButton .img {
       margin-top: 0; }
     as3000-tsc-vertical-element .gradientButton .centerImg {

@@ -358,7 +358,7 @@ WT_G3x5_TSCTrafficAltitudeSettingsHTMLElement.TEMPLATE.innerHTML = `
                 margin-bottom: var(--trafficsettings-button-margin-vertical, 0.1em);
             }
             wt-tsc-button-value {
-                --value-color: var(--wt-g3x5-lightblue);
+                --button-value-color: var(--wt-g3x5-lightblue);
             }
     </style>
     <div id="wrapper">
@@ -570,7 +570,7 @@ WT_G3x5_TSCTrafficADSBSettingsHTMLElement.TEMPLATE.innerHTML = `
                 margin-bottom: var(--trafficsettings-button-margin-vertical, 0.1em);
             }
             wt-tsc-button-value {
-                --value-color: var(--wt-g3x5-lightblue);
+                --button-value-color: var(--wt-g3x5-lightblue);
             }
 
         .${WT_G3x5_TSCTrafficADSBSettingsHTMLElement.UNIT_CLASS} {
