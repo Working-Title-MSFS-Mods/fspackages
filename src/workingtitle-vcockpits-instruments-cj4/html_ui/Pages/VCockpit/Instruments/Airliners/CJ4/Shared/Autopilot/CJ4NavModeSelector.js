@@ -603,20 +603,14 @@ class CJ4NavModeSelector {
       this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
     }
 
-    // switch (this.currentVerticalActiveState) {
-    //   case VerticalNavModeState.ALTV:
-    //   case VerticalNavModeState.ALTS:
-    //   case VerticalNavModeState.ALT:
-    //     this.checkCorrectAltMode();
-    //   case VerticalNavModeState.ALTCAP:
-    //   case VerticalNavModeState.ALTVCAP:
-    //   case VerticalNavModeState.ALTSCAP:
-    //     //console.log("setting slot 3 in handleAlt1Changed");
-    //     //SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-    //     break;
-    // }
+    switch (this.currentVerticalActiveState) {
+      case VerticalNavModeState.ALTV:
+      case VerticalNavModeState.ALTS:
+      case VerticalNavModeState.ALT:
+        this.checkCorrectAltMode();
+    }
 
-    // this.setProperAltitudeArmedState();
+    //this.setProperAltitudeArmedState();
   }
 
   /**
@@ -632,19 +626,18 @@ class CJ4NavModeSelector {
    * between ALTV (MANAGED), ALTS (SELECTED) and ALT (PRESSURE).
    */
   checkCorrectAltMode() {
-    // if (this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV
-    //   || this.currentVerticalActiveState === VerticalNavModeState.ALT) {
-    //   let newValue = VerticalNavModeState.ALT;
-    //   const altLockValue = Math.floor(Simplane.getAutoPilotDisplayedAltitudeLockValue());
-    //   if (altLockValue == Math.floor(this.selectedAlt1)) {
-    //     newValue = VerticalNavModeState.ALTS;
-    //   } else if (altLockValue == Math.floor(this.managedAltitudeTarget)) {
-    //     newValue = VerticalNavModeState.ALTV;
-    //   }
-    //   if (this.currentVerticalActiveState !== newValue) {
-    //     this.currentVerticalActiveState = newValue;
-    //   }
-    // }
+    if (this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV
+      || this.currentVerticalActiveState === VerticalNavModeState.ALT) {
+      let newValue = VerticalNavModeState.ALT;
+      if (Math.floor(this.pressureAltitudeTarget) == Math.floor(this.selectedAlt1)) {
+        newValue = VerticalNavModeState.ALTS;
+      } else if (Math.floor(this.pressureAltitudeTarget) == Math.floor(this.managedAltitudeTarget)) {
+        newValue = VerticalNavModeState.ALTV;
+      }
+      if (this.currentVerticalActiveState !== newValue) {
+        this.currentVerticalActiveState = newValue;
+      }
+    }
   }
 
   checkCorrectAltSlot() {
