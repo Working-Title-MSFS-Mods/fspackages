@@ -155,6 +155,9 @@ class WT_TrafficContact {
         this._computedGroundTrack = NaN;
         this._computedVerticalSpeed = WT_Unit.FPM.createNumber(NaN);
 
+        this._maxValidGroundSpeed = WT_Unit.KNOT.createNumber(0);
+        this._maxValidVerticalSpeed = WT_Unit.FPM.createNumber(0);
+
         this._optsManager = new WT_OptionsManager(this, WT_TrafficContact.OPTION_DEFS);
         this._optsManager.setOptions(options);
 
@@ -228,6 +231,28 @@ class WT_TrafficContact {
     }
 
     /**
+     * @type {WT_NumberUnit}
+     */
+    get maxValidGroundSpeed() {
+        return this._maxValidGroundSpeed.readonly();
+    }
+
+    set maxValidGroundSpeed(speed) {
+        this._maxValidGroundSpeed.set(speed);
+    }
+
+    /**
+     * @type {WT_NumberUnit}
+     */
+    get maxValidVerticalSpeed() {
+        return this._maxValidVerticalSpeed.readonly();
+    }
+
+    set maxValidVerticalSpeed(speed) {
+        this._maxValidVerticalSpeed.set(speed);
+    }
+
+    /**
      * Calculates the predicted position and altitude of this contact at a specified time based on the most recent
      * available data and stores the results in the supplied objects. If insufficient data is available to calculate
      * the prediction, the result will be a value of NaN.
@@ -285,6 +310,12 @@ class WT_TrafficContact {
         this._computedVerticalSpeed.set(this._verticalSpeedSmoother.next(vsFPM, dt));
     }
 
+    _checkValidity() {
+        let isGroundSpeedValid = this.computedGroundSpeed.compare(this.maxValidGroundSpeed) <= 0;
+        let isVerticalSpeedValid = this.computedVerticalSpeed.compare(this.maxValidVerticalSpeed) <= 0;
+        return isGroundSpeedValid && isVerticalSpeedValid;
+    }
+
     _setReportedValues(position, altitude, heading) {
         this._lastPosition.set(position);
         this._lastAltitude.set(altitude);
@@ -306,8 +337,12 @@ class WT_TrafficContact {
             this._updateVerticalSpeed(dt, altitude);
         }
 
-        this._setReportedValues(position, altitude, heading);
-        this._lastContactTime.set(currentTime);
+        if (this._checkValidity()) {
+            this._setReportedValues(position, altitude, heading);
+            this._lastContactTime.set(currentTime);
+        } else {
+            this.reset(position, altitude, heading);
+        }
     }
 
     reset(position, altitude, heading) {
@@ -325,5 +360,7 @@ WT_TrafficContact.OPTION_DEFS = {
     groundSpeedSmoothingConstant: {default: 2, auto: true},
     groundTrackSmoothingConstant: {default: 2, auto: true},
     verticalSpeedSmoothingConstant: {default: 2, auto: true},
-    contactTimeResetThreshold: {default: 5, auto: true}
+    contactTimeResetThreshold: {default: 5, auto: true},
+    maxValidGroundSpeed: {default: WT_Unit.KNOT.createNumber(1500)},
+    maxValidVerticalSpeed: {default: WT_Unit.FPM.createNumber(10000)}
 };
