@@ -1,12 +1,17 @@
+/**
+ * A traffic avoidance system. Given a list of aircraft contacts (intruders), it calculates the time of closest
+ * approach (TCA) for each, as well as the 3D location of the intruder at TCA relative to own airplane and whether
+ * it violates a cylindrical protected zone around own airplane.
+ */
 class WT_TrafficAvoidanceSystem {
     /**
-     * @param {WT_PlayerAirplane} airplane
+     * @param {WT_PlayerAirplane} airplane - the new system's own airplane.
      * @param {WT_NumberUnit} protectedRadius - the initial radius of the cylindrical protected zone around own
      *                                          airplane.
      * @param {WT_NumberUnit} protectedHeight - the initial height of the cylindrical protected zone around own
      *                                          airplane.
-     * @param {WT_TrafficTracker} trafficTracker
-     * @param {Object} [options]
+     * @param {WT_TrafficTracker} trafficTracker - the traffic tracker from which to retrieve aircraft contact data.
+     * @param {Object} [options] - optional options to pass to the new system.
      */
     constructor(airplane, protectedRadius, protectedHeight, trafficTracker, options = {}) {
         this._ownAirplane = new WT_TrafficAvoidanceSystemOwnAirplane(airplane, protectedRadius, protectedHeight);
@@ -63,6 +68,7 @@ class WT_TrafficAvoidanceSystem {
     }
 
     /**
+     * This traffic avoidance system's own airplane.
      * @readonly
      * @type {WT_TrafficAvoidanceSystemOwnAirplane}
      */
@@ -71,6 +77,7 @@ class WT_TrafficAvoidanceSystem {
     }
 
     /**
+     * An array of intruders currently being tracked by this traffic avoidance system.
      * @readonly
      * @type {WT_ReadOnlyArray<WT_TrafficAvoidanceSystemIntruder>}
      */
@@ -93,14 +100,20 @@ class WT_TrafficAvoidanceSystem {
     }
 
     /**
-     *
-     * @param {eventType:WT_TrafficAvoidanceSystem.IntruderEventType}
-     * @param {(eventType:WT_TrafficAvoidanceSystem.IntruderEventType, intruder:WT_TrafficAvoidanceSystemIntruder) => void} listener
+     * Adds a listener to this traffic avoidance system which will be called on certain events. Supported events
+     * include addition of a new intruder, update of an existing intruder, and removal of an intruder.
+     * @param {eventType:WT_TrafficAvoidanceSystem.IntruderEventType} eventType - the type of event to which the listener should respond.
+     * @param {(eventType:WT_TrafficAvoidanceSystem.IntruderEventType, intruder:WT_TrafficAvoidanceSystemIntruder) => void} listener - a listener function.
      */
     addIntruderListener(eventType, listener) {
         this._listeners[eventType].push(listener);
     }
 
+    /**
+     * Removes a listener from this traffic avoidance system.
+     * @param {eventType:WT_TrafficAvoidanceSystem.IntruderEventType} eventType - the type of event to which the listener was bound.
+     * @param {(eventType:WT_TrafficAvoidanceSystem.IntruderEventType, intruder:WT_TrafficAvoidanceSystemIntruder) => void} listener - a listener function.
+     */
     removeIntruderListener(eventType, listener) {
         let index = this._listeners[eventType].indexOf(listener);
         if (index >= 0) {
@@ -112,6 +125,10 @@ class WT_TrafficAvoidanceSystem {
         this._listeners[eventType].forEach(listener => listener(eventType, intruder));
     }
 
+    /**
+     * Updates this traffic avoidance system. The TCA and related data for each intruder is recalculated based on the
+     * most recent available data.
+     */
     update() {
         let time = this._tempSecond.set(SimVar.GetSimVarValue("E:ZULU TIME", "seconds")).readonly();
         this._ownAirplane.update(time);
@@ -134,6 +151,9 @@ WT_TrafficAvoidanceSystem.OPTION_DEFS = {
     minimumGroundSpeed: {default: WT_Unit.KNOT.createNumber(30)}
 };
 
+/**
+ * A traffic avoidance system's own airplane.
+ */
 class WT_TrafficAvoidanceSystemOwnAirplane {
     /**
      * @param {WT_PlayerAirplane} airplane - the airplane.
@@ -185,6 +205,7 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The time at which this airplane was last updated.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -193,6 +214,7 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The position of this airplane at the time of the last update.
      * @readonly
      * @type {WT_GeoPointReadOnly}
      */
@@ -201,6 +223,7 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The altitude of this airplane at the time of the last update.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -209,6 +232,7 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The true ground track of this airplane at the time of the last update.
      * @readonly
      * @type {Number}
      */
@@ -217,6 +241,7 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The ground speed of this airplane at the time of the last update.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -225,6 +250,7 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The vertical speed of this airplane at the time of the last update.
      * @readonly
      * @type {WT_NumberUnitReadOnly}
      */
@@ -233,6 +259,12 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The 3D position vector of this airplane at the time of the last update. By definition, this vector always points
+     * to the origin. Each component is expressed in units of meters. The coordinate system is an Euclidean
+     * approximation of the geodetic space around this airplane such that the z-coordinate represents orthometric
+     * height (the reference datum being the altitude of this airplane) and the x- and y-coordinates represent an
+     * equirectangular projection of latitude and longitude, with the positive x-axis pointing due east, the
+     * positive y-axis pointing due south, and x = 0, y = 0 located at this aircraft's position.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -241,6 +273,8 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
     }
 
     /**
+     * The 3D velocity vector of this airplane at the time of the last update. Each component is expressed in units of
+     * meters per second. The coordinate system is defined the same as for position vectors.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -262,6 +296,10 @@ class WT_TrafficAvoidanceSystemOwnAirplane {
         this._velocityVector.set(horizontalVelocity.x, horizontalVelocity.y, verticalVelocity);
     }
 
+    /**
+     * Updates this airplane's position and velocity data.
+     * @param {WT_NumberUnit} time - the current time.
+     */
     update(time) {
         this._updateParameters();
         this._updateVectors();
@@ -342,6 +380,11 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
+     * The 3D position vector of this intruder. Each component is expressed in units of meters. The coordinate system
+     * is an Euclidean approximation of the geodetic space around own airplane such that the z-coordinate represents
+     * orthometric height (the reference datum being the altitude of own airplane) and the x- and y-coordinates
+     * represent an equirectangular projection of latitude and longitude, with the positive x-axis pointing due east,
+     * the positive y-axis pointing due south, and x = 0, y = 0 located at own aircraft's position.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -350,6 +393,8 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
+     * The 3D velocity vector of this intruder. Each component is expressed in units of meters per second. The
+     * coordinate system is defined the same as for position vectors.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -358,7 +403,7 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
-     * The position of this intruder relative to own airplane. Expressed as a 3D vector in units of meters.
+     * The 3D position vector of this intruder relative to own airplane.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -367,7 +412,7 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
-     * The velocity of this intruder relative to own airplane. Expressed as a 3D vector in units of meters per second.
+     * The 3D velocity vector of this intruder relative to own airplane.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -396,9 +441,7 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
-     * The predicted displacement vector from own airplane to this intruder at time of closest approach. The coordinate
-     * system is defined in units of meters, with the positive x axis pointing due east, the positive y axis pointing
-     * due south, and the positive z axis pointing upwards.
+     * The predicted 3D displacement vector from own airplane to this intruder at time of closest approach.
      * @readonly
      * @type {WT_GVector3ReadOnly}
      */
@@ -433,10 +476,9 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
-     * Calculates the predicted displacement vector from own airplane to this intruder at a specified time based on the
-     * most recent available data. The coordinate system is defined in units of meters, with the positive x axis
-     * pointing due east, the positive y axis pointing due south, and the positive z axis pointing upwards. If
-     * insufficient data is available to calculate the prediction, null will be returned.
+     * Calculates the predicted 3D displacement vector from own airplane to this intruder at a specified time based on
+     * the most recent available data. If insufficient data is available to calculate the prediction, null will be
+     * returned.
      * @param {WT_NumberUnit} time - the time at which to calculate the displacement.
      * @param {WT_GVector3} [reference] - a WT_GVector3 object in which to store the result. If not supplied, a new
      *                                    object will be created.
@@ -635,11 +677,12 @@ class WT_TrafficAvoidanceSystemIntruder {
     }
 
     /**
-     *
-     * @param {WT_NumberUnitReadOnly} time
-     * @param {WT_TrafficAvoidanceSystemOwnAirplane} ownAirplane
-     * @param {WT_NumberUnitReadOnly} lookaheadTime
-     * @param {WT_NumberUnitReadOnly} minimumGroundSpeed
+     * Updates this intruder's predicted TCA and related data.
+     * @param {WT_NumberUnitReadOnly} time - the current time.
+     * @param {WT_TrafficAvoidanceSystemOwnAirplane} ownAirplane - own airplane.
+     * @param {WT_NumberUnitReadOnly} lookaheadTime - the maximum lookahead time to calculate TCA.
+     * @param {WT_NumberUnitReadOnly} minimumGroundSpeed - the minimum ground speed this intruder must have to make
+     *                                                     a valid prediction of TCA.
      */
     update(time, ownAirplane, lookaheadTime, minimumGroundSpeed) {
         this._updateVectors(time, ownAirplane, minimumGroundSpeed);
