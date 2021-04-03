@@ -1383,7 +1383,7 @@ class WT_VerticalAutopilot {
                 if (this._altInterceptValues !== false) {
                     this._altInterceptValues = false;
                 }
-                const interceptMargin = 0.125 * Math.abs(this.verticalSpeed);
+                const interceptMargin = 0.18 * Math.abs(this.verticalSpeed);
                 const altCaptureArmed = this.altCapArm(isClimb);
                 if (altCaptureArmed) {
                     switch(altCaptureArmed.mode) {
