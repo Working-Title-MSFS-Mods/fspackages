@@ -1175,10 +1175,10 @@ class WT_VerticalAutopilot {
             case VerticalNavModeState.ALTCAP:
             case VerticalNavModeState.ALTSCAP:
             case VerticalNavModeState.ALTVCAP:
-                const interceptMargin = 0.125 * Math.abs(this.verticalSpeed);
-                if (isClimb && Math.abs(targetAltitude - this.indicatedAltitude) < interceptMargin) {
+                const interceptMargin = this._priorVerticalModeState && this._priorVerticalModeState.interceptMargin ? this._priorVerticalModeState.interceptMargin : false;
+                if (interceptMargin && isClimb && Math.abs(targetAltitude - this.indicatedAltitude) < interceptMargin) {
                     return false;
-                } else if (!isClimb && Math.abs(this.indicatedAltitude - targetAltitude) < interceptMargin) {
+                } else if (interceptMargin && !isClimb && Math.abs(this.indicatedAltitude - targetAltitude) < interceptMargin) {
                     return false;
                 }
                 if (isClimb && this.indicatedAltitude < targetAltitude) {
@@ -1268,10 +1268,11 @@ class WT_VerticalAutopilot {
         }
     }
 
-    storePriorVerticalModeState(mode) {
+    storePriorVerticalModeState(mode, interceptMargin) {
         const priorVerticalModeState = {
             mode: mode,
-            value: undefined
+            value: undefined,
+            interceptMargin: interceptMargin
         };
         switch(mode) {
             case VerticalNavModeState.VS:
@@ -1366,7 +1367,7 @@ class WT_VerticalAutopilot {
                 // console.log("this.altCapArm(isClimb) " + this.altCapArm(isClimb));
                 const altCaptureValidate = this.altCapArm(isClimb);
                 if (altCaptureValidate === false) {
-                    console.log("setting pitch with altCaptureValidate === false");
+                    console.log("alt cap booken");
                     this.setPriorVerticalModeState();
                     break;
                 }
@@ -1396,10 +1397,10 @@ class WT_VerticalAutopilot {
                                 this.altitudeArmedState = VerticalNavModeState.ALTS;
                             }
                             if (isClimb && Math.abs(altCaptureArmed.altitude - this.indicatedAltitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode);
+                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
                                 this.verticalMode = VerticalNavModeState.ALTSCAP
                             } else if (!isClimb && Math.abs(this.indicatedAltitude - altCaptureArmed.altitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode);
+                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
                                 this.verticalMode = VerticalNavModeState.ALTSCAP
                             }
                             break;
@@ -1408,10 +1409,10 @@ class WT_VerticalAutopilot {
                                 this.altitudeArmedState = VerticalNavModeState.ALTV;
                             }
                             if (isClimb && Math.abs(altCaptureArmed.altitude - this.indicatedAltitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode);
+                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
                                 this.verticalMode = VerticalNavModeState.ALTVCAP
                             } else if (!isClimb && Math.abs(this.indicatedAltitude - altCaptureArmed.altitude) < interceptMargin) {
-                                this.storePriorVerticalModeState(this.verticalMode);
+                                this.storePriorVerticalModeState(this.verticalMode, interceptMargin);
                                 this.verticalMode = VerticalNavModeState.ALTVCAP
                             }
                             break;
