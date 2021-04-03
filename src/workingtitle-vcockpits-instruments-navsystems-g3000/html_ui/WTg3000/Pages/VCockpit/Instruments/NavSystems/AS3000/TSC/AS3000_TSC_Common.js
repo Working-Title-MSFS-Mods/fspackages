@@ -128,6 +128,16 @@ class AS3000_TSC extends NavSystemTouch {
         return AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT.has(SimVar.GetSimVarValue("ATC MODEL", "string"));
     }
 
+    _defineSoftKeys() {
+        this.pageTitle = this.getChildById("PageTitle");
+        this.pfdSoftkey = this.getChildById("SoftKey_2");
+        this.mfdSoftkey = this.getChildById("SoftKey_3");
+        this.navcomSoftkey = this.getChildById("SoftKey_4");
+    }
+
+    _defineLabelBar() {
+    }
+
     _createSpeedBugsPage() {
     }
 
@@ -137,22 +147,8 @@ class AS3000_TSC extends NavSystemTouch {
     _createTrafficSettingsPage(halfPaneID) {
     }
 
-    _initMFDPaneControlID() {
-        this._mfdPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
-    }
-
-    _initMFDPaneSelectDisplay() {
-        this._mfdPaneSelectDisplay = this.getChildById("Softkey_1_Container").querySelector(`tsc-mfdpaneselectdisplay`);
-        this._mfdPaneSelectDisplay.selectColor = this.urlConfig.index === 1 ? WT_G3x5_MFDMainPane.LEFT_TSC_COLOR : WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR;
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
+    _initPages() {
         this.pagesContainer = this.getChildById("PagesDisplay");
-        this.pageTitle = this.getChildById("PageTitle");
-        this.pfdSoftkey = this.getChildById("SoftKey_2");
-        this.mfdSoftkey = this.getChildById("SoftKey_3");
-        this.navcomSoftkey = this.getChildById("SoftKey_4");
 
         this._mfdPagesLeft = {};
         this._mfdPagesRight = {};
@@ -204,15 +200,13 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
             ]),
         ];
-        this.navButtons = [
-            new AS3000_TSC_NavButton("NavBar_1", this),
-            new AS3000_TSC_NavButton("NavBar_2", this),
-            new AS3000_TSC_NavButton("NavBar_3", this),
-            new AS3000_TSC_NavButton("NavBar_4", this),
-            new AS3000_TSC_NavButton("NavBar_5", this),
-            new AS3000_TSC_NavButton("NavBar_6", this)
-        ];
-        this.transponderWindow = new NavSystemElementContainer("Transponder", "TransponderWindow", new AS3000_TSC_Transponder());
+    }
+
+    _createTransponderPopUp() {
+    }
+
+    _initPopUpWindows() {
+        this.transponderWindow = new NavSystemElementContainer("Transponder", "TransponderWindow", this._createTransponderPopUp());
         this.transponderWindow.setGPS(this);
         this.audioRadioWindow = new NavSystemElementContainer("Audio & Radios", "AudioRadiosWindow", new AS3000_TSC_AudioRadios());
         this.audioRadioWindow.setGPS(this);
@@ -246,6 +240,36 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
+    }
+
+    _initNavButtons() {
+        this.navButtons = [
+            new AS3000_TSC_NavButton("NavBar_1", this),
+            new AS3000_TSC_NavButton("NavBar_2", this),
+            new AS3000_TSC_NavButton("NavBar_3", this),
+            new AS3000_TSC_NavButton("NavBar_4", this),
+            new AS3000_TSC_NavButton("NavBar_5", this),
+            new AS3000_TSC_NavButton("NavBar_6", this)
+        ];
+    }
+
+    _initMFDPaneControlID() {
+        this._mfdPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
+    }
+
+    _initMFDPaneSelectDisplay() {
+        this._mfdPaneSelectDisplay = this.getChildById("Softkey_1_Container").querySelector(`tsc-mfdpaneselectdisplay`);
+        this._mfdPaneSelectDisplay.selectColor = this.urlConfig.index === 1 ? WT_G3x5_MFDMainPane.LEFT_TSC_COLOR : WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._defineSoftKeys();
+        this._defineLabelBar();
+        this._initPages();
+        this._initPopUpWindows();
+        this._initNavButtons();
 
         this._initMFDPaneControlID();
         this._initMFDPaneSelectDisplay();
@@ -2286,8 +2310,15 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.inputIndex = -1;
         this.identTime = 0;
     }
-    init(root) {
+
+    _defineXPDRChildren() {
         this.XPDRIdent = this.gps.getChildById("XPDRIdent");
+        this._xpdrCodeButton = this.gps.getChildById("XPDR");
+        this._xpdrModeDisplay = this._xpdrCodeButton.getElementsByClassName("topText")[0];
+        this._xpdrCodeDisplay = this._xpdrCodeButton.getElementsByClassName("mainNumber")[0];
+    }
+
+    _defineComsChildren() {
         this.Com1Active = this.gps.getChildById("Com1Active");
         this.Com1Active_Freq = this.Com1Active.getElementsByClassName("mainNumber")[0];
         this.Com1Stby = this.gps.getChildById("Com1Stby");
@@ -2296,19 +2327,9 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.Com2Active_Freq = this.Com2Active.getElementsByClassName("mainNumber")[0];
         this.Com2Stby = this.gps.getChildById("Com2Stby");
         this.Com2Stby_Freq = this.Com2Stby.getElementsByClassName("mainNumber")[0];
-        this.XPDR = this.gps.getChildById("XPDR");
-        this.XPDRStatus = this.XPDR.getElementsByClassName("topText")[0];
-        this.XPDRCode = this.XPDR.getElementsByClassName("mainNumber")[0];
-        this.PilotIsolate = this.gps.getChildById("PilotIsolate");
-        this.Mic_Button = this.gps.getChildById("Mic");
-        this.Mon_Button = this.gps.getChildById("Mon");
-        this.Mic_Com1_Status = this.gps.getChildById("Com1_MicActive");
-        this.Mic_Com2_Status = this.gps.getChildById("Com2_MicActive");
-        this.Mon_Com1_Status = this.gps.getChildById("Com1_MonActive");
-        this.Mon_Com2_Status = this.gps.getChildById("Com2_MonActive");
-        this.PilotMusic = this.gps.getChildById("PilotMusic");
-        this.AudioRadio = this.gps.getChildById("AudioRadio");
-        this.Intercom = this.gps.getChildById("Intercom");
+    }
+
+    _defineKeyboardChildren() {
         this.NKFindButton = this.gps.getChildById("NKFindButton");
         this.NKBkspButton = this.gps.getChildById("NKBkspButton");
         this.NK_1 = this.gps.getChildById("NK_1");
@@ -2323,10 +2344,53 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.NKPlayButton = this.gps.getChildById("NKPlayButton");
         this.NK_0 = this.gps.getChildById("NK_0");
         this.NKXferButton = this.gps.getChildById("NKXferButton");
+    }
+
+    _defineMonitorsChildren() {
+        this.PilotIsolate = this.gps.getChildById("PilotIsolate");
+        this.Mic_Button = this.gps.getChildById("Mic");
+        this.Mon_Button = this.gps.getChildById("Mon");
+        this.Mic_Com1_Status = this.gps.getChildById("Com1_MicActive");
+        this.Mic_Com2_Status = this.gps.getChildById("Com2_MicActive");
+        this.Mon_Com1_Status = this.gps.getChildById("Com1_MonActive");
+        this.Mon_Com2_Status = this.gps.getChildById("Com2_MonActive");
+    }
+
+    _defineAudioRadio() {
+        this.AudioRadio = this.gps.getChildById("AudioRadio");
+    }
+
+    _defineIntercom() {
+        this.Intercom = this.gps.getChildById("Intercom");
+    }
+
+    _defineMusic() {
+        this.PilotMusic = this.gps.getChildById("PilotMusic");
+    }
+
+    _defineChildren() {
+        this._defineXPDRChildren();
+        this._defineComsChildren();
+        this._defineKeyboardChildren();
+        this._defineMonitorsChildren();
+        this._defineAudioRadio();
+        this._defineIntercom();
+        this._defineMusic();
+    }
+
+    _initXPDRButtons() {
+        this.gps.makeButton(this._xpdrCodeButton, this.openTransponder.bind(this));
+        this.gps.makeButton(this.XPDRIdent, this.xpdrIdent.bind(this));
+    }
+
+    _initComsButtons() {
         this.gps.makeButton(this.Com1Stby, this.setSelectedCom.bind(this, 1));
         this.gps.makeButton(this.Com2Stby, this.setSelectedCom.bind(this, 2));
         this.gps.makeButton(this.Com1Active, this.swapCom1.bind(this));
         this.gps.makeButton(this.Com2Active, this.swapCom2.bind(this));
+    }
+
+    _initKeyboardButtons() {
         this.gps.makeButton(this.NK_0, this.onDigitPress.bind(this, 0));
         this.gps.makeButton(this.NK_1, this.onDigitPress.bind(this, 1));
         this.gps.makeButton(this.NK_2, this.onDigitPress.bind(this, 2));
@@ -2339,16 +2403,35 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.gps.makeButton(this.NK_9, this.onDigitPress.bind(this, 9));
         this.gps.makeButton(this.NKBkspButton, this.backspace.bind(this));
         this.gps.makeButton(this.NKXferButton, this.swapSelectedCom.bind(this));
-        this.gps.makeButton(this.XPDR, this.openTransponder.bind(this));
-        this.gps.makeButton(this.XPDRIdent, this.xpdrIdent.bind(this));
-        this.gps.makeButton(this.AudioRadio, this.openAudioRadios.bind(this));
+    }
+
+    _initMonitorsButtons() {
         this.gps.makeButton(this.Mic_Button, this.MicSwitch.bind(this));
         this.gps.makeButton(this.Mon_Button, this.MonSwitch.bind(this));
     }
+
+    _initAudioRadioButton() {
+        this.gps.makeButton(this.AudioRadio, this.openAudioRadios.bind(this));
+    }
+
+    _initButtons() {
+        this._initXPDRButtons();
+        this._initComsButtons();
+        this._initKeyboardButtons();
+        this._initMonitorsButtons();
+        this._initAudioRadioButton();
+    }
+
+    init(root) {
+        this._defineChildren();
+        this._initButtons();
+    }
+
     onEnter() {
         this.setSoftkeysNames();
     }
-    onUpdate(_deltaTime) {
+
+    _updateComs() {
         let com1Active = this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3);
         let com1Stby;
         if (this.selectedCom != 1 || this.inputIndex == -1) {
@@ -2391,36 +2474,7 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
             this.Com1Stby.setAttribute("state", "none");
             this.Com2Stby.setAttribute("state", "Selected");
         }
-        let xpdrState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
-        if (this.xpdrState != xpdrState) {
-            this.xpdrState = xpdrState;
-            switch (xpdrState) {
-                case 0:
-                    this.XPDRStatus.innerHTML = "Off";
-                    this.XPDR.setAttribute("state", "");
-                    break;
-                case 1:
-                    this.XPDRStatus.innerHTML = "STBY";
-                    this.XPDR.setAttribute("state", "");
-                    break;
-                case 2:
-                    this.XPDRStatus.innerHTML = "TEST";
-                    this.XPDR.setAttribute("state", "");
-                    break;
-                case 3:
-                    this.XPDRStatus.innerHTML = "ON";
-                    this.XPDR.setAttribute("state", "Green");
-                    break;
-                case 4:
-                    this.XPDRStatus.innerHTML = "ALT";
-                    this.XPDR.setAttribute("state", "Green");
-                    break;
-            }
-        }
-        let transponderCode = ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
-        if (transponderCode != this.XPDRCode.innerHTML) {
-            this.XPDRCode.innerHTML = transponderCode;
-        }
+
         let comSpacingMode = SimVar.GetSimVarValue("COM SPACING MODE:" + this.selectedCom, "Enum");
         if (comSpacingMode == 0 && this.currentInput % 25 != 0) {
             this.currentInput -= this.currentInput % 25;
@@ -2428,6 +2482,45 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         if (comSpacingMode == 0 && this.inputIndex > 5) {
             this.inputIndex = 5;
         }
+    }
+
+    _updateXPDRMode() {
+        let xpdrState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
+        if (this.xpdrState != xpdrState) {
+            this.xpdrState = xpdrState;
+            switch (xpdrState) {
+                case 0:
+                    this._xpdrModeDisplay.innerHTML = "Off";
+                    this._xpdrCodeButton.setAttribute("state", "");
+                    break;
+                case 1:
+                    this._xpdrModeDisplay.innerHTML = "STBY";
+                    this._xpdrCodeButton.setAttribute("state", "");
+                    break;
+                case 2:
+                    this._xpdrModeDisplay.innerHTML = "TEST";
+                    this._xpdrCodeButton.setAttribute("state", "");
+                    break;
+                case 3:
+                    this._xpdrModeDisplay.innerHTML = "ON";
+                    this._xpdrCodeButton.setAttribute("state", "Green");
+                    break;
+                case 4:
+                    this._xpdrModeDisplay.innerHTML = "ALT";
+                    this._xpdrCodeButton.setAttribute("state", "Green");
+                    break;
+            }
+        }
+    }
+
+    _updateXPDRCode() {
+        let transponderCode = ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
+        if (transponderCode != this._xpdrCodeDisplay.innerHTML) {
+            this._xpdrCodeDisplay.innerHTML = transponderCode;
+        }
+    }
+
+    _updateXPDRIdent() {
         if (this.identTime > 0) {
             this.identTime -= this.gps.deltaTime;
             Avionics.Utils.diffAndSetAttribute(this.XPDRIdent, "state", "Active");
@@ -2435,12 +2528,27 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         else {
             Avionics.Utils.diffAndSetAttribute(this.XPDRIdent, "state", "");
         }
+    }
+
+    _updateXPDR() {
+        this._updateXPDRMode();
+        this._updateXPDRCode();
+        this._updateXPDRIdent();
+    }
+
+    _updateMonitors() {
         Avionics.Utils.diffAndSetAttribute(this.Mic_Com1_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "visible" : "hidden");
         Avionics.Utils.diffAndSetAttribute(this.Com1Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.Mic_Com2_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "visible" : "hidden");
         Avionics.Utils.diffAndSetAttribute(this.Com2Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.Mon_Com1_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:1", "Bool") ? "visible" : "hidden");
         Avionics.Utils.diffAndSetAttribute(this.Mon_Com2_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:2", "Bool") ? "visible" : "hidden");
+    }
+
+    onUpdate(_deltaTime) {
+        this._updateComs();
+        this._updateXPDR();
+        this._updateMonitors();
     }
     onExit() {
         this.gps.deactivateNavButton(1);

@@ -6,6 +6,12 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
 
     get templateID() { return "AS3000_TSC_Vertical"; }
 
+    _defineLabelBar() {
+        this.topKnobText = this.getChildById("SoftKey_1");
+        this.middleKnobText = this.getChildById("SoftKey_2");
+        this.bottomKnobText = this.getChildById("SoftKey_3");
+    }
+
     _createSpeedBugsPage() {
         return new WT_G5000_TSCSpeedBugs("PFD");
     }
@@ -18,12 +24,25 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", instrumentID, halfPaneID);
     }
 
+    _createTransponderPopUp() {
+        return new WT_G5000_TSCTransponderCode();
+    }
+
+    _initPopUpWindows() {
+        super._initPopUpWindows();
+
+        this.transponderMode = new NavSystemElementContainer("Transponder Mode", "TransponderMode", new WT_G5000_TSCTransponderMode());
+        this.transponderMode.setGPS(this);
+    }
+
+    _initNavCom() {
+        this.addIndependentElementContainer(new NavSystemElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
+    }
+
     connectedCallback() {
         super.connectedCallback();
-        this.topKnobText = this.getChildById("SoftKey_1");
-        this.middleKnobText = this.getChildById("SoftKey_2");
-        this.bottomKnobText = this.getChildById("SoftKey_3");
-        this.addIndependentElementContainer(new NavSystemElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
+
+        this._initNavCom();
         this.getElementOfType(AS3000_TSC_ActiveFPL).setArrowSizes(5, 20, 10, 4, 8);
     }
 
@@ -79,6 +98,72 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
 }
 
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
+    _defineXPDRChildren() {
+        this._xpdrModeButton = this.gps.getChildById("XPDRMode");
+        this._xpdrCodeButton = new WT_CachedElement(this.gps.getChildById("XPDRCode"));
+        this._xpdrModeDisplay = new WT_CachedElement(this._xpdrModeButton.getElementsByClassName("mainText")[1]);
+        this._xpdrCodeDisplay = this._xpdrCodeButton.element.getElementsByClassName("mainNumber")[0];
+    }
+
+    _initXPDRButtons() {
+        this.gps.makeButton(this._xpdrCodeButton.element, this.openTransponder.bind(this));
+        this.gps.makeButton(this._xpdrModeButton, this._onXPDRModeButtonPressed.bind(this));
+    }
+
+    _initXPDRTCASModeSettingListener() {
+        this.gps.transponderMode.element.tcasModeSetting.addListener(this._onXPDRTCASModeSettingChanged.bind(this));
+        this._xpdrTCASMode = this.gps.transponderMode.element.tcasModeSetting.getValue();
+    }
+
+    init(root) {
+        super.init(root);
+
+        this._initXPDRTCASModeSettingListener();
+    }
+
+    _onXPDRTCASModeSettingChanged(setting, newValue, oldValue) {
+        this._xpdrTCASMode = newValue;
+    }
+
+    _updateXPDRMode() {
+        let xpdrMode = this.gps.airplane.navCom.getTransponder(1).mode();
+
+        let text;
+        switch (xpdrMode) {
+            case WT_AirplaneTransponder.Mode.ALT:
+                switch (this._xpdrTCASMode) {
+                    case WT_G5000_TransponderTCASModeSetting.Mode.AUTO:
+                        text = "AUTO";
+                        break;
+                    case WT_G5000_TransponderTCASModeSetting.Mode.TA_ONLY:
+                        text = "TA ONLY";
+                        break;
+                    default:
+                        text = "ALT";
+                }
+                this._xpdrCodeButton.setAttribute("mode", "alt");
+                break;
+            case WT_AirplaneTransponder.Mode.ON:
+                text = "ON";
+                this._xpdrCodeButton.setAttribute("mode", "on");
+                break;
+            default:
+                text = "STBY";
+                this._xpdrCodeButton.setAttribute("mode", "standby");
+        }
+        this._xpdrModeDisplay.textContent = text;
+    }
+
+    _updateXPDRCode() {
+        let transponderCode = ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
+        if (transponderCode != this._xpdrCodeDisplay.textContent) {
+            this._xpdrCodeDisplay.textContent = transponderCode;
+        }
+    }
+
+    _updateXPDRIdent() {
+    }
+
     setSelectedCom(id) {
         let title = `COM${id} Standby`;
         let activeFreqSimVar = `COM ACTIVE FREQUENCY:${id}`;
@@ -121,7 +206,22 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         }
     }
 
+    _onXPDRModeButtonPressed() {
+        if (this.gps.popUpElement === this.gps.transponderMode.element) {
+            return;
+        }
+
+        let homePageGroup = this.gps.getCurrentPageGroup().name;
+        let homePageName = homePageGroup + " Home";
+        this.gps.transponderMode.element.setContext({homePageGroup: homePageGroup, homePageName: homePageName});
+        this.gps.switchToPopUpPage(this.gps.transponderMode);
+    }
+
     openTransponder() {
+        if (this.gps.popUpElement === this.gps.transponderWindow.element) {
+            return;
+        }
+
         if (this.inputIndex != -1) {
             this.comFreqCancel();
         }
@@ -132,6 +232,10 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     }
 
     openAudioRadios() {
+        if (this.gps.popUpElement === this.gps.audioRadioWindow.element) {
+            return;
+        }
+
         if (this.inputIndex != -1) {
             this.comFreqCancel();
         }
@@ -139,6 +243,14 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         let homePageName = homePageGroup + " Home";
         this.gps.audioRadioWindow.element.setContext(homePageGroup, homePageName);
         this.gps.switchToPopUpPage(this.gps.audioRadioWindow);
+    }
+}
+
+class WT_G5000_TSCTransponderCode extends AS3000_TSC_Transponder {
+    _initModeButtons() {
+    }
+
+    _updateModeButtons() {
     }
 }
 

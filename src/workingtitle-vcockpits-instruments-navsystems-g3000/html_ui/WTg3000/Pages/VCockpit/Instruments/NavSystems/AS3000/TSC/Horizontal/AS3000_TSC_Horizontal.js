@@ -1,10 +1,19 @@
 class AS3000_TSC_Horizontal extends AS3000_TSC {
     get templateID() { return "AS3000_TSC_Horizontal"; }
 
-    connectedCallback() {
-        super.connectedCallback();
+    _defineLabelBar() {
         this.topKnobText = this.getChildById("SoftKey_1");
         this.bottomKnobText = this.getChildById("SoftKey_5");
+    }
+
+    _createTransponderPopUp() {
+        return new AS3000_TSC_Transponder();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._defineLabelBar();
     }
 
     parseXMLConfig() {
