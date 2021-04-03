@@ -764,7 +764,7 @@ class WT_BaseVnav {
     getDistanceToTarget() {
         let segment = this._verticalFlightPlanSegments.length - 1;
         const currentPathSegment = this._verticalFlightPlan[this.flightplan.activeWaypointIndex].segment;
-        if (currentPathSegment) {
+        if (currentPathSegment !== undefined) {
             segment = currentPathSegment;
         }
         const flightPathTarget = this._verticalFlightPlanSegments[segment].targetIndex;
