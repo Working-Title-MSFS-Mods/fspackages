@@ -234,7 +234,7 @@ WT_G5000_TSCTransponderModeModeHTMLElement.TEMPLATE.innerHTML = `
                 width: 100%;
                 height: var(--xpdrmode-mode-button-height, 3em);
                 transform: translateX(-50%);
-                margin-bottom: var(--xpdrmode-mode-button-margin-vertical, 0.1em);
+                margin-bottom: var(--xpdrmode-mode-button-margin-vertical, 0.2em);
             }
     </style>
     <div id="wrapper">
