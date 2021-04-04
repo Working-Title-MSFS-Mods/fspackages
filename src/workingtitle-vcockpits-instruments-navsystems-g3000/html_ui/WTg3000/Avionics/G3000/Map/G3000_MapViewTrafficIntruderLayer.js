@@ -56,8 +56,8 @@ class WT_G3000_MapViewTrafficIntruderView extends WT_G3x5_MapViewTrafficIntruder
     _updateVisibility(state, useOuterRangeMaxScale, showSymbol) {
         let isVisible = false;
         if (showSymbol) {
-            if (this.intruderEntry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY && useOuterRangeMaxScale) {
-                isVisible = true;
+            if (this.intruderEntry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
+                isVisible = useOuterRangeMaxScale || !this.isOffScale;
             } else {
                 let altitudeMeters = this.intruderEntry.intruder.relativePositionVector.z;
                 let isWithinAltitude = altitudeMeters <= state.model.traffic.altitudeRestrictionAbove.asUnit(WT_Unit.METER) && altitudeMeters >= -state.model.traffic.altitudeRestrictionBelow.asUnit(WT_Unit.METER);
