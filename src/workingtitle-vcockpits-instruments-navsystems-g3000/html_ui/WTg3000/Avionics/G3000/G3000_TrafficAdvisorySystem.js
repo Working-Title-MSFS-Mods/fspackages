@@ -34,6 +34,7 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
 
     onOptionChanged(option, oldValue, newValue) {
         switch (option) {
+            case "taHysteresis":
             case "proximityAdvisoryParams":
                 this._entryUpdateOptions[option] = newValue;
                 break;
@@ -60,6 +61,7 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     }
 }
 WT_G3000_TrafficAdvisorySystem.OPTION_DEFS = {
+    taHysteresis: {default: 2, auto: true, observed: true},
     proximityAdvisoryParams: {default: {
         horizontalSeparation: WT_Unit.NMILE.createNumber(6),
         verticalSeparation: WT_Unit.FOOT.createNumber(1200)
@@ -85,6 +87,7 @@ WT_G3000_TrafficAdvisorySystem.AlertLevel = {
 /**
  * @typedef WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions
  * @property {WT_G5000_TCASII.OperatingMode} operatingMode
+ * @property {Number} taHysteresis
  * @property {{horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} proximityAdvisoryParams
  */
 
@@ -130,6 +133,8 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
         this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.UNKNOWN;
         this._lastHorizontalSeparation = WT_Unit.NMILE.createNumber(0);
         this._lastVerticalSeparation = WT_Unit.FOOT.createNumber(0);
+
+        this._hysteresisCounter = 0;
     }
 
     /**
@@ -144,21 +149,47 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
      *
      * @param {WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions} options
      */
+    _updateNonTAAlertLevel(options) {
+        this.intruder.predictSeparation(this.intruder.lastUpdatedTime, this._lastHorizontalSeparation, this._lastVerticalSeparation);
+        if (this._lastHorizontalSeparation.compare(options.proximityAdvisoryParams.horizontalSeparation) <= 0 && this._lastVerticalSeparation.compare(options.proximityAdvisoryParams.verticalSeparation) <= 0) {
+            this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.PROXIMITY_ADVISORY;
+        } else {
+            this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.NON_THREAT;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions} options
+     */
     _updateAlertLevel(options) {
         if (!this.intruder.isPredictionValid) {
             this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.UNKNOWN;
             return;
         }
 
-        this.intruder.predictSeparation(this.intruder.lastUpdatedTime, this._lastHorizontalSeparation, this._lastVerticalSeparation);
+        let isTA = false;
         if (this.intruder.tcaNorm <= 1) {
+            if (this._alertLevel !== WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
+                if (++this._hysteresisCounter > options.taHysteresis) {
+                    isTA = true;
+                    this._hysteresisCounter = 0;
+                }
+            } else {
+                isTA = true;
+            }
+        } else if (this._alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
+            if (++this._hysteresisCounter > options.taHysteresis) {
+                this._hysteresisCounter = 0;
+            } else {
+                isTA = true;
+            }
+        }
+
+        if (isTA) {
             this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY;
         } else {
-            if (this._lastHorizontalSeparation.compare(options.proximityAdvisoryParams.horizontalSeparation) <= 0 && this._lastVerticalSeparation.compare(options.proximityAdvisoryParams.verticalSeparation) <= 0) {
-                this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.PROXIMITY_ADVISORY;
-            } else {
-                this._alertLevel = WT_G3000_TrafficAdvisorySystem.AlertLevel.NON_THREAT;
-            }
+            this._updateNonTAAlertLevel(options);
         }
     }
 
