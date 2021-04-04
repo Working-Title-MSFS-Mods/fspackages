@@ -29,8 +29,8 @@ class AS3000_TSC_Horizontal extends AS3000_TSC {
         return new WT_G3000_TSCPFDSettings("PFD", "PFD Home", "PFD");
     }
 
-    _createTrafficMapSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
-        return new WT_G3000_TSCTrafficMapSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, instrumentID, halfPaneID);
+    _createTrafficMapSettingsPage(homePageGroup, homePageName) {
+        return new WT_G3000_TSCTrafficMapSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID);
     }
 
     _createNavMapTrafficSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
