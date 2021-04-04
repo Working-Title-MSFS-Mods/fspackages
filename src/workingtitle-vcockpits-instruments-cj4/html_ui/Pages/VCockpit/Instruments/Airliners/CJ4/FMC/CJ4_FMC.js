@@ -243,7 +243,6 @@ class CJ4_FMC extends FMCMainDisplay {
 
         CJ4_FMC_InitRefIndexPage.ShowPage5(this);
 
-
         //Timer for periodic page refresh
         this._pageRefreshTimer = null;
 
