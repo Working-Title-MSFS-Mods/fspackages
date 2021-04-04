@@ -1579,6 +1579,20 @@ class WT_VerticalAutopilot {
                 isclimb: isClimb
             };
         }
+        else if (this._vnav._currentFlightSegment.type === SegmentType.Departure && this._vnav._activeConstraint && this._vnav._activeConstraint.index) {
+            constraintIndex = this._vnav._activeConstraint.index;
+            isClimb = true;
+            vnavWindowData = {
+                toddistance: "",
+                fpa: "",
+                descentrate: "",
+                constraintreal: constraintIndex ? this._vnav.allWaypoints[constraintIndex].ident : "",
+                constraintrealaltitude: constraintIndex ? this.buildConstraintText(this._vnav.allWaypoints[constraintIndex]) : "",
+                fptaDistance: constraintIndex ? this._vnav.allWaypoints[constraintIndex].cumulativeDistanceInFP - this._vnav._currentDistanceInFP : "",
+                isdirect: false,
+                isclimb: isClimb
+            };
+        }
         localStorage.setItem("VNAVWINDOWDATA", JSON.stringify(vnavWindowData));
     }
 }
