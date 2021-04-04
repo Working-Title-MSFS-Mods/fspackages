@@ -1206,7 +1206,7 @@ class WT_VerticalAutopilot {
         this._navModeSelector.checkVerticalSpeedActive();
         const deltaAlt = this.indicatedAltitude - targetAltitude;
         let setVerticalSpeed = 0;
-        const max = 500;
+        const max = 1000;
         const correction = Math.min(Math.max((10 * Math.abs(deltaAlt)), 100), max);
         if (deltaAlt > 10) {
             setVerticalSpeed = 0 - correction;
