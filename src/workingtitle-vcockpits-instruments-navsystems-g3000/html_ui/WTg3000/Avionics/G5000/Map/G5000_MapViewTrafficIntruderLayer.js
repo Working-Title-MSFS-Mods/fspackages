@@ -220,7 +220,7 @@ WT_G5000_MapViewTrafficIntruderHTMLElement.TEMPLATE.innerHTML = `
                 display: block;
             }
 
-            .alt {
+            #wrapper[show-label="true"] .alt {
                 position: absolute;
                 left: 50%;
                 transform: translateX(-50%);
