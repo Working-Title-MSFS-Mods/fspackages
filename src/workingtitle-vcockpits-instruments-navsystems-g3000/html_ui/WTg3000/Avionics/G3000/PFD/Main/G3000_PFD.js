@@ -9,6 +9,10 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
         return new WT_G3000_PFDInsetMap("PFD");
     }
 
+    _createTrafficInsetMap() {
+        return new WT_G3000_PFDTrafficInsetMapContainer("PFD");
+    }
+
     _createApproachNavLoader() {
         return new WT_G3000_ApproachNavLoader(this.airplane);
     }
@@ -35,6 +39,12 @@ class WT_G3000_PFD extends WT_G3x5_PFD {
 class WT_G3000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
     _createNavMap() {
         return new WT_G3000_NavMap(this.instrumentID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.unitsSettingModel, this.instrument.citySearcher, new WT_MapViewBorderData(), null, null, this.instrument.trafficSystem, WT_G3x5_PFDInsetMap.LAYER_OPTIONS);
+    }
+}
+
+class WT_G3000_PFDTrafficInsetMapContainer extends WT_G3x5_PFDTrafficInsetMapContainer {
+    _createTrafficMap() {
+        return new WT_G3000_PFDTrafficInsetMap(this.instrument.airplane, this.instrument.trafficSystem);
     }
 }
 
@@ -175,7 +185,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
             new WT_G3000_PFDSoftKeyElement("Map Range&nbsp−", this._changeMapRange.bind(this, -1), null, null, this._getInsetMapSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("Map Range&nbsp+", this._changeMapRange.bind(this, 1), null, null, this._getInsetMapSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("PFD Map Settings", this._switchSoftkeyMenu.bind(this, this._pfdMapMenu)),
-            new WT_G3000_PFDSoftKeyElement("Traffic Inset", null, this._constElement.bind(this, false)),
+            new WT_G3000_PFDSoftKeyElement("Traffic Inset", this._toggleTrafficInsetMap.bind(this), this._trafficInsetMapCompare.bind(this, true)),
             new WT_G3000_PFDSoftKeyElement("PFD Settings", this._switchSoftkeyMenu.bind(this, this._pfdMenu)),
             new WT_G3000_PFDSoftKeyElement("OBS"),
             new WT_G3000_PFDSoftKeyElement("Active&nbsp;NAV", this.gps.computeEvent.bind(this.gps, "SoftKey_CDI"), null, this._getNavSourceValue.bind(this)),
@@ -203,7 +213,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
             new WT_G3000_PFDSoftKeyElement("Map Layout", this._switchSoftkeyMenu.bind(this, this._pfdMapLayoutMenu)),
             new WT_G3000_PFDSoftKeyElement("Detail", this._toggleDCLTR.bind(this), null, this._getDCLTRValue.bind(this), this._getInsetMapSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("Weather Legend"),
-            new WT_G3000_PFDSoftKeyElement("Traffic"),
+            new WT_G3000_PFDSoftKeyElement("Traffic", this._toggleInsetMapTraffic.bind(this), this._insetMapTrafficCompare.bind(this, true), null, this._getInsetMapSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("Storm-scope"),
             new WT_G3000_PFDSoftKeyElement("Terrain", this._toggleTerrain.bind(this), null, this._getTerrainValue.bind(this), this._getInsetMapSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("Data Link Settings"),
@@ -327,6 +337,15 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
         return this._innerMap.showSetting.getValue() === value;
     }
 
+    _toggleTrafficInsetMap() {
+        let setting = this.instrument.trafficInsetMap.showSetting;
+        setting.setValue(!setting.getValue());
+    }
+
+    _trafficInsetMapCompare(value) {
+        return this.instrument.trafficInsetMap.showSetting.getValue() === value;
+    }
+
     _toggleDCLTR() {
         if (this._innerMap.showSetting.getValue()) {
             let currentValue = this._innerMap.navMap.dcltrSetting.getValue();
@@ -349,6 +368,15 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
 
     _getTerrainValue() {
         return WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[this._innerMap.navMap.terrainSetting.getValue()];
+    }
+
+    _toggleInsetMapTraffic() {
+        let setting = this.instrument.insetMap.navMap.trafficShowSetting;
+        setting.setValue(!setting.getValue());
+    }
+
+    _insetMapTrafficCompare(value) {
+        return this.instrument.insetMap.navMap.trafficShowSetting.getValue() === value;
     }
 
     _toggleWX() {

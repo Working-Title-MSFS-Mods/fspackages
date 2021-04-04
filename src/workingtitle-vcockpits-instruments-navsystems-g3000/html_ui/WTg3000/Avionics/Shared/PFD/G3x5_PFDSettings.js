@@ -5,6 +5,13 @@ class WT_G3x5_PFDInsetMapShowSetting extends WT_DataStoreSetting {
 }
 WT_G3x5_PFDInsetMapShowSetting.KEY = "WT_InsetMap_Show";
 
+class WT_G3x5_PFDTrafficInsetMapShowSetting extends WT_DataStoreSetting {
+    constructor(controller, defaultValue = false, autoUpdate = false, isPersistent = true, key = WT_G3x5_PFDTrafficInsetMapShowSetting.KEY) {
+        super(controller, key, defaultValue, autoUpdate, isPersistent);
+    }
+}
+WT_G3x5_PFDTrafficInsetMapShowSetting.KEY = "WT_TrafficInsetMap_Show";
+
 class WT_G3x5_PFDSVTShowSetting extends WT_DataStoreSetting {
     constructor(controller, defaultValue = false, autoUpdate = false, isPersistent = true, key = WT_G3x5_PFDSVTShowSetting.KEY) {
         super(controller, key, defaultValue, autoUpdate, isPersistent);

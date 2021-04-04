@@ -10,7 +10,11 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
     }
 
     _createInsetMap() {
-        return new WT_G5000_PFDInsetMap("PFD", this.citySearcher);
+        return new WT_G5000_PFDInsetMap("PFD");
+    }
+
+    _createTrafficInsetMap() {
+        return new WT_G5000_PFDTrafficInsetMapContainer("PFD");
     }
 
     _createMainPage() {
@@ -56,9 +60,42 @@ class WT_G5000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
     }
 
     _changeMapRange(delta) {
-        let currentIndex = this.navMap.rangeSetting.getValue();
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        this.navMap.rangeSetting.setValue(newIndex);
+        let rangeSetting = this.navMap.rangeSetting;
+        let currentIndex = rangeSetting.getValue();
+        let newIndex = Math.max(Math.min(currentIndex + delta, rangeSetting.ranges.length - 1), 0);
+        rangeSetting.setValue(newIndex);
+    }
+
+    _handleZoomEvent(event) {
+        switch (event) {
+            case "RANGE_DEC":
+                this._changeMapRange(-1);
+                break;
+            case "RANGE_INC":
+                this._changeMapRange(1);
+                break;
+        }
+    }
+
+    onEvent(event) {
+        if (!this._isEnabled) {
+            return;
+        }
+
+        this._handleZoomEvent(event);
+    }
+}
+
+class WT_G5000_PFDTrafficInsetMapContainer extends WT_G3x5_PFDTrafficInsetMapContainer {
+    _createTrafficMap() {
+        return new WT_G5000_PFDTrafficInsetMap(this.instrument.airplane, this.instrument.trafficSystem);
+    }
+
+    _changeMapRange(delta) {
+        let rangeSetting = this.trafficMap.rangeSetting;
+        let currentIndex = rangeSetting.getValue();
+        let newIndex = Math.max(Math.min(currentIndex + delta, rangeSetting.ranges.length - 1), 0);
+        rangeSetting.setValue(newIndex);
     }
 
     _handleZoomEvent(event) {

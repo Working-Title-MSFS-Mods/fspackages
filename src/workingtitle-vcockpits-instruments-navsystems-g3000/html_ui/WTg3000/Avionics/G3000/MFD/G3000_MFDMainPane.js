@@ -21,7 +21,7 @@ class WT_G3000_MFDHalfPane extends WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3000_TrafficMap}
      */
-     _createTrafficMap(id, airplane, trafficSystem) {
-         return new WT_G3000_TrafficMap(id, airplane, trafficSystem);
+     _createTrafficMap(airplane, trafficSystem) {
+         return new WT_G3000_TrafficMap(airplane, trafficSystem);
     }
 }

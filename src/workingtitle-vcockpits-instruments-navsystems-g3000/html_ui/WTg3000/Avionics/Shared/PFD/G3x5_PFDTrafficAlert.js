@@ -28,6 +28,7 @@ class WT_G3x5_PFDTrafficAlert extends WT_G3x5_PFDElement {
     }
 
     _openTrafficInsetMap() {
+        this.instrument.trafficInsetMap.showSetting.setValue(true);
     }
 
     _enableNavMapTrafficOverlay() {
