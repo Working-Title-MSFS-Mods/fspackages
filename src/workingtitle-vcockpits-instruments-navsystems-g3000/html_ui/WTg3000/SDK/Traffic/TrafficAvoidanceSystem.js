@@ -130,7 +130,7 @@ class WT_TrafficAvoidanceSystem {
      * most recent available data.
      */
     update() {
-        let time = this._tempSecond.set(SimVar.GetSimVarValue("E:ZULU TIME", "seconds")).readonly();
+        let time = this._tempSecond.set(SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds")).readonly();
         this._ownAirplane.update(time);
         this._intruders.forEach(intruder => {
             intruder.update(time, this._ownAirplane, this.lookaheadTime, this.minimumGroundSpeed);
