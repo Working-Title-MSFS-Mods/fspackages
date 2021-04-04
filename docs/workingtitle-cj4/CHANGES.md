@@ -4,12 +4,17 @@ Welcome to the Working Title CJ4 v0.12.0. This version brings a boatload of bug 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
 
+GUIDE: https://docs.google.com/document/d/1qzxPMTSQRkvau8QOi7xUqNvjx9rbww_qHlso5AT5OnI
+
 ## Installation
 Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside the zip file to your MSFS Community folder. 
 
 **Important: We recommend that you fully delete the previous `workingtitle-aircraft-cj4` folder before copying this release.**
 
 # Changes
+
+## VNAV CLIMB
+VNAV Climb should now be working correctly - we know that we've warned many people in past versions to turn it off if it isn't working, but at this point we believe it works as designed. As a refresher, in the CJ4, VNAV in climb is NOT A PATH. It simply provides protection for the pilot to not exceed an AT or AT OR BELOW constraint in the departure procedure. The protection exists ONLY for waypoints that are loaded into the FMC as part of a DEPARTURE PROCEDURE. If you add other waypoints beyond the DP, those constraints will not be respected as climb constraints.
 
 ## AUTOPILOT/MODES
 - Enabled APPR mode for ILS when tuned in PFD even when an approach is not loaded in the FMC.
@@ -43,13 +48,13 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 - Fixed bug where the final approach fix calculation in LNAV sometimes chose the missed approach waypoint as the FAF.
 - Fixed bug that sometimes caused the departure runway to be undefined (black FMC screen) after flight plan import.
 - Adjusted DIRTO and Vertical Direct page and capabilities to fix bug not allowing a second vertical direct, not allowing a vertical direct to a current direct to waypoint.
-- Added ability to select any vertical waypoint with a constraint for a direct to; when constrants are A/B or A/ the altitude targeted will be the ABOVE value.
+- Added ability to select any vertical waypoint with a constraint for a direct to; when constraints are A/B or A/ the altitude targeted will be the ABOVE value.
 - Fixed bug causing VREF/VAPP display error in FMC in certain circumstances.
 - Removed departure runway altitude from flight plan and LEGS page.
 
 ## VNAV
 - Fixed bug that would prevent a climb in cases where there is no SID, but a STAR exists and has constraints.
-- Adjusted VNAV FMS Text window to display descent data as soon as the last departure constraint is passed, instead of waiting until the departure procedure has been completly flown.
+- Adjusted VNAV FMS Text window to display descent data as soon as the last departure constraint is passed, instead of waiting until the departure procedure has been completely flown.
 - Fixed bug with missing some A/B or A/ constraints in the first descent segment in some rare cases.
 - Changed behavior of path smoothing to cause the first descent segment to always be at the requested VPA in the VNAV DESCENT setup page.
 - Fixed bug with VNAV calculations after a DIR TO.
@@ -65,7 +70,7 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 - Adjusted behavior of the panel light knob to replicate the function of the knob in the real aircraft - full on is DAY setting, and this is the ONLY setting to get daytime charts.
 
 ## ⚠️ Known Issues
-* In the latest versions of Navigraph data, some "lettered" or non-runway-specific approachs now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
+* In the latest versions of Navigraph data, some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
 * Some external applications that use the GPS/Flight plan SimVars may not function correctly or as expected when FP Sync is off.
 * Loading and saving flights can have bad results.
 * Custom liveries can render FADEC inoperative if they ship with a panel.cfg. Painters should reference the new [REPAINT_README.md](https://github.com/Working-Title-MSFS-Mods/fspackages/blob/main/docs/workingtitle-cj4/REPAINT_README.md) file included in the docs folder of the Github repository.
