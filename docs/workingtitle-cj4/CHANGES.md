@@ -1,5 +1,5 @@
 # Working Title CJ4 v0.12.0
-Welcome to the Working Title CJ4 v0.12.0. This version brings a boatload of bug fixes and tweaks, incluing a new custom vertical autopilot that has allowed us to add altitude capture for PTCH mode, TO/GA modes and improve the altitude capture mechanics of the autopilot.
+Welcome to the Working Title CJ4 v0.12.0. This version brings a boatload of bug fixes and tweaks, including a new custom vertical autopilot that has allowed us to add altitude capture for PTCH mode, TO/GA modes and improve the altitude capture mechanics of the autopilot.
 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
