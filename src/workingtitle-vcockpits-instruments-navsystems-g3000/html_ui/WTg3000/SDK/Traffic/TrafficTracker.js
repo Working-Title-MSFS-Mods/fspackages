@@ -325,6 +325,16 @@ class WT_TrafficContact {
      */
     _updateGroundTrack(dt, newPosition) {
         let track = newPosition.bearingFrom(this._lastPosition);
+        // need to handle wraparounds
+        let last = this._groundSpeedSmoother.last();
+        let delta = track - last;
+        if (delta > 180) {
+            delta = delta - 360;
+        } else if (delta < -180) {
+            delta = delta + 360;
+        }
+        track = last + delta;
+
         this._computedGroundTrack = this._groundTrackSmoother.next(track, dt);
     }
 
