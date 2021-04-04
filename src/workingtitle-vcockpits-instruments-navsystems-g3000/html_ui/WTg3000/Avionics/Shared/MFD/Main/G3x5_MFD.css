@@ -256,9 +256,12 @@ as3000-mfd-element #Electricity map-view {
     }
     as3000-mfd-element #Electricity map-view map-view-pointerinfo {
         position: absolute;
-        top: 0;
         left: 10vh;
+        top: 0;
+        width: 24vh;
+        height: 4.5vh;
         margin: 1px;
+        font-weight: bold;
     }
     as3000-mfd-element #Electricity map-view .trafficStatusLayer {
         font-weight: bold;

@@ -44,18 +44,13 @@ class WT_MapViewPointerInfo extends HTMLElement {
             <style>
                 :host {
                     display: block;
-                    width: 24vh;
-                    height: 4.5vh;
                     background-color: black;
                     border: solid 1px white;
                     border-radius: 3px;
-                    font-weight: bold;
-                    font-size: 1.75vh;
-                    line-height: 2vh;
                     color: white;
                 }
                     #grid {
-                        margin: 0 0.5vh;
+                        margin: 0 0.2em;
                         display: grid;
                         grid-template-columns: 1fr 1fr;
                         grid-template-rows: 1fr 1fr;
@@ -82,12 +77,12 @@ class WT_MapViewPointerInfo extends HTMLElement {
                     }
 
                     #lat {
-                        padding-left: 1vh;
+                        padding-left: 0.5em;
                         grid-area: lat;
                         text-align: start;
                     }
                     #long {
-                        padding-left: 1vh;
+                        padding-left: 0.5em;
                         grid-area: long;
                         text-align: start;
                     }
