@@ -527,7 +527,7 @@ class WT_TrafficAvoidanceSystemIntruder {
 
         let distance = WT_Unit.GA_RADIAN.convert(this.position.distance(ownAirplane.position), WT_Unit.METER);
         let bearing = ownAirplane.position.bearingTo(this.position);
-        let horizontalPosition = this._tempVector2_1.setFromPolar(distance, bearing);
+        let horizontalPosition = this._tempVector2_1.setFromPolar(distance, bearing * Avionics.Utils.DEG2RAD);
         let verticalPosition = this.altitude.asUnit(WT_Unit.METER) - ownAirplane.altitude.asUnit(WT_Unit.METER);
         this._positionVector.set(horizontalPosition.x, horizontalPosition.y, verticalPosition);
     }
@@ -567,8 +567,8 @@ class WT_TrafficAvoidanceSystemIntruder {
      * @returns {Number}
      */
     _calculateCylindricalNorm(vector, radius, halfHeight) {
-        let vectorHoriz = this._tempVector2_1.set(vector);
-        return Math.max(Math.abs(vector.z) / halfHeight, vectorHoriz.length / radius);
+        let horizLength = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+        return Math.max(Math.abs(vector.z) / halfHeight, horizLength / radius);
     }
 
     _calculateDisplacementVector(initialDisplacement, velocityDelta, elapsedTime) {
