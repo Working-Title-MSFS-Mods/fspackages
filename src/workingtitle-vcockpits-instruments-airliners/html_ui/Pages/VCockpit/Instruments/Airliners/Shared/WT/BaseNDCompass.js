@@ -207,11 +207,6 @@ class Jet_NDCompass extends HTMLElement {
     }
     updateCompass(_deltaTime) {
 
-        let onGround = SimVar.GetSimVarValue("SIM ON GROUND", "Bool");
-        if (this.trackingBug) {
-            this.trackingBug.setAttribute("style", (onGround === 1) ? "display:none" : "");
-        }
-
         let simHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree");
         let simSelectedHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR:1", "degree");
         let simTrack = SimVar.GetSimVarValue("GPS GROUND MAGNETIC TRACK", "degree");

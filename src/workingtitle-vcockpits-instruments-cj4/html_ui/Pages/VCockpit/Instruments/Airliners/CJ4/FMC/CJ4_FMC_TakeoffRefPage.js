@@ -50,30 +50,9 @@ class CJ4_FMC_TakeoffRefPage {
         let depRunwayConditionActive = fmc.depRunwayCondition == 0 ? "DRY[green]/[white]WET[s-text]"
             : "DRY[s-text]/[white]WET[green]";
 
-        //FIND SLOPE - disabled for now
-        //let depRunwayNumberOnly = new Number(depRunwayOutput.slice(0,2));
-        //let depRunwayOppositeNumber = depRunwayNumberOnly < 19 ? depRunwayNumberOnly + 18
-        //    : depRunwayNumberOnly - 18;
-        //let depRunwayOppositeMod = "";
-        //let depRunwayOppositeDesignator = "";
-        //if (depRunwayMod == ("L" || "C" || "R")) {
-        //    depRunwayOppositeMod = depRunwayMod == "R" ? "L"
-        //        : depRunwayMod == "C" ? "C"
-        //        : depRunwayMod == "L" ? "R"
-        //        : "";
-        //    depRunwayOppositeDesignator = depRunwayOppositeNumber + depRunwayOppositeMod;
-        //} else {
-        //    depRunwayOppositeDesignator = depRunwayOppositeNumber;
-        //}
-        //let depRunwayOpposite = origin.infos.oneWayRunways.find(r => { return r.designation.indexOf(depRunwayOppositeDesignator) !== -1; });
-        //console.log("Opposite Runway Designator: " + depRunwayOppositeDesignator);
-        //console.log("Opposite Runway: " + depRunwayOpposite.designation);
-        //console.log("Opposite Runway Elevation: " + (3.28 * depRunwayOpposite.elevation));
-        //console.log("Current Runway: " + depRunwayDesignation);
-        //console.log("Current Runway Elevation: " + depRunwayElevation);
-
         const depRunwayLengthText = WT_ConvertUnit.getLength(depRunwayLength).getString(0, " ", "[s-text]");
         const takeoffQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.takeoffQnh).toFixed(0) : fmc.takeoffQnh.toFixed(2);
+        const slopeText = fmc.takeoffRwySlope == 0 ? "--.-" : fmc.takeoffRwySlope.toFixed(1);
 
         fmc._templateRenderer.setTemplateRaw([
             [originIdent, "1/3[blue] ", "TAKEOFF REF[blue]"],
@@ -84,7 +63,7 @@ class CJ4_FMC_TakeoffRefPage {
             [" RWY LENGTH[blue]", "QNH[blue] "],
             [depRunwayLengthText, takeoffQnhText + "[s-text]"],
             [" RWY SLOPE[blue]", "P ALT[blue] "],
-            ["--.-%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
+            [slopeText + "%[s-text]", fmc.takeoffPressAlt + " FT[s-text]"],
             [" RWY COND[blue]"],
             [depRunwayConditionActive],
             [""],
@@ -140,6 +119,36 @@ class CJ4_FMC_TakeoffRefPage {
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc, fmc.takeoffQnh); //added ability to keep manually set QNH by passing var
         };
 
+        fmc.onLeftInput[3] = () => {
+            const slope = /([UD-]?)([\d{1}]?)(\.?)([\d{1}]?)([UD]?)/;
+            let input = fmc.inOut;
+            const slopeMatch = input.match(slope);
+            // 1 = U or D or -
+            // 2 = Integer
+            // 3 = Decimal Point
+            // 4 = Tenths Value
+            // 5 = U or D
+            // over 2 degrees out of range
+            if (slopeMatch) {
+                if (slopeMatch[1] == "" || slopeMatch[5] == "") {
+                    const slopeDirection = slopeMatch[1] == "-" || slopeMatch[1] == "D" || slopeMatch[5] == "D" ? -1 : 1;
+                    let slopeValue = 0;
+                    slopeValue += parseInt(slopeMatch[2]) > 0 ? parseInt(slopeMatch[2]) : 0;
+                    slopeValue += parseInt(slopeMatch[4]) > 0 ? (parseInt(slopeMatch[4]) / 10) : 0;
+                    slopeValue = slopeValue * slopeDirection;
+                    fmc.takeoffRwySlope = slopeValue > 2 ? 2 : slopeValue < -2 ? -2 : slopeValue;
+                } else {
+                    fmc.showErrorMessage("INVALID SLOPE");
+                }
+            } else if (input == "DELETE") {
+                fmc.takeoffRwySlope = 0;
+                CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
+            } else {
+                fmc.showErrorMessage("INVALID SLOPE");
+            }
+            fmc.clearUserInput();
+            CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
+        };
         fmc.onLeftInput[4] = () => {
             if (fmc.depRunwayCondition == 0) {
                 fmc.depRunwayCondition = 1;
@@ -246,6 +255,12 @@ class CJ4_FMC_TakeoffRefPage {
                 fmc.endTakeoffDist = fmc.endTakeoffDist - (headwind * tailWindFactor);
             }
         }
+
+        if (fmc.takeoffRwySlope != 0) {
+            fmc.endTakeoffDist = CJ4_FMC_TakeoffRefPage.TakeoffSlopeAdjustment(fmc.endTakeoffDist, fmc.takeoffRwySlope);
+        }
+
+
         let takeoffFlapsActive = fmc.takeoffFlaps == 15 ? "0[s-text]/[white]15[green]"
             : "0[green]/[white]15[s-text]";
         let takeoffAntiIceActive = fmc.takeoffAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
@@ -392,5 +407,20 @@ class CJ4_FMC_TakeoffRefPage {
             CJ4_FMC_TakeoffRefPage.ShowPage1(fmc);
         };
         fmc.updateSideButtonActiveStatus();
+    }
+
+    static TakeoffSlopeAdjustment(tofl, slope) {
+        console.log("TakeoffSlopeAdjustment: tofl = " + tofl + " slope = " + slope);
+        if (slope > 0) {
+            const constfactor = 0.0045;
+            const expFactor = 0.00044;
+            return tofl + (((constfactor * Math.exp(expFactor * tofl)) * slope) * tofl * 10);
+        } else if (slope < 0) {
+            const stdDev = 0.4;
+            const meanVal = 1;
+            return (((3 * (tofl / 100)) * (1 / (stdDev * Math.sqrt(6.283185))) * Math.exp(-0.5 * Math.pow((((-1 * slope) - meanVal) / stdDev), 2))) + tofl) - Math.min(-1 * slope,1) * ((Math.max(3200, tofl) - 3200) / 8);
+        } else {
+            return tofl;
+        }
     }
 }

@@ -23,6 +23,8 @@ class CJ4_FMC extends FMCMainDisplay {
         this.grossWeight = 10280;
         this.zFWActive = 0;
         this.zFWPilotInput = 0;
+        this.gWTActive = 0;
+        this.gWTPilotInput = 0;
         this.takeoffOat = "□□□";
         this.landingOat = "□□□";
         this.takeoffQnh = "□□.□□";
@@ -37,7 +39,11 @@ class CJ4_FMC extends FMCMainDisplay {
         this.arrRunwayCondition = 0;
         this.takeoffFlaps = 15;
         this.takeoffAntiIce = 0;
+        this.landingAntiIce = 0;
+        this.landingFactor = 0;
         this.endTakeoffDist = 0;
+        this.takeoffRwySlope = 0;
+        this.landingRwySlope = 0;
         this.initialFuelLeft = 0;
         this.initialFuelRight = 0;
         this.selectedRunwayOutput = "";
@@ -52,6 +58,7 @@ class CJ4_FMC extends FMCMainDisplay {
         this.vfrRunwayExtension = undefined;
         this.modVfrRunway = false;
         this.deletedVfrLandingRunway = undefined;
+
         this.selectedWaypoint = undefined;
         this.selectMode = CJ4_FMC_LegsPage.SELECT_MODE.NONE;
         SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", 1);
@@ -615,51 +622,10 @@ class CJ4_FMC extends FMCMainDisplay {
                 Coherent.call("HEADING_BUG_SET", 2, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
             }
 
-            //WT MANUAL BANK FD
-            // const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
-            // if (fdOn && !this._apMasterStatus) {
-            //     const bank = 0;
-            //     const planeHeading = Simplane.getHeadingMagnetic();
-            //     const apHeading = SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK DIR", "degrees");
-            //     if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.HDG || this._navModeSelector.currentLateralActiveState === LateralNavModeState.LNAV
-            //         || this._navModeSelector.currentLateralActiveState === LateralNavModeState.TO || this._navModeSelector.currentLateralActiveState === LateralNavModeState.GA)) {
-            //         const deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
-            //         this.driveFlightDirector(deltaAngle, bank);
-            //     } else if (!Simplane.getIsGrounded() && (this._navModeSelector.currentLateralActiveState === LateralNavModeState.NAV || this._navModeSelector.currentLateralActiveState === LateralNavModeState.APPR)) {
-            //         const nav = SimVar.GetSimVarValue("AUTOPILOT NAV SELECTED", "number");
-            //         const signal = SimVar.GetSimVarValue("NAV HAS NAV:" + nav, "bool");
-            //         const isIls = SimVar.GetSimVarValue("NAV HAS LOCALIZER:" + nav, "bool");
-            //         const isLnav = SimVar.GetSimVarValue("L:WT_CJ4_LNAV_MODE", "number") == 0;
-            //         if (isLnav) {
-            //             const deltaAngle = Avionics.Utils.angleDiff(planeHeading, apHeading);
-            //             this.driveFlightDirector(deltaAngle, bank);
-            //         } else if (signal && isIls) {
-            //             const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
-            //             const loc = SimVar.GetSimVarValue("NAV LOCALIZER:" + nav, "degrees");
-            //             const correctionAngle = 0.23 * cdi;
-            //             const desiredHeading = AutopilotMath.normalizeHeading(loc + correctionAngle);
-            //             const windCorrectedHeading = AutopilotMath.normalizeHeading(desiredHeading - AutopilotMath.windCorrectionAngle(desiredHeading, Simplane.getTrueSpeed(), Simplane.getWindDirection(), Simplane.getWindStrength()));
-            //             const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
-            //             this.driveFlightDirector(deltaAngle, bank);
-            //         } else if (signal && !isIls) {
-            //             const cdi = SimVar.GetSimVarValue("NAV CDI:" + nav, "number");
-            //             const obs = SimVar.GetSimVarValue("NAV OBS:" + nav, "degrees");
-            //             const correctionAngle = 0.23 * cdi;
-            //             const desiredHeading = AutopilotMath.normalizeHeading(obs + correctionAngle);
-            //             const windCorrectedHeading = AutopilotMath.normalizeHeading(desiredHeading - AutopilotMath.windCorrectionAngle(desiredHeading, Simplane.getTrueSpeed(), Simplane.getWindDirection(), Simplane.getWindStrength()));
-            //             const deltaAngle = Avionics.Utils.angleDiff(planeHeading, windCorrectedHeading);
-            //             this.driveFlightDirector(deltaAngle, bank);
-            //         } else {
-            //             if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
-            //                 this.driveFlightDirector(0, 0);
-            //             }
-            //         }
-            //     } else {
-            //         if (SimVar.GetSimVarValue("L:WT_FLIGHT_DIRECTOR_BANK", "number") != 0) {
-            //             this.driveFlightDirector(0, 0);
-            //         }
-            //     }
-            // }
+            //CHECK FOR ALT set >45000
+            if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet") > 45000) {
+                Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 45000, true);
+            }
             this.updateAutopilotCooldown = this._apCooldown;
         }
     }

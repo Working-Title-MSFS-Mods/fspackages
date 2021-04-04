@@ -20,9 +20,10 @@ class CJ4_FMC_DirectToPage {
 
         if (directWaypoint) {
             directWaypointCell = directWaypoint.ident + "*";
-        } else if (onDirect) {
-            directWaypointCell = fmc.flightPlanManager.getDirectToTarget().ident + "[magenta]";
         }
+        // else if (onDirect) {
+        //     directWaypointCell = fmc.flightPlanManager.getDirectToTarget().ident + "[magenta]";
+        // }
         const waypointsCell = [];
         const waypointsBearing = [];
         const waypointsAltCell = [];
@@ -35,7 +36,7 @@ class CJ4_FMC_DirectToPage {
         for (let i = 0; i < pageCount * 4; i++) {
             const waypoint = displayWaypoints[i];
             if (waypoint != undefined) {
-                if (i === 0 && !onDirect) {
+                if (i === 0) {
                     waypointsCell[i] = "<" + waypoint.ident + "[magenta]";
                 } else {
                     waypointsCell[i] = "<" + waypoint.ident + "[white]";
@@ -64,7 +65,16 @@ class CJ4_FMC_DirectToPage {
                         const constraintText = constraints.isAtConstraint ? formatConstraints(constraints.lowerConstraint)
                             : lowerConstraint + upperConstraint;
                         waypointsAltCell[i] = constraintText;
-                        if (constraints.isAtConstraint) {
+                        if (!waypoint.isClimb && constraints.isAtConstraint) {
+                            const distanceToConstraint = waypoint.cumulativeDistanceInFP - fmc._vnav._currentDistanceInFP;
+                            const altitudeDifference = fmc._vnav.indicatedAltitude - constraints.lowerConstraint;
+                            if (altitudeDifference > 0) {
+                                const fpa = AutopilotMath.calculateFPA(altitudeDifference, distanceToConstraint);
+                                const vs = AutopilotMath.calculateVerticaSpeed(fpa, Simplane.getGroundSpeed());
+                                waypointsFpaCell[i] = fpa.toFixed(1).padStart(3, " ") + "°" + vs.toFixed(0).padStart(4, " ");
+                            }
+                        }
+                        else if (!waypoint.isClimb && constraints.hasConstraint && constraints.lowerConstraint > 0) {
                             const distanceToConstraint = waypoint.cumulativeDistanceInFP - fmc._vnav._currentDistanceInFP;
                             const altitudeDifference = fmc._vnav.indicatedAltitude - constraints.lowerConstraint;
                             if (altitudeDifference > 0) {
@@ -81,7 +91,7 @@ class CJ4_FMC_DirectToPage {
                             if (value <= 450) {
                                 value = value * 100;
                             }
-                        } else if (constraints.isAtConstraint) {
+                        } else if (!waypoint.isClimb && constraints.hasConstraint && constraints.lowerConstraint > 0) {
                             value = constraints.lowerConstraint;
                         } else {
                             value = undefined;
@@ -90,6 +100,7 @@ class CJ4_FMC_DirectToPage {
                             waypoint.legAltitudeDescription = 1;
                             waypoint.legAltitude1 = value;
                             fmc._vnav.activateVerticalDirect(waypointIndex, value, () => {
+                                fmc.clearUserInput();
                                 fmc.onLegs();
                             });
                         }
@@ -158,17 +169,19 @@ class CJ4_FMC_DirectToPage {
                         }
                     });
                 }
-            } else if (onDirect) {
-                const wpt = fmc.flightPlanManager.getDirectToTarget();
-                const index = fmc.flightPlanManager.getAllWaypoints().indexOf(wpt);
-                fmc.ensureCurrentFlightPlanIsTemporary(() => {
-                    fmc.flightPlanManager.activateDirectToByIndex(index, () => {
-                        fmc.activateRoute(true, () => {
-                            fmc.onLegs();
-                        });
-                    });
-                });
-            } else if (directWaypoint) {
+            }
+            // else if (onDirect) {
+            //     const wpt = fmc.flightPlanManager.getDirectToTarget();
+            //     const index = fmc.flightPlanManager.getAllWaypoints().indexOf(wpt);
+            //     fmc.ensureCurrentFlightPlanIsTemporary(() => {
+            //         fmc.flightPlanManager.activateDirectToByIndex(index, () => {
+            //             fmc.activateRoute(true, () => {
+            //                 fmc.onLegs();
+            //             });
+            //         });
+            //     });
+            // }
+            else if (directWaypoint) {
                 const activeIndex = fmc.flightPlanManager.getActiveWaypointIndex();
                 const pilotWaypoint = fmc._pilotWaypoints._pilotWaypointArray.find(w => w.id == directWaypoint.ident);
                 if (pilotWaypoint) {
@@ -394,9 +407,9 @@ class CJ4_FMC_DirectToPage {
         const allWaypoints = fmc.flightPlanManager.getAllWaypoints();
         const unfilteredWaypoints = [];
 
-        if (onDirect) {
-            activeWaypointIndex = activeWaypointIndex + 1;
-        }
+        // if (onDirect) {
+        //     activeWaypointIndex = activeWaypointIndex + 1;
+        // }
 
         for (let i = Math.max(0, activeWaypointIndex); i < allWaypoints.length; i++) {
             unfilteredWaypoints.push(allWaypoints[i]);

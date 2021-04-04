@@ -121,4 +121,35 @@
             <SEQ1_EMISSIVE_CODE>(L:SEATBELT_LIGHT_ON, Bool)</SEQ1_EMISSIVE_CODE>
         </UseTemplate>
     </Template>
+
+    <Template Name="WT_PanelLight_Knob_Template">
+        <DefaultTemplateParameters>
+            <ANIM_NAME>LIGHTING_Knob_Master</ANIM_NAME>
+            <NODE_ID>LIGHTING_Knob_Master</NODE_ID>
+            <ANIM_LENGTH>100</ANIM_LENGTH>
+            <NODE_NAME>#NODE_ID#</NODE_NAME>
+            <KNOB_POSITION_VAR_TYPE>L</KNOB_POSITION_VAR_TYPE>
+            <KNOB_POSITION_VAR>#NODE_ID#</KNOB_POSITION_VAR>
+            <KNOB_SPEED>10</KNOB_SPEED>
+            <WRAP>False</WRAP>
+        </DefaultTemplateParameters>
+        <UseTemplate Name="ASOBO_GT_Update">
+            <FREQUENCY>2</FREQUENCY>
+            <UPDATE_CODE>
+                (L:LIGHTING_Knob_Master, number) 90 &gt; if{
+                    0 (&gt;K:PANEL_LIGHTS_SET)
+                } els{
+                    1 (&gt;K:PANEL_LIGHTS_SET)
+                }
+                (L:LIGHTING_Knob_Master, number) 10 max (&gt;K:LIGHT_POTENTIOMETER_3_SET)
+            </UPDATE_CODE>
+        </UseTemplate>
+        <Component ID="#NODE_ID#" Node="#NODE_ID#">
+            <UseTemplate Name="ASOBO_GT_Knob_Finite_Dummy">
+                <KNOB_NAME>#NODE_NAME#</KNOB_NAME>
+                <WWISE_EVENT>lighting_knob_generic</WWISE_EVENT>
+                <COUNT>15</COUNT>
+            </UseTemplate>
+        </Component>
+    </Template>
 </ModelBehaviors>

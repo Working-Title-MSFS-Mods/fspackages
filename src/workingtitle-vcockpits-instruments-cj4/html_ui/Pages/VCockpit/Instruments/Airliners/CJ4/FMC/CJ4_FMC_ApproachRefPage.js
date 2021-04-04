@@ -70,6 +70,8 @@ class CJ4_FMC_ApproachRefPage {
         const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength).getString(0, " ", "[s-text]");
         const landingQnhText = WT_ConvertUnit.isMetric() ? WT_ConvertUnit.getQnh(fmc.landingQnh).toFixed(0) : fmc.landingQnh.toFixed(2);
 
+        const slopeText = fmc.landingRwySlope == 0 ? "--.-" : fmc.landingRwySlope.toFixed(1);
+
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "1/3 [blue]", "APPROACH REF[blue]"],
             [" SEL APT[blue]", "WIND [blue]"],
@@ -81,7 +83,7 @@ class CJ4_FMC_ApproachRefPage {
             [" RUNWAY LENGTH[blue]", "P ALT [blue]"],
             [arrRunwayLengthText + "[s-text]", fmc.landingPressAlt + " FT[s-text]"],
             [" RWY SLOPE[blue]"],
-            ["--.-%"],
+            [slopeText + "%[s-text]"],
             [" RWY COND[blue]"],
             [arrRunwayConditionActive]
         ]);
@@ -132,6 +134,36 @@ class CJ4_FMC_ApproachRefPage {
             }
             fmc.clearUserInput();
             fmc.appVSpeedStatus = CJ4_FMC.VSPEED_STATUS.NONE;
+            CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+        };
+        fmc.onLeftInput[4] = () => {
+            const slope = /([UD-]?)([\d{1}]?)(\.?)([\d{1}]?)([UD]?)/;
+            let input = fmc.inOut;
+            const slopeMatch = input.match(slope);
+            // 1 = U or D or -
+            // 2 = Integer
+            // 3 = Decimal Point
+            // 4 = Tenths Value
+            // 5 = U or D
+            // over 2 degrees out of range
+            if (slopeMatch) {
+                if (slopeMatch[1] == "" || slopeMatch[5] == "") {
+                    const slopeDirection = slopeMatch[1] == "-" || slopeMatch[1] == "D" || slopeMatch[5] == "D" ? -1 : 1;
+                    let slopeValue = 0;
+                    slopeValue += parseInt(slopeMatch[2]) > 0 ? parseInt(slopeMatch[2]) : 0;
+                    slopeValue += parseInt(slopeMatch[4]) > 0 ? (parseInt(slopeMatch[4]) / 10) : 0;
+                    slopeValue = slopeValue * slopeDirection;
+                    fmc.landingRwySlope = slopeValue > 2 ? 2 : slopeValue < -2 ? -2 : slopeValue;
+                } else {
+                    fmc.showErrorMessage("INVALID SLOPE");
+                }
+            } else if (input == "DELETE") {
+                fmc.landingRwySlope = 0;
+                CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
+            } else {
+                fmc.showErrorMessage("INVALID SLOPE");
+            }
+            fmc.clearUserInput();
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
         fmc.onLeftInput[5] = () => {
@@ -249,6 +281,25 @@ class CJ4_FMC_ApproachRefPage {
             ldgFieldLength = ldgFieldLength * ((fmc.landingPressAlt * .0001025) + 1.21875); //Determines a factor to multiply with dependent on pressure altitude.  Sea level being 1.21x landing distance
         }
 
+        if (fmc.landingRwySlope < 0) {
+            ldgFieldLength = CJ4_FMC_ApproachRefPage.LandingSlopeAdjustment(ldgFieldLength, fmc.landingRwySlope);
+        }
+
+        switch(fmc.landingFactor) {
+            case 0:
+                ldgFieldLength = ldgFieldLength * 1;
+                break;
+            case 1:
+                ldgFieldLength = ldgFieldLength * 1.25;
+                break;
+            case 2:
+                ldgFieldLength = ldgFieldLength * 1.67;
+                break;
+            case 3:
+                ldgFieldLength = ldgFieldLength * 1.92;
+                break;                
+        }
+
         let vspeedSendMsg = "";
         if (fmc.appVSpeedStatus === CJ4_FMC.VSPEED_STATUS.INPROGRESS) {
             vspeedSendMsg = "IN PROGRESS";
@@ -260,6 +311,10 @@ class CJ4_FMC_ApproachRefPage {
             vspeedColor = "blue";
         }
 
+        function formatNumber(num, pad = 3) {
+            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
+        }
+
         if (!arrRunway || fmc.landingOat === "□□□") {
             ldgFieldLength = 0;
             vRef = null;
@@ -267,27 +322,30 @@ class CJ4_FMC_ApproachRefPage {
             vspeedSendMsg = "";
         }
 
-        function formatNumber(num, pad = 3) {
-            return ((num === null || isNaN(num) || num === undefined) ? "" : num.toFixed(0)).padStart(pad, " ");
-        }
+        let landingAntiIceActive = fmc.landingAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
+            : "OFF[s-text]/[white]ON[green]";
 
         const ldgWtText = ldgWt < 10300 ? "-----" : formatNumber(WT_ConvertUnit.getWeight(ldgWt).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (ldgWt > 15660 ? "[yellow]" : "");
         const grossWeightText = formatNumber(WT_ConvertUnit.getWeight(grossWeightValue).Value, (WT_ConvertUnit.isMetric() ? 4 : 5)) + (WT_ConvertUnit.isMetric() ? "/7103[s-text]" : "/15660[s-text]");
         const landingDistText = WT_ConvertUnit.isMetric() ? formatNumber((ldgFieldLength / 3.28), 4) : formatNumber(ldgFieldLength, 4);
-        const arrRunwayLengthText = WT_ConvertUnit.getLength(arrRunwayLength / 3.28).getString(0, " ", "[s-text]");
+        const arrRunwayLengthText = arrRunwayLength > 0 ? WT_ConvertUnit.getLength(arrRunwayLength / 3.28).getString(0, " ", "[s-text]") : "";
+
+        const vAppText = vApp == null ? "   " : Math.ceil(vApp);
+
+        const landingFactorSwitch = fmc._templateRenderer.renderSwitch(["1.0", "1.25", "1.67", "1.92"], fmc.landingFactor);
 
         fmc._templateRenderer.setTemplateRaw([
             [destinationIdent, "2/3 [blue]", "APPROACH REF[blue]"],
             [" A/I[blue]"],
-            ["OFF[green]/[white]ON[s-text]"],
+            [landingAntiIceActive],
             ["", "V[d-text blue]REF:[s-text blue] " + formatNumber(vRef) + "[s-text + " + vspeedColor + "]"],
             [""],
-            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + Math.ceil(vApp) + "[s-text + " + vspeedColor + "]"],
+            [" LW/GWT/MLW[blue]", "V[d-text blue]APP:[s-text blue] " + vAppText + "[s-text + " + vspeedColor + "]"],
             [ldgWtText + "/" + grossWeightText + "[s-text]"],
             [" LFL/" + arrRunwayOutput + "[blue]"],
             [landingDistText + "/" + arrRunwayLengthText + "[s-text]"],
             [" LDG FACTOR[blue]"],
-            ["1.0[green]" + "/[white]1.25[s-text]" + "/[white]1.67[s-text]" + "/[white]1.92[s-text]"],
+            [landingFactorSwitch],
             ["", vspeedSendMsg + " [s-text]"],
             ["", "SEND>[s-text]"]
         ]);
@@ -309,6 +367,24 @@ class CJ4_FMC_ApproachRefPage {
                 CJ4_FMC_ApproachRefPage.ShowPage2(fmc);
             };
         }
+
+        fmc.onLeftInput[0] = () => {
+            if (fmc.landingAntiIce == 0) {
+                fmc.landingAntiIce = 1;
+            } else if (fmc.landingAntiIce == 1) {
+                fmc.landingAntiIce = 0;
+            }
+            landingAntiIceActive = fmc.landingAntiIce == 0 ? "OFF[green]/[white]ON[s-text]"
+                : "OFF[s-text]/[white]ON[green]";
+            fmc.clearUserInput();
+            { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); }
+        };
+
+        fmc.onLeftInput[4] = () => {
+            fmc.landingFactor = fmc.landingFactor == 3 ? 0 : fmc.landingFactor + 1;
+            { CJ4_FMC_ApproachRefPage.ShowPage2(fmc); }
+        };
+        
 
         fmc.onPrevPage = () => {
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
@@ -382,5 +458,16 @@ class CJ4_FMC_ApproachRefPage {
             CJ4_FMC_ApproachRefPage.ShowPage1(fmc);
         };
         fmc.updateSideButtonActiveStatus();
+    }
+
+    static LandingSlopeAdjustment(tofl, slope) {
+        if (slope > 0) {
+            return tofl;
+        } else if (slope < 0) {
+            const factor = 0.365;
+            return tofl * (1 + (-1 * factor * slope));
+        } else {
+            return tofl;
+        }
     }
 }

@@ -79,6 +79,9 @@ class CJ4NavModeSelector {
     /** The current AP target altitude type. */
     this.currentAltitudeTracking = AltitudeState.SELECTED;
 
+    /** The pressure/locked altitude value for WT Vertical AP. */
+    this.pressureAltitudeTarget = undefined;
+
     /**
      * The queue of state change events to process.
      * @type {string[]}
@@ -87,7 +90,7 @@ class CJ4NavModeSelector {
 
     /** The current states of the input data. */
     this._inputDataStates = {
-      altLocked: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean"), () => NavModeEvent.ALT_LOCK_CHANGED),
+      altLocked: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_CJ4_ALT_HOLD", "number") == 1, () => NavModeEvent.ALT_LOCK_CHANGED),
       altSlot: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number"), () => NavModeEvent.ALT_SLOT_CHANGED),
       selectedAlt1: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"), () => NavModeEvent.SELECTED_ALT1_CHANGED),
       selectedAlt2: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"), () => NavModeEvent.SELECTED_ALT2_CHANGED),
@@ -123,7 +126,9 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.GROUNDED}`]: this.handleGrounded.bind(this),
       [`${NavModeEvent.AP_CHANGED}`]: this.handleAPChanged.bind(this),
       [`${NavModeEvent.LOC_ACTIVE}`]: this.handleLocActive.bind(this),
-      [`${NavModeEvent.LNAV_ACTIVE}`]: this.handleLNAVActive.bind(this)
+      [`${NavModeEvent.LNAV_ACTIVE}`]: this.handleLNAVActive.bind(this),
+      [`${NavModeEvent.FD_TOGGLE}`]: this.handleFdToggle.bind(this),
+      [`${NavModeEvent.ALT_PRESSED}`]: this.handleAltPressed.bind(this)
     };
 
     this.initialize();
@@ -237,7 +242,7 @@ class CJ4NavModeSelector {
       approachActive: this.currentLateralActiveState === LateralNavModeState.APPR ? "APPR" : "",
       lateralMode: getLateralAnnunciation(this.currentLateralActiveState),
       lateralArmed: this.currentLateralArmedState !== LateralNavModeState.NONE ? getLateralAnnunciation(this.currentLateralArmedState, true) : "",
-      verticalMode: `${this.isVNAVOn ? "V" : ""}${this.currentVerticalActiveState}`,
+      verticalMode: `${this.isVNAVOn && this.currentVerticalActiveState != 'TO' ? "V" : ""}${this.currentVerticalActiveState}`,
       altitudeArmed: this.currentArmedAltitudeState !== VerticalNavModeState.NONE ? this.currentArmedAltitudeState : "",
       vnavArmed: this.currentArmedVnavState !== VerticalNavModeState.NONE ? this.currentArmedVnavState : "",
       approachVerticalArmed: this.currentArmedApproachVerticalState !== VerticalNavModeState.NONE ? this.currentArmedApproachVerticalState : ""
@@ -320,63 +325,103 @@ class CJ4NavModeSelector {
    * Handles when the plane changes from on ground to in air or in air to on ground.
    */
   handleGrounded() {
-    if (this._inputDataStates.grounded.state) {
-      switch (this.currentLateralActiveState) {
-        case LateralNavModeState.NAV:
-          SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
-          SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
-          break;
-        case LateralNavModeState.LNAV:
-        case LateralNavModeState.HDG:
-        case LateralNavModeState.TO:
-        case LateralNavModeState.GA:
-          SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
-          break;
-        case LateralNavModeState.APPR:
-          this.cancelApproachMode(true);
-          SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
-          SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
-          break;
-        case LateralNavModeState.ROLL:
-          break;
-      }
-      this.currentLateralActiveState = LateralNavModeState.ROLL;
+    // if (this._inputDataStates.grounded.state) {
+    //   switch (this.currentLateralActiveState) {
+    //     case LateralNavModeState.NAV:
+    //       SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+    //       SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
+    //       break;
+    //     case LateralNavModeState.LNAV:
+    //     case LateralNavModeState.HDG:
+    //     case LateralNavModeState.TO:
+    //     case LateralNavModeState.GA:
+    //       SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+    //       SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+    //       SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+    //       break;
+    //     case LateralNavModeState.APPR:
+    //       this.cancelApproachMode(true);
+    //       SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+    //       SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+    //       break;
+    //     case LateralNavModeState.ROLL:
+    //       break;
+    //   }
+    //   this.currentLateralActiveState = LateralNavModeState.ROLL;
 
-      switch (this.currentVerticalActiveState) {
-        case VerticalNavModeState.FLC:
-          SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 0);
-          break;
-        case VerticalNavModeState.ALTCAP:
-        case VerticalNavModeState.ALTVCAP:
-        case VerticalNavModeState.ALTSCAP:
-        case VerticalNavModeState.ALTV:
-        case VerticalNavModeState.ALTS:
-        case VerticalNavModeState.ALT:
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
-          SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-          Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-          break;
-        case VerticalNavModeState.VS:
-        case VerticalNavModeState.PATH:
-        case VerticalNavModeState.GP:
-          SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
-          SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
-          break;
-        case VerticalNavModeState.PTCH:
-          break;
-      }
-      this.currentVerticalActiveState = VerticalNavModeState.PTCH;
-      if (this.isVNAVOn) {
-        this.isVNAVOn = false;
-        SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
-      }
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-      SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+    //   switch (this.currentVerticalActiveState) {
+    //     case VerticalNavModeState.FLC:
+    //       SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE", "number", 0);
+    //       break;
+    //     case VerticalNavModeState.ALTCAP:
+    //     case VerticalNavModeState.ALTVCAP:
+    //     case VerticalNavModeState.ALTSCAP:
+    //     case VerticalNavModeState.ALTV:
+    //     case VerticalNavModeState.ALTS:
+    //     case VerticalNavModeState.ALT:
+    //       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
+    //       SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
+    //       Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
+    //       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+    //       break;
+    //     case VerticalNavModeState.VS:
+    //     case VerticalNavModeState.PATH:
+    //     case VerticalNavModeState.GP:
+    //       SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
+    //       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
+    //       break;
+    //     case VerticalNavModeState.PTCH:
+    //       break;
+    //   }
+    //   this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+    //   if (this.isVNAVOn) {
+    //     this.isVNAVOn = false;
+    //     SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
+    //   }
+    //   SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
 
+    // }
+  }
+
+  /**
+   * Handles when the ALT button is pressed.
+   */
+  handleAltPressed() {
+    switch (this.currentVerticalActiveState) {
+      case VerticalNavModeState.TO:
+      case VerticalNavModeState.GA:
+        SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
+      case VerticalNavModeState.PTCH:
+      case VerticalNavModeState.FLC:
+
+      case VerticalNavModeState.GS:
+      case VerticalNavModeState.PATH:
+      case VerticalNavModeState.GP:
+      case VerticalNavModeState.VS:
+        this.engagePitch();
+        if (Simplane.getVerticalSpeed() > 500) {
+          this.pressureAltitudeTarget = 100 * Math.ceil(Simplane.getAltitude() / 100);
+        }
+        else if (Simplane.getVerticalSpeed() < -500) {
+          this.pressureAltitudeTarget = 100 * Math.floor(Simplane.getAltitude() / 100);
+        }
+        else {
+          this.pressureAltitudeTarget = 100 * Math.round(Simplane.getAltitude() / 100);
+        }
+        this.currentVerticalActiveState = VerticalNavModeState.ALT;
+        Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, this.pressureAltitudeTarget, true);
+        break;
+      case VerticalNavModeState.ALTCAP:
+      case VerticalNavModeState.ALTVCAP:
+      case VerticalNavModeState.ALTSCAP:
+      case VerticalNavModeState.ALTV:
+      case VerticalNavModeState.ALTS:
+      case VerticalNavModeState.ALT:
+        this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        this.engagePitch();
+        break;
     }
+
   }
 
   /**
@@ -399,12 +444,12 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.GS:
       case VerticalNavModeState.PATH:
       case VerticalNavModeState.GP:
-        this.engageVerticalSpeed();
         this.currentVerticalActiveState = VerticalNavModeState.VS;
+        this.engageVerticalSpeed();
         break;
       case VerticalNavModeState.VS:
-        this.engagePitch();
         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        this.engagePitch();
         break;
     }
 
@@ -431,12 +476,12 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.GS:
       case VerticalNavModeState.PATH:
       case VerticalNavModeState.GP:
-        this.engageFlightLevelChange();
         this.currentVerticalActiveState = VerticalNavModeState.FLC;
+        this.engageFlightLevelChange();
         break;
       case VerticalNavModeState.FLC:
-        this.engagePitch();
         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        this.engagePitch();
         break;
     }
 
@@ -444,25 +489,37 @@ class CJ4NavModeSelector {
   }
 
   /**
-   * Engage VS to Slot.
-   * @param {number} vsslot is the slot to engage VS with.
-   * @param {number} vs is the starting VS value to set.
+   * Check that VS is active.
    */
-  engageVerticalSpeed(vsslot = 1, vs = Simplane.getVerticalSpeed()) {
-    SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
-    SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
-    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", vsslot);
-    Coherent.call("AP_VS_VAR_SET_ENGLISH", vsslot, vs);
-    this.checkCorrectAltSlot();
+   checkVerticalSpeedActive() {
     if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") != 1) {
       SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 1);
     }
   }
 
   /**
+   * Engage VS to Slot.
+   * @param {number} vsslot is the slot to engage VS with.
+   * @param {number} vs is the starting VS value to set.
+   */
+  engageVerticalSpeed(vsslot = 1, vs = Simplane.getVerticalSpeed(), annunciate = true) {
+    if (annunciate) {
+      SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 1);
+    } else {
+      SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
+    }
+    SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
+    SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", vsslot);
+    Coherent.call("AP_VS_VAR_SET_ENGLISH", vsslot, vs);
+    this.checkVerticalSpeedActive();    
+  }
+
+  /**
    * Engage Pitch Mode (disengages all other vertical modes).
    */
   engagePitch() {
+    //this.checkCorrectAltSlot();
+    console.log("SimVar AUTOPILOT PITCH HOLD " + SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean"));
     if (SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD", "Boolean") == 0) {
       if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "number") == 1) {
         SimVar.SetSimVarValue("K:AP_PANEL_VS_HOLD", "number", 0);
@@ -470,7 +527,6 @@ class CJ4NavModeSelector {
         SimVar.SetSimVarValue("K:FLIGHT_LEVEL_CHANGE_ON", "Number", 0);
       }
     }
-    this.checkCorrectAltSlot();
     SimVar.SetSimVarValue("L:WT_CJ4_VS_ON", "number", 0);
     SimVar.SetSimVarValue("L:WT_CJ4_FLC_ON", "number", 0);
 
@@ -499,6 +555,8 @@ class CJ4NavModeSelector {
         const airspeed = Simplane.getIndicatedSpeed();
         Coherent.call("AP_SPD_VAR_SET", 0, airspeed);
       }
+    } else if (speed > 0 && speed < 1) {
+      Coherent.call("AP_MACH_VAR_SET", 0, parseFloat(speed.toFixed(2)));
     } else {
       Coherent.call("AP_SPD_VAR_SET", 0, speed);
     }
@@ -508,18 +566,13 @@ class CJ4NavModeSelector {
    * Handles when the VNAV button is pressed.
    */
   handleVNAVPressed() {
-    if (this.currentLateralActiveState !== LateralNavModeState.APPR) {
+    if (this.currentVerticalActiveState !== VerticalNavModeState.GP || this.currentVerticalActiveState !== VerticalNavModeState.GS) {
       this.isVNAVOn = !this.isVNAVOn;
       SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", this.isVNAVOn ? 1 : 0);
 
       if (!this.isVNAVOn) {
-        if (this.currentVerticalActiveState === VerticalNavModeState.ALT || this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV) {
-          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-        } else {
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-        }
-        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {
+          SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
           this.engagePitch();
           this.currentVerticalActiveState = VerticalNavModeState.PTCH;
         }
@@ -542,7 +595,10 @@ class CJ4NavModeSelector {
   handleAlt1Changed() {
     if (this._inputDataStates.selectedAlt1.state < 0) {
       this.selectedAlt1 = 0;
-      Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 0);
+      Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 0, true);
+    } else if (this._inputDataStates.selectedAlt1.state > 45000) {
+      this.selectedAlt1 = 45000;
+      Coherent.call("AP_ALT_VAR_SET_ENGLISH", 1, 45000, true);
     } else {
       this.selectedAlt1 = this._inputDataStates.selectedAlt1.state;
     }
@@ -552,15 +608,9 @@ class CJ4NavModeSelector {
       case VerticalNavModeState.ALTS:
       case VerticalNavModeState.ALT:
         this.checkCorrectAltMode();
-      case VerticalNavModeState.ALTCAP:
-      case VerticalNavModeState.ALTVCAP:
-      case VerticalNavModeState.ALTSCAP:
-        console.log("setting slot 3 in handleAlt1Changed");
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-        break;
     }
 
-    this.setProperAltitudeArmedState();
+    //this.setProperAltitudeArmedState();
   }
 
   /**
@@ -579,10 +629,9 @@ class CJ4NavModeSelector {
     if (this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV
       || this.currentVerticalActiveState === VerticalNavModeState.ALT) {
       let newValue = VerticalNavModeState.ALT;
-      const altLockValue = Math.floor(Simplane.getAutoPilotDisplayedAltitudeLockValue());
-      if (altLockValue == Math.floor(this.selectedAlt1)) {
+      if (Math.floor(this.pressureAltitudeTarget) == Math.floor(this.selectedAlt1)) {
         newValue = VerticalNavModeState.ALTS;
-      } else if (altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)) {
+      } else if (Math.floor(this.pressureAltitudeTarget) == Math.floor(this.managedAltitudeTarget)) {
         newValue = VerticalNavModeState.ALTV;
       }
       if (this.currentVerticalActiveState !== newValue) {
@@ -592,10 +641,12 @@ class CJ4NavModeSelector {
   }
 
   checkCorrectAltSlot() {
-    if (!this.isVNAVOn || this.currentVerticalActiveState === VerticalNavModeState.ALTSCAP || this.currentVerticalActiveState === VerticalNavModeState.ALTVCAP 
-      || this.currentVerticalActiveState === VerticalNavModeState.ALTCAP) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-    }
+    // if (this.currentVerticalActiveState === VerticalNavModeState.ALTS || this.currentVerticalActiveState === VerticalNavModeState.ALTV 
+    //   || this.currentVerticalActiveState === VerticalNavModeState.ALT) {
+    //   SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+    // } else {
+    //   SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+    // }
   }
 
   /**
@@ -617,15 +668,10 @@ class CJ4NavModeSelector {
         Coherent.call("HEADING_BUG_SET", 2, SimVar.GetSimVarValue('PLANE HEADING DEGREES MAGNETIC', 'Degrees'));
         this.currentLateralActiveState = LateralNavModeState.TO;
       } else {
-        if (this.currentLateralActiveState === LateralNavModeState.APPR) {
-          if (this.approachMode === WT_ApproachType.ILS) {
-            SimVar.SetSimVarValue("K:AP_APR_HOLD", "number", 0);
-          }
-        }
         if (this.isVNAVOn) {
           this.isVNAVOn = false;
           SimVar.SetSimVarValue("L:WT_CJ4_VNAV_ON", "number", 0);
-          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+          SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
           SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
         }
         this.currentVerticalActiveState = VerticalNavModeState.GA;
@@ -707,28 +753,28 @@ class CJ4NavModeSelector {
    * Sets the proper armed altitude state.
    */
   setProperAltitudeArmedState() {
-    if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {
-      switch (this.currentAltitudeTracking) {
-        case AltitudeState.MANAGED:
-          this.setArmedAltitudeState(VerticalNavModeState.ALTV);
-          break;
-        default:
-          this.setArmedAltitudeState(VerticalNavModeState.ALTS);
-      }
-    } else if (this.isVNAVOn && (this.currentVerticalActiveState === VerticalNavModeState.VS
-      || this.currentVerticalActiveState === VerticalNavModeState.FLC)) {
-      switch (this.currentAltitudeTracking) {
-        case AltitudeState.MANAGED:
-          this.setArmedAltitudeState(VerticalNavModeState.ALTV);
-          break;
-        default:
-          this.setArmedAltitudeState(VerticalNavModeState.ALTS);
-      }
-    } else if (this.currentVerticalActiveState === VerticalNavModeState.VS || this.currentVerticalActiveState === VerticalNavModeState.FLC) {
-      this.setArmedAltitudeState(VerticalNavModeState.ALTS);
-    } else {
-      this.setArmedAltitudeState();
-    }
+    // if (this.currentVerticalActiveState === VerticalNavModeState.PATH) {
+    //   switch (this.currentAltitudeTracking) {
+    //     case AltitudeState.MANAGED:
+    //       this.setArmedAltitudeState(VerticalNavModeState.ALTV);
+    //       break;
+    //     default:
+    //       this.setArmedAltitudeState(VerticalNavModeState.ALTS);
+    //   }
+    // } else if (this.isVNAVOn && (this.currentVerticalActiveState === VerticalNavModeState.VS
+    //   || this.currentVerticalActiveState === VerticalNavModeState.FLC)) {
+    //   switch (this.currentAltitudeTracking) {
+    //     case AltitudeState.MANAGED:
+    //       this.setArmedAltitudeState(VerticalNavModeState.ALTV);
+    //       break;
+    //     default:
+    //       this.setArmedAltitudeState(VerticalNavModeState.ALTS);
+    //   }
+    // } else if (this.currentVerticalActiveState === VerticalNavModeState.VS || this.currentVerticalActiveState === VerticalNavModeState.FLC) {
+    //   this.setArmedAltitudeState(VerticalNavModeState.ALTS);
+    // } else {
+    //   this.setArmedAltitudeState();
+    // }
   }
 
   /**
@@ -889,6 +935,15 @@ class CJ4NavModeSelector {
         case WT_ApproachType.RNAV:
           this.currentLateralArmedState = this.currentLateralArmedState !== LateralNavModeState.APPR ? LateralNavModeState.APPR : LateralNavModeState.NONE;
           break;
+        case WT_ApproachType.NONE:
+        case WT_ApproachType.VISUAL:
+          if (this.lNavModeState === LNavModeState.NAV1 || this.lNavModeState === LNavModeState.NAV2) {
+            const navSource = this.lNavModeState === LNavModeState.NAV2 ? 2 : 1;
+            if (SimVar.GetSimVarValue(`NAV HAS LOCALIZER:` + navSource, 'Bool') !== 0) {
+              this.currentLateralArmedState = this.currentLateralArmedState !== LateralNavModeState.APPR ? LateralNavModeState.APPR : LateralNavModeState.NONE;
+            }
+          }
+          break;
       }
     };
 
@@ -944,79 +999,90 @@ class CJ4NavModeSelector {
    */
   handleAltLockChanged() {
     this.isAltitudeLocked = this._inputDataStates.altLocked.state;
+    console.log("this.isAltitudeLocked " + this.isAltitudeLocked);
 
     if (this.isAltitudeLocked) {
 
       if (this.currentVerticalActiveState === VerticalNavModeState.TO || this.currentVerticalActiveState === VerticalNavModeState.GA) {
         SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
       }
-
-      switch (this.currentAltitudeTracking) {
-        case AltitudeState.SELECTED:
-          this.currentVerticalActiveState = VerticalNavModeState.ALTSCAP;
-          break;
-        case AltitudeState.MANAGED:
-          this.currentVerticalActiveState = VerticalNavModeState.ALTVCAP;
-          break;
-        default:
-          this.currentVerticalActiveState = VerticalNavModeState.ALTCAP;
-          break;
+      if (this.currentLateralActiveState === LateralNavModeState.TO || this.currentLateralActiveState === LateralNavModeState.GA) {
+        if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 0) {
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 1);
+          SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+        }
+        SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+        SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+        this.currentLateralActiveState = LateralNavModeState.ROLL;
       }
+
+      // switch (this.currentAltitudeTracking) {
+      //   case AltitudeState.SELECTED:
+      //     this.currentVerticalActiveState = VerticalNavModeState.ALTSCAP;
+      //     break;
+      //   case AltitudeState.MANAGED:
+      //     this.currentVerticalActiveState = VerticalNavModeState.ALTVCAP;
+      //     break;
+      //   default:
+      //     this.currentVerticalActiveState = VerticalNavModeState.ALTCAP;
+      //     break;
+      // }
     }
 
-    if (!this.isAltitudeLocked) {
+    // if (!this.isAltitudeLocked) {
 
-      switch (this.currentVerticalActiveState) {
-        case VerticalNavModeState.ALTCAP:
-        case VerticalNavModeState.ALTVCAP:
-        case VerticalNavModeState.ALTSCAP:
-        case VerticalNavModeState.ALTV:
-        case VerticalNavModeState.ALTS:
-        case VerticalNavModeState.ALT:
-          if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
-            this.currentVerticalActiveState = VerticalNavModeState.PATH;
-          } else {
-            this.currentVerticalActiveState = VerticalNavModeState.PTCH;
-          }
-          break;
-      }
-    }
-    this.setProperAltitudeArmedState();
+    //   switch (this.currentVerticalActiveState) {
+    //     case VerticalNavModeState.ALTCAP:
+    //     case VerticalNavModeState.ALTVCAP:
+    //     case VerticalNavModeState.ALTSCAP:
+    //     case VerticalNavModeState.ALTV:
+    //     case VerticalNavModeState.ALTS:
+    //     case VerticalNavModeState.ALT:
+    //       if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
+    //         this.currentVerticalActiveState = VerticalNavModeState.PATH;
+    //       } else {
+    //         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+    //       }
+    //       break;
+    //   }
+    // }
+    // this.setProperAltitudeArmedState();
   }
 
   /**
    * Handles when the plane has fully captured the assigned lock altitude.
    */
   handleAltCaptured() {
-    if (this.isAltitudeLocked) {
+    // if (this.isAltitudeLocked) {
 
-      if (this.currentVerticalActiveState === VerticalNavModeState.ALTSCAP || this.currentVerticalActiveState === VerticalNavModeState.ALTVCAP
-        || this.currentVerticalActiveState === VerticalNavModeState.ALTCAP) {
-        const altLockValue = Math.floor(Simplane.getAutoPilotDisplayedAltitudeLockValue());
-        if (altLockValue == Math.floor(this.selectedAlt1)) {
-          this.currentVerticalActiveState = VerticalNavModeState.ALTS;
-        } else if (altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)) {
-          this.currentVerticalActiveState = VerticalNavModeState.ALTV;
-        } else {
-          this.currentVerticalActiveState = VerticalNavModeState.ALT;
-        }
-      }
+    //   if (this.currentVerticalActiveState === VerticalNavModeState.ALTSCAP || this.currentVerticalActiveState === VerticalNavModeState.ALTVCAP
+    //     || this.currentVerticalActiveState === VerticalNavModeState.ALTCAP) {
+    //     const altLockValue = Math.floor(Simplane.getAutoPilotDisplayedAltitudeLockValue());
+    //     if (altLockValue == Math.floor(this.selectedAlt1)) {
+    //       this.currentVerticalActiveState = VerticalNavModeState.ALTS;
+    //     } else if (altLockValue == Math.floor(this.selectedAlt2) || altLockValue == Math.floor(this.managedAltitudeTarget)) {
+    //       this.currentVerticalActiveState = VerticalNavModeState.ALTV;
+    //     } else {
+    //       this.currentVerticalActiveState = VerticalNavModeState.ALT;
+    //     }
+    //   }
 
-      if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 1) {
-        SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
-      }
-      if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-      }
+    //   if (SimVar.GetSimVarValue("AUTOPILOT VS SLOT INDEX", "number") != 1) {
+    //     SimVar.SetSimVarValue("K:VS_SLOT_INDEX_SET", "number", 1);
+    //   }
+    //   if (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number") != 3) {
+    //     SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
+    //   }
 
-      //MOVED SETTING 0 VS rates from ALT CAP TO ALT CAPTURED
-      if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:1", "feet per minute") != 0) {
-        Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
-      }
-      if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute") != 0) {
-        Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
-      }
-    }
+    //   //MOVED SETTING 0 VS rates from ALT CAP TO ALT CAPTURED
+    //   if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:1", "feet per minute") != 0) {
+    //     Coherent.call("AP_VS_VAR_SET_ENGLISH", 1, 0);
+    //   }
+    //   if (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR:2", "feet per minute") != 0) {
+    //     Coherent.call("AP_VS_VAR_SET_ENGLISH", 2, 0);
+    //   }
+    // }
   }
 
   /**
@@ -1115,23 +1181,10 @@ class CJ4NavModeSelector {
    * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
   handleVnavRequestSlot1(force = false) {
-
-    switch (this.currentVerticalActiveState) {
-      case VerticalNavModeState.ALTCAP:
-      case VerticalNavModeState.ALTVCAP:
-      case VerticalNavModeState.ALTSCAP:
-      case VerticalNavModeState.ALTV:
-      case VerticalNavModeState.ALTS:
-      case VerticalNavModeState.ALT:
-        this.vnavRequestedSlot = 1;
-        break;
-      default:
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
-        this.vnavRequestedSlot = 1;
-        break;
-    }
+    this.currentAltitudeTracking = AltitudeState.SELECTED;
     if (force) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 1);
+      console.log("forcing alt slot 2");
+      this.setSimAltSlot(1);
     }
   }
 
@@ -1140,33 +1193,99 @@ class CJ4NavModeSelector {
    * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
   handleVnavRequestSlot2(force = false) {
-
-    switch (this.currentVerticalActiveState) {
-      case VerticalNavModeState.ALTCAP:
-      case VerticalNavModeState.ALTVCAP:
-      case VerticalNavModeState.ALTSCAP:
-      case VerticalNavModeState.ALTV:
-      case VerticalNavModeState.ALTS:
-      case VerticalNavModeState.ALT:
-        this.vnavRequestedSlot = 2;
-        break;
-      default:
-        SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
-        this.vnavRequestedSlot = 2;
-        break;
-    }
+    this.currentAltitudeTracking = AltitudeState.MANAGED;
     if (force) {
-      SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 2);
+      console.log("forcing alt slot 2");
+      this.setSimAltSlot(2);
     }
   }
 
   /**
    * Handles when vnav autopilot requests alt slot 3 in the sim autopilot.
+   * @param {boolean} force set to true to force the slot even if in one of the protected ALT states.
    */
-  handleVnavRequestSlot3() {
-    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", 3);
-    this.vnavRequestedSlot = 3;
+  handleVnavRequestSlot3(force = false) {
+    this.currentAltitudeTracking = AltitudeState.LOCKED;
+    if (force) {
+      console.log("forcing alt slot 3");
+      this.setSimAltSlot(3);
+    }
   }
+
+  /**
+   * Method to actually set the altitude slot (added with WT Altitude Manager).
+   */
+  setSimAltSlot(slot) {
+    SimVar.SetSimVarValue("K:ALTITUDE_SLOT_INDEX_SET", "number", slot);
+  }
+
+  /**
+   * Method to actually set the altitude slot (added with WT Altitude Manager).
+   */
+  setSimAltitude(slot, altitude) {
+    Coherent.call("AP_ALT_VAR_SET_ENGLISH", slot, altitude, true);
+  }
+
+  /**
+   * Method to actually set the altitude slot (added with WT Altitude Manager).
+   */
+   cancelAltHold() {
+     this.setSimAltitude(2, -5000);
+     this.setSimAltSlot(2);
+  }  
+
+  /**
+   * Handles when FD is turned off to cancel vertical and lateral modes.
+   */
+    handleFdToggle() {
+      const apOn = SimVar.GetSimVarValue("AUTOPILOT MASTER", "boolean");
+      const fdOn = SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Boolean");
+      if (!apOn && fdOn) {
+        this.engagePitch();
+        this.currentVerticalActiveState = VerticalNavModeState.PTCH;
+        this.currentArmedAltitudeState = VerticalNavModeState.NONE;
+        this.currentArmedVnavState = VerticalNavModeState.NONE;
+        this.currentArmedApproachVerticalState = VerticalNavModeState.NONE;
+        switch (this.currentLateralActiveState) {
+          case LateralNavModeState.ROLL:
+            break;
+          case LateralNavModeState.HDG:
+            if (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "number") == 1) {
+              SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+            }
+            SimVar.SetSimVarValue("L:WT_CJ4_HDG_ON", "number", 0);
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            break;
+          case LateralNavModeState.TO:
+          case LateralNavModeState.GA:
+            SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 0);
+            break;
+          case LateralNavModeState.NAV:
+            SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            SimVar.SetSimVarValue("K:AP_NAV1_HOLD", "number", 0);
+            break;
+          case LateralNavModeState.LNAV:
+            SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+            break;
+          case LateralNavModeState.APPR:
+            this.cancelApproachMode(true);
+            SimVar.SetSimVarValue("L:WT_CJ4_NAV_ON", "number", 0);
+            SimVar.SetSimVarValue("K:HEADING_SLOT_INDEX_SET", "number", 1);
+            SimVar.SetSimVarValue("K:AP_PANEL_HEADING_HOLD", "number", 0);
+            break;
+          }
+        this.currentLateralActiveState = LateralNavModeState.ROLL;
+        this.currentLateralArmedState = LateralNavModeState.NONE;
+        SimVar.SetSimVarValue("K:TOGGLE_FLIGHT_DIRECTOR", "number", 0);
+        this.handleVNAVPressed();
+      } else {
+        SimVar.SetSimVarValue("K:TOGGLE_FLIGHT_DIRECTOR", "number", 1);
+      }
+    }
+  
 }
 
 class LateralNavModeState { }
@@ -1235,6 +1354,8 @@ NavModeEvent.GS_ACTIVE = 'gs_active';
 NavModeEvent.AP_CHANGED = 'ap_changed';
 NavModeEvent.LOC_ACTIVE = 'loc_active';
 NavModeEvent.LNAV_ACTIVE = 'lnav_active';
+NavModeEvent.FD_TOGGLE = 'FD_TOGGLE';
+NavModeEvent.ALT_PRESSED = 'ALT_PRESSED';
 
 class WT_ApproachType { }
 WT_ApproachType.NONE = 'none';
@@ -1246,6 +1367,7 @@ class AltitudeState { }
 AltitudeState.SELECTED = 'SELECTED';
 AltitudeState.MANAGED = 'MANAGED';
 AltitudeState.PRESSURE = 'PRESSURE';
+AltitudeState.LOCKED = 'LOCKED';
 AltitudeState.NONE = 'NONE';
 
 class ValueStateTracker {
