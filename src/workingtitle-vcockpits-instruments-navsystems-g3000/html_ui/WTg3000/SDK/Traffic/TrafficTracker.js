@@ -121,9 +121,17 @@ class WT_TrafficTracker {
      * @returns {Promise<void>} a Promise which resolves when the update is complete.
      */
     async update() {
-        let data = await Coherent.call("GET_AIR_TRAFFIC");
-        this._updateContacts(data);
-        this._deprecateContacts();
+        let data;
+        try {
+            data = await Coherent.call("GET_AIR_TRAFFIC");
+        } catch (e) {
+            console.log(e);
+        }
+
+        if (data) {
+            this._updateContacts(data);
+            this._deprecateContacts();
+        }
     }
 }
 /**
