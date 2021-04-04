@@ -1135,7 +1135,7 @@ class WT_G3x5_TSCMapSettingsTrafficTabRow extends WT_G3x5_TSCMapSettingsToggleTa
         let instrument = this.context.instrument;
         let pageGroup = this.context.homePageGroup;
         if (pageGroup === "PFD") {
-
+            instrument.SwitchToPageName(pageGroup, instrument.pfdNavMapTrafficSettings.name);
         } else {
             instrument.SwitchToPageName(pageGroup, instrument.getSelectedMFDPanePages().navMapTraffic.name);
         }

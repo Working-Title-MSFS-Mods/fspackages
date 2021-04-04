@@ -270,6 +270,7 @@ wt-tsc-button-value {
  #Electricity #PagesDisplay[state=Timers] #Timers,
  #Electricity #PagesDisplay[state=Minimums] #Minimums,
  #Electricity #PagesDisplay[state=PFDMapSettings] #PFDMapSettings,
+ #Electricity #PagesDisplay[state=PFDNavMapTrafficSettings] #PFDNavMapTrafficSettings,
  #Electricity #PagesDisplay[state=PFDSettings] #PFDSettings,
  #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
  #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
