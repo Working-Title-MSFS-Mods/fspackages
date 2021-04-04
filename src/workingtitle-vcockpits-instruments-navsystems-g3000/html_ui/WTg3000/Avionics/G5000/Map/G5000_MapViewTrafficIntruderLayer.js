@@ -401,7 +401,7 @@ WT_G5000_MapViewTrafficOffScaleHTMLElement.TEMPLATE.innerHTML = `
                 border: solid 1px white;
                 border-radius: 3px;
                 padding: var(--traffic-offscale-banner-padding, 0 0.2em);
-                display: block;
+                display: none;
             }
             #raoffscale {
                 color: red;
