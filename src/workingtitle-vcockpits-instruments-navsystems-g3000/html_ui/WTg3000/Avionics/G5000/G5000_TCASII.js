@@ -41,6 +41,14 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
         this._xpdrTCASMode = this._xpdrTCASModeSetting.getValue();
     }
 
+    /**
+     *
+     * @returns {Boolean}
+     */
+    isStandby() {
+        return this.operatingMode === WT_G5000_TCASII.OperatingMode.STANDBY;
+    }
+
     onOptionChanged(option, oldValue, newValue) {
         switch (option) {
             case "proximityAdvisoryParams":

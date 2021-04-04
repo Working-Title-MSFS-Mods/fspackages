@@ -117,6 +117,13 @@ class WT_G3x5_TrafficSystem {
         return this._entriesCulledReadOnly;
     }
 
+    /**
+     *
+     * @returns {Boolean}
+     */
+    isStandby() {
+    }
+
     _setOperatingMode(mode) {
         this._operatingMode = mode;
         this._entryUpdateOptions.operatingMode = mode;
