@@ -11,6 +11,9 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
         super(className, configName);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewAirplaneLayer.OPTIONS_DEF);
+
+        this._lastRotation = 0;
+        this._lastViewPos = {x: 0, y: 0};
     }
 
     _createHTMLElement() {
@@ -59,8 +62,17 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
         if (!state.viewPlane) {
             return;
         }
-        let iconRotation = state.model.airplane.navigation.headingTrue() + state.projection.rotation;
-        this._icon.style.transform = `translate(${state.viewPlane.x}px, ${state.viewPlane.y}px) rotate(${iconRotation}deg)`;
+
+        let iconRotation = Math.round((state.model.airplane.navigation.headingTrue() + state.projection.rotation) * 10) / 10;
+        let viewPosX = Math.round(state.viewPlane.x);
+        let viewPosY = Math.round(state.viewPlane.y);
+
+        if (iconRotation !== this._lastRotation || viewPosX !== this._lastViewPos.x || viewPosY !== this._lastViewPos.y) {
+            this._icon.style.transform = `translate(${viewPosX}px, ${viewPosY}px) rotate(${iconRotation}deg)`;
+            this._lastRotation = iconRotation;
+            this._lastViewPos.x = viewPosX;
+            this._lastViewPos.y = viewPosY;
+        }
     }
 }
 WT_MapViewAirplaneLayer.CLASS_DEFAULT = "airplaneLayer";

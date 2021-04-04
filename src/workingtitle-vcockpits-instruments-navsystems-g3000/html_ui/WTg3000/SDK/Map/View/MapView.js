@@ -316,10 +316,10 @@ class WT_MapView extends HTMLElement {
                 }
             }
             if (layerContainer.layer.isEnabled() && layerContainer.layer.isVisible(this._state)) {
-                layerContainer.container.style.display = "block";
+                layerContainer.setVisibility(true);
                 layerContainer.layer.onUpdate(this._state);
             } else {
-                layerContainer.container.style.display = "none";
+                layerContainer.setVisibility(false);
             }
         }, this);
     }
@@ -386,6 +386,7 @@ class WT_MapViewLayerContainer {
     constructor(view, layer) {
         this._view = view;
         this._layer = layer;
+        this._isVisible = true;
         this._isInit = false;
 
         this._container = document.createElement("div");
@@ -439,6 +440,13 @@ class WT_MapViewLayerContainer {
         this.view.appendChild(this.container);
         this.layer.onAttached(state);
         this._isInit = true;
+    }
+
+    setVisibility(value) {
+        if (this._isVisible !== value) {
+            this.container.style.display = value ? "block" : "none";
+            this._isVisible = value;
+        }
     }
 }
 
