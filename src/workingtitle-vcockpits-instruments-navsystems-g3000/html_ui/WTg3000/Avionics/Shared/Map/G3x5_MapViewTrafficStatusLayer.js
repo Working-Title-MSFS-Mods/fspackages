@@ -82,7 +82,9 @@ class WT_G3x5_MapViewTrafficOperatingModeHTMLElement extends HTMLElement {
      * @param {WT_MapViewState} state
      */
     _updateDisplay(state) {
-        this._mode.textContent = this._context.text[state.model.traffic.trafficSystem.operatingMode];
+        let trafficSystem = state.model.traffic.trafficSystem;
+        this._mode.textContent = this._context.text[trafficSystem.operatingMode];
+        this._mode.setAttribute("alert", `${(trafficSystem.isStandby() && !state.model.airplane.sensors.isOnGround()) ? "caution" : "none"}`);
     }
 
     /**
@@ -113,6 +115,9 @@ WT_G3x5_MapViewTrafficOperatingModeHTMLElement.TEMPLATE.innerHTML = `
         #mode {
             margin: var(--traffic-operatingmode-margin, 0 0.1em);
             color: white;
+        }
+        #mode[alert="caution"] {
+            color: var(--wt-g3x5-amber);
         }
     </style>
     <div id="mode"></div>
