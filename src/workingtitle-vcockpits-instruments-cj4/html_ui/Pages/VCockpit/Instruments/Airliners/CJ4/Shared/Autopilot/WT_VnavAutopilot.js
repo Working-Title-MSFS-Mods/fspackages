@@ -1583,7 +1583,7 @@ class WT_VerticalAutopilot {
             constraintIndex = this._vnav._activeConstraint.index;
             isClimb = true;
             vnavWindowData = {
-                toddistance: "",
+                toddistance: undefined,
                 fpa: "",
                 descentrate: "",
                 constraintreal: constraintIndex ? this._vnav.allWaypoints[constraintIndex].ident : "",
