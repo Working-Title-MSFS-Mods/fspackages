@@ -816,7 +816,7 @@ class WT_BaseVnav {
         else if (this.flightplan.activeWaypointIndex > this._lastClimbIndex) {
             altitude = this.indicatedAltitude;
             if (currentSegment >= 0) {
-                const fptaIdx = this._verticalFlightPlan.findIndex(x => (x.waypointFPTA !== undefined && !x.isClimb && x.waypointFPTA < altitude && x.indexInFlightPlan >= this.flightplan.activeWaypointIndex));
+                const fptaIdx = this._verticalFlightPlan.findIndex(x => (x.waypointFPTA !== undefined && !x.isClimb && x.waypointFPTA < altitude + 100 && x.indexInFlightPlan >= this.flightplan.activeWaypointIndex));
                 if (fptaIdx > -1) {
                     const fptaSegment = this._verticalFlightPlan[fptaIdx].segment;
                     if (fptaSegment !== undefined) {

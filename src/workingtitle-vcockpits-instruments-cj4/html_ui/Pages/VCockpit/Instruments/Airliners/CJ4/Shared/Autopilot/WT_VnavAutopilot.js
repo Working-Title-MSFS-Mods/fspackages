@@ -519,14 +519,16 @@ class WT_VerticalAutopilot {
     }
 
     canPathActivate() {
-        if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > -250) {
+        const gsBasedDeviation = -1 * (((this.groundSpeed && this.groundSpeed > 100 ? this.groundSpeed : 200) * (4 / 11)) + (750/11));
+        if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > gsBasedDeviation) {
             return true;
         }
         return false;
     }
 
     canGlidepathActivate() {
-        if (this.glidepath.deviation < 100 && this.glidepath.deviation > -250) {
+        const gsBasedDeviation = -1 * (((this.groundSpeed && this.groundSpeed > 100 ? this.groundSpeed : 200) * (4 / 11)) + (750/11));
+        if (this.glidepath.deviation < 100 && this.glidepath.deviation > gsBasedDeviation) {
             return true;
         }
         return false;
@@ -655,8 +657,8 @@ class WT_VerticalAutopilot {
                 }
                 else if (this._vnavPathStatus === VnavPathStatus.PATH_ACTIVE) {
                     if (this.indicatedAltitude < this.managedAltitude + 1000 && this.path.endsLevel) {
-                        console.log("setting PathInterceptStatus.LEVELING " + this.path.endsLevel + " " + this.path.fpta);
                         this._pathInterceptStatus = PathInterceptStatus.LEVELING;
+                        break;
                     }
                     else if (!this.path.endsLevel && this._pathInterceptStatus === PathInterceptStatus.INTERCEPTED
                         && this.indicatedAltitude < this.managedAltitude + 1000 && this.nextPath && this.nextPath.fpta) {
