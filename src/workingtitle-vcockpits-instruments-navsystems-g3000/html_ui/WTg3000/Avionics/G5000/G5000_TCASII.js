@@ -51,7 +51,8 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
 
     onOptionChanged(option, oldValue, newValue) {
         switch (option) {
-            case "taHysteresis":
+            case "taOnHysteresis":
+            case "taOffHysteresis":
             case "proximityAdvisoryParams":
                 this._entryUpdateOptions[option] = newValue;
                 break;
@@ -106,7 +107,8 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
     }
 }
 WT_G5000_TCASII.OPTION_DEFS = {
-    taHysteresis: {default: 2, auto: true, observed: true},
+    taOnHysteresis: {default: 2, auto: true, observed: true},    // seconds
+    taOffHysteresis: {default: 8, auto: true, observed: true},   // seconds
     proximityAdvisoryParams: {default: {
         horizontalSeparation: WT_Unit.NMILE.createNumber(6),
         verticalSeparation: WT_Unit.FOOT.createNumber(1200)
@@ -185,7 +187,8 @@ class WT_G5000_TCASIIIntruderEntry extends WT_G3x5_TrafficSystemIntruderEntry {
         this._lastHorizontalSeparation = WT_Unit.NMILE.createNumber(0);
         this._lastVerticalSeparation = WT_Unit.FOOT.createNumber(0);
 
-        this._hysteresisCounter = 0;
+        this._taOnTime = 0;
+        this._taOffTime = 0;
     }
 
     /**
@@ -220,18 +223,21 @@ class WT_G5000_TCASIIIntruderEntry extends WT_G3x5_TrafficSystemIntruderEntry {
         }
 
         let isTA = false;
+        let currentTime = this.intruder.lastUpdatedTime.asUnit(WT_Unit.SECOND);
         if (this.intruder.tcaNorm <= 1) {
             if (this._alertLevel !== WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY) {
-                if (++this._hysteresisCounter > options.taHysteresis) {
+                let dt = currentTime - this._taOffTime;
+                if (dt >= options.taOnHysteresis) {
                     isTA = true;
-                    this._hysteresisCounter = 0;
+                    this._taOnTime = currentTime;
                 }
             } else {
                 isTA = true;
             }
         } else if (this._alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY) {
-            if (++this._hysteresisCounter > options.taHysteresis) {
-                this._hysteresisCounter = 0;
+            let dt = currentTime - this._taOnTime;
+            if (dt >= options.taOffHysteresis) {
+                this._taOffTime = currentTime;
             } else {
                 isTA = true;
             }

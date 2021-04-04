@@ -79,7 +79,7 @@ class WT_TrafficTracker {
     }
 
     _deprecateContacts() {
-        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+        let currentTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
         for (let i = 0; i < this._trackedArray.length; i++) {
             let contact = this._trackedArray[i];
             let dt = currentTime - contact.lastContactTime.asUnit(WT_Unit.SECOND);
@@ -169,7 +169,7 @@ class WT_TrafficContact {
         let headingUnit = new WT_NavAngleUnit(false, this._lastPosition);
         this._lastHeading = headingUnit.createNumber(heading.asUnit(headingUnit));
 
-        this._lastContactTime = WT_Unit.SECOND.createNumber(SimVar.GetSimVarValue("E:ZULU TIME", "seconds"));
+        this._lastContactTime = WT_Unit.SECOND.createNumber(SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds"));
 
         this._computedGroundSpeed = WT_Unit.KNOT.createNumber(NaN);
         this._computedGroundTrack = NaN;
@@ -362,7 +362,7 @@ class WT_TrafficContact {
      * @param {WT_NumberUnit} heading - the current reported heading.
      */
     update(position, altitude, heading) {
-        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+        let currentTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
         let dt = currentTime - this._lastContactTime.number;
         if (dt < 0 || dt > this.contactTimeResetThreshold) {
             this.reset(position, altitude, heading);
@@ -397,7 +397,7 @@ class WT_TrafficContact {
         this._groundSpeedSmoother.reset();
         this._groundTrackSmoother.reset();
         this._verticalSpeedSmoother.reset();
-        this._lastContactTime.set(SimVar.GetSimVarValue("E:ZULU TIME", "seconds"));
+        this._lastContactTime.set(SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds"));
     }
 }
 WT_TrafficContact.OPTION_DEFS = {

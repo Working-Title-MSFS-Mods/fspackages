@@ -198,7 +198,7 @@ class WT_G3x5_TrafficSystem {
     }
 
     update() {
-        let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+        let currentTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
         if (currentTime - this._lastUpdateTime >= this.updateInterval) {
             this._doUpdate(currentTime);
         }
