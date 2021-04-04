@@ -1,12 +1,11 @@
 class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID) {
+    constructor(homePageGroup, homePageName, trafficSystemID) {
         super(homePageGroup, homePageName);
 
-        this._instrumentID = instrumentID;
         this._trafficSystemID = trafficSystemID;
 
         this._initSettingModel();
-        this._initMapSettingModel(instrumentID, halfPaneID);
+        this._initMapSettingModel();
     }
 
     /**
@@ -39,11 +38,8 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
         this._settingModel = new WT_DataStoreSettingModel(this._trafficSystemID);
     }
 
-    _getMapSettingModelID(instrumentID, halfPaneID) {
-    }
-
-    _initMapSettingModel(instrumentID, halfPaneID) {
-        this._mapSettingModel = new WT_MapSettingModel(this._getMapSettingModelID(instrumentID, halfPaneID), null, null);
+    _initMapSettingModel() {
+        this._mapSettingModel = new WT_MapSettingModel(WT_G3x5_TrafficMap.SETTING_MODEL_ID, null, null);
 
         this.trafficMapSettingModel.addSetting(this._rangeSetting = new WT_G3x5_TrafficMapRangeSetting(this.trafficMapSettingModel, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS, WT_G3x5_TrafficMap.MAP_RANGE_DEFAULT));
         this.trafficMapSettingModel.addSetting(this._altitudeModeSetting = new WT_G3x5_TrafficMapAltitudeModeSetting(this.trafficMapSettingModel, false));
@@ -98,20 +94,16 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
 }
 
 class WT_G3x5_TSCTrafficMapSettings extends WT_G3x5_TSCTrafficSettings {
-    _getMapSettingModelID(instrumentID, halfPaneID) {
-        let prefix = halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
-        return `${prefix}-${WT_G3x5_TrafficMap.SETTING_MODEL_ID_SUFFIX}`;
-    }
-
     _createADSBSubPage() {
         return new WT_G3x5_TSCTrafficADSBSettings(this, this._motionVectorModeSetting, this._motionVectorLookaheadSetting, true);
     }
 }
 
 class WT_G3x5_TSCNavMapTrafficSettings extends WT_G3x5_TSCTrafficSettings {
-    _getMapSettingModelID(instrumentID, halfPaneID) {
-        this._mapSettingModelID = halfPaneID === undefined ? instrumentID : `${instrumentID}-${halfPaneID}`;
-        return this._mapSettingModelID;
+    constructor(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID) {
+        super(homePageGroup, homePageName, trafficSystemID);
+
+        this._mapSettingModelID = (halfPaneID === undefined) ? instrumentID : `${instrumentID}-${halfPaneID}`;
     }
 
     _createADSBSubPage() {

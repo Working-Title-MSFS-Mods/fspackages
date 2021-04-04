@@ -6,7 +6,7 @@ class WT_G3x5_TrafficMap {
      */
     constructor(instrumentID, airplane, trafficSystem) {
         this._instrumentID = instrumentID;
-        this._settingModelID = `${instrumentID}-${WT_G3x5_TrafficMap.SETTING_MODEL_ID_SUFFIX}`;
+        this._settingModelID = WT_G3x5_TrafficMap.SETTING_MODEL_ID;
 
         this._airplane = airplane;
         this._trafficSystem = trafficSystem;
@@ -125,7 +125,7 @@ class WT_G3x5_TrafficMap {
         this.view.update();
     }
 }
-WT_G3x5_TrafficMap.SETTING_MODEL_ID_SUFFIX = "TrafficMap";
+WT_G3x5_TrafficMap.SETTING_MODEL_ID = "TrafficMap";
 
 WT_G3x5_TrafficMap.MAP_RANGE_LEVELS =
     [750, 1500].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(

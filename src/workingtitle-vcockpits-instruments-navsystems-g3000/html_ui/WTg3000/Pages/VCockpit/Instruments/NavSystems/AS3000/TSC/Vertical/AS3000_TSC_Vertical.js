@@ -20,8 +20,8 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCPFDSettings("PFD", "PFD Home", "PFD");
     }
 
-    _createTrafficMapSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
-        return new WT_G5000_TSCTrafficMapSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", instrumentID, halfPaneID);
+    _createTrafficMapSettingsPage(homePageGroup, homePageName) {
+        return new WT_G5000_TSCTrafficMapSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1");
     }
 
     _createNavMapTrafficSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
