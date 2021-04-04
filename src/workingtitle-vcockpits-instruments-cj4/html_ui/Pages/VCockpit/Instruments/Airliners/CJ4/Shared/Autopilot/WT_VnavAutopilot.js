@@ -317,6 +317,11 @@ class WT_VerticalAutopilot {
                         this._glidepathStatus = GlidepathStatus.NONE;
                     }
                 }
+                if (!this.canPathArm()) {
+                    this.setArmedVnavVerticalState(VerticalNavModeState.NONE);
+                    this._vnavPathStatus = VnavPathStatus.PATH_EXISTS;
+                    break;
+                }
                 if (this._pathInterceptStatus === PathInterceptStatus.LEVELED) {
                     this.manageAltitude();
                 }
