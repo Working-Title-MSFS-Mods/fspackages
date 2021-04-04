@@ -872,6 +872,9 @@ class WT_VerticalAutopilot {
     }
 
     checkAndSetManagedAltitude(isClimb = false) {
+        if (this.managedAltitude !== this.constraint.altitude) {
+            this.managedAltitude = this.constraint.altitude;
+        }
         if (isClimb) {
             if (this.indicatedAltitude > this.managedAltitude - 1000) {
                 return true;
