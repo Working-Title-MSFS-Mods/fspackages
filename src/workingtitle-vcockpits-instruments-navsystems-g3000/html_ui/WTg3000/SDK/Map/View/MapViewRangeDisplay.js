@@ -109,12 +109,9 @@ WT_MapViewRangeDisplay.TEMPLATE.innerHTML = `
             border: solid 1px white;
             border-radius: 3px;
             text-align: center;
-            font-size: 2.5vh;
-            line-height: 2vh;
-            color: white;
         }
             div {
-                margin: 0 0.5vh;
+                margin: 0 0.2em;
             }
             #auto {
                 display: none;

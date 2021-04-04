@@ -226,8 +226,11 @@ as3000-mfd-element #Electricity map-view {
     width: 100%;
     display: block;
     background-color: black;
+    font-size: 1.75vh;
 }
     as3000-mfd-element #Electricity map-view map-view-rangedisplay {
+        font-weight: bold;
+        font-size: 2.5vh;
         color: var(--wt-g3x5-lightblue);
     }
     as3000-mfd-element #Electricity map-view map-view-orientationdisplay {
@@ -235,6 +238,7 @@ as3000-mfd-element #Electricity map-view {
         top: 0;
         left: 0;
         margin: 1px;
+        font-weight: bold;
         color: var(--wt-g3x5-lightblue);
     }
     as3000-mfd-element #Electricity map-view map-view-minicompass {
@@ -258,7 +262,6 @@ as3000-mfd-element #Electricity map-view {
     }
     as3000-mfd-element #Electricity map-view .trafficStatusLayer {
         font-weight: bold;
-        font-size: 1.75vh;
     }
         as3000-mfd-element #Electricity map-view .trafficStatusTopInfo {
             position: absolute;
@@ -277,14 +280,12 @@ as3000-mfd-element #Electricity map-view {
         bottom: 1px;
         width: 15vh;
         font-weight: bold;
-        font-size: 1.75vh;
     }
     as3000-mfd-element #Electricity map-view wt-map-view-traffic-navmapstatus {
         position: absolute;
         right: 1px;
         bottom: 1px;
         font-weight: bold;
-        font-size: 1.75vh;
     }
 
 as3000-mfd-element #Electricity .weatherRadar {
