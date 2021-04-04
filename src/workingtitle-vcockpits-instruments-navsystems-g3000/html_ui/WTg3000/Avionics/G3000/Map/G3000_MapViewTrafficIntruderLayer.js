@@ -1,10 +1,39 @@
 class WT_G3000_MapViewTrafficIntruderLayer extends WT_G3x5_MapViewTrafficIntruderLayer {
+    _createOffScaleHTMLElement() {
+        return new WT_G3000_MapViewTrafficOffScaleHTMLElement();
+    }
+
     _createIntruderViewHTMLElementRecycler() {
         return new WT_G3000_MapViewTrafficIntruderViewHTMLElementRecycler(this._iconLayer.container);
     }
 
     _createIntruderView(intruderEntry) {
         return new WT_G3000_MapViewTrafficIntruderView(intruderEntry, this._intruderViewHTMLElementRecycler);
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_G3000_MapViewTrafficIntruderView} view
+     * @param {Boolean} showSymbol
+     * @param {Boolean} showLabel
+     */
+    _updateIntruderView(state, view, showSymbol, showLabel) {
+        super._updateIntruderView(state, view, showSymbol, showLabel);
+
+        if (view.isOffScale && view.intruderEntry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
+            this._taOffScaleCount++;
+        }
+    }
+
+    _updateIntruders(state) {
+        this._taOffScaleCount = 0;
+
+        super._updateIntruders(state);
+    }
+
+    _updateOffScale(state) {
+        this._offScaleHTMLElement.update(state, this._taOffScaleCount);
     }
 }
 
@@ -13,7 +42,7 @@ class WT_G3000_MapViewTrafficIntruderViewHTMLElementRecycler extends WT_HTMLElem
      *
      * @returns {T}
      */
-     _createElement() {
+    _createElement() {
         return new WT_G3000_MapViewTrafficIntruderHTMLElement();
     }
 }
@@ -289,3 +318,89 @@ WT_G3000_MapViewTrafficIntruderHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3000_MapViewTrafficIntruderHTMLElement.NAME, WT_G3000_MapViewTrafficIntruderHTMLElement);
+
+class WT_G3000_MapViewTrafficOffScaleHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3000_MapViewTrafficOffScaleHTMLElement.TEMPLATE;
+    }
+
+    _defineChildren() {
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     * @param {Number} taOffScaleCount
+     */
+    _updateTAOffScale(state, taOffScaleCount) {
+        this._wrapper.setAttribute("show-taoffscale", `${taOffScaleCount > 0}`);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     * @param {Number} taOffScaleCount
+     */
+    _updateDisplay(state, taOffScaleCount) {
+        this._updateTAOffScale(state, taOffScaleCount);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     * @param {Number} taOffScaleCount
+     */
+    update(state, taOffScaleCount) {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._updateDisplay(state, taOffScaleCount);
+    }
+}
+WT_G3000_MapViewTrafficOffScaleHTMLElement.NAME = "wt-map-view-traffic-offscale";
+WT_G3000_MapViewTrafficOffScaleHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3000_MapViewTrafficOffScaleHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+            .banner {
+                background-color: black;
+                border: solid 1px white;
+                border-radius: 3px;
+                padding: var(--traffic-offscale-banner-padding, 0 0.2em);
+                display: none;
+            }
+            #taoffscale {
+                color: var(--wt-g3x5-amber);
+            }
+            #wrapper[show-taoffscale="true"] #taoffscale {
+                display: block;
+            }
+    </style>
+    <div id="wrapper">
+        <div id="taoffscale" class="banner">TA OFF SCALE</div>
+    </div>
+`;
+
+customElements.define(WT_G3000_MapViewTrafficOffScaleHTMLElement.NAME, WT_G3000_MapViewTrafficOffScaleHTMLElement);

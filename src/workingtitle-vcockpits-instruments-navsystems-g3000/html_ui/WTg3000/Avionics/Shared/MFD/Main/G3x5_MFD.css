@@ -271,6 +271,21 @@ as3000-mfd-element #Electricity map-view {
             bottom: 1px;
             right: 1px;
         }
+    as3000-mfd-element #Electricity map-view wt-map-view-traffic-offscale {
+        position: absolute;
+        left: 1px;
+        bottom: 1px;
+        width: 15vh;
+        font-weight: bold;
+        font-size: 1.75vh;
+    }
+    as3000-mfd-element #Electricity map-view wt-map-view-traffic-navmapstatus {
+        position: absolute;
+        right: 1px;
+        bottom: 1px;
+        font-weight: bold;
+        font-size: 1.75vh;
+    }
 
 as3000-mfd-element #Electricity .weatherRadar {
     position: relative;

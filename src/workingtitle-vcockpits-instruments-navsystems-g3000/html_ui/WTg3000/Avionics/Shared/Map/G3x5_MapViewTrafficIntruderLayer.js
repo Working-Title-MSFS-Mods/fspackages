@@ -9,6 +9,13 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
         this.addSubLayer(this._motionVectorLayer);
         this.addSubLayer(this._iconLayer);
 
+        if (!useOuterRangeMaxScale) {
+            this._offScaleLayer = new WT_MapViewSubLayer(true);
+            this.addSubLayer(this._offScaleLayer);
+            this._offScaleHTMLElement = this._createOffScaleHTMLElement();
+            this._offScaleLayer.container.appendChild(this._offScaleHTMLElement);
+        }
+
         /**
          * @type {WT_HTMLElementRecycler<WT_G3x5_MapViewTrafficIntruderHTMLElement>}
          */
@@ -24,6 +31,9 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
         this._intruderViewsToRemove = new Set();
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_MapViewTrafficIntruderLayer.OPTIONS_DEF);
+    }
+
+    _createOffScaleHTMLElement() {
     }
 
     _createIntruderViewHTMLElementRecycler() {
@@ -124,6 +134,35 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
     }
 
     /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_G3x5_MapViewTrafficIntruderView} view
+     * @param {Boolean} showSymbol
+     * @param {Boolean} showLabel
+     */
+    _updateIntruderView(state, view, showSymbol, showLabel) {
+        view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer, this._useOuterRangeMaxScale, showSymbol, showLabel);
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {Boolean} showSymbol
+     * @param {Boolean} showLabel
+     * @param {WT_G3x5_TrafficSystemIntruderEntry} entry
+     */
+    _updateIntruderEntry(state, showSymbol, showLabel, intruderEntry) {
+        let view = this._intruderViews.get(intruderEntry);
+        if (!view) {
+            view = this._createIntruderView(intruderEntry);
+            this._intruderViews.set(intruderEntry, view);
+        } else {
+            this._intruderViewsToRemove.delete(view);
+        }
+        this._updateIntruderView(state, view, showSymbol, showLabel);
+    }
+
+    /**
      * @param {WT_MapViewState} state
      */
     _updateIntruders(state) {
@@ -138,16 +177,7 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
          * @type {WT_ReadOnlyArray<WT_G3x5_TrafficSystemIntruderEntry>}
          */
         let intruderEntries = state.model.traffic.trafficSystem.intruders;
-        intruderEntries.forEach(intruderEntry => {
-            let view = this._intruderViews.get(intruderEntry);
-            if (!view) {
-                view = this._createIntruderView(intruderEntry);
-                this._intruderViews.set(intruderEntry, view);
-            } else {
-                this._intruderViewsToRemove.delete(view);
-            }
-            view.update(state, this.iconSize, this.fontSize, this._motionVectorLayer, this._useOuterRangeMaxScale, showSymbol, showLabel);
-        }, this);
+        intruderEntries.forEach(this._updateIntruderEntry.bind(this, state, showSymbol, showLabel));
 
         this._strokeMotionVectors(state);
 
@@ -158,6 +188,9 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
         this._intruderViewsToRemove.clear();
     }
 
+    _updateOffScale(state) {
+    }
+
     /**
      * @param {WT_MapViewState} state
      */
@@ -165,6 +198,9 @@ class WT_G3x5_MapViewTrafficIntruderLayer extends WT_MapViewMultiLayer {
         super.onUpdate(state);
 
         this._updateIntruders(state);
+        if (this._offScaleHTMLElement) {
+            this._updateOffScale(state);
+        }
     }
 }
 WT_G3x5_MapViewTrafficIntruderLayer.CLASS_DEFAULT = "trafficIntruderLayer";
