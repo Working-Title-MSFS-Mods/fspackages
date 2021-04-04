@@ -43,7 +43,7 @@
       height: 100%;
       z-index: 0; }
 
-as3000-pfd-element #Mainframe #InstrumentsContainer #InsetMap {
+as3000-pfd-element #Mainframe #InstrumentsContainer .insetMapContainer {
     transform: rotateX(0);
     position: absolute;
     left: 0.5vh;
