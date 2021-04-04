@@ -1584,8 +1584,8 @@ class WT_VerticalAutopilot {
             isClimb = true;
             vnavWindowData = {
                 toddistance: undefined,
-                fpa: "",
-                descentrate: "",
+                fpa: 0,
+                descentrate: 0,
                 constraintreal: constraintIndex ? this._vnav.allWaypoints[constraintIndex].ident : "",
                 constraintrealaltitude: constraintIndex ? this.buildConstraintText(this._vnav.allWaypoints[constraintIndex]) : "",
                 fptaDistance: constraintIndex ? this._vnav.allWaypoints[constraintIndex].cumulativeDistanceInFP - this._vnav._currentDistanceInFP : "",
