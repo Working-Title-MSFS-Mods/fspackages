@@ -305,6 +305,8 @@ class WT_G3x5_NavMap {
         this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapAltitudeRestrictionSetting(this.trafficSettingModel));
         this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorModeSetting(this.trafficSettingModel));
         this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorLookaheadSetting(this.trafficSettingModel));
+
+        this.trafficSettingModel.update();
     }
 
     init(viewElement) {
@@ -333,7 +335,6 @@ class WT_G3x5_NavMap {
         this._waypointRenderer.update(this.view.state);
     }
 }
-WT_G3x5_NavMap.TRAFFIC_SETTING_MODEL_ID_SUFFIX = "TrafficMap";
 WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT = {
     miniCompass: true,
     rangeDisplay: false,

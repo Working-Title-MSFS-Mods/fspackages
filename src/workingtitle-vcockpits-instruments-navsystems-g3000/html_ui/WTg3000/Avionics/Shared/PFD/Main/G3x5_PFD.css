@@ -182,6 +182,15 @@ as3000-pfd-element map-view {
         font-weight: bold;
         color: var(--wt-g3x5-lightblue);
     }
+    as3000-pfd-element #Electricity map-view .trafficStatusLayer {
+        font-weight: bold;
+    }
+        as3000-pfd-element #Electricity map-view .trafficStatusTopInfo {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 11vh;
+        }
     as3000-pfd-element map-view wt-map-view-traffic-offscale {
         position: absolute;
         left: 1px;

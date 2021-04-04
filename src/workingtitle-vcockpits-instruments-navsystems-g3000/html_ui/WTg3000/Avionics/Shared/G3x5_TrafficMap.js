@@ -1,23 +1,13 @@
 class WT_G3x5_TrafficMap {
     /**
-     * @param {String} instrumentID
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_G3x5_TrafficSystem} trafficSystem
      */
-    constructor(instrumentID, airplane, trafficSystem) {
-        this._instrumentID = instrumentID;
+    constructor(airplane, trafficSystem) {
         this._settingModelID = WT_G3x5_TrafficMap.SETTING_MODEL_ID;
 
         this._airplane = airplane;
         this._trafficSystem = trafficSystem;
-    }
-
-    /**
-     * @readonly
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
     }
 
     /**
@@ -56,6 +46,14 @@ class WT_G3x5_TrafficMap {
     }
 
     /**
+     * @readonly
+     * @type {WT_G3x5_TrafficMapRangeSetting}
+     */
+    get rangeSetting() {
+        return this._rangeTargetController.rangeSetting;
+    }
+
+    /**
      * @returns {WT_G3x5_MapModelTrafficModule}
      */
     _createTrafficModule() {
@@ -75,7 +73,7 @@ class WT_G3x5_TrafficMap {
     }
 
     /**
-     * @returns {WT_G3x5_MapViewTrafficStatusLayer}
+     * @returns {WT_MapViewLayer}
      */
     _createTrafficStatusLayer() {
     }

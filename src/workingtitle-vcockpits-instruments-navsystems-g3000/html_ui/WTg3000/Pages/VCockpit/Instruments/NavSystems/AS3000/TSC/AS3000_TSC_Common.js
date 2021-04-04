@@ -434,18 +434,33 @@ class AS3000_TSC extends NavSystemTouch {
         WT_MapSettingModel.setSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
     }
 
-    _handleZoomEventPFD(event) {
-        if (!this._pfdMapSettings.element.insetMapShowSetting.getValue()) {
-            return;
-        }
+    _changePFDTrafficMapRange(delta) {
+        let settingModelID = WT_G3x5_TrafficMap.SETTING_MODEL_ID;
+        let key = WT_G3x5_TrafficMapRangeSetting.KEY_DEFAULT;
+        let currentIndex = WT_MapSettingModel.getSettingValue(settingModelID, key);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS.length - 1), 0);
+        WT_MapSettingModel.setSettingValue(settingModelID, key, newIndex, true);
+    }
 
-        switch (event) {
-            case "BottomKnob_Small_INC":
-                this._changePFDMapRange(1);
-                break;
-            case "BottomKnob_Small_DEC":
-                this._changePFDMapRange(-1);
-                break;
+    _handleZoomEventPFD(event) {
+        if (this._pfdMapSettings.element.insetMapShowSetting.getValue()) {
+            switch (event) {
+                case "BottomKnob_Small_INC":
+                    this._changePFDMapRange(1);
+                    break;
+                case "BottomKnob_Small_DEC":
+                    this._changePFDMapRange(-1);
+                    break;
+            }
+        } else if (WT_DataStoreSettingModel.getSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, false)) {
+            switch (event) {
+                case "BottomKnob_Small_INC":
+                    this._changePFDTrafficMapRange(1);
+                    break;
+                case "BottomKnob_Small_DEC":
+                    this._changePFDTrafficMapRange(-1);
+                    break;
+            }
         }
     }
 
@@ -636,6 +651,11 @@ AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT = new Set([
 class AS3000_TSC_PageInfos {
 }
 class AS3000_TSC_PFDHome extends NavSystemElement {
+    constructor() {
+        super();
+    }
+
+
     init(root) {
         this.NavSourceButton = this.gps.getChildById("NavSourceButton");
         this.NavSourceButton_Value = this.NavSourceButton.getElementsByClassName("lowerValue")[0];
@@ -659,13 +679,25 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
         this.gps.makeButton(this.SpeedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "Speed Bugs"));
         this.gps.makeButton(this.TimersButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "Timers"));
         this.gps.makeButton(this.MinimumsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "Minimums"));
+        this.gps.makeButton(this.TrafficMapButton, this._onTrafficMapButtonPressed.bind(this));
         this.gps.makeButton(this.PFDMapSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "PFD Map Settings"));
         this.gps.makeButton(this.PFDSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "PFD Settings"));
     }
+
+    _toggleTrafficMap() {
+        let value = WT_DataStoreSettingModel.getSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, false);
+        WT_DataStoreSettingModel.setSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, !value);
+    }
+
+    _onTrafficMapButtonPressed() {
+        this._toggleTrafficMap();
+    }
+
     onEnter() {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+");
     }
+
     onUpdate(_deltaTime) {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
             Avionics.Utils.diffAndSet(this.NavSourceButton_Value, "FMS");
@@ -715,10 +747,13 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
                 break;
         }
     }
+
     onExit() {
     }
+
     onEvent(_event) {
     }
+
     sendMouseEvent(_event) {
         LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", _event);
     }

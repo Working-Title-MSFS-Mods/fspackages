@@ -55,6 +55,14 @@ class WT_G3x5_PFD extends NavSystem {
         return this._insetMap;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_PFDTrafficInsetMapContainer}
+     */
+    get trafficInsetMap() {
+        return this._trafficInsetMap;
+    }
+
     _createMainPage() {
     }
 
@@ -74,6 +82,13 @@ class WT_G3x5_PFD extends NavSystem {
         this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", this._insetMap = this._createInsetMap()));
     }
 
+    _createTrafficInsetMap() {
+    }
+
+    _initTrafficInsetMap() {
+        this.addIndependentElementContainer(new NavSystemElementContainer("TrafficInsetMap", "TrafficInsetMap", this._trafficInsetMap = this._createTrafficInsetMap()));
+    }
+
     _initWarnings() {
         this._warnings = new PFD_Warnings();
         this.addIndependentElementContainer(new NavSystemElementContainer("Warnings", "Warnings", this._warnings));
@@ -83,6 +98,7 @@ class WT_G3x5_PFD extends NavSystem {
         this._initMainPage();
         this._initWarnings();
         this._initInsetMap();
+        this._initTrafficInsetMap();
     }
 
     connectedCallback() {
@@ -215,16 +231,14 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
         super();
 
         this._instrumentID = instrumentID;
-
         this._isEnabled = false;
+        this._isInit = false;
 
         this._initSettingModel();
-
-        this._isInit = false;
     }
 
     _initSettingModel() {
-        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID, null);
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID);
         this._settingModel.addSetting(this._showSetting = new WT_G3x5_PFDInsetMapShowSetting(this._settingModel));
         this.showSetting.addListener(this._onShowSettingChanged.bind(this));
 
@@ -255,7 +269,7 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
         return this._showSetting;
     }
 
-    _defineChildren(root) {
+    _defineChildren() {
         this._mapContainer = this.gps.getChildById("InsetMap");
         this._mapContainer.style.display = "none";
     }
@@ -269,7 +283,7 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
     }
 
     init(root) {
-        this._defineChildren(root);
+        this._defineChildren();
         this._initNavMap(root);
         this._setEnabled(this.showSetting.getValue());
         this._isInit = true;
@@ -286,6 +300,10 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
             return;
         }
 
+        if (value && this.instrument.trafficInsetMap) {
+            this.instrument.trafficInsetMap.showSetting.setValue(false);
+        }
+
         this._mapContainer.style.display = value ? "block" : "none";
         this._isEnabled = value;
     }
@@ -295,9 +313,6 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
             this._navMap.update();
         }
     }
-
-    onEvent(event) {
-    }
 }
 WT_G3x5_PFDInsetMap.LAYER_OPTIONS = {
     miniCompass: true,
@@ -305,6 +320,95 @@ WT_G3x5_PFDInsetMap.LAYER_OPTIONS = {
     windData: false,
     roads: false
 };
+
+class WT_G3x5_PFDTrafficInsetMapContainer extends WT_G3x5_PFDElement {
+    constructor(instrumentID) {
+        super();
+
+        this._instrumentID = instrumentID;
+        this._isEnabled = false;
+        this._isInit = false;
+
+        this._initSettingModel();
+    }
+
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this.instrumentID);
+        this._settingModel.addSetting(this._showSetting = new WT_G3x5_PFDTrafficInsetMapShowSetting(this._settingModel));
+        this.showSetting.addListener(this._onShowSettingChanged.bind(this));
+
+        this._settingModel.init();
+    }
+
+    /**
+     * @readonly
+     * @type {String}
+     */
+    get instrumentID() {
+        return this._instrumentID;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_TrafficMap}
+     */
+    get trafficMap() {
+        return this._trafficMap;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_PFDInsetMapShowSetting}
+     */
+    get showSetting() {
+        return this._showSetting;
+    }
+
+    _defineChildren() {
+        this._mapContainer = this.gps.getChildById("TrafficInsetMap");
+        this._mapContainer.style.display = "none";
+    }
+
+    _createTrafficMap() {
+    }
+
+    _initTrafficMap(root) {
+        this._trafficMap = this._createTrafficMap();
+        this._trafficMap.init(root.querySelector(`.insetMap`));
+    }
+
+    init(root) {
+        this._defineChildren();
+        this._initTrafficMap(root);
+        this._setEnabled(this.showSetting.getValue());
+        this._isInit = true;
+    }
+
+    _onShowSettingChanged(setting, newValue, oldValue) {
+        if (this._isInit) {
+            this._setEnabled(newValue);
+        }
+    }
+
+    _setEnabled(value) {
+        if (value === this._isEnabled) {
+            return;
+        }
+
+        if (value && this.instrument.insetMap) {
+            this.instrument.insetMap.showSetting.setValue(false);
+        }
+
+        this._mapContainer.style.display = value ? "block" : "none";
+        this._isEnabled = value;
+    }
+
+    onUpdate(deltaTime) {
+        if (this._isEnabled) {
+            this._trafficMap.update();
+        }
+    }
+}
 
 class WT_G3x5_PFDMainPage extends NavSystemPage {
     constructor(instrument) {
