@@ -153,5 +153,20 @@ as3000-pfd-element map-view-rangedisplay {
     color: var(--wt-g3x5-lightblue);
 }
 as3000-pfd-element map-view-orientationdisplay {
-  color: var(--wt-g3x5-lightblue);
+    color: var(--wt-g3x5-lightblue);
+}
+as3000-pfd-element map-view wt-map-view-traffic-offscale {
+    position: absolute;
+    left: 1px;
+    bottom: 1px;
+    width: 15vh;
+    font-weight: bold;
+    font-size: 1.75vh;
+}
+as3000-pfd-element map-view wt-map-view-traffic-navmapstatus {
+    position: absolute;
+    right: 1px;
+    bottom: 1px;
+    font-weight: bold;
+    font-size: 1.75vh;
 }
