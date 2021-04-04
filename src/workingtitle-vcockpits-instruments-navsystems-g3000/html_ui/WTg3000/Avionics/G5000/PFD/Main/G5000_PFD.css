@@ -132,6 +132,17 @@ as3000-pfd-element wt-pfd-aoaindicator {
     font-size: 2vh;
 }
 
+as3000-pfd-element wt-pfd-trafficalert {
+    position: absolute;
+    left: 34.5%;
+    bottom: 51%;
+    height: 3%;
+    width: 8%;
+    font-family: "Roboto-Regular";
+    font-weight: bold;
+    font-size: 3vh;
+}
+
     as3000-pfd-element #Mainframe #InstrumentsContainer #Map {
       transform: rotateX(0);
       position: absolute;

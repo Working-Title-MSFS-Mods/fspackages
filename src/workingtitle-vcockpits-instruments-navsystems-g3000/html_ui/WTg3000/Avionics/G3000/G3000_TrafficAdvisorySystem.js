@@ -1,5 +1,17 @@
 class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     /**
+     * @param {WT_PlayerAirplane} airplane
+     * @param {WT_TrafficTracker} trafficTracker
+     * @param {Object} [options]
+     */
+    constructor(airplane, trafficTracker, options) {
+        super(airplane, trafficTracker, options);
+
+        this._taEntries = [];
+        this._taEntriesReadOnly = new WT_ReadOnlyArray(this._taEntries);
+    }
+
+    /**
      * @returns {WT_G3000_TrafficSystemSensitivity}
      */
     _createSensitivity() {
@@ -22,6 +34,14 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
 
         this._settingModel.init();
         this._setOperatingMode(operatingModeSetting.getValue());
+    }
+
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_G3000_TrafficAdvisorySystemIntruderEntry>}
+     */
+    get trafficAdvisories() {
+        return this._taEntriesReadOnly;
     }
 
     /**
@@ -48,6 +68,23 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
 
     _createIntruderEntry(intruder) {
         return new WT_G3000_TrafficAdvisorySystemIntruderEntry(intruder);
+    }
+
+    /**
+     *
+     * @param {WT_G3000_TrafficAdvisorySystemIntruderEntry} entry
+     */
+    _updateIntruderEntry(entry) {
+        let wasTA = entry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY;
+        super._updateIntruderEntry(entry);
+        let isTA = entry.alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY;
+        if (wasTA !== isTA) {
+            if (isTA) {
+                this._taEntries.push(entry);
+            } else {
+                this._taEntries.splice(this._taEntries.indexOf(entry), 1);
+            }
+        }
     }
 
     _doUpdate(currentTime) {

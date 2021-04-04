@@ -2,6 +2,9 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
     constructor(airplane, trafficTracker, xpdrID, options) {
         super(airplane, trafficTracker, options);
 
+        this._taEntries = [];
+        this._taEntriesReadOnly = new WT_ReadOnlyArray(this._taEntries);
+
         this._xpdrID = xpdrID;
         this._initXPDRSettingModel();
     }
@@ -42,6 +45,14 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
     }
 
     /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_G3000_TrafficAdvisorySystemIntruderEntry>}
+     */
+    get trafficAdvisories() {
+        return this._taEntriesReadOnly;
+    }
+
+    /**
      *
      * @returns {Boolean}
      */
@@ -69,6 +80,23 @@ class WT_G5000_TCASII extends WT_G3x5_TrafficSystem {
 
     _createIntruderEntry(intruder) {
         return new WT_G5000_TCASIIIntruderEntry(intruder);
+    }
+
+    /**
+     *
+     * @param {WT_G5000_TCASIIIntruderEntry} entry
+     */
+    _updateIntruderEntry(entry) {
+        let wasTA = entry.alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY;
+        super._updateIntruderEntry(entry);
+        let isTA = entry.alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY;
+        if (wasTA !== isTA) {
+            if (isTA) {
+                this._taEntries.push(entry);
+            } else {
+                this._taEntries.splice(this._taEntries.indexOf(entry), 1);
+            }
+        }
     }
 
     _updateOperatingMode() {

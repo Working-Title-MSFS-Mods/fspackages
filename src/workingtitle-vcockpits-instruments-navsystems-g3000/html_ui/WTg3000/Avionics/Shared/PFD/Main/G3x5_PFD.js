@@ -47,6 +47,14 @@ class WT_G3x5_PFD extends NavSystem {
         return this._trafficSystem;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_PFDInsetMap}
+     */
+    get insetMap() {
+        return this._insetMap;
+    }
+
     _createMainPage() {
     }
 
@@ -63,7 +71,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _initInsetMap() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", this._createInsetMap()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", this._insetMap = this._createInsetMap()));
     }
 
     _initWarnings() {
@@ -353,6 +361,13 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
 
     /**
      *
+     * @returns {WT_G3x5_PFDTrafficAlert}
+     */
+    _createTrafficAlert() {
+    }
+
+    /**
+     *
      * @returns {WT_G3x5_PFDBottomInfo}
      */
     _createBottomInfo() {
@@ -368,6 +383,7 @@ class WT_G3x5_PFDMainPage extends NavSystemPage {
             this._compass = new WT_G3x5_PFDCompass(),
             this._aoaIndicator = this._createAoAIndicator(),
             this._minimums = this._createMinimums(),
+            this._trafficAlert = this._createTrafficAlert(),
             this._bottomInfo = this._createBottomInfo(),
             new AS3000_PFD_ActiveCom(),
             this._mapInstrument = new MapInstrumentElement(),

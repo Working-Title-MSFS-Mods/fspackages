@@ -98,6 +98,10 @@ class WT_G5000_PFDMainPage extends WT_G3x5_PFDMainPage {
         return new WT_G5000_PFDAoAIndicator();
     }
 
+    _createTrafficAlert() {
+        return new WT_G5000_PFDTrafficAlert();
+    }
+
     _createBottomInfo() {
         return new WT_G5000_PFDBottomInfo();
     }
