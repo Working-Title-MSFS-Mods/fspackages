@@ -101,6 +101,14 @@ class WT_G3x5_NavMap {
         return this._nexradShowSetting;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_NavMapTrafficShowSetting}
+     */
+    get trafficShowSetting() {
+        return this._trafficShowSetting;
+    }
+
     _initUnitsModule() {
         this._unitsAdapter = new WT_G3x5_UnitsControllerMapModelAdapter(this._unitsController, this.model);
     }
@@ -272,7 +280,7 @@ class WT_G3x5_NavMap {
             this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_KEY, "roads", "primaryRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.ROAD_PRIMARY_RANGE_DEFAULT));
         }
 
-        this.settingModel.addSetting(new WT_G3x5_NavMapTrafficShowSetting(this.settingModel));
+        this.settingModel.addSetting(this._trafficShowSetting = new WT_G3x5_NavMapTrafficShowSetting(this.settingModel));
 
         this.settingModel.addSetting(new WT_G3x5_TrafficMapAltitudeModeSetting(this.settingModel));
         this.settingModel.addSetting(new WT_G3x5_TrafficMapAltitudeRestrictionSetting(this.settingModel));

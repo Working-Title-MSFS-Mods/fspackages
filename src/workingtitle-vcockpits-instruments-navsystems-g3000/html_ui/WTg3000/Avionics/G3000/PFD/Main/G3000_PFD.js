@@ -135,7 +135,11 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
     }
 
     _createAoAIndicator() {
-        return this._aoaIndicator = new WT_G3000_PFDAoAIndicator("PFD");
+        return new WT_G3000_PFDAoAIndicator();
+    }
+
+    _createTrafficAlert() {
+        return new WT_G3000_PFDTrafficAlert();
     }
 
     _createBottomInfo() {
