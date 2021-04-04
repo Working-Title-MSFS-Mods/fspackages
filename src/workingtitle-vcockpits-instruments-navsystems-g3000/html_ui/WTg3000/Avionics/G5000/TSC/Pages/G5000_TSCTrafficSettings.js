@@ -1,6 +1,6 @@
 class WT_G5000_TSCTrafficMapSettings extends WT_G3x5_TSCTrafficMapSettings {
-    constructor(homePageGroup, homePageName, trafficSystemID, xpdrID, instrumentID, halfPaneID) {
-        super(homePageGroup, homePageName, trafficSystemID, instrumentID, halfPaneID);
+    constructor(homePageGroup, homePageName, trafficSystemID, xpdrID) {
+        super(homePageGroup, homePageName, trafficSystemID);
 
         this._initXPDRSettingModel(xpdrID);
     }

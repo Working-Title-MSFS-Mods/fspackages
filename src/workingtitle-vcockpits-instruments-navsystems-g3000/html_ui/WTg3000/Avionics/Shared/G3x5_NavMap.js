@@ -70,6 +70,15 @@ class WT_G3x5_NavMap {
     }
 
     /**
+     * The setting model associated with this map's traffic layer.
+     * @readonly
+     * @type {WT_MapSettingModel}
+     */
+    get trafficSettingModel() {
+        return this._trafficSettingModel;
+    }
+
+    /**
      * @readonly
      * @type {WT_MapRangeSetting}
      */
@@ -282,11 +291,6 @@ class WT_G3x5_NavMap {
 
         this.settingModel.addSetting(this._trafficShowSetting = new WT_G3x5_NavMapTrafficShowSetting(this.settingModel));
 
-        this.settingModel.addSetting(new WT_G3x5_TrafficMapAltitudeModeSetting(this.settingModel));
-        this.settingModel.addSetting(new WT_G3x5_TrafficMapAltitudeRestrictionSetting(this.settingModel));
-        this.settingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorModeSetting(this.settingModel));
-        this.settingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorLookaheadSetting(this.settingModel));
-
         this.settingModel.addSetting(new WT_MapSymbolRangeSetting(this.settingModel, WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_KEY, "traffic", "symbolRange", WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_DEFAULT));
 
         this.settingModel.addSetting(new WT_MapSymbolShowSetting(this.settingModel, "trafficLabel", "traffic", "labelShow", WT_G3x5_NavMap.TRAFFIC_LABEL_SHOW_KEY, this._dcltrSetting));
@@ -296,15 +300,24 @@ class WT_G3x5_NavMap {
         this.settingModel.update();
     }
 
+    _initTrafficSettingModel() {
+        this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapAltitudeModeSetting(this.trafficSettingModel));
+        this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapAltitudeRestrictionSetting(this.trafficSettingModel));
+        this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorModeSetting(this.trafficSettingModel));
+        this.trafficSettingModel.addSetting(new WT_G3x5_TrafficMapMotionVectorLookaheadSetting(this.trafficSettingModel));
+    }
+
     init(viewElement) {
         this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
         this.view.setModel(this.model);
         this._settingModel = new WT_MapSettingModel(this._settingModelID, this.model, this.view);
+        this._trafficSettingModel = new WT_MapSettingModel(WT_G3x5_TrafficMap.SETTING_MODEL_ID, this.model, this.view);
 
         this._initModel();
         this._initView();
         this._initSettingModel();
+        this._initTrafficSettingModel();
     }
 
     sleep() {
