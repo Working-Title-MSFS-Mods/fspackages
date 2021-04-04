@@ -143,7 +143,7 @@ class WT_G3x5_NavMap {
     }
 
     /**
-     * @returns {WT_G3x5_MapViewTrafficStatusLayer}
+     * @returns {WT_G3x5_MapViewNavMapTrafficStatusLayer}
      */
     _createTrafficStatusLayer() {
     }
@@ -175,6 +175,7 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewCrosshairLayer());
         this.view.addLayer(new WT_MapViewAirplaneLayer());
         this.view.addLayer(this._createTrafficIntruderLayer());
+        this.view.addLayer(this._createTrafficStatusLayer());
         this.view.addLayer(new WT_MapViewPointerLayer());
         if (this._layerOptions.windData) {
             this.view.addLayer(new WT_MapViewWindDataLayer());
@@ -187,7 +188,6 @@ class WT_G3x5_NavMap {
         if (this._layerOptions.miniCompass) {
             this.view.addLayer(new WT_MapViewMiniCompassLayer());
         }
-        //this.view.addLayer(this._createTrafficStatusLayer());
     }
 
     _initSettingModel() {
