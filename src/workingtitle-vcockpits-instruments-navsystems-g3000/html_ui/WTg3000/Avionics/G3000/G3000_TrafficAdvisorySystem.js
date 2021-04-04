@@ -24,6 +24,14 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
         this._setOperatingMode(operatingModeSetting.getValue());
     }
 
+    /**
+     *
+     * @returns {Boolean}
+     */
+    isStandby() {
+        return this.operatingMode === WT_G3000_TrafficAdvisorySystem.OperatingMode.STANDBY;
+    }
+
     onOptionChanged(option, oldValue, newValue) {
         switch (option) {
             case "proximityAdvisoryParams":
