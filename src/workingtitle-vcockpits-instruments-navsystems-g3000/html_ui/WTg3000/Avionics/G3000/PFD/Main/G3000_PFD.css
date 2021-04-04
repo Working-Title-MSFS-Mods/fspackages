@@ -583,32 +583,3 @@ as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys {
                 as3000-pfd-element #Mainframe #InstrumentsContainer #SoftKeys .SoftKey .Status[toggle="off"] {
                     background-color: black;
                 }
-
-as3000-pfd-element #Electricity map-view {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    display: block;
-}
-    as3000-pfd-element #Electricity map-view map-view-orientationdisplay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        margin: 1px;
-        font-size: 1.75vh;
-    }
-    as3000-pfd-element #Electricity map-view .rangeDisplayLayer {
-        position: absolute;
-        top: 2.5vh;
-        left: 0;
-        margin: 1px;
-        font-size: 1.75vh;
-    }
-    as3000-pfd-element #Electricity map-view map-view-minicompass {
-        position: absolute;
-        top: 6vh;
-        left: 1.25vh;
-        width: 3vh;
-        height: 3vh;
-        font-size: 1vh;
-    }
