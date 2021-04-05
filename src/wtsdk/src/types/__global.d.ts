@@ -36,6 +36,9 @@ declare class LZUTF8 {
   static decompress(input: string, options?: {}): any;
 }
 
+declare class CJ4_FMC_NavRadioPage {
+  static ShowPage1(fmc: CJ4_FMC): void;
+}
 
 // MSFS
 
@@ -188,6 +191,7 @@ declare class Simplane {
   static getHeadingMagnetic(): number;
   static getGroundSpeed(): number;
   static getNextWaypointName(): string;
+  static getIndicatedSpeed():number;
 }
 
 declare class EmptyCallback {
@@ -202,7 +206,7 @@ declare class Coherent {
 declare function RegisterViewListener(handler: string): void
 declare function OpenBrowser(url: string): void;
 
-declare class FMCMainDisplay {
+declare class FMCMainDisplay extends BaseInstrument {
   lastPos: string;
   onLeftInput: { (): void }[];
   onRightInput: { (): void }[];
@@ -211,6 +215,8 @@ declare class FMCMainDisplay {
   inOut: string;
   showErrorMessage(message: string);
   defaultInputErrorMessage: string;
+  getOrSelectWaypointByIdent
+  flightPlanManager: any
 }
 
 declare class RadioNav {

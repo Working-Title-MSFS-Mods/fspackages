@@ -30,7 +30,7 @@ class CJ4_FMC_PerfInitPage {
 		
         let crzAltCell = "□□□□□";
 		let zFW = 0;
-		const paxLabel = WT_ConvertUnit.isMetric() ? "/77[d-text]KG[s-text]" : "/170[d-text]LB[s-text]";
+        const paxWeight = new Number(WT_ConvertUnit.getWeight(WTDataStore.get("WT_CJ4_PaxWeight", 170)).Value);
 		let bow = 10280;
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
@@ -46,20 +46,29 @@ class CJ4_FMC_PerfInitPage {
 			fmc.paxNumber = "--";
 			fmc.cargoWeight = "----";
 		} else {
-			zFW = 10280 + (fmc.paxNumber * 170) + fmc.cargoWeight;
+			zFW = 10280 + (fmc.paxNumber * paxWeight) + fmc.cargoWeight;
 		}
-        fmc.grossWeight = zFW + fuelQuantityTotal;
+
+        if (fmc.gWTActive == 1) {
+			fmc.grossWeight = fmc.gWTPilotInput;
+			bow = "-----";
+			fmc.paxNumber = "--";
+			fmc.cargoWeight = "----";
+            zFW = fmc.grossWeight - fuelQuantityTotal;
+		} else {
+			fmc.grossWeight = zFW + fuelQuantityTotal;
+		}
         
         const unitText = WT_ConvertUnit.getWeight(1).Unit + "[s-text]";
         const zwfValueUnit = WT_ConvertUnit.getWeight(zFW);
         const zfwText = zwfValueUnit.Value.toFixed(0) + " " + zwfValueUnit.Unit + (zFW > 12500 ? "[s-text yellow]" : "[s-text]");
-        const cargoValueUnit = WT_ConvertUnit.getWeight(fmc.cargoWeight);
-        const cargoWeightText = fmc.zFWActive == 1 ? "----" : cargoValueUnit.Value.toFixed(0).padStart(4, " ") + "[d-text] " + unitText;
+        const cargoValueUnit = fmc.cargoWeight > 0 ? WT_ConvertUnit.getWeight(fmc.cargoWeight) : WT_ConvertUnit.getWeight(0);
+        const cargoWeightText = fmc.zFWActive == 1 || fmc.gWTActive == 1 ? "----" : cargoValueUnit.Value.toFixed(0).padStart(4, " ") + "[d-text] " + unitText;
         const fuelText = WT_ConvertUnit.getWeight(fuelQuantityTotal).Value.toFixed(0) + "[d-text] " + unitText + "[s-text]";
         const gwtValueUnit = WT_ConvertUnit.getWeight(fmc.grossWeight);
         const grossWeightText = gwtValueUnit.Value.toFixed(0) + " " + gwtValueUnit.Unit + "[s-text]";
-        const bowText = fmc.zFWActive == 1 ? " -----": " " + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + "[d-text]" + unitText + "[s-text]";
-        const paxText = fmc.zFWActive == 1 ? "--/--" : fmc.paxNumber + paxLabel;
+        const bowText = fmc.zFWActive == 1 || fmc.gWTActive == 1 ? " -----": " (" + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + ")[d-text]" + unitText + "[s-text]";
+        const paxText = fmc.zFWActive == 1 || fmc.gWTActive == 1 ? "--/--" : fmc.paxNumber + "/" + paxWeight.toFixed(0) + unitText;
         const transitionFL = 180;
         const cruiseAltText = crzAltCell == "□□□□□" ? "□□□□□" : crzAltCell < transitionFL ? crzAltCell * 100 : "FL" + crzAltCell;
 
@@ -87,11 +96,18 @@ class CJ4_FMC_PerfInitPage {
             fmc.clearUserInput();
         };
         fmc.onLeftInput[1] = () => {
-            let value = parseInt(fmc.inOut);
-            if (value >= 0) {
-                fmc.paxNumber = value;
-            }
-            else {
+
+            let value = fmc.inOut;
+            const paxInput = /(\d?)\/?(\d?\d?\d?)/;
+            const paxMatch = value.match(paxInput);
+
+            if (paxMatch) {
+                fmc.paxNumber = parseInt(paxMatch[1]) >= 0 ? parseInt(paxMatch[1]) : fmc.paxNumber;
+                const newPaxWeight = parseInt(paxMatch[2]) > 0 ? parseInt(paxMatch[2]) : undefined;
+                if (newPaxWeight && newPaxWeight != paxWeight) {
+                    WTDataStore.set("WT_CJ4_PaxWeight", WT_ConvertUnit.setWeight(newPaxWeight));
+                }
+            } else {
                 fmc.showErrorMessage("INVALID");
             }
             fmc.clearUserInput();
@@ -127,6 +143,7 @@ class CJ4_FMC_PerfInitPage {
                 zFW = value;
                 fmc.zFWPilotInput = zFW;
                 fmc.zFWActive = 1;
+                fmc.gWTActive = 0;
             }
             else {
                 fmc.showErrorMessage("INVALID");
@@ -135,12 +152,23 @@ class CJ4_FMC_PerfInitPage {
             CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onRightInput[3] = () => {
-            if (fmc.inOut == FMCMainDisplay.clrValue){
-                fmc.clearUserInput();
-                CJ4_FMC_PerfInitPage.ShowPage2(fmc);
-            }else {
+            let value = WT_ConvertUnit.setWeight(parseInt(fmc.inOut));
+			if (fmc.inOut == FMCMainDisplay.clrValue){
+				fmc.gWTActive = 0;
+				fmc.paxNumber = 0;
+				fmc.cargoWeight = 0;
+            }
+            else if (!isNaN(value)) {
+                fmc.grossWeight = value;
+                fmc.gWTPilotInput = fmc.grossWeight;
+                fmc.gWTActive = 1;
+                fmc.zFWActive = 0;
+            }
+            else {
                 fmc.showErrorMessage("INVALID");
             }
+			fmc.clearUserInput();
+            CJ4_FMC_PerfInitPage.ShowPage2(fmc);
         };
         fmc.onRightInput[4] = () => { CJ4_FMC_TakeoffRefPage.ShowPage1(fmc); };
         fmc.onRightInput[5] = () => { CJ4_FMC_VNavSetupPage.ShowPage1(fmc); };

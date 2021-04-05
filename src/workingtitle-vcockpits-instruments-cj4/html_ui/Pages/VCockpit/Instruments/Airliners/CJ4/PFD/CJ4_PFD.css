@@ -629,7 +629,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo[masks=off] #RightMask {
 }
 
 cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Minimums {
-    top: 3%;
+    top: 6%;
     left: 76.2%;
     width: 22%;
     height: 8%;

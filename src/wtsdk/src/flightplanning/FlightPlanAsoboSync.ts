@@ -57,9 +57,11 @@ export class FlightPlanAsoboSync {
               // set departure
               //  rwy index
               await fpln.setOriginRunwayIndex(data.originRunwayIndex);
-              await fpln.setDepartureRunwayIndex(data.departureRunwayIndex);
               //  proc index
               await fpln.setDepartureProcIndex(data.departureProcIndex);
+ 
+ 
+              await fpln.setDepartureRunwayIndex(data.departureRunwayIndex);
               //  enroutetrans index
               await fpln.setDepartureEnRouteTransitionIndex(data.departureEnRouteTransitionIndex);
 
@@ -97,11 +99,11 @@ export class FlightPlanAsoboSync {
 
         if (plan.hasOrigin && plan.hasDestination) {
           if (plan.hasOrigin) {
-            await Coherent.call("SET_ORIGIN", plan.originAirfield.icao);
+            await Coherent.call("SET_ORIGIN", plan.originAirfield.icao, false);
           }
 
           if (plan.hasDestination) {
-            await Coherent.call("SET_DESTINATION", plan.destinationAirfield.icao);
+            await Coherent.call("SET_DESTINATION", plan.destinationAirfield.icao, false);
           }
 
           let coIndex = 1;

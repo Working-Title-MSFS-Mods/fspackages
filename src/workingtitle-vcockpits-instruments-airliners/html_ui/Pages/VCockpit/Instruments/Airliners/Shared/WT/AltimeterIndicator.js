@@ -1510,7 +1510,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         }
         else {
             //selectedAltitude = Math.max(0, Simplane.getAutoPilotAltitudeLockValue());
-            selectedAltitude = Math.max(0, Simplane.getAutoPilotSelectedAltitudeLockValue());
+            selectedAltitude = Math.min(Math.max(0, Simplane.getAutoPilotSelectedAltitudeLockValue()), 45000);
         }
         this.updateGraduationScrolling(indicatedAltitude);
         this.updateCursorScrolling(indicatedAltitude);
@@ -1568,12 +1568,14 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.pressureSVG.textContent = "1013";
                     this.pressureSVGUnits.textContent = "STD";
                     this.pressurePreset.textContent = baroPreset.toFixed(0);
+                    this.pressurePresetUnits.textContent = "HPA";
                 }
                 else {
                     let rounded = Math.round((baroPreset / 33.8639) * 1000) / 1000; //Converts baroPreset to inHg then rounds up to hundreths so it matches what the sim will show for pressure.
                     this.pressureSVG.textContent = "29.92";
                     this.pressureSVGUnits.textContent = "STD";
                     this.pressurePreset.textContent = rounded.toFixed(2);
+                    this.pressurePresetUnits.textContent = "IN";
                 }
             }
             else {

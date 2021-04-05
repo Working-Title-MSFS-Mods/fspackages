@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.4.1
+### Latest version: v0.4.2
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.4.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.4.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -17,16 +17,14 @@ If you want to enable the road display for the navigation map, you must also dow
 ### Configuration File
 Certain mod settings can be customized via a configuration file which is located at `workingtitle-g3000\html_ui\WTg3000.cfg`. Documentation for the various settings can be found in the file itself. If you make changes to the file while the game is running, you must restart the game for the changes to take effect.
 
-#### Release Highlights for v0.4.1
+#### Release Highlights for v0.4.2
 
-- Added mod configuration file.
-- Added road display for the navigation map (requires the optional `workingtitle-g3000-roaddata` package).
+Now compatible with game patch 1.14.5.0 (Sim Update 3).
 
 **Fixes**
-- \[General\] Fixed performance degradation over time.
+- \[PFD\] Fixed regression where PFD softkey functions related to changing inset map settings were not working as intended.
 
 ### Known Issues
-- \[Stability\] The game will CTD when clearing origin and destination from the flight plan and attempting to enter a new origin/destination.
 - \[Compatibility\] Using this mod with the WorkingTitle GX mod may result in various flight planning bugs, such as blank waypoint entries in the GTC active flight plan page and avionics freeze when initiating a Direct To to an approach waypoint.
 - \[PFD\] (Vanilla issue) Co-pilot PFD softkeys are nonfunctional in the TBM 930.
 - \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
@@ -34,6 +32,7 @@ Certain mod settings can be customized via a configuration file which is located
 - \[NavMap\] All airport waypoints are shown as if they are serviced, regardless of whether they actually are. This is because waypoint data from the game is currently missing this information.
 - \[NavMap\] Airport waypoint symbols will only show around a certain geographic distance from the center of the map (this does not apply to airports that are part of the active flight plan). This is due to the way the game searches for airports (the number of results is limited for performance reasons and there is no option to filter the search e.g. by size to reduce the performance penalty).
 - \[Weather Radar\] When NEXRAD is enabled for the navigation map in the right MFD pane, the weather radar display in the left MFD pane will have artifacts. This does not occur with the opposite arrangement (i.e. NEXRAD enabled in left MFD pane, weather radar in right MFD pane). The bug also occurs when enabling NEXRAD for the PFD inset map. A workaround for now is to simply disable NEXRAD or to enable it in the left pane instead of the right (and disable it for the PFD inset map) if you wish to use it in conjunction with the weather radar.
+- \[Misc\] MSFS will take an increased amount of time to fully shut down (up to several minutes) when closing the game after starting a flight that uses the road data package. The game window will still close promptly, but the game process will run in the background and game audio can be heard. The process is not frozen and will eventually shut down on its own, however if you wish to speed up the process, you can manually end-task or end-process MSFS through Task Manager.
 
 ### FAQ
 - **Q**: I copied the mod folder to my Community folder but don't get any of the new features. What do I do?

@@ -61,10 +61,20 @@ class CJ4_MFD extends BaseAirliners {
         this.maxUpdateBudget = 12;
 
         setTimeout(() => {
-            if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") !== 1) {
-                document.querySelector("#liverywarning").style.display = "";
-            }
+            this.checkLivery();
         }, 10000);
+    }
+    checkLivery() {
+        if (SimVar.GetSimVarValue("L:FADEC_ACTIVE", "number") === 1) {
+            // FADEC IS HERE
+            document.querySelector("#liverywarning").style.display = "none";
+        } else {
+            // FADEC MISSING
+            document.querySelector("#liverywarning").style.display = "";
+            setTimeout(() => {
+                this.checkLivery();
+            }, 1000);
+        }
     }
     disconnectedCallback() {
     }

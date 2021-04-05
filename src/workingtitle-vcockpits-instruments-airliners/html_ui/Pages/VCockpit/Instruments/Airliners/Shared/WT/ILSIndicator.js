@@ -203,6 +203,12 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                 this.loc_cursorGroup.setAttribute("id", "CursorGroup");
                 this.loc_cursorGroup.setAttribute("transform", "translate(" + this.loc_cursorPosX + ", " + this.loc_cursorPosY + ")");
                 this.loc_mainGroup.appendChild(this.loc_cursorGroup);
+
+                this.loc_ldevGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                this.loc_ldevGroup.setAttribute("id", "SnowflakeGroup");
+                this.loc_ldevGroup.setAttribute("transform", "translate(" + this.loc_cursorPosX + ", " + this.loc_cursorPosY + ")");
+                this.loc_mainGroup.appendChild(this.loc_ldevGroup);
+
                 {
                     let x = 20;
                     let y = 12;
@@ -220,7 +226,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     this.lateral_snowFlake.setAttribute("d", "M 0 11 c -0.0599 -0.1556 -0.6583 -2.0229 -1.3406 -4.1656 l -1.2449 -3.8902 l -4.1296 -1.3167 c -3.579 -1.1491 -4.1296 -1.3526 -4.1296 -1.5561 c 0 -0.2035 0.5386 -0.395 4.1296 -1.4962 l 4.1296 -1.2568 l 1.3167 -4.1296 c 1.0174 -3.1601 1.3765 -4.1416 1.5322 -4.1656 c 0.2514 -0.0479 0.1436 -0.3471 1.58 4.3451 l 1.209 3.9381 l 3.9381 1.209 c 4.6922 1.4364 4.393 1.3287 4.3451 1.58 c -0.0239 0.1556 -1.0055 0.5147 -4.1656 1.5322 l -4.1296 1.3167 l -1.2568 4.1296 c -0.9815 3.2199 -1.3047 4.1296 -1.4723 4.1656 c -0.1317 0.0239 -0.2394 -0.0599 -0.3112 -0.2394 z");
                     this.lateral_snowFlake.setAttribute("stroke", "magenta");
                     this.lateral_snowFlake.setAttribute("stroke-width", "2.5");
-                    this.loc_cursorGroup.appendChild(this.lateral_snowFlake);
+                    this.loc_ldevGroup.appendChild(this.lateral_snowFlake);
 
                 }
             }
@@ -313,7 +319,7 @@ class Jet_PFD_ILSIndicator extends HTMLElement {
                     let delta = (cdi + 1.0) * 0.5;
                     let x = this.loc_cursorMinX + (this.loc_cursorMaxX - this.loc_cursorMinX) * delta;
                     x = Math.max(this.loc_cursorMinX, Math.min(this.loc_cursorMaxX, x));
-                    this.loc_cursorGroup.setAttribute("transform", "translate(" + x + ", " + this.loc_cursorPosY + ")");
+                    this.loc_ldevGroup.setAttribute("transform", "translate(" + x + ", " + this.loc_cursorPosY + ")");
 
                     this.lateral_snowFlake.setAttribute("visibility", "visible");
                 }
