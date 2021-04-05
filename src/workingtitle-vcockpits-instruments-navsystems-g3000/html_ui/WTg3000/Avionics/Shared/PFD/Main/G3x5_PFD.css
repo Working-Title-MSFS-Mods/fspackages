@@ -191,16 +191,19 @@ as3000-pfd-element map-view {
             right: 1px;
             width: 11vh;
         }
+        as3000-pfd-element #Electricity map-view wt-map-view-traffic-centerbanner {
+            font-size: 2.5vh;
+        }
+        as3000-pfd-element map-view wt-map-view-traffic-navmapstatus {
+            position: absolute;
+            right: 1px;
+            bottom: 1px;
+            font-weight: bold;
+        }
     as3000-pfd-element map-view wt-map-view-traffic-offscale {
         position: absolute;
         left: 1px;
         bottom: 1px;
         width: 15vh;
-        font-weight: bold;
-    }
-    as3000-pfd-element map-view wt-map-view-traffic-navmapstatus {
-        position: absolute;
-        right: 1px;
-        bottom: 1px;
         font-weight: bold;
     }

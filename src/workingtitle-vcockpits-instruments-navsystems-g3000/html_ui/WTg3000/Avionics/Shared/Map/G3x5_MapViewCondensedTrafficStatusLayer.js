@@ -1,8 +1,9 @@
 class WT_G3x5_MapViewCondensedTrafficStatusLayer extends WT_MapViewLayer {
-    constructor(operatingModeText, className = WT_G3x5_MapViewCondensedTrafficStatusLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewCondensedTrafficStatusLayer.CONFIG_NAME_DEFAULT) {
+    constructor(operatingModeText, centerBannerText, className = WT_G3x5_MapViewCondensedTrafficStatusLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewCondensedTrafficStatusLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._operatingModeText = operatingModeText;
+        this._centerBannerText = centerBannerText;
 
         this._initChildren();
     }
@@ -17,15 +18,31 @@ class WT_G3x5_MapViewCondensedTrafficStatusLayer extends WT_MapViewLayer {
         return container;
     }
 
-    _initChildren() {
-        let topInfos = document.createElement("div");
-        topInfos.classList.add(WT_G3x5_MapViewTrafficStatusLayer.TOP_INFO_CLASS);
-
+    _initOperatingMode() {
         this._operatingMode = new WT_G3x5_MapViewTrafficOperatingModeHTMLElement();
         this._operatingMode.setContext({text: this._operatingModeText});
-        topInfos.appendChild(this._operatingMode);
+        this._topInfos.appendChild(this._operatingMode);
+    }
 
-        this.htmlElement.appendChild(topInfos);
+    _initTopInfos() {
+        this._topInfos = document.createElement("div");
+        this._topInfos.classList.add(WT_G3x5_MapViewTrafficStatusLayer.TOP_INFO_CLASS);
+
+        this._initOperatingMode();
+
+        this.htmlElement.appendChild(this._topInfos);
+    }
+
+    _initCenterBanner() {
+        this._centerBanner = new WT_G3x5_MapViewTrafficCenterBannerHTMLElement();
+        this._centerBanner.setContext({text: this._centerBannerText});
+        this._centerBanner.setAttribute("style", "position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);");
+        this.htmlElement.appendChild(this._centerBanner);
+    }
+
+    _initChildren() {
+        this._initTopInfos();
+        this._initCenterBanner();
     }
 
     /**
@@ -33,6 +50,7 @@ class WT_G3x5_MapViewCondensedTrafficStatusLayer extends WT_MapViewLayer {
      */
     onUpdate(state) {
         this._operatingMode.update(state);
+        this._centerBanner.update(state);
     }
 }
 WT_G3x5_MapViewCondensedTrafficStatusLayer.CLASS_DEFAULT = "trafficStatusLayer";
