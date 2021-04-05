@@ -170,7 +170,6 @@ class WT_G3x5_NavMap {
         this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(`${this.instrumentID}`));
-        /*
         this.view.addLayer(new WT_MapViewBorderLayer(this._borderData, WT_G3x5_NavMap.BORDER_LOD_RESOLUTION_THRESHOLDS, labelManager));
         if (this._layerOptions.roads) {
             this.view.addLayer(new WT_MapViewRoadLayer(this._roadFeatureData, this._roadLabelData, WT_G3x5_NavMap.ROAD_LOD_RESOLUTION_THRESHOLDS));
@@ -182,7 +181,6 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewFuelRingLayer());
         this.view.addLayer(new WT_MapViewAltitudeInterceptLayer(this._altimeterIndex));
         this.view.addLayer(new WT_MapViewTrackVectorLayer(this._airspeedSensorIndex));
-        */
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(state) {
