@@ -204,7 +204,8 @@ class LNavDirector {
     const armedState = this.navModeSelector.currentLateralArmedState;
     const activeState = this.navModeSelector.currentLateralActiveState;
 
-    if ((armedState === LateralNavModeState.APPR || activeState === LateralNavModeState.APPR) && this.navModeSelector.approachMode === WT_ApproachType.ILS) {
+    if ((armedState === LateralNavModeState.APPR || activeState === LateralNavModeState.APPR)
+       && (this.navModeSelector.approachMode === WT_ApproachType.ILS || this.navModeSelector.lNavModeState === LNavModeState.NAV1 || this.navModeSelector.lNavModeState === LNavModeState.NAV2)) {
       this.locDirector.update();
       return this.locDirector.state === LocDirectorState.ACTIVE;
     }
@@ -344,7 +345,9 @@ class LNavDirector {
    */
   tryActivateIfArmed(legStart, legEnd, planeState, navSensitivity) {
     const armedState = this.navModeSelector.currentLateralArmedState;
-    if (armedState === LateralNavModeState.LNAV || (armedState === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV)) {
+    const agl = Simplane.getAltitudeAboveGround();
+    if ((armedState === LateralNavModeState.LNAV || (armedState === LateralNavModeState.APPR && this.navModeSelector.approachMode === WT_ApproachType.RNAV))
+      && !planeState.onGround && agl > 400) {
       const xtk = AutopilotMath.crossTrack(legStart, legEnd, planeState.position);
       let activationXtk = 1.9;
 
@@ -468,16 +471,18 @@ class LNavDirector {
     const approach = this.fpm.getApproachWaypoints();
     if (approach.length > 1) {
       let finalApproachFix = approach[approach.length - 2];
-      let finalApproachFixDistance = finalApproachFix.cumulativeDistanceInFp;
-
+      const runwayFix = approach[approach.length - 1];
+      let finalApproachFixDistance = runwayFix.cumulativeDistanceInFp - finalApproachFix.cumulativeDistanceInFp;
+            
       if (finalApproachFixDistance < 3 && approach.length >= 3) {
         finalApproachFix = approach[approach.length - 3];
       }
-
-      finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
+      finalApproachFixDistance = 100;
+      if (finalApproachFix && finalApproachFix.infos && finalApproachFix.infos.coordinates) {
+        finalApproachFixDistance = Avionics.Utils.computeGreatCircleDistance(planeCoords, finalApproachFix.infos.coordinates);
+      }
       return finalApproachFixDistance;
     }
-
     return NaN;
   }
 
@@ -585,7 +590,7 @@ class LNavDirectorOptions {
     this.maxBankAngle = 30;
 
     /** The rate of bank in degrees per second. */
-    this.bankRate = 8;
+    this.bankRate = 5;
 
     /** The maximum turn angle in degrees to calculate turn anticipation to. */
     this.maxTurnAnticipationAngle = 110;

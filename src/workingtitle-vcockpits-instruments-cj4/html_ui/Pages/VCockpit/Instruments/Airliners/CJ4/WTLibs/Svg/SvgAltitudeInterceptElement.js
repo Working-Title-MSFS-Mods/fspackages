@@ -62,7 +62,7 @@ class SvgAltitudeInterceptElement extends SvgMapElement {
         let dt = currentTime - this._lastTime;
 
         let vSpeed = SimVar.GetSimVarValue("VERTICAL SPEED", "feet per minute");
-        let altTarget = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet");
+        let altTarget = SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet");
         let altCurrent = SimVar.GetSimVarValue("INDICATED ALTITUDE", "feet");
         if (Math.abs(vSpeed) < this.vSpeedThreshold || ((altTarget - altCurrent) / vSpeed) < 0 || Math.abs(altTarget - altCurrent) < this.altitudeTargetThreshold) {
             this.arcOuter.setAttribute("display", "none");

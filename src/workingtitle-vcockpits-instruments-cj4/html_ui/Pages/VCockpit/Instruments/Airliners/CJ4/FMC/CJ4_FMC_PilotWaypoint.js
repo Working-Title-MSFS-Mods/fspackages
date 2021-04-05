@@ -43,16 +43,19 @@ class CJ4_FMC_PilotWaypoint_Manager {
   }
 
   checkPilotDuplicates(ident) {
-    return this._pilotWaypointArray.find(w => { return w.id == ident; }) !== undefined;
+    return this._pilotWaypointArray.find(w => {
+      return w.id == ident;
+    }) !== undefined;
   }
 
   async checkDatabaseDuplicates(ident) {
     return new Promise(resolve => {
       this._fmc.dataManager.GetWaypointsByIdent(ident).then((waypoints) => {
-        if (waypoints && waypoints.length > 0 && waypoints.find(w => { return w.ident === ident; })) {
+        if (waypoints && waypoints.length > 0 && waypoints.find(w => {
+          return w.ident === ident;
+        })) {
           resolve(true);
-        }
-        else {
+        } else {
           resolve(false);
         }
       });
@@ -67,8 +70,7 @@ class CJ4_FMC_PilotWaypoint_Manager {
     }
     if (duplicateExists) {
       return false;
-    }
-    else {
+    } else {
       const pilotWaypoint = new CJ4_FMC_PilotWaypoint(ident, latitude, longitude);
       this._pilotWaypointArray.push(pilotWaypoint);
       this._pilotWaypointCount++;
@@ -95,15 +97,12 @@ class CJ4_FMC_PilotWaypoint_Manager {
       this._pilotWaypointArray.splice(0, deleteCount);
     }
     this.writePilotWaypointsToDatastore();
-    if (duplicateExists) {
-      this._fmc.showErrorMessage("PILOT WPT OVERWRITE");
-    } else {
-      this._fmc.showErrorMessage("PILOT WPT ADDED");
-    }
   }
 
   deletePilotWaypoint(ident) {
-    const pilotWaypoint = this._pilotWaypointArray.find(w => { return w.id == ident; });
+    const pilotWaypoint = this._pilotWaypointArray.find(w => {
+      return w.id == ident;
+    });
     if (pilotWaypoint) {
       const pilotWaypointIndex = this._pilotWaypointArray.indexOf(pilotWaypoint);
       this._pilotWaypointArray.splice(pilotWaypointIndex, 1);
@@ -180,13 +179,13 @@ class CJ4_FMC_PilotWaypoint_Manager {
       }
     }
 
-    if (arraysRequired < 5) {
-      for (let l = arraysRequired + 1; l <= 5; l++) {
-        if (WTDataStore.get('CJ4_PILOTWPT_' + l, '{ }') !== {}) {
-          WTDataStore.remove('CJ4_PILOTWPT_' + l);
-        }
-      }
-    }
+    // if (arraysRequired < 5) {
+    //   for (let l = arraysRequired + 1; l <= 5; l++) {
+    //     if (WTDataStore.get('CJ4_PILOTWPT_' + l, 'empty') !== 'empty') {
+    //       WTDataStore.remove('CJ4_PILOTWPT_' + l);
+    //     }
+    //   }
+    // }
 
   }
 }
@@ -283,13 +282,12 @@ class CJ4_FMC_PilotWaypointPage {
         [""],
         [leftInputText + "", "RETURN>"]
       ]);
-    }
-    else {
-      let waypointCells = [];
+    } else {
+      const waypointCells = [];
       this._pageCount = Math.max(1, Math.ceil(this._fmc._pilotWaypoints._pilotWaypointCount / 10));
 
       for (let i = 0; i < 10; i++) {
-        const pilotWaypoint = this._fmc._pilotWaypoints._pilotWaypointArray[i + ((this._currentPage - 1) * 10)]
+        const pilotWaypoint = this._fmc._pilotWaypoints._pilotWaypointArray[i + ((this._currentPage - 1) * 10)];
         if (pilotWaypoint && pilotWaypoint.id != undefined) {
           waypointCells.push(pilotWaypoint.id);
         } else {
@@ -342,8 +340,7 @@ class CJ4_FMC_PilotWaypointPage {
           if (inputValue.length > 0 && inputValue.length <= 5) {
             if (this._fmc._pilotWaypoints.checkPilotDuplicates(inputValue)) {
               this._fmc.showErrorMessage("PILOT WPT DUPLICATE");
-            }
-            else {
+            } else {
               await this._fmc._pilotWaypoints.checkDatabaseDuplicates(inputValue).then((exists) => {
                 if (exists) {
                   this._fmc.showErrorMessage("NAVDATA WPT DUPLICATE");
@@ -353,9 +350,8 @@ class CJ4_FMC_PilotWaypointPage {
                   this.invalidate();
                 }
               });
-            }          
-          }
-          else {
+            }
+          } else {
             this._fmc.showErrorMessage("INVALID ENTRY");
           }
         };
@@ -372,8 +368,7 @@ class CJ4_FMC_PilotWaypointPage {
             } else {
               this._fmc.showErrorMessage("INVALID ENTRY");
             }
-          }
-          else {
+          } else {
             this._fmc.showErrorMessage("INVALID ENTRY");
           }
         };
@@ -391,8 +386,7 @@ class CJ4_FMC_PilotWaypointPage {
                 this._fmc.showErrorMessage("INVALID ENTRY");
               }
             });
-          }
-          else {
+          } else {
             this._fmc.showErrorMessage("INVALID ENTRY");
           }
         };
@@ -414,8 +408,7 @@ class CJ4_FMC_PilotWaypointPage {
               setTimeout(() => {
                 CJ4_FMC_PilotWaypointPage.ShowPage1(this._fmc, false);
               }, 1000);
-              
-             
+
             } else {
               this._fmc.showErrorMessage("ERROR ADDING PILOT WPT");
               this.invalidate();
@@ -452,7 +445,7 @@ class CJ4_FMC_PilotWaypointPage {
             this._showPilotWaypointPage = true;
             this.invalidate();
           }
-        }
+        };
         this._fmc.onRightInput[i] = () => {
           const selectedIndex = 5 + i + ((this._currentPage - 1) * 10);
           console.log("selectedIndex: " + selectedIndex);
@@ -463,7 +456,7 @@ class CJ4_FMC_PilotWaypointPage {
             this._showPilotWaypointPage = true;
             this.invalidate();
           }
-        }
+        };
       }
 
       this._fmc.onRightInput[5] = () => {
@@ -504,7 +497,7 @@ class CJ4_FMC_PilotWaypointPage {
   static ShowPage1(fmc, defineWaypoint = false) {
     fmc.clearDisplay();
 
-    // create page instance and init 
+    // create page instance and init
     PilotWaypointPage1Instance = new CJ4_FMC_PilotWaypointPage(fmc, defineWaypoint);
     PilotWaypointPage1Instance.invalidate();
   }
@@ -515,8 +508,8 @@ class CJ4_FMC_PilotWaypointPage {
  */
 class CJ4_FMC_PilotWaypoint {
   constructor(ident = undefined, latitude = undefined, longitude = undefined) {
-    /** 
-     * User Waypoint ident. 
+    /**
+     * User Waypoint ident.
      * @type {number}
      */
     this.id = ident;

@@ -93,10 +93,15 @@ export class CJ4_FMC_NavControlPage extends CJ4_FMC_Page {
     
     this._fmc.onLeftInput[0] = () => {
       const radioState = this.radioSystem.radioStates[this.radioIndex];
+      if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
+        CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+      }
+      else {
       this.handleFreqPressed(() => radioState.frequency, value => radioState.setManualFrequency(value));
 
       this.render();
       this.bindEvents();
+      }
     }
 
     this._fmc.onRightInput[0] = () => {

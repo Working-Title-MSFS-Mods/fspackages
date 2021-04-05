@@ -57,9 +57,11 @@ export class FlightPlanAsoboSync {
               // set departure
               //  rwy index
               await fpln.setOriginRunwayIndex(data.originRunwayIndex);
-              await fpln.setDepartureRunwayIndex(data.departureRunwayIndex);
               //  proc index
               await fpln.setDepartureProcIndex(data.departureProcIndex);
+ 
+ 
+              await fpln.setDepartureRunwayIndex(data.departureRunwayIndex);
               //  enroutetrans index
               await fpln.setDepartureEnRouteTransitionIndex(data.departureEnRouteTransitionIndex);
 

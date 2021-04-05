@@ -151,6 +151,19 @@ export class NavigraphApi {
     }
   }
 
+  
+  /** Gets the signed png url of the requested chart */
+  public async getChartPngUrl(chart: NgApi.NG_Chart, dayChart = true): Promise<string> {
+    if (chart !== undefined) {
+      await this.validateToken();
+      const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${dayChart ? chart.file_day : chart.file_night}`;
+      const urlResp = await this.sendRequest(url, "get", null, true);
+      return urlResp.data;
+    }
+
+    return "";
+  }
+
   /**
    * Used to encapsulate requests to navigraph
    * @param path The url the request points to
