@@ -97,7 +97,7 @@ class WT_G3x5_TSCNavMapTrafficMapSettingsHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._initSelectionListWindowContexts();
         this._initButtonListeners();
         this._isInit = true;

@@ -689,7 +689,7 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
         this.SensorsButton = this.gps.getChildById("SensorsButton");
         this.PFDSettingsButton = this.gps.getChildById("PFDSettingsButton");
 
-        await WT_Wait.wait(this._defineTrafficMapButton.bind(this, root));
+        await WT_Wait.awaitCallback(this._defineTrafficMapButton.bind(this, root));
     }
 
     _initButtonListeners() {

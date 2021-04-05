@@ -324,7 +324,7 @@ class WT_G3x5_TSCTrafficAltitudeSettingsHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._isInit = true;
         if (this._context) {
             this._updateFromContext();
@@ -531,7 +531,7 @@ class WT_G3x5_TSCTrafficADSBSettingsHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._isInit = true;
         if (this._context) {
             this._updateFromContext();

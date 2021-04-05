@@ -96,7 +96,7 @@ class WT_G5000_PFDBottomInfoNavStatusCellHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._isInit = true;
         this._updateFromContext();
     }
@@ -528,7 +528,7 @@ class WT_G5000_PFDBottomInfoWindDataCellHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._isInit = true;
         this._updateFromContext();
     }
