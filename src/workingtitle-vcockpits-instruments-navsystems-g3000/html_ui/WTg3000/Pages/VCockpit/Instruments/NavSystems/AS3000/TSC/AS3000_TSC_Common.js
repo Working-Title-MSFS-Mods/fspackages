@@ -653,10 +653,26 @@ class AS3000_TSC_PageInfos {
 class AS3000_TSC_PFDHome extends NavSystemElement {
     constructor() {
         super();
+
+        this._initTrafficInsetMapSettingModel();
     }
 
+    _initTrafficInsetMapSettingModel() {
+        this._trafficInsetMapSettingModel = new WT_DataStoreSettingModel("PFD");
+        this._trafficInsetMapSettingModel.addSetting(this._trafficInsetMapShowSetting = new WT_G3x5_PFDTrafficInsetMapShowSetting(this._trafficInsetMapSettingModel));
+    }
 
-    init(root) {
+    _defineTrafficMapButton(root) {
+        let trafficMapButton = root.querySelector(`#TrafficMapButton`);
+        if (trafficMapButton instanceof WT_TSCStatusBarImageButton) {
+            this._trafficMapButton = trafficMapButton;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async _defineChildren(root) {
         this.NavSourceButton = this.gps.getChildById("NavSourceButton");
         this.NavSourceButton_Value = this.NavSourceButton.getElementsByClassName("lowerValue")[0];
         this.OBSButton = this.gps.getChildById("OBSButton");
@@ -669,28 +685,37 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
         this.SpeedBugsButton = this.gps.getChildById("SpeedBugsButton_PFD");
         this.TimersButton = this.gps.getChildById("TimersButton");
         this.MinimumsButton = this.gps.getChildById("MinimumsButton");
-        this.TrafficMapButton = this.gps.getChildById("TrafficMapButton");
         this.PFDMapSettingsButton = this.gps.getChildById("PFDMapSettingsButton");
         this.SensorsButton = this.gps.getChildById("SensorsButton");
         this.PFDSettingsButton = this.gps.getChildById("PFDSettingsButton");
+
+        await WT_Wait.wait(this._defineTrafficMapButton.bind(this, root));
+    }
+
+    _initButtonListeners() {
         this.gps.makeButton(this.NavSourceButton, this.sendMouseEvent.bind(this.gps, this.gps.pfdPrefix + "_NavSourceSwitch"));
         this.gps.makeButton(this.Bearing1Button, this.sendMouseEvent.bind(this.gps, this.gps.pfdPrefix + "_BRG1Switch"));
         this.gps.makeButton(this.Bearing2Button, this.sendMouseEvent.bind(this.gps, this.gps.pfdPrefix + "_BRG2Switch"));
         this.gps.makeButton(this.SpeedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "Speed Bugs"));
         this.gps.makeButton(this.TimersButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "Timers"));
         this.gps.makeButton(this.MinimumsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "Minimums"));
-        this.gps.makeButton(this.TrafficMapButton, this._onTrafficMapButtonPressed.bind(this));
         this.gps.makeButton(this.PFDMapSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "PFD Map Settings"));
         this.gps.makeButton(this.PFDSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "PFD Settings"));
     }
 
-    _toggleTrafficMap() {
-        let value = WT_DataStoreSettingModel.getSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, false);
-        WT_DataStoreSettingModel.setSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, !value);
+    _initButtonManagers() {
+        this._trafficMapButtonManager = new WT_TSCSettingStatusBarButtonManager(this._trafficMapButton, this._trafficInsetMapShowSetting);
+        this._trafficMapButtonManager.init();
     }
 
-    _onTrafficMapButtonPressed() {
-        this._toggleTrafficMap();
+    async _initHelper(root) {
+        await this._defineChildren(root);
+        this._initButtonListeners();
+        this._initButtonManagers();
+    }
+
+    init(root) {
+        this._initHelper(root);
     }
 
     onEnter() {

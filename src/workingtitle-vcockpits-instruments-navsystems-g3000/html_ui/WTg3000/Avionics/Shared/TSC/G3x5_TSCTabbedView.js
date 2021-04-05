@@ -220,7 +220,7 @@ customElements.define("tsc-tabbedview", WT_G3x5_TSCTabbedView);
  */
 
 class WT_G3x5_TSCTabButton extends WT_TSCLabeledButton {
-    _initHostStyle() {
+    _createHostStyle() {
         return `
             :host {
                 display: block;
