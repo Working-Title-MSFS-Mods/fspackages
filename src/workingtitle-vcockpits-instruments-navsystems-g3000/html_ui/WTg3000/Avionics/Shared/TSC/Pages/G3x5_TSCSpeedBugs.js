@@ -697,7 +697,7 @@ class WT_G3x5_TSCSpeedBugSpeedButton extends WT_TSCLabeledButton {
         this._initFormatter();
     }
 
-    _initLabelBoxStyle() {
+    _createLabelBoxStyle() {
         return `
             #labelbox {
                 position: absolute;
@@ -709,7 +709,7 @@ class WT_G3x5_TSCSpeedBugSpeedButton extends WT_TSCLabeledButton {
         `;
     }
 
-    _initEditIconStyle() {
+    _createEditIconStyle() {
         return `
             #editicon {
                 position: absolute;
@@ -729,7 +729,7 @@ class WT_G3x5_TSCSpeedBugSpeedButton extends WT_TSCLabeledButton {
 
     _createStyle() {
         let style = super._createStyle();
-        let editIconStyle = this._initEditIconStyle();
+        let editIconStyle = this._createEditIconStyle();
 
         return `
             ${style}

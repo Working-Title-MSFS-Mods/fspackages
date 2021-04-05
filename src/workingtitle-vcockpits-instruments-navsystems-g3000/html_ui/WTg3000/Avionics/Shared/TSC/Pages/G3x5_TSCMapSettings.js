@@ -480,7 +480,7 @@ class WT_G3x5_TSCMapDetailButton extends WT_TSCLabeledButton {
         this._lastVisible = null;
     }
 
-    _initLabelBoxStyle() {
+    _createLabelBoxStyle() {
         return `
             #labelbox {
                 position: absolute;
