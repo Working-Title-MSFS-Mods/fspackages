@@ -272,22 +272,25 @@ as3000-mfd-element #Electricity map-view {
             right: 1px;
             width: 18vh;
         }
+        as3000-mfd-element #Electricity map-view wt-map-view-traffic-centerbanner {
+            font-size: 2.5vh;
+        }
         as3000-mfd-element #Electricity map-view wt-map-view-traffic-motionvectormode {
             position: absolute;
             bottom: 1px;
             right: 1px;
+        }
+        as3000-mfd-element #Electricity map-view wt-map-view-traffic-navmapstatus {
+            position: absolute;
+            right: 1px;
+            bottom: 1px;
+            font-weight: bold;
         }
     as3000-mfd-element #Electricity map-view wt-map-view-traffic-offscale {
         position: absolute;
         left: 1px;
         bottom: 1px;
         width: 15vh;
-        font-weight: bold;
-    }
-    as3000-mfd-element #Electricity map-view wt-map-view-traffic-navmapstatus {
-        position: absolute;
-        right: 1px;
-        bottom: 1px;
         font-weight: bold;
     }
 

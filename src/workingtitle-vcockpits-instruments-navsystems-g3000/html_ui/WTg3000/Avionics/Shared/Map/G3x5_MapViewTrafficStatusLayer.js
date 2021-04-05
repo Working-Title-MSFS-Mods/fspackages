@@ -1,9 +1,10 @@
 class WT_G3x5_MapViewTrafficStatusLayer extends WT_MapViewLayer {
-    constructor(operatingModeText, altitudeRestrictionModeText, motionVectorModeText, className = WT_G3x5_MapViewTrafficStatusLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewTrafficStatusLayer.CONFIG_NAME_DEFAULT) {
+    constructor(operatingModeText, altitudeRestrictionModeText, centerBannerText, motionVectorModeText, className = WT_G3x5_MapViewTrafficStatusLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewTrafficStatusLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._operatingModeText = operatingModeText;
         this._altitudeRestrictionText = altitudeRestrictionModeText;
+        this._centerBannerText = centerBannerText;
         this._motionVectorModeText = motionVectorModeText;
 
         this._initChildren();
@@ -19,23 +20,45 @@ class WT_G3x5_MapViewTrafficStatusLayer extends WT_MapViewLayer {
         return container;
     }
 
-    _initChildren() {
-        let topInfos = document.createElement("div");
-        topInfos.classList.add(WT_G3x5_MapViewTrafficStatusLayer.TOP_INFO_CLASS);
-
+    _initOperatingMode() {
         this._operatingMode = new WT_G3x5_MapViewTrafficOperatingModeHTMLElement();
         this._operatingMode.setContext({text: this._operatingModeText});
-        topInfos.appendChild(this._operatingMode);
+        this._topInfos.appendChild(this._operatingMode);
+    }
 
+    _initAltitudeRestrictionMode() {
         this._altitudeRestrictionMode = new WT_G3x5_MapViewTrafficAltitudeRestrictionModeHTMLElement();
         this._altitudeRestrictionMode.setContext({text: this._altitudeRestrictionText});
-        topInfos.appendChild(this._altitudeRestrictionMode);
+        this._topInfos.appendChild(this._altitudeRestrictionMode);
+    }
 
-        this.htmlElement.appendChild(topInfos);
+    _initTopInfos() {
+        this._topInfos = document.createElement("div");
+        this._topInfos.classList.add(WT_G3x5_MapViewTrafficStatusLayer.TOP_INFO_CLASS);
 
+        this._initOperatingMode();
+        this._initAltitudeRestrictionMode();
+
+        this.htmlElement.appendChild(this._topInfos);
+    }
+
+    _initCenterBanner() {
+        this._centerBanner = new WT_G3x5_MapViewTrafficCenterBannerHTMLElement();
+        this._centerBanner.setContext({text: this._centerBannerText});
+        this._centerBanner.setAttribute("style", "position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);");
+        this.htmlElement.appendChild(this._centerBanner);
+    }
+
+    _initMotionVectorMode() {
         this._motionVectorMode = new WT_G3x5_MapViewTrafficMotionVectorModeHTMLElement();
         this._motionVectorMode.setContext({text: this._motionVectorModeText});
         this.htmlElement.appendChild(this._motionVectorMode);
+    }
+
+    _initChildren() {
+        this._initTopInfos();
+        this._initCenterBanner();
+        this._initMotionVectorMode();
     }
 
     /**
@@ -44,6 +67,7 @@ class WT_G3x5_MapViewTrafficStatusLayer extends WT_MapViewLayer {
     onUpdate(state) {
         this._operatingMode.update(state);
         this._altitudeRestrictionMode.update(state);
+        this._centerBanner.update(state);
         this._motionVectorMode.update(state);
     }
 }
@@ -194,6 +218,92 @@ WT_G3x5_MapViewTrafficAltitudeRestrictionModeHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G3x5_MapViewTrafficAltitudeRestrictionModeHTMLElement.NAME, WT_G3x5_MapViewTrafficAltitudeRestrictionModeHTMLElement);
 
+class WT_G3x5_MapViewTrafficCenterBannerHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_MapViewTrafficCenterBannerHTMLElement.TEMPLATE;
+    }
+
+    _defineChildren() {
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
+        this._text = new WT_CachedElement(this.shadowRoot.querySelector(`#text`));
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+    }
+
+    setContext(context) {
+        this._context = context;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateDisplay(state) {
+        let trafficSystem = state.model.traffic.trafficSystem;
+        let text = this._context.text[trafficSystem.operatingMode];
+        if (text !== "") {
+            this._wrapper.setAttribute("show", "true");
+            this._text.textContent = this._context.text[trafficSystem.operatingMode];
+            this._wrapper.setAttribute("alert", `${(trafficSystem.isStandby() && !state.model.airplane.sensors.isOnGround()) ? "caution" : "none"}`);
+        } else {
+            this._wrapper.setAttribute("show", "false");
+        }
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    update(state) {
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        this._updateDisplay(state);
+    }
+}
+WT_G3x5_MapViewTrafficCenterBannerHTMLElement.NAME = "wt-map-view-traffic-centerbanner";
+WT_G3x5_MapViewTrafficCenterBannerHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_MapViewTrafficCenterBannerHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper {
+            display: none;
+            background-color: var(--traffic-centerbanner-background-color, black);
+            border: var(--traffic-centerbanner-border, solid 1px white);
+            border-radius: var(--traffic-centerbanner-border-radius, 3px);
+        }
+        #wrapper[show="true"] {
+            display: block;
+        }
+            #text {
+                margin: var(--traffic-centerbanner-padding, 0 0.2em);
+                color: white;
+            }
+            #wrapper[alert="caution"] #text {
+                color: var(--wt-g3x5-amber);
+            }
+    </style>
+    <div id="wrapper">
+        <div id="text"></div>
+    </wrapper>
+`;
+
+customElements.define(WT_G3x5_MapViewTrafficCenterBannerHTMLElement.NAME, WT_G3x5_MapViewTrafficCenterBannerHTMLElement);
+
 class WT_G3x5_MapViewTrafficMotionVectorModeHTMLElement extends HTMLElement {
     constructor() {
         super();
@@ -251,7 +361,7 @@ WT_G3x5_MapViewTrafficMotionVectorModeHTMLElement.TEMPLATE.innerHTML = `
         }
 
         #text {
-            margin: var(--traffic-motionvectormode-margin, 0 0.2em);
+            margin: var(--traffic-motionvectormode-padding, 0 0.2em);
             color: white;
         }
             #mode {
