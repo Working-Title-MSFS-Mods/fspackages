@@ -199,8 +199,9 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
-                new NavSystemPage("Setup", "UtilitiesSetup", new AS3000_TSC_UtilitiesSetup()),
-                new NavSystemPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD"))
+                new NavSystemPage("Setup", "UtilitiesSetup", new WT_G3x5_TSCUtilitiesSetup("MFD", "MFD Home")),
+                new NavSystemPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD")),
+                new NavSystemPage("Database Status", "DatabaseStatus", new WT_G3x5_TSCDatabaseStatus("MFD", "MFD Home"))
             ]),
             new NavSystemPageGroup("NavCom", this, [
                 new NavSystemPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
@@ -1545,43 +1546,6 @@ class AS3000_TSC_Utilities extends NavSystemElement {
         this.setupButton = this.gps.getChildById("SetupButton");
 
         this.gps.makeButton(this.setupButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Setup"));
-    }
-
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-    }
-
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onEvent(_event) {
-    }
-
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        return true;
-    }
-}
-
-/*
- * Setup Page (via Utilities)
- */
-class AS3000_TSC_UtilitiesSetup extends NavSystemElement {
-    init(root) {
-        this.avionicsSettingsButton = this.gps.getChildById("AvionicsSettingsButton");
-
-        this.gps.makeButton(this.avionicsSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Avionics Settings"));
     }
 
     onEnter() {
