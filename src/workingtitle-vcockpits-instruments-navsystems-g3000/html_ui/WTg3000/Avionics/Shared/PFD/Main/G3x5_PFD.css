@@ -174,24 +174,29 @@ as3000-pfd-element map-view {
         height: 3vh;
         font-size: 1vh;
     }
+    as3000-pfd-element #TrafficInsetMap map-view map-view-minicompass {
+        top: 3vh;
+    }
     as3000-pfd-element map-view-rangedisplay {
+        font-weight: bold;
+        color: var(--wt-g3x5-lightblue);
+    }
+    as3000-pfd-element #InsetMap map-view-rangedisplay {
         position: absolute;
         top: 2.5vh;
         left: 0;
         margin: 1px;
-        font-weight: bold;
-        color: var(--wt-g3x5-lightblue);
     }
-    as3000-pfd-element #Electricity map-view .trafficStatusLayer {
+    as3000-pfd-element map-view .trafficStatusLayer {
         font-weight: bold;
     }
-        as3000-pfd-element #Electricity map-view .trafficStatusTopInfo {
+        as3000-pfd-element map-view .trafficStatusTopInfo {
             position: absolute;
             top: 1px;
             right: 1px;
             width: 11vh;
         }
-        as3000-pfd-element #Electricity map-view wt-map-view-traffic-centerbanner {
+        as3000-pfd-element map-view wt-map-view-traffic-centerbanner {
             font-size: 2.5vh;
         }
         as3000-pfd-element map-view wt-map-view-traffic-navmapstatus {
