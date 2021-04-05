@@ -302,7 +302,8 @@ wt-tsc-button-value {
  #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig,
  #Electricity #PagesDisplay[state=Utilities] #Utilities,
  #Electricity #PagesDisplay[state=UtilitiesSetup] #UtilitiesSetup,
- #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings {
+ #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings,
+ #Electricity #PagesDisplay[state=DatabaseStatus] #DatabaseStatus {
   display: block; }
 
 .PopUpWindow {

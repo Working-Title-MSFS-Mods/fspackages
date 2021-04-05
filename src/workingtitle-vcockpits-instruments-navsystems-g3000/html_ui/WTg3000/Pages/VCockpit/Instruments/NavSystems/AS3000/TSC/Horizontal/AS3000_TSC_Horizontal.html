@@ -753,14 +753,10 @@
                     </div>
                 </div>
                 <div class="tscPage" id="UtilitiesSetup">
-                    <div class="line">
-                        <div class="gradientButton" id="AvionicsSettingsButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_AVIONICS_SETTINGS.png" />
-                            <div class="label">Avionics Settings</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="tscPage" id="AvionicsSettings">
+                </div>
+                <div class="tscPage" id="DatabaseStatus">
                 </div>
 
                 <div class="tscPage" id="WaypointsInfo">
@@ -2110,6 +2106,7 @@
 <script type="text/html" import-script="/WTg3000/SDK/Utils/FileHandler.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/CustomElementSelector.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/CachedElement.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/HTMLElementRecycler.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreSettingModel.js"></script>
@@ -2208,6 +2205,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCGradientDiv.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCTabbedView.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCDirectoryPage.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPopUpElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCRangeDisplay.js"></script>
@@ -2225,7 +2223,9 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTrafficSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCDatabaseStatus.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAirportInfo.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/G3000_TrafficAdvisorySystem.js"></script>
@@ -2234,5 +2234,5 @@
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCPFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCTrafficSettings.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js?foo=bar"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>

@@ -445,9 +445,9 @@ class WT_TSCImageButton extends WT_TSCLabeledButton {
             #labelbox {
                 position: absolute;
                 left: 0%;
-                top: 55%;
+                top: var(--button-img-label-top, 55%);
                 width: 100%;
-                height: 50%;
+                height: var(--button-img-label-height, 45%);
             }
         `;
     }
@@ -457,9 +457,9 @@ class WT_TSCImageButton extends WT_TSCLabeledButton {
             #img {
                 position: absolute;
                 left: 50%;
-                top: 5%;
+                top: var(--button-img-image-top, 5%);
                 max-width: 90%;
-                height: 50%;
+                height: var(--button-img-image-height, 50%);
                 transform: translateX(-50%);
             }
         `;
@@ -517,9 +517,9 @@ class WT_TSCStatusBarImageButton extends WT_TSCStatusBarButton {
             #labelbox {
                 position: absolute;
                 left: 0%;
-                bottom: 20%;
+                top: var(--button-statusbarimg-label-top, 50%);
                 width: 100%;
-                height: 30%;
+                height: var(--button-statusbarimg-label-height, 30%);
             }
         `;
     }
@@ -546,9 +546,9 @@ class WT_TSCStatusBarImageButton extends WT_TSCStatusBarButton {
             #img {
                 position: absolute;
                 left: 50%;
-                top: 5%;
+                top: var(--button-statusbarimg-image-top, 5%);
                 max-width: 90%;
-                height: 45%;
+                height: var(--button-statusbarimg-image-height, 45%);
                 transform: translateX(-50%);
             }
         `;

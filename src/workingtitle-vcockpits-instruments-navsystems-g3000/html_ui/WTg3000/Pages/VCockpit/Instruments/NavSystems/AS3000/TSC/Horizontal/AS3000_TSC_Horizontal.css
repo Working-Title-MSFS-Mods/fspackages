@@ -480,10 +480,22 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
             height: 15vh;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
-as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings {
+as3000-tsc-horizontal-element #UtilitiesSetup wt-tsc-utilitiessetup {
+    position: absolute;
+    left: 10%;
+    top: 5%;
+    width: 80%;
+    height: 90%;
+    font-size: 4vh;
+    line-height: 4vh;
+    --utilitiessetup-grid-gap-row: 10%;
+    --utilitiessetup-grid-grap-column: 10%;
+}
+
+as3000-tsc-horizontal-element #AvionicsSettings {
     font-size: 4vh;
 }
-as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-tabbedview {
+as3000-tsc-horizontal-element #AvionicsSettings tsc-tabbedview {
     position: absolute;
     top: 1%;
     left: 1%;
@@ -492,21 +504,21 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-t
     --tab-content-width: 106vh;
     --tab-content-height: 88vh;
 }
-as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings wt-tsc-button-tab {
+as3000-tsc-horizontal-element #AvionicsSettings wt-tsc-button-tab {
     width: 20vh;
     height: 15vh;
     margin: 2vh 0;
 }
-as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings .tab {
+as3000-tsc-horizontal-element #AvionicsSettings .tab {
     width: 100%;
     height: 100%;
 }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsbuttonrow,
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-unitsdisplayrow {
+    as3000-tsc-horizontal-element #AvionicsSettings tsc-avionicssettings-unitsbuttonrow,
+    as3000-tsc-horizontal-element #AvionicsSettings tsc-avionicssettings-unitsdisplayrow {
       height: 18vh;
       margin: 0.25vh 0.5vh;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-mfdnavdatafieldrow {
+    as3000-tsc-horizontal-element #AvionicsSettings tsc-avionicssettings-mfdnavdatafieldrow {
         height: 18vh;
         margin: 0.25vh 0.5vh;
     }
