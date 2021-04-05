@@ -523,6 +523,15 @@ as3000-tsc-horizontal-element #AvionicsSettings .tab {
         margin: 0.25vh 0.5vh;
     }
 
+as3000-tsc-horizontal-element #DatabaseStatus wt-tsc-databasestatus {
+    position: absolute;
+    left: 5%;
+    top: 0%;
+    width: 90%;
+    height: 99%;
+    font-size: 4vh;
+}
+
 @keyframes flightplanMenuEnter {
   0% {
     right: -100%; }
