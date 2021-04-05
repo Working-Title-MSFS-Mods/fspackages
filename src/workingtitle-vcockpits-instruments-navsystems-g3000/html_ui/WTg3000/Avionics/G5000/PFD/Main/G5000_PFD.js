@@ -30,7 +30,7 @@ class WT_G5000_PFD extends WT_G3x5_PFD {
      * @returns {WT_G5000_TCASII}
      */
     _createTrafficSystem() {
-        return new WT_G5000_TCASII(this.airplane, this._trafficTracker);
+        return new WT_G5000_TCASII(this.airplane, this._trafficTracker, "XPDR1");
     }
 
     _initAutoThrottle() {
