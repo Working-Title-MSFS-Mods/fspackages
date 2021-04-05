@@ -88,7 +88,7 @@ class WT_G5000_TSCTransponderModeModeHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._initButtonListeners();
         this._isInit = true;
         if (this._context) {

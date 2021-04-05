@@ -98,7 +98,7 @@ class WT_G3000_PFDWindDataBoxHTMLElement extends HTMLElement {
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.wait(this._defineChildren.bind(this));
+        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
         this._isInit = true;
         this._updateFromContext();
     }

@@ -93,7 +93,7 @@ class WT_VFRMapPanel extends HTMLElement {
     connectedCallback() {
         this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
         this._loadModConfig();
-        WT_Wait.wait(() => window["simvar"] && this._modConfigLoaded, this).then(this._doInit.bind(this));
+        WT_Wait.awaitCallback(() => window["simvar"] && this._modConfigLoaded, this).then(this._doInit.bind(this));
     }
 
     _onVFRMapRegistered() {
