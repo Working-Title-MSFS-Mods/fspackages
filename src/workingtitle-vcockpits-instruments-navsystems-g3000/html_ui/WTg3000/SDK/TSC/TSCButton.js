@@ -21,7 +21,7 @@ class WT_TSCButton extends HTMLElement {
         }
     }
 
-    _initHostStyle() {
+    _createHostStyle() {
         return `
             :host {
                 display: block;
@@ -51,7 +51,7 @@ class WT_TSCButton extends HTMLElement {
         `;
     }
 
-    _initWrapperStyle() {
+    _createWrapperStyle() {
         return `
             #wrapper {
                 position: absolute;
@@ -64,8 +64,8 @@ class WT_TSCButton extends HTMLElement {
     }
 
     _createStyle() {
-        let hostStyle = this._initHostStyle();
-        let wrapperStyle = this._initWrapperStyle();
+        let hostStyle = this._createHostStyle();
+        let wrapperStyle = this._createWrapperStyle();
 
         return `
             ${hostStyle}
@@ -183,11 +183,12 @@ class WT_TSCButton extends HTMLElement {
         this._listeners = [];
     }
 }
+WT_TSCButton.NAME = "wt-tsc-button";
 
-customElements.define("wt-tsc-button", WT_TSCButton);
+customElements.define(WT_TSCButton.NAME, WT_TSCButton);
 
 class WT_TSCLabeledButton extends WT_TSCButton {
-    _initLabelBoxStyle() {
+    _createLabelBoxStyle() {
         return `
             #labelbox {
                 position: absolute;
@@ -197,7 +198,7 @@ class WT_TSCLabeledButton extends WT_TSCButton {
         `;
     }
 
-    _initLabelStyle() {
+    _createLabelStyle() {
         return `
             #label {
                 position: absolute;
@@ -210,8 +211,8 @@ class WT_TSCLabeledButton extends WT_TSCButton {
 
     _createStyle() {
         let style = super._createStyle();
-        let labelBoxStyle = this._initLabelBoxStyle();
-        let labelStyle = this._initLabelStyle();
+        let labelBoxStyle = this._createLabelBoxStyle();
+        let labelStyle = this._createLabelStyle();
 
         return `
             ${style}
@@ -220,13 +221,17 @@ class WT_TSCLabeledButton extends WT_TSCButton {
         `;
     }
 
-    _appendChildren() {
+    _appendLabel() {
         this._labelBox = document.createElement("div");
         this._labelBox.id = "labelbox";
         this._label = document.createElement("div");
         this._label.id = "label";
         this._labelBox.appendChild(this._label);
         this._wrapper.appendChild(this._labelBox);
+    }
+
+    _appendChildren() {
+        this._appendLabel();
     }
 
     static get observedAttributes() {
@@ -258,14 +263,24 @@ class WT_TSCLabeledButton extends WT_TSCButton {
         this._label.innerHTML = value;
     }
 }
+WT_TSCLabeledButton.NAME = "wt-tsc-button-label";
 
-customElements.define("wt-tsc-button-label", WT_TSCLabeledButton);
+customElements.define(WT_TSCLabeledButton.NAME, WT_TSCLabeledButton);
 
 class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
-    constructor() {
-        super();
+    _createLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                width: 100%;
+                top: 0%;
+                bottom: 30%;
+            }
+        `;
+    }
 
-        this._style.appendChild(document.createTextNode(`
+    _createStatusBarStyle() {
+        return `
             #statusbar {
                 position: absolute;
                 width: 50%;
@@ -278,23 +293,30 @@ class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
             #statusbar[state=on] {
                 background-color: var(--button-statusbar-color-on, lawngreen);
             }
-        `));
+        `;
+    }
 
+    _createStyle() {
+        let style = super._createStyle();
+        let statusBarStyle = this._createStatusBarStyle();
+
+        return `
+            ${style}
+            ${statusBarStyle}
+        `;
+    }
+
+    _appendStatusBar() {
         this._statusBar = document.createElement("div");
         this._statusBar.id = "statusbar";
 
         this._wrapper.appendChild(this._statusBar);
     }
 
-    _initLabelBoxStyle() {
-        return `
-            #labelbox {
-                position: absolute;
-                width: 100%;
-                top: 0%;
-                bottom: 30%;
-            }
-        `;
+    _appendChildren() {
+        super._appendChildren();
+
+        this._appendStatusBar();
     }
 
     static get observedAttributes() {
@@ -321,11 +343,12 @@ class WT_TSCStatusBarButton extends WT_TSCLabeledButton {
         this._statusBar.setAttribute("state", value);
     }
 }
+WT_TSCStatusBarButton.NAME = "wt-tsc-button-statusbar";
 
-customElements.define("wt-tsc-button-statusbar", WT_TSCStatusBarButton);
+customElements.define(WT_TSCStatusBarButton.NAME, WT_TSCStatusBarButton);
 
 class WT_TSCValueButton extends WT_TSCLabeledButton {
-    _initLabelBoxStyle() {
+    _createLabelBoxStyle() {
         return `
             #labelbox {
                 position: absolute;
@@ -336,7 +359,7 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
         `;
     }
 
-    _initValueBoxStyle() {
+    _createValueBoxStyle() {
         return `
             #valuebox {
                 position: absolute;
@@ -347,7 +370,7 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
         `;
     }
 
-    _initValueStyle() {
+    _createValueStyle() {
         return `
             #value {
                 position: absolute;
@@ -362,8 +385,8 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
 
     _createStyle() {
         let style = super._createStyle();
-        let valueBoxStyle = this._initValueBoxStyle();
-        let valueStyle = this._initValueStyle();
+        let valueBoxStyle = this._createValueBoxStyle();
+        let valueStyle = this._createValueStyle();
 
         return `
             ${style}
@@ -412,38 +435,56 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
         this._value.innerHTML = value;
     }
 }
+WT_TSCValueButton.NAME = "wt-tsc-button-value";
 
-customElements.define("wt-tsc-button-value", WT_TSCValueButton);
+customElements.define(WT_TSCValueButton.NAME, WT_TSCValueButton);
 
 class WT_TSCImageButton extends WT_TSCLabeledButton {
-    constructor() {
-        super();
+    _createLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                left: 0%;
+                top: 55%;
+                width: 100%;
+                height: 50%;
+            }
+        `;
+    }
 
-        this._style.appendChild(document.createTextNode(`
+    _createImageStyle() {
+        return `
             #img {
                 position: absolute;
                 left: 50%;
-                transform: translateX(-50%);
-                max-width: 90%;
                 top: 5%;
+                max-width: 90%;
                 height: 50%;
+                transform: translateX(-50%);
             }
-        `));
+        `;
+    }
 
+    _createStyle() {
+        let style = super._createStyle();
+        let imageStyle = this._createImageStyle();
+
+        return `
+            ${style}
+            ${imageStyle}
+        `;
+    }
+
+    _appendImage() {
         this._img = document.createElement("img");
         this._img.id = "img";
         this._wrapper.appendChild(this._img);
     }
 
-    _initLabelBoxStyle() {
-        return `
-            #labelbox {
-                position: absolute;
-                width: 100%;
-                top: 55%;
-                bottom: 5%;
-            }
-        `;
+    _appendChildren() {
+        super._appendChildren();
+
+        this._appendImage();
     }
 
     static get observedAttributes() {
@@ -466,8 +507,98 @@ class WT_TSCImageButton extends WT_TSCLabeledButton {
         }
     }
 }
+WT_TSCImageButton.NAME = "wt-tsc-button-img";
 
-customElements.define("wt-tsc-button-img", WT_TSCImageButton);
+customElements.define(WT_TSCImageButton.NAME, WT_TSCImageButton);
+
+class WT_TSCStatusBarImageButton extends WT_TSCStatusBarButton {
+    _createLabelBoxStyle() {
+        return `
+            #labelbox {
+                position: absolute;
+                left: 0%;
+                bottom: 20%;
+                width: 100%;
+                height: 30%;
+            }
+        `;
+    }
+
+    _createStatusBarStyle() {
+        return `
+            #statusbar {
+                position: absolute;
+                left: 25%;
+                bottom: 6%;
+                width: 50%;
+                height: 10%;
+                border-radius: var(--button-statusbar-border-radius, 0.5vh);
+                background-color: var(--button-statusbar-color-off, grey);
+            }
+            #statusbar[state=on] {
+                background-color: var(--button-statusbar-color-on, lawngreen);
+            }
+        `;
+    }
+
+    _createImageStyle() {
+        return `
+            #img {
+                position: absolute;
+                left: 50%;
+                top: 5%;
+                max-width: 90%;
+                height: 45%;
+                transform: translateX(-50%);
+            }
+        `;
+    }
+
+    _createStyle() {
+        let style = super._createStyle();
+        let imageStyle = this._createImageStyle();
+
+        return `
+            ${style}
+            ${imageStyle}
+        `;
+    }
+
+    _appendImage() {
+        this._img = document.createElement("img");
+        this._img.id = "img";
+        this._wrapper.appendChild(this._img);
+    }
+
+    _appendChildren() {
+        super._appendChildren();
+
+        this._appendImage();
+    }
+
+    static get observedAttributes() {
+        return [...WT_TSCStatusBarButton.observedAttributes, "imgsrc"];
+    }
+
+    get imgSrc() {
+        return this._img.src;
+    }
+
+    set imgSrc(value) {
+        this.setAttribute("imgsrc", value);
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "imgsrc") {
+            this._img.src = newValue;
+        } else {
+            super.attributeChangedCallback(name, oldValue, newValue);
+        }
+    }
+}
+WT_TSCStatusBarImageButton.NAME = "wt-tsc-button-statusbarimg";
+
+customElements.define(WT_TSCStatusBarImageButton.NAME, WT_TSCStatusBarImageButton);
 
 class WT_TSCContentButton extends WT_TSCButton {
     _appendChildren() {

@@ -1403,7 +1403,7 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
         this._initFormatter();
     }
 
-    _initWrapperStyle() {
+    _createWrapperStyle() {
         return `
             #wrapper {
                 position: absolute;
@@ -1419,7 +1419,7 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
         `;
     }
 
-    _initDesignationStyle() {
+    _createDesignationStyle() {
         return `
             #designation {
                 font-size: 1.5em;
@@ -1427,7 +1427,7 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
         `;
     }
 
-    _initSizeStyle() {
+    _createSizeStyle() {
         return `
             .unit {
                 font-size: 0.75em;
@@ -1435,21 +1435,21 @@ class WT_G3x5_TSCRunwayButton extends WT_TSCButton {
         `;
     }
 
-    _initSurfaceStyle() {
+    _createSurfaceStyle() {
         return "";
     }
 
-    _initLightingStyle() {
+    _createLightingStyle() {
         return "";
     }
 
     _createStyle() {
         let style = super._createStyle();
 
-        let designationStyle = this._initDesignationStyle();
-        let sizeStyle = this._initSizeStyle();
-        let surfaceStyle = this._initSurfaceStyle();
-        let lightingStyle = this._initLightingStyle();
+        let designationStyle = this._createDesignationStyle();
+        let sizeStyle = this._createSizeStyle();
+        let surfaceStyle = this._createSurfaceStyle();
+        let lightingStyle = this._createLightingStyle();
 
         return`
             ${style}

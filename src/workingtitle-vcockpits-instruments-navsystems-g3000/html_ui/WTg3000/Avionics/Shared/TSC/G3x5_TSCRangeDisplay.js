@@ -8,7 +8,7 @@ class WT_G3x5_TSCRangeDisplayButton extends WT_TSCLabeledButton {
         this._initFormatter();
     }
 
-    _initUnitStyle() {
+    _createUnitStyle() {
         return `
             #label .unit {
                 font-size: var(--rangedisplay-unit-font-size, 0.75em);
@@ -18,7 +18,7 @@ class WT_G3x5_TSCRangeDisplayButton extends WT_TSCLabeledButton {
 
     _createStyle() {
         let style = super._createStyle();
-        let unitStyle = this._initUnitStyle();
+        let unitStyle = this._createUnitStyle();
 
         return `
             ${style}
@@ -129,8 +129,8 @@ class WT_G3x5_TSCRangeTypeDisplayButton extends WT_TSCValueButton {
         this._initFormatter();
     }
 
-    _initHostStyle() {
-        let style = super._initHostStyle();
+    _createHostStyle() {
+        let style = super._createHostStyle();
         return `
             ${style}
             :host(${WT_G3x5_TSCRangeTypeDisplayButton.NAME}) {
@@ -139,7 +139,7 @@ class WT_G3x5_TSCRangeTypeDisplayButton extends WT_TSCValueButton {
         `;
     }
 
-    _initUnitStyle() {
+    _createUnitStyle() {
         return `
             #value .unit {
                 font-size: var(--rangedisplay-unit-font-size, 0.75em);
@@ -149,7 +149,7 @@ class WT_G3x5_TSCRangeTypeDisplayButton extends WT_TSCValueButton {
 
     _createStyle() {
         let style = super._createStyle();
-        let unitStyle = this._initUnitStyle();
+        let unitStyle = this._createUnitStyle();
 
         return `
             ${style}
