@@ -61,7 +61,7 @@ WT_TSCScrollList.TEMPLATE.innerHTML = `
                 padding-bottom: var(--scrolllist-padding-bottom, 2%);
                 display: flex;
                 flex-flow: column nowrap;
-                align-items: center;
+                align-items: var(--scrolllist-align-items, center);
             }
 
     </style>
