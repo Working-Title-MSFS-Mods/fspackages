@@ -944,6 +944,8 @@ as3000-tsc-vertical-element .charts wt-tsc-charts {
     width: 98%;
     height: 98%;
     font-size: 3vh;
+    --charts-datafail-position-x: calc(50% + 7.5vh);
+    --charts-datafail-position-y: 35vh;
 }
     as3000-tsc-vertical-element .charts .chartsHeader {
         position: absolute;
@@ -1029,6 +1031,15 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings .tab {
         height: 14vh;
         margin: 0.25vh 0.5vh;
     }
+
+as3000-tsc-vertical-element #DatabaseStatus wt-tsc-databasestatus {
+    position: absolute;
+    left: 5%;
+    top: 0%;
+    width: 90%;
+    height: 99%;
+    font-size: 3vh;
+}
 
 as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airportinfo {
     position: absolute;

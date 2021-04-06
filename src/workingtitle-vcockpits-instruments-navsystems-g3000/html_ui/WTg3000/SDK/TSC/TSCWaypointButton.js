@@ -7,7 +7,7 @@ class WT_TSCWaypointButton extends WT_TSCButton {
         this._isInit = false;
     }
 
-    _initIdentStyle() {
+    _createIdentStyle() {
         return `
             #ident {
                 position: absolute;
@@ -20,7 +20,7 @@ class WT_TSCWaypointButton extends WT_TSCButton {
         `;
     }
 
-    _initNameStyle() {
+    _createNameStyle() {
         return `
             #name {
                 position: absolute;
@@ -36,7 +36,7 @@ class WT_TSCWaypointButton extends WT_TSCButton {
         `;
     }
 
-    _initIconStyle() {
+    _createIconStyle() {
         return `
             #icon {
                 position: absolute;
@@ -48,7 +48,7 @@ class WT_TSCWaypointButton extends WT_TSCButton {
         `;
     }
 
-    _initEmptyStyle() {
+    _createEmptyStyle() {
         return `
             #empty {
                 position: absolute;
@@ -62,10 +62,10 @@ class WT_TSCWaypointButton extends WT_TSCButton {
     _createStyle() {
         let style = super._createStyle();
 
-        let identStyle = this._initIdentStyle();
-        let nameStyle = this._initNameStyle();
-        let iconStyle = this._initIconStyle();
-        let emptyStyle = this._initEmptyStyle();
+        let identStyle = this._createIdentStyle();
+        let nameStyle = this._createNameStyle();
+        let iconStyle = this._createIconStyle();
+        let emptyStyle = this._createEmptyStyle();
 
         return`
             ${style}
@@ -182,8 +182,9 @@ class WT_TSCWaypointButton extends WT_TSCButton {
         }
     }
 }
+WT_TSCWaypointButton.NAME = "wt-tsc-button-waypoint";
 
-customElements.define("tsc-button-waypoint", WT_TSCWaypointButton);
+customElements.define(WT_TSCWaypointButton.NAME, WT_TSCWaypointButton);
 
 class WT_TSCWaypointButtonIconSrcFactory {
     constructor(imageDir) {

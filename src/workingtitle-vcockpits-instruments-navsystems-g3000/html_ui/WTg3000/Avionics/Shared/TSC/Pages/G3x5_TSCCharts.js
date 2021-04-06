@@ -93,13 +93,15 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         if (airport) {
             try {
                 let charts = await this._navigraphAPI.getChartsList(this._airport.ident);
+                this.htmlElement.setDataFail(false);
                 if (charts) {
                     return charts.charts;
-                } else {
-                    return [];
                 }
             } catch (e) {
                 console.log(e);
+                if (e === WT_NavigraphAPI.Error.ACCESS_DENIED) {
+                    this.htmlElement.setDataFail(true);
+                }
             }
         }
         return [];
@@ -245,6 +247,10 @@ class WT_G3x5_TSCChartsHTMLElement extends HTMLElement {
         return this._optionsButton;
     }
 
+    _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+    }
+
     _initSelectButton() {
         this._selectButton = new WT_TSCWaypointButton();
         this._selectButton.classList.add(WT_G3x5_TSCChartsHTMLElement.SELECT_BUTTON_CLASS);
@@ -321,6 +327,7 @@ class WT_G3x5_TSCChartsHTMLElement extends HTMLElement {
     }
 
     connectedCallback() {
+        this._defineChildren();
         this._initChildren();
         this._initTabs();
         this._isInit = true;
@@ -346,6 +353,10 @@ class WT_G3x5_TSCChartsHTMLElement extends HTMLElement {
         this._departure.setChartID(id);
         this._arrival.setChartID(id);
         this._approach.setChartID(id);
+    }
+
+    setDataFail(value) {
+        this._wrapper.setAttribute("datafail", `${value}`);
     }
 
     addChartSelectListener(listener) {
@@ -384,6 +395,7 @@ WT_G3x5_TSCChartsHTMLElement.HEADER_CLASS = "chartsHeader";
 WT_G3x5_TSCChartsHTMLElement.SELECT_BUTTON_CLASS = "chartsSelectButton";
 WT_G3x5_TSCChartsHTMLElement.OPTIONS_BUTTON_CLASS = "chartsOptionsButton";
 WT_G3x5_TSCChartsHTMLElement.MAIN_VIEW_CLASS = "chartsMain";
+WT_G3x5_TSCChartsHTMLElement.DATA_FAIL_CLASS = "chartsDataFail";
 WT_G3x5_TSCChartsHTMLElement.NAME = "wt-tsc-charts";
 WT_G3x5_TSCChartsHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3x5_TSCChartsHTMLElement.TEMPLATE.innerHTML = `
@@ -391,10 +403,28 @@ WT_G3x5_TSCChartsHTMLElement.TEMPLATE.innerHTML = `
         :host {
             display: block;
         }
+            #datafail {
+                display: none;
+                position: absolute;
+                left: var(--charts-datafail-position-x, 50%);
+                top: var(--charts-datafail-position-y, 50%);
+                transform: translate(-50%, -50%);
+                text-align: center;
+                font-size: var(--charts-datafail-font-size, 1.5em);
+                color: white;
+                padding: 0 0.2em;
+                border-radius: 5px;
+                border: 3px solid var(--wt-g3x5-bordergray);
+                background-color: black;
+            }
+            #wrapper[datafail="true"] #datafail {
+                display: block;
+            }
     </style>
     <div id="wrapper">
         <slot name="header"></slot>
         <slot name="main" id="main"></slot>
+        <div name="datafail" id="datafail">CHARTS&nbspDATA&nbspFAIL</div>
     </div>
 `;
 
