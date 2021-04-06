@@ -532,7 +532,7 @@ class WT_VerticalAutopilot {
             }
             return false;
         } else {
-            if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > 1000) {
+            if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > -1000) {
                 return true;
             }
             return false;
