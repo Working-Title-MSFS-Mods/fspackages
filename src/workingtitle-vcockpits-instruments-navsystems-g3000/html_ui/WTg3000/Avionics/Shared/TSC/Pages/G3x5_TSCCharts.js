@@ -19,7 +19,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._chartID = "";
 
         this._navigraphAPI = navigraphAPI;
-        this._settingModelID = `MFD-${halfPaneID}`;
+        this._settingModelID = `MFD-${halfPaneID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
         this._initSettingModel();
 
         this._isLocked = false;
@@ -29,6 +29,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
         this._settingModel.addSetting(this._icaoSetting = new WT_G3x5_ChartsICAOSetting(this._settingModel));
         this._settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this._settingModel));
+
+        this._icaoSetting.init();
     }
 
     /**
@@ -183,9 +185,15 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._chartIDSetting.setValue(chart.id);
     }
 
+    _activateChartsDisplayPane() {
+        let settings = this.instrument.getSelectedMFDPaneSettings();
+        settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS);
+    }
+
     onEnter() {
         super.onEnter();
 
+        this._activateChartsDisplayPane();
         this.htmlElement.open();
     }
 

@@ -392,6 +392,13 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === WT_G3x5_TSCCharts.TITLE)) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
         if (!this._isChangingPages && setting === this.getSelectedMFDPaneSettings().display) {
             let currentPageGroup = this.getCurrentPageGroup();
@@ -405,6 +412,9 @@ class AS3000_TSC extends NavSystemTouch {
                     break;
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
                     this._onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+                    this._onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage);
                     break;
             }
         }

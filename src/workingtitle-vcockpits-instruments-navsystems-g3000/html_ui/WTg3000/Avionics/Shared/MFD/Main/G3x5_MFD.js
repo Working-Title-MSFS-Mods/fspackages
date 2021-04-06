@@ -53,11 +53,18 @@ class WT_G3x5_MFD extends NavSystem {
 
     /**
      * @readonly
-     * @property {WT_CitySearcher} citySearcher
      * @type {WT_CitySearcher}
      */
     get citySearcher() {
         return this._citySearcher;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NavigraphAPI}
+     */
+    get navigraphAPI() {
+        return this._navigraphAPI;
     }
 
     /**
@@ -115,11 +122,16 @@ class WT_G3x5_MFD extends NavSystem {
         this._trafficSystem = this._createTrafficSystem();
     }
 
+    _initNavigraphAPI() {
+        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
+    }
+
     Init() {
         super.Init();
 
         this._initReferenceSensors();
         this._initTrafficSystem();
+        this._initNavigraphAPI();
     }
 
     _updateTrafficTracker(currentTime) {
