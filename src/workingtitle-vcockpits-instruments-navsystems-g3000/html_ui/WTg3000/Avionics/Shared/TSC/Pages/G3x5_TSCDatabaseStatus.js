@@ -171,7 +171,6 @@ WT_G3x5_TSCDatabaseStatusHTMLElement.TEMPLATE.innerHTML = `
                     }
                         .tableRow {
                             height: var(--databasestatus-table-row-height, 4em);
-                            border: 3px ridge var(--wt-g3x5-bordergray);
                         }
     </style>
     <div id="wrapper">
