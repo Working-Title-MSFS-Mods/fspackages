@@ -55,22 +55,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.initDuration = 4000;
 
         this._initUnitsSettingModel();
-
-        this._mfdMainPaneSettings = {settingModel: new WT_DataStoreSettingModel("MFD", null)};
-        this._mfdMainPaneSettings.settingModel.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.settingModel));
-        this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
-
-        this._mfdLeftPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
-        this._mfdRightPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
-        this._initHalfPaneController(this._mfdLeftPaneSettings);
-        this._initHalfPaneController(this._mfdRightPaneSettings);
-
-        this._mfdLeftPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
-        this._mfdRightPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
-
-        this._mfdMainPaneSettings.settingModel.update();
-
         this._initLightingControl();
+        this._initNavigraphAPI();
+        this._initMFDPaneSettings();
 
         this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
         this._mfdPaneControlID;
@@ -87,11 +74,31 @@ class AS3000_TSC extends NavSystemTouch {
         paneSettings.settingModel.update();
     }
 
+    _initMFDPaneSettings() {
+        this._mfdMainPaneSettings = {settingModel: new WT_DataStoreSettingModel("MFD", null)};
+        this._mfdMainPaneSettings.settingModel.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.settingModel));
+        this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
+
+        this._mfdLeftPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
+        this._mfdRightPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
+        this._initHalfPaneController(this._mfdLeftPaneSettings);
+        this._initHalfPaneController(this._mfdRightPaneSettings);
+
+        this._mfdLeftPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
+        this._mfdRightPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
+
+        this._mfdMainPaneSettings.settingModel.update();
+    }
+
     _initLightingControl() {
         if (this.isLightingControlAllowed()) {
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLightingBool", "bool", true); // tell xmls to use custom display lighting xmlvar
             SimVar.SetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number", WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1)); // initialize display brightness variable: 1.0 = maximum brightness
         }
+    }
+
+    _initNavigraphAPI() {
+        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
     }
 
     get templateID() { return "AS3000_TSC"; }
@@ -196,12 +203,14 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Nearest VOR", "NearestVOR", new AS3000_TSC_NRST_VOR()),
                 new NavSystemPage("Nearest NDB", "NearestNDB", new AS3000_TSC_NRST_NDB()),
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
+                this._mfdPagesLeft.charts = new NavSystemPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
                 new NavSystemPage("Setup", "UtilitiesSetup", new WT_G3x5_TSCUtilitiesSetup("MFD", "MFD Home")),
                 new NavSystemPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD")),
-                new NavSystemPage("Database Status", "DatabaseStatus", new WT_G3x5_TSCDatabaseStatus("MFD", "MFD Home"))
+                new NavSystemPage("Database Status", "DatabaseStatus", new WT_G3x5_TSCDatabaseStatus("MFD", "MFD Home", this._navigraphAPI))
             ]),
             new NavSystemPageGroup("NavCom", this, [
                 new NavSystemPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
@@ -800,6 +809,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.directToButton = this.gps.getChildById("DirectToButton");
         this.FlightPlanButton = this.gps.getChildById("FlightPlanButton");
         this.procButton = this.gps.getChildById("ProcButton");
+        this._chartsButton = this.gps.getChildById("ChartsButton");
         this.NearestButton = this.gps.getChildById("NearestButton");
         this.speedBugsButton = this.gps.getChildById("SpeedBugsButton_MFD");
         this.WaypointsInfoButton = this.gps.getChildById("WaypointInfoButton");
@@ -811,6 +821,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
         this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
         this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
+        this.gps.makeButton(this._chartsButton, this._onChartsButtonPressed.bind(this));
         this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest"));
         this.gps.makeButton(this.speedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Speed Bugs"));
         this.gps.makeButton(this.WaypointsInfoButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Waypoint Info"));
@@ -863,6 +874,10 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         } else {
             settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER);
         }
+    }
+
+    _onChartsButtonPressed() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().charts.name);
     }
 
     _updatePaneDisplayButtons() {

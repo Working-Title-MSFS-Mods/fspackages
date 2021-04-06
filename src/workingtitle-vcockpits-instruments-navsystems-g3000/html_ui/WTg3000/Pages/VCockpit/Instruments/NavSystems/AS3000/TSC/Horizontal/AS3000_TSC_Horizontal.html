@@ -147,7 +147,7 @@
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png" />
                             <div class="label">PROC</div>
                         </div>
-                        <div class="gradientButton" id="ChartsButton" state="Greyed">
+                        <div class="gradientButton" id="ChartsButton">
                             <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_CHARTS_1.png" />
                             <div class="label">Charts</div>
                         </div>
@@ -707,6 +707,11 @@
                         <div class="title">Sequence</div>
                         <div class="content"></div>
                     </div>
+                </div>
+
+                <div class="tscPage charts" id="ChartsLeft">
+                </div>
+                <div class="tscPage charts" id="ChartsRight">
                 </div>
 
                 <div class="tscPage" id="AircraftSystems">
@@ -2201,6 +2206,8 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_TrafficMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
 
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsSettings.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDElement.js"></script>
@@ -2228,6 +2235,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTrafficSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCCharts.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCDatabaseStatus.js"></script>
@@ -2239,5 +2247,5 @@
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCPFDSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCTrafficSettings.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js?foo=bar"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>
