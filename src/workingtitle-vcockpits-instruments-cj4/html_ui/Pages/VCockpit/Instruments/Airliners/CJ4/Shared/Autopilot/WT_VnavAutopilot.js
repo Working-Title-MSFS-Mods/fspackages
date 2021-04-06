@@ -337,7 +337,7 @@ class WT_VerticalAutopilot {
                     this._pathInterceptStatus = PathInterceptStatus.NONE;
                     break;
                 }
-                if (!this.canPathActivate() && this._pathInterceptStatus !== PathInterceptStatus.LEVELING && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
+                if (!this.canPathActivate(true) && this._pathInterceptStatus !== PathInterceptStatus.LEVELING && this._pathInterceptStatus !== PathInterceptStatus.LEVELED) {
                     this.setVerticalNavModeState(VerticalNavModeState.PTCH);
                     this._vnavPathStatus = VnavPathStatus.NONE;
                     this.vsSlot = 1;
@@ -524,12 +524,20 @@ class WT_VerticalAutopilot {
         return false;
     }
 
-    canPathActivate() {
-        const gsBasedDeviation = -1 * (((this.groundSpeed && this.groundSpeed > 100 ? this.groundSpeed : 200) * (4 / 11)) + (750/11));
-        if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > gsBasedDeviation) {
-            return true;
+    canPathActivate(alreadyActive = false) {
+        if (!alreadyActive) {
+            const gsBasedDeviation = -1 * (((this.groundSpeed && this.groundSpeed > 100 ? this.groundSpeed : 200) * (4 / 11)) + (750/11));
+            if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > gsBasedDeviation) {
+                return true;
+            }
+            return false;
+        } else {
+            if (this.path.fpa != 0 && this.path.deviation < 1000 && this.path.deviation > 1000) {
+                return true;
+            }
+            return false;
         }
-        return false;
+        
     }
 
     canGlidepathActivate() {
