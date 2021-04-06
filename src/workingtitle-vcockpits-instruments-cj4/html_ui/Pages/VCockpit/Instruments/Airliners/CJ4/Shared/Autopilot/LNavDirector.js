@@ -468,7 +468,7 @@ class LNavDirector {
    * @returns {number} The distance from the final approach fix in NM.
    */
   getFinalApproachFixDistance(planeCoords) {
-    const approach = this.fpm.getApproachWaypoints();
+    const approach = this.fpm.getApproachWaypoints(0);
     if (approach.length > 1) {
       let finalApproachFix = approach[approach.length - 2];
       const runwayFix = approach[approach.length - 1];
