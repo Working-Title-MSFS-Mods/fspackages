@@ -1,8 +1,5 @@
 class WT_NavigraphAPI {
     constructor(magicStrings) {
-        this.RFRSH_TOKEN_KEY = "WT_NG_REFRESH_TOKEN";
-        this.ACC_TOKEN_KEY = "WT_NG_ACC_TOKEN";
-        this._refreshToken = "";
         this._chartListCache = new Map();
         this._chartCacheTimestamp = 0;
         this._accessTokenTimestamp = 0;
@@ -10,16 +7,14 @@ class WT_NavigraphAPI {
     }
     /** Gets a boolean indicating if the navigraph account is linked */
     get isAccountLinked() {
-        this._refreshToken = WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
-        return this._refreshToken !== "";
+        return this.refreshToken !== "";
     }
     /** Sets the refresh token */
     set refreshToken(val) {
-        this._refreshToken = val;
-        WTDataStore.set(this.RFRSH_TOKEN_KEY, val);
+        WTDataStore.set(WT_NavigraphAPI.REFRESH_TOKEN_KEY, val);
     }
     get refreshToken() {
-        return WTDataStore.get(this.RFRSH_TOKEN_KEY, "");
+        return WTDataStore.get(WT_NavigraphAPI.REFRESH_TOKEN_KEY, "");
     }
     /** Returns a boolean indicating if a access token is known */
     get hasAccessToken() {
@@ -27,12 +22,12 @@ class WT_NavigraphAPI {
     }
     /** Sets the access token */
     set accessToken(val) {
-        localStorage.setItem(this.ACC_TOKEN_KEY, val);
+        localStorage.setItem(WT_NavigraphAPI.ACC_TOKEN_KEY, val);
         this._accessTokenTimestamp = Date.now();
     }
     /** Gets the access token */
     get accessToken() {
-        return localStorage.getItem(this.ACC_TOKEN_KEY);
+        return localStorage.getItem(WT_NavigraphAPI.ACC_TOKEN_KEY);
     }
     /**
      * Checks if the access token is still good or starts the link account process
@@ -40,13 +35,15 @@ class WT_NavigraphAPI {
     validateToken() {
         return WT_Wait.awaitGenerator(this, void 0, void 0, function* () {
             if (this.isAccountLinked) {
+                let success = true;
                 if (!this.hasAccessToken ||
                     (this.hasAccessToken && (Date.now() - this._accessTokenTimestamp) > 900000)) {
-                    yield this.refreshAccessToken();
+                    success = yield this.refreshAccessToken();
                 }
+                return success;
             }
             else {
-                yield this.linkAccount();
+                return false;
             }
         });
     }
@@ -63,8 +60,9 @@ class WT_NavigraphAPI {
             if (refreshResp.ok) {
                 this.refreshToken = refreshResp.json().refresh_token;
                 this.accessToken = refreshResp.json().access_token;
+                return true;
             }
-            return;
+            return false;
         });
     }
     /**
@@ -80,7 +78,10 @@ class WT_NavigraphAPI {
                 return chartsObj;
             }
             if (!this._chartListCache.has(icao)) {
-                yield this.validateToken();
+                let success = yield this.validateToken();
+                if (!success) {
+                    throw (WT_NavigraphAPI.Error.ACCESS_DENIED);
+                }
                 const signedUrlResp = yield this.sendRequest(`https://charts.api.navigraph.com/2/airports/${icao}/signedurls/charts.json`, "get", null, true);
                 if (signedUrlResp.ok) {
                     const signedUrl = signedUrlResp.data;
@@ -138,7 +139,7 @@ class WT_NavigraphAPI {
                 return true;
             }
             else {
-                throw ("Auth failed");
+                throw (WT_NavigraphAPI.Error.AUTH_FAILED);
             }
         });
     }
@@ -146,7 +147,10 @@ class WT_NavigraphAPI {
     getChartPngUrl(chart, dayChart = true) {
         return WT_Wait.awaitGenerator(this, void 0, void 0, function* () {
             if (chart !== undefined) {
-                yield this.validateToken();
+                let success = yield this.validateToken();
+                if (!success) {
+                    throw (WT_NavigraphAPI.Error.ACCESS_DENIED);
+                }
                 const url = `https://charts.api.navigraph.com/2/airports/${chart.icao_airport_identifier}/signedurls/${dayChart ? chart.file_day : chart.file_night}`;
                 const urlResp = yield this.sendRequest(url, "get", null, true);
                 return urlResp.data;
@@ -187,6 +191,15 @@ class WT_NavigraphAPI {
             return response;
         });
     }
+}
+WT_NavigraphAPI.REFRESH_TOKEN_KEY = "WT_NG_REFRESH_TOKEN";
+WT_NavigraphAPI.ACC_TOKEN_KEY = "WT_NG_ACC_TOKEN";
+/**
+ * @enum {String}
+ */
+WT_NavigraphAPI.Error = {
+    ACCESS_DENIED: "Access denied",
+    AUTH_FAILED: "Authorization failed"
 }
 WT_NavigraphAPI.FORM_KEYS = [
     "ㆶᩙⷎ䗶䬠耂老",

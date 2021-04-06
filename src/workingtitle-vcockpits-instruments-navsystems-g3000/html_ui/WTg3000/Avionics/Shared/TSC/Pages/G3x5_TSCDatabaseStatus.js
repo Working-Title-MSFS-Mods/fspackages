@@ -25,10 +25,11 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     _initNavigraphRow(row) {
         row.setContext({
             title: "Navigraph Charts",
-            navigraph: this._navigraphAPI
+            navigraphAPI: this._navigraphAPI
         });
 
         row.addButtonListener(this._onNavigraphButtonPressed.bind(this));
+        row.update();
     }
 
     async _initRows() {
@@ -44,12 +45,29 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
         this._initRows();
     }
 
-    async _linkNavigraphAccount() {
-        await this._navigraphAPI.linkAccount();
+    async _linkNavigraphAccount(button) {
+        try {
+            await this._navigraphAPI.linkAccount();
+        } catch (e) {
+            console.log(e);
+        }
+        button.update();
     }
 
     _onNavigraphButtonPressed(button) {
-        this._linkNavigraphAccount();
+        this._linkNavigraphAccount(button);
+    }
+
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.open();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
     }
 }
 WT_G3x5_TSCDatabaseStatus.TITLE = "Database Status";
@@ -95,6 +113,21 @@ class WT_G3x5_TSCDatabaseStatusHTMLElement extends HTMLElement {
 
     connectedCallback() {
         this._connectedCallbackHelper();
+    }
+
+    _updateRows() {
+        this.navigraphRow.update();
+    }
+
+    open() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._updateRows();
+    }
+
+    close() {
     }
 }
 WT_G3x5_TSCDatabaseStatusHTMLElement.NAME = "wt-tsc-databasestatus";
@@ -145,7 +178,7 @@ WT_G3x5_TSCDatabaseStatusHTMLElement.TEMPLATE.innerHTML = `
                         position: absolute;
                         left: 0%;
                         top: 0%;
-                        width: 100%;
+                        width: calc(100% - var(--scrolllist-scrollbar-width, 1vw));
                         height: var(--databasestatus-table-header-height, 15%);
                         display: grid;
                         grid-template-rows: 100%;
@@ -302,9 +335,47 @@ class WT_G3x5_TSCDatabaseStatusRowButton extends WT_TSCButton {
             this._updateFromContext();
         }
     }
+
+    update() {
+    }
 }
 
 class WT_G3x5_TSCDatabaseStatusNavigraphRowButton extends WT_G3x5_TSCDatabaseStatusRowButton {
+    constructor() {
+        super();
+
+        this._updateID = 0;
+    }
+
+    _updateStandby(isAccountLinked, isAccessAvail) {
+        this._standby.textContent = isAccountLinked ? "Available" : "None";
+    }
+
+    _updateActive(isAccountLinked, isAccessAvail) {
+        this._active.textContent = isAccessAvail ? "Available" : "None";
+    }
+
+    async _doUpdate() {
+        let updateID = ++this._updateID;
+        let navigraphAPI = this._context.navigraphAPI;
+        let isAccountLinked = navigraphAPI.isAccountLinked;
+        let isAccessAvail = await navigraphAPI.validateToken();
+
+        if (updateID !== this._updateID) {
+            return;
+        }
+
+        this._updateStandby(isAccountLinked, isAccessAvail);
+        this._updateActive(isAccountLinked, isAccessAvail);
+    }
+
+    update() {
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        this._doUpdate();
+    }
 }
 WT_G3x5_TSCDatabaseStatusNavigraphRowButton.NAME = "wt-tsc-button-databasestatus-row-navigraph";
 

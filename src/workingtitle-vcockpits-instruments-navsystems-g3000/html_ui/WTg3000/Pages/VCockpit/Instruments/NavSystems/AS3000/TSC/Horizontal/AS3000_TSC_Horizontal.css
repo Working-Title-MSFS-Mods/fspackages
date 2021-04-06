@@ -848,6 +848,8 @@ as3000-tsc-horizontal-element .charts wt-tsc-charts {
     width: 98%;
     height: 98%;
     font-size: 4vh;
+    --charts-datafail-position-x: calc(50% + 11.5vh);
+    --charts-datafail-position-y: 52.5vh;
 }
     as3000-tsc-horizontal-element .charts .chartsHeader {
         position: absolute;
