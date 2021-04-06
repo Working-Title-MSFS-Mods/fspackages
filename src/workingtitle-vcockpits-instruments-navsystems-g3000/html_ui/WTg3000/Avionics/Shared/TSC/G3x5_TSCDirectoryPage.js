@@ -5,7 +5,6 @@ class WT_G3x5_TSCDirectoryPage extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCDirectoryPageHTMLElement} htmlElement
      * @type {WT_G3x5_TSCDirectoryPageHTMLElement}
      */
     get htmlElement() {

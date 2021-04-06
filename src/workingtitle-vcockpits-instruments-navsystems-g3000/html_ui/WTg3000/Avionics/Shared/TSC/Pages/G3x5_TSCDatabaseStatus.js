@@ -1,17 +1,17 @@
 class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName) {
+    /**
+     * @param {String} homePageGroup
+     * @param {String} homePageName
+     * @param {WT_NavigraphAPI} navigraphAPI
+     */
+    constructor(homePageGroup, homePageName, navigraphAPI) {
         super(homePageGroup, homePageName);
 
-        this._initNavigraphAPI();
-    }
-
-    _initNavigraphAPI() {
-        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
+        this._navigraphAPI = navigraphAPI;
     }
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCDatabaseStatusHTMLElement} htmlElement
      * @type {WT_G3x5_TSCDatabaseStatusHTMLElement}
      */
     get htmlElement() {
