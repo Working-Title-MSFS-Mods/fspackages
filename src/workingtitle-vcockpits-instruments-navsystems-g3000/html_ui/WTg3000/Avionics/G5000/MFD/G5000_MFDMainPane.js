@@ -2,11 +2,12 @@ class WT_G5000_MFDMainPane extends WT_G3x5_MFDMainPane {
     /**
      *
      * @param {WT_G3x5_MFDHalfPane.ID} side
+     * @param {Object} data
      * @returns {WT_G3x5_MFDHalfPane}
      */
-    _createHalfPane(paneID) {
+    _createHalfPane(paneID, data) {
          let slot = (paneID === WT_G3x5_MFDHalfPane.ID.LEFT) ? "left" : "right";
-         return new WT_G5000_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="${slot}"]`), this.instrumentID, paneID, this.instrument.airplane, this.instrument.referenceAirspeedSensor.index, this.instrument.referenceAltimeter.index, this.instrument.icaoWaypointFactory, this.instrument.icaoSearchers, this.instrument.flightPlanManagerWT, this.instrument.trafficSystem, this.instrument.unitsSettingModel, this._citySearcher, this._borderData, this._roadFeatureData, this._roadLabelData);
+         return new WT_G5000_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="${slot}"]`), this.instrumentID, paneID, data);
     }
 }
 

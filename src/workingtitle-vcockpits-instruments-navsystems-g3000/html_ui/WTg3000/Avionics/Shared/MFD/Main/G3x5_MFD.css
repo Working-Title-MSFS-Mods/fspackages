@@ -324,3 +324,15 @@ as3000-mfd-element #Electricity .weatherRadar {
         width: 20vh;
         height: 20%;
     }
+
+as3000-mfd-element #Electricity .charts {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: block;
+    background-color: black;
+    font-size: 1.75vh;
+}
+    as3000-mfd-element #Electricity .charts map-view {
+        background-color: transparent;
+    }
