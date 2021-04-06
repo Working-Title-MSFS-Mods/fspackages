@@ -840,6 +840,56 @@ as3000-tsc-horizontal-element #DatabaseStatus wt-tsc-databasestatus {
           height: 40%;
           width: 30%; }
 
+as3000-tsc-horizontal-element .charts wt-tsc-charts {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+    font-size: 4vh;
+}
+    as3000-tsc-horizontal-element .charts .chartsHeader {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+    }
+    as3000-tsc-horizontal-element .charts .chartsSelectButton {
+        width: 60vh;
+        height: 15vh;
+        font-size: 4vh;
+        margin-right: 1vh;
+    }
+    as3000-tsc-horizontal-element .charts .chartsOptionsButton {
+        width: 23vh;
+        height: 15vh;
+        font-size: 4vh;
+    }
+    as3000-tsc-horizontal-element .charts tsc-tabbedview {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 16vh;
+        bottom: 1%;
+        --tab-content-width: 100vh;
+        --tab-content-height: 73vh;
+    }
+    as3000-tsc-horizontal-element .charts wt-tsc-button-tab {
+        width: 23vh;
+        height: 15vh;
+        margin: 2.5vh 0;
+    }
+        as3000-tsc-horizontal-element .charts wt-tsc-charts-tab {
+            --scrolllist-align-items: stretch;
+        }
+          as3000-tsc-horizontal-element .charts .chartButton {
+              height: 15vh;
+              margin: 0.25vh 0;
+          }
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig .backgroundBox {
         position: absolute;
         top: 20%;

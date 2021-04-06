@@ -70,6 +70,7 @@ class WT_NavigraphAPI {
     /**
      * Gets a list of charts for the given ICAO
      * @param icao The ICAO of the airport to get the charts from
+     * @returns {Promise<{charts:WT_NavigraphChartDefinition[]}>}
      */
     getChartsList(icao) {
         return WT_Wait.awaitGenerator(this, void 0, void 0, function* () {
@@ -196,3 +197,33 @@ WT_NavigraphAPI.MAGIC_STRINGS_G3000 = [
     "㮺୙晦\u0303耂耀",
     "∧娒ै╃↙慐滦欶ᦪᄝ䭍㐔㦛ⶭ⒈焹ㄼ䀀耀"
 ]
+
+/**
+ * @typedef WT_NavigraphChartDefinition
+ * @property {String} file_day
+ * @property {String} file_night
+ * @property {String} thumb_day
+ * @property {String} thumb_night
+ * @property {String} icao_airport_identifier
+ * @property {String} id
+ * @property {String} ext_id
+ * @property {String} file_name
+ * @property {{code:String, category:String, details:String, precision:String, section:String}} type
+ * @property {String} index_number
+ * @property {String} procedure_identifier
+ * @property {String} action
+ * @property {String} revision_date
+ * @property {String} effective_date
+ * @property {String} trim_size
+ * @property {Boolean} georef
+ * @property {Number[]} bbox_local
+ * @property {{bbox_local:Number[], bbox_geo:Number[]}} planview
+ * @property {{bbox_local:Number[]}[]} insets
+ * @property {String[]} procedure_code
+ * @property {String[]} runway
+ * @property {String[]} route_id
+ * @property {Boolean} std_visibility
+ * @property {Boolean} cao_visibility
+ * @property {Boolean} vfr_visibility
+ * @property {Number} visibility
+ */

@@ -936,6 +936,56 @@ as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradars
             height: 100%;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
+as3000-tsc-vertical-element .charts wt-tsc-charts {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+    font-size: 3vh;
+}
+    as3000-tsc-vertical-element .charts .chartsHeader {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+    }
+    as3000-tsc-vertical-element .charts .chartsSelectButton {
+        width: 40vh;
+        height: 10vh;
+        font-size: 3vh;
+        margin-right: 0.5vh;
+    }
+    as3000-tsc-vertical-element .charts .chartsOptionsButton {
+        width: 15vh;
+        height: 10vh;
+        font-size: 3vh;
+    }
+    as3000-tsc-vertical-element .charts tsc-tabbedview {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 11vh;
+        bottom: 1%;
+        --tab-content-width: 55vh;
+        --tab-content-height: 48vh;
+    }
+    as3000-tsc-vertical-element .charts wt-tsc-button-tab {
+        width: 15vh;
+        height: 10.5vh;
+        margin: 1.5vh 0;
+    }
+        as3000-tsc-vertical-element .charts wt-tsc-charts-tab {
+            --scrolllist-align-items: stretch;
+        }
+            as3000-tsc-vertical-element .charts .chartButton {
+                height: 12vh;
+                margin: 0.25vh 0;
+            }
+
 as3000-tsc-vertical-element #UtilitiesSetup wt-tsc-utilitiessetup {
     position: absolute;
     left: 5%;

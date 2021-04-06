@@ -230,7 +230,7 @@
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png" />
                             <div class="label">PROC</div>
                         </div>
-                        <div class="gradientButton" id="ChartsButton" state="Greyed">
+                        <div class="gradientButton" id="ChartsButton">
                             <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_CHARTS_1.png" />
                             <div class="label">Charts</div>
                         </div>
@@ -790,6 +790,12 @@
                         <div class="content"></div>
                     </div>
                 </div>
+
+                <div class="tscPage charts" id="ChartsLeft">
+                </div>
+                <div class="tscPage charts" id="ChartsRight">
+                </div>
+
                 <div class="tscPage" id="AircraftSystems">
                     <div class="line">
                         <div class="gradientButton" id="LightingConfigButton">
@@ -1855,6 +1861,7 @@
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/LzUtf8.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Libraries/WorldMagneticModel.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Utils/Wait.js"></script>
@@ -1862,6 +1869,8 @@
 <script type="text/html" import-script="/WTg3000/SDK/Utils/SortedArray.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/InterpolatedLookupTable.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/FileHandler.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/URLRequest.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/OAuth.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/CustomElementSelector.js"></script>
@@ -1929,6 +1938,8 @@
 <script type="text/html" import-script="/WTg3000/SDK/Avionics/NavDataInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Avionics/NavDataBar.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Charts/Navigraph.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
 
@@ -1953,6 +1964,8 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_TrafficSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_TrafficMap.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsSettings.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
 
@@ -1981,6 +1994,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTrafficSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCCharts.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCDatabaseStatus.js"></script>
