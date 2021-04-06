@@ -1934,12 +1934,18 @@ as3000-tsc-horizontal-element #Electricity #NavMapTrafficMapSettings wt-tsc-navm
     font-size: 5vh;
 }
 
+:root {
+    --button-border: 3px ridge var(--wt-g3x5-bordergray);
+}
+
   as3000-tsc-horizontal-element .gradientButton {
     width: 27vh;
     height: 21vh;
     max-height: 21vh;
     margin: 1vh;
-    font-size: 5vh; }
+    font-size: 5vh;
+    border: 3px ridge var(--wt-g3x5-bordergray);
+  }
     as3000-tsc-horizontal-element .gradientButton .lowerValue {
       position: absolute;
       top: 55%;
