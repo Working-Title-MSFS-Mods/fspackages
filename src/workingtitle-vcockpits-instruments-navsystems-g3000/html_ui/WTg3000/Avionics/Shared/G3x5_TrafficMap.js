@@ -112,12 +112,6 @@ class WT_G3x5_TrafficMap {
         this._initSettingModel();
     }
 
-    sleep() {
-    }
-
-    wake() {
-    }
-
     update() {
         this._rangeTargetController.update();
         this.view.update();

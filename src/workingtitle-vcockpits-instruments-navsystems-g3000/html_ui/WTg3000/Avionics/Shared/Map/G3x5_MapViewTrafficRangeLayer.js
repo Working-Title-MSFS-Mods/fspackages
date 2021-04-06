@@ -73,7 +73,7 @@ class WT_G3x5_MapViewTrafficRangeLayer extends WT_MapViewLabeledRingLayer {
     /**
      * @param {WT_MapViewState} state
      */
-     onProjectionViewChanged(state) {
+    onProjectionViewChanged(state) {
         super.onProjectionViewChanged(state);
 
         this._updateStyles(state.dpiScale);
@@ -84,6 +84,7 @@ class WT_G3x5_MapViewTrafficRangeLayer extends WT_MapViewLabeledRingLayer {
      */
     onAttached(state) {
         super.onAttached(state);
+
         this._updateStyles(state.dpiScale);
     }
 
