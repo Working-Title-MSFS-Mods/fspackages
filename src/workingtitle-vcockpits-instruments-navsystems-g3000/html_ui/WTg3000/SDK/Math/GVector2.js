@@ -460,16 +460,30 @@ class WT_GTransform2 {
                   [0, 1, 0],
                   [0, 0, 1]];
         this.set(definition);
+
+        this._readonly = new WT_GTransform2ReadOnly(this);
     }
 
     static _toMatrix(definition) {
         if (definition instanceof WT_GTransform2) {
             return definition._;
+        } else if (definition instanceof WT_GTransform2ReadOnly) {
+            return definition._source._;
         } else if (definition instanceof Array && definition[0] instanceof Array) {
             return definition;
         } else {
             return undefined;
         }
+    }
+
+    /**
+     * Gets an element from this transformation's matrix.
+     * @param {Number} row - the row index of the element.
+     * @param {Number} col - the column index of the element.
+     * @returns {Number} an element from this transformation's matrix.
+     */
+    element(row, col) {
+        return this._[row][col];
     }
 
     /**
@@ -567,6 +581,24 @@ class WT_GTransform2 {
     }
 
     /**
+     * Copies this transformation.
+     * @returns {WT_GTransform2} a copy of this transformation.
+     */
+    copy() {
+        return new WT_GTransform2(this);
+    }
+
+    /**
+     * Gets a read-only version of this transformation. The read-only version is updated as this transformation is changed.
+     * Attempting to call any mutating method on the read-only version will create and return a mutated copy of this
+     * transformation instead.
+     * @returns {WT_GTransform2ReadOnly} a read-only version of this transformation.
+     */
+    readonly() {
+        return this._readonly;
+    }
+
+    /**
      * Concatenates one or more other transformations in order and returns the result. This method takes an arbitrary number of
      * transformation objects as arguments. The last argument to this method can optionally be a boolean that indicates whether
      * to store the resulting concatenated transformation in the transformation object provided as the first argument. If the
@@ -593,9 +625,9 @@ class WT_GTransform2 {
             0, 0, 1
         );
         let newMatrix = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix2,
-            next._[0][0], next._[0][1], next._[0][2],
-            next._[1][0], next._[1][1], next._[1][2],
-            next._[2][0], next._[2][1], next._[2][2]
+            next.element(0, 0), next.element(0, 1), next.element(0, 2),
+            next.element(1, 0), next.element(1, 1), next.element(1, 2),
+            next.element(2, 0), next.element(2, 1), next.element(2, 2)
         );
         let end = args.length - (typeof args[args.length - 1] === "boolean");
         while (++index < end) {
@@ -607,7 +639,7 @@ class WT_GTransform2 {
             }
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 2; j++) {
-                    newMatrix[j][i] = oldMatrix[0][i] * next._[j][0] + oldMatrix[1][i] * next._[j][1] + oldMatrix[2][i] * next._[j][2];
+                    newMatrix[j][i] = oldMatrix[0][i] * next.element(j, 0) + oldMatrix[1][i] * next.element(j, 1) + oldMatrix[2][i] * next.element(j, 2);
                 }
             }
         }
@@ -722,11 +754,11 @@ class WT_GTransform2 {
         let x;
         let y;
         if (typeof args[0] === "number" && typeof args[1] === "number") {
-            x = arg1;
-            y = arg2;
+            x = args[0];
+            y = args[1];
         } else if (typeof args[0] === "number") {
-            x = arg1;
-            y = arg1;
+            x = args[0];
+            y = args[0];
         } else {
             return undefined;
         }
@@ -787,5 +819,85 @@ class WT_GTransform2 {
 }
 WT_GTransform2._tempMatrix1 = [[1, 0, 0],[0, 1, 0],[0, 0, 1]];
 WT_GTransform2._tempMatrix2 = [[1, 0, 0],[0, 1, 0],[0, 0, 1]];
+
+/**
+ * A read-only interface for a WT_GTransform2.
+ */
+class WT_GTransform2ReadOnly {
+    /**
+     * @param {WT_GTransform2} source
+     */
+    constructor(source) {
+        this._source = source;
+    }
+
+    /**
+     * Gets an element from this transformation's matrix.
+     * @param {Number} row - the row index of the element.
+     * @param {Number} col - the column index of the element.
+     * @returns {Number} an element from this transformation's matrix.
+     */
+    element(row, col) {
+        return this._source.element(row, col);
+    }
+
+    /**
+     * Copies this transformation and sets the copy's matrix.
+     * @param {Number[][]|WT_GTransform2} definition - the 3x3 matrix defining the new transformation or a WT_GTransform2 object
+     *                                                 from which to copy.
+     * @returns {WT_GTransform2} the new transformation.
+     */
+    set(definition) {
+        return new WT_GTransform2(definition);
+    }
+
+    /**
+     * Applies this transformation to a vector and returns the result. The operation can either be performed in-place or a new
+     * WT_GVector2 object can be created.
+     * @param {WT_GVector2} vec - the vector to transform.
+     * @param {Boolean} mutate - whether to perform the operation in-place.
+     * @returns {WT_GVector2} the transformed vector.
+     */
+    apply(vec, mutate = false) {
+        return this._source.apply(vec, mutate);
+    }
+
+    /**
+     * Concatenates this transformation with one or more other transformations in order and returns the result as a new
+     * WT_GTransform2 object. This method takes an arbitrary number of transformation objects as arguments.
+     * @param  {...any} args - the arguments to pass to this method.
+     * @returns {WT_GTransform2} a single transformation equivalent to the ordered concatenation of two or more transformations.
+     */
+    concat(...args) {
+        return WT_GTransform2.concat(this, ...args);
+    }
+
+    /**
+     * Calculates and returns the inverse of this transformation as a new WT_GTransform2 object..
+     * @returns {WT_GTransform2} the inverse of this transformation.
+     */
+    inverse() {
+        return this._source.inverse();
+    }
+
+    /**
+     * Copies this transformation.
+     * @returns {WT_GTransform2} a copy of this transformation.
+     */
+    copy() {
+        return this._source.copy();
+    }
+
+    /**
+     * Gets a read-only version of this transformation. The read-only version is updated as this transformation is changed.
+     * Attempting to call any mutating method on the read-only version will create and return a mutated copy of this
+     * transformation instead.
+     * @returns {WT_GTransform2ReadOnly} a read-only version of this transformation.
+     */
+    readonly() {
+        return this;
+    }
+}
+
 WT_GTransform2._tempTransform1 = new WT_GTransform2();
 WT_GTransform2._tempTransform2 = new WT_GTransform2();

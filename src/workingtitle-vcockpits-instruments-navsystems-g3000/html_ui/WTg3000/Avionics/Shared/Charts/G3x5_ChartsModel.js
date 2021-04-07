@@ -11,6 +11,8 @@ class WT_G3x5_ChartsModel {
         this._chartDayURL = "";
         this._chartNightURL = "";
 
+        this._offset = new WT_GVector2(0, 0);
+
         this._taskID = 0;
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_ChartsModel.OPTION_DEFS);
@@ -124,6 +126,17 @@ class WT_G3x5_ChartsModel {
     get chartNightViewURL() {
         return this._chartNightURL;
     }
+
+    /**
+     * @type {WT_GVector2}
+     */
+    get offset() {
+        return this._offset.readonly();
+    }
+
+    set offset(offset) {
+        this._offset.set(offset);
+    }
 }
 WT_G3x5_ChartsModel.NAME_DEFAULT = "charts";
 /**
@@ -135,5 +148,8 @@ WT_G3x5_ChartsModel.NavigraphStatus = {
 };
 WT_G3x5_ChartsModel.OPTION_DEFS = {
     chartID: {default: ""},
-    useNightView: {default: false, auto: true}
+    useNightView: {default: false, auto: true},
+    usePlanView: {default: false, auto: true},
+    rotation: {default: 0, auto: true},
+    scaleFactor: {default: 1, auto: true}
 };
