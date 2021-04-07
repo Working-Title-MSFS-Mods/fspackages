@@ -132,6 +132,7 @@ class WT_G3x5_NavMap {
     _initModel() {
         this._initUnitsModule();
         this.model.addModule(new WT_MapModelCrosshairModule());
+        this.model.addModule(new WT_MapModelAirplaneIconModule());
         this.model.addModule(new WT_MapModelTerrainModule());
         this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelOrientationModule());

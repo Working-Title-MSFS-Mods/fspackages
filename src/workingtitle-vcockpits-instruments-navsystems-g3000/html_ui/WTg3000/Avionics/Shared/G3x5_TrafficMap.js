@@ -63,6 +63,7 @@ class WT_G3x5_TrafficMap {
     _initModel() {
         this.model.addModule(new WT_MapModelUnitsModule());
         this.model.addModule(new WT_MapModelOrientationModule());
+        this.model.addModule(new WT_MapModelAirplaneIconModule());
         this.model.addModule(this._trafficModule = this._createTrafficModule());
     }
 
