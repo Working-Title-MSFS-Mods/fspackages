@@ -1,8 +1,4 @@
 ﻿{
-    "miniCompass": {
-        "iconPath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_MINI_COMPASS.svg"
-    },
-
     "airplane": {
         "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_TBM930_PURPLE.svg",
         "iconSize": 40,

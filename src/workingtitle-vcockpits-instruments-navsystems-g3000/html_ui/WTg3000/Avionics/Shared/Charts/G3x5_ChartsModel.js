@@ -149,7 +149,7 @@ WT_G3x5_ChartsModel.NavigraphStatus = {
 WT_G3x5_ChartsModel.OPTION_DEFS = {
     chartID: {default: ""},
     useNightView: {default: false, auto: true},
-    usePlanView: {default: false, auto: true},
+    usePlanView: {default: true, auto: true},
     rotation: {default: 0, auto: true},
     scaleFactor: {default: 1, auto: true}
 };

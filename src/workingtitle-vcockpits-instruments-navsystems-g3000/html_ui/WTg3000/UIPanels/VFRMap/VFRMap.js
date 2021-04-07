@@ -345,6 +345,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _initModel(modConfig) {
         this.model.addModule(new WT_MapModelUnitsModule());
+        this.model.addModule(new WT_MapModelAirplaneIconModule());
         this.model.addModule(new WT_MapModelTerrainModule());
         this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelBordersModule());

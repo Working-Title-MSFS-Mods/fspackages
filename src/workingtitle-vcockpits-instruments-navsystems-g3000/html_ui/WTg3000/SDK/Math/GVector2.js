@@ -568,9 +568,9 @@ class WT_GTransform2 {
         let det = e_00 * i_00 + e_01 * i_01 + e_02 * i_02;
 
         let inverse = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
-            i_00 / det, i_01 / det, i_02 / det,
-            i_10 / det, i_11 / det, i_12 / det,
-            i_20 / det, i_21 / det, i_22 / det
+            i_00 / det, i_10 / det, i_20 / det,
+            i_02 / det, i_11 / det, i_21 / det,
+            i_02 / det, i_12 / det, i_22 / det
         );
 
         if (mutate) {
