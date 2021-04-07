@@ -240,3 +240,15 @@ WT_NavigraphAPI.MAGIC_STRINGS_G3000 = [
  * @property {Boolean} vfr_visibility
  * @property {Number} visibility
  */
+
+class WT_NavigraphChart {
+}
+/**
+ * @enum
+ */
+WT_NavigraphChart.BoundsIndex = {
+    LEFT: 0,
+    TOP: 3,
+    RIGHT: 2,
+    BOTTOM: 1
+};

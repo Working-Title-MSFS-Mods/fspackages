@@ -62,8 +62,16 @@ class WT_G3x5_ChartsDisplay {
         this.settingModel.init();
     }
 
+    _initMapModel() {
+        this._mapModel.addModule(new WT_MapModelAirplaneIconModule());
+    }
+
     _initMapView() {
-        this._mapView.addLayer(new WT_MapViewAirplaneLayer());
+        this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneLayer(this.model, this.view));
+    }
+
+    _initMapRangeTargetRotationController() {
+        this._mapRangeTargetRotationController = new WT_G3x5_ChartsMapRangeTargetRotationController(this.model, this.view, this._mapModel);
     }
 
     _initMap(viewElement) {
@@ -71,7 +79,9 @@ class WT_G3x5_ChartsDisplay {
         this._mapView = viewElement.querySelector(`map-view`);
         this._mapView.setModel(this._mapModel);
 
+        this._initMapModel();
         this._initMapView();
+        this._initMapRangeTargetRotationController();
     }
 
     init(viewElement) {
@@ -96,62 +106,127 @@ class WT_G3x5_ChartsDisplay {
 
     update() {
         this.view.update();
+        this._mapRangeTargetRotationController.update();
+        this._mapView.update();
     }
 }
 WT_G3x5_ChartsDisplay.SETTING_MODEL_ID = "Charts";
 
-class WT_G3x5_ChartsMapRangeTargetController {
+class WT_G3x5_ChartsMapRangeTargetRotationController {
     /**
+     * @param {WT_G3x5_ChartsModel} chartsModel
+     * @param {WT_G3x5_ChartsDisplayHTMLElement} chartsView
      * @param {WT_MapModel} mapModel
-     * @param {WT_MapView} mapView
      */
-    constructor(mapModel, mapView) {
-        this._icaoWaypointFactory = icaoWaypointFactory;
+    constructor(chartsModel, chartsView, mapModel) {
+        this._chartsModel = chartsModel;
+        this._chartsView = chartsView;
+        this._mapModel = mapModel;
 
-        this.addSetting(this._rangeSetting);
+        this._geoRef = {
+            /**
+             * @type {WT_NavigraphChartDefinition}
+             */
+            chart: null,
+            isValid: false,
 
-        mapView.setTargetOffsetHandler(this);
-        mapView.setRangeInterpreter(this);
+            /**
+             * @type {Number[]}
+             */
+            geoBounds: null,
+            geoAngularWidth: 0,
+            geoAngularHeight: 0,
+            geoWidth: WT_Unit.GA_RADIAN.createNumber(0),
+            geoHeight: WT_Unit.GA_RADIAN.createNumber(0),
 
-        this._aspectRatio = 1;
+            /**
+             * @type {Number[]}
+             */
+            viewBounds: null,
+            viewWidth: 0,
+            viewHeight: 0,
+            viewCenter: new WT_GVector2(0, 0),
+        };
+
+        this._tempGARad = WT_Unit.GA_RADIAN.createNumber(0);
+        this._tempVector2 = new WT_GVector2(0, 0);
+        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
-    /**
-     *
-     * @param {WT_MapModel} model
-     * @param {WT_GVector2} offset
-     */
-    getTargetOffset(model, offset) {
-        offset.set(0, 0);
+    _imgBoundToViewBound(value, index, array) {
+        switch (index) {
+            case WT_NavigraphChart.BoundsIndex.LEFT:
+            case WT_NavigraphChart.BoundsIndex.RIGHT:
+                return value - array[WT_NavigraphChart.BoundsIndex.LEFT];
+            case WT_NavigraphChart.BoundsIndex.TOP:
+            case WT_NavigraphChart.BoundsIndex.BOTTOM:
+                return value - array[WT_NavigraphChart.BoundsIndex.TOP];
+        }
     }
 
-    /**
-     *
-     * @param {WT_MapModel} model
-     * @param {WT_NumberUnit} range
-     */
-    getTrueRange(model, range) {
-        // nominal range should be 90% of half the smallest dimension
-        let rangeHeightFactor = Math.min(0.45, this._aspectRatio * 0.45);
-        range.set(model.range).scale(1 / rangeHeightFactor, true);
-    }
+    _updateGeoRef() {
+        let chart = this._chartsModel.chart;
+        if (!chart || !chart.georef || !this._chartsModel.usePlanView || !chart.planview) {
+            this._geoRef.isValid = false;
+            return;
+        }
 
-    _updateTarget() {
-        this.mapModel.target = this.mapModel.airplane.navigation.position(this._target);
+        if ((this._geoRef.chart && chart.id === this._geoRef.chart.id) && this._geoRef.isValid) {
+            return;
+        }
+
+        this._geoRef.chart = chart;
+        this._geoRef.isValid = true;
+        this._geoRef.geoBounds = chart.planview.bbox_geo;
+
+        let deltaLat = chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.TOP] - chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.BOTTOM];
+        let deltaLong = chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.RIGHT] - chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.LEFT];
+        let deltaLatAbs = Math.abs(deltaLat);
+        let deltaLongAbs = Math.abs(deltaLong);
+        this._geoRef.geoAngularWidth = Math.min(deltaLongAbs, 360 - deltaLongAbs);
+        this._geoRef.geoAngularHeight = Math.min(deltaLatAbs, 360 - deltaLatAbs);
+
+        let centerLat = chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.BOTTOM] + deltaLat / 2;
+        let centerLong = chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.LEFT] + deltaLong / 2;
+        this._geoRef.geoWidth.set(this._tempGeoPoint.set(centerLat, chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.LEFT]).distance(centerLat, chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.RIGHT]));
+        this._geoRef.geoHeight.set(this._tempGeoPoint.set(chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.TOP], centerLong).distance(chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.BOTTOM], centerLong));
+
+        this._geoRef.viewBounds = chart.planview.bbox_local.map(this._imgBoundToViewBound.bind(this));
+        this._geoRef.viewWidth = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.RIGHT] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.LEFT];
+        this._geoRef.viewHeight = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.BOTTOM] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.TOP];
+        this._geoRef.viewCenter.set(this._geoRef.viewWidth / 2, this._geoRef.viewHeight / 2);
     }
 
     _updateRotation() {
-        this.mapModel.rotation = -this.mapModel.airplane.navigation.headingTrue();
+        this._mapModel.rotation = this._chartsModel.rotation;
+    }
+
+    _updateTarget() {
+        let viewTargetX = this._geoRef.viewCenter.x + this._chartsModel.offset.x;
+        let viewTargetY = this._geoRef.viewCenter.y + this._chartsModel.offset.y;
+
+        let geoTargetLat = this._geoRef.geoBounds[WT_NavigraphChart.BoundsIndex.TOP] - viewTargetY / this._geoRef.viewHeight * this._geoRef.geoAngularHeight;
+        let geoTargetLong = this._geoRef.geoBounds[WT_NavigraphChart.BoundsIndex.LEFT] + viewTargetX / this._geoRef.viewWidth * this._geoRef.geoAngularWidth;
+
+        this._mapModel.target = this._tempGeoPoint.set(geoTargetLat, geoTargetLong);
+    }
+
+    _updateRange() {
+        let scaleFactor = this._chartsView.viewHeight / this._chartsView.chartReferenceDisplayHeight * this._chartsModel.scaleFactor;
+
+        this._mapModel.range = this._tempGARad.set(this._geoRef.geoHeight).scale(scaleFactor, true);
     }
 
     update() {
-        let aspectRatio = this.mapView.projection.viewWidth / this.mapView.projection.viewHeight;
-        if (aspectRatio !== this._aspectRatio) {
-            this._aspectRatio = aspectRatio;
+        this._updateGeoRef();
+        if (this._geoRef.isValid) {
+            this._updateRotation();
+            this._updateTarget();
+            this._updateRange();
+            this._mapModel.airplaneIcon.show = true;
+        } else {
+            this._mapModel.airplaneIcon.show = false;
         }
-
-        this._updateTarget();
-        this._updateRotation();
     }
 }
 
@@ -167,6 +242,9 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
          */
         this._context = null;
         this._isInit = false;
+
+        this._viewWidth = 0;
+        this._viewHeight = 0;
 
         this._bounds = [0, 0, 0, 0];
         this._boundsReadOnly = {
@@ -185,6 +263,9 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
             }
         };
 
+        this._referenceDisplayWidth = 0;
+        this._referenceDisplayHeight = 0;
+
         this._translation = new WT_GVector2(0, 0);
         this._scaleFactor = 1;
         this._rotation = 0;
@@ -200,10 +281,42 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
 
     /**
      * @readonly
+     * @type {Number}
+     */
+    get viewWidth() {
+        return this._viewWidth;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get viewHeight() {
+        return this._viewHeight;
+    }
+
+    /**
+     * @readonly
      * @type {{readonly left:Number, readonly top:Number, readonly right:Number, readonly bottom:Number}}
      */
     get chartBounds() {
         return this._boundsReadOnly;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get chartReferenceDisplayWidth() {
+        return this._referenceDisplayWidth;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get chartReferenceDisplayHeight() {
+        return this._referenceDisplayHeight;
     }
 
     /**
@@ -273,11 +386,11 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
     }
 
     _updateBoundsFromChart(chart, usePlanView) {
-        let bbox = usePlanView ? chart.planview.bbox_local : chart.bbox_local;
-        this._bounds[0] = bbox[3]; // left
-        this._bounds[1] = bbox[0]; // top
-        this._bounds[2] = bbox[2]; // right
-        this._bounds[3] = bbox[1]; // bottom
+        let bbox = (usePlanView && chart.planview) ? chart.planview.bbox_local : chart.bbox_local;
+        this._bounds[0] = bbox[WT_NavigraphChart.BoundsIndex.LEFT];
+        this._bounds[1] = bbox[WT_NavigraphChart.BoundsIndex.TOP];
+        this._bounds[2] = bbox[WT_NavigraphChart.BoundsIndex.RIGHT];
+        this._bounds[3] = bbox[WT_NavigraphChart.BoundsIndex.BOTTOM];
     }
 
     _updateChartTransform() {
@@ -297,12 +410,16 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
         let viewAspectRatio = this._viewWidth / this._viewHeight;
         let imgAspectRatio = imgAspectRatioWidth / imgAspectRatioHeight;
 
-        let scaleFactor = model.scaleFactor;
+        let scaleFactor;
         if (imgAspectRatio > viewAspectRatio) {
-            scaleFactor *= this._viewWidth / imgAspectRatioWidth;
+            scaleFactor = this._viewWidth / imgAspectRatioWidth;
         } else {
-            scaleFactor *= this._viewHeight / imgAspectRatioHeight;
+            scaleFactor = this._viewHeight / imgAspectRatioHeight;
         }
+        this._referenceDisplayWidth = imgWidth * scaleFactor;
+        this._referenceDisplayHeight = imgHeight * scaleFactor;
+
+        scaleFactor *= model.scaleFactor;
 
         let rotation = model.rotation * Avionics.Utils.DEG2RAD;
 

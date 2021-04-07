@@ -1,6 +1,7 @@
 /**
  * An icon of the player airplane. The icon is placed at the airplane's present position, and its orientation is
- * synchronized to the airplane's heading.
+ * synchronized to the airplane's heading. The use of this layer requires the .airplaneIcon module to be added
+ * to the map model.
  */
 class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
     /**
@@ -28,18 +29,28 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
         return this._icon;
     }
 
-    _resizeIcon(size) {
+    _resizeIcon(size, anchor) {
         this._icon.style.width = `${size}px`;
         this._icon.style.height = `${size}px`;
-        this._icon.style.left = `${-size / 2}px`;
-        this._icon.style.top = `${-size / 2}px`;
+        this._icon.style.left = `${-size * anchor[0]}px`;
+        this._icon.style.top = `${-size * anchor[1]}px`;
+        this._icon.style.transformOrigin = `${anchor[0] * 100}% ${anchor[1] * 100}%`;
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    isVisible(state) {
+        return state.model.airplaneIcon.show;
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onConfigLoaded(state) {
-        this._setPropertyFromConfig("iconSize");
+        for (let property of WT_MapViewAirplaneLayer.CONFIG_PROPERTIES) {
+            this._setPropertyFromConfig(property);
+        }
 
         this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", this.config.imagePath);
     }
@@ -48,7 +59,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onProjectionViewChanged(state) {
-        this._resizeIcon(this.iconSize * state.dpiScale);
+        this._resizeIcon(this.iconSize * state.dpiScale, this.iconAnchor);
     }
 
     onAttached(state) {
@@ -78,5 +89,10 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
 WT_MapViewAirplaneLayer.CLASS_DEFAULT = "airplaneLayer";
 WT_MapViewAirplaneLayer.CONFIG_NAME_DEFAULT = "airplane";
 WT_MapViewAirplaneLayer.OPTIONS_DEF = {
-    iconSize: {default: 60, auto: true}
+    iconSize: {default: 60, auto: true},
+    iconAnchor: {default: [0.5, 0.5], auto: true}
 };
+WT_MapViewAirplaneLayer.CONFIG_PROPERTIES = [
+    "iconSize",
+    "iconAnchor"
+];
