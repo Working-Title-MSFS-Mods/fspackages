@@ -168,11 +168,82 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
         this._context = null;
         this._isInit = false;
 
-        this._displayedChart = null;
+        this._bounds = [0, 0, 0, 0];
+        this._boundsReadOnly = {
+            _bounds: this._bounds,
+            get left() {
+                return this._bounds[0];
+            },
+            get top() {
+                return this._bounds[1];
+            },
+            get right() {
+                return this._bounds[2];
+            },
+            get bottom() {
+                return this._bounds[3];
+            }
+        };
+
+        this._translation = new WT_GVector2(0, 0);
+        this._scaleFactor = 1;
+        this._rotation = 0;
+        this._transform = new WT_GTransform2();
+        this._inverseTransform = new WT_GTransform2();
+
+        this._tempTransform = new WT_GTransform2();
     }
 
     _getTemplate() {
         return WT_G3x5_ChartsDisplayHTMLElement.TEMPLATE;
+    }
+
+    /**
+     * @readonly
+     * @type {{readonly left:Number, readonly top:Number, readonly right:Number, readonly bottom:Number}}
+     */
+    get chartBounds() {
+        return this._boundsReadOnly;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_GVector2ReadOnly}
+     */
+    get chartTranslation() {
+        return this._translation.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get chartScaleFactor() {
+        return this._scaleFactor;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get chartRotation() {
+        return this._rotation;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_GTransform2ReadOnly}
+     */
+    get chartTransform() {
+        return this._transform.readonly();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_GTransform2ReadOnly}
+     */
+    get chartInverseTransform() {
+        return this._inverseTransform.readonly();
     }
 
     _defineChildren() {
@@ -197,18 +268,65 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
     }
 
     _updateViewSize() {
-        this._width = this.clientWidth;
-        this._height = this.clientHeight;
+        this._viewWidth = this.clientWidth;
+        this._viewHeight = this.clientHeight;
+    }
+
+    _updateBoundsFromChart(chart, usePlanView) {
+        let bbox = usePlanView ? chart.planview.bbox_local : chart.bbox_local;
+        this._bounds[0] = bbox[3]; // left
+        this._bounds[1] = bbox[0]; // top
+        this._bounds[2] = bbox[2]; // right
+        this._bounds[3] = bbox[1]; // bottom
+    }
+
+    _updateChartTransform() {
+        let model = this._context.model;
+        if (!model.chart) {
+            return;
+        }
+
+        this._updateBoundsFromChart(model.chart, model.usePlanView);
+        let imgWidth = this.chartBounds.right - this.chartBounds.left;
+        let imgHeight = this.chartBounds.bottom - this.chartBounds.top;
+
+        let flipAspectRatio = ((model.rotation / 90) % 2) === 1;
+        let imgAspectRatioWidth = flipAspectRatio ? imgHeight : imgWidth;
+        let imgAspectRatioHeight = flipAspectRatio ? imgWidth : imgHeight;
+
+        let viewAspectRatio = this._viewWidth / this._viewHeight;
+        let imgAspectRatio = imgAspectRatioWidth / imgAspectRatioHeight;
+
+        let scaleFactor = model.scaleFactor;
+        if (imgAspectRatio > viewAspectRatio) {
+            scaleFactor *= this._viewWidth / imgAspectRatioWidth;
+        } else {
+            scaleFactor *= this._viewHeight / imgAspectRatioHeight;
+        }
+
+        let rotation = model.rotation * Avionics.Utils.DEG2RAD;
+
+        WT_GTransform2.translation(-imgWidth / 2, -imgHeight / 2, this._transform)                                       // translate center to origin
+            .concat(WT_GTransform2.scale(scaleFactor, this._tempTransform), true)                                        // scale
+            .concat(WT_GTransform2.rotation(rotation, this._tempTransform), true)                                        // rotate
+            .concat(WT_GTransform2.translation(this._viewWidth / 2, this._viewHeight / 2, this._tempTransform), true);   // translate center to view center
+
+        this._inverseTransform.set(this._transform).inverse(true);
+
+        //this._translation.set(translateX, translateY);
+        this._scaleFactor = scaleFactor;
+        this._rotation = model.rotation;
     }
 
     _updateChartView() {
         let chart = this._context.model.chart;
         let url = this._context.model.useNightView ? this._context.model.chartNightViewURL : this._context.model.chartDayViewURL;
-        this._chartView.update(this._width, this._height, chart, url);
+        this._chartView.update(chart, url, this.chartBounds, this.chartTransform);
     }
 
     _doUpdate() {
         this._updateViewSize();
+        this._updateChartTransform();
         this._updateChartView();
     }
 
@@ -243,6 +361,9 @@ WT_G3x5_ChartsDisplayHTMLElement.TEMPLATE.innerHTML = `
             }
                 #chart {
                     position: absolute;
+                    left: 0%;
+                    top: 0%;
+                    transform-origin: top left;
                 }
             #noairplanecontainer {
                 display: none;
@@ -307,13 +428,15 @@ class WT_G3x5_ChartsDisplayChartView {
         this._displayedChart = null;
         this._displayedURL = "";
 
-        this._viewWidth = 0;
-        this._viewHeight = 0;
-
         this._imgWidth = 0;
         this._imgHeight = 0;
-        this._imgDisplayWidth = 0;
-        this._imgDisplayHeight = 0;
+        /**
+         * @type {{readonly left:Number, readonly top:Number, readonly right:Number, readonly bottom:Number}}
+         */
+        this._imgBounds = null;
+        this._imgTransform = "";
+
+        this._isImgLoading = false;
     }
 
     /**
@@ -327,16 +450,27 @@ class WT_G3x5_ChartsDisplayChartView {
     _onImgSrcLoaded() {
         this._canvas.width = this._imgWidth;
         this._canvas.height = this._imgHeight;
-        this._context.drawImage(this._img, 0, 0);
+        this._context.drawImage(this._img, this._imgBounds.left, this._imgBounds.top, this._imgWidth, this._imgHeight, 0, 0, this._imgWidth, this._imgHeight);
 
         this._canvas.style.width = `${this._imgWidth}px`;
         this._canvas.style.height = `${this._imgHeight}px`;
         this._canvas.style.display = "block";
+
+        this._isImgLoading = false;
     }
 
-    _setChart(chart, url) {
+    _setChart(chart, url, bounds) {
         if (url === this._displayedURL) {
             return;
+        }
+
+        this._imgBounds = bounds;
+        if (chart) {
+            this._imgWidth = this._imgBounds.right - this._imgBounds.left;
+            this._imgHeight = this._imgBounds.bottom - this._imgBounds.top;
+        } else {
+            this._imgWidth = 0;
+            this._imgHeight = 0;
         }
 
         this._canvas.style.display = "none";
@@ -344,47 +478,34 @@ class WT_G3x5_ChartsDisplayChartView {
 
         this._displayedChart = chart;
         this._displayedURL = url;
-        if (chart) {
-            this._imgWidth = Math.abs(chart.bbox_local[3] - chart.bbox_local[2]);
-            this._imgHeight = Math.abs(chart.bbox_local[1] - chart.bbox_local[0]);
-        } else {
-            this._imgWidth = 0;
-            this._imgHeight = 0;
+        this._isImgLoading = true;
+    }
+
+    /**
+     *
+     * @param {WT_GTransform2ReadOnly} transform
+     */
+    _updateTransform(transform) {
+        let transformString = `matrix(${transform.element(0, 0)}, ${transform.element(1, 0)}, ${transform.element(0, 1)}, ${transform.element(1, 1)}, ${transform.element(0, 2).toFixed(1)}, ${transform.element(1, 2).toFixed(1)})`;
+        if (transformString !== this._imgTransform) {
+            this._canvas.style.transform = transformString;
+            this._imgTransform = transformString;
         }
     }
 
-    _updateDimensions(viewWidth, viewHeight) {
-        let viewAspectRatio = viewWidth / viewHeight;
-        let imgAspectRatio = this._imgWidth / this._imgHeight;
-
-        let scaleFactor = 1;
-        if (imgAspectRatio > viewAspectRatio) {
-            scaleFactor = viewWidth / this._imgWidth;
-        } else {
-            scaleFactor = viewHeight / this._imgHeight;
-        }
-
-        let displayWidth = scaleFactor * this._imgWidth;
-        let displayHeight = scaleFactor * this._imgHeight;
-        if (displayWidth !== this._imgDisplayWidth || displayHeight !== this._imgDisplayHeight) {
-            this._canvas.style.left = `${(viewWidth - this._imgWidth) / 2}px`;
-            this._canvas.style.top = `${(viewHeight - this._imgHeight) / 2}px`;
-            this._canvas.style.transform = `scale(${scaleFactor})`;
-            this._imgDisplayWidth = displayWidth;
-            this._imgDisplayHeight = displayHeight;
-        }
-    }
-
-    update(viewWidth, viewHeight, chart, url) {
-        if (viewWidth === 0 || viewHeight === 0) {
+    /**
+     *
+     * @param {WT_NavigraphChartDefinition} chart
+     * @param {String} url
+     * @param {{readonly left:Number, readonly top:Number, readonly right:Number, readonly bottom:Number}} bounds
+     * @param {WT_GTransform2ReadOnly} transform
+     */
+    update(chart, url, bounds, transform) {
+        this._setChart(chart, url, bounds);
+        if (!this._displayedChart || this._isImgLoading) {
             return;
         }
 
-        this._setChart(chart, url);
-        if (!this._displayedChart) {
-            return;
-        }
-
-        this._updateDimensions(viewWidth, viewHeight);
+        this._updateTransform(transform);
     }
 }
