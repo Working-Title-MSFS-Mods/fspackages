@@ -396,7 +396,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage) {
-        if (currentPageGroup.name === "MFD" && (currentPage.title === WT_G3x5_TSCCharts.TITLE)) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === WT_G3x5_TSCCharts.TITLE || currentPage.title === WT_G3x5_TSCChartsTouchControl.TITLE)) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
