@@ -146,10 +146,17 @@ WT_G3x5_ChartsModel.NavigraphStatus = {
     UNLINKED: 0,
     LINKED: 1
 };
+/**
+ * @enum {Number}
+ */
+WT_G3x5_ChartsModel.SectionMode = {
+    ALL: 0,
+    PLAN: 1
+};
 WT_G3x5_ChartsModel.OPTION_DEFS = {
     chartID: {default: ""},
     useNightView: {default: false, auto: true},
-    usePlanView: {default: false, auto: true},
+    sectionMode: {default: WT_G3x5_ChartsModel.SectionMode.ALL, auto: true},
     rotation: {default: 0, auto: true},
     scaleFactor: {default: 1, auto: true}
 };

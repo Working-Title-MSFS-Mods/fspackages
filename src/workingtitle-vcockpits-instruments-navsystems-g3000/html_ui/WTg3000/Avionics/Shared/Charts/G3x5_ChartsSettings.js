@@ -23,6 +23,10 @@ class WT_G3x5_ChartsRotationSetting extends WT_DataStoreSetting {
         return this.getValue() * 90;
     }
 
+    resetRotation() {
+        this.setValue(0);
+    }
+
     rotateCCW() {
         this.setValue((this.getValue() + 3) % 4); // add by 3 instead of subtracting 1 to avoid negative values
     }
@@ -54,6 +58,10 @@ class WT_G3x5_ChartsZoomSetting extends WT_DataStoreSetting {
         return this._scaleFactors[this.getValue()];
     }
 
+    resetZoom() {
+        this.setValue(0);
+    }
+
     changeZoom(delta) {
         let current = this.getValue();
         let target = Math.max(0, Math.min(this._scaleFactors.length - 1, current + delta));
@@ -63,3 +71,11 @@ class WT_G3x5_ChartsZoomSetting extends WT_DataStoreSetting {
 WT_G3x5_ChartsZoomSetting.KEY = "WT_Charts_Zoom";
 WT_G3x5_ChartsZoomSetting.SCALE_FACTORS = [1, 1.5, 2, 2.5, 3, 4, 5, 7.5, 10];
 WT_G3x5_ChartsZoomSetting.DEFAULT = 0;
+
+class WT_G3x5_ChartsSectionSetting extends WT_DataStoreSetting {
+    constructor(model, defaultValue = WT_G3x5_ChartsSectionSetting.DEFAULT, key = WT_G3x5_ChartsSectionSetting.KEY) {
+        super(model, key, defaultValue, false, false);
+    }
+}
+WT_G3x5_ChartsSectionSetting.KEY = "WT_Charts_Section";
+WT_G3x5_ChartsSectionSetting.DEFAULT = WT_G3x5_ChartsModel.SectionMode.ALL;
