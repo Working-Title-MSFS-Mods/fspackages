@@ -205,8 +205,8 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
                 this._mfdPagesLeft.charts = new NavSystemPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT)),
-                this._mfdPagesLeft.chartsTouchControl = new NavSystemPage("Charts Touch Control Left", "ChartsTouchControlLeft", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.LEFT)),
-                this._mfdPagesRight.chartsTouchControl = new NavSystemPage("Charts Touch Control Right", "ChartsTouchControlRight", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.chartsTouchControl = new NavSystemPage("Charts Touch Control Left", "ChartsTouchControlLeft", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesLeft.charts.element)),
+                this._mfdPagesRight.chartsTouchControl = new NavSystemPage("Charts Touch Control Right", "ChartsTouchControlRight", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesRight.charts.element)),
                 new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
@@ -261,6 +261,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.navMapTrafficMapSettings = new NavSystemElementContainer("Nav Map Traffic Map Settings", "NavMapTrafficMapSettings", new WT_G3x5_TSCNavMapTrafficMapSettings());
         this.navMapTrafficMapSettings.setGPS(this);
+
+        this.chartsOptions = new NavSystemElementContainer("Charts Options", "ChartsOptions", new WT_G3x5_TSCChartsOptions());
+        this.chartsOptions.setGPS(this);
     }
 
     _initNavButtons() {
@@ -522,10 +525,10 @@ class AS3000_TSC extends NavSystemTouch {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
                 switch (event) {
                     case "BottomKnob_Small_INC":
-                        this.getSelectedMFDPanePages().chartsTouchControl.element.changeZoom(-1);
+                        this.getSelectedMFDPanePages().charts.element.changeZoom(-1);
                         break;
                     case "BottomKnob_Small_DEC":
-                        this.getSelectedMFDPanePages().chartsTouchControl.element.changeZoom(1);
+                        this.getSelectedMFDPanePages().charts.element.changeZoom(1);
                         break;
                 }
                 break;

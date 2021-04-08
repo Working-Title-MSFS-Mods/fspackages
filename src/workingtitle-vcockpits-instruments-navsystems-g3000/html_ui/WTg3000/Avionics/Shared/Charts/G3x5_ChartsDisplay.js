@@ -56,6 +56,7 @@ class WT_G3x5_ChartsDisplay {
 
     _initSettingListeners() {
         this._chartIDSetting.addListener(this._onChartIDSettingChanged.bind(this));
+        this._sectionSetting.addListener(this._onSectionSettingChanged.bind(this));
         this._rotationSetting.addListener(this._onRotationSettingChanged.bind(this));
         this._zoomSetting.addListener(this._onZoomSettingChanged.bind(this));
         WT_CrossInstrumentEvent.addListener(this._scrollEventKey, this._onScrollEvent.bind(this));
@@ -63,6 +64,7 @@ class WT_G3x5_ChartsDisplay {
 
     _initSettingModel() {
         this.settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this.settingModel));
+        this.settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this.settingModel));
         this.settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this.settingModel));
         this.settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this.settingModel));
 
@@ -103,24 +105,20 @@ class WT_G3x5_ChartsDisplay {
         this._initMap(viewElement);
     }
 
-    _onChartIDSettingChanged(setting, newValue, oldValue) {
-        this.model.chartID = newValue;
-    }
-
     _updateChartRotation() {
-        if (!this.model.chart) {
-            return;
-        }
-
         this.model.rotation = this._rotationSetting.getRotation();
     }
 
     _updateChartZoom() {
-        if (!this.model.chart) {
-            return;
-        }
-
         this.model.scaleFactor = this._zoomSetting.getScaleFactor();
+    }
+
+    _onChartIDSettingChanged(setting, newValue, oldValue) {
+        this.model.chartID = newValue;
+    }
+
+    _onSectionSettingChanged(setting, newValue, oldValue) {
+        this.model.sectionMode = newValue;
     }
 
     _onRotationSettingChanged(setting, newValue, oldValue) {
@@ -147,10 +145,14 @@ class WT_G3x5_ChartsDisplay {
     }
 
     _onScrollEvent(key, data) {
-        let split = data.split(",");
-        let deltaX = parseFloat(split[0]);
-        let deltaY = parseFloat(split[1]);
-        this._scrollChart(deltaX, deltaY);
+        if (data === WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET) {
+            this.model.offset = this._tempVector2.set(0, 0);
+        } else {
+            let split = data.split(",");
+            let deltaX = parseFloat(split[0]);
+            let deltaY = parseFloat(split[1]);
+            this._scrollChart(deltaX, deltaY);
+        }
     }
 
     sleep() {
@@ -166,6 +168,8 @@ class WT_G3x5_ChartsDisplay {
     }
 }
 WT_G3x5_ChartsDisplay.SETTING_MODEL_ID = "Charts";
+WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
+WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET = "RESET";
 
 class WT_G3x5_ChartsMapRangeTargetRotationController {
     /**
@@ -221,7 +225,7 @@ class WT_G3x5_ChartsMapRangeTargetRotationController {
 
     _updateGeoRef() {
         let chart = this._chartsModel.chart;
-        if (!chart || !chart.georef || !this._chartsModel.usePlanView || !chart.planview) {
+        if (!chart || !chart.georef || this._chartsModel.sectionMode !== WT_G3x5_ChartsModel.SectionMode.PLAN || !chart.planview) {
             this._geoRef.isValid = false;
             return;
         }
@@ -284,8 +288,6 @@ class WT_G3x5_ChartsMapRangeTargetRotationController {
         }
     }
 }
-
-WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
 
 class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
     constructor() {
@@ -467,7 +469,7 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
             return;
         }
 
-        this._updateBoundsFromChart(model.chart, model.usePlanView);
+        this._updateBoundsFromChart(model.chart, model.sectionMode === WT_G3x5_ChartsModel.SectionMode.PLAN);
         let imgWidth = this.chartBounds.right - this.chartBounds.left;
         let imgHeight = this.chartBounds.bottom - this.chartBounds.top;
 

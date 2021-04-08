@@ -1,17 +1,13 @@
 class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, halfPaneID) {
+    /**
+     * @param {String} homePageGroup
+     * @param {String} homePageName
+     * @param {WT_G3x5_TSCCharts} chartsPage
+     */
+    constructor(homePageGroup, homePageName, chartsPage) {
         super(homePageGroup, homePageName);
 
-        this._settingModelID = `MFD-${halfPaneID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
-        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
-
-        this._initSettingModel();
-    }
-
-    _initSettingModel() {
-        this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
-        this._settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this._settingModel));
-        this._settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this._settingModel));
+        this._chartsPage = chartsPage;
     }
 
     /**
@@ -39,21 +35,13 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
         this._initListeners();
     }
 
-    _rotateCCW() {
-        this._rotationSetting.rotateCCW();
-    }
-
-    _rotateCW() {
-        this._rotationSetting.rotateCW();
-    }
-
     _onButtonPressed(buttonID) {
         switch (buttonID) {
             case WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.ROTATE_CCW:
-                this._rotateCCW();
+                this._chartsPage.rotateCCW();
                 break;
             case WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.ROTATE_CW:
-                this._rotateCW();
+                this._chartsPage.rotateCW();
                 break;
         }
     }
@@ -63,11 +51,7 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
      * @param {WT_TSCTouchPadEvent} event
      */
     _onTouchEvent(event) {
-        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, `${event.deltaPos.x},${event.deltaPos.y}`);
-    }
-
-    changeZoom(delta) {
-        this._zoomSetting.changeZoom(delta);
+        this._chartsPage.scroll(event.deltaPos);
     }
 
     _activateLabelBar() {
