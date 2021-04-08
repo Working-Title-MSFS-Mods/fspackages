@@ -40,7 +40,7 @@
     background-color: none;
     color: var(--wt-g3x5-lightblue); } }
 
-wt-tsc-button-value {
+:root {
     --button-value-color: var(--wt-g3x5-lightblue);
 }
 

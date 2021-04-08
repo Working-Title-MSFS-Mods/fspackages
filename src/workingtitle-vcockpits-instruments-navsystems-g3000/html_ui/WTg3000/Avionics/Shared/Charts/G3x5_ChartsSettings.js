@@ -14,6 +14,30 @@ class WT_G3x5_ChartsChartIDSetting extends WT_DataStoreSetting {
 WT_G3x5_ChartsChartIDSetting.KEY = "WT_Charts_ChartID";
 WT_G3x5_ChartsChartIDSetting.DEFAULT = "";
 
+class WT_G3x5_ChartsLightModeSetting extends WT_DataStoreSetting {
+    constructor(model, defaultValue = WT_G3x5_ChartsLightModeSetting.DEFAULT, key = WT_G3x5_ChartsLightModeSetting.KEY) {
+        super(model, key, defaultValue, false, false);
+    }
+}
+WT_G3x5_ChartsLightModeSetting.KEY = "WT_Charts_LightMode";
+/**
+ * @enum {Number}
+ */
+WT_G3x5_ChartsLightModeSetting.Mode = {
+    NIGHT: 0,
+    DAY: 1,
+    AUTO: 2
+};
+WT_G3x5_ChartsLightModeSetting.DEFAULT = WT_G3x5_ChartsLightModeSetting.Mode.DAY;
+
+class WT_G3x5_ChartsLightThresholdSetting extends WT_DataStoreSetting {
+    constructor(model, defaultValue = WT_G3x5_ChartsLightThresholdSetting.DEFAULT, key = WT_G3x5_ChartsLightThresholdSetting.KEY) {
+        super(model, key, defaultValue, false, false);
+    }
+}
+WT_G3x5_ChartsLightThresholdSetting.KEY = "WT_Charts_LightThreshold";
+WT_G3x5_ChartsLightThresholdSetting.DEFAULT = 0.25;
+
 class WT_G3x5_ChartsRotationSetting extends WT_DataStoreSetting {
     constructor(model, defaultValue = WT_G3x5_ChartsRotationSetting.DEFAULT, key = WT_G3x5_ChartsRotationSetting.KEY) {
         super(model, key, defaultValue, false, false);

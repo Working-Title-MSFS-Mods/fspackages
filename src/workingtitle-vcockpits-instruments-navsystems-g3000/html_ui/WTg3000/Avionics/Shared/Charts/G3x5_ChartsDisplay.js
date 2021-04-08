@@ -54,8 +54,18 @@ class WT_G3x5_ChartsDisplay {
         this.view.setContext({model: this.model});
     }
 
+    _initSettingValues() {
+        this._setLightMode(this._lightModeSetting.getValue());
+        this._setLightThreshold(this._lightThresholdSetting.getValue());
+        this._setSectionMode(this._sectionSetting.getValue());
+        this._updateChartRotation();
+        this._updateChartZoom();
+    }
+
     _initSettingListeners() {
         this._chartIDSetting.addListener(this._onChartIDSettingChanged.bind(this));
+        this._lightModeSetting.addListener(this._onLightModeSettingChanged.bind(this));
+        this._lightThresholdSetting.addListener(this._onLightThresholdSettingChanged.bind(this));
         this._sectionSetting.addListener(this._onSectionSettingChanged.bind(this));
         this._rotationSetting.addListener(this._onRotationSettingChanged.bind(this));
         this._zoomSetting.addListener(this._onZoomSettingChanged.bind(this));
@@ -64,10 +74,13 @@ class WT_G3x5_ChartsDisplay {
 
     _initSettingModel() {
         this.settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this.settingModel));
+        this.settingModel.addSetting(this._lightModeSetting = new WT_G3x5_ChartsLightModeSetting(this.settingModel));
+        this.settingModel.addSetting(this._lightThresholdSetting = new WT_G3x5_ChartsLightThresholdSetting(this.settingModel));
         this.settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this.settingModel));
         this.settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this.settingModel));
         this.settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this.settingModel));
 
+        this._initSettingValues();
         this._initSettingListeners();
 
         this.settingModel.init();
@@ -105,6 +118,18 @@ class WT_G3x5_ChartsDisplay {
         this._initMap(viewElement);
     }
 
+    _setLightMode(value) {
+        this._lightMode = value;
+    }
+
+    _setLightThreshold(value) {
+        this._lightThreshold = value;
+    }
+
+    _setSectionMode(value) {
+        this.model.sectionMode = value;
+    }
+
     _updateChartRotation() {
         this.model.rotation = this._rotationSetting.getRotation();
     }
@@ -117,8 +142,16 @@ class WT_G3x5_ChartsDisplay {
         this.model.chartID = newValue;
     }
 
+    _onLightModeSettingChanged(setting, newValue, oldValue) {
+        this._setLightMode(newValue);
+    }
+
+    _onLightThresholdSettingChanged(setting, newValue, oldValue) {
+        this._setLightThreshold(newValue);
+    }
+
     _onSectionSettingChanged(setting, newValue, oldValue) {
-        this.model.sectionMode = newValue;
+        this._setSectionMode(newValue);
     }
 
     _onRotationSettingChanged(setting, newValue, oldValue) {
@@ -161,7 +194,24 @@ class WT_G3x5_ChartsDisplay {
     wake() {
     }
 
+    _updateLightMode() {
+        switch (this._lightMode) {
+            case WT_G3x5_ChartsLightModeSetting.Mode.DAY:
+                this.model.useNightView = false;
+                break;
+            case WT_G3x5_ChartsLightModeSetting.Mode.NIGHT:
+                this.model.useNightView = true;
+                break;
+            case WT_G3x5_ChartsLightModeSetting.Mode.AUTO:
+                let displayLighting = SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number");
+                this.model.useNightView = displayLighting <= this._lightThreshold;
+                break;
+        }
+    }
+
     update() {
+        this._updateLightMode();
+
         this.view.update();
         this._mapRangeTargetRotationController.update();
         this._mapView.update();

@@ -35,6 +35,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
         this._settingModel.addSetting(this._icaoSetting = new WT_G3x5_ChartsICAOSetting(this._settingModel));
         this._settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this._settingModel));
+        this._settingModel.addSetting(this._lightModeSetting = new WT_G3x5_ChartsLightModeSetting(this._settingModel));
+        this._settingModel.addSetting(this._lightThresholdSetting = new WT_G3x5_ChartsLightThresholdSetting(this._settingModel));
         this._settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this._settingModel));
         this._settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this._settingModel));
         this._settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this._settingModel));
@@ -72,6 +74,22 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      */
     get selectedChart() {
         return this._chart;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ChartsLightModeSetting}
+     */
+    get lightModeSetting() {
+        return this._lightModeSetting;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ChartsLightThresholdSetting}
+     */
+    get lightThresholdSetting() {
+        return this._lightThresholdSetting;
     }
 
     /**
