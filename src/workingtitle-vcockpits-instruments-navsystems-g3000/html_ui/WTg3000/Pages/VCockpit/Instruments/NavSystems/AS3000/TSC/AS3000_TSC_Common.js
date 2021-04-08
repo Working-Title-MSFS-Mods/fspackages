@@ -599,7 +599,7 @@ class AS3000_TSC extends NavSystemTouch {
     _handleChartsTouchControlNavigationEvent(event) {
         if (this.getCurrentPage().title === WT_G3x5_TSCChartsTouchControl.TITLE) {
             this.goBack();
-        } else if (this.getCurrentPageGroup().name === "MFD" && this.getCurrentPage().title === WT_G3x5_TSCCharts.TITLE) {
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().chartsTouchControl.name);
         }
