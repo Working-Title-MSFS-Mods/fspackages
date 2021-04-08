@@ -11,6 +11,7 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
     _initSettingModel() {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
         this._settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this._settingModel));
+        this._settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this._settingModel));
     }
 
     /**
@@ -65,6 +66,10 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
         WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, `${event.deltaPos.x},${event.deltaPos.y}`);
     }
 
+    changeZoom(delta) {
+        this._zoomSetting.changeZoom(delta);
+    }
+
     _activateLabelBar() {
         this.instrument.setTopKnobText("Pan/Point Push: Pan Off");
         this.instrument.setBottomKnobText("-Range+ Push: Pan Off");
@@ -104,7 +109,7 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
                 LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanLeft");
                 break;
             case "TopKnob_Push":
-                this.gps.goBack();
+                this.instrument.goBack();
                 break;
         }
     }
