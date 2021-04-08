@@ -508,6 +508,72 @@ class WT_GTransform2 {
     }
 
     /**
+     * Sets the x-scaling factor of this transformation.
+     * @param {Number} value - the new x-scaling factor.
+     */
+    setScaleX(value) {
+        this._[0][0] = value;
+        return this;
+    }
+
+    /**
+     * Sets the y-scaling factor of this transformation.
+     * @param {Number} value - the new y-scaling factor.
+     */
+    setScaleY(value) {
+        this._[1][1] = value;
+        return this;
+    }
+
+    /**
+     * Sets the x-skew factor of this transformation.
+     * @param {Number} value - the new x-skew factor.
+     */
+    setSkewX(value) {
+        this._[0][1] = value;
+        return this;
+    }
+
+    /**
+     * Sets the y-skew factor of this transformation.
+     * @param {Number} value - the new y-skew factor.
+     */
+    setSkewY(value) {
+        this._[1][0] = value;
+        return this;
+    }
+
+    /**
+     * Sets the x translation value of this transformation.
+     * @param {Number} value - the new x translation value.
+     */
+    setTranslateX(value) {
+        this._[0][2] = value;
+        return this;
+    }
+
+    /**
+     * Sets the y translation value of this transformation.
+     * @param {Number} value - the new y translation value.
+     */
+    setTranslateY(value) {
+        this._[1][2] = value;
+        return this;
+    }
+
+    /**
+     * Sets the x and y translation values of this transformation.
+     * @param {Number} x - the new x translation value.
+     * @param {Number} y - the new y translation value.
+     * @returns {WT_GTransform2} this transformation after it has been changed.
+     */
+    setTranslate(x, y) {
+        this._[0][2] = x;
+        this._[1][2] = y;
+        return this;
+    }
+
+    /**
      * Applies this transformation to a vector and returns the result. The operation can either be performed in-place or a new
      * WT_GVector2 object can be created.
      * @param {WT_GVector2} vec - the vector to transform.
@@ -569,7 +635,7 @@ class WT_GTransform2 {
 
         let inverse = WT_GTransform2._setMatrix(WT_GTransform2._tempMatrix1,
             i_00 / det, i_10 / det, i_20 / det,
-            i_02 / det, i_11 / det, i_21 / det,
+            i_01 / det, i_11 / det, i_21 / det,
             i_02 / det, i_12 / det, i_22 / det
         );
 

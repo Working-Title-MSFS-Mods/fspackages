@@ -989,6 +989,25 @@ as3000-tsc-vertical-element .charts wt-tsc-charts {
                 margin: 0.25vh 0;
             }
 
+as3000-tsc-vertical-element .chartsTouchControl wt-tsc-chartstouchcontrol {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3.5vh;
+    background-color: black;
+    border: 3px solid var(--wt-g3x5-bordergray);
+    border-radius: 5px;
+    --chartstouchcontrol-padding-left: 1.5vh;
+    --chartstouchcontrol-padding-top: 1.5vh;
+    --chartstouchcontrol-padding-right: 1.5vh;
+    --chartstouchcontrol-padding-bottom: 1.5vh;
+    --chartstouchcontrol-header-height: 12vh;
+    --chartstouchcontrol-header-button-width: 15vh;
+    --chartstouchcontrol-header-margin-bottom: 1.5vh;
+}
+
 as3000-tsc-vertical-element #UtilitiesSetup wt-tsc-utilitiessetup {
     position: absolute;
     left: 5%;

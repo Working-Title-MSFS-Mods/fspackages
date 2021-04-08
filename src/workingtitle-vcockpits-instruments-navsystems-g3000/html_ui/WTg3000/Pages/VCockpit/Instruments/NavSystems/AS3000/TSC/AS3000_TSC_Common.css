@@ -300,6 +300,8 @@ wt-tsc-button-value {
 #Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
 #Electricity #PagesDisplay[state=ChartsLeft] #ChartsLeft,
 #Electricity #PagesDisplay[state=ChartsRight] #ChartsRight,
+#Electricity #PagesDisplay[state=ChartsTouchControlLeft] #ChartsTouchControlLeft,
+#Electricity #PagesDisplay[state=ChartsTouchControlRight] #ChartsTouchControlRight,
 #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
 #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig,
 #Electricity #PagesDisplay[state=Utilities] #Utilities,

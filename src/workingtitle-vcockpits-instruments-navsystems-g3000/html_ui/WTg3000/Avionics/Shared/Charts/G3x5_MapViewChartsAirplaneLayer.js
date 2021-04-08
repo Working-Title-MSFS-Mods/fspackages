@@ -35,7 +35,7 @@ class WT_G3x5_MapViewChartsAirplaneLayer extends WT_MapViewAirplaneLayer {
         let show = false;
         if (state.model.airplaneIcon.show) {
             let chartBounds = this._chartsView.chartBounds;
-            let chartPos = this._chartsView.chartInverseTransform.apply(this._tempVector2.set(state.viewPlane), true).add(chartBounds.left, chartBounds.top);
+            let chartPos = this._chartsView.chartTransformInverse.apply(this._tempVector2.set(state.viewPlane), true).add(chartBounds.left, chartBounds.top);
             if (chartPos.x >= chartBounds.left && chartPos.x <= chartBounds.right && chartPos.y >= chartBounds.top && chartPos.y <= chartBounds.bottom) {
                 show = !this._isInInset(this._chartsModel.chart.insets, chartPos);
             }
