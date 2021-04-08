@@ -17,10 +17,16 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
          */
         this._charts = null;
         this._chartID = "";
+        /**
+         * @type {WT_NavigraphChartDefinition}
+         */
+        this._chart = null;
 
         this._navigraphAPI = navigraphAPI;
         this._settingModelID = `MFD-${halfPaneID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
         this._initSettingModel();
+
+        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
 
         this._isLocked = false;
     }
@@ -29,6 +35,9 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
         this._settingModel.addSetting(this._icaoSetting = new WT_G3x5_ChartsICAOSetting(this._settingModel));
         this._settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this._settingModel));
+        this._settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this._settingModel));
+        this._settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this._settingModel));
+        this._settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this._settingModel));
 
         this._icaoSetting.init();
     }
@@ -39,6 +48,54 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      */
     get htmlElement() {
         return this._htmlElement;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_Airport}
+     */
+    get selectedAirport() {
+        return this._airport;
+    }
+
+    /**
+     * @readonly
+     * @type {String}
+     */
+    get selectedChartID() {
+        return this._chartID;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NavigraphChartDefinition}
+     */
+    get selectedChart() {
+        return this._chart;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ChartsSectionSetting}
+     */
+    get sectionSetting() {
+        return this._sectionSetting;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ChartsRotationSetting}
+     */
+    get rotationSetting() {
+        return this._rotationSetting;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ChartsZoomSetting}
+     */
+    get zoomSetting() {
+        return this._zoomSetting;
     }
 
     _createHTMLElement() {
@@ -86,6 +143,81 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._initHTMLElement();
     }
 
+    rotateCCW() {
+        if (!this.selectedChart) {
+            return;
+        }
+
+        this.rotationSetting.rotateCCW();
+    }
+
+    rotateCW() {
+        if (!this.selectedChart) {
+            return;
+        }
+
+        this.rotationSetting.rotateCW();
+    }
+
+    resetRotation() {
+        this.rotationSetting.resetRotation();
+    }
+
+    changeZoom(delta) {
+        if (!this.selectedChart) {
+            return;
+        }
+
+        this.zoomSetting.changeZoom(delta);
+    }
+
+    resetZoom() {
+        this.zoomSetting.resetZoom();
+    }
+
+    /**
+     *
+     * @param {WT_GVector2} delta
+     */
+    scroll(delta) {
+        if (!this.selectedChart) {
+            return;
+        }
+
+        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, `${delta.x},${delta.y}`);
+    }
+
+    resetScroll() {
+        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET);
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    _updateChartIDSettingFromAirport(airport) {
+        if (airport) {
+            let currentChartID = this._chartIDSetting.getValue();
+            if (airport.ident === currentChartID.substring(0, 4)) {
+                return;
+            }
+        }
+        this._chartIDSetting.setValue("");
+    }
+
+    _findChart(id) {
+        if (this._charts) {
+            let chart = this._charts.find(chart => chart.id === id);
+            return chart ? chart : null;
+        } else {
+            return null;
+        }
+    }
+
+    _updateChartFromID(id) {
+        this._chart = this._findChart(id);
+    }
+
     /**
      *
      * @param {WT_Airport} airport
@@ -122,7 +254,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_Airport} airport
      */
-    _setAirport(airport) {
+    async _setAirport(airport) {
         if ((airport === null && this._airport === null) || (airport && airport.equals(this._airport))) {
             return;
         }
@@ -130,20 +262,22 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._airport = airport;
         this._icaoSetting.setValue(this._airport ? this._airport.icao : "");
         this.htmlElement.setAirport(this._airport);
-        this._updateCharts();
+        this._updateChartIDSettingFromAirport(this._airport);
+        await this._updateCharts();
+        this._updateChartFromID(this._chartID);
     }
 
     async _setAirportICAO(icao) {
         if (icao) {
             try {
                 let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
-                this._setAirport(airport);
+                await this._setAirport(airport);
                 return;
             } catch (e) {
                 console.log(e);
             }
         }
-        this._setAirport(null);
+        await this._setAirport(null);
     }
 
     _onICAOSettingChanged(setting, newValue, oldValue) {
@@ -152,6 +286,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
 
     _setChartID(id) {
         this._chartID = id;
+        this._updateChartFromID(id);
         this.htmlElement.setChartID(this._chartID);
     }
 
@@ -166,15 +301,30 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
     }
 
+    _openOptionsWindow() {
+        this.instrument.deactivateNavButton(5);
+        this.instrument.deactivateNavButton(6);
+        this.instrument.chartsOptions.element.setContext({chartsPage: this});
+        this.instrument.switchToPopUpPage(this.instrument.chartsOptions);
+    }
+
     _onSelectButtonPressed(button) {
         this._openKeyboard();
     }
 
     _onOptionsButtonPressed(button) {
+        this._openOptionsWindow();
     }
 
     _onKeyboardClosed(icao) {
         this._setAirportICAO(icao);
+    }
+
+    _resetChartSettings() {
+        this.sectionSetting.setValue(WT_G3x5_ChartsModel.SectionMode.ALL);
+        this.resetRotation();
+        this.resetZoom();
+        this.resetScroll();
     }
 
     /**
@@ -183,6 +333,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      */
     _onChartSelected(chart) {
         this._chartIDSetting.setValue(chart.id);
+        this._resetChartSettings();
     }
 
     _activateChartsDisplayPane() {
