@@ -2,7 +2,25 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
     constructor() {
         super();
 
+        this._initWindowContexts();
         this._isReady = false;
+    }
+
+    _initLightModeWindowContext() {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCChartsOptions.LIGHT_MODE_TEXT);
+        this._lightModeWindowContext = {
+            title: "Select Light Mode",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            homePageGroup: "",
+            homePageName: ""
+        };
+    }
+
+    _initWindowContexts() {
+        this._initLightModeWindowContext();
     }
 
     /**
@@ -53,12 +71,24 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
 
     _cleanUpButtonManagers() {
         if (this._sectionAllButtonManager) {
+            this._lightModeButtonManager.destroy();
             this._sectionAllButtonManager.destroy();
             this._sectionPlanButtonManager.destroy();
 
+            this._lightModeButtonManager = null;
             this._sectionAllButtonManager = null;
             this._sectionPlanButtonManager = null;
         }
+    }
+
+    _initLightModeButtonManager() {
+        let chartsPage = this.context.chartsPage;
+        let instrument = chartsPage.instrument;
+        this._lightModeWindowContext.homePageGroup = chartsPage.homePageGroup;
+        this._lightModeWindowContext.homePageName = chartsPage.homePageName;
+
+        this._lightModeButtonManager = new WT_TSCSettingValueButtonManager(instrument, this.htmlElement.lightModeButton, chartsPage.lightModeSetting, instrument.selectionListWindow1, this._lightModeWindowContext, value => WT_G3x5_TSCChartsOptions.LIGHT_MODE_TEXT[value]);
+        this._lightModeButtonManager.init();
     }
 
     _initSectionAllButtonManager() {
@@ -72,6 +102,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _initButtonManagers() {
+        this._initLightModeButtonManager();
         this._initSectionAllButtonManager();
         this._initSectionPlanButtonManager();
     }
@@ -122,6 +153,11 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         this._cleanUpContext();
     }
 }
+WT_G3x5_TSCChartsOptions.LIGHT_MODE_TEXT = [
+    "Night",
+    "Day",
+    "Auto"
+];
 
 class WT_G3x5_TSCChartsOptionsHTMLElement extends HTMLElement {
     constructor() {
@@ -151,6 +187,22 @@ class WT_G3x5_TSCChartsOptionsHTMLElement extends HTMLElement {
      */
     get fitWidthButton() {
         return this._fitWidthButton;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCValueButton}
+     */
+    get lightModeButton() {
+        return this._lightModebutton;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCValueButton}
+     */
+    get lightThresholdButton() {
+        return this._lightThresholdButton;
     }
 
     /**
@@ -251,6 +303,7 @@ WT_G3x5_TSCChartsOptionsHTMLElement.TEMPLATE.innerHTML = `
                 flex-flow: column nowrap;
                 justify-content: flex-end;
                 align-items: stretch;
+                --button-value-color: var(--wt-g3x5-lightblue);
             }
                 .leftButton {
                     height: var(--chartsoptions-leftcolumn-button-height, 4em);
@@ -301,7 +354,7 @@ WT_G3x5_TSCChartsOptionsHTMLElement.TEMPLATE.innerHTML = `
         <div id="left">
             <wt-tsc-button-label id="fitwidth" class="leftButton" labeltext="Fit Width"></wt-tsc-button-label>
             <wt-tsc-button-value id="lightmode" class="leftButton" labeltext="Light Mode"></wt-tsc-button-value>
-            <wt-tsc-button-value id="lightthreshold" class="leftButton" labeltext="Threshold"></wt-tsc-button-value>
+            <wt-tsc-button-value id="lightthreshold" class="leftButton" labeltext="Threshold" enabled="false"></wt-tsc-button-value>
         </div>
         <div id="sectionscontainer">
             <div id="sections">
