@@ -205,6 +205,8 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
                 this._mfdPagesLeft.charts = new NavSystemPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.chartsTouchControl = new NavSystemPage("Charts Touch Control Left", "ChartsTouchControlLeft", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.chartsTouchControl = new NavSystemPage("Charts Touch Control Right", "ChartsTouchControlRight", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
@@ -323,7 +325,8 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _updateMFDPaneSelectDisplay() {
-        if (this.getCurrentPageGroup().name === "MFD" && this.getCurrentPage().title !== "Map Pointer Control") {
+        let currentPage = this.getCurrentPage();
+        if (this.getCurrentPageGroup().name === "MFD" && currentPage.title !== "Map Pointer Control" && currentPage.title !== WT_G3x5_TSCChartsTouchControl.TITLE) {
             if (this._mfdPaneSelectDisplay.style.display !== "block") {
                 this._mfdPaneSelectDisplay.style.display = "block";
             }
@@ -571,14 +574,28 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _handleMapPointerEvent(event) {
+    _handleMapPointerControlNavigationEvent(event) {
+        if (this.getCurrentPage().title === "Map Pointer Control") {
+            this.goBack();
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
+        }
+    }
+
+    _handleChartsTouchControlNavigationEvent(event) {
+        if (this.getCurrentPage().title === WT_G3x5_TSCChartsTouchControl.TITLE) {
+            this.goBack();
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getCurrentPage().title === WT_G3x5_TSCCharts.TITLE) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().chartsTouchControl.name);
+        }
+    }
+
+    _handleBottomKnobPushEvent(event) {
         if (event === "BottomKnob_Push") {
-            if (this.getCurrentPage().title === "Map Pointer Control") {
-                this.goBack();
-            } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
-                this.closePopUpElement();
-                this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
-            }
+            this._handleMapPointerControlNavigationEvent(event);
+            this._handleChartsTouchControlNavigationEvent(event);
         }
     }
 
@@ -588,7 +605,7 @@ class AS3000_TSC extends NavSystemTouch {
         this._handleNavigationEvent(event);
         this._handleZoomEvent(event);
         this._handleControlEvent(event);
-        this._handleMapPointerEvent(event);
+        this._handleBottomKnobPushEvent(event);
     }
 
     goBack() {

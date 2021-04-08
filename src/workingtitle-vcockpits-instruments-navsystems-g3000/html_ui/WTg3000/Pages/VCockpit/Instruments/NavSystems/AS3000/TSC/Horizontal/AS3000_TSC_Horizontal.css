@@ -893,6 +893,25 @@ as3000-tsc-horizontal-element .charts wt-tsc-charts {
               margin: 0.25vh 0;
           }
 
+as3000-tsc-horizontal-element .chartsTouchControl wt-tsc-chartstouchcontrol {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 4.5vh;
+    background-color: black;
+    border: 3px solid var(--wt-g3x5-bordergray);
+    border-radius: 5px;
+    --chartstouchcontrol-padding-left: 2vh;
+    --chartstouchcontrol-padding-top: 2vh;
+    --chartstouchcontrol-padding-right: 2vh;
+    --chartstouchcontrol-padding-bottom: 2vh;
+    --chartstouchcontrol-header-height: 15vh;
+    --chartstouchcontrol-header-button-width: 20vh;
+    --chartstouchcontrol-header-margin-bottom: 2vh;
+}
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig .backgroundBox {
         position: absolute;
         top: 20%;

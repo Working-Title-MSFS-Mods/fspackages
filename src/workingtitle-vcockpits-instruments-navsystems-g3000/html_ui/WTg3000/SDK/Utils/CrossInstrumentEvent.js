@@ -15,7 +15,7 @@ class WT_CrossInstrumentEvent {
         let storagePrefix = WT_CrossInstrumentEvent._getPrefix(key);
         const storageListener = event => {
             if (event.key === storagePrefix) {
-                let data = event.newValue.substring(event.newValue.indexOf("#") + 1);
+                let data = event.newValue.substring(10);
                 listener(key, data);
             }
         };
@@ -67,7 +67,8 @@ class WT_CrossInstrumentEvent {
      */
     static fireEvent(key, data) {
         let storagePrefix = WT_CrossInstrumentEvent._getPrefix(key);
-        window.localStorage.setItem(storagePrefix, `${WT_CrossInstrumentEvent._uniqueId++}#${data}`);
+        window.localStorage.setItem(storagePrefix, `${(WT_CrossInstrumentEvent._uniqueId).toFixed(0).padStart(10, "0")}${data}`);
+        WT_CrossInstrumentEvent._uniqueId = (WT_CrossInstrumentEvent._uniqueId + 1) % 1e10;
         WT_CrossInstrumentEvent._notifyListeners(key, data);
     }
 }

@@ -5,10 +5,14 @@ class WT_G3x5_ChartsDisplay {
      * @param {WT_NavigraphAPI} navigraphAPI
      */
     constructor(instrumentID, airplane, navigraphAPI) {
-        this._settingModelID = `${instrumentID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
-
         this._airplane = airplane;
         this._navigraphAPI = navigraphAPI;
+
+        this._settingModelID = `${instrumentID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
+        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_${instrumentID}`;
+
+        this._tempVector2 = new WT_GVector2(0, 0);
+        this._tempTransform = new WT_GTransform2();
     }
 
     /**
@@ -52,10 +56,13 @@ class WT_G3x5_ChartsDisplay {
 
     _initSettingListeners() {
         this._chartIDSetting.addListener(this._onChartIDSettingChanged.bind(this));
+        this._rotationSetting.addListener(this._onRotationSettingChanged.bind(this));
+        WT_CrossInstrumentEvent.addListener(this._scrollEventKey, this._onScrollEvent.bind(this));
     }
 
     _initSettingModel() {
         this.settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this.settingModel));
+        this.settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this.settingModel));
 
         this._initSettingListeners();
 
@@ -96,6 +103,40 @@ class WT_G3x5_ChartsDisplay {
 
     _onChartIDSettingChanged(setting, newValue, oldValue) {
         this.model.chartID = newValue;
+    }
+
+    _updateChartRotation() {
+        if (!this.model.chart) {
+            return;
+        }
+
+        this.model.rotation = this._rotationSetting.getRotation();
+    }
+
+    _onRotationSettingChanged(setting, newValue, oldValue) {
+        this._updateChartRotation();
+    }
+
+    _scrollChart(deltaX, deltaY) {
+        if (!this.model.chart) {
+            return;
+        }
+
+        let transform = this._tempTransform.set(this.view.chartTransformInverse).setTranslate(0, 0);
+
+        let offset = transform.apply(this._tempVector2.set(-deltaX, -deltaY), true).add(this.model.offset);
+        let halfWidth = (this.view.chartBounds.right - this.view.chartBounds.left) / 2;
+        let halfHeight = (this.view.chartBounds.bottom - this.view.chartBounds.top) / 2;
+        let boundedOffsetX = Math.max(-halfWidth, Math.min(halfWidth, offset.x));
+        let boundedOffsetY = Math.max(-halfHeight, Math.min(halfHeight, offset.y));
+        this.model.offset = offset.set(boundedOffsetX, boundedOffsetY);
+    }
+
+    _onScrollEvent(key, data) {
+        let split = data.split(",");
+        let deltaX = parseFloat(split[0]);
+        let deltaY = parseFloat(split[1]);
+        this._scrollChart(deltaX, deltaY);
     }
 
     sleep() {
@@ -230,6 +271,8 @@ class WT_G3x5_ChartsMapRangeTargetRotationController {
     }
 }
 
+WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
+
 class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
     constructor() {
         super();
@@ -355,7 +398,7 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
      * @readonly
      * @type {WT_GTransform2ReadOnly}
      */
-    get chartInverseTransform() {
+    get chartTransformInverse() {
         return this._inverseTransform.readonly();
     }
 
@@ -393,6 +436,17 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
         this._bounds[3] = bbox[WT_NavigraphChart.BoundsIndex.BOTTOM];
     }
 
+    _calculateReferenceScaleFactor(imgWidth, imgHeight) {
+        let viewAspectRatio = this._viewWidth / this._viewHeight;
+        let imgAspectRatio = imgWidth / imgHeight;
+
+        if (imgAspectRatio > viewAspectRatio) {
+            return this._viewWidth / imgWidth;
+        } else {
+            return this._viewHeight / imgHeight;
+        }
+    }
+
     _updateChartTransform() {
         let model = this._context.model;
         if (!model.chart) {
@@ -403,19 +457,7 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
         let imgWidth = this.chartBounds.right - this.chartBounds.left;
         let imgHeight = this.chartBounds.bottom - this.chartBounds.top;
 
-        let flipAspectRatio = ((model.rotation / 90) % 2) === 1;
-        let imgAspectRatioWidth = flipAspectRatio ? imgHeight : imgWidth;
-        let imgAspectRatioHeight = flipAspectRatio ? imgWidth : imgHeight;
-
-        let viewAspectRatio = this._viewWidth / this._viewHeight;
-        let imgAspectRatio = imgAspectRatioWidth / imgAspectRatioHeight;
-
-        let scaleFactor;
-        if (imgAspectRatio > viewAspectRatio) {
-            scaleFactor = this._viewWidth / imgAspectRatioWidth;
-        } else {
-            scaleFactor = this._viewHeight / imgAspectRatioHeight;
-        }
+        let scaleFactor = this._calculateReferenceScaleFactor(imgWidth, imgHeight);
         this._referenceDisplayWidth = imgWidth * scaleFactor;
         this._referenceDisplayHeight = imgHeight * scaleFactor;
 
@@ -423,10 +465,10 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
 
         let rotation = model.rotation * Avionics.Utils.DEG2RAD;
 
-        WT_GTransform2.translation(-imgWidth / 2, -imgHeight / 2, this._transform)                                       // translate center to origin
-            .concat(WT_GTransform2.scale(scaleFactor, this._tempTransform), true)                                        // scale
-            .concat(WT_GTransform2.rotation(rotation, this._tempTransform), true)                                        // rotate
-            .concat(WT_GTransform2.translation(this._viewWidth / 2, this._viewHeight / 2, this._tempTransform), true);   // translate center to view center
+        WT_GTransform2.translation(-imgWidth / 2 - model.offset.x, -imgHeight / 2 - model.offset.y, this._transform)                // translate center to origin
+            .concat(WT_GTransform2.scale(scaleFactor, this._tempTransform), true)                                                   // scale
+            .concat(WT_GTransform2.rotation(rotation, this._tempTransform), true)                                                   // rotate
+            .concat(WT_GTransform2.translation(this._viewWidth / 2, this._viewHeight / 2, this._tempTransform), true);              // translate center to view center (with offset)
 
         this._inverseTransform.set(this._transform).inverse(true);
 

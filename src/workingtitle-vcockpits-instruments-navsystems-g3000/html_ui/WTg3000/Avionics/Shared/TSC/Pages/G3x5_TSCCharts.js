@@ -123,7 +123,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {WT_Airport} airport
      */
     _setAirport(airport) {
-        if (airport === null && this._airport === null || (airport && airport.equals(this._airport))) {
+        if ((airport === null && this._airport === null) || (airport && airport.equals(this._airport))) {
             return;
         }
 
