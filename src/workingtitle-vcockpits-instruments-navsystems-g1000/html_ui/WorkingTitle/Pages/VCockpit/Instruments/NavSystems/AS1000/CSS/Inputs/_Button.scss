@@ -1,0 +1,10 @@
+selectable-button {
+    display: block;
+    color: $input_color;
+
+    &[disabled] {
+        color: #666;
+    }
+
+    @extend %animated-selection;
+}

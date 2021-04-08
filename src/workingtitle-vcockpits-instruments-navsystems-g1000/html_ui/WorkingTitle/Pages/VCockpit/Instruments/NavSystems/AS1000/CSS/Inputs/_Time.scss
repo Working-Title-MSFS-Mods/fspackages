@@ -1,0 +1,14 @@
+time-input {
+    display: block;
+    color: $input_color;
+
+    &[disabled] {
+        color: #fff;
+    }
+
+    @extend %animated-selection;
+
+    .digit {
+        @extend %animated-selection;
+    }
+}

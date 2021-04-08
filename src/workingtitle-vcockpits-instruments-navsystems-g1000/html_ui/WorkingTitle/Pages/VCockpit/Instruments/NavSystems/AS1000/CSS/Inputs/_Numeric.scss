@@ -1,0 +1,14 @@
+numeric-input,
+adf-input {
+    color: $input_color;
+
+    &[disabled] {
+        color: #fff;
+    }
+
+    @extend %animated-selection;
+
+    .digit {
+        @extend %animated-selection;
+    }
+}

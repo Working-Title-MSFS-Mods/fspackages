@@ -1,0 +1,19 @@
+g1000-pfd-setup-menu {
+    display: block;
+
+    .element {
+        margin: 1vh 0;
+        display: grid;
+        grid-gap: 1vh;
+        grid-template-columns: 40% 1fr 6ch;
+        align-items: center;
+
+        label {
+            font-weight: bold;
+        }
+
+        numeric-input {
+            text-align: right;
+        }
+    }
+}

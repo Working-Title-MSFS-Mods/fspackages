@@ -1,0 +1,173 @@
+$arrow_width: 2ch;
+
+g1000-nav-box {
+    grid-area: nav;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 28% minmax(0, 1fr) 25%;
+    grid-template-rows: 100%;
+    border-bottom: $border_width_thick solid $border_color;
+    background: $page_background_color;
+    line-height: 1;
+    font-weight: normal;
+    //font-family: $font_family_mono;
+    font-family: $font_family_normal;
+    font-size: $font_size_regular;
+
+    > .center {
+        height: 100%;
+        display: grid;
+        grid-template-rows: 50% 50%;
+        border-left: $border_width_thin solid $border_color;
+        border-right: $border_width_thin solid $border_color;
+
+        .mfd-status {
+            border-bottom: $border_width_thin solid $border_color;
+            padding: 0 1vh;
+            align-items: baseline;
+            display: flex;
+            overflow: hidden;
+
+            div {
+                width: auto;
+                margin: 0 1vh;
+                flex: none;
+                line-height: 3.5vh;
+                font-size: $font_size_large;
+                font-weight: normal;
+
+                &.value {
+                    //font-family: $font_family_mono;
+                    font-weight: bold;
+                    color: $color_gps;
+                    flex: 1;
+                    font-size: $font_size_extra_large;
+                }
+            }
+
+            .small {
+                font-size: 0.7em;
+                font-family: $font_family_normal;
+                text-transform: uppercase;
+            }
+        }
+
+        .page-title {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            padding: 0 2vh;
+            color: $input_color;
+            font-size: 1.1em;
+            line-height: 1;
+            font-weight: bold;
+            font-family: $font_family_normal;
+        }
+    }
+}
+
+g1000-nav-frequencies,
+g1000-com-frequencies {
+    font-family: $font_family_normal;
+    display: grid;
+    grid-template-rows: 50% 50%;
+    height: 100%;
+    width: 100%;
+    padding: 0 1vh;
+
+    .active {
+        grid-area: active;
+        font-weight: bold;
+    }
+
+    .standby {
+        grid-area: standby;
+        font-weight: bold;
+    }
+
+    .name {
+        grid-area: name;
+    }
+
+    .arrow {
+        grid-area: arrow;
+        visibility: hidden;
+        height: 0.6em;
+        color: $input_color;
+        text-align: center;
+        margin: auto;
+    }
+
+    .volume {
+        grid-area: volume;
+        display: none;
+        color: $input_color;
+        font-weight: bold;
+    }
+
+    .radio-1,
+    .radio-2 {
+        display: grid;
+        grid-gap: 0.5em;
+        align-items: center;
+        grid-template-columns: 3.5ch auto minmax(0, 1fr) auto 5ch;
+        grid-template-areas: "name standby arrow active ident";
+        font-size: $font_size_large;
+
+        &[mode="volume"] {
+            grid-template-columns: 3.5ch auto minmax(0, 1fr) auto 5ch;
+            grid-template-areas: "name volume arrow active ident";
+
+            .standby {
+                display: none;
+            }
+
+            .arrow {
+                visibility: hidden !important;
+            }
+
+            .volume {
+                display: block;
+            }
+        }
+
+        div:first-child {
+            font-size: $font_size_regular;
+        }
+    }
+
+    &[selected="1"] {
+        .radio-1 {
+            .arrow {
+                visibility: visible;
+            }
+            .standby {
+                outline: $border_width_thin solid cyan;
+            }
+        }
+    }
+
+    &[selected="2"] {
+        .radio-2 {
+            .arrow {
+                visibility: visible;
+            }
+            .standby {
+                outline: $border_width_thin solid cyan;
+            }
+        }
+    }
+}
+
+g1000-com-frequencies {
+    .radio-1,
+    .radio-2 {
+        grid-template-columns: auto minmax(0, 1fr) auto 3.5ch;
+        grid-template-areas: "active arrow standby name";
+
+        &[mode="volume"] {
+            grid-template-columns: auto minmax(0, 1fr) auto 3.5ch;
+            grid-template-areas: "active arrow volume name";
+        }
+    }
+}

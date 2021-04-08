@@ -3,17 +3,17 @@ class BaseAS1000 extends NavSystem {
     connectedCallback() {
         super.connectedCallback();
         this.preserveAspectRatio("Mainframe");
-        this.addIndependentElementContainer(new NavSystemElementContainer("Frequencies", "NavBox", new NavSystemElementGroup([
+        /*this.addIndependentElementContainer(new NavSystemElementContainer("Frequencies", "NavBox", new NavSystemElementGroup([
             new AS1000.NavFrequencies(),
             new AS1000.ComFrequencies()
         ])));
-        this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys()));
+        //this.addIndependentElementContainer(new NavSystemElementContainer("SoftKeys", "SoftKeys", new SoftKeys()));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("DRCT", "DRCT", new GlassCockpit_DirectTo(), "DIRECTTO"));
         this.addEventAlias("FMS_Upper_INC", "NavigationSmallInc");
         this.addEventAlias("FMS_Upper_DEC", "NavigationSmallDec");
         this.addEventAlias("FMS_Lower_INC", "NavigationLargeInc");
         this.addEventAlias("FMS_Lower_DEC", "NavigationLargeDec");
-        this.addEventAlias("FMS_Upper_PUSH", "NavigationPush");
+        this.addEventAlias("FMS_Upper_PUSH", "NavigationPush");*/
     }
 }
 var AS1000;
@@ -281,6 +281,7 @@ class Engine extends NavSystemElementContainer {
             let engineRoot = this.gps.xmlConfig.getElementsByTagName("EngineDisplay");
             if (engineRoot.length > 0) {
                 fromConfig = true;
+                this.gps.setAttribute("engine", "XML");
                 this.root.setAttribute("state", "XML");
                 this.xmlEngineDisplay = this.root.querySelector("glasscockpit-xmlenginedisplay");
                 this.xmlEngineDisplay.setConfiguration(this.gps, engineRoot[0]);
@@ -302,6 +303,7 @@ class Engine extends NavSystemElementContainer {
         switch (this.engineType) {
             case EngineType.ENGINE_TYPE_PISTON:
                 {
+                    this.gps.setAttribute("engine", "piston");
                     this.root.setAttribute("state", "piston");
                     this.addGauge().Set(this.gps.getChildById("Piston_VacGauge"), this.settings.Vacuum, this.getVAC.bind(this), "VAC", "inHg");
                     this.addGauge().Set(this.gps.getChildById("Piston_FuelGauge"), this.settings.FuelQuantity, this.getFuelR.bind(this), "FUEL QTY", "GAL", 0, this.getFuelL.bind(this));
@@ -327,6 +329,7 @@ class Engine extends NavSystemElementContainer {
             case EngineType.ENGINE_TYPE_TURBOPROP:
             case EngineType.ENGINE_TYPE_JET:
                 {
+                    this.gps.setAttribute("engine", "turbo");
                     this.root.setAttribute("state", "turbo");
                     this.addGauge().Set(this.gps.getChildById("Turbo_AmpGauge1"), this.settings.BatteryBusAmps, this.getAmpsBattery.bind(this), "", "AMPS B");
                     this.addGauge().Set(this.gps.getChildById("Turbo_AmpGauge2"), this.settings.GenAltBusAmps, this.getAmpsGenAlt.bind(this), "", "AMPS G");
@@ -1153,4 +1156,29 @@ class AS1000_PFD_BackgroundTimer extends NavSystemElement {
         return this.willReset;
     }
 }
+
+class WT_Model {
+    constructor() {
+    }
+    update(dt) {
+    }
+}
+
+class WT_Menu_Push_Handler {
+    push() {
+
+    }
+}
 //# sourceMappingURL=BaseAS1000.js.map
+
+class WT_Cancel_Dialog_Error extends Error {
+
+}
+WT_Cancel_Dialog_Error.HANDLER = e => {
+    if (e instanceof WT_Cancel_Dialog_Error) {
+        console.log("Closed new waypoint handler");
+    } else {
+        console.error(e.message);
+        return e;
+    }
+}

@@ -1,0 +1,80 @@
+g1000-procedures-page {
+    display: grid;
+    grid-template-columns: 60% 1fr;
+    grid-template-rows: 100%;
+    grid-template-areas: "map sidebar";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: $page_background_color;
+
+    .map {
+        grid-area: map;
+        display: block;
+        position: relative;
+    }
+
+    .sidebar {
+        grid-area: sidebar;
+        border-left: $border_width_thick solid $border_color;
+        padding: 0 2vh;
+    }
+
+    g1000-sequence-list {
+        max-height: 20vh;
+        overflow-y: scroll;
+    }
+}
+
+g1000-approach-page,
+g1000-departure-page,
+g1000-arrival-page {
+    display: none;
+
+    &[visible] {
+        display: block;
+    }
+}
+
+g1000-approach-page {
+    .minimums {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .load-or-activate {
+        display: grid;
+        margin: 0 4vh;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+
+        span {
+            text-align: center;
+        }
+
+        selectable-button {
+            text-align: center;
+            display: inline-block;
+            font-size: $font_size_large;
+        }
+    }
+}
+
+g1000-sequence-list {
+    display: block;
+
+    li {
+        color: $input_color;
+        display: grid;
+        grid-template-columns: 50% 25% 25%;
+
+        .bearing,
+        .distance {
+            text-align: right;
+        }
+
+        @extend %animated-selection;
+    }
+}

@@ -1,0 +1,19 @@
+string-input,
+icao-input {
+    color: $input_color;
+    font-family: $font_family_mono;
+
+    &[disabled] {
+        color: #fff;
+    }
+
+    &[state="Selected"] {
+        .character {
+            animation: SelectionBlink 0.5s infinite !important;
+        }
+    }
+
+    .character {
+        @extend %animated-selection;
+    }
+}

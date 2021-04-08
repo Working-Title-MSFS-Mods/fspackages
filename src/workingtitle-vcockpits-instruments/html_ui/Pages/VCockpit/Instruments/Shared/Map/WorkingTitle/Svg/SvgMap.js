@@ -55,6 +55,7 @@ class SvgMap {
                 configPath = arg.configPath;
             }
         }
+        console.log(`Config path: ${configPath}`);
         if (!this._svgHtmlElement) {
             this._svgHtmlElement = _root.querySelector("#" + elementId);
         }
@@ -346,7 +347,7 @@ class SvgMap {
         }
         for (let svgLayer of this.svgLayersToUpdate) {
             for (let child of svgLayer.children) {
-                child.setAttribute("needDeletion", "true");
+                child.needDeletion = true;
             }
         }
 
@@ -357,7 +358,7 @@ class SvgMap {
         let newElementsWithTextBox = new Set();
         for (let i = 0; i < this.mapElements.length; i++) {
             let svgElement = this.mapElements[i].draw(this);
-            svgElement.setAttribute("needDeletion", "false");
+            svgElement.needDeletion = false;
 
             if (this.mapElements[i].hasTextBox) {
                 newElementsWithTextBox.add(this.mapElements[i].getLabelElement());
@@ -367,7 +368,7 @@ class SvgMap {
             let i = 0;
             while (i < svgLayer.children.length) {
                 let e = svgLayer.children[i];
-                if (e.getAttribute("needDeletion") === "true") {
+                if (e.needDeletion === true) {
                     svgLayer.removeChild(e);
                 } else {
                     i++;

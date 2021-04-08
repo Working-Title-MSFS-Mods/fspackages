@@ -1,0 +1,32 @@
+g1000-radio-altimeter {
+    position: absolute;
+    left: 62%;
+    bottom: 50%;
+    height: 5%;
+    width: 8%;
+    padding: 1vh;
+    background-color: #000;
+    border: $border_width_thin solid #fff;
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 35% 1fr;
+    align-items: end;
+    font-size: 1.2em;
+    font-weight: bold;
+
+    label {
+        font-size: 0.8em;
+        text-align: left;
+        line-height: 1em;
+    }
+
+    div {
+        text-align: right;
+        color: $color_green;
+        line-height: 1em;
+    }
+
+    &[state="inactive"] {
+        display: none;
+    }
+}

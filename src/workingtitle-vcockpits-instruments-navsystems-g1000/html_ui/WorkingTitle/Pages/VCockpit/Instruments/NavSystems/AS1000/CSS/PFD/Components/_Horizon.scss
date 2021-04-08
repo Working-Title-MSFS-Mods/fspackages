@@ -1,0 +1,171 @@
+.horizon-container {
+    grid-area: main;
+    @extend %render-layer;
+    position: relative;
+    overflow: hidden;
+
+    #SyntheticVision {
+        @extend %render-layer;
+        position: absolute;
+        left: -13%; // Center is 47, so we shift left by 3 then 20% * 0.5
+        top: -21%; // Center is 39, so we shift up by 11 then 20% * 0.5
+        width: 120%;
+        height: 120%;
+        /*left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;*/
+
+        #MapSVG,
+        #road-network-canvas,
+        #MapRange,
+        #MapOrientation {
+            display: none;
+        }
+        bing-map {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+    }
+
+    glasscockpit-attitude-indicator {
+        position: absolute;
+        /*left: 23.2%;
+        top: 12%;
+        width: 47%;
+        height: 41%;*/
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        border: none;
+
+        #Attitude {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+    }
+
+    .flight-path-marker {
+        .circle-fill {
+            fill: none;
+            stroke: $color_green;
+            stroke-width: 3;
+        }
+
+        .circle-outline {
+            fill: none;
+            stroke: #000;
+            stroke-width: 6;
+        }
+
+        .barbs {
+            fill: $color_green;
+            stroke: #000;
+            stroke-width: 2;
+        }
+    }
+
+    .flight-director {
+        .outline {
+            fill: none;
+            stroke: #000;
+            stroke-width: 2;
+        }
+
+        .fill {
+            fill: #d12bc7;
+        }
+
+        .fill-dark {
+            fill: #990891;
+        }
+    }
+
+    .cursors {
+        .outline {
+            fill: none;
+            stroke: #000;
+            stroke-width: 2;
+        }
+
+        .fill {
+            fill: #ffff00;
+        }
+
+        .fill-dark {
+            fill: #cccc00;
+        }
+    }
+
+    .separator {
+        fill: white;
+        stroke: rgba(0, 0, 0, 0.6);
+        stroke-width: 1px;
+    }
+
+    .bank-indicator,
+    .bank-triangle,
+    .slip-skid {
+        fill: white;
+        stroke: rgba(0, 0, 0, 0.6);
+        stroke-width: 1px;
+    }
+
+    .bank-arc-outline {
+        fill: none;
+        stroke: rgba(0, 0, 0, 0.6);
+        stroke-width: 6px;
+    }
+
+    .bank-arc-fill {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 4px;
+    }
+
+    .attitude-pitch {
+        stroke: rgba(0, 0, 0, 0.6);
+
+        path {
+            stroke-width: 1px;
+        }
+
+        text {
+            stroke-width: 6px;
+        }
+    }
+
+    .graduation-text-left,
+    .graduation-text-right {
+        font-family: $font_family_normal;
+        fill: #fff;
+        font-weight: bold;
+    }
+
+    .graduation-text-left {
+        text-anchor: end;
+    }
+
+    .graduation-text-right {
+        text-anchor: start;
+    }
+
+    .horizon-heading {
+        fill: #fff;
+        text {
+            font-size: 20px;
+            font-weight: bold;
+            text-anchor: middle;
+            stroke: rgba(0, 0, 0, 0.6);
+            stroke-width: 6px;
+            paint-order: stroke;
+        }
+    }
+}

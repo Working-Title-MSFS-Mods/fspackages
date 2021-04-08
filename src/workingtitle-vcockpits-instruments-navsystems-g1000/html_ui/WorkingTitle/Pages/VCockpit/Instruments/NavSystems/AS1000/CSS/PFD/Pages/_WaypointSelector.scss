@@ -1,0 +1,31 @@
+g1000-waypoint-selector-pane {
+    display: block;
+
+    .location {
+        display: grid;
+        grid-template-columns: 4ch 1fr 50%;
+        grid-template-rows: auto auto;
+        align-items: center;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    .bearing,
+    .distance {
+        color: $input_color;
+    }
+
+    .bearing,
+    .distance {
+        font-family: $font_family_mono;
+    }
+
+    footer {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 1em;
+        font-size: 1.1em;
+    }
+}

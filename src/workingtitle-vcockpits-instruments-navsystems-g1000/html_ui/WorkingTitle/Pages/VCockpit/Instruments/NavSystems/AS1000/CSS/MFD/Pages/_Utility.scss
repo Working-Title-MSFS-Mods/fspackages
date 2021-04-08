@@ -1,0 +1,15 @@
+g1000-utility {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2vh;
+    padding: 0 2vh;
+
+    .flight-timer {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr;
+
+        .value {
+            text-align: right;
+        }
+    }
+}

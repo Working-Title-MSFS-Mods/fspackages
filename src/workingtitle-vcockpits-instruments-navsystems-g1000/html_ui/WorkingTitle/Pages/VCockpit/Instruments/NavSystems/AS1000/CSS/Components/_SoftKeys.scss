@@ -1,0 +1,80 @@
+g1000-soft-key-menu {
+    background-color: $page_background_color;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(12, 1fr);
+    font-size: 1rem;
+
+    g1000-soft-key,
+    g1000-soft-key-alert {
+        display: block;
+        height: 100%;
+        width: 100%;
+        border-right: $border_width_thin solid #000;
+        border-left: $border_width_thin solid #888;
+        border-top: $border_width_thick solid $border_color;
+        text-align: center;
+        line-height: 1.8;
+
+        &[disabled] {
+            color: #555;
+        }
+
+        &[selected],
+        &[hover] {
+            &:not([disabled]) {
+                color: #000;
+                background-color: #aaa;
+
+                box-shadow: 0px $border_width_thin 0px 0px #888 inset;
+                border-right-color: #ddd;
+                border-left-color: #444;
+            }
+        }
+    }
+
+    @keyframes soft-key-alert {
+        0% {
+            background: var(--background);
+            color: #000;
+        }
+        45% {
+            background: var(--background);
+            color: #000;
+        }
+        50% {
+            background: transparent;
+            color: #fff;
+        }
+        95% {
+            background: transparent;
+            color: #fff;
+        }
+        100% {
+            background: var(--background);
+            color: #000;
+        }
+    }
+
+    g1000-soft-key-alert {
+        &[state="flashing"] {
+            animation: soft-key-alert 1s infinite !important;
+        }
+
+        --background: transparent;
+        background: var(--background);
+
+        &[level="advisory"] {
+            --background: #fff;
+            color: #000;
+        }
+        &[level="caution"] {
+            --background: yellow;
+            color: #000;
+        }
+        &[level="warning"] {
+            --background: red;
+            color: #000;
+        }
+    }
+}

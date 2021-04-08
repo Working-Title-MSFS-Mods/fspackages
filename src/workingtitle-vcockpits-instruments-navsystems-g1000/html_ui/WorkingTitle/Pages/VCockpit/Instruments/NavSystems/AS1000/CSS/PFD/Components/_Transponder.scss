@@ -1,0 +1,37 @@
+g1000-transponder {
+    grid-area: xpdr;
+    padding: 1vh;
+    display: grid;
+    grid-template-columns: auto 4ch 4ch 1ch;
+    grid-gap: 1vh;
+    align-items: center;
+    background-color: $page_background_color;
+    border-top: $border_width_thin solid $border_color;
+    border-left: $border_width_thin solid $border_color;
+
+    label {
+        font-weight: bold;
+    }
+
+    .mode {
+        text-align: right;
+    }
+
+    &[enabled] {
+        .mode,
+        .code {
+            color: $color_ap_active;
+        }
+    }
+
+    .reply {
+        visibility: hidden;
+        font-size: 0.8em;
+        font-weight: bold;
+    }
+    &[interrogated][enabled] {
+        .reply {
+            visibility: visible;
+        }
+    }
+}

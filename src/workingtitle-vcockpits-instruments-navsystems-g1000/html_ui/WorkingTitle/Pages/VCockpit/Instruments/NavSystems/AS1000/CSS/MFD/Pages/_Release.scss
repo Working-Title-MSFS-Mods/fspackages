@@ -1,0 +1,21 @@
+g1000-release-page {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding: 2vh;
+    grid-gap: 1vh;
+    height: 100%;
+
+    .header {
+        border-bottom: $border_width_thin solid $border_color;
+    }
+
+    article {
+    }
+
+    g1000-external-link {
+        padding: 1vh 1.5vh;
+        border: $border_width_thick outset $border_color;
+        color: #fff;
+        display: inline-block;
+    }
+}

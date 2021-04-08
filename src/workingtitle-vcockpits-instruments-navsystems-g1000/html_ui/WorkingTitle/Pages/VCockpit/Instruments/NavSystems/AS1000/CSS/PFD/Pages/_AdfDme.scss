@@ -1,0 +1,75 @@
+g1000-pfd-adf-dme {
+    display: block;
+
+    .adf {
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "label top"
+            "label bottom";
+
+        .top {
+            grid-area: top;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            grid-gap: 1vh;
+            align-items: center;
+
+            .arrow {
+                width: 2ch;
+            }
+
+            .active {
+                text-align: right;
+                font-size: 1.1em;
+                color: $color_ap_active;
+            }
+
+            adf-input {
+                text-align: left;
+            }
+        }
+
+        .bottom {
+            grid-area: bottom;
+            display: grid;
+            grid-template-columns: auto 1fr auto 1fr;
+            grid-gap: 1vh;
+
+            .volume {
+                text-align: right;
+            }
+        }
+    }
+
+    .dme {
+        grid-template-areas: "label mode";
+
+        .mode {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-gap: 1vh;
+        }
+    }
+
+    .dme,
+    .adf {
+        display: grid;
+        grid-template-columns: 5ch 1fr;
+        grid-gap: 1vh;
+        border-bottom: $border_width_thin solid #666;
+        padding-bottom: 1vh;
+        margin-bottom: 1vh;
+    }
+
+    h2 {
+        grid-area: label;
+        color: #fff;
+        font-weight: bold;
+        font-size: 1em;
+    }
+
+    .ent-to-transfer {
+        margin: auto;
+        margin-top: 5vh;
+    }
+}

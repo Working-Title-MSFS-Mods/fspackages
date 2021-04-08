@@ -1,0 +1,33 @@
+g1000-minimums {
+    position: absolute;
+    left: 59%;
+    bottom: 37%;
+    height: 6%;
+    width: 10%;
+    border: $border_width_thin solid #fff;
+    background-color: #000;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    font-weight: bold;
+
+    .source {
+        text-align: center;
+        font-size: 0.9em;
+    }
+    .value {
+        text-align: center;
+        color: $input_color;
+
+        &[state="near"] {
+            color: white;
+        }
+        &[state="low"] {
+            color: yellow;
+        }
+    }
+    &[state="Inactive"] {
+        display: none;
+    }
+}
