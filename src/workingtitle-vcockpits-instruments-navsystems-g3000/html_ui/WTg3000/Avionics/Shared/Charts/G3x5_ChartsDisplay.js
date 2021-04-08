@@ -271,7 +271,7 @@ class WT_G3x5_ChartsMapRangeTargetRotationController {
     }
 
     _updateRange() {
-        let scaleFactor = this._chartsView.viewHeight / this._chartsView.chartReferenceDisplayHeight * this._chartsModel.scaleFactor;
+        let scaleFactor = this._chartsView.viewHeight / this._chartsView.chartReferenceDisplayHeight / this._chartsModel.scaleFactor;
 
         this._mapModel.range = this._tempGARad.set(this._geoRef.geoHeight).scale(scaleFactor, true);
     }
@@ -452,6 +452,13 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
         this._bounds[3] = bbox[WT_NavigraphChart.BoundsIndex.BOTTOM];
     }
 
+    _resetBounds() {
+        this._bounds[0] = 0;
+        this._bounds[1] = 0;
+        this._bounds[2] = 0;
+        this._bounds[3] = 0;
+    }
+
     _calculateReferenceScaleFactor(imgWidth, imgHeight) {
         let viewAspectRatio = this._viewWidth / this._viewHeight;
         let imgAspectRatio = imgWidth / imgHeight;
@@ -466,6 +473,7 @@ class WT_G3x5_ChartsDisplayHTMLElement extends HTMLElement {
     _updateChartTransform() {
         let model = this._context.model;
         if (!model.chart) {
+            this._resetBounds();
             return;
         }
 
@@ -606,9 +614,37 @@ class WT_G3x5_ChartsDisplayChartView {
         this._imgWidth = 0;
         this._imgHeight = 0;
         /**
-         * @type {{readonly left:Number, readonly top:Number, readonly right:Number, readonly bottom:Number}}
+         * @type {{left:Number, top:Number, right:Number, bottom:Number}}
          */
-        this._imgBounds = null;
+        this._imgBounds = {
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+
+            /**
+             *
+             * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
+             */
+            copyFrom(bounds) {
+                this.left = bounds.left;
+                this.top = bounds.top;
+                this.right = bounds.right;
+                this.bottom = bounds.bottom;
+            },
+
+            /**
+             *
+             * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
+             * @returns {Boolean}
+             */
+            equals(bounds) {
+                return this.left === bounds.left &&
+                       this.top === bounds.top &&
+                       this.right === bounds.right &&
+                       this.bottom === bounds.bottom;
+            }
+        };
         this._imgTransform = "";
 
         this._isImgLoading = false;
@@ -622,7 +658,7 @@ class WT_G3x5_ChartsDisplayChartView {
         return this._displayedChart;
     }
 
-    _onImgSrcLoaded() {
+    _drawImgToCanvas() {
         this._canvas.width = this._imgWidth;
         this._canvas.height = this._imgHeight;
         this._context.drawImage(this._img, this._imgBounds.left, this._imgBounds.top, this._imgWidth, this._imgHeight, 0, 0, this._imgWidth, this._imgHeight);
@@ -630,16 +666,19 @@ class WT_G3x5_ChartsDisplayChartView {
         this._canvas.style.width = `${this._imgWidth}px`;
         this._canvas.style.height = `${this._imgHeight}px`;
         this._canvas.style.display = "block";
+    }
 
+    _onImgSrcLoaded() {
+        this._drawImgToCanvas();
         this._isImgLoading = false;
     }
 
     _setChart(chart, url, bounds) {
-        if (url === this._displayedURL) {
+        if (url === this._displayedURL && this._imgBounds.equals(bounds)) {
             return;
         }
 
-        this._imgBounds = bounds;
+        this._imgBounds.copyFrom(bounds);
         if (chart) {
             this._imgWidth = this._imgBounds.right - this._imgBounds.left;
             this._imgHeight = this._imgBounds.bottom - this._imgBounds.top;
@@ -648,12 +687,16 @@ class WT_G3x5_ChartsDisplayChartView {
             this._imgHeight = 0;
         }
 
-        this._canvas.style.display = "none";
-        this._img.src = url;
+        if (url === this._displayedURL) {
+            this._drawImgToCanvas();
+        } else {
+            this._canvas.style.display = "none";
+            this._img.src = url;
 
-        this._displayedChart = chart;
-        this._displayedURL = url;
-        this._isImgLoading = true;
+            this._displayedChart = chart;
+            this._displayedURL = url;
+            this._isImgLoading = true;
+        }
     }
 
     /**
