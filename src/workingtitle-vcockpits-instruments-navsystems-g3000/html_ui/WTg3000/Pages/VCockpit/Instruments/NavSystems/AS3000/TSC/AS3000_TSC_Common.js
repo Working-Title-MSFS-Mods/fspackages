@@ -519,6 +519,16 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                 }
                 break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this.getSelectedMFDPanePages().chartsTouchControl.element.changeZoom(-1);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this.getSelectedMFDPanePages().chartsTouchControl.element.changeZoom(1);
+                        break;
+                }
+                break;
         }
     }
 
