@@ -61,9 +61,19 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         }
     }
 
-    _initButtonManagers() {
+    _initSectionAllButtonManager() {
         this._sectionAllButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this.htmlElement.sectionAllButton, this.context.chartsPage.sectionSetting, WT_G3x5_ChartsModel.SectionMode.ALL);
+        this._sectionAllButtonManager.init();
+    }
+
+    _initSectionPlanButtonManager() {
         this._sectionPlanButtonManager = new WT_TSCSettingEnumStatusBarButtonManager(this.htmlElement.sectionPlanButton, this.context.chartsPage.sectionSetting, WT_G3x5_ChartsModel.SectionMode.PLAN);
+        this._sectionPlanButtonManager.init();
+    }
+
+    _initButtonManagers() {
+        this._initSectionAllButtonManager();
+        this._initSectionPlanButtonManager();
     }
 
     _updateFromContext() {
