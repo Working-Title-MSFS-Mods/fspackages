@@ -57,12 +57,14 @@ class WT_G3x5_ChartsDisplay {
     _initSettingListeners() {
         this._chartIDSetting.addListener(this._onChartIDSettingChanged.bind(this));
         this._rotationSetting.addListener(this._onRotationSettingChanged.bind(this));
+        this._zoomSetting.addListener(this._onZoomSettingChanged.bind(this));
         WT_CrossInstrumentEvent.addListener(this._scrollEventKey, this._onScrollEvent.bind(this));
     }
 
     _initSettingModel() {
         this.settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this.settingModel));
         this.settingModel.addSetting(this._rotationSetting = new WT_G3x5_ChartsRotationSetting(this.settingModel));
+        this.settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this.settingModel));
 
         this._initSettingListeners();
 
@@ -113,8 +115,20 @@ class WT_G3x5_ChartsDisplay {
         this.model.rotation = this._rotationSetting.getRotation();
     }
 
+    _updateChartZoom() {
+        if (!this.model.chart) {
+            return;
+        }
+
+        this.model.scaleFactor = this._zoomSetting.getScaleFactor();
+    }
+
     _onRotationSettingChanged(setting, newValue, oldValue) {
         this._updateChartRotation();
+    }
+
+    _onZoomSettingChanged(setting, newValue, oldValue) {
+        this._updateChartZoom();
     }
 
     _scrollChart(deltaX, deltaY) {
