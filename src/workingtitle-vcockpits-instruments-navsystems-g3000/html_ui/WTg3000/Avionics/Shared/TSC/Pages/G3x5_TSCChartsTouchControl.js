@@ -35,6 +35,11 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
         this._initListeners();
     }
 
+    _openOptionsWindow() {
+        this.instrument.chartsOptions.element.setContext({chartsPage: this._chartsPage});
+        this.instrument.switchToPopUpPage(this.instrument.chartsOptions);
+    }
+
     _onButtonPressed(buttonID) {
         switch (buttonID) {
             case WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.ROTATE_CCW:
@@ -42,6 +47,9 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.ROTATE_CW:
                 this._chartsPage.rotateCW();
+                break;
+            case WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.OPTIONS:
+                this._openOptionsWindow();
                 break;
         }
     }
@@ -123,10 +131,12 @@ class WT_G3x5_TSCChartsTouchControlHTMLElement extends HTMLElement {
     async _defineChildren() {
         [
             this._rotateCCWButton,
+            this._optionsButton,
             this._rotateCWButton,
             this._touchPad
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#rotateccw`, WT_TSCImageButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#options`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#rotatecw`, WT_TSCImageButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#touchpad`, WT_TSCTouchPad)
         ]);
@@ -135,6 +145,7 @@ class WT_G3x5_TSCChartsTouchControlHTMLElement extends HTMLElement {
     _initListeners() {
         this._rotateCCWButton.addButtonListener(this._onRotateCCWButtonPressed.bind(this));
         this._rotateCWButton.addButtonListener(this._onRotateCWButtonPressed.bind(this));
+        this._optionsButton.addButtonListener(this._onOptionsButtonPressed.bind(this));
     }
 
     _processListenerBuffer() {
@@ -163,6 +174,10 @@ class WT_G3x5_TSCChartsTouchControlHTMLElement extends HTMLElement {
 
     _onRotateCWButtonPressed(button) {
         this._notifyButtonListeners(WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.ROTATE_CW);
+    }
+
+    _onOptionsButtonPressed(button) {
+        this._notifyButtonListeners(WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID.OPTIONS);
     }
 
     /**
@@ -223,7 +238,8 @@ class WT_G3x5_TSCChartsTouchControlHTMLElement extends HTMLElement {
  */
 WT_G3x5_TSCChartsTouchControlHTMLElement.ButtonID = {
     ROTATE_CCW: 0,
-    ROTATE_CW: 1
+    ROTATE_CW: 1,
+    OPTIONS: 2
 };
 WT_G3x5_TSCChartsTouchControlHTMLElement.NAME = "wt-tsc-chartstouchcontrol";
 WT_G3x5_TSCChartsTouchControlHTMLElement.TEMPLATE = document.createElement("template");
@@ -271,6 +287,7 @@ WT_G3x5_TSCChartsTouchControlHTMLElement.TEMPLATE.innerHTML = `
     <div id="wrapper">
         <div id="header">
             <wt-tsc-button-img id="rotateccw" class="button" labeltext="Rotate" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_ROTATE_CCW.png"></wt-tsc-button-img>
+            <wt-tsc-button-label id="options" class="button" labeltext="Charts Options"></wt-tsc-button-label>
             <wt-tsc-button-img id="rotatecw" class="button" labeltext="Rotate" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_ROTATE_CW.png"></wt-tsc-button-img>
         </div>
         <wt-tsc-touchpad id="touchpad"></wt-tsc-touchpad>
