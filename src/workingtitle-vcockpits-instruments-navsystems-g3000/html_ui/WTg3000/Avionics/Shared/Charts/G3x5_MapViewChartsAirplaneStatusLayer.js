@@ -1,6 +1,5 @@
 /**
- * A text box which displays the current map orientation. The use of this layer requires the .orientation module to be added to
- * the map model.
+ * A layer that displays an icon that signals when the airplane symbol is not displayed.
  */
 class WT_G3x5_MapViewChartsAirplaneStatusLayer extends WT_MapViewLayer {
     constructor(className = WT_G3x5_MapViewChartsAirplaneStatusLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewChartsAirplaneStatusLayer.CONFIG_NAME_DEFAULT) {
@@ -15,7 +14,7 @@ class WT_G3x5_MapViewChartsAirplaneStatusLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return !state.model.airplaneIcon.show;
+        return !state.model.charts.showAirplane;
     }
 
     /**
