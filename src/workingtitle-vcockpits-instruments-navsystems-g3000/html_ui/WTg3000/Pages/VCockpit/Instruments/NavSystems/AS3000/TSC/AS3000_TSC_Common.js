@@ -264,6 +264,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.chartsOptions = new NavSystemElementContainer("Charts Options", "ChartsOptions", new WT_G3x5_TSCChartsOptions());
         this.chartsOptions.setGPS(this);
+
+        this.chartsLightThreshold = new NavSystemElementContainer("Charts Light Threshold", "ChartsLightThreshold", this._createChartsLightThresholdPopUp());
+        this.chartsLightThreshold.setGPS(this);
     }
 
     _initNavButtons() {

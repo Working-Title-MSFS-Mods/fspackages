@@ -194,6 +194,9 @@ class WT_G3x5_ChartsDisplay {
     wake() {
     }
 
+    _getBacklightLevel() {
+    }
+
     _updateLightMode() {
         switch (this._lightMode) {
             case WT_G3x5_ChartsLightModeSetting.Mode.DAY:
@@ -203,8 +206,8 @@ class WT_G3x5_ChartsDisplay {
                 this.model.useNightView = true;
                 break;
             case WT_G3x5_ChartsLightModeSetting.Mode.AUTO:
-                let displayLighting = SimVar.GetSimVarValue("L:XMLVAR_AS3000_DisplayLighting", "number");
-                this.model.useNightView = displayLighting <= this._lightThreshold;
+                let backlightLevel = this._getBacklightLevel();
+                this.model.useNightView = backlightLevel <= this._lightThreshold;
                 break;
         }
     }
