@@ -36,6 +36,10 @@ class AS3000_TSC_Horizontal extends AS3000_TSC {
     _createNavMapTrafficSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
         return new WT_G3000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, instrumentID, halfPaneID);
     }
+
+    _createChartsLightThresholdPopUp() {
+        return new WT_G3x5_TSCChartsLightThreshold(() => WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1));
+    }
 }
 registerInstrument("as3000-tsc-horizontal-element", AS3000_TSC_Horizontal);
 //# sourceMappingURL=AS3000_TSC_Horizontal.js.map

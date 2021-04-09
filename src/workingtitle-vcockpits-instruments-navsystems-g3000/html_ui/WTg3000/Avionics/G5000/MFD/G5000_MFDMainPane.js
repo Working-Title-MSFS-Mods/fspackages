@@ -25,4 +25,11 @@ class WT_G5000_MFDHalfPane extends WT_G3x5_MFDHalfPane {
     _createTrafficMap(airplane, trafficSystem) {
          return new WT_G5000_TrafficMap(airplane, trafficSystem);
     }
+
+    /**
+     * @returns {WT_G5000_ChartsDisplay}
+     */
+    _createCharts(id, airplane, navigraphAPI) {
+        return new WT_G5000_ChartsDisplay(id, airplane, navigraphAPI);
+    }
 }

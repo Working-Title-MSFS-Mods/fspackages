@@ -1142,6 +1142,15 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
         let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${index + 1}`, "gallons per hour");
         return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
     }
+
+    /**
+     * Gets the value of an indexed light potentiometer setting. Values range from 0 to 1.
+     * @param {Number} index - the index of the setting.
+     * @returns {Number} the value of the indexed light potentiometer setting.
+     */
+    potentiometer(index) {
+        return SimVar.GetSimVarValue(`A:LIGHT POTENTIOMETER:${index}`, "number");
+    }
 }
 
 class WT_AirplaneEngine {

@@ -1,4 +1,8 @@
 class WT_CitationLongitudeAirplane extends WT_PlayerAirplane {
+    _createEngineering() {
+        return new WT_CitationLongitudeEngineering(this);
+    }
+
     _createControls() {
         return new WT_CitationLongitudeControls(this);
     }
@@ -7,6 +11,20 @@ class WT_CitationLongitudeAirplane extends WT_PlayerAirplane {
         return new WT_CitationLongitudeReferences(this, WT_g3000_ModConfig.INSTANCE.longitudeReferences);
     }
 }
+
+class WT_CitationLongitudeEngineering extends WT_AirplaneEngineering {
+}
+/**
+ * @enum {Number}
+ */
+WT_CitationLongitudeEngineering.Potentiometer = {
+    PFD_LEFT_BACKLIGHT: 15,
+    PFD_RIGHT_BACKLIGHT: 16,
+    MFD_BACKLIGHT: 17,
+    GTC_PFD_LEFT_BACKLIGHT: 19,
+    GTC_PFD_RIGHT_BACKLIGHT: 18,
+    GTC_MFD_BACKLIGHT: 20
+};
 
 class WT_CitationLongitudeControls extends WT_AirplaneControls {
 }
@@ -18,7 +36,7 @@ WT_CitationLongitudeControls.FlapsPosition = {
     FLAPS_1: 1,
     FLAPS_2: 2,
     FLAPS_3: 3
-}
+};
 
 class WT_CitationLongitudeReferences extends WT_AirplaneReferences {
     _initFromData(data) {

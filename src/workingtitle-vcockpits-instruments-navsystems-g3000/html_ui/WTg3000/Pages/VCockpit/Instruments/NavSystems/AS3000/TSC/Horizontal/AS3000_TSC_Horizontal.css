@@ -1973,6 +1973,15 @@ as3000-tsc-horizontal-element #ChartsOptions wt-tsc-chartsoptions {
     font-size: 4.5vh;
 }
 
+as3000-tsc-horizontal-element #ChartsLightThreshold wt-tsc-chartslightthreshold {
+  position: absolute;
+  left: 5%;
+  top: 10%;
+  width: 90%;
+  height: 70%;
+  font-size: 4vh;
+}
+
 :root {
     --button-border: 3px ridge var(--wt-g3x5-bordergray);
 }
