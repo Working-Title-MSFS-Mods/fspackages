@@ -73,7 +73,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _openLightThresholdWindow() {
-        this.instrument.chartsLightThreshold.element.setContext({chartsPage: this.context.chartsPage});
+        this.instrument.chartsLightThreshold.element.setContext({homePageGroup: this.context.homePageGroup, homePageName: this.context.homePageName, chartsPage: this.context.chartsPage});
         this.instrument.switchToPopUpPage(this.instrument.chartsLightThreshold);
     }
 
