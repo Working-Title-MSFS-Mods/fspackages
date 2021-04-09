@@ -6,7 +6,7 @@ class WT_TSCScrollManager {
      * @param {HTMLElement} scrollElement - the scrolling element to manage.
      * @param {Object} [options] - an options object defining the new manager's initial options.
      */
-    constructor(scrollElement, options = {}) {
+    constructor(scrollElement, options) {
         this._scrollElement = scrollElement;
 
         this._scrollObjectiveX = 0;
@@ -25,7 +25,9 @@ class WT_TSCScrollManager {
         this.scrollElement.addEventListener("mousemove", this._onMouseMove.bind(this));
 
         this._optsManager = new WT_OptionsManager(this, WT_TSCScrollManager.OPTIONS_DEF);
-        this._optsManager.setOptions(options);
+        if (options) {
+            this._optsManager.setOptions(options);
+        }
     }
 
     /**
@@ -208,7 +210,7 @@ class WT_TSCScrollManager {
             let deltaY = this._scrollObjectiveY - currentScrollTop;
             let hyp = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             let ratio = scrollDelta / hyp;
-            if (ratio >= 1) {
+            if (ratio >= 1 - WT_TSCScrollManager.SCROLL_TOLERANCE) {
                 this.scrollElement.scrollLeft = this._scrollObjectiveX;
                 this.scrollElement.scrollTop = this._scrollObjectiveY;
                 this._isScrollLocked = false;
@@ -219,6 +221,7 @@ class WT_TSCScrollManager {
         }
     }
 }
+WT_TSCScrollManager.SCROLL_TOLERANCE = 1e-6;
 WT_TSCScrollManager.OPTIONS_DEF = {
     allowDragging: {default: true, auto: true},
     scrollSpeed: {default: 2000, auto: true},
