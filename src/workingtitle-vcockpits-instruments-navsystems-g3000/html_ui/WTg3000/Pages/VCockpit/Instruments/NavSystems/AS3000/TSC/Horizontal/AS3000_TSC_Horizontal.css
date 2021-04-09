@@ -1946,7 +1946,7 @@ as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .conten
       background-image: none; }
 
 
-as3000-tsc-horizontal-element #Electricity #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
+as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
     position: absolute;
     left: 15%;
     top: 20%;
@@ -1955,7 +1955,16 @@ as3000-tsc-horizontal-element #Electricity #NavMapTrafficMapSettings wt-tsc-navm
     font-size: 5vh;
 }
 
-as3000-tsc-horizontal-element #Electricity #ChartsOptions wt-tsc-chartsoptions {
+as3000-tsc-horizontal-element #NavigraphLink wt-tsc-navigraphlink {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 80%;
+    font-size: 4vh;
+}
+
+as3000-tsc-horizontal-element #ChartsOptions wt-tsc-chartsoptions {
     position: absolute;
     left: 15%;
     top: 20%;

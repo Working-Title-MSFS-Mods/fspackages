@@ -18,6 +18,11 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
         return this._htmlElement;
     }
 
+    _initNavigraphLinkPopUp() {
+        this._navigraphLinkWindow = new NavSystemElementContainer("Navigraph Link", "NavigraphLink", new WT_G3x5_TSCNavigraphLink(this._navigraphAPI));
+        this._navigraphLinkWindow.setGPS(this.instrument);
+    }
+
     _createHTMLElement() {
         return new WT_G3x5_TSCDatabaseStatusHTMLElement();
     }
@@ -38,6 +43,8 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     }
 
     init(root) {
+        this._initNavigraphLinkPopUp();
+
         this.container.title = WT_G3x5_TSCDatabaseStatus.TITLE;
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
@@ -45,17 +52,12 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
         this._initRows();
     }
 
-    async _linkNavigraphAccount(button) {
-        try {
-            await this._navigraphAPI.linkAccount();
-        } catch (e) {
-            console.log(e);
-        }
-        button.update();
+    _openNavigraphLinkWindow(button) {
+        this.instrument.switchToPopUpPage(this._navigraphLinkWindow);
     }
 
     _onNavigraphButtonPressed(button) {
-        this._linkNavigraphAccount(button);
+        this._openNavigraphLinkWindow(button);
     }
 
     onEnter() {

@@ -1895,7 +1895,7 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
               width: 8vh;
               height: 21vh; }
 
-as3000-tsc-vertical-element #Electricity #TransponderMode wt-tsc-transpondermode-mode {
+as3000-tsc-vertical-element #TransponderMode wt-tsc-transpondermode-mode {
     position: absolute;
     left: 2%;
     top: 10%;
@@ -1904,7 +1904,7 @@ as3000-tsc-vertical-element #Electricity #TransponderMode wt-tsc-transpondermode
     font-size: 3vh;
 }
 
-as3000-tsc-vertical-element #Electricity #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
+as3000-tsc-vertical-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
     position: absolute;
     left: 15%;
     top: 20%;
@@ -1913,7 +1913,16 @@ as3000-tsc-vertical-element #Electricity #NavMapTrafficMapSettings wt-tsc-navmap
     font-size: 4vh;
 }
 
-as3000-tsc-vertical-element #Electricity #ChartsOptions wt-tsc-chartsoptions {
+as3000-tsc-vertical-element #NavigraphLink wt-tsc-navigraphlink {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 80%;
+    font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #ChartsOptions wt-tsc-chartsoptions {
     position: absolute;
     left: 5%;
     top: 20%;
