@@ -92,6 +92,7 @@ class WT_G3x5_ChartsDisplay {
 
     _initMapView() {
         this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneLayer(this.model, this.view));
+        this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneStatusLayer());
     }
 
     _initMapRangeTargetRotationController() {
