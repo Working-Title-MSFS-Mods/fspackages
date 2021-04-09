@@ -87,16 +87,16 @@ class WT_G3x5_ChartsDisplay {
     }
 
     _initMapModel() {
-        this._mapModel.addModule(new WT_MapModelAirplaneIconModule());
+        this._mapModel.addModule(new WT_G3x5_MapModelChartsModule());
     }
 
     _initMapView() {
-        this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneLayer(this.model, this.view));
+        this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneLayer());
         this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneStatusLayer());
     }
 
     _initMapRangeTargetRotationController() {
-        this._mapRangeTargetRotationController = new WT_G3x5_ChartsMapRangeTargetRotationController(this.model, this.view, this._mapModel);
+        this._mapRangeTargetRotationController = new WT_G3x5_ChartsMapController(this.model, this.view, this._mapModel, this._mapView);
     }
 
     _initMap(viewElement) {
@@ -225,16 +225,18 @@ WT_G3x5_ChartsDisplay.SETTING_MODEL_ID = "Charts";
 WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
 WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET = "RESET";
 
-class WT_G3x5_ChartsMapRangeTargetRotationController {
+class WT_G3x5_ChartsMapController {
     /**
      * @param {WT_G3x5_ChartsModel} chartsModel
      * @param {WT_G3x5_ChartsView} chartsView
      * @param {WT_MapModel} mapModel
+     * @param {WT_MapView} mapView
      */
-    constructor(chartsModel, chartsView, mapModel) {
+    constructor(chartsModel, chartsView, mapModel, mapView) {
         this._chartsModel = chartsModel;
         this._chartsView = chartsView;
         this._mapModel = mapModel;
+        this._mapView = mapView;
 
         this._geoRef = {
             /**
@@ -275,6 +277,10 @@ class WT_G3x5_ChartsMapRangeTargetRotationController {
             case WT_NavigraphChart.BoundsIndex.BOTTOM:
                 return value - array[WT_NavigraphChart.BoundsIndex.TOP];
         }
+    }
+
+    _updateChart() {
+        this._mapModel.charts.displayedChart = this._chartsModel.chart;
     }
 
     _updateGeoRef() {
@@ -330,15 +336,41 @@ class WT_G3x5_ChartsMapRangeTargetRotationController {
         this._mapModel.range = this._tempGARad.set(this._geoRef.geoHeight).scale(scaleFactor, true);
     }
 
+    /**
+     *
+     * @param {{bbox_local:Number[]}[]} insets
+     * @param {WT_GVector2} position
+     * @returns {Boolean}
+     */
+     _isInInset(insets, position) {
+        return insets.some(inset => {
+            return position.x >= inset.bbox_local[WT_NavigraphChart.BoundsIndex.LEFT] &&
+                   position.x <= inset.bbox_local[WT_NavigraphChart.BoundsIndex.RIGHT] &&
+                   position.y >= inset.bbox_local[WT_NavigraphChart.BoundsIndex.TOP] &&
+                   position.y <= inset.bbox_local[WT_NavigraphChart.BoundsIndex.BOTTOM];
+        });
+    }
+
+    _updateShowAirplane() {
+        let show = false;
+        if (this._geoRef.isValid) {
+            let chartBounds = this._chartsView.chartBounds;
+            let chartPos = this._chartsView.chartTransformInverse.apply(this._tempVector2.set(this._mapView.state.viewPlane), true).add(chartBounds.left, chartBounds.top);
+            if (chartPos.x >= chartBounds.left && chartPos.x <= chartBounds.right && chartPos.y >= chartBounds.top && chartPos.y <= chartBounds.bottom) {
+                show = !this._isInInset(this._chartsModel.chart.insets, chartPos);
+            }
+        }
+        this._mapModel.charts.showAirplane = show;
+    }
+
     update() {
+        this._updateChart();
         this._updateGeoRef();
         if (this._geoRef.isValid) {
             this._updateRotation();
             this._updateTarget();
             this._updateRange();
-            this._mapModel.airplaneIcon.show = true;
-        } else {
-            this._mapModel.airplaneIcon.show = false;
         }
+        this._updateShowAirplane();
     }
 }

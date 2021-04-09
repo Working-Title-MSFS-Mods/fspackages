@@ -1,7 +1,7 @@
 /**
- * An icon of the player airplane. The icon is placed at the airplane's present position, and its orientation is
- * synchronized to the airplane's heading. The use of this layer requires the .airplaneIcon module to be added
- * to the map model.
+ * A symbol representing the player airplane. The symbol is placed at the airplane's present position, and its
+ * orientation is synchronized to the airplane's heading. The use of this layer requires the .airplaneIcon
+ * module to be added to the map model.
  */
 class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
     /**
