@@ -309,9 +309,6 @@ class WT_G3x5_ChartHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
-        this._img = new Image();
-        this._img.onload = this._onImgSrcLoaded.bind(this);
-
         this._displayedChart = null;
         this._displayedURL = "";
 
@@ -368,8 +365,9 @@ class WT_G3x5_ChartHTMLElement extends HTMLElement {
     }
 
     _defineChildren() {
-        this._canvas = this.shadowRoot.querySelector(`canvas`);
-        this._context = this._canvas.getContext("2d");
+        this._container = this.shadowRoot.querySelector(`#container`);
+        this._img = this.shadowRoot.querySelector(`img`);
+        this._img.onload = this._onImgSrcLoaded.bind(this);
     }
 
     connectedCallback() {
@@ -377,19 +375,22 @@ class WT_G3x5_ChartHTMLElement extends HTMLElement {
         this._isInit = true;
     }
 
-    _drawImgToCanvas() {
-        this._canvas.width = this._imgWidth;
-        this._canvas.height = this._imgHeight;
-        this._context.drawImage(this._img, this._imgBounds.left, this._imgBounds.top, this._imgWidth, this._imgHeight, 0, 0, this._imgWidth, this._imgHeight);
+    _updateImageSize() {
+        let imgWidth = this._imgBounds.right - this._imgBounds.left;
+        let imgHeight = this._imgBounds.bottom - this._imgBounds.top;
 
-        this._canvas.style.width = `${this._imgWidth}px`;
-        this._canvas.style.height = `${this._imgHeight}px`;
-        this._canvas.style.display = "block";
+        this._container.style.width = `${imgWidth}px`;
+        this._container.style.height = `${imgHeight}px`;
+
+        this._img.style.left = `${-this._imgBounds.left}px`;
+        this._img.style.top = `${-this._imgBounds.top}px`;
+        //this._img.style.width = `${imgWidth}px`;
+        //this._img.style.height = `${imgHeight}px`;
     }
 
     _onImgSrcLoaded() {
-        this._drawImgToCanvas();
         this._isImgLoading = false;
+        this._img.style.display = "block";
     }
 
     _setChart(chart, url, bounds) {
@@ -398,18 +399,10 @@ class WT_G3x5_ChartHTMLElement extends HTMLElement {
         }
 
         this._imgBounds.copyFrom(bounds);
-        if (chart) {
-            this._imgWidth = this._imgBounds.right - this._imgBounds.left;
-            this._imgHeight = this._imgBounds.bottom - this._imgBounds.top;
-        } else {
-            this._imgWidth = 0;
-            this._imgHeight = 0;
-        }
+        this._updateImageSize();
 
-        if (url === this._displayedURL) {
-            this._drawImgToCanvas();
-        } else {
-            this._canvas.style.display = "none";
+        if (url !== this._displayedURL) {
+            this._img.style.display = "none";
             this._img.src = url;
 
             this._displayedChart = chart;
@@ -425,7 +418,7 @@ class WT_G3x5_ChartHTMLElement extends HTMLElement {
     _updateTransform(transform) {
         let transformString = `matrix(${transform.element(0, 0)}, ${transform.element(1, 0)}, ${transform.element(0, 1)}, ${transform.element(1, 1)}, ${transform.element(0, 2).toFixed(1)}, ${transform.element(1, 2).toFixed(1)})`;
         if (transformString !== this._imgTransform) {
-            this._canvas.style.transform = transformString;
+            this._container.style.transform = transformString;
             this._imgTransform = transformString;
         }
     }
@@ -461,14 +454,20 @@ WT_G3x5_ChartHTMLElement.TEMPLATE.innerHTML = `
             height: 100%;
         }
 
-        canvas {
+        #container {
             position: absolute;
-            left: 0%;
             top: 0%;
+            left: 0%;
             transform-origin: top left;
+            overflow: hidden;
         }
+            img {
+                position: absolute;
+            }
     </style>
-    <canvas />
+    <div id="container">
+        <img />
+    </div>
 `;
 
 customElements.define(WT_G3x5_ChartHTMLElement.NAME, WT_G3x5_ChartHTMLElement);
