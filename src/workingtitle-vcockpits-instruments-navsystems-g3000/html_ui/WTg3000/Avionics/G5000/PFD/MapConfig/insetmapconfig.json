@@ -96,8 +96,9 @@
     },
 
     "airplane": {
-        "iconSize": 60,
-        "imagePath": "/Pages/VCockpit/Instruments/Shared/Map/Images/Outlined/ICON_MAP_PLANE.svg"
+        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_LONGITUDE.svg",
+        "iconSize": 40,
+        "iconAnchor": [0.5, 0]
     },
 
     "pointer": {
