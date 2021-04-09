@@ -28,6 +28,10 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", instrumentID, halfPaneID);
     }
 
+    _createChartsLightThresholdPopUp() {
+        return new WT_G3x5_TSCChartsLightThreshold((() => this.airplane.engineering.potentiometer(WT_CitationLongitudeEngineering.Potentiometer.MFD_BACKLIGHT)).bind(this));
+    }
+
     _createTransponderPopUp() {
         return new WT_G5000_TSCTransponderCode();
     }

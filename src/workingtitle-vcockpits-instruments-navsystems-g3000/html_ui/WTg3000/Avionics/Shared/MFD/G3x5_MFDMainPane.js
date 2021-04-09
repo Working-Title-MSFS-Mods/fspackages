@@ -330,7 +330,6 @@ class WT_G3x5_MFDHalfPane {
      * @returns {WT_G3x5_ChartsDisplay}
      */
     _createCharts(id, airplane, navigraphAPI) {
-        return new WT_G3x5_ChartsDisplay(id, airplane, navigraphAPI);
     }
 
     /**

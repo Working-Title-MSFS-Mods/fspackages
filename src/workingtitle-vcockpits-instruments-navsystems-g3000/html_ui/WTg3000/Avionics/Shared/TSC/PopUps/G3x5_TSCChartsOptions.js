@@ -4,6 +4,8 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
 
         this._initWindowContexts();
         this._isReady = false;
+
+        this._lightThresholdSettingListener = this._onLightThresholdSettingChanged.bind(this);
     }
 
     _initLightModeWindowContext() {
@@ -40,6 +42,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         this._sectionPlanButtonCached = new WT_CachedElement(this.htmlElement.sectionPlanButton);
 
         this.htmlElement.fitWidthButton.addButtonListener(this._onFitWidthButtonPressed.bind(this));
+        this.htmlElement.lightThresholdButton.addButtonListener(this._onLightThresholdButtonPressed.bind(this));
     }
 
     async _initFromHTMLElement() {
@@ -69,6 +72,27 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         this._fitWidth();
     }
 
+    _openLightThresholdWindow() {
+        this.instrument.chartsLightThreshold.element.setContext({chartsPage: this.context.chartsPage});
+        this.instrument.switchToPopUpPage(this.instrument.chartsLightThreshold);
+    }
+
+    _onLightThresholdButtonPressed(button) {
+        if (!this.context) {
+            return;
+        }
+
+        this._openLightThresholdWindow();
+    }
+
+    _setLightThresholdButtonValue(value) {
+        this.htmlElement.lightThresholdButton.valueText = `${(value * 100).toFixed(0)}%`;
+    }
+
+    _onLightThresholdSettingChanged(setting, oldValue, newValue) {
+        this._setLightThresholdButtonValue(newValue);
+    }
+
     _cleanUpButtonManagers() {
         if (this._sectionAllButtonManager) {
             this._lightModeButtonManager.destroy();
@@ -79,6 +103,10 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
             this._sectionAllButtonManager = null;
             this._sectionPlanButtonManager = null;
         }
+    }
+
+    _cleanUpLightThresholdSettingListener() {
+        this.context.chartsPage.lightThresholdSetting.removeListener(this._lightThresholdSettingListener);
     }
 
     _initLightModeButtonManager() {
@@ -107,16 +135,23 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         this._initSectionPlanButtonManager();
     }
 
+    _initLightThresholdSettingListener() {
+        this.context.chartsPage.lightThresholdSetting.addListener(this._lightThresholdSettingListener);
+        this._setLightThresholdButtonValue(this.context.chartsPage.lightThresholdSetting.getValue());
+    }
+
     _updateFromContext() {
         if (!this.context || !this._isReady) {
             return;
         }
 
         this._initButtonManagers();
+        this._initLightThresholdSettingListener();
     }
 
     _cleanUpContext() {
         this._cleanUpButtonManagers();
+        this._cleanUpLightThresholdSettingListener();
     }
 
     onEnter() {
@@ -354,7 +389,7 @@ WT_G3x5_TSCChartsOptionsHTMLElement.TEMPLATE.innerHTML = `
         <div id="left">
             <wt-tsc-button-label id="fitwidth" class="leftButton" labeltext="Fit Width"></wt-tsc-button-label>
             <wt-tsc-button-value id="lightmode" class="leftButton" labeltext="Light Mode"></wt-tsc-button-value>
-            <wt-tsc-button-value id="lightthreshold" class="leftButton" labeltext="Threshold" enabled="false"></wt-tsc-button-value>
+            <wt-tsc-button-value id="lightthreshold" class="leftButton" labeltext="Threshold"></wt-tsc-button-value>
         </div>
         <div id="sectionscontainer">
             <div id="sections">
@@ -378,3 +413,312 @@ WT_G3x5_TSCChartsOptionsHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_TSCChartsOptionsHTMLElement.NAME, WT_G3x5_TSCChartsOptionsHTMLElement);
+
+class WT_G3x5_TSCChartsLightThreshold extends WT_G3x5_TSCPopUpElement {
+    /**
+     * @param {() => Number} getMFDBacklight
+     */
+    constructor(getMFDBacklight) {
+        super();
+
+        this._getMFDBacklight = getMFDBacklight;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCChartsLightThresholdHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    _createHTMLElement() {
+        return new WT_G3x5_TSCChartsLightThresholdHTMLElement();
+    }
+
+    async _initFromHTMLElement() {
+        await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
+        this._isReady = true;
+        this._updateFromContext();
+    }
+
+    onInit() {
+        this._htmlElement = this._createHTMLElement();
+        this.popUpWindow.appendChild(this.htmlElement);
+        this._initFromHTMLElement();
+    }
+
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.setContext({setting: this.context.chartsPage.lightThresholdSetting, getMFDBacklight: this._getMFDBacklight});
+    }
+
+    onUpdate(deltaTime) {
+        if (!this.context) {
+            return;
+        }
+
+        this.htmlElement.update();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.setContext(null);
+    }
+}
+
+class WT_G3x5_TSCChartsLightThresholdHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        /**
+         * @type {{setting:WT_G3x5_ChartsLightThresholdSetting, getMFDBacklight:() => Number}}
+         */
+        this._context = null;
+        this._isInit = false;
+
+        this._settingListener = this._onSettingChanged.bind(this);
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCChartsLightThresholdHTMLElement.TEMPLATE;
+    }
+
+    async _defineChildren() {
+        /**
+         * @type {WT_G3x5_TSCSlider}
+         */
+        this._slider = await WT_CustomElementSelector.select(this.shadowRoot, `#slider`, WT_G3x5_TSCSlider);
+        this._valueNumber = this.shadowRoot.querySelector(`#valuenumber`);
+    }
+
+    _initSliderLabel() {
+        this._sliderLabel = new WT_G3x5_TSCSliderLabel(new WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement());
+        this._slider.addLabel(this._sliderLabel, false);
+    }
+
+    _initSliderListener() {
+        this._slider.addValueListener(this._onSliderValueChanged.bind(this));
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._initSliderLabel();
+        this._initSliderListener();
+        this._isInit = true;
+        this._updateFromContext();
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _cleanUpContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._context.setting.removeListener(this._settingListener);
+    }
+
+    _initSettingListener() {
+        this._context.setting.addListener(this._settingListener);
+        this._setThreshold(this._context.setting.getValue());
+    }
+
+    _updateFromContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._initSettingListener();
+    }
+
+    /**
+     *
+     * @param {{setting:WT_G3x5_ChartsLightThresholdSetting, getMFDBacklight:() => Number}} context
+     */
+    setContext(context) {
+        this._cleanUpContext();
+        this._context = context;
+        if (this._isInit) {
+            this._updateFromContext();
+        }
+    }
+
+    _setThreshold(value) {
+        this._slider.setValue(value);
+        this._valueNumber.textContent = `${(value * 100).toFixed(0)}%`;
+    }
+
+    _onSettingChanged(setting, newValue, oldValue) {
+        this._setThreshold(newValue);
+    }
+
+    _onSliderValueChanged(slider, oldValue, newValue) {
+        if (!this._context) {
+            return;
+        }
+
+        this._context.setting.setValue(newValue);
+    }
+
+    _setBacklightLevel(value) {
+        this._sliderLabel.htmlElement.setBacklightLevel(value);
+        this._sliderLabel.setValue(value);
+    }
+
+    _updateMFDBacklight() {
+        let level = this._context.getMFDBacklight();
+        this._setBacklightLevel(level);
+    }
+
+    _doUpdate() {
+        this._updateMFDBacklight();
+    }
+
+    update() {
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        this._doUpdate();
+    }
+}
+WT_G3x5_TSCChartsLightThresholdHTMLElement.NAME = "wt-tsc-chartslightthreshold";
+WT_G3x5_TSCChartsLightThresholdHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCChartsLightThresholdHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            border-radius: 5px;
+            background: linear-gradient(#1f3445, black 25px);
+            background-color: black;
+            border: 3px solid var(--wt-g3x5-bordergray);
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--chartslightthreshold-padding-left, 0.2em);
+            top: var(--chartslightthreshold-padding-top, 0.2em);
+            width: calc(100% - var(--chartslightthreshold-padding-left, 0.2em) - var(--chartslightthreshold-padding-right, 0.2em));
+            height: calc(100% - var(--chartslightthreshold-padding-top, 0.2em) - var(--chartslightthreshold-padding-bottom, 0.2em));
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            align-items: center;
+        }
+            #value {
+                color: white;
+            }
+                #valuenumber {
+                    font-size: var(--chartslightthreshold-value-font-size, 1.5em);
+                    color: var(--wt-g3x5-lightblue);
+                }
+            #slider {
+                position: relative;
+                height: 60%;
+                width: 80%;
+                --slider-label-bottom-height: 50%;
+            }
+                #slider img {
+                    width: 100%;
+                    height: 100%;
+                }
+    </style>
+    <div id="wrapper">
+        <div id="valuecontainer">
+            <div id="value">
+                Threshold Level: <span id="valuenumber"></span>
+            </div>
+        </div>
+        <wt-tsc-slider id="slider" min="0" max="1" step="0.01">
+            <img slot="sliderbgleft" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/GRADIENT_TRIANGLE_HORIZ_BLUE.png" />
+        </wt-tsc-slider>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCChartsLightThresholdHTMLElement.NAME, WT_G3x5_TSCChartsLightThresholdHTMLElement);
+
+class WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._backLightLevel = 1;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement.TEMPLATE;
+    }
+
+    _defineChildren() {
+        this._backlightLevelText = this.shadowRoot.querySelector(`#backlightlevel`);
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+        this._setBacklightLevelText(this._backLightLevel);
+    }
+
+    _setBacklightLevelText(value) {
+        this._backlightLevelText.textContent = `${(value * 100).toFixed(0)}%`;
+    }
+
+    setBacklightLevel(value) {
+        if (value === this._backLightLevel) {
+            return;
+        }
+
+        this._backLightLevel = value;
+
+        if (this._isInit) {
+            this._setBacklightLevelText(value);
+        }
+    }
+}
+WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement.NAME = "wt-tsc-chartslightthreshold-sliderlabel";
+WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper {
+            position: relative;
+            display: flex;
+            flex-flow: column nowrap;
+            align-items: center;
+        }
+            #arrowsvg {
+                width: 1em;
+                height: 1em;
+                fill: white;
+            }
+            #text {
+                margin-top: 0.2em;
+                text-align: center;
+                color: white;
+            }
+    </style>
+    <div id="wrapper">
+        <svg id="arrowsvg" viewBox="0 0 100 100">
+            <path id="arrow" d="M 50 6.7 L 93.3 93.3 L 6.7 93.3 Z" />
+        </svg>
+        <div id="text">
+            Current&nbspMFD<br>Backlight&nbspLevel<br><span id="backlightlevel"></span>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement.NAME, WT_G3x5_TSCChartsLightThresholdSliderLabelHTMLElement);

@@ -1931,6 +1931,15 @@ as3000-tsc-vertical-element #ChartsOptions wt-tsc-chartsoptions {
     font-size: 3.5vh;
 }
 
+as3000-tsc-vertical-element #ChartsLightThreshold wt-tsc-chartslightthreshold {
+    position: absolute;
+    left: 1%;
+    top: 10%;
+    width: 98%;
+    height: 70%;
+    font-size: 3vh;
+}
+
 :root {
     --button-border: 2px ridge white;
 }
