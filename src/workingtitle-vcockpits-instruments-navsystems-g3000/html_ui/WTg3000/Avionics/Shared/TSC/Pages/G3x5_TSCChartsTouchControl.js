@@ -36,7 +36,7 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
     }
 
     _openOptionsWindow() {
-        this.instrument.chartsOptions.element.setContext({chartsPage: this._chartsPage});
+        this.instrument.chartsOptions.element.setContext({homePageGroup: this.homePageGroup, homePageName: this.homePageName, chartsPage: this._chartsPage});
         this.instrument.switchToPopUpPage(this.instrument.chartsOptions);
     }
 

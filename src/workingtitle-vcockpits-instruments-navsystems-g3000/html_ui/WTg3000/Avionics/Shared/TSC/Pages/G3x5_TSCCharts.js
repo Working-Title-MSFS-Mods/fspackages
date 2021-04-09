@@ -322,7 +322,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     _openOptionsWindow() {
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
-        this.instrument.chartsOptions.element.setContext({chartsPage: this});
+        this.instrument.chartsOptions.element.setContext({homePageGroup: this.homePageGroup, homePageName: this.homePageName, chartsPage: this});
         this.instrument.switchToPopUpPage(this.instrument.chartsOptions);
     }
 
