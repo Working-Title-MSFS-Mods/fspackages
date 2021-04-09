@@ -1,7 +1,7 @@
 class WT_G3x5_MapViewChartsAirplaneLayer extends WT_MapViewAirplaneLayer {
     /**
      * @param {WT_G3x5_ChartsModel} chartsModel
-     * @param {WT_G3x5_ChartsDisplayHTMLElement} chartsView
+     * @param {WT_G3x5_ChartsView} chartsView
      * @param {String} className
      * @param {String} configName
      */

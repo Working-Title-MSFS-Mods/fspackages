@@ -336,3 +336,10 @@ as3000-mfd-element #Electricity .charts {
     as3000-mfd-element #Electricity .charts map-view {
         background-color: transparent;
     }
+        as3000-mfd-element #Electricity wt-map-view-charts-airplanestatus {
+            position: absolute;
+            right: 1px;
+            bottom: 1px;
+            width: 1.5em;
+            height: 1.5em;
+        }
