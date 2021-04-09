@@ -4,7 +4,7 @@
     },
 
     "airplane": {
-        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_TBM930_PURPLE.svg",
+        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_TBM930.svg",
         "iconSize": 40,
         "iconAnchor": [0.5, 0]
     }
