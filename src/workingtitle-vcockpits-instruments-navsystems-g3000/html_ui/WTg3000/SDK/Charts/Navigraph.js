@@ -105,42 +105,57 @@ class WT_NavigraphAPI {
         }
     }
     /**
-     * Executes the navigraph account linking process
+     * Retrieves and prepares data needed for the account linking process.
+     * @returns {Promise<{pkce:{code_verifier:String, code_challenge:String}, deviceCode:String, uri:String}>}
+     *          a Promise to return the data required for the account linking process, or null if the data could not be
+     *          retrieved.
      */
-    linkAccount() {
+    async prepareAccountLink() {
+        const pkce = WT_OAuthPkce.getChallenge(32);
+        const authForm = new Map([
+            ["code_challenge", pkce.code_challenge],
+            ["code_challenge_method", "S256"]
+        ]);
+        let authResp = await this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post", authForm);
+        if (authResp.ok) {
+            return {pkce: pkce, deviceCode: authResp.json().device_code, uri: authResp.json().verification_uri_complete};
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Executes the account linking process. This method will repeatedly request an account link from navigraph until
+     * either a link is established or the process times out.
+     * @param {{code_verifier:String, code_challenge:String}} pkce - the OAuth PKCE to use.
+     * @param {String} deviceCode - the device code for which to link the account.
+     * @param {Number} [timeout] - the maximum amount of time in milliseconds to spend attempting to establish an
+     *                             account link. Defaults to 30000.
+     * @returns {Promise<Boolean>} a Promise to return true if the account was successfully linked, or false if the
+     *                             process timed out.
+     */
+    executeAccountLink(pkce, deviceCode, timeout = 30000) {
         return WT_Wait.awaitGenerator(this, void 0, void 0, function* () {
             this.refreshToken = "";
             this.accessToken = "";
-            const pkce = WT_OAuthPkce.getChallenge(32);
-            const authForm = new Map([
-                ["code_challenge", pkce.code_challenge],
-                ["code_challenge_method", "S256"]
+            // poll for token
+            const pollForm = new Map([
+                ["grant_type", "urn:ietf:params:oauth:grant-type:device_code"],
+                ["device_code", deviceCode],
+                ["scope", "openid charts offline_access"],
+                ["code_verifier", pkce.code_verifier]
             ]);
-            // send auth request
-            const authResp = yield this.sendRequest("https://identity.api.navigraph.com/connect/deviceauthorization", "post", authForm);
-            if (authResp.ok) {
-                // send user to page
-                OpenBrowser(authResp.json().verification_uri_complete);
-                // poll for token
-                const pollForm = new Map([
-                    ["grant_type", "urn:ietf:params:oauth:grant-type:device_code"],
-                    ["device_code", authResp.json().device_code],
-                    ["scope", "openid charts offline_access"],
-                    ["code_verifier", pkce.code_verifier]
-                ]);
-                while (!this.isAccountLinked) {
-                    yield WT_Wait.wait(4000);
-                    const pollResp = yield this.sendRequest("https://identity.api.navigraph.com/connect/token", "post", pollForm);
-                    if (pollResp.ok) {
-                        this.refreshToken = pollResp.json().refresh_token;
-                        this.accessToken = pollResp.json().access_token;
-                    }
+            let t0 = Date.now();
+            while (Date.now() - t0 < timeout) {
+                yield WT_Wait.wait(4000);
+                const pollResp = yield this.sendRequest("https://identity.api.navigraph.com/connect/token", "post", pollForm);
+                if (pollResp.ok) {
+                    this.refreshToken = pollResp.json().refresh_token;
+                    this.accessToken = pollResp.json().access_token;
+                    return true;
                 }
-                return true;
             }
-            else {
-                throw (WT_NavigraphAPI.Error.AUTH_FAILED);
-            }
+            return false;
         });
     }
     /** Gets the signed png url of the requested chart */

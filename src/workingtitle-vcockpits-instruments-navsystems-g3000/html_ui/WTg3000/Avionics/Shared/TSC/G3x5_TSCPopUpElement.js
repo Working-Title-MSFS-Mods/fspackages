@@ -4,6 +4,7 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
 
         this._title = null;
         this._isInit = false;
+        this._isActive = false;
     }
 
     /**
@@ -28,6 +29,14 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
      */
     get title() {
         return this._title;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isActive() {
+        return this._isActive;
     }
 
     /**
@@ -111,6 +120,7 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     onEnter() {
         this._activateNavButtons();
         this._setVisible(true);
+        this._isActive = true;
     }
 
     onUpdate(deltaTime) {
@@ -127,6 +137,7 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     onExit() {
         this._setVisible(false);
         this._deactivateNavButtons();
+        this._isActive = false;
     }
 }
 
