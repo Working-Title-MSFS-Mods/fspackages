@@ -12,10 +12,6 @@ class WT_MapViewFlightPlanCanvasRenderer {
         this._flightPlan = null;
         this._activeLeg = null;
         this._flightPlanListener = this._onFlightPlanEvent.bind(this);
-        /**
-         * @type {WT_FlightPlanLeg[]}
-         */
-        this._legs = [];
 
         this._waypointsRendered = new Set();
 
@@ -71,15 +67,7 @@ class WT_MapViewFlightPlanCanvasRenderer {
         return this._waypointsRendered.values();
     }
 
-    _update() {
-        this._legs = [];
-        if (this.flightPlan) {
-            this._legs = this.flightPlan.legs();
-        }
-    }
-
     _onFlightPlanEvent(event) {
-        this._update();
         this._needsRedraw = true;
     }
 
@@ -105,7 +93,6 @@ class WT_MapViewFlightPlanCanvasRenderer {
         if (this.flightPlan) {
             this.flightPlan.addListener(this._flightPlanListener);
         }
-        this._update();
         this._needsRedraw = true;
     }
 
@@ -176,12 +163,13 @@ class WT_MapViewFlightPlanCanvasRenderer {
             this._waypointsRendered.add(destination);
         }
 
+        let legs = this.flightPlan.legs;
         let start = (this.getActiveLeg() && !this.drawPreviousLegs) ? this.getActiveLeg().index : 0;
-        let startPrevious = this._legs[start - 1];
+        let startPrevious = legs.get(start - 1);
         let previousEndpoint = startPrevious ? startPrevious.endpoint : null;
         let discontinuity = startPrevious ? startPrevious.discontinuity : false;
-        for (let i = start; i < this._legs.length; i++) {
-            let leg = this._legs[i];
+        for (let i = start; i < legs.length; i++) {
+            let leg = legs.get(i);
             this._renderLeg(state, projectionRenderer, context, bounds, leg, previousEndpoint, discontinuity);
             previousEndpoint = leg.endpoint;
             discontinuity = leg.discontinuity;
