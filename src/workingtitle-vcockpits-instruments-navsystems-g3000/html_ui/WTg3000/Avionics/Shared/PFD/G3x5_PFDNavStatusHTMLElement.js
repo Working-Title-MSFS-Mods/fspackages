@@ -143,7 +143,7 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
             this._updateDirectTo();
         } else {
             let activeLeg = fpm.getActiveLeg(true);
-            let previousLeg = activeLeg ? fpm.activePlan.leg(activeLeg.index - 1) : null;
+            let previousLeg = activeLeg ? fpm.activePlan.legs.get(activeLeg.index - 1) : null;
             if (previousLeg) {
                 this._main.setAttribute("mode", "leg");
                 this._updateLeg(activeLeg, previousLeg);

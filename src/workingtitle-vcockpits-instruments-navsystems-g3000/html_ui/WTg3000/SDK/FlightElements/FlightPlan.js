@@ -27,10 +27,22 @@ class WT_FlightPlan {
          */
         this._approach = null;
 
+        /**
+         * @type {WT_FlightPlanLeg[]}
+         */
         this._legs = [];
+        this._legsReadOnly = new WT_ReadOnlyArray(this._legs);
         this._totalDistance = new WT_NumberUnit(0, WT_Unit.NMILE);
 
         this._listeners = [];
+    }
+
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_FlightPlanLeg>}
+     */
+    get legs() {
+        return this._legsReadOnly;
     }
 
     hasOrigin() {
@@ -121,43 +133,6 @@ class WT_FlightPlan {
     }
 
     /**
-     * @returns {Number}
-     */
-    legCount() {
-        return this._legs.length;
-    }
-
-    /**
-     * @returns {WT_FlightPlanLeg}
-     */
-    firstLeg() {
-        return this._legs[0];
-    }
-
-    /**
-     * @returns {WT_FlightPlanLeg}
-     */
-    lastLeg() {
-        return this._legs[this._legs.length - 1];
-    }
-
-    /**
-     *
-     * @param {Number} index
-     * @returns {WT_FlightPlanLeg}
-     */
-    leg(index) {
-        return this._legs[index];
-    }
-
-    /**
-     * @returns {WT_FlightPlanLeg[]}
-     */
-    legs() {
-        return this._legs.slice();
-    }
-
-    /**
      * @returns {WT_NumberUnitReadOnly}
      */
     totalDistance() {
@@ -188,25 +163,25 @@ class WT_FlightPlan {
     }
 
     _updateLegs() {
-        this._legs = [];
+        this._legs.splice(0, this._legs.length);
         if (this.hasOrigin()) {
             if (!this._departure || this._departure.runwayTransitionIndex < 0) {
-                this._legs.push(...this._origin.legs());
+                this._legs.push(...this._origin.legs);
             }
             if (this._departure) {
-                this._legs.push(...this._departure.legs());
+                this._legs.push(...this._departure.legs);
             }
         }
-        this._legs.push(...this._enroute.legs());
+        this._legs.push(...this._enroute.legs);
         if (this.hasDestination()) {
             if (this._arrival) {
-                this._legs.push(...this._arrival.legs());
+                this._legs.push(...this._arrival.legs);
             }
             if (this._approach) {
-                this._legs.push(...this._approach.legs());
+                this._legs.push(...this._approach.legs);
             }
             if (!this._approach) {
-                this._legs.push(...this._destination.legs());
+                this._legs.push(...this._destination.legs);
             }
         }
 
@@ -214,7 +189,7 @@ class WT_FlightPlan {
             this._legs[i]._index = i;
         }
 
-        let lastLeg = this.lastLeg();
+        let lastLeg = this._legs[this._legs.length - 1];
         this._totalDistance.set(lastLeg ? lastLeg.cumulativeDistance : 0);
     }
 
@@ -250,9 +225,7 @@ class WT_FlightPlan {
         eventData.oldDeparture = this._departure;
         eventData.newDeparture = departure;
         if (this._departure) {
-            for (let leg of this._departure.legs()) {
-                leg._index = -1;
-            }
+            this._departure.legs.forEach(leg => leg._index = -1);
             this._departure._setFlightPlan(null);
         }
         this._departure = departure;
@@ -272,9 +245,7 @@ class WT_FlightPlan {
         eventData.oldArrival = this._arrival;
         eventData.newArrival = arrival;
         if (this._arrival) {
-            for (let leg of this._arrival.legs()) {
-                leg._index = -1;
-            }
+            this._arrival.legs.forEach(leg => leg._index = -1);
             this._arrival._setFlightPlan(null);
         }
         this._arrival = arrival;
@@ -294,9 +265,7 @@ class WT_FlightPlan {
         eventData.oldApproach = this._approach;
         eventData.newApproach = approach;
         if (this._approach) {
-            for (let leg of this._approach.legs()) {
-                leg._index = -1;
-            }
+            this._approach.legs.forEach(leg => leg._index = -1);
             this._approach._setFlightPlan(null);
         }
         this._approach = approach;
@@ -1088,6 +1057,11 @@ class WT_FlightPlanElement {
         this._prev;
         this._distance = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
         this._cumulativeDistance = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
+        /**
+         * @type {WT_FlightPlanLeg[]}
+         */
+        this._legs = [];
+        this._legsReadOnly = new WT_ReadOnlyArray(this._legs);
     }
 
     /**
@@ -1148,6 +1122,14 @@ class WT_FlightPlanElement {
         return this._cumulativeDistance.readonly();
     }
 
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_FlightPlanLeg>}
+     */
+    get legs() {
+        return this._legsReadOnly;
+    }
+
     _updateDistance() {
     }
 
@@ -1185,13 +1167,6 @@ class WT_FlightPlanElement {
     copy() {
         return null;
     }
-
-    /**
-     * @returns {WT_FlightPlanLeg[]}
-     */
-    legs() {
-        return null;
-    }
 }
 
 class WT_FlightPlanLeg extends WT_FlightPlanElement {
@@ -1212,6 +1187,8 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
         this._altitudeConstraint = altitudeConstraint ? altitudeConstraint : WT_AltitudeConstraint.NO_CONSTRAINT;
         this._desiredTrack;
         this._index = -1;
+
+        this._legs.push(this);
     }
 
     /**
@@ -1317,8 +1294,8 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 
     previousLeg() {
         if (this._prev) {
-            let prevLegs = this._prev.legs();
-            return (prevLegs && prevLegs.length > 0) ? prevLegs[prevLegs.length - 1] : null;
+            let prevLegs = this._prev.legs;
+            return (prevLegs && prevLegs.length > 0) ? prevLegs.get(prevLegs.length - 1) : null;
         } else {
             return null;
         }
@@ -1330,10 +1307,6 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
      */
     firstStep() {
         return this._firstStep;
-    }
-
-    legs() {
-        return [this];
     }
 
     equals(other) {
@@ -1692,6 +1665,17 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
         }
     }
 
+    _updateLegs() {
+        this._legs.splice(0, this._legs.length);
+        this._elements.forEach(element => this._legs.push(...element.legs), this);
+    }
+
+    _update() {
+        super._update();
+
+        this._updateLegs();
+    }
+
     _insert(element, index) {
         if (index === undefined) {
             index = this._elements.length;
@@ -1727,12 +1711,6 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
         this._elements.forEach(element => element._setParent(null));
         this._elements = [];
         this._update();
-    }
-
-    legs() {
-        let legs = [];
-        this._elements.forEach(element => legs.push(...element.legs()));
-        return legs;
     }
 
     _copyElements() {
