@@ -197,10 +197,11 @@ class WT_G3x5_ChartsDisplay {
         }
     }
 
-    sleep() {
+    wake() {
+        this.model.updateNavigraphStatus();
     }
 
-    wake() {
+    sleep() {
     }
 
     _getBacklightLevel() {

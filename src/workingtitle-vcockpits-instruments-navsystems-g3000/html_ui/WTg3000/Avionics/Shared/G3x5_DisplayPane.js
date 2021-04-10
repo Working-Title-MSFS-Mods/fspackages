@@ -139,6 +139,14 @@ class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
         this.charts.init(root);
     }
 
+    wake() {
+        this.charts.wake();
+    }
+
+    sleep() {
+        this.charts.sleep();
+    }
+
     update() {
         this.charts.update();
     }
