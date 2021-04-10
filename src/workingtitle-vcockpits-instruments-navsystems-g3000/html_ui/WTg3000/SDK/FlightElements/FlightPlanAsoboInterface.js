@@ -165,7 +165,7 @@ class WT_FlightPlanAsoboInterface {
             await Coherent.call("SET_ORIGIN", flightPlan.getOrigin().waypoint.icao);
             await Coherent.call("SET_DESTINATION", flightPlan.getDestination().waypoint.icao);
             let count = 1;
-            for (let leg of flightPlan.getEnroute().legs()) {
+            for (let leg of flightPlan.getEnroute().legs) {
                 let waypoint = leg.fix;
                 if (waypoint && waypoint.icao) {
                     await Coherent.call("ADD_WAYPOINT", waypoint.icao, count, false);
@@ -213,15 +213,15 @@ class WT_FlightPlanAsoboInterface {
         let legs;
         if (isApproachActive) {
             if (flightPlan.hasApproach()) {
-                legs = flightPlan.getApproach().legs();
+                legs = flightPlan.getApproach().legs;
             } else {
                 return null;
             }
         } else {
-            legs = flightPlan.legs();
+            legs = flightPlan.legs;
         }
 
-        let leg = legs[index];
+        let leg = legs.get(index);
         if (!leg) {
             let legsBefore = legs.slice(0, index).reverse();
             let legsAfter = legs.slice(index + 1, legs.length);
@@ -241,7 +241,7 @@ class WT_FlightPlanAsoboInterface {
                 }
             }
             if (index >= 0) {
-                return legs[index];
+                return legs.get(index);
             }
         }
         return leg ? leg: null;
