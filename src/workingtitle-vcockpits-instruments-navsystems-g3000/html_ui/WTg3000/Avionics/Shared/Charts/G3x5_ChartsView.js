@@ -128,6 +128,7 @@ class WT_G3x5_ChartsView extends HTMLElement {
     }
 
     async _defineChildren() {
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
         /**
          * @type {WT_G3x5_ChartHTMLElement}
          */
@@ -150,6 +151,15 @@ class WT_G3x5_ChartsView extends HTMLElement {
     _updateViewSize() {
         this._viewWidth = this.clientWidth;
         this._viewHeight = this.clientHeight;
+    }
+
+    _updateBanners() {
+        let model = this._context.model;
+        if (model.navigraphStatus === WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE) {
+            this._wrapper.setAttribute("status", "ok");
+        } else {
+            this._wrapper.setAttribute("status", "datafail");
+        }
     }
 
     _updateBoundsFromChart(chart, usePlanView) {
@@ -217,6 +227,7 @@ class WT_G3x5_ChartsView extends HTMLElement {
 
     _doUpdate() {
         this._updateViewSize();
+        this._updateBanners();
         this._updateChartTransform();
         this._updateChartHTMLElement();
     }
@@ -258,12 +269,27 @@ WT_G3x5_ChartsView.TEMPLATE.innerHTML = `
                 height: 100%;
                 transform: rotate(0deg);
             }
+            .banner {
+                display: none;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                font-weight: bold;
+                font-size: var(--charts-banner-font-size, 1.5em);
+                color: white;
+            }
+            #wrapper[status="datafail"] #datafail {
+                display: block;
+            }
     </style>
     <div id="wrapper">
         <div id="chartcontainer">
             <wt-charts-chart id="chart"></wt-charts-chart>
         </div>
         <slot name="map" id="map"></slot>
+        <div id="nocharts" class="banner">No Available Charts</div>
+        <div id="datafail" class="banner">Unable To Display Chart</div>
     </div>
 `;
 
