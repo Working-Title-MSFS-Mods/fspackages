@@ -16,23 +16,7 @@ class WT_G3x5_ChartsModel {
         this._taskID = 0;
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_ChartsModel.OPTION_DEFS);
-        this._updateNavigraphStatus();
-    }
-
-    async _updateNavigraphStatus() {
-        let status;
-        if (this.navigraphAPI.isAccountLinked) {
-            let isAccessAvail = await this.navigraphAPI.validateToken();
-            if (isAccessAvail) {
-                status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
-            } else {
-                status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_EXPIRED;
-            }
-        } else {
-            status = WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
-        }
-
-        this._navigraphStatus = status;
+        this.updateNavigraphStatus();
     }
 
     /**
@@ -51,6 +35,22 @@ class WT_G3x5_ChartsModel {
         return this._navigraphStatus;
     }
 
+    async updateNavigraphStatus() {
+        let status;
+        if (this.navigraphAPI.isAccountLinked) {
+            let isAccessAvail = await this.navigraphAPI.validateToken();
+            if (isAccessAvail) {
+                status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
+            } else {
+                status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_EXPIRED;
+            }
+        } else {
+            status = WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
+        }
+
+        this._navigraphStatus = status;
+    }
+
     async _retrieveCharts(ident) {
         try {
             let response = await this.navigraphAPI.getChartsList(ident);
@@ -60,7 +60,7 @@ class WT_G3x5_ChartsModel {
             }
         } catch (e) {
             console.log(e);
-            this._updateNavigraphStatus();
+            this.updateNavigraphStatus();
         }
         return [];
     }
@@ -72,7 +72,7 @@ class WT_G3x5_ChartsModel {
             return urls;
         } catch (e) {
             console.log(e);
-            this._updateNavigraphStatus();
+            this.updateNavigraphStatus();
         }
         return ["", ""];
     }
