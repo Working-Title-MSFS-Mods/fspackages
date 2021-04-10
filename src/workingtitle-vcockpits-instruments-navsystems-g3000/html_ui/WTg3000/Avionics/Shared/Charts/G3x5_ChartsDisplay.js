@@ -93,6 +93,7 @@ class WT_G3x5_ChartsDisplay {
     _initMapView() {
         this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneLayer());
         this._mapView.addLayer(new WT_G3x5_MapViewChartsAirplaneStatusLayer());
+        this._mapView.addLayer(new WT_G3x5_MapViewChartsScaleLayer());
     }
 
     _initMapRangeTargetRotationController() {
@@ -366,6 +367,7 @@ class WT_G3x5_ChartsMapController {
     update() {
         this._updateChart();
         this._updateGeoRef();
+        this._mapModel.charts.isToScale = this._geoRef.isValid;
         if (this._geoRef.isValid) {
             this._updateRotation();
             this._updateTarget();
