@@ -209,20 +209,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET);
     }
 
-    /**
-     *
-     * @param {WT_Airport} airport
-     */
-    _updateChartIDSettingFromAirport(airport) {
-        if (airport) {
-            let currentChartID = this._chartIDSetting.getValue();
-            if (airport.ident === currentChartID.substring(0, 4)) {
-                return;
-            }
-        }
-        this._chartIDSetting.setValue("");
-    }
-
     _findChart(id) {
         if (this._charts) {
             let chart = this._charts.find(chart => chart.id === id);
@@ -272,6 +258,26 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_Airport} airport
      */
+    _updateChartIDFromAirport(airport) {
+        if (airport) {
+            if (this._chartID.substring(0, 4) !== airport.ident) {
+                // selected chart ID does not belong to the airport -> try to select airport diagram.
+                let chartID = "";
+                let chart = this._charts.find(chart => chart.type.code === "AP");
+                if (chart) {
+                    chartID = chart.id;
+                }
+                this._chartIDSetting.setValue(chartID);
+            }
+        } else {
+            this._chartIDSetting.setValue("");
+        }
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
     async _setAirport(airport) {
         if ((airport === null && this._airport === null) || (airport && airport.equals(this._airport))) {
             return;
@@ -280,9 +286,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._airport = airport;
         this._icaoSetting.setValue(this._airport ? this._airport.icao : "");
         this.htmlElement.setAirport(this._airport);
-        this._updateChartIDSettingFromAirport(this._airport);
         await this._updateCharts();
-        this._updateChartFromID(this._chartID);
+        this._updateChartIDFromAirport(this._airport);
     }
 
     async _setAirportICAO(icao) {
