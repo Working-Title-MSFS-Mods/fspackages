@@ -291,7 +291,7 @@ class WT_G3x5_PFDBearingInfoModelADFAdapter extends WT_G3x5_PFDBearingInfoModelS
     }
 }
 
-class WT_G3x5_UnitsSettingsModelPFDBearingInfoModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsSettingsModelPFDBearingInfoModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_G3x5_PFDBearingInfoModel} bearingInfoModel

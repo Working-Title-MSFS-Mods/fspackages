@@ -39,7 +39,7 @@ class WT_G3000_PFDNavStatusBox extends WT_G3x5_PFDElement {
             }
         ];
 
-        this._unitsControllerAdapter = new WT_G3000_UnitsControllerNavStatusAdapter(this.instrument.unitsSettingModel, this._infos[0].model, this._infos[1].model);
+        this._unitsControllerAdapter = new WT_G3000_UnitsSettingModelNavStatusAdapter(this.instrument.unitsSettingModel, this._infos[0].model, this._infos[1].model);
     }
 
     _createHTMLElement() {
@@ -152,7 +152,7 @@ WT_G3000_PFDNavStatusBoxHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G3000_PFDNavStatusBoxHTMLElement.NAME, WT_G3000_PFDNavStatusBoxHTMLElement);
 
-class WT_G3000_UnitsControllerNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3000_UnitsSettingModelNavStatusAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_NavDataBarModel} navDataBarModel
