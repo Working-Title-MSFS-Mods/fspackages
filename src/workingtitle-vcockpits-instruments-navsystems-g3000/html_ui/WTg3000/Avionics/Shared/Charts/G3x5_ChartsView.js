@@ -250,31 +250,6 @@ WT_G3x5_ChartsView.TEMPLATE.innerHTML = `
                 width: 100%;
                 height: 100%;
             }
-            #noairplanecontainer {
-                display: none;
-                position: absolute;
-                right: 1px;
-                bottom: 1px;
-                width: var(--charts-noairplane-size, 1.2em);
-                height: var(--charts-noairplane-size, 1.2em);
-                background-color: black;
-                border: solid 1px white;
-                border-radius: 3px;
-                transform: rotate(0deg);
-            }
-            #noscale {
-                display: none;
-                position: absolute;
-                right: calc(5px + var(--charts-noairplane-size, 1.2em));
-                bottom: 1px;
-                background-color: black;
-                border: solid 1px white;
-                border-radius: 3px;
-                font-size: var(--charts-scale-font-size, 1em);
-                color: var(--wt-g3x5-lightblue);
-                padding: 0 0.2em;
-                transform: rotate(0deg);
-            }
             #map {
                 position: absolute;
                 left: 0%;
@@ -289,11 +264,6 @@ WT_G3x5_ChartsView.TEMPLATE.innerHTML = `
             <wt-charts-chart id="chart"></wt-charts-chart>
         </div>
         <slot name="map" id="map"></slot>
-        <div id="noairplanecontainer">
-        </div>
-        <div id="scalecontainer">
-        </div>
-        <div id="noscale">NOT TO SCALE</div>
     </div>
 `;
 
