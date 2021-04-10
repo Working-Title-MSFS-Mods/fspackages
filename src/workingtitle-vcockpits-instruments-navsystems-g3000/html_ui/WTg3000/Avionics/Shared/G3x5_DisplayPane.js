@@ -132,7 +132,7 @@ class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
 
     getTitle() {
         let chart = this.charts.model.chart;
-        return chart ? `${this.charts.model.airportIdent}–${chart.procedure_identifier}` : "";
+        return chart ? `${this.charts.model.airportIdent}–${chart.procedure_identifier}` : "Charts";
     }
 
     init(root) {

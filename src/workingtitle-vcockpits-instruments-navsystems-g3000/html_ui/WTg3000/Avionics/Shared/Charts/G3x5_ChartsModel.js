@@ -16,11 +16,23 @@ class WT_G3x5_ChartsModel {
         this._taskID = 0;
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_ChartsModel.OPTION_DEFS);
-        this._checkNavigraphStatus();
+        this._updateNavigraphStatus();
     }
 
-    _checkNavigraphStatus() {
-        this._navigraphStatus = this.navigraphAPI.isAccountLinked ? WT_G3x5_ChartsModel.NavigraphStatus.LINKED : WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
+    async _updateNavigraphStatus() {
+        let status;
+        if (this.navigraphAPI.isAccountLinked) {
+            let isAccessAvail = await this.navigraphAPI.validateToken();
+            if (isAccessAvail) {
+                status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
+            } else {
+                status = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_EXPIRED;
+            }
+        } else {
+            status = WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
+        }
+
+        this._navigraphStatus = status;
     }
 
     /**
@@ -31,14 +43,24 @@ class WT_G3x5_ChartsModel {
         return this._navigraphAPI;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_ChartsModel.NavigraphStatus}
+     */
+    get navigraphStatus() {
+        return this._navigraphStatus;
+    }
+
     async _retrieveCharts(ident) {
         try {
             let response = await this.navigraphAPI.getChartsList(ident);
+            this._navigraphStatus = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
             if (response) {
                 return response.charts;
             }
         } catch (e) {
             console.log(e);
+            this._updateNavigraphStatus();
         }
         return [];
     }
@@ -46,9 +68,11 @@ class WT_G3x5_ChartsModel {
     async _retrieveChartURLs(chart) {
         try {
             let urls = await Promise.all([this.navigraphAPI.getChartPngUrl(chart, true), this.navigraphAPI.getChartPngUrl(chart, false)]);
+            this._navigraphStatus = WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE;
             return urls;
         } catch (e) {
             console.log(e);
+            this._updateNavigraphStatus();
         }
         return ["", ""];
     }
@@ -144,7 +168,8 @@ WT_G3x5_ChartsModel.NAME_DEFAULT = "charts";
  */
 WT_G3x5_ChartsModel.NavigraphStatus = {
     UNLINKED: 0,
-    LINKED: 1
+    ACCESS_EXPIRED: 1,
+    ACCESS_AVAILABLE: 2
 };
 /**
  * @enum {Number}
