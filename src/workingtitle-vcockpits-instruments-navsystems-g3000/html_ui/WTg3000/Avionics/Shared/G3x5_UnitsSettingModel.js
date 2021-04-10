@@ -213,7 +213,7 @@ WT_G3x5_ExtTemperatureUnitsSetting.DEFAULT = WT_G3x5_ExtTemperatureUnitsSetting.
 /**
  * @abstract
  */
-class WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
@@ -306,7 +306,7 @@ class WT_G3x5_UnitsControllerModelAdapter {
     }
 }
 
-class WT_G3x5_UnitsControllerMapModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsSettingModelMapModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_MapModel} mapModel
@@ -340,7 +340,7 @@ class WT_G3x5_UnitsControllerMapModelAdapter extends WT_G3x5_UnitsControllerMode
     }
 }
 
-class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_NavDataBarModel} navDataBarModel

@@ -15,8 +15,8 @@ class WT_G5000_MFDHalfPane extends WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G5000_NavMap}
      */
-    _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem) {
-        return new WT_G5000_NavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem);
+    _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsSettingModel, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem) {
+        return new WT_G5000_NavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsSettingModel, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem);
     }
 
     /**
@@ -29,7 +29,7 @@ class WT_G5000_MFDHalfPane extends WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G5000_ChartsDisplay}
      */
-    _createCharts(id, airplane, navigraphAPI) {
-        return new WT_G5000_ChartsDisplay(id, airplane, navigraphAPI);
+    _createCharts(id, airplane, navigraphAPI, unitsSettingModel) {
+        return new WT_G5000_ChartsDisplay(id, airplane, navigraphAPI, unitsSettingModel);
     }
 }

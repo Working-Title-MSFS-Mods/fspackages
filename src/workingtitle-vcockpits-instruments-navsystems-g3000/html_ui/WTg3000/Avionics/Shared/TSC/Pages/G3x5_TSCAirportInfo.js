@@ -94,7 +94,7 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCPageElement {
     }
 }
 
-class WT_G3x5_TSCAirportInfoUnitsModel extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_TSCAirportInfoUnitsModel extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */

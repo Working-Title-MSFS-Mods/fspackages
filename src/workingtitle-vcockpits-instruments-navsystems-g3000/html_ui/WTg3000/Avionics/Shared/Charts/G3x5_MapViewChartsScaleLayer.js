@@ -16,13 +16,18 @@ class WT_G3x5_MapViewChartsScaleLayer extends WT_MapViewLayer {
         this.htmlElement.setViewLengthTarget(this.viewLengthTarget);
     }
 
-    _convertGeoDistanceCandidates() {
-        return this.geoDistanceCandidates.map(value => WT_Unit.NMILE.createNumber(value));
+    _convertGeoDistanceCandidates(candidates, unit) {
+        return candidates.map(value => unit.createNumber(value));
     }
 
-    _updateGeoDistanceCandidates() {
-        let geoDistanceCandidatesConverted = this._convertGeoDistanceCandidates();
-        this.htmlElement.setGeoDistanceCandidates(geoDistanceCandidatesConverted);
+    _updateGeoDistanceCandidatesNautical() {
+        let geoDistanceCandidatesConverted = this._convertGeoDistanceCandidates(this.geoDistanceCandidatesNautical, WT_Unit.NMILE);
+        this.htmlElement.setGeoDistanceCandidatesNautical(geoDistanceCandidatesConverted);
+    }
+
+    _updateGeoDistanceCandidatesMetric() {
+        let geoDistanceCandidatesConverted = this._convertGeoDistanceCandidates(this.geoDistanceCandidatesMetric, WT_Unit.KILOMETER);
+        this.htmlElement.setGeoDistanceCandidatesMetric(geoDistanceCandidatesConverted);
     }
 
     onOptionChanged(name, oldValue, newValue) {
@@ -30,8 +35,11 @@ class WT_G3x5_MapViewChartsScaleLayer extends WT_MapViewLayer {
             case "viewLengthTarget":
                 this._updateViewLengthTarget();
                 break;
-            case "geoDistanceCandidates":
-                this._updateGeoDistanceCandidates();
+            case "geoDistanceCandidatesNautical":
+                this._updateGeoDistanceCandidatesNautical();
+                break;
+            case "geoDistanceCandidatesMetric":
+                this._updateGeoDistanceCandidatesMetric();
                 break;
         }
     }
@@ -58,7 +66,8 @@ WT_G3x5_MapViewChartsScaleLayer.CLASS_DEFAULT = "chartsScaleLayer";
 WT_G3x5_MapViewChartsScaleLayer.CONFIG_NAME_DEFAULT = "chartsScale";
 WT_G3x5_MapViewChartsScaleLayer.OPTIONS_DEF = {
     viewLengthTarget: {default: 100, auto: true, observed: true},
-    geoDistanceCandidates: {default: [0.00822894, 0.0164579, 0.0411447, 0.0822894, 0.164579, 0.25, 0.5, 1, 2, 5, 10, 15, 20], auto: true, observed: true}
+    geoDistanceCandidatesNautical: {default: [0.00822894, 0.0164579, 0.0411447, 0.0822894, 0.164579, 0.25, 0.5, 1, 2, 2.5, 5, 10, 15, 20], auto: true, observed: true}, // NM
+    geoDistanceCandidatesMetric: {default: [0.1, 0.2, 0.25, 0.5, 1, 2, 2.5, 5, 10, 15, 20, 25, 50], auto: true, observed: true}, // KM
 };
 WT_G3x5_MapViewChartsScaleLayer.CONFIG_PROPERTIES = [
     "viewLengthTarget",
@@ -75,7 +84,9 @@ class WT_G3x5_MapViewChartsScaleHTMLElement extends HTMLElement {
         this._initFormatter();
 
         this._viewLengthTarget = 0;
-        this._geoDistanceCandidates = [WT_Unit.NMILE.createNumber(1)];
+        this._geoDistanceCandidatesNautical = [WT_Unit.NMILE.createNumber(1)];
+        this._geoDistanceCandidatesMetric = [WT_Unit.KILOMETER.createNumber(1)];
+        this._lastUnitMode = WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode.NAUTICAL;
         this._lastViewResolutionNM = 0;
         this._needUpdate = false;
         this._isInit = false;
@@ -115,23 +126,50 @@ class WT_G3x5_MapViewChartsScaleHTMLElement extends HTMLElement {
     }
 
     /**
-     * Sets the candidate geographic distances from which this scale can choose when picking a distance to mark.
+     * Sets the candidate geographic distances from which this scale can choose when picking a distance to mark in
+     * nautical units mode.
      * @param {WT_NumberUnit[]} candidates - the new candidates.
      */
-    setGeoDistanceCandidates(candidates) {
-        this._geoDistanceCandidates = candidates.map(candidate => candidate.copy());
+    setGeoDistanceCandidatesNautical(candidates) {
+        this._geoDistanceCandidatesNautical = candidates.map(candidate => candidate.copy());
         this._needUpdate = true;
+    }
+
+    /**
+     * Sets the candidate geographic distances from which this scale can choose when picking a distance to mark in
+     * metric units mode.
+     * @param {WT_NumberUnit[]} candidates - the new candidates.
+     */
+    setGeoDistanceCandidatesMetric(candidates) {
+        this._geoDistanceCandidatesMetric = candidates.map(candidate => candidate.copy());
+        this._needUpdate = true;
+    }
+
+    /**
+     * Gets the appropriate distance unit mode from the current map view state.
+     * @param {WT_MapViewState} state - the current map view state.
+     * @returns {WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode} a distance unit mode.
+     */
+    _getUnitMode(state) {
+        let distanceUnit = state.model.units.distance;
+        if (distanceUnit.equals(WT_Unit.NMILE) || distanceUnit.equals(WT_Unit.FOOT)) {
+            return WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode.NAUTICAL;
+        } else {
+            return WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode.METRIC;
+        }
     }
 
     /**
      * Finds the most suitable geographic distance to mark on this scale based on the current map resolution.
      * @param {WT_MapViewState} state - the current map view state.
+     * @param {WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode} unitMode - the current distance unit mode.
      * @returns {WT_NumberUnit} the most suitable geographic distance to mark on this scale.
      */
-    _getGeoDistanceTarget(state) {
+    _getGeoDistanceTarget(state, unitMode) {
         let viewResolution = state.projection.viewResolution;
         let viewLengthTarget = this._viewLengthTarget;
-        let target = this._geoDistanceCandidates.reduce((prev, curr) => Math.abs(prev.ratio(viewResolution) - viewLengthTarget) <= Math.abs(curr.ratio(viewResolution) - viewLengthTarget) ? prev : curr);
+        let candidates = unitMode === WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode.NAUTICAL ? this._geoDistanceCandidatesNautical : this._geoDistanceCandidatesMetric;
+        let target = candidates.reduce((prev, curr) => Math.abs(prev.ratio(viewResolution) - viewLengthTarget) <= Math.abs(curr.ratio(viewResolution) - viewLengthTarget) ? prev : curr);
         return target;
     }
 
@@ -148,16 +186,14 @@ class WT_G3x5_MapViewChartsScaleHTMLElement extends HTMLElement {
     /**
      *
      * @param {WT_NumberUnit} range
-     * @param {WT_Unit} distanceUnit
+     * @param {WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode} unitMode
      * @returns {WT_Unit}
      */
-    _selectDisplayUnit(range, distanceUnit) {
-        if (distanceUnit.equals(WT_Unit.NMILE) || distanceUnit.equals(WT_Unit.FOOT)) {
+    _selectDisplayUnit(range, unitMode) {
+        if (unitMode === WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode.NAUTICAL) {
             return range.asUnit(WT_Unit.FOOT) <= 1001 ? WT_Unit.FOOT : WT_Unit.NMILE;
-        } else if (distanceUnit.equals(WT_Unit.KILOMETER) || distanceUnit.equals(WT_Unit.METER)) {
-            return range.asUnit(WT_Unit.METER) <= 501 ? WT_Unit.METER : WT_Unit.KILOMETER;
         } else {
-            return distanceUnit;
+            return range.asUnit(WT_Unit.METER) <= 501 ? WT_Unit.METER : WT_Unit.KILOMETER;
         }
     }
 
@@ -165,9 +201,10 @@ class WT_G3x5_MapViewChartsScaleHTMLElement extends HTMLElement {
      *
      * @param {WT_MapViewState} state
      * @param {WT_NumberUnit} geoDistance
+     * @param {WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode} unitMode
      */
-    _setRightLabel(state, geoDistance) {
-        let unit = this._selectDisplayUnit(geoDistance, WT_Unit.NMILE);
+    _setRightLabel(state, geoDistance, unitMode) {
+        let unit = this._selectDisplayUnit(geoDistance, unitMode);
         this._right.textContent = this._formatter.getFormattedString(geoDistance, unit);
     }
 
@@ -175,10 +212,11 @@ class WT_G3x5_MapViewChartsScaleHTMLElement extends HTMLElement {
      *
      * @param {WT_MapViewState} state
      * @param {WT_NumberUnit} geoDistance
+     * @param {WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode} unitMode
      */
-    _setScaleLength(state, geoDistance) {
+    _setScaleLength(state, geoDistance, unitMode) {
         this._setBarLength(state, geoDistance);
-        this._setRightLabel(state, geoDistance);
+        this._setRightLabel(state, geoDistance, unitMode);
     }
 
     /**
@@ -192,16 +230,25 @@ class WT_G3x5_MapViewChartsScaleHTMLElement extends HTMLElement {
             return;
         }
 
+        let unitMode = this._getUnitMode(state);
         let viewResolutionNM = state.projection.viewResolution.asUnit(WT_Unit.NMILE);
-        if (!this._isInit || (!this._needUpdate && this._lastViewResolutionNM === viewResolutionNM)) {
+        if (!this._isInit || (!this._needUpdate && this._lastUnitMode === unitMode && this._lastViewResolutionNM === viewResolutionNM)) {
             return;
         }
 
-        let target = this._getGeoDistanceTarget(state);
-        this._setScaleLength(state, target);
+        let target = this._getGeoDistanceTarget(state, unitMode);
+        this._setScaleLength(state, target, unitMode);
+        this._lastUnitMode = unitMode;
         this._lastViewResolutionNM = viewResolutionNM;
         this._needUpdate = false;
     }
+}
+/**
+ * @enum {Number}
+ */
+WT_G3x5_MapViewChartsScaleHTMLElement.UnitMode = {
+    NAUTICAL: 0,
+    METRIC: 1
 }
 WT_G3x5_MapViewChartsScaleHTMLElement.NAME = "wt-map-view-charts-scale";
 WT_G3x5_MapViewChartsScaleHTMLElement.TEMPLATE = document.createElement("template");

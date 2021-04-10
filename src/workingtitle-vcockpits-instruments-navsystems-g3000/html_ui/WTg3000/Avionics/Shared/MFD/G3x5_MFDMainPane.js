@@ -289,7 +289,7 @@ class WT_G3x5_MFDHalfPane {
         this._navMap = new WT_G3x5_NavMapDisplayPane(this._createNavMap(id, data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMap = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem));
         this._weatherRadar = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
-        this._charts = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI));
+        this._charts = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
         this._waypointInfo = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
 
         this._displayMode;
@@ -310,7 +310,7 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_NavMap}
      */
-    _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem) {
+    _createNavMap(id, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsSettingModel, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem) {
     }
 
     /**
@@ -329,7 +329,7 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_ChartsDisplay}
      */
-    _createCharts(id, airplane, navigraphAPI) {
+    _createCharts(id, airplane, navigraphAPI, unitsSettingModel) {
     }
 
     /**

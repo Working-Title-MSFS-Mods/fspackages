@@ -152,7 +152,7 @@ WT_G3x5_PFDWindDataModel.Mode = {
     NO_DATA: 4
 };
 
-class WT_G3x5_UnitsSettingModelPFDWindDataModelAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G3x5_UnitsSettingModelPFDWindDataModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_G3x5_PFDWindDataModel} windDataModel
