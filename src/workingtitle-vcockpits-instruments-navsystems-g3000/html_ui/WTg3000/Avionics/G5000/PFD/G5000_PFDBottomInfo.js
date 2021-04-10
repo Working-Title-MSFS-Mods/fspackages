@@ -154,7 +154,7 @@ WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.NAME, WT_G5000_PFDBottomInfoNavStatusCellHTMLElement);
 
-class WT_G5000_UnitsSettingModelNavStatusAdapter extends WT_G3x5_UnitsControllerModelAdapter {
+class WT_G5000_UnitsSettingModelNavStatusAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_NavDataBarModel} navDataBarModel

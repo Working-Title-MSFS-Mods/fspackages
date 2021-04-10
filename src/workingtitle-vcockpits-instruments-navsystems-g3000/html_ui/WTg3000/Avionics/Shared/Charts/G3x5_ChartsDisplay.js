@@ -3,10 +3,12 @@ class WT_G3x5_ChartsDisplay {
      * @param {String} instrumentID
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(instrumentID, airplane, navigraphAPI) {
+    constructor(instrumentID, airplane, navigraphAPI, unitsSettingModel) {
         this._airplane = airplane;
         this._navigraphAPI = navigraphAPI;
+        this._unitsSettingModel = unitsSettingModel;
 
         this._settingModelID = `${instrumentID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
         this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_${instrumentID}`;
@@ -86,7 +88,12 @@ class WT_G3x5_ChartsDisplay {
         this.settingModel.init();
     }
 
+    _initMapUnitsModule() {
+        this._unitsAdapter = new WT_G3x5_UnitsSettingModelMapModelAdapter(this._unitsSettingModel, this._mapModel);
+    }
+
     _initMapModel() {
+        this._initMapUnitsModule();
         this._mapModel.addModule(new WT_G3x5_MapModelChartsModule());
     }
 

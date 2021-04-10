@@ -6,7 +6,7 @@ class WT_G3x5_NavMap {
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {{{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}} icaoSearchers
      * @param {WT_FlightPlanManager} flightPlanManager
-     * @param {WT_G3x5_UnitsSettingModel} unitsController
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      * @param {WT_CitySearchHandler} citySearcher
      * @param {WT_MapViewBorderData} borderData
      * @param {WT_MapViewRoadFeatureCollection} roadFeatureData
@@ -14,7 +14,7 @@ class WT_G3x5_NavMap {
      * @param {WT_G3x5_TrafficSystem} trafficSystem
      * @param {*} layerOptions
      */
-    constructor(instrumentID, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsController, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
+    constructor(instrumentID, airplane, airspeedSensorIndex, altimeterIndex, icaoWaypointFactory, icaoSearchers, flightPlanManager, unitsSettingModel, citySearcher, borderData, roadFeatureData, roadLabelData, trafficSystem, layerOptions = WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT) {
         this._instrumentID = instrumentID;
         this._settingModelID = instrumentID;
 
@@ -24,7 +24,7 @@ class WT_G3x5_NavMap {
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
         this._fpm = flightPlanManager;
-        this._unitsController = unitsController;
+        this._unitsSettingModel = unitsSettingModel;
         this._citySearcher = citySearcher;
         this._borderData = borderData;
         this._roadFeatureData = roadFeatureData;
@@ -119,7 +119,7 @@ class WT_G3x5_NavMap {
     }
 
     _initUnitsModule() {
-        this._unitsAdapter = new WT_G3x5_UnitsControllerMapModelAdapter(this._unitsController, this.model);
+        this._unitsAdapter = new WT_G3x5_UnitsSettingModelMapModelAdapter(this._unitsSettingModel, this.model);
     }
 
     /**
