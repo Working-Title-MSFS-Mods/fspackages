@@ -64,6 +64,46 @@ class WT_FlightPlanManager {
     /**
      *
      * @param {Boolean} [cached]
+     * @returns {Promise<WT_Waypoint>|WT_Waypoint}
+     */
+    getOriginWaypoint(cached = false) {
+        if (cached) {
+            return this.activePlan.getOrigin().waypoint;
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this.activePlan.getOrigin().waypoint);
+            });
+        }
+    }
+
+    _getDestinationWaypoint() {
+        if (!this.directTo.isActive() || this._getDirectToLeg()) {
+            return this.activePlan.getDestination().waypoint;
+        } else {
+            return this.directTo.getDestination();
+        }
+    }
+
+    /**
+     *
+     * @param {Boolean} [cached]
+     * @returns {Promise<WT_Waypoint>|WT_Waypoint}
+     */
+    getDestinationWaypoint(cached = false) {
+        if (cached) {
+            return this._getDestinationWaypoint();
+        } else {
+            return new Promise(async resolve => {
+                await this.syncActiveFromGame();
+                resolve(this._getDestinationWaypoint());
+            })
+        }
+    }
+
+    /**
+     *
+     * @param {Boolean} [cached]
      * @returns {Promise<WT_FlightPlanLeg>|WT_FlightPlanLeg}
      */
     getActiveLeg(cached = false) {
