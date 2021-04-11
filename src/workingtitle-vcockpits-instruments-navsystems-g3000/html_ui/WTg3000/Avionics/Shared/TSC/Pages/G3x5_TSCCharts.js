@@ -47,7 +47,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _initManualAirportSelectListener() {
-        WT_CrossInstrumentEvent.addListener(this._manualAirportSelectKey, this._onManualChartSelect.bind(this));
+        WT_CrossInstrumentEvent.addListener(this._manualAirportSelectKey, this._onManualAirportSelect.bind(this));
     }
 
     /**
@@ -274,6 +274,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
                     chartID = chart.id;
                 }
                 this._chartIDSetting.setValue(chartID);
+                this._resetChartSettings();
             }
         } else {
             this._chartIDSetting.setValue("");
@@ -356,7 +357,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._setAirportICAO(icao);
     }
 
-    _onManualChartSelect(key, data) {
+    _onManualAirportSelect(key, data) {
         this._hasMadeManualAirportSelection = true;
     }
 
@@ -409,7 +410,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
                 shouldSelectOrigin = distanceFromOrigin <= compareDistance;
             }
 
-            if (shouldSelectOrigin && !this._airport) {
+            if (shouldSelectOrigin) {
                 return origin;
             }
         }
@@ -422,11 +423,9 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         } else {
             // select nearest airport if a current airport is not selected.
 
-            if (!this._airport) {
-                let nearest = this.instrument.nearestAirportList.airports.get(0);
-                if (nearest) {
-                    return nearest;
-                }
+            let nearest = this.instrument.nearestAirportList.airports.get(0);
+            if (nearest) {
+                return nearest;
             }
         }
         return null;
