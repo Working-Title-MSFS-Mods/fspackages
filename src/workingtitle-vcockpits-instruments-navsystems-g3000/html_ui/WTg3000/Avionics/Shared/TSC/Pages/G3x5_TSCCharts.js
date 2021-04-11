@@ -28,7 +28,9 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
 
         this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
 
-        this._isLocked = false;
+        this._hasMadeManualAirportSelection = false;
+        this._manualAirportSelectKey = `${WT_G3x5_TSCCharts.AIRPORT_SELECT_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
+        this._initManualAirportSelectListener();
     }
 
     _initSettingModel() {
@@ -42,6 +44,10 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this._settingModel));
 
         this._icaoSetting.init();
+    }
+
+    _initManualAirportSelectListener() {
+        WT_CrossInstrumentEvent.addListener(this._manualAirportSelectKey, this._onManualChartSelect.bind(this));
     }
 
     /**
@@ -339,8 +345,19 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._openOptionsWindow();
     }
 
+    _fireManualAirportSelectionEvent() {
+        WT_CrossInstrumentEvent.fireEvent(this._manualAirportSelectKey, "");
+    }
+
     _onKeyboardClosed(icao) {
+        if (icao !== "" && !this._hasMadeManualAirportSelection) {
+            this._fireManualAirportSelectionEvent();
+        }
         this._setAirportICAO(icao);
+    }
+
+    _onManualChartSelect(key, data) {
+        this._hasMadeManualAirportSelection = true;
     }
 
     _resetChartSettings() {
@@ -359,6 +376,66 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._resetChartSettings();
     }
 
+    /**
+     *
+     * @returns {WT_Airport}
+     */
+    _chooseAutoSelectAirport() {
+        if (this._airport && this._hasMadeManualAirportSelection) {
+            return null;
+        }
+
+        let fpm = this.instrument.flightPlanManagerWT;
+        let origin = fpm.getOriginWaypoint(true);
+        let destination = fpm.getDestinationWaypoint(true);
+
+        if (origin && origin instanceof WT_Airport) {
+            // if there is an origin loaded into the active flight plan, we will check to see if a departure is also
+            // loaded. If there is a departure, we will attempt to switch to origin airport only if active leg is
+            // before end of departure. If there is no departure or no active leg, we will switch to origin if the
+            // distance of the airplane from the origin is less than 15 NM or the distance to the destination,
+            // whichever is smaller.
+
+            let shouldSelectOrigin = false;
+            let departure = fpm.activePlan.getDeparture();
+            let activeLeg = fpm.directTo.isActive() ? fpm.getDirectToLeg(true) : fpm.getActiveLeg(true);
+            if (departure && activeLeg) {
+                shouldSelectOrigin = activeLeg.index <= departure.legs.get(departure.legs.length - 1).index;
+            } else {
+                let planePos = this.instrument.airplane.navigation.position();
+                let distanceFromOrigin = origin.location.distance(planePos);
+                let distanceToDest = destination ? destination.location.distance(planePos) : Infinity;
+                let compareDistance = Math.min(distanceToDest, WT_G3x5_TSCCharts.AIRPORT_AUTOSELECT_ORIGIN_RADIUS.asUnit(WT_Unit.GA_RADIAN));
+                shouldSelectOrigin = distanceFromOrigin <= compareDistance;
+            }
+
+            if (shouldSelectOrigin && !this._airport) {
+                return origin;
+            }
+        }
+
+        if (destination && destination instanceof WT_Airport) {
+            // if an origin was not selected and a destination airport is loaded into the flight plan (or a direct-to
+            // an airport is active), select the destination.
+
+            return destination;
+        } else {
+            // select nearest airport if a current airport is not selected.
+
+            if (!this._airport) {
+                // TODO
+            }
+        }
+        return null;
+    }
+
+    _autoSelectAirport() {
+        let airportToSelect = this._chooseAutoSelectAirport();
+        if (airportToSelect) {
+            this._setAirportICAO(airportToSelect.icao);
+        }
+    }
+
     _activateChartsDisplayPane() {
         let settings = this.instrument.getSelectedMFDPaneSettings();
         settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS);
@@ -367,6 +444,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     onEnter() {
         super.onEnter();
 
+        this._autoSelectAirport();
         this._activateChartsDisplayPane();
         this.htmlElement.open();
     }
@@ -382,6 +460,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 }
 WT_G3x5_TSCCharts.TITLE = "Charts";
+WT_G3x5_TSCCharts.AIRPORT_SELECT_EVENT_KEY_PREFIX = "WT_Charts_ManualAirportSelection";
+WT_G3x5_TSCCharts.AIRPORT_AUTOSELECT_ORIGIN_RADIUS = WT_Unit.NMILE.createNumber(15);
 
 class WT_G3x5_TSCChartsHTMLElement extends HTMLElement {
     constructor() {
