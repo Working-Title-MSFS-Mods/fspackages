@@ -156,7 +156,11 @@ class WT_G3x5_ChartsView extends HTMLElement {
     _updateBanners() {
         let model = this._context.model;
         if (model.navigraphStatus === WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE) {
-            this._wrapper.setAttribute("status", "ok");
+            if (model.chartID === "") {
+                this._wrapper.setAttribute("status", "nocharts");
+            } else {
+                this._wrapper.setAttribute("status", "ok");
+            }
         } else {
             this._wrapper.setAttribute("status", "datafail");
         }
@@ -278,6 +282,9 @@ WT_G3x5_ChartsView.TEMPLATE.innerHTML = `
                 font-weight: bold;
                 font-size: var(--charts-banner-font-size, 1.5em);
                 color: white;
+            }
+            #wrapper[status="nocharts"] #nocharts {
+                display: block;
             }
             #wrapper[status="datafail"] #datafail {
                 display: block;
