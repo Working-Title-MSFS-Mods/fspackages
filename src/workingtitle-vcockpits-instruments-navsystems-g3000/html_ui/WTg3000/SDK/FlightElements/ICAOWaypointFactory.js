@@ -7,14 +7,21 @@
 class WT_ICAOWaypointFactory {
     /**
      * @param {Number} [cacheSize] - the size of the internal waypoint cache.
+     * @param {Number} [coherentCallProcessBudget] - the maximum number of calls to make to Coherent to request
+     *                                               waypoint data per waypoint type per update cycle.
+     * @param {Number} [coherentDataProcessBudget] - the maximum number of waypoint data objects sent by Coherent to
+     *                                               process per update cycle.
      */
-    constructor(cacheSize = WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT) {
+    constructor(cacheSize = WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT, coherentCallProcessBudget = WT_ICAOWaypointFactory.COHERENT_CALL_PROCESS_BUDGET_DEFAULT, coherentDataProcessBudget = WT_ICAOWaypointFactory.COHERENT_DATA_PROCESS_BUDGET_DEFAULT) {
         this._cacheSize = cacheSize;
+        this._coherentCallProcessBudget = coherentCallProcessBudget;
+        this._coherentDataProcessBudget = coherentDataProcessBudget;
 
         /**
          * @type {Map<String,Set<String>>}
          */
         this._icaosToRetrieve = new Map();
+        this._coherentDataQueue = [];
         /**
          * @type {Map<String,WT_ICAOWaypointFactoryCacheEntry>}
          */
@@ -54,19 +61,10 @@ class WT_ICAOWaypointFactory {
 
     /**
      * Returns a Promise that resolves when this factory is registered to receive waypoint data from Coherent.
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
-    _waitForRegistration() {
-        return new Promise(resolve => {
-            let loop = function() {
-                if (this._isRegistered) {
-                    resolve();
-                } else {
-                    requestAnimationFrame(loop.bind(this));
-                }
-            }
-            loop.bind(this)();
-        });
+    async _waitForRegistration() {
+        await WT_Wait.awaitCallback(() => this._isRegistered, this);
     }
 
     _buildAirway(waypoint, route) {
@@ -140,29 +138,21 @@ class WT_ICAOWaypointFactory {
     }
 
     /**
+     * Enqueues waypoint data sent by Coherent to be processed.
+     * @param {Object} data - the waypoint data object.
+     */
+    _enqueueCoherentData(data) {
+        this._coherentDataQueue.push(data);
+    }
+
+    /**
      *
      * @param {Object} data - the data object describing the waypoint.
+     * @param {WT_ICAOWaypoint.Type} sentType - the ICAO waypoint type of the data, as sent by Coherent.
      */
-    _onCoherentDataLoaded(data, type) {
-        data.icaoTrimmed = data.icao.trim();
-
-        let entry = this._waypointCache.get(data.icaoTrimmed);
-        if (!entry) {
-            entry = {isReady: false};
-            this._waypointCache.set(data.icaoTrimmed, entry);
-            if (this._waypointCache.size > this._cacheSize) {
-                this._waypointCache.delete(this._waypointCache.keys().next().value);
-            }
-        } else if (entry.isReady) {
-            return;
-        }
-
-        if (data.routes) {
-            this._addAirwayDataToCache(data, entry);
-        }
-        if (data.icao[0] === type) {
-            this._addWaypointToCache(data, entry);
-        }
+    _onCoherentDataLoaded(data, sentType) {
+        data.sentType = sentType;
+        this._enqueueCoherentData(data);
     }
 
     /**
@@ -414,21 +404,84 @@ class WT_ICAOWaypointFactory {
         }
     }
 
-    update() {
+    /**
+     * Sends a request to Coherent to retrieve waypoint data for an array of ICAO strings.
+     * @param {String} key - the Coherent call key.
+     * @param {String[]} icaoArray - an array of ICAO strings.
+     */
+    _executeCoherentCall(key, icaoArray) {
+        Coherent.call(key, icaoArray, icaoArray.length);
+        if (key !== WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS && key !== WT_ICAOWaypointFactory.COHERENT_CALL_INTS) {
+            // need to make an extra call to load intersection data in order to get airways for VORs and NDBs.
+            Coherent.call(WT_ICAOWaypointFactory.COHERENT_CALL_INTS, icaoArray, icaoArray.length);
+        }
+    }
+
+    _processCoherentCallQueue() {
         this._icaosToRetrieve.forEach((icaos, key) => {
             if (!icaos || icaos.size === 0) {
                 return;
             }
-            let icaoArray = Array.from(icaos);
-            Coherent.call(key, icaoArray, icaoArray.length);
-            if (key !== WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS && key !== WT_ICAOWaypointFactory.COHERENT_CALL_INTS) {
-                Coherent.call(WT_ICAOWaypointFactory.COHERENT_CALL_INTS, icaoArray, icaoArray.length);
-            }
-            icaos.clear();
+            let icaoArray = [];
+            icaos.forEach(icao => {
+                if (icaoArray.length < this._coherentCallProcessBudget) {
+                    icaoArray.push(icao);
+                }
+            });
+            this._executeCoherentCall(key, icaoArray);
+
+            icaoArray.forEach(icao => icaos.delete(icao));
         }, this);
+    }
+
+    /**
+     * Processes waypoint data sent by Coherent. Depending on the data that was sent, either a new WT_ICAOWaypoint
+     * object will be created from the data and added to the cache, or airway data will be added to a waypoint
+     * object.
+     * @param {Object} data - the waypoint data object.
+     */
+    _processCoherentData(data) {
+        data.icaoTrimmed = data.icao.trim();
+
+        let entry = this._waypointCache.get(data.icaoTrimmed);
+        if (!entry) {
+            entry = {isReady: false};
+            this._waypointCache.set(data.icaoTrimmed, entry);
+            if (this._waypointCache.size > this._cacheSize) {
+                this._waypointCache.delete(this._waypointCache.keys().next().value);
+            }
+        } else if (entry.isReady) {
+            return;
+        }
+
+        if (data.routes) {
+            this._addAirwayDataToCache(data, entry);
+        }
+        if (data.icao[0] === data.sentType) {
+            this._addWaypointToCache(data, entry);
+        }
+    }
+
+    _processCoherentDataQueue() {
+        let count = 0;
+        while (count < this._coherentDataProcessBudget) {
+            if (count >= this._coherentDataQueue.length) {
+                break;
+            }
+            this._processCoherentData(this._coherentDataQueue[count++]);
+        }
+
+        this._coherentDataQueue.splice(0, count);
+    }
+
+    update() {
+        this._processCoherentCallQueue();
+        this._processCoherentDataQueue();
     }
 }
 WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT = 5000;
+WT_ICAOWaypointFactory.COHERENT_CALL_PROCESS_BUDGET_DEFAULT = 10;
+WT_ICAOWaypointFactory.COHERENT_DATA_PROCESS_BUDGET_DEFAULT = 20;
 WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS = "LOAD_AIRPORTS";
 WT_ICAOWaypointFactory.COHERENT_CALL_VORS = "LOAD_VORS";
 WT_ICAOWaypointFactory.COHERENT_CALL_NDBS = "LOAD_NDBS";
