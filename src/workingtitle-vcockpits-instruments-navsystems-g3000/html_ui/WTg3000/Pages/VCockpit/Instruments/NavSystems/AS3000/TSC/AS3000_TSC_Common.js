@@ -119,6 +119,14 @@ class AS3000_TSC extends NavSystemTouch {
         return this._mfdRightPaneSettings;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_NearestAirportList}
+     */
+    get nearestAirportList() {
+        return this._nearestAirportList;
+    }
+
     getSelectedMFDPane() {
         if (this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
             return WT_G3x5_MFDHalfPane.ID.LEFT;
@@ -313,13 +321,30 @@ class AS3000_TSC extends NavSystemTouch {
             this.pfdPrefix = pfdPrefix_elem[0].textContent;
         }
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
+
     reboot() {
         super.reboot();
         if (this.terrainAlerts)
             this.terrainAlerts.reset();
+    }
+
+    _initNearestAirportList() {
+        this._nearestAirportList = new WT_G3x5_NearestAirportList(this.airplane, this.icaoWaypointFactory, this.icaoSearchers.airport);
+        this._lastNearestAirportListUpdateTime = Date.now();
+    }
+
+    _initNearestWaypoints() {
+        this._initNearestAirportList();
+    }
+
+    Init() {
+        super.Init();
+
+        this._initNearestWaypoints();
     }
 
     _updatePageTitle() {
@@ -363,12 +388,24 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
+    _updateNearestAirportList(currentTime) {
+        if (currentTime - this._lastNearestAirportListUpdateTime >= AS3000_TSC.NEAREST_AIRPORT_LIST_UPDATE_INTERVAL) {
+            this.nearestAirportList.update();
+            this._lastNearestAirportListUpdateTime = currentTime;
+        }
+    }
+
+    _updateNearestWaypoints(currentTime) {
+        this._updateNearestAirportList(currentTime);
+    }
+
     _doUpdates(currentTime) {
         super._doUpdates(currentTime);
 
         this._updatePageTitle();
         this._updateSoftkeyLabels();
         this._updateMFDPaneSelectDisplay();
+        this._updateNearestWaypoints(currentTime);
     }
 
     _onMFDMainPaneModeChanged(setting, newValue, oldValue) {
@@ -700,6 +737,7 @@ class AS3000_TSC extends NavSystemTouch {
 AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT = new Set([
     "TT:ATCCOM.AC_MODEL_TBM9.0.text"
 ]);
+AS3000_TSC.NEAREST_AIRPORT_LIST_UPDATE_INTERVAL = 5000;
 
 class AS3000_TSC_PageInfos {
 }
