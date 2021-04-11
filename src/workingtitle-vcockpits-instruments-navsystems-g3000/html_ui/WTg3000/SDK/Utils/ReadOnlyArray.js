@@ -54,8 +54,8 @@ class WT_ReadOnlyArray {
 
     /**
      * Finds the index of the first element in this array where predicate is true.
-     * @param {(this: void, value: T, index: number, obj: T[]) => Boolean} predicate - this function is called once for each element of the array,
-     *                                                                                 in ascending order, until it returns true.
+     * @param {(value: T, index: number, obj: T[]) => Boolean} predicate - this function is called once for each element of the array,
+     *                                                                     in ascending order, until it returns true.
      * @param {Object} [thisArg] - if provided, it will be used as the this value for each invocation of predicate. If
      *                             it is not provided, undefined is used instead.
      * @returns {Number} the index of the first element in this array where predicate is true, or -1 if no such element
@@ -67,8 +67,8 @@ class WT_ReadOnlyArray {
 
     /**
      * Gets the first element in this array where predicate is true.
-     * @param {(this: void, value: T, index: number, obj: T[]) => Boolean} predicate - this function is called once for each element of the array,
-     *                                                                                 in ascending order, until it returns true.
+     * @param {(value: T, index: number, obj: T[]) => Boolean} predicate - this function is called once for each element of the array,
+     *                                                                     in ascending order, until it returns true.
      * @param {Object} [thisArg] - if provided, it will be used as the this value for each invocation of predicate. If
      *                             it is not provided, undefined is used instead.
      * @returns {T} the first element in this array where predicate is true, or -1 if no such element was found.
@@ -99,6 +99,30 @@ class WT_ReadOnlyArray {
         } else {
             return this._array.reduce(callback, initialValue);
         }
+    }
+
+    /**
+     * Determines whether the specified predicate function returns true for any element of this array.
+     * @param {(value: T, index: number, array: T[]) => Boolean} predicate - this function is called once for each element of the array,
+     *                                                                       in ascending order, until it returns true.
+     * @param {Object} [thisArg] - if provided, it will be used as the this value for each invocation of predicate. If
+     *                             it is not provided, undefined is used instead.
+     * @returns {Boolean} whether at least one element of this array satisfies the predicate.
+     */
+    some(predicate, thisArg) {
+        return this._array.some(predicate, thisArg);
+    }
+
+    /**
+     * Determines whether every element of this array satisfies the specified predicate.
+     * @param {(value: T, index: number, array: T[]) => Boolean} predicate - this function is called once for each element of the array,
+     *                                                                       in ascending order, until it returns false.
+     * @param {Object} [thisArg] - if provided, it will be used as the this value for each invocation of predicate. If
+     *                             it is not provided, undefined is used instead.
+     * @returns {Boolean} whether every element of this array satisfies the predicate.
+     */
+    every(predicate, thisArg) {
+        return this._array.every(predicate, thisArg);
     }
 
     /**

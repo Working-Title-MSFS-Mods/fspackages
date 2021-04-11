@@ -211,7 +211,7 @@ class WT_SortedArray {
      * Removes all elements from this array.
      */
     clear() {
-        this._array = [];
+        this._array.splice(0, this._array.length);
     }
 
     /**

@@ -423,7 +423,10 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
             // select nearest airport if a current airport is not selected.
 
             if (!this._airport) {
-                // TODO
+                let nearest = this.instrument.nearestAirportList.airports.get(0);
+                if (nearest) {
+                    return nearest;
+                }
             }
         }
         return null;
