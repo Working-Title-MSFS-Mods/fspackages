@@ -68,13 +68,13 @@ class WT_G3x5_TSCAvionicsSettingsHTMLElement extends HTMLElement {
     }
 
     _initTabs() {
-        this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsSystemTab(), WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
+        this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsSystemTab(this.parentPage));
         this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsUnitsTab(this.parentPage));
         this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsAlertsTab(), WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
         this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsMFDFieldsTab(this.parentPage, this.parentPage.mfdInstrumentID));
         this._tabbedContent.addTab(new WT_G3x5_TSCAvionicsSettingsAudioTab(), WT_G3x5_TSCTabbedView.TabButtonPosition.LEFT, false);
 
-        this._lastActiveTabIndex = 1;
+        this._lastActiveTabIndex = 0;
     }
 
     _initTabbedContent() {
@@ -187,19 +187,222 @@ class WT_G3x5_TSCAvionicsSettingsScrollTab extends WT_G3x5_TSCAvionicsSettingsTa
     }
 }
 
-class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsTab {
+class WT_G3x5_TSCAvionicsSettingsRow extends HTMLElement {
     constructor() {
-        super(WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE);
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._context = null;
+
+        this._isInit = false;
+        this._lastContext = null;
+    }
+
+    async _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+        this._title = this.shadowRoot.querySelector(`#title`);
+    }
+
+    _initChildren() {
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._initChildren();
+        this._isInit = true;
+        if (this._context) {
+            this._updateFromContext();
+        }
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _cleanUpContext() {
+    }
+
+    _updateFromContext() {
+    }
+
+    setContext(context) {
+        if (context === this._context) {
+            return;
+        }
+
+        this._cleanUpContext();
+
+        this._context = context;
+        if (this._isInit) {
+            this._updateFromContext();
+        }
+    }
+}
+
+class WT_G3x5_TSCAvionicsSettingsButtonRow extends WT_G3x5_TSCAvionicsSettingsRow {
+    _getTemplate() {
+        return WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE;
+    }
+
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_TSCLabeledButton);
+    }
+}
+WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            width: 100%;
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 5px;
+        }
+
+        #wrapper {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: var(--avionicssettings-row-left-width, 50%) var(--avionicssettings-row-right-width, 50%);
+        }
+            #title {
+                text-align: center;
+                align-self: center;
+            }
+            #button {
+                position: relative;
+                margin: var(--avionicssettings-row-button-margin, 0.1em);
+                font-size: var(--avionicssettings-row-button-font-size, 1em);
+                color: var(--avionicssettings-row-button-color, var(--wt-g3x5-lightblue));
+            }
+    </style>
+    <div id="wrapper">
+        <div id="title"></div>
+        <wt-tsc-button-label id="button"></wt-tsc-button-label>
+    </div>
+`;
+
+class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
+    constructor(parentPage) {
+        super(WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE, parentPage);
     }
 
     _createHTMLElement() {
-        return document.createElement("div");
+        let htmlElement = new WT_TSCScrollList();
+        htmlElement.classList.add(WT_G3x5_TSCAvionicsSettingsSystemTab.CLASS);
+        return htmlElement;
+    }
+
+    _initRunwaySurfaceRow() {
+        this._runwaySurfaceRow = new WT_G3x5_TSCSystemRunwaySurfaceRow();
+        this._runwaySurfaceRow.setContext({
+            parentPage: this.parentPage,
+            setting: this.parentPage.instrument.nearestAirportList.runwaySurfaceSetting
+        });
+        this._runwaySurfaceRow.slot = "content";
+        this.htmlElement.appendChild(this._runwaySurfaceRow);
+    }
+
+    _initRows() {
+        this._initRunwaySurfaceRow();
+    }
+
+    onAttached() {
+        super.onAttached();
+
+        this._initRows();
+    }
+
+    _cancelScroll() {
+        this.htmlElement.scrollManager.cancelScroll();
+    }
+
+    onDeactivated() {
+        super.onDeactivated();
+
+        this._cancelScroll();
     }
 
     update() {
+        this.htmlElement.scrollManager.update();
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollManager.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollManager.scrollDown();
     }
 }
 WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE = "System";
+WT_G3x5_TSCAvionicsSettingsSystemTab.CLASS = "systemTab";
+
+class WT_G3x5_TSCSystemRunwaySurfaceRow extends WT_G3x5_TSCAvionicsSettingsButtonRow {
+    constructor() {
+        super();
+
+        this._initSelectionWindowContext();
+    }
+
+    _initSelectionWindowContext() {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT);
+        this._selectionWindowContext = {
+            title: "Select Runway Surface",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler
+        };
+    }
+
+    _initTitle() {
+        this._title.textContent = "Nearest Airport Runway Surface";
+    }
+
+    _initChildren() {
+        this._initTitle();
+    }
+
+    _cleanUpContext() {
+        if (this._buttonManager) {
+            this._buttonManager.destroy();
+        }
+    }
+
+    _updateSelectionWindowContext() {
+        this._selectionWindowContext.homePageGroup = this._context.parentPage.homePageGroup;
+        this._selectionWindowContext.homePageName = this._context.parentPage.homePageName;
+    }
+
+    _initButtonManager() {
+        let instrument = this._context.parentPage.instrument;
+        this._buttonManager = new WT_TSCSettingLabeledButtonManager(instrument, this._button, this._context.setting, instrument.selectionListWindow1, this._selectionWindowContext, value => WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT[value]);
+        this._buttonManager.init();
+    }
+
+    _updateFromContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._updateSelectionWindowContext();
+        this._initButtonManager();
+    }
+}
+WT_G3x5_TSCSystemRunwaySurfaceRow.NAME = "wt-tsc-avionicssettings-runwaysurfacerow";
+WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT = [
+    "All",
+    "Hard Surface",
+    "Soft Surface"
+];
+
+customElements.define(WT_G3x5_TSCSystemRunwaySurfaceRow.NAME, WT_G3x5_TSCSystemRunwaySurfaceRow);
 
 class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
     constructor(parentPage) {
