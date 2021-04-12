@@ -15,7 +15,12 @@ class WT_Airport extends WT_ICAOWaypoint {
     }
 
     _approachMap(data, index) {
-        return new WT_Approach(this, data.name, index, data);
+        let approach = new WT_Approach(this, data.name, index, data);
+        let runway = approach.runway;
+        if (runway) {
+            runway.addApproach(approach);
+        }
+        return approach;
     }
 
     _calculateElevation(runwayData) {
@@ -375,6 +380,9 @@ class WT_Runway {
     constructor(airport, number, data, reverse) {
         this._airport = airport;
         this._initFromData(number, data, reverse);
+
+        this._approaches = [];
+        this._approachesReadOnly = new WT_ReadOnlyArray(this._approaches);
     }
 
     _initFromData(number, data, reverse) {
@@ -400,8 +408,8 @@ class WT_Runway {
     }
 
     /**
+     * The airport to which this runway belongs.
      * @readonly
-     * @property {WT_Airport} airport - the airport to which this runway belongs.
      * @type {WT_Airport}
      */
     get airport() {
@@ -409,8 +417,8 @@ class WT_Runway {
     }
 
     /**
+     * The number of this runway.
      * @readonly
-     * @property {Number} number - the number of this runway.
      * @type {Number}
      */
     get number() {
@@ -418,8 +426,8 @@ class WT_Runway {
     }
 
     /**
+     * The suffix of this runway.
      * @readonly
-     * @property {WT_Runway.Suffix} suffix - the suffix of this runway.
      * @type {WT_Runway.Suffix}
      */
     get suffix() {
@@ -427,8 +435,8 @@ class WT_Runway {
     }
 
     /**
+     * The designation of this runway, consisting of the runway number followed by an optional L/C/R suffix.
      * @readonly
-     * @property {String} designation - the designation of this runway, consisting of the runway number followed by an optional L/C/R suffix.
      * @type {String}
      */
     get designation() {
@@ -436,9 +444,9 @@ class WT_Runway {
     }
 
     /**
+     * The designation of the runway pair that contains this runway, or simply this runway's designation if
+     * this runway has no reciprocal.
      * @readonly
-     * @property {String} pairDesignation - the designation of the runway pair that contains this runway, or simply this runway's designation if
-     *                                      this runway has no reciprocal.
      * @type {String}
      */
     get pairDesignation() {
@@ -446,8 +454,8 @@ class WT_Runway {
     }
 
     /**
+     * The runway that is the opposite of this runway, if one exists.
      * @readonly
-     * @property {WT_Runway} reciprocal - the runway that is the opposite of this runway, if one exists.
      * @type {WT_Runway}
      */
     get reciprocal() {
@@ -455,8 +463,8 @@ class WT_Runway {
     }
 
     /**
+     * The lat/long coordinates of the center of this runway.
      * @readonly
-     * @property {WT_GeoPointReadOnly} location - the lat/long coordinates of the center of this runway.
      * @type {WT_GeoPointReadOnly}
      */
     get location() {
@@ -464,8 +472,8 @@ class WT_Runway {
     }
 
     /**
+     * The lat/long coordinates of the start of this runway.
      * @readonly
-     * @property {WT_GeoPointReadOnly} start - the lat/long coordinates of the start of this runway.
      * @type {WT_GeoPointReadOnly}
      */
     get start() {
@@ -473,8 +481,8 @@ class WT_Runway {
     }
 
     /**
+     * The lat/long coordinates of the end of this runway.
      * @readonly
-     * @property {WT_GeoPointReadOnly} end - the lat/long coordinates of the end of this runway.
      * @type {WT_GeoPointReadOnly}
      */
     get end() {
@@ -482,8 +490,8 @@ class WT_Runway {
     }
 
     /**
+     * The elevation of the center of this runway.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} elevation - the elevation of the center of this runway.
      * @type {WT_NumberUnitReadOnly}
      */
     get elevation() {
@@ -491,8 +499,8 @@ class WT_Runway {
     }
 
     /**
+     * The precise heading of this runway.
      * @readonly
-     * @property {Number} direction - the precise heading of this runway.
      * @type {Number}
      */
     get direction() {
@@ -500,8 +508,8 @@ class WT_Runway {
     }
 
     /**
+     * The length of this runway.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} length - the length of this runway.
      * @type {WT_NumberUnitReadOnly}
      */
     get length() {
@@ -509,8 +517,8 @@ class WT_Runway {
     }
 
     /**
+     * The width of this runway.
      * @readonly
-     * @property {WT_NumberUnitReadOnly} width - the width of this runway.
      * @type {WT_NumberUnitReadOnly}
      */
     get width() {
@@ -518,8 +526,8 @@ class WT_Runway {
     }
 
     /**
+     * The surface type of this runway.
      * @readonly
-     * @property {WT_Runway.Surface} surface - the surface type of this runway.
      * @type {WT_Runway.Surface}
      */
     get surface() {
@@ -527,12 +535,29 @@ class WT_Runway {
     }
 
     /**
+     * The lighting type of this runway.
      * @readonly
-     * @property {WT_Runway.Lighting} surface - the lighting type of this runway.
      * @type {WT_Runway.Lighting}
      */
     get lighting() {
         return this._lighting;
+    }
+
+    /**
+     * The approaches associated with this runway.
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_Approach>}
+     */
+    get approaches() {
+        return this._approachesReadOnly;
+    }
+
+    /**
+     * Adds an approach associated with this runway.
+     * @param {WT_Approach} approach - an approach procedure.
+     */
+    addApproach(approach) {
+        this._approaches.push(approach);
     }
 
     /**
@@ -662,14 +687,23 @@ class WT_RunwayWaypoint extends WT_Waypoint {
 
 /**
  * A list of procedures.
- * @template T
+ * @template {WT_Procedure} T
  */
 class WT_ProcedureList {
     /**
      * @param {Array<T>} procedures - an array of procedures with which to initialize this list.
      */
     constructor(procedures) {
-        this._procedures = procedures;
+        this._array = new WT_ReadOnlyArray(procedures);
+    }
+
+    /**
+     * A read-only array of the runways in this list.
+     * @readonly
+     * @type {WT_ReadOnlyArray<T>}
+     */
+    get array() {
+        return this._array;
     }
 
     /**
@@ -678,7 +712,7 @@ class WT_ProcedureList {
      * @returns {T} a procedure.
      */
     getByIndex(index) {
-        return this._procedures[index];
+        return this._array.get(index);
     }
 
     /**
@@ -687,14 +721,6 @@ class WT_ProcedureList {
      * @returns {T} a procedure.
      */
     getByName(name) {
-        let index = this._procedures.findIndex(procedure => procedure.name === name);
-        return this.getByIndex(index);
-    }
-
-    /**
-     * @returns {Iterator<T>}
-     */
-    [Symbol.iterator]() {
-        return this._procedures.values();
+        return this._array.find(procedure => procedure.name === name);
     }
 }
