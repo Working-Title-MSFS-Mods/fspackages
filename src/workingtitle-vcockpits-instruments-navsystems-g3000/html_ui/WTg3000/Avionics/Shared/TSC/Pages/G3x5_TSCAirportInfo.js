@@ -230,10 +230,10 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
         this._header = document.createElement("div");
         this._header.classList.add(WT_G3x5_TSCAirportInfoHTMLElement.HEADER_CLASS);
 
-        this._selectButton = new WT_TSCWaypointButton();
+        this._selectButton = new WT_G3x5_TSCWaypointButton();
         this._selectButton.classList.add(WT_G3x5_TSCAirportInfoHTMLElement.SELECT_BUTTON_CLASS);
         this._selectButton.emptyText = "Select Airport";
-        this._selectButton.setIconSrcFactory(new WT_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCAirportInfoHTMLElement.WAYPOINT_ICON_PATH));
+        this._selectButton.setIconSrcFactory(new WT_G3x5_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCAirportInfoHTMLElement.WAYPOINT_ICON_PATH));
         this._header.appendChild(this._selectButton);
 
         this._optionsButton = new WT_TSCLabeledButton();
@@ -255,7 +255,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @type {WT_TSCWaypointButton}
+     * @type {WT_G3x5_TSCWaypointButton}
      */
     get selectButton() {
         return this._selectButton;
@@ -903,7 +903,7 @@ WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.innerHTML = `
                 <div class="title">BRG</div>
                 <div class="valuebox">
                     <div class="value"></div>
-                    <tsc-bearingarrow class="arrow"></tsc-bearingarrow>
+                    <wt-tsc-bearingarrow class="arrow"></wt-tsc-bearingarrow>
                 </div>
             </div>
             <div id="dis">

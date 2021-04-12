@@ -497,7 +497,7 @@ class WT_G3x5_TSCChartsHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @type {WT_TSCWaypointButton}
+     * @type {WT_G3x5_TSCWaypointButton}
      */
     get selectButton() {
         return this._selectButton;
@@ -516,10 +516,10 @@ class WT_G3x5_TSCChartsHTMLElement extends HTMLElement {
     }
 
     _initSelectButton() {
-        this._selectButton = new WT_TSCWaypointButton();
+        this._selectButton = new WT_G3x5_TSCWaypointButton();
         this._selectButton.classList.add(WT_G3x5_TSCChartsHTMLElement.SELECT_BUTTON_CLASS);
         this._selectButton.emptyText = "Select Airport";
-        this._selectButton.setIconSrcFactory(new WT_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCChartsHTMLElement.WAYPOINT_ICON_PATH));
+        this._selectButton.setIconSrcFactory(new WT_G3x5_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCChartsHTMLElement.WAYPOINT_ICON_PATH));
         this._header.appendChild(this._selectButton);
     }
 

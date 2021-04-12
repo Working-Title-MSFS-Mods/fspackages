@@ -1,4 +1,4 @@
-class WT_TSCWaypointButton extends WT_TSCButton {
+class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
     constructor() {
         super();
 
@@ -15,7 +15,7 @@ class WT_TSCWaypointButton extends WT_TSCButton {
                 top: 5%;
                 font-size: var(--waypoint-ident-font-size, 1.67em);
                 text-align: left;
-                color: var(--waypoint-ident-color, #67e8ef);
+                color: var(--waypoint-ident-color, var(--wt-g3x5-lightblue));
             }
         `;
     }
@@ -182,11 +182,11 @@ class WT_TSCWaypointButton extends WT_TSCButton {
         }
     }
 }
-WT_TSCWaypointButton.NAME = "wt-tsc-button-waypoint";
+WT_G3x5_TSCWaypointButton.NAME = "wt-tsc-button-waypoint";
 
-customElements.define(WT_TSCWaypointButton.NAME, WT_TSCWaypointButton);
+customElements.define(WT_G3x5_TSCWaypointButton.NAME, WT_G3x5_TSCWaypointButton);
 
-class WT_TSCWaypointButtonIconSrcFactory {
+class WT_G3x5_TSCWaypointButtonIconSrcFactory {
     constructor(imageDir) {
         this._imageDir = imageDir;
     }
