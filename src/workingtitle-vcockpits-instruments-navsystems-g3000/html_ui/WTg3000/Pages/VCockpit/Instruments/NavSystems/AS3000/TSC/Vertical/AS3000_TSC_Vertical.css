@@ -1157,14 +1157,21 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
             border: none;
             height: 0vh;
             overflow: visible; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(1) {
-          width: 35vw; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(2), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(2) {
-          width: 20vw; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(3), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(3) {
-          width: 20vw; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(4), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(4) {
-          width: 20vw; }
+
+as3000-tsc-vertical-element #NearestAirport wt-tsc-nearestairport {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3.5vh;
+    --nearestwaypoints-col1-width: 2.5fr;
+    --nearestwaypoints-col2-width: 1fr;
+    --nearestwaypoints-col3-width: 1fr;
+    --nearestwaypoints-col4-width: 1.5fr;
+    --nearestwaypoints-row-height: 11vh;
+}
+
         as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(1) {
           width: 35vw; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(2), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(2) {

@@ -55,4 +55,4 @@ WT_TSCBearingArrow.TEMPLATE.innerHTML = `
     </svg>
 `;
 
-customElements.define("tsc-bearingarrow", WT_TSCBearingArrow);
+customElements.define("wt-tsc-bearingarrow", WT_TSCBearingArrow);
