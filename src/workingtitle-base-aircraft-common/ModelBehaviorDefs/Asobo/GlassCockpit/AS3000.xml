@@ -254,13 +254,6 @@
         <UseTemplate Name="ASOBO_AS3000_Screen_Template">
             <DISPLAY>TSC</DISPLAY>
         </UseTemplate>
-        <Component ID="#AS3000#_TSC_#ID#_PreventZoom" Node="#AS3000#_TSC_#ID#">
-            <UseTemplate Name="ASOBO_GT_Interaction_LeftSingle_Code">
-                <LEFT_SINGLE_CODE>0</LEFT_SINGLE_CODE>
-                <NO_HIGHLIGHT_NODE_ID>True</NO_HIGHLIGHT_NODE_ID>
-                <!-- <MOUSEFLAGS>WheelUp</MOUSEFLAGS> -->
-            </UseTemplate>
-        </Component>
     </Template>
 
     <!-- AS580 -->
