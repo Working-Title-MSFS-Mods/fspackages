@@ -62,10 +62,10 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     onFlightStart() {
-        this.pfdConfig().then(() => {
-            console.log("PFD fully configured.");
-            this._pfdConfigDone = true;
-        });
+        // this.pfdConfig().then(() => {
+             console.log("PFD fully configured.");
+            // this._pfdConfigDone = true;
+        // });
     }
 
     onUpdate(_deltaTime) {
@@ -101,24 +101,24 @@ class AS1000_PFD extends BaseAS1000 {
     }
 
     loadSavedBrightness(display) {
-        let brightness = WTDataStore.get(`${display}.Brightness`, 100);
+        let brightness = WTDataStore.get(`${display}.Brightness`, 1.0);
         this.setBrightness(display, brightness);
     }
 
     setBrightness(display, value, relative) {
-        let lvar = `L:XMLVAR_AS1000_${display}_Brightness`;
+        let lvar = `L:AS1000_${display}_Brightness`;
         if (relative) {
             let current = SimVar.GetSimVarValue(lvar, "number")
             value = current + value;
         }
         // clamp value 0-100
-        value = Math.max(Math.min(value, 100), 0);
+        value = Math.max(Math.min(value, 1.0), 0);
         WTDataStore.set(`${display}.Brightness`, value);
         SimVar.SetSimVarValue(lvar, "number", value);
     }
 
     getBrightness(display) {
-        return SimVar.GetSimVarValue(`L:XMLVAR_AS1000_${display}_Brightness`, "number");
+        return SimVar.GetSimVarValue(`L:AS1000_${display}_Brightness`, "number");
     }
 
     parseXMLConfig() {
@@ -642,8 +642,8 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
         this.gps.ActiveSelection(this.defaultSelectables)
     }
     onUpdate(_deltaTime) {
-        this.pfdBrightLevel.textContent = this.gps.getBrightness("PFD") + "%";
-        this.mfdBrightLevel.textContent = this.gps.getBrightness("MFD") + "%";
+        this.pfdBrightLevel.textContent = Math.round(this.gps.getBrightness("PFD")*100) + "%";
+        this.mfdBrightLevel.textContent = Math.round(this.gps.getBrightness("MFD")*100) + "%";
     }
     onExit() {
         this.pfdConfWindow.setAttribute("state", "Inactive");
@@ -660,9 +660,9 @@ class AS1000_PFD_ConfigMenu extends NavSystemElement {
 
     setBrightCallback(_event, display) {
         if (_event == "FMS_Upper_INC" || _event == "NavigationSmallInc") {
-            this.gps.setBrightness(display, 10, true)
+            this.gps.setBrightness(display, 0.1, true)
         } else if (_event == "FMS_Upper_DEC" || _event == "NavigationSmallDec") {
-            this.gps.setBrightness(display, -10, true)
+            this.gps.setBrightness(display, -0.1, true)
         }
     }
 }
