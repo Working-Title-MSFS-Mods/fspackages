@@ -264,6 +264,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.selectionListWindow2 = new NavSystemElementContainer("Dynamic Selection List Window 2", "DynamicSelectionListWindow2", new WT_G3x5_TSCSelectionListWindow());
         this.selectionListWindow2.setGPS(this);
 
+        this.numKeyboard = new NavSystemElementContainer("Numeric Keyboard", "NumKeyboard", new WT_G3x5_TSCNumericKeyboard());
+        this.numKeyboard.setGPS(this);
+
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
 

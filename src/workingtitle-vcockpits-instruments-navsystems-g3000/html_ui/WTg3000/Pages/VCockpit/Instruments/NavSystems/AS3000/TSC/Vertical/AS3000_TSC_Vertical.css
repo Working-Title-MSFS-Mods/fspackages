@@ -1043,6 +1043,7 @@ as3000-tsc-vertical-element #AvionicsSettings .tab {
 }
     as3000-tsc-vertical-element #AvionicsSettings wt-tsc-avionicssettings-displayrow,
     as3000-tsc-vertical-element #AvionicsSettings wt-tsc-avionicssettings-runwaysurfacerow,
+    as3000-tsc-vertical-element #AvionicsSettings wt-tsc-avionicssettings-runwaylengthrow,
     as3000-tsc-vertical-element #AvionicsSettings wt-tsc-avionicssettings-unitsbuttonrow,
     as3000-tsc-vertical-element #AvionicsSettings wt-tsc-avionicssettings-mfdnavdatafieldrow {
         height: 14vh;
@@ -1899,6 +1900,16 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
               left: 0.5vh;
               width: 8vh;
               height: 21vh; }
+
+as3000-tsc-vertical-element #NumKeyboard wt-tsc-numkeyboard {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 85%;
+    font-size: 4.5vh;
+    --numkeyboard-button-size: 10vh;
+}
 
 as3000-tsc-vertical-element #TransponderMode wt-tsc-transpondermode-mode {
     position: absolute;
