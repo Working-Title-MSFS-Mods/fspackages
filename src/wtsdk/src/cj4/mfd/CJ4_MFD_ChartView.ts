@@ -1,4 +1,5 @@
 import { NG_Chart } from "../../types/navigraph";
+import { NavigraphApi } from "../../utils/NavigraphApi";
 
 // TODO: split the actual viewer stuff from this class into a more generic viewer component for later reuse
 export class CJ4_MFD_ChartView extends HTMLElement {
@@ -20,6 +21,8 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   private _chartprocidentifier: HTMLElement;
   private _chartinfonogeoref: HTMLElement;
   private _isChartLoading: boolean;
+  private _ngApi: NavigraphApi;
+  private _showDayChart: boolean;
 
   /** Gets a boolean indicating if the view is visible */
   public get isVisible(): boolean {
@@ -73,6 +76,7 @@ export class CJ4_MFD_ChartView extends HTMLElement {
   }
 
   connectedCallback(): void {
+    this._ngApi = new NavigraphApi();
     this._chartindexnumber = this.querySelector("#chartinfo_indexnumber");
     this._chartprocidentifier = this.querySelector("#chartinfo_procidentifier");
     this._chartinfonogeoref = this.querySelector("#chartinfo_nogeoref");
@@ -97,13 +101,15 @@ export class CJ4_MFD_ChartView extends HTMLElement {
    * @param url The url for the chart to load
    * @param chart The chart object
    */
-  loadChart(url: string = "", chart: NG_Chart = undefined): void {
-    if (url !== "") {
-      this._isChartLoading = true;
-      this._srcImage.src = url;
-    }
+  async loadChart(chart: NG_Chart = undefined): Promise<void> {
     if (chart !== undefined) {
       this._chart = chart;
+
+      // get and load png
+      this._isChartLoading = true;
+      this._showDayChart = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:3", "number") === 1;
+      this._srcImage.src = await this._ngApi.getChartPngUrl(this._chart, this._showDayChart);
+
       this._chartindexnumber.textContent = `${chart.icao_airport_identifier} ${chart.index_number}`;
       this._chartprocidentifier.textContent = chart.procedure_identifier;
       this._chartinfonogeoref.style.display = (this._chart.georef) ? "none" : "";
@@ -118,6 +124,13 @@ export class CJ4_MFD_ChartView extends HTMLElement {
       }
       this._renderTmr = this._renderCd;
       this._isDirty = false;
+
+      // check for day/night change
+      const isDay = SimVar.GetSimVarValue("LIGHT POTENTIOMETER:3", "number") === 1;
+      if(isDay !== this._showDayChart) {
+        this.loadChart(this._chart);
+      }
+
       const ctx = this._canvas.getContext("2d");
       ctx.clearRect(0, 0, this._canvas.width, this._canvas.height)
       ctx.setTransform(this._zoom, 0, 0, this._zoom, this._xOffset, this._yOffset);

@@ -36,6 +36,9 @@ declare class LZUTF8 {
   static decompress(input: string, options?: {}): any;
 }
 
+declare class CJ4_FMC_NavRadioPage {
+  static ShowPage1(fmc: CJ4_FMC): void;
+}
 
 // MSFS
 

@@ -565,7 +565,9 @@ export class ManagedFlightPlan {
 
     if (departureIndex !== -1 && runwayIndex !== -1) {
       const runwayTransition = airportInfo.departures[departureIndex].runwayTransitions[runwayIndex];
-      legs.push(...runwayTransition.legs);
+      if(runwayTransition !== undefined){
+        legs.push(...runwayTransition.legs);
+      }
     }
 
     if (departureIndex !== -1) {
@@ -618,8 +620,8 @@ export class ManagedFlightPlan {
           }
         }
         const runwayWaypoint = procedure.buildWaypoint(`RW${selectedRunwayOutput}`, runway.beginningCoordinates);
-        runwayWaypoint.legAltitudeDescription = 1;
-        runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
+        // runwayWaypoint.legAltitudeDescription = 1;
+        // runwayWaypoint.legAltitude1 = (runway.elevation * 3.28084) + 50;
         runwayWaypoint.isRunway = true;
 
         this.addWaypoint(runwayWaypoint, undefined, segment.type);

@@ -361,10 +361,16 @@
 					</UseTemplate>
 				</Component>
 				<Component ID="LIGHTING_Knobs">
-					<UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
+					<!-- <UseTemplate Name="ASOBO_LIGHTING_Knob_Panel_Template">
 						<ANIM_NAME>LIGHTING_Knob_Master</ANIM_NAME>
 						<NODE_ID>LIGHTING_Knob_Master</NODE_ID>
 						<PART_ID>LIGHTING_KNOB_MASTER</PART_ID>
+						<WWISE_EVENT>lighting_master_knob</WWISE_EVENT>
+						<COUNT>10</COUNT>
+					</UseTemplate> -->
+					<UseTemplate Name="WT_PanelLight_Knob_Template">
+						<ANIM_NAME>LIGHTING_Knob_Master</ANIM_NAME>
+						<NODE_ID>LIGHTING_Knob_Master</NODE_ID>
 						<WWISE_EVENT>lighting_master_knob</WWISE_EVENT>
 						<COUNT>10</COUNT>
 					</UseTemplate>
