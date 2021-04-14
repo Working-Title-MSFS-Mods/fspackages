@@ -241,9 +241,78 @@ class WT_G3x5_TSCAvionicsSettingsRow extends HTMLElement {
     }
 }
 
-class WT_G3x5_TSCAvionicsSettingsButtonRow extends WT_G3x5_TSCAvionicsSettingsRow {
+class WT_G3x5_TSCAvionicsSettingsDisplayRow extends WT_G3x5_TSCAvionicsSettingsRow {
     _getTemplate() {
-        return WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE;
+        return WT_G3x5_TSCAvionicsSettingsDisplayRow.TEMPLATE;
+    }
+
+    async _defineChildren() {
+        await super._defineChildren();
+        this._display = new WT_CachedElement(this.shadowRoot.querySelector(`#display`));
+    }
+
+    _updateTitle() {
+        this._title.innerHTML = this._context ? this._context.title : "";
+    }
+
+    _updateFromContext() {
+        this._updateTitle();
+    }
+
+    setDisplayText(text) {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._display.innerHTML = text;
+    }
+
+    update() {
+        if (this._context) {
+            this.setDisplayText(this._context.getDisplayText());
+        }
+    }
+}
+WT_G3x5_TSCAvionicsSettingsDisplayRow.NAME = "wt-tsc-avionicssettings-displayrow";
+WT_G3x5_TSCAvionicsSettingsDisplayRow.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCAvionicsSettingsDisplayRow.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            width: 100%;
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 5px;
+        }
+
+        #wrapper {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: var(--avionicssettings-row-left-width, 50%) var(--avionicssettings-row-left-width, 50%);
+        }
+            #title {
+                text-align: center;
+                align-self: center;
+            }
+            #display {
+                text-align: center;
+                align-self: center;
+                font-size: 1.33em;
+            }
+    </style>
+    <div id="wrapper">
+        <div id="title"></div>
+        <div id="display"></div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCAvionicsSettingsDisplayRow.NAME, WT_G3x5_TSCAvionicsSettingsDisplayRow);
+
+class WT_G3x5_TSCAvionicsSettingsLabeledButtonRow extends WT_G3x5_TSCAvionicsSettingsRow {
+    _getTemplate() {
+        return WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE;
     }
 
     async _defineChildren() {
@@ -252,8 +321,8 @@ class WT_G3x5_TSCAvionicsSettingsButtonRow extends WT_G3x5_TSCAvionicsSettingsRo
         this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_TSCLabeledButton);
     }
 }
-WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE = document.createElement("template");
-WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE.innerHTML = `
+WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
@@ -277,7 +346,7 @@ WT_G3x5_TSCAvionicsSettingsButtonRow.TEMPLATE.innerHTML = `
             #button {
                 position: relative;
                 margin: var(--avionicssettings-row-button-margin, 0.1em);
-                font-size: var(--avionicssettings-row-button-font-size, 1em);
+                font-size: 1.33em;
                 color: var(--avionicssettings-row-button-color, var(--wt-g3x5-lightblue));
             }
     </style>
@@ -343,7 +412,7 @@ class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsSc
 WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE = "System";
 WT_G3x5_TSCAvionicsSettingsSystemTab.CLASS = "systemTab";
 
-class WT_G3x5_TSCSystemRunwaySurfaceRow extends WT_G3x5_TSCAvionicsSettingsButtonRow {
+class WT_G3x5_TSCSystemRunwaySurfaceRow extends WT_G3x5_TSCAvionicsSettingsLabeledButtonRow {
     constructor() {
         super();
 
@@ -410,7 +479,9 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
     }
 
     _createHTMLElement() {
-        return new WT_TSCScrollList();
+        let htmlElement = new WT_TSCScrollList();
+        htmlElement.classList.add(WT_G3x5_TSCAvionicsSettingsUnitsTab.CLASS);
+        return htmlElement;
     }
 
     /**
@@ -448,7 +519,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
         this._navAngleRow = new WT_G3x5_TSCUnitsButtonRow();
         this._initButtonRow(this._navAngleRow, "Nav Angle", this.unitsSettingModel.navAngleSetting, ["Magnetic", "True"], this.unitsSettingModel.navAngleSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
 
-        this._magVarRow = new WT_G3x5_TSCUnitsDisplayRow();
+        this._magVarRow = new WT_G3x5_TSCAvionicsSettingsDisplayRow();
         let airplane = this.parentPage.instrument.airplane;
         this._initDisplayRow(this._magVarRow, "Magnetic Variance", function() {
             let magVar = Math.round(airplane.navigation.magVar());
@@ -500,49 +571,43 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
     }
 }
 WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE = "Units";
+WT_G3x5_TSCAvionicsSettingsUnitsTab.CLASS = "unitsTab";
 
-class WT_G3x5_TSCUnitsButtonRow extends HTMLElement {
+class WT_G3x5_TSCUnitsButtonRow extends WT_G3x5_TSCAvionicsSettingsRow {
     constructor() {
         super();
 
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3x5_TSCUnitsButtonRow.TEMPLATE.content.cloneNode(true));
-
-        this._context = null;
-
         this._settingListener = this._onSettingChanged.bind(this);
-
-        this._isInit = false;
-        this._lastContext = null;
     }
 
-    _defineChildren() {
-        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
-        this._title = this.shadowRoot.querySelector(`#title`);
+    _getTemplate() {
+        return WT_G3x5_TSCUnitsButtonRow.TEMPLATE;
     }
 
-    _createButton() {
-        this._button = new WT_G3x5_TSCUnitsButton();
-        this._button.id = "button";
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_G3x5_TSCUnitsButton);
+    }
+
+    _initButton() {
         this._button.addButtonListener(this._onButtonPressed.bind(this));
-        this._wrapper.appendChild(this._button);
     }
 
-    connectedCallback() {
-        this._defineChildren();
-        this._createButton();
-        this._isInit = true;
-
-        if (this._context) {
-            this._setupContext();
-        }
+    _initChildren() {
+        this._initButton();
     }
 
-    _onButtonPressed(button) {
-        if (this._context) {
-            this._context.instrument.selectionListWindow1.element.setContext(this._selectionWindowContext);
-            this._context.instrument.switchToPopUpPage(this._context.instrument.selectionListWindow1);
+    _cleanUpSettingListener() {
+        this._context.setting.removeListener(this._settingListener);
+    }
+
+    _cleanUpContext() {
+        if (!this._context) {
+            return;
         }
+
+        this._cleanUpSettingListener();
     }
 
     _updateTitle() {
@@ -550,12 +615,12 @@ class WT_G3x5_TSCUnitsButtonRow extends HTMLElement {
     }
 
     _updateButton() {
+        if (!this._context) {
+            return;
+        }
+
         let value = this._context.setting.getValue();
         this._button.setDisplay(this._context.valueTexts[value], this._context.unitSymbols[value]);
-    }
-
-    _onSettingChanged(setting, newValue, oldValue) {
-        this._updateButton();
     }
 
     _initSelectionWindowContext() {
@@ -578,7 +643,7 @@ class WT_G3x5_TSCUnitsButtonRow extends HTMLElement {
         };
     }
 
-    _initListener() {
+    _initSettingListener() {
         if (!this._context) {
             return;
         }
@@ -586,32 +651,29 @@ class WT_G3x5_TSCUnitsButtonRow extends HTMLElement {
         this._context.setting.addListener(this._settingListener);
     }
 
-    _setupContext() {
-        if (this._lastContext) {
-            this._lastContext.setting.removeListener(this._settingListener);
-        }
-
+    _updateFromContext() {
         this._initSelectionWindowContext();
-        this._initListener();
+        this._initSettingListener();
         this._updateTitle();
         this._updateButton();
     }
 
-    setContext(context) {
-        if (context === this._context) {
-            return;
+    _onButtonPressed(button) {
+        if (this._context) {
+            this._context.instrument.selectionListWindow1.element.setContext(this._selectionWindowContext);
+            this._context.instrument.switchToPopUpPage(this._context.instrument.selectionListWindow1);
         }
+    }
 
-        this._context = context;
-        if (this._isInit) {
-            this._setupContext();
-        }
+    _onSettingChanged(setting, newValue, oldValue) {
+        this._updateButton();
     }
 
     _onSelectionMade(value) {
         this._context.setting.setValue(value);
     }
 }
+WT_G3x5_TSCUnitsButtonRow.NAME = "wt-tsc-avionicssettings-unitsbuttonrow";
 WT_G3x5_TSCUnitsButtonRow.TEMPLATE = document.createElement("template");
 WT_G3x5_TSCUnitsButtonRow.TEMPLATE.innerHTML = `
     <style>
@@ -628,7 +690,7 @@ WT_G3x5_TSCUnitsButtonRow.TEMPLATE.innerHTML = `
             height: 100%;
             display: grid;
             grid-template-rows: auto;
-            grid-template-columns: var(--unitsrow-left-width, 50%) var(--unitsrow-right-width, 50%);
+            grid-template-columns: var(--avionicssettings-row-left-width, 50%) var(--avionicssettings-row-right-width, 50%);
         }
             #title {
                 text-align: center;
@@ -636,17 +698,18 @@ WT_G3x5_TSCUnitsButtonRow.TEMPLATE.innerHTML = `
             }
             #button {
                 position: relative;
-                margin: 0.5vh;
+                margin: var(--avionicssettings-row-button-margin, 0.1em);
                 color: var(--wt-g3x5-lightblue);
                 font-size: 1.33em;
             }
     </style>
     <div id="wrapper">
         <div id="title"></div>
+        <wt-tsc-button-units id="button"></wt-tsc-button-units>
     </div>
 `;
 
-customElements.define("tsc-avionicssettings-unitsbuttonrow", WT_G3x5_TSCUnitsButtonRow);
+customElements.define(WT_G3x5_TSCUnitsButtonRow.NAME, WT_G3x5_TSCUnitsButtonRow);
 
 class WT_G3x5_TSCUnitsButton extends WT_TSCButton {
     _initLabelStyle() {
@@ -689,8 +752,9 @@ class WT_G3x5_TSCUnitsButton extends WT_TSCButton {
         this._label.innerHTML = html;
     }
 }
+WT_G3x5_TSCUnitsButton.NAME = "wt-tsc-button-units";
 
-customElements.define("wt-tsc-button-units", WT_G3x5_TSCUnitsButton);
+customElements.define(WT_G3x5_TSCUnitsButton.NAME, WT_G3x5_TSCUnitsButton);
 
 class WT_G3x5_TSCUnitsSelectionElementHandler {
     /**
@@ -724,106 +788,6 @@ class WT_G3x5_TSCUnitsSelectionElementHandler {
     }
 }
 
-class WT_G3x5_TSCUnitsDisplayRow extends HTMLElement {
-    constructor() {
-        super();
-
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3x5_TSCUnitsDisplayRow.TEMPLATE.content.cloneNode(true));
-
-        this._context = null;
-
-        this._isInit = false;
-        this._lastContext = null;
-    }
-
-    _defineChildren() {
-        this._title = this.shadowRoot.querySelector(`#title`);
-        this._display = new WT_CachedElement(this.shadowRoot.querySelector(`#display`));
-    }
-
-    connectedCallback() {
-        this._defineChildren();
-        this._isInit = true;
-
-        if (this._context) {
-            this._setupContext();
-        }
-    }
-
-    _updateTitle() {
-        this._title.innerHTML = this._context ? this._context.title : "";
-    }
-
-    _setupContext() {
-        if (this._lastContext) {
-            this._lastContext.setting.removeListener(this._settingListener);
-        }
-
-        this._updateTitle();
-    }
-
-    setContext(context) {
-        if (context === this._context) {
-            return;
-        }
-
-        this._context = context;
-        if (this._isInit) {
-            this._setupContext();
-        }
-    }
-
-    setDisplayText(text) {
-        if (!this._isInit) {
-            return;
-        }
-
-        this._display.innerHTML = text;
-    }
-
-    update() {
-        if (this._context) {
-            this.setDisplayText(this._context.getDisplayText());
-        }
-    }
-}
-WT_G3x5_TSCUnitsDisplayRow.TEMPLATE = document.createElement("template");
-WT_G3x5_TSCUnitsDisplayRow.TEMPLATE.innerHTML = `
-    <style>
-        :host {
-            display: block;
-            width: 100%;
-            background-color: black;
-            border: solid 1px white;
-            border-radius: 5px;
-        }
-
-        #wrapper {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-rows: auto;
-            grid-template-columns: var(--unitsrow-left-width, 50%) var(--unitsrow-right-width, 50%);
-        }
-            #title {
-                text-align: center;
-                align-self: center;
-            }
-            #display {
-                text-align: center;
-                align-self: center;
-                font-size: 1.33em;
-            }
-    </style>
-    <div id="wrapper">
-        <div id="title"></div>
-        <div id="display"></div>
-    </div>
-`;
-
-customElements.define("tsc-avionicssettings-unitsdisplayrow", WT_G3x5_TSCUnitsDisplayRow);
-
 class WT_G3x5_TSCAvionicsSettingsAlertsTab extends WT_G3x5_TSCAvionicsSettingsTab {
     constructor() {
         super(WT_G3x5_TSCAvionicsSettingsAlertsTab.TITLE);
@@ -843,7 +807,9 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
     }
 
     _createHTMLElement() {
-        return new WT_TSCScrollList();
+        let htmlElement = new WT_TSCScrollList();
+        htmlElement.classList.add(WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.CLASS);
+        return htmlElement;
     }
 
     _initModel() {
@@ -907,49 +873,43 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
     }
 }
 WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.TITLE = "MFD<br>Fields";
+WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.CLASS = "mfdFieldsTab";
 
-class WT_G3x5_TSCNavDataFieldRow extends HTMLElement {
+class WT_G3x5_TSCNavDataFieldRow extends WT_G3x5_TSCAvionicsSettingsRow {
     constructor() {
         super();
 
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3x5_TSCNavDataFieldRow.TEMPLATE.content.cloneNode(true));
-
-        this._context = null;
-
         this._settingListener = this._onDataFieldSettingChanged.bind(this);
-
-        this._isInit = false;
-        this._lastContext = null;
     }
 
-    _defineChildren() {
-        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
-        this._title = this.shadowRoot.querySelector(`#title`);
+    _getTemplate() {
+        return WT_G3x5_TSCNavDataFieldRow.TEMPLATE;
     }
 
-    _createButton() {
-        this._button = new WT_G3x5_TSCNavDataFieldButton();
-        this._button.id = "button";
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_G3x5_TSCNavDataFieldButton);
+    }
+
+    _initButton() {
         this._button.addButtonListener(this._onButtonPressed.bind(this));
-        this._wrapper.appendChild(this._button);
     }
 
-    connectedCallback() {
-        this._defineChildren();
-        this._createButton();
-        this._isInit = true;
-
-        if (this._context) {
-            this._setupContext();
-        }
+    _initChildren() {
+        this._initButton();
     }
 
-    _onButtonPressed(button) {
-        if (this._context) {
-            this._context.instrument.selectionListWindow1.element.setContext(this._selectionWindowContext);
-            this._context.instrument.switchToPopUpPage(this._context.instrument.selectionListWindow1);
+    _cleanUpSettingListener() {
+        this._context.controller.getDataFieldSetting(this._context.index).removeListener(this._settingListener);
+    }
+
+    _cleanUpContext() {
+        if (!this._context) {
+            return;
         }
+
+        this._cleanUpSettingListener();
     }
 
     _updateTitle() {
@@ -959,10 +919,6 @@ class WT_G3x5_TSCNavDataFieldRow extends HTMLElement {
     _updateButton() {
         let navDataInfo = this._context ? this._context.model.getDataFieldInfo(this._context.index) : null;
         this._button.setNavDataInfo(navDataInfo);
-    }
-
-    _onDataFieldSettingChanged(setting, newValue, oldValue) {
-        this._updateButton();
     }
 
     _initSelectionWindowContext() {
@@ -988,7 +944,7 @@ class WT_G3x5_TSCNavDataFieldRow extends HTMLElement {
         this._navDataInfos = this._context.model.getAllNavDataInfo();
     }
 
-    _initListener() {
+    _initSettingListener() {
         if (!this._context) {
             return;
         }
@@ -996,32 +952,29 @@ class WT_G3x5_TSCNavDataFieldRow extends HTMLElement {
         this._context.controller.getDataFieldSetting(this._context.index).addListener(this._settingListener);
     }
 
-    _setupContext() {
-        if (this._lastContext) {
-            this._lastContext.controller.getDataFieldSetting(this._lastContext.index).removeListener(this._settingListener);
-        }
-
+    _updateFromContext() {
         this._initSelectionWindowContext();
-        this._initListener();
+        this._initSettingListener();
         this._updateTitle();
         this._updateButton();
     }
 
-    setContext(context) {
-        if (context === this._context) {
-            return;
+    _onButtonPressed(button) {
+        if (this._context) {
+            this._context.instrument.selectionListWindow1.element.setContext(this._selectionWindowContext);
+            this._context.instrument.switchToPopUpPage(this._context.instrument.selectionListWindow1);
         }
+    }
 
-        this._context = context;
-        if (this._isInit) {
-            this._setupContext();
-        }
+    _onDataFieldSettingChanged(setting, newValue, oldValue) {
+        this._updateButton();
     }
 
     _onSelectionMade(value) {
         this._context.controller.getDataFieldSetting(this._context.index).setValue(this._navDataInfos[value].id);
     }
 }
+WT_G3x5_TSCNavDataFieldRow.NAME = "wt-tsc-avionicssettings-mfdnavdatafieldrow";
 WT_G3x5_TSCNavDataFieldRow.TEMPLATE = document.createElement("template");
 WT_G3x5_TSCNavDataFieldRow.TEMPLATE.innerHTML = `
     <style>
@@ -1038,7 +991,7 @@ WT_G3x5_TSCNavDataFieldRow.TEMPLATE.innerHTML = `
             height: 100%;
             display: grid;
             grid-template-rows: auto;
-            grid-template-columns: var(--mfdnavdatafieldrow-left-width, 30%) var(--mfdnavdatafieldrow-right-width, 70%);
+            grid-template-columns: var(--avionicssettings-row-left-width, 30%) var(--avionicssettings-row-left-width, 70%);
         }
             #title {
                 text-align: center;
@@ -1046,16 +999,17 @@ WT_G3x5_TSCNavDataFieldRow.TEMPLATE.innerHTML = `
             }
             #button {
                 position: relative;
-                margin: 0.5vh;
+                margin: var(--avionicssettings-row-button-margin, 0.1em);
                 color: var(--wt-g3x5-lightblue);
             }
     </style>
     <div id="wrapper">
         <div id="title"></div>
+        <wt-tsc-button-navdatafield id="button"></wt-tsc-button-navdatafield>
     </div>
 `;
 
-customElements.define("tsc-avionicssettings-mfdnavdatafieldrow", WT_G3x5_TSCNavDataFieldRow);
+customElements.define(WT_G3x5_TSCNavDataFieldRow.NAME, WT_G3x5_TSCNavDataFieldRow);
 
 class WT_G3x5_TSCNavDataFieldButton extends WT_TSCButton {
     _initLabelStyle() {
@@ -1116,8 +1070,9 @@ class WT_G3x5_TSCNavDataFieldButton extends WT_TSCButton {
         }
     }
 }
+WT_G3x5_TSCNavDataFieldButton.NAME = "wt-tsc-button-navdatafield";
 
-customElements.define("wt-tsc-button-navdatafield", WT_G3x5_TSCNavDataFieldButton);
+customElements.define(WT_G3x5_TSCNavDataFieldButton.NAME, WT_G3x5_TSCNavDataFieldButton);
 
 class WT_G3x5_TSCNavDataFieldSelectionElementHandler {
     /**
