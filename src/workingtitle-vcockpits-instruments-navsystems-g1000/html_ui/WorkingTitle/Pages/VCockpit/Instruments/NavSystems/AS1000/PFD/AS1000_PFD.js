@@ -32,40 +32,11 @@ class AS1000_PFD extends BaseAS1000 {
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("Procedures", "ProceduresWindow", new MFD_Procedures(), "PROC_Push"));
         this.addEventLinkedPopupWindow(new NavSystemEventLinkedPopUpWindow("CONFIG", "PfdConfWindow", new AS1000_PFD_ConfigMenu(), "CONF_MENU_Push"));
         this.maxUpdateBudget = 12;
-        this._pfdConfigDone = false;
-    }
-
-    async pfdConfig() {
-        this.loadSavedBrightness("PFD");
-        this.loadSavedBrightness("MFD");
-        let loader = new WTConfigLoader(this._xmlConfigPath);
-        // We need to wait for this to finish before we can do the initial set of the light pot
-        // in the line below because this can set a custom value for the avionics knob.
-        await loader.loadModelFile("interior").then((dom) => { this.processInteriorConfig(dom) });
-        this.avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-        return Promise.resolve();
-    }
-
-    processInteriorConfig(dom) {
-        this.avionicsKnobIndex = 30;
-        let templates = dom.getElementsByTagName("UseTemplate");
-        for (const item of templates) {
-            if (item.getAttribute("Name").toLowerCase() != "asobo_as1000_pfd_template")
-                continue;
-            let children = item.childNodes;
-            for (const item of children) {
-                if (item.nodeName.toLowerCase() != "potentiometer")
-                    continue;
-                this.avionicsKnobIndex = item.textContent
-            }
-        }
     }
 
     onFlightStart() {
-        // this.pfdConfig().then(() => {
-             console.log("PFD fully configured.");
-            // this._pfdConfigDone = true;
-        // });
+        this.loadSavedBrightness("PFD");
+        this.loadSavedBrightness("MFD");
     }
 
     onUpdate(_deltaTime) {
@@ -76,14 +47,6 @@ class AS1000_PFD extends BaseAS1000 {
                 if (attr == "true") {
                     this.reversionaryMode = true;
                 }
-            }
-        }
-        if (this._pfdConfigDone) {
-            let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
-            if (avionicsKnobValueNow != this.avionicsKnobValue) {
-                this.setBrightness("PFD", avionicsKnobValueNow);
-                this.setBrightness("MFD", avionicsKnobValueNow);
-                this.avionicsKnobValue = avionicsKnobValueNow;
             }
         }
     }
@@ -115,6 +78,7 @@ class AS1000_PFD extends BaseAS1000 {
         value = Math.max(Math.min(value, 1.0), 0);
         WTDataStore.set(`${display}.Brightness`, value);
         SimVar.SetSimVarValue(lvar, "number", value);
+        console.log(`setting ${lvar} to ${value}`);
     }
 
     getBrightness(display) {

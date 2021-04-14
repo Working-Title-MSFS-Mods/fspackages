@@ -647,7 +647,7 @@
 			l0 (&gt;L:XMLVAR_#FUNCTION#_LAST_BRITVAL)
 		} 
 		</UPDATE_CODE>
-		<FREQUENCY>3</FREQUENCY>
+		<FREQUENCY>4</FREQUENCY>
 	</UseTemplate>
 	<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
 		<TEMPLATE_TO_CALL>ASOBO_AS1000_SubTemplate</TEMPLATE_TO_CALL>
