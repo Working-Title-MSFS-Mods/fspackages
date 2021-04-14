@@ -7,9 +7,8 @@ class WTEngine extends Engine {
      * @param {string} _root As per Engine
      * @param {string} xmlConfigPath The _xmlConfigPath of the parent instrument
      */
-    constructor(_name, _root, xmlConfigPath) {
+    constructor(_name, _root) {
         super(_name, _root);
-        this._configLoader = new WTConfigLoader(xmlConfigPath); 
         this.engineDisplayPages = [];
         this.selectedEnginePage = null;
         this.config = null;
@@ -19,45 +18,38 @@ class WTEngine extends Engine {
     init() {
         super.init();
         // set the default engine page
-        this.xmlConfig = this.gps.xmlConfig
+        this.xmlConfig = this.gps.xmlConfig;
         let id = this._defaultPanelID;
-        this.engineDisplayPages[id] = {
-            title: "Default",
-            node: this.xmlConfig.getElementsByTagName("EngineDisplay"),
-            buttons: []
-        };
-        this.selectedEnginePage = id;
-
-        // If we can read a custom config, load that over top
-        console.log("Attempting to read WT engine display config.")
-        this._configLoader.loadXml("panel/WTEngineDisplay.xml").then((xmlConfig) => {
-            console.log("Found WT engine display config.  Loading.")
-            this.xmlConfig = xmlConfig;
-            let engineDisplayPages = xmlConfig.getElementsByTagName("EngineDisplayPage");
-            if (engineDisplayPages.length > 0) {
-                delete this.engineDisplayPages[this._defaultPanelID];
-                for (let i = 0; i < engineDisplayPages.length; i++) {
-                    let engineDisplayPageRoot = engineDisplayPages[i];
-                    let id = engineDisplayPageRoot.getElementsByTagName("ID")[0].textContent;
-                    let engineDisplayPage = {
-                        title: engineDisplayPageRoot.getElementsByTagName("Title")[0].textContent,
-                        node: engineDisplayPageRoot.getElementsByTagName("Node")[0].textContent,
-                        buttons: []
-                    };
-                    let buttonNodes = engineDisplayPageRoot.getElementsByTagName("Button");
-                    for (let buttonNode of buttonNodes) {
-                        engineDisplayPage.buttons.push({
-                            text: buttonNode.getElementsByTagName("Text")[0].textContent
-                        });
-                    }
-                    this.engineDisplayPages[id] = engineDisplayPage;
-                    if (i == 0) {
-                        this.selectEnginePage(id);
-                    }
+        let engineDisplayPages = this.xmlConfig.getElementsByTagName("EngineDisplayPage");
+        if (engineDisplayPages.length == 0) {
+            engineDisplayPages = this.xmlConfig.getElementsByTagName("EngineDisplay");
+            this.engineDisplayPages[id] = {
+                title: "Default",
+                node: this.xmlConfig.getElementsByTagName("EngineDisplay"),
+                buttons: []
+            };
+            this.selectedEnginePage = id;
+        } else {
+            for (let i = 0; i < engineDisplayPages.length; i++) {
+                let engineDisplayPageRoot = engineDisplayPages[i];
+                let id = engineDisplayPageRoot.getElementsByTagName("ID")[0].textContent;
+                let engineDisplayPage = {
+                    title: engineDisplayPageRoot.getElementsByTagName("Title")[0].textContent,
+                    node: engineDisplayPageRoot.getElementsByTagName("Node")[0].textContent,
+                    buttons: []
+                };
+                let buttonNodes = engineDisplayPageRoot.getElementsByTagName("Button");
+                for (let buttonNode of buttonNodes) {
+                    engineDisplayPage.buttons.push({
+                        text: buttonNode.getElementsByTagName("Text")[0].textContent
+                    });
                 }
-            }
-            console.log("WT engine display config load complete.")
-        });
+                this.engineDisplayPages[id] = engineDisplayPage;
+                if (i == 0) {
+                    this.selectEnginePage(id);
+                }
+            };
+        }
     }
     /**
      *  Returns all the configured engine display pages

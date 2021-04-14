@@ -10,7 +10,7 @@ class AS1000_MFD extends BaseAS1000 {
         super.connectedCallback();
         this.loadSavedMapOrientation();
         this.pagesContainer = this.getChildById("RightInfos");
-        this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
+        this.engineDisplay = new WTEngine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [
