@@ -639,7 +639,16 @@
 		<ANIM_NEVER_FAILS/>
 		<AUTOPILOT_SUFFIX_ID>_1</AUTOPILOT_SUFFIX_ID>
 	</DefaultTemplateParameters>
-	
+	<UseTemplate Name="ASOBO_GT_Update">
+		<UPDATE_CODE>
+		(A:LIGHT POTENTIOMETER:#POTENTIOMETER#, number) sp0
+		l0 (L:XMLVAR_#FUNCTION#_LAST_BRITVAL) != if{
+			l0 (&gt;L:AS1000_#FUNCTION#_Brightness, number)
+			l0 (&gt;L:XMLVAR_#FUNCTION#_LAST_BRITVAL)
+		} 
+		</UPDATE_CODE>
+		<FREQUENCY>3</FREQUENCY>
+	</UseTemplate>
 	<UseTemplate Name="ASOBO_GT_Helper_Suffix_ID_Appender">
 		<TEMPLATE_TO_CALL>ASOBO_AS1000_SubTemplate</TEMPLATE_TO_CALL>
 		<Switch>
@@ -647,7 +656,7 @@
 				<GET_POTENTIOMETER>(A:#SIMVAR_POWER_SETTING#, Percent over 100) (L:AS1000_#FUNCTION#_Brightness, number) *</GET_POTENTIOMETER>
 			</Case>
 			<Default>
-				<GET_POTENTIOMETER>(A:LIGHT POTENTIOMETER:#POTENTIOMETER#, Percent over 100) (L:AS1000_#FUNCTION#_Brightness, number) *</GET_POTENTIOMETER>
+				<GET_POTENTIOMETER>(L:AS1000_#FUNCTION#_Brightness, number)</GET_POTENTIOMETER>
 			</Default>
 		</Switch>
 	</UseTemplate>
