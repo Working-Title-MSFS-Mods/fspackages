@@ -516,6 +516,7 @@ as3000-tsc-horizontal-element #AvionicsSettings .tab {
 }
     as3000-tsc-horizontal-element #AvionicsSettings wt-tsc-avionicssettings-displayrow,
     as3000-tsc-horizontal-element #AvionicsSettings wt-tsc-avionicssettings-runwaysurfacerow,
+    as3000-tsc-horizontal-element #AvionicsSettings wt-tsc-avionicssettings-runwaylengthrow,
     as3000-tsc-horizontal-element #AvionicsSettings wt-tsc-avionicssettings-unitsbuttonrow,
     as3000-tsc-horizontal-element #AvionicsSettings wt-tsc-avionicssettings-mfdnavdatafieldrow {
         height: 18vh;
@@ -1950,6 +1951,15 @@ as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .conten
     as3000-tsc-horizontal-element #Electricity .Transparent {
       background-image: none; }
 
+as3000-tsc-horizontal-element #NumKeyboard wt-tsc-numkeyboard {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: 85%;
+    font-size: 7vh;
+    --numkeyboard-button-size: 15vh;
+}
 
 as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
     position: absolute;

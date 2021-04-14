@@ -321,6 +321,7 @@ class WT_G3x5_TSCAvionicsSettingsLabeledButtonRow extends WT_G3x5_TSCAvionicsSet
         this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_TSCLabeledButton);
     }
 }
+WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.UNIT_CLASS = "unit";
 WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE = document.createElement("template");
 WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE.innerHTML = `
     <style>
@@ -349,6 +350,10 @@ WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE.innerHTML = `
                 font-size: 1.33em;
                 color: var(--avionicssettings-row-button-color, var(--wt-g3x5-lightblue));
             }
+
+        .${WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.UNIT_CLASS} {
+            font-size: var(--avionicssettings-row-button-unit-font-size, 0.75em);
+        }
     </style>
     <div id="wrapper">
         <div id="title"></div>
@@ -377,8 +382,19 @@ class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsSc
         this.htmlElement.appendChild(this._runwaySurfaceRow);
     }
 
+    _initRunwayLengthRow() {
+        this._runwayLengthRow = new WT_G3x5_TSCSystemRunwayLengthRow();
+        this._runwayLengthRow.setContext({
+            parentPage: this.parentPage,
+            setting: this.parentPage.instrument.nearestAirportList.runwayLengthSetting
+        });
+        this._runwayLengthRow.slot = "content";
+        this.htmlElement.appendChild(this._runwayLengthRow);
+    }
+
     _initRows() {
         this._initRunwaySurfaceRow();
+        this._initRunwayLengthRow();
     }
 
     onAttached() {
@@ -472,6 +488,161 @@ WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT = [
 ];
 
 customElements.define(WT_G3x5_TSCSystemRunwaySurfaceRow.NAME, WT_G3x5_TSCSystemRunwaySurfaceRow);
+
+class WT_G3x5_TSCSystemRunwayLengthRow extends WT_G3x5_TSCAvionicsSettingsRow {
+    constructor() {
+        super();
+
+        this._settingListener = this._onSettingChanged.bind(this);
+        this._initNumKeyboardContext();
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCSystemRunwayLengthRow.TEMPLATE;
+    }
+
+    _initNumKeyboardContext() {
+        this._numKeyboardContext = {
+            title: "Select Runway Length",
+            digitCount: 5,
+            valueEnteredCallback: this._onValueEntered.bind(this)
+        };
+    }
+
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_G3x5_TSCNumberUnitButton);
+    }
+
+    _initTitle() {
+        this._title.textContent = "Nearest Airport Min Rwy Length";
+    }
+
+    _initButton() {
+        this._button.setFormatterOptions({
+            precision: 1,
+            unitCaps: true
+        });
+        this._button.addButtonListener(this._onButtonPressed.bind(this));
+    }
+
+    _initChildren() {
+        this._initTitle();
+        this._initButton();
+    }
+
+    _cleanUpContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._context.setting.removeListener(this._settingListener);
+    }
+
+    _initSettingListener() {
+        this._context.setting.addListener(this._settingListener);
+        this._updateButton();
+    }
+
+    _updateFromContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._initSettingListener();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
+     * @returns {WT_Unit}
+     */
+    _getLengthUnit(unitsSettingModel) {
+        if (unitsSettingModel.distanceSpeedSetting.getValue() === WT_G3x5_DistanceSpeedUnitsSetting.Value.NAUTICAL) {
+            return WT_Unit.FOOT;
+        } else {
+            return WT_Unit.METER;
+        }
+    }
+
+    _updateButton() {
+        this._button.setNumberUnit(this._context.setting.getLength());
+        this._button.setDisplayUnit(this._getLengthUnit(this._context.parentPage.instrument.unitsSettingModel));
+    }
+
+    _onSettingChanged(setting, newValue, oldValue) {
+        this._updateButton();
+    }
+
+    _updateNumKeyboardContext() {
+        this._numKeyboardContext.unit = this._getLengthUnit(this._context.parentPage.instrument.unitsSettingModel);
+        this._numKeyboardContext.initialValue = this._context.setting.getLength();
+        this._numKeyboardContext.homePageGroup = this._context.parentPage.homePageGroup;
+        this._numKeyboardContext.homePageName = this._context.parentPage.homePageName;
+    }
+
+    _openNumKeyboard() {
+        this._updateNumKeyboardContext();
+        let instrument = this._context.parentPage.instrument;
+
+        instrument.numKeyboard.element.setContext(this._numKeyboardContext);
+        instrument.switchToPopUpPage(instrument.numKeyboard);
+    }
+
+    _onButtonPressed(button) {
+        if (!this._context) {
+            return;
+        }
+
+        this._openNumKeyboard();
+    }
+
+    _onValueEntered(value) {
+        if (!this._context) {
+            return;
+        }
+
+        this._context.setting.setLength(value);
+    }
+}
+WT_G3x5_TSCSystemRunwayLengthRow.NAME = "wt-tsc-avionicssettings-runwaylengthrow";
+WT_G3x5_TSCSystemRunwayLengthRow.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCSystemRunwayLengthRow.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            width: 100%;
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 5px;
+        }
+
+        #wrapper {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto;
+            grid-template-columns: var(--avionicssettings-row-left-width, 50%) var(--avionicssettings-row-right-width, 50%);
+        }
+            #title {
+                text-align: center;
+                align-self: center;
+            }
+            #button {
+                position: relative;
+                margin: var(--avionicssettings-row-button-margin, 0.1em);
+                color: var(--wt-g3x5-lightblue);
+                font-size: 1.33em;
+            }
+    </style>
+    <div id="wrapper">
+        <div id="title"></div>
+        <wt-tsc-button-numberunit id="button"></wt-tsc-button-numberunit>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCSystemRunwayLengthRow.NAME, WT_G3x5_TSCSystemRunwayLengthRow);
 
 class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
     constructor(parentPage) {

@@ -1002,14 +1002,23 @@ WT_CoordinateFormatter.OPTIONS_DEFAULT = {
  */
 class WT_NumberHTMLFormatter {
     /**
-     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of the WT_NumberUnit objects.
+     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of WT_NumberUnit objects.
      * @param {object} opts - options definition object containing properties to initialize to the new formatter.
      */
     constructor(numberFormatter, opts = {}) {
-        this.numberFormatter = numberFormatter;
+        this._numberFormatter = numberFormatter;
 
         this._optsManager = new WT_OptionsManager(this, WT_NumberHTMLFormatter.OPTIONS_DEF);
         this.setOptions(opts);
+    }
+
+    /**
+     * The formatter used by this HTML formatter to generate the raw string representations of WT_NumberUnit objects.
+     * @readonly
+     * @type {WT_NumberFormatter}
+     */
+    get numberFormatter() {
+        return this._numberFormatter;
     }
 
     /**
