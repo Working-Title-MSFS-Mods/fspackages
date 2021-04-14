@@ -314,9 +314,9 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
 
 /**
  * @template T
- * @extends WT_SimpleHTMLElementRecycler<T>
+ * @extends WT_CustomHTMLElementRecycler<T>
  */
-class WT_G3x5_TSCNearestWaypointRowRecycler extends WT_SimpleHTMLElementRecycler {
+class WT_G3x5_TSCNearestWaypointRowRecycler extends WT_CustomHTMLElementRecycler {
     _createElement() {
         let element = super._createElement();
         element.slot = "content";

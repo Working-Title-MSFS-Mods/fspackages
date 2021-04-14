@@ -112,6 +112,30 @@ class WT_HTMLElementRecycler {
 class WT_SimpleHTMLElementRecycler extends WT_HTMLElementRecycler {
     /**
      * @param {HTMLElement} parent - the parent HTML element of the elements maintained by the new recycler.
+     * @param {String} tagName - the tag name of the recycled elements maintained by the new recycler.
+     */
+    constructor(parent, tagName) {
+        super(parent);
+
+        this._htmlElementTagName = tagName;
+    }
+
+    /**
+     *
+     * @returns {T}
+     */
+    _createElement() {
+        return document.createElement(this._htmlElementTagName);
+    }
+}
+
+/**
+ * @template T
+ * @extends WT_HTMLElementRecycler<T>
+ */
+class WT_CustomHTMLElementRecycler extends WT_HTMLElementRecycler {
+    /**
+     * @param {HTMLElement} parent - the parent HTML element of the elements maintained by the new recycler.
      * @param {new T} htmlElementConstructor - the constructor of the recycled elements maintained by the new recycler.
      */
     constructor(parent, htmlElementConstructor) {
