@@ -1,12 +1,10 @@
 # Documentation for the Working Title G1000
 
-_Applies to version: v0.3.4_
+_Applies to version: v0.3.5_
 
-Welcome to the latest version of the Working Title G1000 for Microsoft Flight Simulator.  This mod provides a raft of bug-fixes and enhancements to the stock G1000 used in many of the sim's general aviation planes.   Version 0.3.0 is developed for version 1.9.3.0 of the base sim, the version released on 29 September 2020.  Previous versions of the G1000 mod will not work with this version of the sim.
+This is an update of the Working Title G1000 mod that's compatible with World Update 4.
 
-This mod can be installed just like any other MSFS mod:  simply drag the `workingtitle-g1000` folder from the zip file into your flight simulator's `Community` directory.
-
-**Note:  Due to some changes in file structure it is important that you do not install v0.3.0 of this mod over an earlier version.**  If you had v0.2.0 or v0.2.1 installed please delete them completely before installing this version to avoid any potential problems.
+**Important**:  Due to changes in how planes load their configurations in WU4, we had to change the code that loads custom display gauges from WTEngineDisplay.xml, as is done with our sample for the G36.   In order to get these to work now, aircraft creators or modders must put the contents of the `WTEngineDisplay` section directly into panel.xml, within the body of the main `PlaneHTMLConfig` section.   This is unfortunate, but it was the only way we could preserve this functionality.   Doing this to your panel.xml is fully backwards compatible and will not break planes that don't use the modded G1000.
 
 ## Key Changes
 
