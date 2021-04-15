@@ -1,14 +1,35 @@
+/**
+ * @template {WT_ICAOWaypoint} T
+ */
 class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
+    constructor(homePageGroup, homePageName) {
+        super(homePageGroup, homePageName);
+
+        this._selectedWaypoint = null;
+    }
+
     /**
      * @readonly
-     * @type {WT_G3x5_TSCNearestWaypointHTMLElement}
+     * @type {WT_G3x5_TSCNearestWaypointHTMLElement<T>}
      */
     get htmlElement() {
         return this._htmlElement;
     }
 
+    /**
+     * @readonly
+     * @type {T}
+     */
+    get selectedWaypoint() {
+        return this._selectedWaypoint;
+    }
+
     _createUnitsModel() {
         return new WT_G3x5_TSCNearestWaypointUnitsModel(this.instrument.unitsSettingModel);
+    }
+
+    _initHTMLElement() {
+        this.htmlElement.addListener(this._onHTMLElementEvent.bind(this));
     }
 
     init(root) {
@@ -18,6 +39,55 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
 
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
+        this._initHTMLElement();
+    }
+
+    /**
+     *
+     * @param {T} waypoint
+     */
+    _setSelectedWaypoint(waypoint) {
+        if ((waypoint === null && this.selectedWaypoint === null) || (waypoint && waypoint.equals(this.selectedWaypoint))) {
+            return;
+        }
+
+        this._selectedWaypoint = waypoint;
+    }
+
+    /**
+     *
+     * @param {T} waypoint
+     */
+    _onWaypointButtonPressed(waypoint) {
+        if (waypoint.equals(this.selectedWaypoint)) {
+            this.htmlElement.toggleOptionsBanner();
+        } else {
+            this.htmlElement.showOptionsBanner();
+        }
+        this._setSelectedWaypoint(waypoint);
+    }
+
+    _onDRCTButtonPressed() {
+        this.instrument.SwitchToPageName("MFD", "Direct To");
+    }
+
+    _onHTMLElementEvent(source, eventType, data) {
+        switch (eventType) {
+            case this._getWaypointButtonEventType():
+                this._onWaypointButtonPressed(data);
+                break;
+            case this._getDRCTButtonEventType():
+                this._onDRCTButtonPressed();
+                break;
+        }
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollDown();
     }
 
     _activateNavButtons() {
@@ -34,16 +104,37 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         this.instrument.deactivateNavButton(6, false);
     }
 
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.open();
+    }
+
+    _updateWaypoints() {
+        let waypoints = this._getWaypoints();
+        this.htmlElement.setWaypoints(waypoints);
+
+        if (this.selectedWaypoint !== null && !waypoints.some(waypoint => waypoint.equals(this.selectedWaypoint), this)) {
+            this._setSelectedWaypoint(null);
+        }
+    }
+
     onUpdate(deltaTime) {
+        this._updateWaypoints();
         this.htmlElement.update();
     }
 
-    _onUpPressed() {
-        this.htmlElement.scrollUp();
+    _updateDirectTo() {
+        // TODO: Implement a more sane way to push data to direct to page.
+        let waypoint = this.selectedWaypoint;
+        this.instrument.lastRelevantICAO = waypoint ? waypoint.icao : null;
     }
 
-    _onDownPressed() {
-        this.htmlElement.scrollDown();
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
+        this._updateDirectTo();
     }
 }
 
@@ -97,25 +188,6 @@ class WT_G3x5_TSCNearestWaypointUnitsModel extends WT_G3x5_UnitsSettingModelAdap
     }
 }
 
-class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
-    _getTitle() {
-        return "Nearest Airport";
-    }
-
-    _createHTMLElement() {
-        let htmlElement = new WT_G3x5_TSCNearestAirportHTMLElement();
-        let nearestAirportList = this.instrument.nearestAirportList;
-        htmlElement.setContext({
-            airplane: this.instrument.airplane,
-            unitsModel: this._unitsModel,
-            getWaypoints() {
-                return nearestAirportList.airports;
-            }
-        });
-        return htmlElement;
-    }
-}
-
 /**
  * @template {WT_ICAOWaypoint} T
  */
@@ -134,9 +206,15 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
          * @type {T[]}
          */
         this._waypoints = [];
+        this._waypointRowListener = this._onWaypointRowEvent.bind(this);
 
         /**
-         * @type {{airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCNearestWaypointUnitsModel, getWaypoints:() => WT_ReadOnlyArray<T>}}
+         * @type {((source:WT_G3x5_TSCNearestWaypointHTMLElement<T>, eventType:Number, data:*) => void)[]}
+         */
+        this._listeners = [];
+
+        /**
+         * @type {{airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCNearestWaypointUnitsModel}}
          */
         this._context = null;
         this._isInit = false;
@@ -151,15 +229,24 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._col2Title = this.shadowRoot.querySelector(`#col2title`);
         this._col3Title = this.shadowRoot.querySelector(`#col3title`);
         this._col4Title = this.shadowRoot.querySelector(`#col4title`);
-        /**
-         * @type {WT_TSCScrollList}
-         */
-        this._waypointsList = await WT_CustomElementSelector.select(this.shadowRoot, `#waypoints`, WT_TSCScrollList);
+        [
+            this._waypointsList,
+            this._optionsBanner,
+            this._drctButton,
+            this._showMapButton,
+            this._infoButton
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#waypoints`, WT_TSCScrollList),
+            WT_CustomElementSelector.select(this.shadowRoot, `#optionsbanner`, WT_TSCSlidingBanner),
+            WT_CustomElementSelector.select(this.shadowRoot, `#directto`, WT_TSCImageButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#map`, WT_TSCStatusBarButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#info`, WT_TSCLabeledButton)
+        ]);
     }
 
     _initWaypointRowRecycler() {
         /**
-         * @type {WT_HTMLElementRecycler<WT_G3x5_TSCNearestWaypointRowHTMLElement<T>>}
+         * @type {WT_G3x5_TSCNearestWaypointRowRecycler<WT_G3x5_TSCNearestWaypointRowHTMLElement<T>>}
          */
         this._waypointRowRecycler = this._createWaypointRowRecycler();
     }
@@ -171,10 +258,18 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._col4Title.innerHTML = this._getCol4TitleText();
     }
 
+    _initOptions() {
+        this._drctButton.addButtonListener(this._onDRCTButtonPressed.bind(this));
+        this._showMapButton.addButtonListener(this._onShowMapButtonPressed.bind(this));
+        this._infoButton.addButtonListener(this._onInfoButtonPressed.bind(this));
+        this._infoButton.labelText = this._getOptionsInfoButtonLabelText();
+    }
+
     async _connectedCallbackHelper() {
         await this._defineChildren();
         this._initWaypointRowRecycler();
         this._initHeader();
+        this._initOptions();
         this._isInit = true;
     }
 
@@ -186,8 +281,65 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._context = context;
     }
 
-    _updateWaypoints() {
-        let waypoints = this._context.getWaypoints().slice();
+    /**
+     *
+     * @param {(source:WT_G3x5_TSCNearestWaypointHTMLElement<T>, eventType:Number, data:*) => void} listener
+     */
+    addListener(listener) {
+        this._listeners.push(listener);
+    }
+
+    /**
+     *
+     * @param {(source:WT_G3x5_TSCNearestWaypointHTMLElement<T>, eventType:Number, data:*) => void} listener
+     */
+    removeListener(listener) {
+        let index = this._listeners.indexOf(listener);
+        if (index >= 0) {
+            this._listeners.splice(index, 1);
+        }
+    }
+
+    _fireEvent(eventType, data) {
+        this._listeners.forEach(listener => listener(this, eventType, data));
+    }
+
+    _onDRCTButtonPressed(button) {
+        this._fireEvent(this._getDRCTButtonEventType());
+    }
+
+    _onShowMapButtonPressed(button) {
+        this._fireEvent(this._getShowMapButtonEventType());
+    }
+
+    _onInfoButtonPressed(button) {
+        this._fireEvent(this._getInfoButtonEventType());
+    }
+
+    _onWaypointRowEvent(row, eventType) {
+    }
+
+    showOptionsBanner() {
+        this._optionsBanner.slideIn(WT_TSCSlidingBanner.Direction.RIGHT);
+    }
+
+    hideOptionsBanner() {
+        this._optionsBanner.slideOut(WT_TSCSlidingBanner.Direction.RIGHT);
+    }
+
+    toggleOptionsBanner() {
+        if (this._optionsBanner.isVisible) {
+            this.hideOptionsBanner();
+        } else {
+            this.showOptionsBanner();
+        }
+    }
+
+    /**
+     *
+     * @param {WT_ReadOnlyArray<T>} waypoints
+     */
+    setWaypoints(waypoints) {
         if (waypoints.length === this._waypoints.length && waypoints.every((waypoint, index) => waypoint.equals(this._waypoints[index]))) {
             return;
         }
@@ -203,7 +355,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         }
 
         for (let i = 0; i < waypoints.length; i++) {
-            let waypoint = waypoints[i];
+            let waypoint = waypoints.get(i);
             let index = this._rows.findIndex(row => row.waypoint.equals(waypoint));
             let row;
             if (index >= 0) {
@@ -211,6 +363,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
             } else {
                 row = this._waypointRowRecycler.request();
                 row.setContext({
+                    parentPage: this._context.parentPage,
                     airplane: this._context.airplane,
                     unitsModel: this._context.unitsModel
                 });
@@ -220,7 +373,10 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
             row.style.order = `${i}`;
         }
 
-        this._waypoints = waypoints;
+        this._waypoints = waypoints.slice();
+    }
+
+    open() {
     }
 
     _updateRows() {
@@ -228,7 +384,6 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
     }
 
     _doUpdate() {
-        this._updateWaypoints();
         this._updateRows();
         this._waypointsList.scrollManager.update();
     }
@@ -239,6 +394,10 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         }
 
         this._doUpdate();
+    }
+
+    close() {
+        this._optionsBanner.popOut();
     }
 
     scrollUp() {
@@ -300,6 +459,33 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
                     height: var(--nearestwaypoints-row-height, 3em);
                     margin: var(--nearestwaypoints-row-margin, 0);
                 }
+            #optionsbanner {
+                position: absolute;
+                right: -1vw;
+                top: 50%;
+                width: calc(var(--nearestwaypoints-options-width, 25%) + 1vw + var(--nearestwaypoints-options-margin-right, 0px));
+                height: var(--nearestwaypoints-options-height, 98%);
+                transform: translateY(-50%);
+                --slidingbanner-padding-right: calc(1vw + var(--nearestwaypoints-options-margin-right, 0px));
+            }
+                #optionscontainer {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                    border: 3px solid var(--wt-g3x5-bordergray);
+                    background: black;
+                    font-size: var(--nearestwaypoints-options-font-size, 0.85em);
+                    display: flex;
+                    flex-flow: column nowrap;
+                    align-items: stretch;
+                }
+                    .optionsButton {
+                        height: var(--nearestwaypoints-options-button-height, 4em);
+                        margin: var(--nearestwaypoints-options-button-margin, 0.25em 0.25em);
+                    }
+                    #directto {
+                        --button-img-image-height: 100%;
+                    }
     </style>
     <div id="wrapper">
         <div id="header">
@@ -309,6 +495,13 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
             <div id="col4title"></div>
         </div>
         <wt-tsc-scrolllist id="waypoints"></wt-tsc-scrolllist>
+        <wt-tsc-slidingbanner id="optionsbanner">
+            <div slot="content" id="optionscontainer">
+                <wt-tsc-button-img id="directto" class="optionsButton" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png"></wt-tsc-button-img>
+                <wt-tsc-button-statusbar id="map" class="optionsButton" labeltext="Show On Map"></wt-tsc-button-statusbar>
+                <wt-tsc-button-label id="info" class="optionsButton"></wt-tsc-button-label>
+            </div>
+        </wt-tsc-slidingbanner>
     </div>
 `;
 
@@ -317,40 +510,25 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
  * @extends WT_CustomHTMLElementRecycler<T>
  */
 class WT_G3x5_TSCNearestWaypointRowRecycler extends WT_CustomHTMLElementRecycler {
+    /**
+     *
+     * @param {HTMLElement} parent
+     * @param {new T} htmlElementConstructor
+     * @param {(source:T, eventType:Number) => void} listener
+     */
+    constructor(parent, htmlElementConstructor, listener) {
+        super(parent, htmlElementConstructor);
+
+        this._listener = listener;
+    }
+
     _createElement() {
         let element = super._createElement();
+        element.addListener(this._listener);
         element.slot = "content";
         return element;
     }
 }
-
-/**
- * @extends WT_G3x5_TSCNearestWaypointHTMLElement<WT_Airport>
- */
-class WT_G3x5_TSCNearestAirportHTMLElement extends WT_G3x5_TSCNearestWaypointHTMLElement {
-    _createWaypointRowRecycler() {
-        return new WT_G3x5_TSCNearestWaypointRowRecycler(this._waypointsList, WT_G3x5_TSCNearestAirportRowHTMLElement);
-    }
-
-    _getCol1TitleText() {
-        return "Airport";
-    }
-
-    _getCol2TitleText() {
-        return "BRG";
-    }
-
-    _getCol3TitleText() {
-        return "DIS";
-    }
-
-    _getCol4TitleText() {
-        return "APPR/RWY";
-    }
-}
-WT_G3x5_TSCNearestAirportHTMLElement.NAME = "wt-tsc-nearestairport";
-
-customElements.define(WT_G3x5_TSCNearestAirportHTMLElement.NAME, WT_G3x5_TSCNearestAirportHTMLElement);
 
 /**
  * @template {WT_ICAOWaypoint} T
@@ -363,13 +541,19 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
         /**
-         * @type {{airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCNearestWaypointUnitsModel}}
+         * @type {((source:WT_G3x5_TSCNearestWaypointRowHTMLElement<T>, eventType:Number) => void)[]}
+         */
+        this._listeners = [];
+
+        /**
+         * @type {{parentPage:WT_G3x5_TSCNearestWaypoint<T>, airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCNearestWaypointUnitsModel}}
          */
         this._context = null;
         /**
          * @type {T}
          */
         this._waypoint = null;
+        this._isHighlighted = false;
         this._isInit = false;
 
         this._initFormatters();
@@ -428,14 +612,23 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
             WT_CustomElementSelector.select(this.shadowRoot, this._getWaypointButtonQuery(), WT_G3x5_TSCWaypointButton),
             WT_CustomElementSelector.select(this.shadowRoot, this._getBearingArrowQuery(), WT_TSCBearingArrow)
         ]);
-        this._waypointButton.setIconSrcFactory(new WT_G3x5_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCNearestWaypointRowHTMLElement.WAYPOINT_ICON_PATH));
 
         this._bearingText = new WT_CachedElement(this.shadowRoot.querySelector(this._getBearingTextQuery()));
         this._distanceText = new WT_CachedElement(this.shadowRoot.querySelector(this._getDistanceTextQuery()));
     }
 
+    _initWaypointButton() {
+        this._waypointButton.setIconSrcFactory(new WT_G3x5_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCNearestWaypointRowHTMLElement.WAYPOINT_ICON_PATH));
+        this._waypointButton.addButtonListener(this._onWaypointButtonPressed.bind(this));
+    }
+
+    _initChildren() {
+        this._initWaypointButton();
+    }
+
     async _connectedCallbackHelper() {
         await this._defineChildren();
+        this._initChildren();
         this._isInit = true;
         this._updateFromWaypoint();
     }
@@ -464,6 +657,41 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         this._waypoint = waypoint;
         if (this._isInit) {
             this._updateFromWaypoint();
+        }
+    }
+
+    /**
+     *
+     * @param {(source:WT_G3x5_TSCNearestWaypointRowHTMLElement<T>, eventType:Number) => void} listener
+     */
+    addListener(listener) {
+        this._listeners.push(listener);
+    }
+
+    /**
+     *
+     * @param {(source:WT_G3x5_TSCNearestWaypointRowHTMLElement<T>, eventType:Number) => void} listener
+     */
+    removeListener(listener) {
+        let index = this._listeners.indexOf(listener);
+        if (index >= 0) {
+            this._listeners.splice(index, 1);
+        }
+    }
+
+    _fireEvent(eventType) {
+        this._listeners.forEach(listener => listener(this, eventType));
+    }
+
+    _onWaypointButtonPressed(button) {
+        this._fireEvent(this._getWaypointButtonEvent());
+    }
+
+    _updateHighlight() {
+        let shouldHighlight = this.waypoint.equals(this._context.parentPage.selectedWaypoint);
+        if (shouldHighlight !== this._isHighlighted) {
+            this._waypointButton.highlight = `${shouldHighlight}`;
+            this._isHighlighted = shouldHighlight;
         }
     }
 
@@ -503,6 +731,7 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
 
     _doUpdate() {
         let planePosition = this._context.airplane.navigation.position(this._tempGeoPoint);
+        this._updateHighlight();
         this._updateBearing(planePosition);
         this._updateDistance(planePosition);
     }
@@ -512,11 +741,115 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
             return;
         }
 
-        this._doUpdate()
+        this._doUpdate();
     }
 }
 WT_G3x5_TSCNearestWaypointRowHTMLElement.WAYPOINT_ICON_PATH = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCNearestWaypointRowHTMLElement.UNIT_CLASS = "unit";
+
+// NEAREST AIRPORT
+
+/**
+ * @extends WT_G3x5_TSCNearestWaypoint<WT_Airport>
+ */
+class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
+    _getTitle() {
+        return "Nearest Airport";
+    }
+
+    _createHTMLElement() {
+        let htmlElement = new WT_G3x5_TSCNearestAirportHTMLElement();
+        htmlElement.setContext({
+            parentPage: this,
+            airplane: this.instrument.airplane,
+            unitsModel: this._unitsModel
+        });
+        return htmlElement;
+    }
+
+    _getWaypoints() {
+        return this.instrument.nearestAirportList.airports;
+    }
+
+    _getWaypointButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.WAYPOINT_BUTTON_PRESSED;
+    }
+
+    _getDRCTButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.DRCT_BUTTON_PRESSED;
+    }
+}
+
+/**
+ * @extends WT_G3x5_TSCNearestWaypointHTMLElement<WT_Airport>
+ */
+ class WT_G3x5_TSCNearestAirportHTMLElement extends WT_G3x5_TSCNearestWaypointHTMLElement {
+    _createWaypointRowRecycler() {
+        return new WT_G3x5_TSCNearestWaypointRowRecycler(this._waypointsList, WT_G3x5_TSCNearestAirportRowHTMLElement, this._waypointRowListener);
+    }
+
+    _getCol1TitleText() {
+        return "Airport";
+    }
+
+    _getCol2TitleText() {
+        return "BRG";
+    }
+
+    _getCol3TitleText() {
+        return "DIS";
+    }
+
+    _getCol4TitleText() {
+        return "APPR/RWY";
+    }
+
+    _getOptionsInfoButtonLabelText() {
+        return "Airport Info";
+    }
+
+    _getWaypointButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.WAYPOINT_BUTTON_PRESSED;
+    }
+
+    _getDRCTButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.DRCT_BUTTON_PRESSED;
+    }
+
+    _getShowMapButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.MAP_BUTTON_PRESSED;
+    }
+
+    _getInfoButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.INFO_BUTTON_PRESSED;
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCNearestAirportRowHTMLElement} row
+     */
+    _onWaypointButtonPressed(row) {
+        this._fireEvent(this._getWaypointButtonEventType(), row.waypoint);
+    }
+
+    _onWaypointRowEvent(row, eventType) {
+        if (eventType === WT_G3x5_TSCNearestAirportRowHTMLElement.EventType.WAYPOINT_BUTTON_PRESSED) {
+            this._onWaypointButtonPressed(row);
+        }
+    }
+}
+/**
+ * @enum {Number}
+ */
+WT_G3x5_TSCNearestAirportHTMLElement.EventType = {
+    WAYPOINT_BUTTON_PRESSED: 0,
+    DRCT_BUTTON_PRESSED: 1,
+    MAP_BUTTON_PRESSED: 2,
+    INFO_BUTTON_PRESSED: 3
+};
+WT_G3x5_TSCNearestAirportHTMLElement.NAME = "wt-tsc-nearestairport";
+
+customElements.define(WT_G3x5_TSCNearestAirportHTMLElement.NAME, WT_G3x5_TSCNearestAirportHTMLElement);
 
 /**
  * @extends WT_G3x5_TSCNearestWaypointRowHTMLElement<WT_Airport>
@@ -642,6 +975,10 @@ class WT_G3x5_TSCNearestAirportRowHTMLElement extends WT_G3x5_TSCNearestWaypoint
         this._updateRunway();
     }
 
+    _getWaypointButtonEvent() {
+        return WT_G3x5_TSCNearestAirportRowHTMLElement.EventType.WAYPOINT_BUTTON_PRESSED;
+    }
+
     _updateLengthUnit() {
         let unit = this._context.unitsModel.lengthUnit;
         if (!unit.equals(this._lastLengthUnit)) {
@@ -655,6 +992,12 @@ class WT_G3x5_TSCNearestAirportRowHTMLElement extends WT_G3x5_TSCNearestWaypoint
         this._updateLengthUnit();
     }
 }
+/**
+ * @enum {Number}
+ */
+WT_G3x5_TSCNearestAirportRowHTMLElement.EventType = {
+    WAYPOINT_BUTTON_PRESSED: 0
+};
 WT_G3x5_TSCNearestAirportRowHTMLElement.ZERO_LENGTH = WT_Unit.FOOT.createNumber(0);
 WT_G3x5_TSCNearestAirportRowHTMLElement.APPROACH_TEXT = [
     "",
