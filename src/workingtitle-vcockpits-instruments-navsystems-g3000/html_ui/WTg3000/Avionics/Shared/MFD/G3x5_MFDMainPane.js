@@ -491,19 +491,19 @@ class WT_G3x5_MFDHalfPane {
     _updateMapWaypoint() {
         switch (this._displayMode) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.AIRPORT;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.AIRPORT;
                 this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.VOR;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.VOR;
                 this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.NDB;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.NDB;
                 this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.INT;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.INT;
                 this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
         }
