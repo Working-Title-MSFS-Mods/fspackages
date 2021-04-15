@@ -13,61 +13,12 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 # Changes
 
-## VNAV CLIMB
-VNAV Climb should now be working correctly - we know that we've warned many people in past versions to turn it off if it isn't working, but at this point we believe it works as designed. As a refresher, in the CJ4, VNAV in climb is NOT A PATH. It simply provides protection for the pilot to not exceed an AT or AT OR BELOW constraint in the departure procedure. The protection exists ONLY for waypoints that are loaded into the FMC as part of a DEPARTURE PROCEDURE. If you add other waypoints beyond the DP, those constraints will not be respected as climb constraints.
-
-## AUTOPILOT/MODES
-- Enabled APPR mode for ILS when tuned in PFD even when an approach is not loaded in the FMC.
-- Added custom vertical autopilot to manage altitude capture and hold modes. (note: the ALT button is now tied to H:WT_CJ4_AP_ALT_PRESSED and the emissive lvar is L:WT_CJ4_ALT_HOLD)
-- Added altitude capture for PTCH mode.
-- Added altitude capture for TO/GA modes.
-- Enabled ability to arm LNAV on the ground and set activation at 400' AGL.
-- Fixed bug with not being able to turn off the Flight Director when FMA modes are annunciated - the FD button will now disable all modes when being turned off, as long as the AP is not on.
-- Fixed bug that prevented VNAV button press from being read when APPR mode was active - now it is only force disabled when GP/GS have been captured and those are the active vertical modes.
-
-## PFD
-- Added PITCH REF value to the FMA when in PTCH mode.
-- PFD Baro preset bug fixed where improper units would sometimes display with the baro preset window open.
-- Fixed bugs with selected altitude < 0 or > 45,000; these values will not display AND the simvar values will not exceed those limits (you can't get stuck below 0 anymore).
-- Removed inaccurate feature of resetting the FMA modes upon landing - they will now remain in the last selected modes until the FD is turned off.
-
-## MFD
-- Improved map/terrain mask (thanks Slip!).
-- Improved ROSE/ARC display to better reflect the real aircraft.
-- Improved min wind vector/speed display.
-- Fixed bug where DES waypoint would appear even after it had been passed sometimes on the map.
-- Improved gps track bug on MFD/PFD and enable during ground ops.
-- Added ability for FMS Text VNAV window to display climb data even when no descent/arrival is picked, and also to show arrival/TOD data after climb constraints have passed.
-- Fixed the Range Banana (altitude intercept arc) on the PFD/MFD to only display the point where the SELECTED altitude will be intercepted, not the VNAV altitude.
-
-## FMC
-- Added runway slope calculations to Takeoff and Landing Ref pages - you can now enter a slope and the relevant TOFL/LFL number will adjust accordingly.
-- Added landing factor distance selection on Approach Ref page - you can now select the landing factor.
-- Added ability to enter custom/new pax weight on PERF INIT page using format "/XXX" or "5/XXX" and the pax weight value is persistent.
-- Added ability to enter Gross Weight on PERF INIT page to override ZFW and/or Pax/Cargo inputs.
-- Fixed bug where the final approach fix calculation in LNAV sometimes chose the missed approach waypoint as the FAF.
-- Fixed bug that sometimes caused the departure runway to be undefined (black FMC screen) after flight plan import.
-- Adjusted DIRTO and Vertical Direct page and capabilities to fix bug not allowing a second vertical direct, not allowing a vertical direct to a current direct to waypoint.
-- Added ability to select any vertical waypoint with a constraint for a direct to; when constraints are A/B or A/ the altitude targeted will be the ABOVE value.
-- Fixed bug causing VREF/VAPP display error in FMC in certain circumstances.
-- Removed departure runway altitude from flight plan and LEGS page.
-
-## VNAV
-- Fixed bug that would prevent a climb in cases where there is no SID, but a STAR exists and has constraints.
-- Adjusted VNAV FMS Text window to display descent data as soon as the last departure constraint is passed, instead of waiting until the departure procedure has been completely flown.
-- Fixed bug with missing some A/B or A/ constraints in the first descent segment in some rare cases.
-- Changed behavior of path smoothing to cause the first descent segment to always be at the requested VPA in the VNAV DESCENT setup page.
-- Fixed bug with VNAV calculations after a DIR TO.
-- Adjusted behavior after FPLN change is made that adjusts the PATH; if the new PATH causes an out-of-activation range problem, AP mode changes to PTCH.
-- Fixed bug where after PATH arms in an ABOVE PATH intercept situation, PATH won't disarm even if you deviate from intercept parameters.
-- Extensive debugging and fixing of obscure/non-normal cases.
-
-## FLIGHT MODEL
-- Adjusted idle thrust.
-- Adjusted 75% thrust error in thrust table.
-
-## MODEL
-- Adjusted behavior of the panel light knob to replicate the function of the knob in the real aircraft - full on is DAY setting, and this is the ONLY setting to get daytime charts.
+- Fixed bugs with parsing TUN page inputs.
+- Minor cleanup on DSPL MENU FMC page.
+- Fixed bugs with leg altitude (constraint) parsing to address some incorrect constraints in some European approaches.
+- Fix for erroneous sim autopilot altitude capture when using a hardware button tied to all the altitude slots and not just slot 1.
+- Fix for some erroneous situations where VNAV PATH kicks you to PTCH incorrectly.
+- Fix for sequencing missed approach on Go-Around after a new approach is selected.
 
 ## ⚠️ Known Issues
 * In the latest versions of Navigraph data, some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
