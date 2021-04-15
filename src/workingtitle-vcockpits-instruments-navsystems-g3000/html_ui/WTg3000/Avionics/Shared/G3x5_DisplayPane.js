@@ -169,13 +169,13 @@ class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_DisplayPane {
 
     getTitle() {
         switch (this.waypointInfo.model.waypointInfo.mode) {
-            case WT_MapModelWaypointInfoModule.Mode.AIRPORT:
+            case WT_G3x5_MapModelWaypointInfoModule.Mode.AIRPORT:
                 return "Airport Info";
-            case WT_MapModelWaypointInfoModule.Mode.VOR:
+            case WT_G3x5_MapModelWaypointInfoModule.Mode.VOR:
                 return "VOR Info";
-            case WT_MapModelWaypointInfoModule.Mode.NDB:
+            case WT_G3x5_MapModelWaypointInfoModule.Mode.NDB:
                 return "NDB Info";
-            case WT_MapModelWaypointInfoModule.Mode.INT:
+            case WT_G3x5_MapModelWaypointInfoModule.Mode.INT:
                 return "Intersection Info";
             default:
                 return "Waypoint Info";

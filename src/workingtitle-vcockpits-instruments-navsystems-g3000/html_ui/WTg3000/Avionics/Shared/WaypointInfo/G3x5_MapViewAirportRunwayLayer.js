@@ -2,13 +2,13 @@
  * A graphic representation of an airport's runways. Runways are represented as rectangles with a center line.
  * Runways are labeled with their designation. The label is placed at the start of the runway.
  */
-class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
+class WT_G3x5_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
     /**
-     * @param {WT_MapViewRunwayCanvasRenderer} runwayRenderer - the renderer to use to draw the runways and labels.
+     * @param {WT_G3x5_MapViewRunwayCanvasRenderer} runwayRenderer - the renderer to use to draw the runways and labels.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(runwayRenderer, className = WT_MapViewAirportRunwayLayer.CLASS_DEFAULT, configName = WT_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT) {
+    constructor(runwayRenderer, className = WT_G3x5_MapViewAirportRunwayLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
         this._runwayRenderer = runwayRenderer;
@@ -16,7 +16,7 @@ class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
         this._runwayLayer = new WT_MapViewPersistentCanvas(1.05);
         this.addSubLayer(this._runwayLayer);
 
-        this._optsManager = new WT_OptionsManager(this, WT_MapViewAirportRunwayLayer.OPTIONS_DEF);
+        this._optsManager = new WT_OptionsManager(this, WT_G3x5_MapViewAirportRunwayLayer.OPTIONS_DEF);
 
         this._lastAirport = null;
     }
@@ -53,14 +53,14 @@ class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return state.model.waypointInfo.mode === WT_MapModelWaypointInfoModule.Mode.AIRPORT;
+        return state.model.waypointInfo.mode === WT_G3x5_MapModelWaypointInfoModule.Mode.AIRPORT;
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onConfigLoaded(state) {
-        for (let property of WT_MapViewAirportRunwayLayer.CONFIG_PROPERTIES) {
+        for (let property of WT_G3x5_MapViewAirportRunwayLayer.CONFIG_PROPERTIES) {
             this._setPropertyFromConfig(property);
         }
     }
@@ -117,9 +117,9 @@ class WT_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
         this._updateRunwayLayer(state);
     }
 }
-WT_MapViewAirportRunwayLayer.CLASS_DEFAULT = "airportRunwayLayer";
-WT_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT = "airportRunway";
-WT_MapViewAirportRunwayLayer.OPTIONS_DEF = {
+WT_G3x5_MapViewAirportRunwayLayer.CLASS_DEFAULT = "airportRunwayLayer";
+WT_G3x5_MapViewAirportRunwayLayer.CONFIG_NAME_DEFAULT = "airportRunway";
+WT_G3x5_MapViewAirportRunwayLayer.OPTIONS_DEF = {
     runwayFillColor: {default: "gray", auto: true},
     runwayOutlineWidth: {default: 1, auto: true},
     runwayOutlineColor: {default: "white", auto: true},
@@ -141,7 +141,7 @@ WT_MapViewAirportRunwayLayer.OPTIONS_DEF = {
     runwayLabelBackgroundOutlineWidth: {default: 1, auto: true},
     runwayLabelBackgroundOutlineColor: {default: "blue", auto: true},
 };
-WT_MapViewAirportRunwayLayer.CONFIG_PROPERTIES = [
+WT_G3x5_MapViewAirportRunwayLayer.CONFIG_PROPERTIES = [
     "runwayFillColor",
     "runwayOutlineWidth",
     "runwayOutlineColor",

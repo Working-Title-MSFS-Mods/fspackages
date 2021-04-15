@@ -1,9 +1,9 @@
-class WT_MapViewRunwayCanvasRenderer {
+class WT_G3x5_MapViewRunwayCanvasRenderer {
     constructor(labelManager) {
         this._labelManager = labelManager;
 
         /**
-         * @type {Map<String, WT_MapViewRunwayLabelLayerAirportEntry>}
+         * @type {Map<String, WT_G3x5_MapViewRunwayLabelLayerAirportEntry>}
          */
         this._registered = new Map();
 
@@ -19,7 +19,7 @@ class WT_MapViewRunwayCanvasRenderer {
     registerAirport(airport, styleOptions) {
         let entry = this._registered.get(airport.uniqueID);
         if (!entry) {
-            entry = new WT_MapViewRunwayLabelLayerAirportEntry(airport, styleOptions, this._labelManager);
+            entry = new WT_G3x5_MapViewRunwayLabelLayerAirportEntry(airport, styleOptions, this._labelManager);
             this._registered.set(airport.uniqueID, entry);
         }
     }
@@ -128,7 +128,7 @@ class WT_MapViewRunwayCanvasRenderer {
      * @param {WT_MapViewState} state
      * @param {CanvasRenderingContext2D} context
      * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {WT_MapViewRunwayLabelLayerAirportEntry} entry
+     * @param {WT_G3x5_MapViewRunwayLabelLayerAirportEntry} entry
      */
     _renderAirport(state, context, projectionRenderer, entry) {
         entry.physicalRunways.forEach(runway => {
@@ -149,7 +149,7 @@ class WT_MapViewRunwayCanvasRenderer {
     }
 }
 
-class WT_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
+class WT_G3x5_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
     /**
      * @param {WT_Runway} runway - the runway with which the new label is associated.
      * @param {Number} priority - the display priority of the new label.
@@ -183,7 +183,7 @@ class WT_MapViewRunwayLabel extends WT_MapViewSimpleTextLabel {
     }
 }
 
-class WT_MapViewRunwayLabelLayerAirportEntry {
+class WT_G3x5_MapViewRunwayLabelLayerAirportEntry {
     /**
      * @param {WT_Airport} airport
      * @param {Object} styleOptions
@@ -201,7 +201,7 @@ class WT_MapViewRunwayLabelLayerAirportEntry {
     }
 
     _initLabel(runway) {
-        let label = new WT_MapViewRunwayLabel(runway, this.styleOptions.label.priority, this.styleOptions.label.alwaysShow);
+        let label = new WT_G3x5_MapViewRunwayLabel(runway, this.styleOptions.label.priority, this.styleOptions.label.alwaysShow);
         label.setOptions(this.styleOptions.label);
         this._labels.push(label);
         this._labelManager.add(label);
