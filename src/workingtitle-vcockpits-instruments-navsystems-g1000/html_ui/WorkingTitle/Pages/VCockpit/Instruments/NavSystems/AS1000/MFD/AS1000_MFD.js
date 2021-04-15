@@ -8,12 +8,9 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
         this.loadSavedMapOrientation();
         this.pagesContainer = this.getChildById("RightInfos");
-        this.engineDisplay = new WTEngine("Engine", "LeftInfos", this._xmlConfigPath);
+        this.engineDisplay = new WTEngine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engineDisplay);
         this.pageGroups = [
             new NavSystemPageGroup("MAP", this, [

@@ -1,3 +1,11 @@
+# changes on 0.3.5
+* Updated for 1.15.7.0
+* Fixed compat problems with stock G3000
+
+## Notice
+
+Due to changes in how planes load their configurations in WU4, we had to change the code that loads custom display gauges from WTEngineDisplay.xml, as is done with our sample for the G36.   In order to get these to work now, aircraft creators or modders must put the contents of the `WTEngineDisplay` section directly into panel.xml, within the body of the main `PlaneHTMLConfig` section.   This is unfortunate, but it was the only way we could preserve this functionality.   Doing this to your panel.xml is fully backwards compatible and will not break planes that don't use the modded G1000.
+
 # changes in v0.3.4
 * Fixed compatibility problems with FBW A320
 * Fixed nav map not drawing approach paths
