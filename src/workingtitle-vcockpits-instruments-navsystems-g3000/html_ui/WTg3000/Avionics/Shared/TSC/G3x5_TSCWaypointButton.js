@@ -17,6 +17,9 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 text-align: left;
                 color: var(--waypoint-ident-color, var(--wt-g3x5-lightblue));
             }
+            :host([highlight=true][primed=false]) #ident {
+                color: black;
+            }
         `;
     }
 
@@ -32,6 +35,9 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 white-space: nowrap;
                 overflow: hidden;
                 color: var(--waypoint-name-color, white);
+            }
+            :host([highlight=true][primed=false]) #name {
+                color: black;
             }
         `;
     }
