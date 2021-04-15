@@ -71,6 +71,9 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
 
+    _onInfoButtonPressed() {
+    }
+
     _onHTMLElementEvent(source, eventType, data) {
         switch (eventType) {
             case this._getWaypointButtonEventType():
@@ -78,6 +81,9 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
                 break;
             case this._getDRCTButtonEventType():
                 this._onDRCTButtonPressed();
+                break;
+            case this._getInfoButtonEventType():
+                this._onInfoButtonPressed();
                 break;
         }
     }
@@ -777,6 +783,16 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
 
     _getDRCTButtonEventType() {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.DRCT_BUTTON_PRESSED;
+    }
+
+    _getInfoButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.INFO_BUTTON_PRESSED;
+    }
+
+    _onInfoButtonPressed() {
+        let airportInfoPage = this.instrument.getSelectedMFDPanePages().airportInfo;
+        airportInfoPage.element.icaoSetting.setValue(this.selectedWaypoint.icao);
+        this.instrument.SwitchToPageName("MFD", airportInfoPage.name);
     }
 }
 
