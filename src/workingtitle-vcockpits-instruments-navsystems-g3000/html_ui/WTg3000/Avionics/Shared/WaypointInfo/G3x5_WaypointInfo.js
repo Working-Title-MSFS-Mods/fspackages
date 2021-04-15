@@ -54,7 +54,7 @@ class WT_G3x5_WaypointInfo {
     /**
      * @readonly
      * @property {WT_MapModelWaypointInfoModule} waypointInfoModule - the waypoint info module associated with this map.
-     * @type {WT_MapModelWaypointInfoModule}
+     * @type {WT_G3x5_MapModelWaypointInfoModule}
      */
     get waypointInfoModule() {
         return this._waypointInfoModule;
@@ -69,7 +69,7 @@ class WT_G3x5_WaypointInfo {
         this.model.addModule(new WT_MapModelOrientationModule());
         this.model.addModule(new WT_MapModelRangeRingModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
-        this.model.addModule(this._waypointInfoModule = new WT_MapModelWaypointInfoModule(this._icaoWaypointFactory));
+        this.model.addModule(this._waypointInfoModule = new WT_G3x5_MapModelWaypointInfoModule(this._icaoWaypointFactory));
         this.model.addModule(this._waypointHighlightModule = new WT_MapModelWaypointHighlightModule(this._icaoWaypointFactory));
 
         this.model.crosshair.show = true;
@@ -87,10 +87,10 @@ class WT_G3x5_WaypointInfo {
     _initView() {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
-        let runwayRenderer = new WT_MapViewRunwayCanvasRenderer(labelManager);
+        let runwayRenderer = new WT_G3x5_MapViewRunwayCanvasRenderer(labelManager);
 
         this.view.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.instrumentID));
-        this.view.addLayer(new WT_MapViewAirportRunwayLayer(runwayRenderer));
+        this.view.addLayer(new WT_G3x5_MapViewAirportRunwayLayer(runwayRenderer));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
         this.view.addLayer(new WT_MapViewWaypointHighlightLayer(this._waypointRenderer));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
