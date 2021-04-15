@@ -286,11 +286,11 @@ class WT_G3x5_MFDHalfPane {
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
         this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
 
-        this._navMap = new WT_G3x5_NavMapDisplayPane(this._createNavMap(id, data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
-        this._trafficMap = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem));
-        this._weatherRadar = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
-        this._charts = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
-        this._waypointInfo = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
+        this._navMapPane = new WT_G3x5_NavMapDisplayPane(this._createNavMap(id, data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
+        this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem));
+        this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
+        this._chartsPane = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
+        this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
 
         this._displayMode;
         /**
@@ -352,11 +352,11 @@ class WT_G3x5_MFDHalfPane {
             WT_CustomElementSelector.select(this.htmlElement, `.waypointInfo`),
         ]);
 
-        this._navMap.init(navMapElement);
-        this._trafficMap.init(trafficMapElement);
-        this._weatherRadar.init(this.htmlElement.querySelector(`.weatherRadar`));
-        this._charts.init(chartsElement);
-        this._waypointInfo.init(waypointInfoElement);
+        this._navMapPane.init(navMapElement);
+        this._trafficMapPane.init(trafficMapElement);
+        this._weatherRadarPane.init(this.htmlElement.querySelector(`.weatherRadar`));
+        this._chartsPane.init(chartsElement);
+        this._waypointInfoPane.init(waypointInfoElement);
     }
 
     _initDisplay() {
@@ -457,13 +457,13 @@ class WT_G3x5_MFDHalfPane {
     _getDisplayPaneFromMode(mode) {
         switch (mode) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
-                return this._navMap;
+                return this._navMapPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
-                return this._trafficMap;
+                return this._trafficMapPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
-                return this._weatherRadar;
+                return this._weatherRadarPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
-                return this._charts;
+                return this._chartsPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_NRST:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_NRST:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_NRST:
@@ -473,7 +473,7 @@ class WT_G3x5_MFDHalfPane {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
-                return this._waypointInfo;
+                return this._waypointInfoPane;
             default:
                 return null;
         }
@@ -491,20 +491,20 @@ class WT_G3x5_MFDHalfPane {
     _updateMapWaypoint() {
         switch (this._displayMode) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
-                this._waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.AIRPORT;
-                this._waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.AIRPORT;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
-                this._waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.VOR;
-                this._waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.VOR;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
-                this._waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.NDB;
-                this._waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.NDB;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
-                this._waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.INT;
-                this._waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_MapModelWaypointInfoModule.Mode.INT;
+                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
                 break;
         }
     }
