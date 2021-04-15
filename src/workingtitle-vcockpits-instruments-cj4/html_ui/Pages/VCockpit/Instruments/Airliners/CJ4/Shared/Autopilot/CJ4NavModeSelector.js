@@ -91,6 +91,7 @@ class CJ4NavModeSelector {
     /** The current states of the input data. */
     this._inputDataStates = {
       altLocked: new ValueStateTracker(() => SimVar.GetSimVarValue("L:WT_CJ4_ALT_HOLD", "number") == 1, () => NavModeEvent.ALT_LOCK_CHANGED),
+      simAltLocked: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Boolean"), () => NavModeEvent.SIM_ALT_LOCK_CHANGED),
       altSlot: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE SLOT INDEX", "number"), () => NavModeEvent.ALT_SLOT_CHANGED),
       selectedAlt1: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:1", "feet"), () => NavModeEvent.SELECTED_ALT1_CHANGED),
       selectedAlt2: new ValueStateTracker(() => SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR:2", "feet"), () => NavModeEvent.SELECTED_ALT2_CHANGED),
@@ -111,6 +112,7 @@ class CJ4NavModeSelector {
       [`${NavModeEvent.FLC_PRESSED}`]: this.handleFLCPressed.bind(this),
       [`${NavModeEvent.VNAV_PRESSED}`]: this.handleVNAVPressed.bind(this),
       [`${NavModeEvent.ALT_LOCK_CHANGED}`]: this.handleAltLockChanged.bind(this),
+      [`${NavModeEvent.SIM_ALT_LOCK_CHANGED}`]: this.handleSimAltLockChanged.bind(this),
       [`${NavModeEvent.ALT_CAPTURED}`]: this.handleAltCaptured.bind(this),
       [`${NavModeEvent.PATH_ACTIVE}`]: this.handleVPathActivate.bind(this),
       [`${NavModeEvent.GP_ACTIVE}`]: this.handleGPGSActivate.bind(this),
@@ -995,9 +997,9 @@ class CJ4NavModeSelector {
   }
 
   /**
-   * Handles when the altitude lock state has changed.
-   */
-  handleAltLockChanged() {
+ * Handles when the altitude lock state has changed.
+ */
+    handleAltLockChanged() {
     this.isAltitudeLocked = this._inputDataStates.altLocked.state;
     console.log("this.isAltitudeLocked " + this.isAltitudeLocked);
 
@@ -1029,25 +1031,41 @@ class CJ4NavModeSelector {
       //     break;
       // }
     }
+  }
 
-    // if (!this.isAltitudeLocked) {
-
-    //   switch (this.currentVerticalActiveState) {
-    //     case VerticalNavModeState.ALTCAP:
-    //     case VerticalNavModeState.ALTVCAP:
-    //     case VerticalNavModeState.ALTSCAP:
-    //     case VerticalNavModeState.ALTV:
-    //     case VerticalNavModeState.ALTS:
-    //     case VerticalNavModeState.ALT:
-    //       if (this.vPathState === VnavPathStatus.PATH_ACTIVE) {
-    //         this.currentVerticalActiveState = VerticalNavModeState.PATH;
-    //       } else {
-    //         this.currentVerticalActiveState = VerticalNavModeState.PTCH;
-    //       }
-    //       break;
-    //   }
-    // }
-    // this.setProperAltitudeArmedState();
+  /**
+   * Handles when the altitude lock state has changed.
+   */
+  handleSimAltLockChanged() {
+    if (this._inputDataStates.simAltLocked.state === true) {
+      console.log("simAltLocked.state === true ");
+      switch (this.currentVerticalActiveState) {
+        case VerticalNavModeState.TO:
+        case VerticalNavModeState.GA:
+          SimVar.SetSimVarValue("K:AUTO_THROTTLE_TO_GA", "number", 1);
+          break;
+        case VerticalNavModeState.PTCH:
+          this.engagePitch();
+          break;
+        case VerticalNavModeState.VS:
+          this.engageVerticalSpeed(1);
+          break;
+        case VerticalNavModeState.ALTCAP:
+        case VerticalNavModeState.ALTVCAP:
+        case VerticalNavModeState.ALTSCAP:
+        case VerticalNavModeState.ALTV:
+        case VerticalNavModeState.ALTS:
+        case VerticalNavModeState.ALT:
+        case VerticalNavModeState.GS:
+        case VerticalNavModeState.PATH:
+        case VerticalNavModeState.GP:
+          this.engageVerticalSpeed(2);
+          break;
+        case VerticalNavModeState.FLC:
+          this.engageFlightLevelChange();
+          break;
+        }
+    }
   }
 
   /**
@@ -1323,6 +1341,7 @@ LNavModeState.NAV2 = 'nav2';
 
 class NavModeEvent { }
 NavModeEvent.ALT_LOCK_CHANGED = 'alt_lock_changed';
+NavModeEvent.SIM_ALT_LOCK_CHANGED = 'sim_alt_lock_changed';
 NavModeEvent.ALT_CAPTURED = 'alt_captured';
 NavModeEvent.NAV_PRESSED = 'NAV_PRESSED';
 NavModeEvent.NAV_MODE_CHANGED = 'nav_mode_changed_to_nav';

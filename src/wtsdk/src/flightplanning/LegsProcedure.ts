@@ -167,9 +167,15 @@ export class LegsProcedure {
         }
 
         if (mappedLeg !== undefined) {
-          mappedLeg.legAltitudeDescription = currentLeg.altDesc;
-          mappedLeg.legAltitude1 = 100 * Math.round((currentLeg.altitude1 * 3.28084) / 100);
-          mappedLeg.legAltitude2 = 100 * Math.round((currentLeg.altitude2 * 3.28084) / 100);
+          if (this.altitudeIsVerticalAngleInfo(currentLeg)) {
+            mappedLeg.legAltitudeDescription = 1;
+            mappedLeg.legAltitude1 = 100 * Math.round((currentLeg.altitude2 * 3.28084) / 100);
+            mappedLeg.legAltitude2 = 100 * Math.round((currentLeg.altitude1 * 3.28084) / 100);
+          } else {
+            mappedLeg.legAltitudeDescription = currentLeg.altDesc;
+            mappedLeg.legAltitude1 = 100 * Math.round((currentLeg.altitude1 * 3.28084) / 100);
+            mappedLeg.legAltitude2 = 100 * Math.round((currentLeg.altitude2 * 3.28084) / 100);
+          }
         }
 
         this._currentIndex++;
@@ -184,6 +190,12 @@ export class LegsProcedure {
     else {
       return undefined;
     }
+  }
+
+  private altitudeIsVerticalAngleInfo(leg: ProcedureLeg): boolean {
+    return (leg.type === 4 || leg.type === 18)
+      && (leg.altDesc === 1 || leg.altDesc === 2)
+      && (leg.altitude1 > 0 && leg.altitude2 > 0);
   }
 
 

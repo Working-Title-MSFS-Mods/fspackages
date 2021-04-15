@@ -9,7 +9,6 @@ class CJ4_FMC_DsplMenuPage {
         const altitudeActive = fmc._templateRenderer.renderSwitch(["ALTITUDE"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.CONSTRAINTS) - 1));
         const termWptsActive = fmc._templateRenderer.renderSwitch(["TERM WPTS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.TERMWPTS) - 1));
         const vnavWindowSwitch = fmc._templateRenderer.renderSwitch(["OFF", "ON", "VNAV"], WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1));
-        const missedActive = fmc._templateRenderer.renderSwitch(["MISSEDAPPR"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.MISSEDAPPR) - 1));
 
         fmc.onLeftInput[2] = () => {
             CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.NAVAIDS).then(() => {
@@ -42,12 +41,6 @@ class CJ4_FMC_DsplMenuPage {
             });
         };
 
-        fmc.onRightInput[4] = () => {
-            CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.MISSEDAPPR).then(() => {
-                CJ4_FMC_DsplMenuPage.ShowPage1(fmc);
-            });
-        };
-
         fmc.onLeftInput[5] = () => {
             let currentVal = WTDataStore.get("WT_CJ4_MFD_DATA_WINDOW", 1);
             currentVal++;
@@ -68,10 +61,10 @@ class CJ4_FMC_DsplMenuPage {
             [loNavaidsActive, altitudeActive + "[disabled s-text]"],
             [""],
             [intersectionsActive, airportsActive],
-            [""],
-            [termWptsActive, missedActive],
-            ["WINDOW[blue s-text]", "SIDE[blue]"],
-            [vnavWindowSwitch, "L[green]/[white]R[s-text]>"]
+            ["","DISPLAY [blue]"],
+            [termWptsActive, "MFD[green]/PFD[disabled s-text]"],
+            [" WINDOW[blue s-text]", "SIDE[blue] "],
+            [vnavWindowSwitch, "L[green]/R[disabled s-text]>[disabled]"]
         ]);
 
         fmc.onPrevPage = () => {
@@ -84,25 +77,32 @@ class CJ4_FMC_DsplMenuPage {
     }
     static ShowPage2(fmc) {
         let rngSelDisabled = WTDataStore.get("WT_CJ4_RANGE_SEL_DISABLED", 0);
-        const rngSelSwitch = (rngSelDisabled == 0) ? "green" : "";
+        const rngSelSwitch = fmc._templateRenderer.renderSwitch(["RNG: ALT SEL"], (rngSelDisabled == 1));
         const ndbsActive = fmc._templateRenderer.renderSwitch(["NDBS"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.NDBS) - 1));
+        const missedActive = fmc._templateRenderer.renderSwitch(["MISS APPR"], (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.MISSEDAPPR) - 1));
 
         fmc.clearDisplay();
         fmc._templateRenderer.setTemplateRaw([
             [" LEFT DISPLAY MENU[blue]", "2/2 [blue]"],
             ["", "", "MFD MAP DISPLAY[blue s-text]"],
-            ["MISS APPR[s-text disabled]"],
+            [missedActive],
             [""],
             [ndbsActive],
             [""],
-            ["RNG: ALT SEL[s-text " + rngSelSwitch + "]"],
+            [rngSelSwitch],
             [""],
             ["GNSS POS[s-text disabled]"],
             ["", "DISPLAY [blue s-text]"],
-            ["ALTN FPLN[s-text disabled]", "MFD[green]/[white]PFD>[s-text white]"],
+            ["ALTN FPLN[s-text disabled]", "MFD[green]/PFD[disabled s-text]"],
             ["", "SIDE [blue s-text]"],
-            ["", "L[green]/[white]R[s-text]>"]
+            ["", "L[green]/R[disabled s-text]>[disabled]"]
         ]);
+
+        fmc.onLeftInput[0] = () => {
+            CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.MISSEDAPPR).then(() => {
+                CJ4_FMC_DsplMenuPage.ShowPage2(fmc);
+            });
+        };
 
         fmc.onLeftInput[1] = () => {
             CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.NDBS).then(() => {
