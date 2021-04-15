@@ -137,9 +137,9 @@ class WT_G3x5_NavMap {
         this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelOrientationModule());
         if (this._layerOptions.windData) {
-            this.model.addModule(new WT_MapModelWindDataModule());
+            this.model.addModule(new WT_G3x5_MapModelWindDataModule());
         }
-        this.model.addModule(new WT_MapModelPointerModule());
+        this.model.addModule(new WT_G3x5_MapModelPointerModule());
         this.model.addModule(new WT_MapModelRangeRingModule());
         this.model.addModule(new WT_MapModelRangeCompassModule());
         this.model.addModule(new WT_MapModelTrackVectorModule());
@@ -192,15 +192,15 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewAirplaneLayer());
         this.view.addLayer(this._createTrafficIntruderLayer());
         this.view.addLayer(this._createTrafficStatusLayer());
-        this.view.addLayer(new WT_MapViewPointerLayer());
+        this.view.addLayer(new WT_G3x5_MapViewPointerLayer());
         if (this._layerOptions.windData) {
-            this.view.addLayer(new WT_MapViewWindDataLayer());
+            this.view.addLayer(new WT_G3x5_MapViewWindDataLayer());
         }
         this.view.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_NavMap.ORIENTATION_DISPLAY_TEXTS));
         if (this._layerOptions.rangeDisplay) {
             this.view.addLayer(new WT_MapViewRangeDisplayLayer());
         }
-        this.view.addLayer(new WT_MapViewPointerInfoLayer());
+        this.view.addLayer(new WT_G3x5_MapViewPointerInfoLayer());
         if (this._layerOptions.miniCompass) {
             this.view.addLayer(new WT_MapViewMiniCompassLayer());
         }
@@ -214,7 +214,7 @@ class WT_G3x5_NavMap {
         this.settingModel.addSetting(new WT_MapAltitudeInterceptSetting(this.settingModel));
 
         if (this._layerOptions.windData) {
-            this.settingModel.addSetting(new WT_MapWindDataShowSetting(this.settingModel));
+            this.settingModel.addSetting(new WT_G3x5_MapWindDataShowSetting(this.settingModel));
         }
 
         this._dcltrSetting = new WT_MapDCLTRSetting(this.settingModel, [
@@ -477,7 +477,7 @@ class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
         this._rangeSetting = new WT_MapRangeSetting(model, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.MAP_RANGE_DEFAULT, true, false);
         this._orientationSetting = new WT_MapSetting(model, WT_G3x5_NavMap.ORIENTATION_KEY, WT_G3x5_NavMap.Orientation.HDG, true, false, true);
         this._autoNorthUpSetting = new WT_MapAutoNorthUpSettingGroup(model, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NORTHUP_RANGE_DEFAULT);
-        this._pointerSetting = new WT_MapPointerSettingGroup(model);
+        this._pointerSetting = new WT_G3x5_MapPointerSettingGroup(model);
 
         this.addSetting(this._rangeSetting);
         this.addSetting(this._orientationSetting);

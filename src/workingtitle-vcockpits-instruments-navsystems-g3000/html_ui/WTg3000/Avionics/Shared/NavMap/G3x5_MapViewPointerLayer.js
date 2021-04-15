@@ -1,15 +1,15 @@
 /**
  * A movable pointer (cursor). The use of this layer requires the .pointer module to be added to the map model.
  */
-class WT_MapViewPointerLayer extends WT_MapViewLayer {
+class WT_G3x5_MapViewPointerLayer extends WT_MapViewLayer {
     /**
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(className = WT_MapViewPointerLayer.CLASS_DEFAULT, configName = WT_MapViewPointerLayer.CONFIG_NAME_DEFAULT) {
+    constructor(className = WT_G3x5_MapViewPointerLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewPointerLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
-        this._optsManager = new WT_OptionsManager(this, WT_MapViewPointerLayer.OPTIONS_DEF);
+        this._optsManager = new WT_OptionsManager(this, WT_G3x5_MapViewPointerLayer.OPTIONS_DEF);
 
         this._tempVector = new WT_GVector2(0, 0);
     }
@@ -68,8 +68,8 @@ class WT_MapViewPointerLayer extends WT_MapViewLayer {
         this._pointer.style.transform = `translate(${position.x}px, ${position.y}px)`;
     }
 }
-WT_MapViewPointerLayer.CLASS_DEFAULT = "pointerLayer";
-WT_MapViewPointerLayer.CONFIG_NAME_DEFAULT = "pointer";
-WT_MapViewPointerLayer.OPTIONS_DEF = {
+WT_G3x5_MapViewPointerLayer.CLASS_DEFAULT = "pointerLayer";
+WT_G3x5_MapViewPointerLayer.CONFIG_NAME_DEFAULT = "pointer";
+WT_G3x5_MapViewPointerLayer.OPTIONS_DEF = {
     size: {default: 20, auto: true}
 };

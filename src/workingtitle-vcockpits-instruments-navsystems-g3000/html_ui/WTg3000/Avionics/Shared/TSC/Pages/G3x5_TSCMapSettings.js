@@ -462,7 +462,7 @@ class WT_G3x5_TSCMFDMapSettingsHTMLElement extends WT_G3x5_TSCMapSettingsHTMLEle
 
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsRangeTabRow("North Up<br>Above", WT_MapAutoNorthUpSettingGroup.ACTIVE_KEY, WT_MapAutoNorthUpSettingGroup.RANGE_KEY, WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1], "Map North Up Above"));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsTrackVectorTabRow("Track Vector", WT_MapTrackVectorSettingGroup.SHOW_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_KEY, WT_MapTrackVectorSettingGroup.LOOKAHEAD_VALUES_DEFAULT));
-        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Wind Vector", WT_MapWindDataShowSetting.KEY));
+        this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Wind Vector", WT_G3x5_MapWindDataShowSetting.KEY));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsFuelRingTabRow("Fuel Rng (Rsv)", WT_MapFuelRingSettingGroup.SHOW_KEY, WT_MapFuelRingSettingGroup.RESERVE_KEY));
         this._otherTab.attachRow(new WT_G3x5_TSCMapSettingsToggleTabRow("Range to<br>Altitude", WT_MapAltitudeInterceptSetting.SHOW_KEY_DEFAULT));
 

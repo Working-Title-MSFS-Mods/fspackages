@@ -1,19 +1,19 @@
-class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
+class WT_G3x5_MapPointerSettingGroup extends WT_MapSettingGroup {
     /**
      * @param {WT_MapSettingModel} model - the setting model with which to associate the new setting.
      * @param {Number} [edgeBuffer] - the buffer, in units of relative width/height, around the edges of the viewing window
      *                                that are inaccessible to the cursor.
      * @param {Number} [maxScrollSpeed] - the maximum map scroll speed, in pixels per second.
      */
-    constructor(model, edgeBuffer = WT_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT, maxScrollSpeed = WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT) {
+    constructor(model, edgeBuffer = WT_G3x5_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT, maxScrollSpeed = WT_G3x5_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT) {
         super(model, [], false, false);
 
         this._edgeBuffer = edgeBuffer;
         this._maxScrollSpeed = maxScrollSpeed;
 
-        this._showSetting = new WT_MapSetting(model, WT_MapPointerSettingGroup.SHOW_KEY, false, false, false, false);
-        this._deltaXSetting = new WT_MapSetting(model, WT_MapPointerSettingGroup.DELTA_X_KEY, 0, false, false, false);
-        this._deltaYSetting = new WT_MapSetting(model, WT_MapPointerSettingGroup.DELTA_Y_KEY, 0, false, false, false);
+        this._showSetting = new WT_MapSetting(model, WT_G3x5_MapPointerSettingGroup.SHOW_KEY, false, false, false, false);
+        this._deltaXSetting = new WT_MapSetting(model, WT_G3x5_MapPointerSettingGroup.DELTA_X_KEY, 0, false, false, false);
+        this._deltaYSetting = new WT_MapSetting(model, WT_G3x5_MapPointerSettingGroup.DELTA_Y_KEY, 0, false, false, false);
 
         this.addSetting(this._showSetting);
         this.addSetting(this._deltaXSetting);
@@ -82,8 +82,8 @@ class WT_MapPointerSettingGroup extends WT_MapSettingGroup {
         super.init();
     }
 }
-WT_MapPointerSettingGroup.SHOW_KEY = "WT_Map_CursorShow";
-WT_MapPointerSettingGroup.DELTA_X_KEY = "WT_Map_CursorDeltaX";
-WT_MapPointerSettingGroup.DELTA_Y_KEY = "WT_Map_CursorDeltaY";
-WT_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT = 0.05;
-WT_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT = 500; // pixels per second.
+WT_G3x5_MapPointerSettingGroup.SHOW_KEY = "WT_Map_CursorShow";
+WT_G3x5_MapPointerSettingGroup.DELTA_X_KEY = "WT_Map_CursorDeltaX";
+WT_G3x5_MapPointerSettingGroup.DELTA_Y_KEY = "WT_Map_CursorDeltaY";
+WT_G3x5_MapPointerSettingGroup.EDGE_BUFFER_DEFAULT = 0.05;
+WT_G3x5_MapPointerSettingGroup.MAX_SCROLL_SPEED_DEFAULT = 500; // pixels per second.
