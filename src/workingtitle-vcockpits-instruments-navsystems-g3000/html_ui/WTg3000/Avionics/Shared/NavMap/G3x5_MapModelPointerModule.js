@@ -1,12 +1,12 @@
-class WT_MapModelPointerModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelPointerModule.NAME_DEFAULT) {
+class WT_G3x5_MapModelPointerModule extends WT_MapModelModule {
+    constructor(name = WT_G3x5_MapModelPointerModule.NAME_DEFAULT) {
         super(name);
 
         this._position = new WT_GVector2(0, 0);
         this._measureReference = new WT_GeoPoint(0, 0, 0);
         this._isMeasureReferenceNull = true;
 
-        this._optsManager.addOptions(WT_MapModelPointerModule.OPTIONS_DEF);
+        this._optsManager.addOptions(WT_G3x5_MapModelPointerModule.OPTIONS_DEF);
     }
 
     get position() {
@@ -33,8 +33,8 @@ class WT_MapModelPointerModule extends WT_MapModelModule {
         }
     }
 }
-WT_MapModelPointerModule.NAME_DEFAULT = "pointer";
-WT_MapModelPointerModule.OPTIONS_DEF = {
+WT_G3x5_MapModelPointerModule.NAME_DEFAULT = "pointer";
+WT_G3x5_MapModelPointerModule.OPTIONS_DEF = {
     show: {default: false, auto: true},
     position: {},
     measureReference: {}

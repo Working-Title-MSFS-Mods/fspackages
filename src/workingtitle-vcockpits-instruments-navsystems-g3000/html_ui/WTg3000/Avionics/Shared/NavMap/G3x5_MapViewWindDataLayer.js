@@ -3,17 +3,17 @@
  * direction and a numeric display indicating the wind speed. The box displays "NO WIND DATA" when the airplane is on the ground.
  * The use of this layer requires the .wind module to be added to the map model.
  */
-class WT_MapViewWindDataLayer extends WT_MapViewLayer {
+class WT_G3x5_MapViewWindDataLayer extends WT_MapViewLayer {
     /**
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(className = WT_MapViewWindDataLayer.CLASS_DEFAULT, configName = WT_MapViewWindDataLayer.CONFIG_NAME_DEFAULT) {
+    constructor(className = WT_G3x5_MapViewWindDataLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewWindDataLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
     }
 
     _createHTMLElement() {
-        this._windDisplay = new WT_MapViewWindDataDisplay();
+        this._windDisplay = new WT_G3x5_MapViewWindDataDisplay();
         return this._windDisplay;
     }
 
@@ -31,10 +31,10 @@ class WT_MapViewWindDataLayer extends WT_MapViewLayer {
         this._windDisplay.update(state);
     }
 }
-WT_MapViewWindDataLayer.CLASS_DEFAULT = "windDataLayer";
-WT_MapViewWindDataLayer.CONFIG_NAME_DEFAULT = "wind";
+WT_G3x5_MapViewWindDataLayer.CLASS_DEFAULT = "windDataLayer";
+WT_G3x5_MapViewWindDataLayer.CONFIG_NAME_DEFAULT = "wind";
 
-class WT_MapViewWindDataDisplay extends HTMLElement {
+class WT_G3x5_MapViewWindDataDisplay extends HTMLElement {
     constructor() {
         super();
 
@@ -180,4 +180,4 @@ class WT_MapViewWindDataDisplay extends HTMLElement {
         }
     }
 }
-customElements.define("map-view-winddatadisplay", WT_MapViewWindDataDisplay);
+customElements.define("map-view-winddatadisplay", WT_G3x5_MapViewWindDataDisplay);
