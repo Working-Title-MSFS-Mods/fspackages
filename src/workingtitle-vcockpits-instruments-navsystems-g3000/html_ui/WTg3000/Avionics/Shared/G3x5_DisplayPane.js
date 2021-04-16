@@ -198,3 +198,55 @@ class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_DisplayPane {
         this.waypointInfo.update();
     }
 }
+
+class WT_G3x5_NearestWaypointDisplayPane extends WT_G3x5_DisplayPane {
+    constructor(nearestWaypoint) {
+        super();
+
+        this._nearestWaypoint = nearestWaypoint;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NearestWaypointDisplay}
+     */
+    get nearestWaypoint() {
+        return this._nearestWaypoint;
+    }
+
+    getTitle() {
+        let waypoint = this.nearestWaypoint.mapModel.nearestWaypoint.waypoint;
+        if (waypoint) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return "Nearest Airport";
+                case WT_ICAOWaypoint.Type.VOR:
+                    return "Nearest VOR";
+                case WT_ICAOWaypoint.Type.NDB:
+                    return "Nearest NDB";
+                case WT_ICAOWaypoint.Type.INT:
+                    return "Nearest Intersection";
+                default:
+                    return "Nearest Waypoint";
+            }
+        } else {
+            return "Nearest Waypoint";
+        }
+    }
+
+    init(root) {
+        this.nearestWaypoint.init(root);
+    }
+
+    wake() {
+        this.nearestWaypoint.wake();
+    }
+
+    sleep() {
+        this.nearestWaypoint.sleep();
+    }
+
+    update() {
+        this.nearestWaypoint.update();
+    }
+}
