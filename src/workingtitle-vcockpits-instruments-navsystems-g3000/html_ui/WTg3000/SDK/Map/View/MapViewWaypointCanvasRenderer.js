@@ -55,45 +55,6 @@ class WT_MapViewWaypointCanvasRenderer {
             }
         }
 
-        this._iconFactories = {
-            normal: null,
-            airway: null,
-            flightPlan: null,
-            flightPlanActive: null,
-            highlight: null
-        };
-        this._labelFactories = {
-            normal: null,
-            airway: null,
-            flightPlan: null,
-            flightPlanActive: null,
-            highlight: null
-        };
-
-        this._canvasContexts = {
-            normal: null,
-            airway: null,
-            flightPlan: null,
-            flightPlanActive: null,
-            highlight: null
-        };
-
-        this._styleOptionHandlers = {
-            normal: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.normal;}},
-            airway: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.airway;}},
-            flightPlan: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.flightPlan;}},
-            flightPlanActive: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.flightPlanActive;}},
-            highlight: {getOptions(state, waypoint) {return WT_MapViewWaypointCanvasRenderer.DEFAULT_STYLE_OPTIONS.highlight;}}
-        };
-
-        this._visibilityHandlers = {
-            normal: {isVisible(state, waypoint) {return true;}},
-            airway: {isVisible(state, waypoint) {return true;}},
-            flightPlan: {isVisible(state, waypoint) {return true;}},
-            flightPlanActive: {isVisible(state, waypoint) {return true;}},
-            highlight: {isVisible(state, waypoint) {return true;}}
-        };
-
         this._deprecateBounds = [new WT_GVector2(0, 0), new WT_GVector2(0, 0)];
     }
 
