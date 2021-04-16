@@ -130,7 +130,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
 
     _initICAOSettingListener() {
         this._icaoSetting.addListener(this._onICAOSettingChanged.bind(this));
-        this._setAirportICAO(this._icaoSetting.getValue());
+        this.setAirportICAO(this._icaoSetting.getValue());
     }
 
     _initChartIDSettingListener() {
@@ -153,6 +153,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     async _initHTMLElement() {
+        this.htmlElement.setAirport(this._airport);
         await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
         this._initSettingListeners();
         this._initButtonListeners();
@@ -285,33 +286,39 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_Airport} airport
      */
-    async _setAirport(airport) {
+    async setAirport(airport) {
         if ((airport === null && this._airport === null) || (airport && airport.equals(this._airport))) {
             return;
         }
 
         this._airport = airport;
         this._icaoSetting.setValue(this._airport ? this._airport.icao : "");
-        this.htmlElement.setAirport(this._airport);
+        if (this.htmlElement) {
+            this.htmlElement.setAirport(this._airport);
+        }
         await this._updateCharts();
         this._updateChartIDFromAirport(this._airport);
     }
 
-    async _setAirportICAO(icao) {
+    /**
+     *
+     * @param {String} icao
+     */
+    async setAirportICAO(icao) {
         if (icao) {
             try {
                 let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
-                await this._setAirport(airport);
+                await this.setAirport(airport);
                 return;
             } catch (e) {
                 console.log(e);
             }
         }
-        await this._setAirport(null);
+        await this.setAirport(null);
     }
 
     _onICAOSettingChanged(setting, newValue, oldValue) {
-        this._setAirportICAO(newValue);
+        this.setAirportICAO(newValue);
     }
 
     _setChartID(id) {
@@ -354,7 +361,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         if (icao !== "" && !this._hasMadeManualAirportSelection) {
             this._fireManualAirportSelectionEvent();
         }
-        this._setAirportICAO(icao);
+        this.setAirportICAO(icao);
     }
 
     _onManualAirportSelect(key, data) {
@@ -434,7 +441,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     _autoSelectAirport() {
         let airportToSelect = this._chooseAutoSelectAirport();
         if (airportToSelect) {
-            this._setAirportICAO(airportToSelect.icao);
+            this.setAirportICAO(airportToSelect.icao);
         }
     }
 
