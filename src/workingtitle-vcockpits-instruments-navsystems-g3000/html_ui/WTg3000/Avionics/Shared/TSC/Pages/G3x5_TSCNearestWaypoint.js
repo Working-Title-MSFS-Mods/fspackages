@@ -539,24 +539,36 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
                 right: -1vw;
                 top: 50%;
                 width: calc(var(--nearestwaypoints-options-width, 25%) + 1vw + var(--nearestwaypoints-options-margin-right, 0px));
-                height: var(--nearestwaypoints-options-height, 98%);
+                height: var(--nearestwaypoints-options-height, 100%);
                 transform: translateY(-50%);
                 --slidingbanner-padding-right: calc(1vw + var(--nearestwaypoints-options-margin-right, 0px));
             }
-                #optionscontainer {
+                #optionspadding {
+                    position: relative;
                     width: 100%;
                     height: 100%;
                     border-radius: 5px;
                     border: 3px solid var(--wt-g3x5-bordergray);
                     background: black;
+                }
+                #optionscontainer {
+                    position: absolute;
+                    left: var(--nearestwaypoints-options-padding-left, 0.25em);
+                    top: var(--nearestwaypoints-options-padding-top, 0.25em);
+                    width: calc(100% - var(--nearestwaypoints-options-padding-left, 0.25em) - var(--nearestwaypoints-options-padding-right, 0.25em));
+                    height: calc(100% - var(--nearestwaypoints-options-padding-top, 0.25em) - var(--nearestwaypoints-options-padding-bottom, 0.25em));
                     font-size: var(--nearestwaypoints-options-font-size, 0.85em);
                     display: flex;
                     flex-flow: column nowrap;
                     align-items: stretch;
                 }
+                    #optionstitle {
+                        margin-bottom: var(--nearestwaypoints-options-title-margin-bottom, 0.25em);
+                        text-align: center;
+                    }
                     .optionsButton {
-                        height: var(--nearestwaypoints-options-button-height, 4em);
-                        margin: var(--nearestwaypoints-options-button-margin, 0.25em 0.25em);
+                        height: var(--nearestwaypoints-options-button-height, 3em);
+                        margin-bottom: var(--nearestwaypoints-options-button-margin, 0.25em);
                     }
                     #directto {
                         --button-img-image-height: 100%;
@@ -571,11 +583,14 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
         </div>
         <wt-tsc-scrolllist id="waypoints"></wt-tsc-scrolllist>
         <wt-tsc-slidingbanner id="optionsbanner">
-            <div slot="content" id="optionscontainer">
-                <wt-tsc-button-img id="directto" class="optionsButton" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png"></wt-tsc-button-img>
-                <wt-tsc-button-label id="info" class="optionsButton"></wt-tsc-button-label>
-                <wt-tsc-button-label id="charts" class="optionsButton"></wt-tsc-button-label>
-                <wt-tsc-button-statusbar id="map" class="optionsButton" labeltext="Show On Map"></wt-tsc-button-statusbar>
+            <div slot="content" id="optionspadding">
+                <div id="optionscontainer">
+                    <div id="optionstitle">Waypoint Options</div>
+                    <wt-tsc-button-img id="directto" class="optionsButton" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png"></wt-tsc-button-img>
+                    <wt-tsc-button-label id="info" class="optionsButton"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="charts" class="optionsButton"></wt-tsc-button-label>
+                    <wt-tsc-button-statusbar id="map" class="optionsButton" labeltext="Show On Map"></wt-tsc-button-statusbar>
+                </div>
             </div>
         </wt-tsc-slidingbanner>
     </div>
