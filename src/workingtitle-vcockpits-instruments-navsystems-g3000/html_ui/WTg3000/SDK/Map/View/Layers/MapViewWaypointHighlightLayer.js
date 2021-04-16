@@ -301,6 +301,7 @@ class WT_MapViewWaypointHighlightImageIcon extends WT_MapViewWaypointIcon {
 
     setOptions(opts) {
         this._optsManager.setOptions(opts);
+        this._baseIcon.setOptions(opts);
     }
 
     /**
