@@ -2,10 +2,20 @@
  * @template {WT_ICAOWaypoint} T
  */
 class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName) {
+    constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPanePages, mfdPaneSettings) {
         super(homePageGroup, homePageName);
 
         this._selectedWaypoint = null;
+
+        this._settingModelID = `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID}`;
+        this._mfdPanePages = mfdPanePages;
+        this._mfdPaneSettings = mfdPaneSettings;
+        this._initSettingModel();
+    }
+
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
+        this._settingModel.addSetting(this._displayPaneICAOSetting = new WT_G3x5_NearestWaypointICAOSetting(this._settingModel));
     }
 
     /**
@@ -14,6 +24,14 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
      */
     get htmlElement() {
         return this._htmlElement;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_MFDHalfPaneDisplaySetting}
+     */
+    get mfdPaneDisplaySetting() {
+        return this._mfdPaneSettings.display;
     }
 
     /**
@@ -47,10 +65,6 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
      * @param {T} waypoint
      */
     _setSelectedWaypoint(waypoint) {
-        if ((waypoint === null && this.selectedWaypoint === null) || (waypoint && waypoint.equals(this.selectedWaypoint))) {
-            return;
-        }
-
         this._selectedWaypoint = waypoint;
     }
 
@@ -62,13 +76,27 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         if (waypoint.equals(this.selectedWaypoint)) {
             this.htmlElement.toggleOptionsBanner();
         } else {
+            this._setSelectedWaypoint(waypoint);
+            this._displayPaneICAOSetting.setValue(waypoint ? waypoint.icao : "");
             this.htmlElement.showOptionsBanner();
         }
-        this._setSelectedWaypoint(waypoint);
     }
 
     _onDRCTButtonPressed() {
         this.instrument.SwitchToPageName("MFD", "Direct To");
+    }
+
+    _toggleNearestWaypointDisplayPane() {
+        if (this.mfdPaneDisplaySetting.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT && this._displayPaneICAOSetting.getValue() === this.selectedWaypoint.icao) {
+            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        } else {
+            this._displayPaneICAOSetting.setValue(this.selectedWaypoint.icao);
+            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT);
+        }
+    }
+
+    _onShowMapButtonPressed() {
+        this._toggleNearestWaypointDisplayPane();
     }
 
     _onInfoButtonPressed() {
@@ -81,6 +109,9 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
                 break;
             case this._getDRCTButtonEventType():
                 this._onDRCTButtonPressed();
+                break;
+            case this._getShowMapButtonEventType():
+                this._onShowMapButtonPressed();
                 break;
             case this._getInfoButtonEventType():
                 this._onInfoButtonPressed();
@@ -121,6 +152,9 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         this.htmlElement.setWaypoints(waypoints);
 
         if (this.selectedWaypoint !== null && !waypoints.some(waypoint => waypoint.equals(this.selectedWaypoint), this)) {
+            if (this.selectedWaypoint.icao === this._displayPaneICAOSetting.getValue()) {
+                this._displayPaneICAOSetting.setValue("");
+            }
             this._setSelectedWaypoint(null);
         }
     }
@@ -220,7 +254,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._listeners = [];
 
         /**
-         * @type {{airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCNearestWaypointUnitsModel}}
+         * @type {{parentPage:WT_G3x5_TSCNearestWaypoint, airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCNearestWaypointUnitsModel, displayPaneICAOSetting:WT_G3x5_NearestWaypointICAOSetting}}
          */
         this._context = null;
         this._isInit = false;
@@ -389,8 +423,29 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._rows.forEach(row => row.update());
     }
 
+    _updateMapButton() {
+        let paneDisplayMode = this._context.parentPage.mfdPaneDisplaySetting.getValue();
+        let selectedWaypoint = this._context.parentPage.selectedWaypoint;
+        let selectedWaypointICAO = selectedWaypoint ? selectedWaypoint.icao : "";
+        this._showMapButton.enabled = selectedWaypoint === null ? "false" : "true";
+        this._showMapButton.toggle = (paneDisplayMode === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT && selectedWaypoint && selectedWaypointICAO === this._context.displayPaneICAOSetting.getValue()) ? "on" : "off";
+    }
+
+    _updateOptions() {
+        if (this._optionsBanner.isVisible && this._context.parentPage.selectedWaypoint === null) {
+            this.hideOptionsBanner();
+        }
+
+        if (!this._optionsBanner.isVisible) {
+            return;
+        }
+
+        this._updateMapButton();
+    }
+
     _doUpdate() {
         this._updateRows();
+        this._updateOptions();
         this._waypointsList.scrollManager.update();
     }
 
@@ -768,7 +823,8 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
         htmlElement.setContext({
             parentPage: this,
             airplane: this.instrument.airplane,
-            unitsModel: this._unitsModel
+            unitsModel: this._unitsModel,
+            displayPaneICAOSetting: this._displayPaneICAOSetting
         });
         return htmlElement;
     }
@@ -785,12 +841,16 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.DRCT_BUTTON_PRESSED;
     }
 
+    _getShowMapButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.MAP_BUTTON_PRESSED;
+    }
+
     _getInfoButtonEventType() {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.INFO_BUTTON_PRESSED;
     }
 
     _onInfoButtonPressed() {
-        let airportInfoPage = this.instrument.getSelectedMFDPanePages().airportInfo;
+        let airportInfoPage = this._mfdPanePages.airportInfo;
         airportInfoPage.element.icaoSetting.setValue(this.selectedWaypoint.icao);
         this.instrument.SwitchToPageName("MFD", airportInfoPage.name);
     }

@@ -291,6 +291,7 @@ class WT_G3x5_MFDHalfPane {
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
         this._chartsPane = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
         this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
+        this._nearestWaypointPane = new WT_G3x5_NearestWaypointDisplayPane(this._createNearestWaypoint(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
 
         this._displayMode;
         /**
@@ -339,17 +340,26 @@ class WT_G3x5_MFDHalfPane {
         return new WT_G3x5_WaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers);
     }
 
+    /**
+     * @returns {WT_G3x5_NearestWaypointDisplay}
+     */
+    _createNearestWaypoint(id, airplane, icaoWaypointFactory, icaoSearchers) {
+        return new WT_G3x5_NearestWaypointDisplay(id, airplane, icaoWaypointFactory, icaoSearchers);
+    }
+
     async _initDisplayPanes() {
         let [
             navMapElement,
             trafficMapElement,
             chartsElement,
-            waypointInfoElement
+            waypointInfoElement,
+            nearestWaypointElement,
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.htmlElement, `.navMap`),
             WT_CustomElementSelector.select(this.htmlElement, `.trafficMap`),
             WT_CustomElementSelector.select(this.htmlElement, `.charts`),
             WT_CustomElementSelector.select(this.htmlElement, `.waypointInfo`),
+            WT_CustomElementSelector.select(this.htmlElement, `.nearestWaypoint`)
         ]);
 
         this._navMapPane.init(navMapElement);
@@ -357,6 +367,7 @@ class WT_G3x5_MFDHalfPane {
         this._weatherRadarPane.init(this.htmlElement.querySelector(`.weatherRadar`));
         this._chartsPane.init(chartsElement);
         this._waypointInfoPane.init(waypointInfoElement);
+        this._nearestWaypointPane.init(nearestWaypointElement);
     }
 
     _initDisplay() {
@@ -464,16 +475,13 @@ class WT_G3x5_MFDHalfPane {
                 return this._weatherRadarPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
                 return this._chartsPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_NRST:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_NRST:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_NRST:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_NRST:
-                return null;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
                 return this._waypointInfoPane;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT:
+                return this._nearestWaypointPane;
             default:
                 return null;
         }
@@ -605,16 +613,14 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
                 this._setActiveView("charts");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_NRST:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_NRST:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_NRST:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_NRST:
-                break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
                 this._setActiveView("waypointinfo");
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT:
+                this._setActiveView("nearestwaypoint");
                 break;
         }
     }
@@ -668,6 +674,9 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                     #wrapper[active-view="waypointinfo"] #waypointinfo {
                         display: block;
                     }
+                    #wrapper[active-view="nearestwaypoint"] #nearestwaypoint {
+                        display: block;
+                    }
             #titledpane[control=left] {
                 position: absolute;
                 background-color: ${WT_G3x5_MFDMainPane.LEFT_TSC_COLOR};
@@ -694,6 +703,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
             <slot slot="content" id="weatherradar" class="content" name="weatherradar"></slot>
             <slot slot="content" id="charts" class="content" name="charts"></slot>
             <slot slot="content" id="waypointinfo" class="content" name="waypointinfo"></slot>
+            <slot slot="content" id="nearestwaypoint" class="content" name="nearestwaypoint"></slot>
         </pane-titled>
     </div>
 `;
@@ -763,10 +773,7 @@ WT_G3x5_MFDHalfPaneDisplaySetting.Display = {
     VOR_INFO: 5,
     NDB_INFO: 6,
     INT_INFO: 7,
-    AIRPORT_NRST: 8,
-    VOR_NRST: 9,
-    NDB_NRST: 10,
-    INT_NRST: 11,
+    NRST_WAYPOINT: 8
 }
 
 class WT_G3x5_MFDHalfPaneWaypointSetting extends WT_DataStoreSetting {
