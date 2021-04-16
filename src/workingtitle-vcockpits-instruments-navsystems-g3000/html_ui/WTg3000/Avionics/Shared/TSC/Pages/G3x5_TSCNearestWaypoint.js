@@ -95,11 +95,14 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         }
     }
 
-    _onShowMapButtonPressed() {
-        this._toggleNearestWaypointDisplayPane();
+    _onInfoButtonPressed() {
     }
 
-    _onInfoButtonPressed() {
+    _onChartsButtonPressed() {
+    }
+
+    _onShowMapButtonPressed() {
+        this._toggleNearestWaypointDisplayPane();
     }
 
     _onHTMLElementEvent(source, eventType, data) {
@@ -110,11 +113,14 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
             case this._getDRCTButtonEventType():
                 this._onDRCTButtonPressed();
                 break;
+            case this._getInfoButtonEventType():
+                    this._onInfoButtonPressed();
+                    break;
+            case this._getChartsButtonEventType():
+                this._onChartsButtonPressed();
+                break;
             case this._getShowMapButtonEventType():
                 this._onShowMapButtonPressed();
-                break;
-            case this._getInfoButtonEventType():
-                this._onInfoButtonPressed();
                 break;
         }
     }
@@ -273,14 +279,16 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
             this._waypointsList,
             this._optionsBanner,
             this._drctButton,
-            this._showMapButton,
-            this._infoButton
+            this._infoButton,
+            this._chartsButton,
+            this._showMapButton
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#waypoints`, WT_TSCScrollList),
             WT_CustomElementSelector.select(this.shadowRoot, `#optionsbanner`, WT_TSCSlidingBanner),
             WT_CustomElementSelector.select(this.shadowRoot, `#directto`, WT_TSCImageButton),
-            WT_CustomElementSelector.select(this.shadowRoot, `#map`, WT_TSCStatusBarButton),
-            WT_CustomElementSelector.select(this.shadowRoot, `#info`, WT_TSCLabeledButton)
+            WT_CustomElementSelector.select(this.shadowRoot, `#info`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#charts`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#map`, WT_TSCStatusBarButton)
         ]);
     }
 
@@ -300,9 +308,11 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
 
     _initOptions() {
         this._drctButton.addButtonListener(this._onDRCTButtonPressed.bind(this));
-        this._showMapButton.addButtonListener(this._onShowMapButtonPressed.bind(this));
         this._infoButton.addButtonListener(this._onInfoButtonPressed.bind(this));
+        this._chartsButton.addButtonListener(this._onChartsButtonPressed.bind(this));
+        this._showMapButton.addButtonListener(this._onShowMapButtonPressed.bind(this));
         this._infoButton.labelText = this._getOptionsInfoButtonLabelText();
+        this._chartsButton.labelText = this._getOptionsChartsButtonLabelText();
     }
 
     async _connectedCallbackHelper() {
@@ -348,12 +358,16 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._fireEvent(this._getDRCTButtonEventType());
     }
 
-    _onShowMapButtonPressed(button) {
-        this._fireEvent(this._getShowMapButtonEventType());
-    }
-
     _onInfoButtonPressed(button) {
         this._fireEvent(this._getInfoButtonEventType());
+    }
+
+    _onChartsButtonPressed(button) {
+        this._fireEvent(this._getChartsButtonEventType());
+    }
+
+    _onShowMapButtonPressed(button) {
+        this._fireEvent(this._getShowMapButtonEventType());
     }
 
     _onWaypointRowEvent(row, eventType) {
@@ -559,8 +573,9 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
         <wt-tsc-slidingbanner id="optionsbanner">
             <div slot="content" id="optionscontainer">
                 <wt-tsc-button-img id="directto" class="optionsButton" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png"></wt-tsc-button-img>
-                <wt-tsc-button-statusbar id="map" class="optionsButton" labeltext="Show On Map"></wt-tsc-button-statusbar>
                 <wt-tsc-button-label id="info" class="optionsButton"></wt-tsc-button-label>
+                <wt-tsc-button-label id="charts" class="optionsButton"></wt-tsc-button-label>
+                <wt-tsc-button-statusbar id="map" class="optionsButton" labeltext="Show On Map"></wt-tsc-button-statusbar>
             </div>
         </wt-tsc-slidingbanner>
     </div>
@@ -841,18 +856,28 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.DRCT_BUTTON_PRESSED;
     }
 
-    _getShowMapButtonEventType() {
-        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.MAP_BUTTON_PRESSED;
-    }
-
     _getInfoButtonEventType() {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.INFO_BUTTON_PRESSED;
+    }
+
+    _getChartsButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.CHARTS_BUTTON_PRESSED;
+    }
+
+    _getShowMapButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.MAP_BUTTON_PRESSED;
     }
 
     _onInfoButtonPressed() {
         let airportInfoPage = this._mfdPanePages.airportInfo;
         airportInfoPage.element.icaoSetting.setValue(this.selectedWaypoint.icao);
         this.instrument.SwitchToPageName("MFD", airportInfoPage.name);
+    }
+
+    _onChartsButtonPressed() {
+        let chartsPage = this._mfdPanePages.charts;
+        chartsPage.element.setAirport(this.selectedWaypoint);
+        this.instrument.SwitchToPageName("MFD", chartsPage.name);
     }
 }
 
@@ -884,6 +909,10 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
         return "Airport Info";
     }
 
+    _getOptionsChartsButtonLabelText() {
+        return "Airport Charts";
+    }
+
     _getWaypointButtonEventType() {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.WAYPOINT_BUTTON_PRESSED;
     }
@@ -892,12 +921,16 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.DRCT_BUTTON_PRESSED;
     }
 
-    _getShowMapButtonEventType() {
-        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.MAP_BUTTON_PRESSED;
-    }
-
     _getInfoButtonEventType() {
         return WT_G3x5_TSCNearestAirportHTMLElement.EventType.INFO_BUTTON_PRESSED;
+    }
+
+    _getChartsButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.CHARTS_BUTTON_PRESSED;
+    }
+
+    _getShowMapButtonEventType() {
+        return WT_G3x5_TSCNearestAirportHTMLElement.EventType.MAP_BUTTON_PRESSED;
     }
 
     /**
@@ -920,8 +953,9 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
 WT_G3x5_TSCNearestAirportHTMLElement.EventType = {
     WAYPOINT_BUTTON_PRESSED: 0,
     DRCT_BUTTON_PRESSED: 1,
-    MAP_BUTTON_PRESSED: 2,
-    INFO_BUTTON_PRESSED: 3
+    INFO_BUTTON_PRESSED: 2,
+    CHARTS_BUTTON_PRESSED: 3,
+    MAP_BUTTON_PRESSED: 4
 };
 WT_G3x5_TSCNearestAirportHTMLElement.NAME = "wt-tsc-nearestairport";
 
