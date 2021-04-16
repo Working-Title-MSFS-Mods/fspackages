@@ -1169,7 +1169,9 @@ as3000-tsc-vertical-element .nearestAirport wt-tsc-nearestairport {
     --nearestwaypoints-col3-width: 1fr;
     --nearestwaypoints-col4-width: 1.5fr;
     --nearestwaypoints-row-height: 11vh;
-    --nearestwaypoints-options-width: 33%;
+    --nearestwaypoints-options-width: 40%;
+    --nearestwaypoints-options-padding-left: 0.5em;
+    --nearestwaypoints-options-padding-right: 0.5em;
 }
 
         as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(1) {
