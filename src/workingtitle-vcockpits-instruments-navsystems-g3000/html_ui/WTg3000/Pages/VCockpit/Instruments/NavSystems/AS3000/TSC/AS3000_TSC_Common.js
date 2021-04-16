@@ -206,7 +206,8 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
                 this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
                 new NavSystemPage("Nearest", "Nearest", new AS3000_TSC_NRST()),
-                new NavSystemPage("Nearest Airport", "NearestAirport", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home")),
+                this._mfdPagesLeft.nearestAirport = new NavSystemPage("Nearest Airport Left", "NearestAirportLeft", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestAirport = new NavSystemPage("Nearest Airport Right", "NearestAirportRight", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
                 new NavSystemPage("Nearest Intersection", "NearestIntersection", new AS3000_TSC_NRST_Intersection()),
                 new NavSystemPage("Nearest VOR", "NearestVOR", new AS3000_TSC_NRST_VOR()),
                 new NavSystemPage("Nearest NDB", "NearestNDB", new AS3000_TSC_NRST_NDB()),
@@ -2038,11 +2039,16 @@ class AS3000_TSC_NRST extends NavSystemElement {
         this.ARTCC = this.gps.getChildById("NrstARTCC_Btn");
         this.FSS = this.gps.getChildById("NrstFSS_Btn");
         this.Weather = this.gps.getChildById("NrstWeather_Btn");
-        this.gps.makeButton(this.Airport, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Airport"));
+        this.gps.makeButton(this.Airport, this._onAirportButtonPressed.bind(this));
         this.gps.makeButton(this.INT, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Intersection"));
         this.gps.makeButton(this.VOR, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest VOR"));
         this.gps.makeButton(this.NDB, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest NDB"));
     }
+
+    _onAirportButtonPressed() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().nearestAirport.name);
+    }
+
     onEnter() {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+ Push: Pan");

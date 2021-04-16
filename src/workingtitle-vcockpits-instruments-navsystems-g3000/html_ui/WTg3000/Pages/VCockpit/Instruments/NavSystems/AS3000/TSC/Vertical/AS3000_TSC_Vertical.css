@@ -1157,7 +1157,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
             height: 0vh;
             overflow: visible; }
 
-as3000-tsc-vertical-element #NearestAirport wt-tsc-nearestairport {
+as3000-tsc-vertical-element .nearestAirport wt-tsc-nearestairport {
     position: absolute;
     left: 1%;
     top: 0%;
