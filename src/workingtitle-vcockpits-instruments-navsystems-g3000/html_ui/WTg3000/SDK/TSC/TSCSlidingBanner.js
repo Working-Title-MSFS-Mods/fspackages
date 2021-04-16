@@ -262,10 +262,10 @@ WT_TSCSlidingBanner.TEMPLATE.innerHTML = `
         }
             #content {
                 position: absolute;
-                left: var(--slidingbanner-padding-left, 0.25em);
-                top: var(--slidingbanner-padding-top, 0.25em);
-                width: calc(100% - var(--slidingbanner-padding-left, 0.25em) - var(--slidingbanner-padding-right, 0.25em));
-                height: calc(100% - var(--slidingbanner-padding-top, 0.25em) - var(--slidingbanner-padding-bottom, 0.25em));
+                left: var(--slidingbanner-padding-left, 0px);
+                top: var(--slidingbanner-padding-top, 0px);
+                width: calc(100% - var(--slidingbanner-padding-left, 0px) - var(--slidingbanner-padding-right, 0px));
+                height: calc(100% - var(--slidingbanner-padding-top, 0px) - var(--slidingbanner-padding-bottom, 0px));
             }
     </style>
     <div id="wrapper">
