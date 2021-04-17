@@ -791,6 +791,13 @@ class WT_AirplaneRadioSlot {
     }
 
     /**
+     * Sets this radio's active frequency.
+     * @param {WT_Frequency} frequency - the new frequency.
+     */
+    setActiveFrequency(frequency) {
+    }
+
+    /**
      * Sets this radio's standby frequency.
      * @param {WT_Frequency} frequency - the new frequency.
      */
@@ -828,6 +835,14 @@ class WT_AirplaneComSlot extends WT_AirplaneRadioSlot {
      */
     standbyFrequency() {
         return new WT_Frequency(SimVar.GetSimVarValue(`COM STANDBY FREQUENCY:${this.index}`, "Hz"));
+    }
+
+    /**
+     * Sets this radio's active frequency.
+     * @param {WT_Frequency} frequency - the new frequency.
+     */
+    setActiveFrequency(frequency) {
+        SimVar.SetSimVarValue(`K:COM${this.index === 1 ? "" : this.index}_RADIO_SET_HZ`, "Hz", frequency.hertz());
     }
 
     /**
@@ -870,6 +885,14 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
      */
     standbyFrequency() {
         return new WT_Frequency(SimVar.GetSimVarValue(`NAV STANDBY FREQUENCY:${this.index}`, "Hz"));
+    }
+
+    /**
+     * Sets this radio's active frequency.
+     * @param {WT_Frequency} frequency - the new frequency.
+     */
+    setActiveFrequency(frequency) {
+        SimVar.SetSimVarValue(`K:NAV${this.index}_RADIO_SET_HZ`, "Hz", frequency.hertz());
     }
 
     /**
@@ -1003,13 +1026,19 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
     }
 
     /**
+     * Sets this radio's active frequency.
+     * @param {WT_Frequency} frequency - the new frequency.
+     */
+    setActiveFrequency(frequency) {
+        SimVar.SetSimVarValue(`K:ADF${this.index === 1 ? "" : this.index}_COMPLETE_SET`, "Frequency ADF BCD32", frequency.bcd32());
+    }
+
+    /**
      * Sets this radio's standby frequency.
      * @param {WT_Frequency} frequency - the new frequency.
      */
     setStandbyFrequency(frequency) {
-        this.swapFrequency();
-        SimVar.SetSimVarValue(`K:ADF${this.index === 1 ? "" : this.index}_COMPLETE_SET`, "Frequency ADF BCD32", frequency.bcd32);
-        this.swapFrequency();
+        SimVar.SetSimVarValue(`K:ADF${this.index === 1 ? "" : this.index}_STBY_SET`, "Frequency ADF BCD32", frequency.bcd32());
     }
 
     /**
@@ -1029,7 +1058,11 @@ class WT_AirplaneADFSlot extends WT_AirplaneRadioSlot {
      *                   this radio is not currently receiving.
      */
     bearing() {
-        return SimVar.GetSimVarValue(`ADF RADIAL:${this.index}`, "degree");
+        if (!this.isReceiving()) {
+            return null;
+        }
+
+        return (SimVar.GetSimVarValue(`ADF RADIAL:${this.index}`, "degree") + 360) % 360;
     }
 }
 

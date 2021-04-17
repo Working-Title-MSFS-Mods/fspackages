@@ -26,7 +26,7 @@ class WT_G3x5_TSCDirectoryPage extends WT_G3x5_TSCPageElement {
     }
 
     init(root) {
-        this.container.title = "Setup";
+        this.container.title = this._getTitle();
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
 
