@@ -3,6 +3,10 @@ class WT_G3x5_TSCUtilitiesSetup extends WT_G3x5_TSCDirectoryPage {
         return new WT_G3x5_TSCUtilitiesSetupHTMLElement();
     }
 
+    _getTitle() {
+        return "Setup";
+    }
+
     _initAvionicsSettingsButton() {
         this.htmlElement.avionicsSettingsButton.addButtonListener(this._openPage.bind(this, "Avionics Settings"));
     }

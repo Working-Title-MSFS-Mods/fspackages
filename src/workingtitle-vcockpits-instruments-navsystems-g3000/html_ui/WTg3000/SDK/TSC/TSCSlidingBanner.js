@@ -109,6 +109,7 @@ WT_TSCSlidingBanner.TEMPLATE.innerHTML = `
         :host {
             display: block;
             position: relative;
+            pointer-events: none;
         }
 
         @keyframes slidein-left {
@@ -232,6 +233,7 @@ WT_TSCSlidingBanner.TEMPLATE.innerHTML = `
             width: 100%;
             height: 100%;
             visibility: hidden;
+            pointer-events: auto;
         }
         #wrapper[state="popin"] {
             visibility: visible;

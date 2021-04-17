@@ -9,27 +9,6 @@ class WT_Frequency {
     }
 
     /**
-     * The BCD16 binary-coded decimal format of this frequency. This BCD format encodes the 10^7 to the 10^4 places.
-     * The digit at the 10^8 place is assumed to be 1, and all other digits that are not explicitly encoded are assumed
-     * to be 0.
-     * @readonly
-     * @type {Number}
-     */
-    get bcd16() {
-        return WT_Frequency.hertzToBCD16(this._hertz);
-    }
-
-    /**
-     * The BCD32 binary-coded decimal format of this frequency. This BCD format encodes the 10^7 to the 10^0 places.
-     * All digits that are not explicitly encoded are assumed to be 0.
-     * @readonly
-     * @type {Number}
-     */
-    get bcd32() {
-        return WT_Frequency.hertzToBCD32(this._hertz);
-    }
-
-    /**
      * Gets the hertz value of this frequency.
      * @param {WT_Frequency.Prefix} [prefix] - the metric prefix of the frequency value to return. Defaults to
      *                                         WT_Frequency.Prefix.Hz.
@@ -37,6 +16,25 @@ class WT_Frequency {
      */
     hertz(prefix = WT_Frequency.Prefix.Hz) {
         return this._hertz / prefix;
+    }
+
+    /**
+     * Gets the BCD16 binary-coded decimal format of this frequency. This BCD format encodes the 10^7 to the 10^4
+     * places. The digit at the 10^8 place is assumed to be 1, and all other digits that are not explicitly encoded
+     * are assumed to be 0.
+     * @returns {Number} this frequency in BCD16 format.
+     */
+    bcd16() {
+        return WT_Frequency.hertzToBCD16(this._hertz);
+    }
+
+    /**
+     * Gets the BCD32 binary-coded decimal format of this frequency. This BCD format encodes the 10^6 to the 10^-1
+     * places. All digits that are not explicitly encoded are assumed to be 0.
+     * @returns {Number} this frequency in BCD32 format.
+     */
+    bcd32() {
+        return WT_Frequency.hertzToBCD32(this._hertz);
     }
 
     /**
@@ -143,7 +141,7 @@ class WT_Frequency {
      * @returns {Number} the BCD16-encoded value of the frequency.
      */
      static hertzToBCD32(hertz, prefix = WT_Frequency.Prefix.Hz) {
-        let number = Math.round(hertz * prefix);
+        let number = Math.round(hertz * prefix) * 10;
         let bcd = 0;
         for (let i = 0; i < 8; i++) {
             let digit = number % 10;

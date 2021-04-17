@@ -1,7 +1,10 @@
+/**
+ * @template {WT_ICAOWaypoint} T
+ */
 class WT_NearestWaypointList {
     /**
      * @param {WT_PlayerAirplane} airplane
-     * @param {(icaos:String[]) => Promise<WT_ICAOWaypoint[]>} waypointFactoryMethod
+     * @param {(icaos:String[]) => Promise<T[]>} waypointFactoryMethod
      * @param {WT_ICAOSearcher} waypointSearcher
      */
     constructor(airplane, waypointFactoryMethod, waypointSearcher) {
@@ -15,7 +18,7 @@ class WT_NearestWaypointList {
         this._radius = WT_Unit.NMILE.createNumber(0);
 
         /**
-         * @type {WT_SortedArray<WT_Waypoint>}
+         * @type {WT_SortedArray<T>}
          */
         this._waypoints = new WT_SortedArray(this._airportArrayComparator.bind(this));
         this._waypointsReadOnly = new WT_ReadOnlyArray(this._waypoints.array);
@@ -25,8 +28,8 @@ class WT_NearestWaypointList {
 
     /**
      *
-     * @param {WT_Waypoint} a
-     * @param {WT_Waypoint} b
+     * @param {T} a
+     * @param {T} b
      * @returns {Number}
      */
     _airportArrayComparator(a, b) {
@@ -35,7 +38,7 @@ class WT_NearestWaypointList {
 
     /**
      * @readonly
-     * @type {WT_ReadOnlyArray<WT_ICAOWaypoint>}
+     * @type {WT_ReadOnlyArray<T>}
      */
     get waypoints() {
         return this._waypointsReadOnly;

@@ -891,210 +891,23 @@
                     <tsc-airportinfo></tsc-airportinfo>
                 </div>
 
-                <div class="tscPage" id="Nearest">
-                    <div class="line">
-                        <div class="gradientButton" id="NrstAirport_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="title">Airport</div>
-                        </div>
-                        <div class="gradientButton" id="NrstInt_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="title">INT</div>
-                        </div>
-                        <div class="gradientButton" id="NrstVor_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="title">VOR</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="NrstNdb_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="title">NDB</div>
-                        </div>
-                        <div class="gradientButton" id="NrstUser_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="title">User</div>
-                        </div>
-                        <div class="gradientButton" id="NrstAirspace_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRSPACE.png" />
-                            <div class="title">Airspace</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="NrstARTCC_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="title">ARTCC</div>
-                        </div>
-                        <div class="gradientButton" id="NrstFSS_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="title">FSS</div>
-                        </div>
-                        <div class="gradientButton" id="NrstWeather_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="title">Weather</div>
-                        </div>
-                    </div>
+                <div class="tscPage" id="NearestWaypointSelection">
                 </div>
                 <div class="tscPage nearestAirport" id="NearestAirportLeft">
                 </div>
                 <div class="tscPage nearestAirport" id="NearestAirportRight">
                 </div>
-                <div class="tscPage" id="NearestIntersection">
-                    <div class="NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>Intersection</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_AirportInfo" state="Hidden">
-                                        <div class="mainText">Intersection Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_ShowOnMap" state="Hidden">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestINT" id="NearestINTLeft">
                 </div>
-                <div class="tscPage" id="NearestVOR">
-                    <div class="NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>VOR</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                    <th>Frequency</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_AirportInfo" state="Hidden">
-                                        <div class="mainText">VOR Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_ShowOnMap" state="Hidden">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestINT" id="NearestINTRight">
                 </div>
-                <div class="tscPage" id="NearestNDB">
-                    <div class="NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>NDB</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                    <th>Frequency</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_AirportInfo" state="Hidden">
-                                        <div class="mainText">NDB Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_ShowOnMap" state="Hidden">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestVOR" id="NearestVORLeft">
+                </div>
+                <div class="tscPage nearestVOR" id="NearestVORRight">
+                </div>
+                <div class="tscPage nearestNDB" id="NearestNDBLeft">
+                </div>
+                <div class="tscPage nearestNDB" id="NearestNDBRight">
                 </div>
             </div>
             <div id="NavigationBar">
@@ -1920,7 +1733,6 @@
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_UnitsSettingModel.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
-<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_NearestAirportList.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_TrafficSystem.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_MapModelTrafficModule.js"></script>
@@ -1935,6 +1747,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsDisplay.js"></script>
 
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NearestWaypoint/G3x5_NearestAirportList.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/NearestWaypoint/G3x5_NearestWaypointICAOSetting.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/NearestWaypoint/G3x5_NearestWaypointDisplay.js"></script>
 
