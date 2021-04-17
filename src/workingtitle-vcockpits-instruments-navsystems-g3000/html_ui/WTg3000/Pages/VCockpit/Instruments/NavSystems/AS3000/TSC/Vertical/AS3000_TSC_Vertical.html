@@ -851,44 +851,15 @@
                 <div class="tscPage" id="DatabaseStatus">
                 </div>
 
-                <div class="tscPage" id="WaypointsInfo">
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoAirport_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="title">Airport</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoINT_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="title">INT</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoVOR_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="title">VOR</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoNDB_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="title">NDB</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoUser_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="title">User Waypoint</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoUserCreate_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="title">Create Waypoint</div>
-                        </div>
-                    </div>
+                <div class="tscPage" id="WaypointInfoSelection">
                 </div>
-
                 <div class="tscPage airportInfo" id="AirportInfoLeft">
-                    <tsc-airportinfo></tsc-airportinfo>
                 </div>
                 <div class="tscPage airportInfo" id="AirportInfoRight">
-                    <tsc-airportinfo></tsc-airportinfo>
+                </div>
+                <div class="tscPage vorInfo" id="VORInfoLeft">
+                </div>
+                <div class="tscPage vorInfo" id="VORInfoRight">
                 </div>
 
                 <div class="tscPage" id="NearestWaypointSelection">
@@ -1564,14 +1535,6 @@
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent" id="WaypointInfo_WaypointOptions" state="Inactive">
-                <div class="WindowTitle">Waypoint Options</div>
-                <div class="content">
-                    <div class="button gradientButton drctButon">
-                        <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" />
-                    </div>
-                </div>
-            </div>
             <div class="PopUpWindow" id="SelectionList" state="Inactive">
                 <div class="WindowTitle"></div>
                 <div class="backgroundBox contentContainer">
@@ -1620,6 +1583,9 @@
             </div>
             <div class="PopUpWindow Transparent" id="ChartsLightThreshold" state="Inactive">
                 <div class="WindowTitle">Auto Light Mode Threshold</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="WaypointOptions" state="Inactive">
+                <div class="WindowTitle">Waypoint Options</div>
             </div>
             <div class="PopUpWindow" id="TransponderMode" state="Inactive">
                 <div class="WindowTitle">Transponder</div>
@@ -1791,6 +1757,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCDatabaseStatus.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWaypointInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAirportInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCNearestWaypoint.js"></script>
 
