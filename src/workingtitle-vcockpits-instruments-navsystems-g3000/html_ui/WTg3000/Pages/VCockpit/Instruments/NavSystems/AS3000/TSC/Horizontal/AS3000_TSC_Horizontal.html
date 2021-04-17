@@ -769,44 +769,17 @@
                 <div class="tscPage" id="DatabaseStatus">
                 </div>
 
-                <div class="tscPage" id="WaypointsInfo">
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoAirport_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="label">Airport</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoINT_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="label">INT</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoVOR_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="label">VOR</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoNDB_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="label">NDB</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoUser_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="label">User Waypoint</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoUserCreate_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="label">Create Waypoint</div>
-                        </div>
-                    </div>
+                <div class="tscPage" id="WaypointInfoSelection">
                 </div>
-
                 <div class="tscPage airportInfo" id="AirportInfoLeft">
                     <tsc-airportinfo></tsc-airportinfo>
                 </div>
                 <div class="tscPage airportInfo" id="AirportInfoRight">
                     <tsc-airportinfo></tsc-airportinfo>
+                </div>
+                <div class="tscPage vorInfo" id="VORInfoLeft">
+                </div>
+                <div class="tscPage vorInfo" id="VORInfoRight">
                 </div>
 
                 <div class="tscPage" id="NearestWaypointSelection">
@@ -2032,6 +2005,7 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCDatabaseStatus.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWaypointInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAirportInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCNearestWaypoint.js"></script>
 
