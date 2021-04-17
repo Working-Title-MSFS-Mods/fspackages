@@ -11,9 +11,9 @@ class WT_VOR extends WT_ICAOWaypoint {
         super._initFromData(data);
 
         this._vorType = data.type;
-        this._class = data.vorClass;
+        this._vorClass = data.vorClass;
         this._frequency = new WT_Frequency(data.freqMHz, WT_Frequency.Prefix.MHz);
-        this._magVar = data.magneticVariation;
+        this._magVar = (-data.magneticVariation + 540) % 360 - 180; // coerce values to range -180 to 180.
     }
 
     /**
@@ -30,8 +30,8 @@ class WT_VOR extends WT_ICAOWaypoint {
      * @readonly
      * @type {WT_VOR.Class}
      */
-    get class() {
-        return this._class;
+    get vorClass() {
+        return this._vorClass;
     }
 
     /**
