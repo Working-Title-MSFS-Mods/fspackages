@@ -198,7 +198,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
         }
 
         this._selectedWaypoint = waypoint;
-        if (this.htmlElement) {
+        if (this.htmlElement && this.htmlElement.isInitialized) {
             this.htmlElement.setWaypoint(waypoint);
         }
     }
@@ -235,6 +235,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
         let context = {
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
+            waypoint: this.selectedWaypoint,
             icaoSetting: this._displayPaneICAOSetting,
             mfdPaneDisplaySetting: this._mfdPaneDisplaySetting,
             showOnMapOnDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Display.WAYPOINT_INFO,
@@ -350,7 +351,7 @@ class WT_G3x5_TSCWaypointInfoHTMLElement extends HTMLElement {
         this._waypoint = null;
 
         /**
-         * @type {{parentPage:WT_G3x5_TSCWaypointInfo, airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCWaypointInfoUnitsModel}}
+         * @type {{parentPage:WT_G3x5_TSCWaypointInfo<T>, airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCWaypointInfoUnitsModel}}
          */
         this._context = null;
         this._isInit = false;
@@ -362,14 +363,6 @@ class WT_G3x5_TSCWaypointInfoHTMLElement extends HTMLElement {
      */
     get isInitialized() {
         return this._isInit;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_G3x5_TSCAirportInfo}
-     */
-    get parentPage() {
-        return this._parentPage;
     }
 
     /**

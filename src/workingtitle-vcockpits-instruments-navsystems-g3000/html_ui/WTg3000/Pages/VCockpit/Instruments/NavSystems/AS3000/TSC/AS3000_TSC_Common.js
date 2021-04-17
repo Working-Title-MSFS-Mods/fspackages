@@ -281,8 +281,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.duplicateWaypointSelection.setGPS(this);
         this.loadFrequencyWindow = new NavSystemElementContainer("Frequency Window", "LoadFrequencyPopup", new WT_G3x5_TSCLoadFrequency());
         this.loadFrequencyWindow.setGPS(this);
-        this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointInfo_WaypointOptions", new WT_G3x5_TSCWaypointOptions());
-        this.waypointOptions.setGPS(this);
         this.confirmationWindow = new AS3000_TSC_ConfirmationWindow();
         this.terrainAlerts = new AS3000_TSC_TerrainAlert();
         this.addIndependentElementContainer(new NavSystemElementContainer("Terrain Alert", "terrainAlert", this.terrainAlerts));
@@ -307,6 +305,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.chartsLightThreshold = new NavSystemElementContainer("Charts Light Threshold", "ChartsLightThreshold", this._createChartsLightThresholdPopUp());
         this.chartsLightThreshold.setGPS(this);
+
+        this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointOptions", new WT_G3x5_TSCWaypointOptions());
+        this.waypointOptions.setGPS(this);
     }
 
     _initNavButtons() {

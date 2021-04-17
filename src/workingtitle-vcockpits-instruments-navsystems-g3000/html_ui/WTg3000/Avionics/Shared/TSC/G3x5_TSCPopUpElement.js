@@ -80,8 +80,16 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
         this._isInit = true;
     }
 
+    _cleanUpContext() {
+    }
+
+    _updateFromContext() {
+    }
+
     setContext(context) {
+        this._cleanUpContext();
         this._context = context;
+        this._updateFromContext();
     }
 
     _updateTitle() {
