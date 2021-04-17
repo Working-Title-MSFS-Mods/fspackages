@@ -53,8 +53,8 @@ class WT_G3x5_TSCWaypointOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _updateShowOnMapButton() {
-        if (this.context) {
-            this.htmlElement.showMapButton.enabled = `${this.context.waypoint !== null}`;
+        if (this.context && this.context.waypoint) {
+            this.htmlElement.showMapButton.enabled = "true";
             this.htmlElement.showMapButton.toggle = this._isShowOnMapActive() ? "on" : "off";
         } else {
             this.htmlElement.showMapButton.enabled = "false";
