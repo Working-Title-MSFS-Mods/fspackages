@@ -1034,8 +1034,8 @@ class WT_G3x5_TSCAirportFreqLine extends HTMLElement {
             homePageGroup: this.parentPage.homePageGroup,
             homePageName: this.parentPage.homePageName,
             frequencyText: `${button.labelText} ${this.airportFreq.airport.ident} ${this.airportFreq.name}`,
-            frequency: this.airportFreq.frequency.bcd16,
-            isNav: this.airportFreq.frequency.hertz(WT_Frequency.Prefix.MHz) < 118
+            frequency: this.airportFreq.frequency,
+            radioSlotType: this.airportFreq.frequency.hertz(WT_Frequency.Prefix.MHz) < 118 ? WT_G3x5_TSCLoadFrequency.RadioSlotType.NAV : WT_G3x5_TSCLoadFrequency.RadioSlotType.COM
         }
         instrument.loadFrequencyWindow.element.setContext(context);
         instrument.switchToPopUpPage(instrument.loadFrequencyWindow);

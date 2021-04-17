@@ -127,6 +127,30 @@ class AS3000_TSC extends NavSystemTouch {
         return this._nearestAirportList;
     }
 
+    /**
+     * @readonly
+     * @type {WT_NearestWaypointList<WT_VOR>}
+     */
+    get nearestVORList() {
+        return this._nearestVORList;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NearestWaypointList<WT_NDB>}
+     */
+    get nearestNDBList() {
+        return this._nearestNDBList;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NearestWaypointList<WT_Intersection>}
+     */
+    get nearestINTList() {
+        return this._nearestINTList;
+    }
+
     getSelectedMFDPane() {
         if (this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
             return WT_G3x5_MFDHalfPane.ID.LEFT;
@@ -205,12 +229,15 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Waypoint Info", "WaypointsInfo", new AS3000_TSC_WaypointInfo()),
                 this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
                 this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
-                new NavSystemPage("Nearest", "Nearest", new AS3000_TSC_NRST()),
+                new NavSystemPage("Nearest Waypoint Selection", "NearestWaypointSelection", new WT_G3x5_TSCNearestWaypointSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.nearestAirport = new NavSystemPage("Nearest Airport Left", "NearestAirportLeft", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
                 this._mfdPagesRight.nearestAirport = new NavSystemPage("Nearest Airport Right", "NearestAirportRight", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
-                new NavSystemPage("Nearest Intersection", "NearestIntersection", new AS3000_TSC_NRST_Intersection()),
-                new NavSystemPage("Nearest VOR", "NearestVOR", new AS3000_TSC_NRST_VOR()),
-                new NavSystemPage("Nearest NDB", "NearestNDB", new AS3000_TSC_NRST_NDB()),
+                this._mfdPagesLeft.nearestINT = new NavSystemPage("Nearest INT Left", "NearestINTLeft", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestINT = new NavSystemPage("Nearest INT Right", "NearestINTRight", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestVOR = new NavSystemPage("Nearest VOR Left", "NearestVORLeft", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestVOR = new NavSystemPage("Nearest VOR Right", "NearestVORRight", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestNDB = new NavSystemPage("Nearest NDB Left", "NearestNDBLeft", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestNDB = new NavSystemPage("Nearest NDB Right", "NearestNDBRight", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
                 this._mfdPagesLeft.charts = new NavSystemPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT)),
@@ -338,11 +365,33 @@ class AS3000_TSC extends NavSystemTouch {
 
     _initNearestAirportList() {
         this._nearestAirportList = new WT_G3x5_NearestAirportList(this.airplane, this.icaoWaypointFactory, this.icaoSearchers.airport);
-        this._lastNearestAirportListUpdateTime = Date.now();
+        this._nearestAirportListUpdated = false;
+    }
+
+    _initNearestVORList() {
+        this._nearestVORList = new WT_NearestWaypointList(this.airplane, this.icaoWaypointFactory.getVORs.bind(this.icaoWaypointFactory), this.icaoSearchers.vor);
+        this._nearestVORList.searchLimit = 25;
+        this._nearestVORListUpdated = false;
+    }
+
+    _initNearestNDBList() {
+        this._nearestNDBList = new WT_NearestWaypointList(this.airplane, this.icaoWaypointFactory.getNDBs.bind(this.icaoWaypointFactory), this.icaoSearchers.ndb);
+        this._nearestNDBList.searchLimit = 25;
+        this._nearestNDBListUpdated = false;
+    }
+
+    _initNearestINTList() {
+        this._nearestINTList = new WT_NearestWaypointList(this.airplane, this.icaoWaypointFactory.getINTs.bind(this.icaoWaypointFactory), this.icaoSearchers.int);
+        this._nearestINTList.searchLimit = 25;
+        this._nearestINTListUpdated = false;
     }
 
     _initNearestWaypoints() {
         this._initNearestAirportList();
+        this._initNearestVORList();
+        this._initNearestNDBList();
+        this._initNearestINTList();
+        this._lastNearestWaypointListUpdateTime = 0;
     }
 
     Init() {
@@ -392,15 +441,33 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _updateNearestAirportList(currentTime) {
-        if (currentTime - this._lastNearestAirportListUpdateTime >= AS3000_TSC.NEAREST_AIRPORT_LIST_UPDATE_INTERVAL) {
-            this.nearestAirportList.update();
-            this._lastNearestAirportListUpdateTime = currentTime;
-        }
-    }
-
     _updateNearestWaypoints(currentTime) {
-        this._updateNearestAirportList(currentTime);
+        // stagger updates for performance
+        let delta = currentTime - this._lastNearestWaypointListUpdateTime;
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 3) && !this._nearestAirportListUpdated) {
+            this.nearestAirportList.update();
+            this._nearestAirportListUpdated = true;
+        }
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 2) && !this._nearestVORListUpdated) {
+            this.nearestVORList.update();
+            this._nearestVORListUpdated = true;
+        }
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 1) && !this._nearestNDBListUpdated) {
+            this.nearestNDBList.update();
+            this._nearestNDBListUpdated = true;
+        }
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 0) && !this._nearestINTListUpdated) {
+            this.nearestINTList.update();
+            this._nearestINTListUpdated = true;
+        }
+
+        if (currentTime - this._lastNearestWaypointListUpdateTime >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL) {
+            this._lastNearestWaypointListUpdateTime = currentTime;
+            this._nearestAirportListUpdated = false;
+            this._nearestVORListUpdated = false;
+            this._nearestNDBListUpdated = false;
+            this._nearestINTListUpdated = false;
+        }
     }
 
     _doUpdates(currentTime) {
@@ -741,7 +808,7 @@ class AS3000_TSC extends NavSystemTouch {
 AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT = new Set([
     "TT:ATCCOM.AC_MODEL_TBM9.0.text"
 ]);
-AS3000_TSC.NEAREST_AIRPORT_LIST_UPDATE_INTERVAL = 5000;
+AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL = 5000;
 
 class AS3000_TSC_PageInfos {
 }
@@ -907,7 +974,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
         this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
         this.gps.makeButton(this._chartsButton, this._onChartsButtonPressed.bind(this));
-        this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest"));
+        this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Waypoint Selection"));
         this.gps.makeButton(this.speedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Speed Bugs"));
         this.gps.makeButton(this.WaypointsInfoButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Waypoint Info"));
         this.gps.makeButton(this.aircraftSystemsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Aircraft Systems"));

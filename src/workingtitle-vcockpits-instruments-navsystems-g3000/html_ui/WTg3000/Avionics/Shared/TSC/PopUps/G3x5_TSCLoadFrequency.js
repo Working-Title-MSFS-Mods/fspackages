@@ -19,52 +19,73 @@ class WT_G3x5_TSCLoadFrequency extends WT_G3x5_TSCPopUpElement {
         super.onEnter();
 
         this._freqNameElem.textContent = this.context.frequencyText;
-        if (this.context.isNav) {
-            this._titleLeftElem.textContent = "NAV1";
-            this._titleRightElem.textContent = "NAV2";
-        } else {
-            this._titleLeftElem.textContent = "COM1";
-            this._titleRightElem.textContent = "COM2";
+        switch (this.context.radioSlotType) {
+            case WT_G3x5_TSCLoadFrequency.RadioSlotType.COM:
+                this._titleLeftElem.textContent = "COM1";
+                this._titleRightElem.textContent = "COM2";
+                break;
+            case WT_G3x5_TSCLoadFrequency.RadioSlotType.NAV:
+                this._titleLeftElem.textContent = "NAV1";
+                this._titleRightElem.textContent = "NAV2";
+                break;
+            case WT_G3x5_TSCLoadFrequency.RadioSlotType.ADF:
+                this._titleLeftElem.textContent = "ADF";
+                this._titleRightElem.textContent = "ADF";
+                break;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCLoadFrequency.RadioSlotType} radioSlotType
+     * @returns {WT_AirplaneRadioSlot}
+     */
+    _getRadioSlot(radioSlotType, index) {
+        switch (radioSlotType) {
+            case WT_G3x5_TSCLoadFrequency.RadioSlotType.COM:
+                return this.instrument.airplane.navCom.getCom(index);
+            case WT_G3x5_TSCLoadFrequency.RadioSlotType.NAV:
+                return this.instrument.airplane.navCom.getNav(index);
+            case WT_G3x5_TSCLoadFrequency.RadioSlotType.ADF:
+                return this.instrument.airplane.navCom.getADF(1);
+            default:
+                return null;
         }
     }
 
     _setActiveLeft() {
-        if (this.context.isNav) {
-            SimVar.SetSimVarValue("K:NAV1_RADIO_SET", "Frequency BCD16", this.context.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM_RADIO_SET", "Frequency BCD16", this.context.frequency);
-        }
+        let radio = this._getRadioSlot(this.context.radioSlotType, 1);
+        radio.setStandbyFrequency(radio.activeFrequency());
+        radio.setActiveFrequency(this.context.frequency);
         this.instrument.goBack();
     }
 
     _setActiveRight() {
-        if (this.context.isNav) {
-            SimVar.SetSimVarValue("K:NAV2_RADIO_SET", "Frequency BCD16", this.context.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM2_RADIO_SET", "Frequency BCD16", this.context.frequency);
-        }
+        let radio = this._getRadioSlot(this.context.radioSlotType, 2);
+        radio.setStandbyFrequency(radio.activeFrequency());
+        radio.setActiveFrequency(this.context.frequency);
         this.instrument.goBack();
     }
 
     _setStandbyLeft() {
-        if (this.context.isNav) {
-            SimVar.SetSimVarValue("K:NAV1_STBY_SET", "Frequency BCD16", this.context.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM_STBY_RADIO_SET", "Frequency BCD16", this.context.frequency);
-        }
+        let radio = this._getRadioSlot(this.context.radioSlotType, 1);
+        radio.setStandbyFrequency(this.context.frequency);
         this.instrument.goBack();
     }
 
     _setStandbyRight() {
-        if (this.context.isNav) {
-            SimVar.SetSimVarValue("K:NAV2_STBY_SET", "Frequency BCD16", this.context.frequency);
-        }
-        else {
-            SimVar.SetSimVarValue("K:COM2_STBY_RADIO_SET", "Frequency BCD16", this.context.frequency);
-        }
+        let radio = this._getRadioSlot(this.context.radioSlotType, 2);
+        radio.setStandbyFrequency(this.context.frequency);
         this.instrument.goBack();
     }
+}
+/**
+ * @enum {Number}
+ */
+WT_G3x5_TSCLoadFrequency.RadioSlotType = {
+    COM: 0,
+    NAV: 1,
+    ADF: 2
 }

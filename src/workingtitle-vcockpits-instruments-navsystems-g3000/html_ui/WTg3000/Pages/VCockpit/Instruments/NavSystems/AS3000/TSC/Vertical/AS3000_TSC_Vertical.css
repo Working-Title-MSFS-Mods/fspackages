@@ -1111,51 +1111,15 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         margin: 0.25vh;
     }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer {
-        left: 1%;
-        width: 96%;
-        height: 100%;
-        position: relative;
-        padding: 0.5vh; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList {
-          font-size: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton {
-            height: 98%;
-            width: 98%;
-            margin: auto; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .mainValue {
-              position: absolute;
-              left: 2%;
-              top: 0%;
-              font-size: 4vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .title {
-              position: absolute;
-              left: 2%;
-              bottom: 0%;
-              width: 90%;
-              font-size: 2vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .symbol {
-              height: 75%; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton .mainNumber {
-              font-size: 3vh;
-              padding: 0%;
-              margin: 0%;
-              margin-top: 1.8vh;
-              width: 100%;
-              text-align: center; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList thead {
-            font-size: 3vh;
-            height: 7%;
-            padding-right: 3%; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody {
-            height: 93%; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr, as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody td {
-              height: 10vh;
-              position: relative; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList #SizeSetter, as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList #SizeSetter td {
-            border: none;
-            height: 0vh;
-            overflow: visible; }
+as3000-tsc-vertical-element #NearestWaypointSelection wt-tsc-nearestwaypointselection {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: 50%;
+    font-size: 3vh;
+    line-height: 3vh;
+}
 
 as3000-tsc-vertical-element .nearestAirport wt-tsc-nearestairport {
     position: absolute;
@@ -1168,6 +1132,25 @@ as3000-tsc-vertical-element .nearestAirport wt-tsc-nearestairport {
     --nearestwaypoints-col2-width: 1fr;
     --nearestwaypoints-col3-width: 1fr;
     --nearestwaypoints-col4-width: 1.5fr;
+    --nearestwaypoints-row-height: 11vh;
+    --nearestwaypoints-options-width: 40%;
+    --nearestwaypoints-options-padding-left: 0.5em;
+    --nearestwaypoints-options-padding-right: 0.5em;
+}
+
+as3000-tsc-vertical-element .nearestINT wt-tsc-nearestint,
+as3000-tsc-vertical-element .nearestVOR wt-tsc-nearestvor,
+as3000-tsc-vertical-element .nearestNDB wt-tsc-nearestndb {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3.5vh;
+    --nearestwaypoints-col1-width: 2fr;
+    --nearestwaypoints-col2-width: 1fr;
+    --nearestwaypoints-col3-width: 1fr;
+    --nearestwaypoints-col4-width: 1fr;
     --nearestwaypoints-row-height: 11vh;
     --nearestwaypoints-options-width: 40%;
     --nearestwaypoints-options-padding-left: 0.5em;
