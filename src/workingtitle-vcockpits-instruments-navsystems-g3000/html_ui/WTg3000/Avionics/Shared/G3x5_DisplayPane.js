@@ -161,24 +161,29 @@ class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_DisplayPane {
 
     /**
      * @readonly
-     * @type {WT_G3x5_WaypointInfo}
+     * @type {WT_G3x5_WaypointInfoDisplay}
      */
     get waypointInfo() {
         return this._waypointInfo;
     }
 
     getTitle() {
-        switch (this.waypointInfo.model.waypointInfo.mode) {
-            case WT_G3x5_MapModelWaypointInfoModule.Mode.AIRPORT:
-                return "Airport Info";
-            case WT_G3x5_MapModelWaypointInfoModule.Mode.VOR:
-                return "VOR Info";
-            case WT_G3x5_MapModelWaypointInfoModule.Mode.NDB:
-                return "NDB Info";
-            case WT_G3x5_MapModelWaypointInfoModule.Mode.INT:
-                return "Intersection Info";
-            default:
-                return "Waypoint Info";
+        let waypoint = this.waypointInfo.mapModel.waypointDisplay.waypoint;
+        if (waypoint) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return "Airport Info";
+                case WT_ICAOWaypoint.Type.VOR:
+                    return "VOR Info";
+                case WT_ICAOWaypoint.Type.NDB:
+                    return "NDB Info";
+                case WT_ICAOWaypoint.Type.INT:
+                    return "Intersection Info";
+                default:
+                    return "Waypoint Info";
+            }
+        } else {
+            return "Waypoint Info";
         }
     }
 
@@ -215,7 +220,7 @@ class WT_G3x5_NearestWaypointDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     getTitle() {
-        let waypoint = this.nearestWaypoint.mapModel.nearestWaypoint.waypoint;
+        let waypoint = this.nearestWaypoint.mapModel.waypointDisplay.waypoint;
         if (waypoint) {
             switch (waypoint.type) {
                 case WT_ICAOWaypoint.Type.AIRPORT:

@@ -53,7 +53,7 @@ class WT_G3x5_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return state.model.waypointInfo.mode === WT_G3x5_MapModelWaypointInfoModule.Mode.AIRPORT;
+        return state.model.waypointDisplay.waypoint && state.model.waypointDisplay.waypoint.type === WT_ICAOWaypoint.Type.AIRPORT;
     }
 
     /**
@@ -75,7 +75,7 @@ class WT_G3x5_MapViewAirportRunwayLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     _updateAirport(state) {
-        let airport = state.model.waypointInfo.waypoint;
+        let airport = state.model.waypointDisplay.waypoint;
         if (airport === null && this._lastAirport === null || (airport && this._lastAirport && (airport.type !== WT_ICAOWaypoint.Type.AIRPORT || airport.uniqueID === this._lastAirport.uniqueID))) {
             return;
         }
