@@ -1,7 +1,7 @@
 class WT_G3x5_TSCNumericKeyboard extends WT_G3x5_TSCPopUpElement {
     /**
      * @readonly
-     * @type {WT_G3x5_TSCNavigraphLinkHTMLElement}
+     * @type {WT_G3x5_TSCNumericKeyboardHTMLElement}
      */
     get htmlElement() {
         return this._htmlElement;

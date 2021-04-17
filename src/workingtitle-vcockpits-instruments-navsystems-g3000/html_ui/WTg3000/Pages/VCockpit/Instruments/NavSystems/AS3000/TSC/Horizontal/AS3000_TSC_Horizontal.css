@@ -966,7 +966,7 @@ as3000-tsc-horizontal-element #WaypointInfoSelection wt-tsc-waypointinfoselectio
     --waypointinfoselection-grid-column: 27vh;
 }
 
-as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo tsc-airportinfo {
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo wt-tsc-airportinfo {
     position: absolute;
     left: 1%;
     top: 1%;
@@ -1803,18 +1803,6 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         height: 15%;
         width: auto; }
 
-as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .content {
-    left: 25%;
-    top: 10%;
-    bottom: 2%;
-    width: 50%;
-    font-size: 4vh;
-}
-    as3000-tsc-horizontal-element #Electricity #WaypointInfo_WaypointOptions .content .button {
-        width: 70%;
-        height: 20vh;
-    }
-
     as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow {
       font-size: 4.5vh; }
       as3000-tsc-horizontal-element #Electricity #WaypointDuplicateWindow .Container {
@@ -1954,12 +1942,21 @@ as3000-tsc-horizontal-element #ChartsOptions wt-tsc-chartsoptions {
 }
 
 as3000-tsc-horizontal-element #ChartsLightThreshold wt-tsc-chartslightthreshold {
-  position: absolute;
-  left: 5%;
-  top: 10%;
-  width: 90%;
-  height: 70%;
-  font-size: 4vh;
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 70%;
+    font-size: 4vh;
+}
+
+as3000-tsc-horizontal-element #WaypointOptions wt-tsc-waypointoptions {
+    position: absolute;
+    left: 30%;
+    top: 20%;
+    width: 40%;
+    height: 50%;
+    font-size: 5vh;
 }
 
 :root {
