@@ -1,6 +1,6 @@
 /**
  * A line drawn from the player airplane's position to the currently selected nearest waypoint. The use of this layer
- * requires the .nearestWaypoint module to be added to the map model.
+ * requires the .waypointDisplay module to be added to the map model.
  */
 class WT_G3x5_MapViewNearestWaypointLineLayer extends WT_MapViewMultiLayer {
     constructor(className = WT_G3x5_MapViewNearestWaypointLineLayer.CLASS_DEFAULT, configName = WT_G3x5_MapViewNearestWaypointLineLayer.CONFIG_NAME_DEFAULT) {
@@ -23,7 +23,7 @@ class WT_G3x5_MapViewNearestWaypointLineLayer extends WT_MapViewMultiLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return state.model.nearestWaypoint.waypoint !== null;
+        return state.model.waypointDisplay.waypoint !== null;
     }
 
     /**
@@ -65,7 +65,7 @@ class WT_G3x5_MapViewNearestWaypointLineLayer extends WT_MapViewMultiLayer {
      */
     _updateGeoJSON(state) {
         let planePos = state.model.airplane.navigation.position(this._tempGeoPoint);
-        this._setGeoJSONCoordinates(planePos, state.model.nearestWaypoint.waypoint.location);
+        this._setGeoJSONCoordinates(planePos, state.model.waypointDisplay.waypoint.location);
     }
 
     /**

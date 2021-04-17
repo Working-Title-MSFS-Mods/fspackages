@@ -70,7 +70,6 @@ class AS3000_TSC extends NavSystemTouch {
     _initHalfPaneController(paneSettings) {
         paneSettings.settingModel.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.settingModel));
         paneSettings.settingModel.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.settingModel));
-        paneSettings.settingModel.addSetting(paneSettings.waypoint = new WT_G3x5_MFDHalfPaneWaypointSetting(paneSettings.settingModel));
         paneSettings.settingModel.update();
     }
 
@@ -227,8 +226,8 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
                 new NavSystemPage("Approach Selection", "ApproachSelection", new AS3000_TSC_ApproachSelection()),
                 new NavSystemPage("Waypoint Info", "WaypointsInfo", new AS3000_TSC_WaypointInfo()),
-                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
-                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
+                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
                 new NavSystemPage("Nearest Waypoint Selection", "NearestWaypointSelection", new WT_G3x5_TSCNearestWaypointSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.nearestAirport = new NavSystemPage("Nearest Airport Left", "NearestAirportLeft", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
                 this._mfdPagesRight.nearestAirport = new NavSystemPage("Nearest Airport Right", "NearestAirportRight", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),

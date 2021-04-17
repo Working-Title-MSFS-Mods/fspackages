@@ -125,15 +125,19 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
 
         this._selectedWaypoint = null;
 
-        this._settingModelID = `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID}`;
+        this._settingModelID = this._getSettingModelID(instrumentID, halfPaneID);
         this._mfdPanePages = mfdPanePages;
         this._mfdPaneSettings = mfdPaneSettings;
         this._initSettingModel();
     }
 
+    _getSettingModelID(instrumentID, halfPaneID) {
+        return `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID}`;
+    }
+
     _initSettingModel() {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
-        this._settingModel.addSetting(this._displayPaneICAOSetting = new WT_G3x5_NearestWaypointICAOSetting(this._settingModel));
+        this._settingModel.addSetting(this._displayPaneICAOSetting = new WT_G3x5_WaypointDisplayICAOSetting(this._settingModel));
     }
 
     /**
