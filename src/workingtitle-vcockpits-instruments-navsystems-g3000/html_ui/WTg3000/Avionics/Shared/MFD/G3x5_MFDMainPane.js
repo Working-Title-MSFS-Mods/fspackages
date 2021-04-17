@@ -281,10 +281,8 @@ class WT_G3x5_MFDHalfPane {
         this._settingModel = new WT_DataStoreSettingModel(id, null);
         this._settingModel.addSetting(this._controlSetting = new WT_G3x5_MFDHalfPaneControlSetting(this._settingModel, this._defaultControl));
         this._settingModel.addSetting(this._displaySetting = new WT_G3x5_MFDHalfPaneDisplaySetting(this._settingModel));
-        this._settingModel.addSetting(this._waypointSetting = new WT_G3x5_MFDHalfPaneWaypointSetting(this._settingModel));
         this._controlSetting.addListener(this._onControlSettingChanged.bind(this));
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
-        this._waypointSetting.addListener(this._onWaypointSettingChanged.bind(this));
 
         this._navMapPane = new WT_G3x5_NavMapDisplayPane(this._createNavMap(id, data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem));
@@ -334,10 +332,10 @@ class WT_G3x5_MFDHalfPane {
     }
 
     /**
-     * @returns {WT_G3x5_WaypointInfo}
+     * @returns {WT_G3x5_WaypointInfoDisplay}
      */
     _createWaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers) {
-        return new WT_G3x5_WaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers);
+        return new WT_G3x5_WaypointInfoDisplay(id, airplane, icaoWaypointFactory, icaoSearchers);
     }
 
     /**
@@ -419,14 +417,6 @@ class WT_G3x5_MFDHalfPane {
         this._setDisplayMode(newValue);
     }
 
-    _onWaypointSettingChanged(setting, newValue, oldValue) {
-        if (!this._isInit) {
-            return;
-        }
-
-        this._setWaypointICAO(newValue);
-    }
-
     /**
      * @returns {Number}
      */
@@ -475,10 +465,7 @@ class WT_G3x5_MFDHalfPane {
                 return this._weatherRadarPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
                 return this._chartsPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WAYPOINT_INFO:
                 return this._waypointInfoPane;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT:
                 return this._nearestWaypointPane;
@@ -496,33 +483,11 @@ class WT_G3x5_MFDHalfPane {
         }
     }
 
-    _updateMapWaypoint() {
-        switch (this._displayMode) {
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.AIRPORT;
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
-                break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.VOR;
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
-                break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.NDB;
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
-                break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.mode = WT_G3x5_MapModelWaypointInfoModule.Mode.INT;
-                this._waypointInfoPane.waypointInfo.waypointInfoModule.waypointICAO = this._waypointICAO;
-                break;
-        }
-    }
-
     _setDisplayMode(mode) {
         let oldDisplayPane = this._activeDisplayPane;
         this._displayMode = mode;
         this._activeDisplayPane = this._getDisplayPaneFromMode(mode);
         this._updateSleepWake(oldDisplayPane, this._activeDisplayPane);
-        this._updateMapWaypoint();
         this.htmlElement.setDisplay(mode);
     }
 
@@ -613,10 +578,7 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
                 this._setActiveView("charts");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.AIRPORT_INFO:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.VOR_INFO:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NDB_INFO:
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.INT_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WAYPOINT_INFO:
                 this._setActiveView("waypointinfo");
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT:
@@ -769,16 +731,6 @@ WT_G3x5_MFDHalfPaneDisplaySetting.Display = {
     TRAFFIC: 1,
     WEATHER: 2,
     CHARTS: 3,
-    AIRPORT_INFO: 4,
-    VOR_INFO: 5,
-    NDB_INFO: 6,
-    INT_INFO: 7,
-    NRST_WAYPOINT: 8
+    WAYPOINT_INFO: 4,
+    NRST_WAYPOINT: 5
 }
-
-class WT_G3x5_MFDHalfPaneWaypointSetting extends WT_DataStoreSetting {
-    constructor(model, defaultValue = "", autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneWaypointSetting.KEY) {
-        super(model, key, defaultValue, autoUpdate, isPersistent);
-    }
-}
-WT_G3x5_MFDHalfPaneWaypointSetting.KEY = "WT_MFDHalfPane_Waypoint"
