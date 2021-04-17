@@ -1059,7 +1059,18 @@ as3000-tsc-vertical-element #DatabaseStatus wt-tsc-databasestatus {
     font-size: 3vh;
 }
 
-as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airportinfo {
+as3000-tsc-vertical-element #WaypointInfoSelection wt-tsc-waypointinfoselection {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    font-size: 3vh;
+    line-height: 3vh;
+    --waypointinfoselection-grid-row: 14vh;
+    --waypointinfoselection-grid-column: 18vh;
+}
+
+as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo wt-tsc-airportinfo {
     position: absolute;
     left: 1%;
     top: 1%;
@@ -1111,6 +1122,15 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         margin: 0.25vh;
     }
 
+as3000-tsc-vertical-element .vorInfo wt-tsc-vorinfo {
+    position: absolute;
+    left: 5%;
+    top: 0%;
+    width: 90%;
+    height: 99%;
+    font-size: 3vh;
+}
+
 as3000-tsc-vertical-element #NearestWaypointSelection wt-tsc-nearestwaypointselection {
     position: absolute;
     left: 10%;
@@ -1119,6 +1139,8 @@ as3000-tsc-vertical-element #NearestWaypointSelection wt-tsc-nearestwaypointsele
     height: 50%;
     font-size: 3vh;
     line-height: 3vh;
+    --nearestwaypointselection-grid-row: 14vh;
+    --nearestwaypointselection-grid-column: 18vh;
 }
 
 as3000-tsc-vertical-element .nearestAirport wt-tsc-nearestairport {
@@ -1714,18 +1736,6 @@ as3000-tsc-vertical-element .nearestNDB wt-tsc-nearestndb {
         height: 15%;
         width: auto; }
 
-as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content {
-    left: 25%;
-    top: 10%;
-    bottom: 2%;
-    width: 50%;
-    font-size: 3vh;
-}
-    as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .button {
-        width: 70%;
-        height: 12vh;
-    }
-
     as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow {
       font-size: 3vh; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow .Container {
@@ -1940,6 +1950,15 @@ as3000-tsc-vertical-element #ChartsLightThreshold wt-tsc-chartslightthreshold {
     width: 98%;
     height: 70%;
     font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #WaypointOptions wt-tsc-waypointoptions {
+    position: absolute;
+    left: 25%;
+    top: 20%;
+    width: 50%;
+    height: 60%;
+    font-size: 3.5vh;
 }
 
 :root {
