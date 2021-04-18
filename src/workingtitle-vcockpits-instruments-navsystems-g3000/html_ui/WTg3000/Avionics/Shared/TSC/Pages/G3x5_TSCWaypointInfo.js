@@ -24,7 +24,7 @@ class WT_G3x5_TSCWaypointInfoSelection extends WT_G3x5_TSCDirectoryPage {
     }
 
     _initNDBButton() {
-        //this.htmlElement.ndbButton.addButtonListener(this._openPage.bind(this, "ndbInfo"));
+        this.htmlElement.ndbButton.addButtonListener(this._openPage.bind(this, "ndbInfo"));
     }
 
     _doInitButtons() {
@@ -829,7 +829,12 @@ class WT_G3x5_TSCNavAidInfoHTMLElement extends WT_G3x5_TSCSimpleWaypointInfoHTML
             WT_CustomElementSelector.select(this.shadowRoot, this._getFrequencyButtonQuery(), WT_TSCContentButton)
         ]);
 
+        this._regionText = this.shadowRoot.querySelector(this._getRegionTextQuery());
         this._frequencyText = this.shadowRoot.querySelector(this._getFrequencyTextQuery());
+    }
+
+    _updateRegionText() {
+        this._regionText.textContent = this._waypoint ? WT_G3x5_RegionNames.getName(this._waypoint.region) : "";
     }
 
     _updateFrequencyText() {
@@ -843,6 +848,7 @@ class WT_G3x5_TSCNavAidInfoHTMLElement extends WT_G3x5_TSCSimpleWaypointInfoHTML
     _updateFromWaypoint() {
         super._updateFromWaypoint();
 
+        this._updateRegionText();
         this._updateFrequencyText();
     }
 }
@@ -912,6 +918,10 @@ class WT_G3x5_TSCVORInfoHTMLElement extends WT_G3x5_TSCNavAidInfoHTMLElement {
 
     _getLocationRowQuery() {
         return `#locationrow`;
+    }
+
+    _getRegionTextQuery() {
+        return `#region`;
     }
 
     _getFrequencyButtonQuery() {
@@ -1028,6 +1038,7 @@ WT_G3x5_TSCVORInfoHTMLElement.TEMPLATE.innerHTML = `
                 display: grid;
                 grid-template-columns: 100%;
                 grid-template-rows: var(--vorinfo-grid-rows, repeat(5, 1fr));
+                color: white;
             }
                 .infoRowContainer {
                     position: relative;
@@ -1043,6 +1054,13 @@ WT_G3x5_TSCVORInfoHTMLElement.TEMPLATE.innerHTML = `
                         top: var(--simplewaypointinfo-info-row-padding-top, 0.2em);
                         width: calc(100% - var(--simplewaypointinfo-info-row-padding-left, 0.2em) - var(--simplewaypointinfo-info-row-padding-right, 0.2em));
                         height: calc(100% - var(--simplewaypointinfo-info-row-padding-top, 0.2em) - var(--simplewaypointinfo-info-row-padding-bottom, 0.2em));
+                    }
+                    #row1 {
+                        display: grid;
+                        grid-template-rows: 50% 50%;
+                        grid-template-columns: 100%;
+                        justify-items: start;
+                        align-items: center;
                     }
                         #locationrow {
                             position: relative;
@@ -1060,7 +1078,6 @@ WT_G3x5_TSCVORInfoHTMLElement.TEMPLATE.innerHTML = `
                             position: relative;
                             width: 100%;
                             height: 100%;
-                            color: white;
                         }
                             #frequencytitle {
                                 position: absolute;
@@ -1087,6 +1104,10 @@ WT_G3x5_TSCVORInfoHTMLElement.TEMPLATE.innerHTML = `
         </div>
         <div id="info">
             <div class="infoRowContainer">
+                <div id="row1" class="infoRow">
+                    <div id="city"></div>
+                    <div id="region"></div>
+                </div>
             </div>
             <div class="infoRowContainer borderRow">
                 <div id="row2" class="infoRow">
@@ -1113,3 +1134,222 @@ WT_G3x5_TSCVORInfoHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_TSCVORInfoHTMLElement.NAME, WT_G3x5_TSCVORInfoHTMLElement);
+
+// NDB
+
+/**
+ * @extends WT_G3x5_TSCNavAidInfo<WT_NDB>
+ */
+class WT_G3x5_TSCNDBInfo extends WT_G3x5_TSCNavAidInfo {
+    constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPaneDisplaySetting) {
+        super(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPaneDisplaySetting, WT_ICAOWaypoint.Type.NDB);
+    }
+
+    _getTitle() {
+        return "NDB Information";
+    }
+
+    _createHTMLElement() {
+        let htmlElement = new WT_G3x5_TSCNDBInfoHTMLElement();
+        htmlElement.setContext({
+            parentPage: this,
+            airplane: this.instrument.airplane,
+            unitsModel: this._unitsModel
+        })
+        return htmlElement;
+    }
+
+    async _createWaypointFromICAO(icao) {
+        return this.instrument.icaoWaypointFactory.getNDB(icao);
+    }
+
+    /**
+     *
+     * @param {WT_NDB} waypoint
+     * @returns {String}
+     */
+    _getFrequencyText(waypoint) {
+        return `${waypoint.frequency.hertz(WT_Frequency.Prefix.KHz).toFixed(1)} ${waypoint.ident}`;
+    }
+
+    /**
+     *
+     * @param {WT_NDB} waypoint
+     * @returns {WT_G3x5_TSCLoadFrequency.RadioSlotType}
+     */
+    _getRadioSlotType(waypoint) {
+        return WT_G3x5_TSCLoadFrequency.RadioSlotType.ADF;
+    }
+}
+
+/**
+ * @extends WT_G3x5_TSCNavAidInfoHTMLElement<WT_NDB>
+ */
+class WT_G3x5_TSCNDBInfoHTMLElement extends WT_G3x5_TSCNavAidInfoHTMLElement {
+    _getTemplate() {
+        return WT_G3x5_TSCNDBInfoHTMLElement.TEMPLATE;
+    }
+
+    _getSelectButtonQuery() {
+        return `#selectbutton`;
+    }
+
+    _getOptionsButtonQuery() {
+        return `#optionsbutton`;
+    }
+
+    _getLocationRowQuery() {
+        return `#locationrow`;
+    }
+
+    _getRegionTextQuery() {
+        return `#region`;
+    }
+
+    _getFrequencyButtonQuery() {
+        return `#frequencybutton`;
+    }
+
+    _getFrequencyTextQuery() {
+        return `#frequencytext`;
+    }
+
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._classText = this.shadowRoot.querySelector(`#class`);
+        this._typeText = this.shadowRoot.querySelector(`#type`);
+        this._magVar = this.shadowRoot.querySelector(`#magvar`);
+    }
+
+    _getFrequencyText(frequency) {
+        return frequency.hertz(WT_Frequency.Prefix.KHz).toFixed(1);
+    }
+}
+WT_G3x5_TSCNDBInfoHTMLElement.NAME = "wt-tsc-ndbinfo";
+WT_G3x5_TSCNDBInfoHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCNDBInfoHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            border-radius: 5px;
+            border: 3px solid var(--wt-g3x5-bordergray);
+            background: black;
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--simplewaypointinfo-padding-left, 0.2em);
+            top: var(--simplewaypointinfo-padding-top, 0.2em);
+            width: calc(100% - var(--simplewaypointinfo-padding-left, 0.2em) - var(--simplewaypointinfo-padding-right, 0.2em));
+            height: calc(100% - var(--simplewaypointinfo-padding-top, 0.2em) - var(--simplewaypointinfo-padding-bottom, 0.2em));
+            display: grid;
+            grid-template-rows: var(--simplewaypointinfo-header-height, 4em) 1fr;
+            grid-template-columns: 100%;
+            grid-gap: var(--simplewaypointinfo-header-margin-bottom, 0.2em) 0;
+            justify-items: center;
+        }
+            #header {
+                position: relative;
+                width: var(--simplewaypointinfo-header-width, 90%);
+                display: grid;
+                grid-template-rows: 100%;
+                grid-template-columns: var(--simplewaypointinfo-selectbutton-width, 67%) 1fr;
+                grid-gap: 0 var(--simplewaypointinfo-header-button-margin, 0.5em);
+            }
+            #info {
+                position: relative;
+                width: var(--simplewaypointinfo-info-width, 80%);
+                display: grid;
+                grid-template-columns: 100%;
+                grid-template-rows: var(--ndbinfo-grid-rows, repeat(4, 1fr));
+                color: white;
+            }
+                .infoRowContainer {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+                .borderRow {
+                    border-top: var(--simplewaypointinfo-info-row-border, 1px solid var(--wt-g3x5-bordergray));
+                }
+                    .infoRow {
+                        position: absolute;
+                        left: var(--simplewaypointinfo-info-row-padding-left, 0.2em);
+                        top: var(--simplewaypointinfo-info-row-padding-top, 0.2em);
+                        width: calc(100% - var(--simplewaypointinfo-info-row-padding-left, 0.2em) - var(--simplewaypointinfo-info-row-padding-right, 0.2em));
+                        height: calc(100% - var(--simplewaypointinfo-info-row-padding-top, 0.2em) - var(--simplewaypointinfo-info-row-padding-bottom, 0.2em));
+                    }
+                    #row1 {
+                        display: grid;
+                        grid-template-rows: 50% 50%;
+                        grid-template-columns: 100%;
+                        justify-items: start;
+                        align-items: center;
+                    }
+                        #locationrow {
+                            position: relative;
+                            width: 100%;
+                            height: var(--simplewaypointinfo-info-locationrow-height, 100%);
+                        }
+                    #row3 {
+                        display: grid;
+                        grid-template-rows: 50% 50%;
+                        grid-template-columns: 50% 50%;
+                        justify-items: start;
+                        align-items: center;
+                    }
+                        #frequencycontent {
+                            position: relative;
+                            width: 100%;
+                            height: 100%;
+                        }
+                            #frequencytitle {
+                                position: absolute;
+                                left: 25%;
+                                top: 50%;
+                                transform: translate(-50%, -50%);
+                            }
+                            #frequencytext {
+                                position: absolute;
+                                left: 50%;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                font-size: var(--navaidinfo-info-frequency-font-size, 1.5em);
+                            }
+
+        .${WT_G3x5_TSCSimpleWaypointInfoHTMLElement.UNIT_CLASS} {
+            font-size: var(--waypointinfo-unit-font-size, 0.75em);
+        }
+    </style>
+    <div id="wrapper">
+        <div id="header">
+            <wt-tsc-button-waypoint id="selectbutton" emptytext="Select NDB"></wt-tsc-button-waypoint>
+            <wt-tsc-button-label id="optionsbutton" labeltext="Waypoint Options"></wt-tsc-button-label>
+        </div>
+        <div id="info">
+            <div class="infoRowContainer">
+                <div id="row1" class="infoRow">
+                    <div id="city"></div>
+                    <div id="region"></div>
+                </div>
+            </div>
+            <div class="infoRowContainer borderRow">
+                <div id="row2" class="infoRow">
+                    <wt-tsc-simplewaypointinfo-locationrow id="locationrow"></wt-tsc-simplewaypointinfo-locationrow>
+                </div>
+            </div>
+            <div class="infoRowContainer borderRow">
+            </div>
+            <wt-tsc-button-content id="frequencybutton">
+                <div id="frequencycontent" slot="content">
+                    <div id="frequencytitle">Frequency:</div>
+                    <div id="frequencytext"></div>
+                </div>
+            </wt-tsc-button-content>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCNDBInfoHTMLElement.NAME, WT_G3x5_TSCNDBInfoHTMLElement);
