@@ -73,7 +73,9 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
         this._altimeter.baroPressure(this._pfdBaroSetting);
         if (this._pfdBaroSetting.equals(this._lastPfdBaroSetting)) {
             this._autopilotAltimeter.baroPressure(this._pfdBaroSetting);
-            this._altimeter.setBaroPressure(this._pfdBaroSetting);
+            if (!this._pfdBaroSetting.equals(this._lastPfdBaroSetting)) {
+                this._altimeter.setBaroPressure(this._pfdBaroSetting);
+            }
         } else {
             // the only way for the PFD altimeter to have changed baro settings between updates is if the knob was
             // pressed. Since this is an intentional act by the player, we will sync the standby altimeter to the
