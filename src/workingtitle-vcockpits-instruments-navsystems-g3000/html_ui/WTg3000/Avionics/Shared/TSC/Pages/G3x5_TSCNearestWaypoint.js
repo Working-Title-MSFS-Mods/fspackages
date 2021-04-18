@@ -280,7 +280,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     _onDownPressed() {
         if (this.selectedWaypoint && this._waypoints) {
             let index = this._waypoints.findIndex(waypoint => waypoint.equals(this.selectedWaypoint));
-            if (index + 1 >= 0 && index + 1 < this._waypoints.length) {
+            if (index >= 0 && index + 1 < this._waypoints.length) {
                 let waypoint = this._waypoints.get(index + 1);
                 this._setSelectedWaypoint(waypoint);
                 this.htmlElement.scrollToWaypoint(waypoint);
