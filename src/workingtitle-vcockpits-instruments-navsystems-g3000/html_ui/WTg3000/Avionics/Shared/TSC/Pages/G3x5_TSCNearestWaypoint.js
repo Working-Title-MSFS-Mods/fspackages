@@ -1014,7 +1014,7 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
 
     _onChartsButtonPressed() {
         let chartsPage = this._mfdPanePages.charts;
-        chartsPage.element.setAirport(this.selectedWaypoint);
+        chartsPage.element.setAirportICAO(this.selectedWaypoint.icao);
         this.instrument.SwitchToPageName("MFD", chartsPage.name);
     }
 }

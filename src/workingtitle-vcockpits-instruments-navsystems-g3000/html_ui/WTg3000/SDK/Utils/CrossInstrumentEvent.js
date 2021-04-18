@@ -67,12 +67,19 @@ class WT_CrossInstrumentEvent {
      */
     static fireEvent(key, data) {
         let storagePrefix = WT_CrossInstrumentEvent._getPrefix(key);
-        window.localStorage.setItem(storagePrefix, `${(WT_CrossInstrumentEvent._uniqueId).toFixed(0).padStart(10, "0")}${data}`);
-        WT_CrossInstrumentEvent._uniqueId = (WT_CrossInstrumentEvent._uniqueId + 1) % 1e10;
+        let item = window.localStorage.getItem(storagePrefix);
+        let id = 0;
+        if (item) {
+            id = parseInt(item.substring(0, 10));
+            if (isNaN(id)) {
+                id = 0;
+            }
+        }
+        id = (id + 1) % 1e10;
+        window.localStorage.setItem(storagePrefix, `${(id).toFixed(0).padStart(10, "0")}${data}`);
         WT_CrossInstrumentEvent._notifyListeners(key, data);
     }
 }
-WT_CrossInstrumentEvent._uniqueId = 0;
 /**
  * @type {Map<String,WT_CrossInstrumentListenerEntry[]>}
  */

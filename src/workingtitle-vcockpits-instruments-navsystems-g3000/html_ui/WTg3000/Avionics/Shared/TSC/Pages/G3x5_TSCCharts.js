@@ -5,9 +5,12 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {WT_NavigraphAPI} navigraphAPI
      * @param {WT_G3x5_MFDHalfPane.ID} halfPaneID
      */
-    constructor(homePageGroup, homePageName, navigraphAPI, halfPaneID) {
+    constructor(homePageGroup, homePageName, navigraphAPI, halfPaneID, icaoWaypointFactory) {
         super(homePageGroup, homePageName);
 
+        this._icaoWaypointFactory = icaoWaypointFactory;
+
+        this._icao = "";
         /**
          * @type {WT_Airport}
          */
@@ -15,12 +18,13 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         /**
          * @type {WT_NavigraphChartDefinition[]}
          */
-        this._charts = null;
+        this._charts = [];
         this._chartID = "";
         /**
          * @type {WT_NavigraphChartDefinition}
          */
         this._chart = null;
+        this._dataFail = false;
 
         this._navigraphAPI = navigraphAPI;
         this._settingModelID = `MFD-${halfPaneID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
@@ -31,6 +35,21 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._hasMadeManualAirportSelection = false;
         this._manualAirportSelectKey = `${WT_G3x5_TSCCharts.AIRPORT_SELECT_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
         this._initManualAirportSelectListener();
+    }
+
+    _initICAOSettingListener() {
+        this._icaoSetting.addListener(this._onICAOSettingChanged.bind(this));
+        this._setAirportICAO(this._icaoSetting.getValue(), true);
+    }
+
+    _initChartIDSettingListener() {
+        this._chartIDSetting.addListener(this._onChartIDSettingChanged.bind(this));
+        this._setChartID(this._chartIDSetting.getValue());
+    }
+
+    _initSettingListeners() {
+        this._initICAOSettingListener();
+        this._initChartIDSettingListener();
     }
 
     _initSettingModel() {
@@ -44,6 +63,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._settingModel.addSetting(this._zoomSetting = new WT_G3x5_ChartsZoomSetting(this._settingModel));
 
         this._icaoSetting.init();
+
+        this._initSettingListeners();
     }
 
     _initManualAirportSelectListener() {
@@ -128,21 +149,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         return htmlElement;
     }
 
-    _initICAOSettingListener() {
-        this._icaoSetting.addListener(this._onICAOSettingChanged.bind(this));
-        this.setAirportICAO(this._icaoSetting.getValue());
-    }
-
-    _initChartIDSettingListener() {
-        this._chartIDSetting.addListener(this._onChartIDSettingChanged.bind(this));
-        this._setChartID(this._chartIDSetting.getValue());
-    }
-
-    _initSettingListeners() {
-        this._initICAOSettingListener();
-        this._initChartIDSettingListener();
-    }
-
     _initButtonListeners() {
         this.htmlElement.selectButton.addButtonListener(this._onSelectButtonPressed.bind(this));
         this.htmlElement.optionsButton.addButtonListener(this._onOptionsButtonPressed.bind(this));
@@ -153,9 +159,11 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     async _initHTMLElement() {
-        this.htmlElement.setAirport(this._airport);
         await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
-        this._initSettingListeners();
+        this.htmlElement.setAirport(this._airport);
+        this.htmlElement.setCharts(this._charts);
+        this.htmlElement.setChartID(this._chartID);
+        this.htmlElement.setDataFail(this._dataFail);
         this._initButtonListeners();
         this._initChartSelectListener();
     }
@@ -217,16 +225,13 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _findChart(id) {
-        if (this._charts) {
-            let chart = this._charts.find(chart => chart.id === id);
-            return chart ? chart : null;
-        } else {
-            return null;
-        }
+        let chart = this._charts.find(chart => chart.id === id);
+        return chart ? chart : null;
     }
 
     _updateChartFromID(id) {
         this._chart = this._findChart(id);
+        console.log(`updated chart from ID: ${this._chart} from ${id}`);
     }
 
     /**
@@ -238,14 +243,20 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         if (airport) {
             try {
                 let charts = await this._navigraphAPI.getChartsList(this._airport.ident);
-                this.htmlElement.setDataFail(false);
+                this._dataFail = false;
+                if (this.htmlElement && this.htmlElement.isInitialized) {
+                    this.htmlElement.setDataFail(this._dataFail);
+                }
                 if (charts) {
                     return charts.charts;
                 }
             } catch (e) {
                 console.log(e);
                 if (e === WT_NavigraphAPI.Error.ACCESS_DENIED) {
-                    this.htmlElement.setDataFail(true);
+                    this._dataFail = true;
+                    if (this.htmlElement && this.htmlElement.isInitialized) {
+                        this.htmlElement.setDataFail(this._dataFail);
+                    }
                 }
             }
         }
@@ -256,7 +267,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         let airport = this._airport;
         this._charts = await this._retrieveCharts(airport);
 
-        if (airport === this._airport) {
+        if (airport === this._airport && this.htmlElement && this.htmlElement.isInitialized) {
             this.htmlElement.setCharts(this._charts);
         }
     }
@@ -276,6 +287,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
                 }
                 this._chartIDSetting.setValue(chartID);
                 this._resetChartSettings();
+            } else {
+                this._updateChartFromID(this._chartID);
             }
         } else {
             this._chartIDSetting.setValue("");
@@ -285,49 +298,79 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     /**
      *
      * @param {WT_Airport} airport
+     * @param {Boolean} fromSync
      */
-    async setAirport(airport) {
+    async _setAirport(airport, fromSync) {
+        console.log(`setting airport: ${airport ? airport.ident : "null"} from ${this._airport ? this._airport.ident : "null"}`);
+
         if ((airport === null && this._airport === null) || (airport && airport.equals(this._airport))) {
             return;
         }
 
         this._airport = airport;
-        this._icaoSetting.setValue(this._airport ? this._airport.icao : "");
-        if (this.htmlElement) {
+        if (!fromSync) {
+            console.log(`setting icao setting value to ${this._airport ? this._airport.icao : ""}`);
+            this._icaoSetting.setValue(this._airport ? this._airport.icao : "");
+        }
+        if (this.htmlElement && this.htmlElement.isInitialized) {
             this.htmlElement.setAirport(this._airport);
         }
         await this._updateCharts();
-        this._updateChartIDFromAirport(this._airport);
+        console.log(`charts updated: size ${this._charts.length}`);
+        if (!fromSync) {
+            this._updateChartIDFromAirport(this._airport);
+        } else {
+            this._updateChartFromID(this._chartID);
+        }
     }
 
     /**
      *
      * @param {String} icao
+     * @param {Boolean} fromSync
      */
-    async setAirportICAO(icao) {
+    async _setAirportICAO(icao, fromSync) {
+        console.log(`setting icao: ${icao} from ${this._icao}`);
+        if (this._icao === icao) {
+            return;
+        }
+
+        this._icao = icao;
         if (icao) {
             try {
-                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
-                await this.setAirport(airport);
-                return;
+                let airport = await this._icaoWaypointFactory.getAirport(icao);
+                await this._setAirport(airport, fromSync);
             } catch (e) {
                 console.log(e);
+                await this._setAirportICAO("");
             }
+        } else {
+            await this._setAirport(null, fromSync);
         }
-        await this.setAirport(null);
+    }
+
+    setAirportICAO(icao) {
+        if (icao !== "" && !this._hasMadeManualAirportSelection) {
+            this._fireManualAirportSelectionEvent();
+        }
+
+        this._setAirportICAO(icao, false);
     }
 
     _onICAOSettingChanged(setting, newValue, oldValue) {
-        this.setAirportICAO(newValue);
+        this._setAirportICAO(newValue, true);
     }
 
     _setChartID(id) {
         this._chartID = id;
         this._updateChartFromID(id);
-        this.htmlElement.setChartID(this._chartID);
+        if (this.htmlElement && this.htmlElement.isInitialized) {
+            this.htmlElement.setChartID(this._chartID);
+        }
     }
 
     _onChartIDSettingChanged(setting, newValue, oldValue) {
+        console.log(`chart ID setting changed from ${oldValue} to ${newValue}`);
         this._setChartID(newValue);
     }
 
@@ -358,9 +401,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _onKeyboardClosed(icao) {
-        if (icao !== "" && !this._hasMadeManualAirportSelection) {
-            this._fireManualAirportSelectionEvent();
-        }
         this.setAirportICAO(icao);
     }
 
@@ -389,7 +429,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @returns {WT_Airport}
      */
     _chooseAutoSelectAirport() {
-        if (this._airport && this._hasMadeManualAirportSelection) {
+        if (this._icao !== "" && this._hasMadeManualAirportSelection) {
             return null;
         }
 
@@ -440,8 +480,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
 
     _autoSelectAirport() {
         let airportToSelect = this._chooseAutoSelectAirport();
-        if (airportToSelect) {
-            this.setAirportICAO(airportToSelect.icao);
+        if (airportToSelect && airportToSelect.icao !== this._icao) {
+            this._setAirportICAO(airportToSelect.icao, false);
         }
     }
 
