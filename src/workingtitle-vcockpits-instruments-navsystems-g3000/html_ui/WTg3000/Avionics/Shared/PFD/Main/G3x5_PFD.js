@@ -51,8 +51,8 @@ class WT_G3x5_PFD extends NavSystem {
      * @readonly
      * @type {WT_G3x5_PFDInsetMap}
      */
-    get insetNavMap() {
-        return this._insetMap;
+    get navInsetMap() {
+        return this._navInsetMap;
     }
 
     /**
@@ -79,7 +79,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _initInsetMap() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", this._insetMap = this._createInsetMap()));
+        this.addIndependentElementContainer(new NavSystemElementContainer("InsetMap", "InsetMap", this._navInsetMap = this._createInsetMap()));
     }
 
     _createTrafficInsetMap() {
@@ -411,8 +411,8 @@ class WT_G3x5_PFDTrafficInsetMapContainer extends WT_G3x5_PFDElement {
             return;
         }
 
-        if (value && this.instrument.insetNavMap) {
-            this.instrument.insetNavMap.showSetting.setValue(false);
+        if (value && this.instrument.navInsetMap) {
+            this.instrument.navInsetMap.showSetting.setValue(false);
         }
 
         this._mapContainer.style.display = value ? "block" : "none";
