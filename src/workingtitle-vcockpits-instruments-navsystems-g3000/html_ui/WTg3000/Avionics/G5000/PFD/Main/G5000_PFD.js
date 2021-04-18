@@ -60,10 +60,7 @@ class WT_G5000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
     }
 
     _changeMapRange(delta) {
-        let rangeSetting = this.navMap.rangeSetting;
-        let currentIndex = rangeSetting.getValue();
-        let newIndex = Math.max(Math.min(currentIndex + delta, rangeSetting.ranges.length - 1), 0);
-        rangeSetting.setValue(newIndex);
+        this.navMap.rangeSetting.changeRange(delta);
     }
 
     _handleZoomEvent(event) {
@@ -92,10 +89,7 @@ class WT_G5000_PFDTrafficInsetMapContainer extends WT_G3x5_PFDTrafficInsetMapCon
     }
 
     _changeMapRange(delta) {
-        let rangeSetting = this.trafficMap.rangeSetting;
-        let currentIndex = rangeSetting.getValue();
-        let newIndex = Math.max(Math.min(currentIndex + delta, rangeSetting.ranges.length - 1), 0);
-        rangeSetting.setValue(newIndex);
+        this.trafficMap.rangeSetting.changeRange(delta);
     }
 
     _handleZoomEvent(event) {

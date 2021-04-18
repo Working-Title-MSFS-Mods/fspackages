@@ -366,6 +366,17 @@ class WT_MapRangeSetting extends WT_MapSetting {
         }
     }
 
+    /**
+     * Increases or decreases this setting's range by a certain amount of range levels.
+     * @param {Number} deltaIndex - the difference between the index of the new range level and the index of the
+     *                              current range level.
+     */
+    changeRange(deltaIndex) {
+        let currentIndex = this.getValue();
+        let targetIndex = Math.max(0, Math.min(this.ranges.length - 1, currentIndex + deltaIndex));
+        this.setValue(targetIndex);
+    }
+
     update() {
         this.mapModel.range = this.getRange();
     }

@@ -51,7 +51,7 @@ class WT_G3x5_PFD extends NavSystem {
      * @readonly
      * @type {WT_G3x5_PFDInsetMap}
      */
-    get insetMap() {
+    get insetNavMap() {
         return this._insetMap;
     }
 
@@ -269,6 +269,14 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
         return this._showSetting;
     }
 
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isEnabled() {
+        return this._isEnabled;
+    }
+
     _defineChildren() {
         this._mapContainer = this.gps.getChildById("InsetMap");
         this._mapContainer.style.display = "none";
@@ -364,6 +372,14 @@ class WT_G3x5_PFDTrafficInsetMapContainer extends WT_G3x5_PFDElement {
         return this._showSetting;
     }
 
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isEnabled() {
+        return this._isEnabled;
+    }
+
     _defineChildren() {
         this._mapContainer = this.gps.getChildById("TrafficInsetMap");
         this._mapContainer.style.display = "none";
@@ -395,8 +411,8 @@ class WT_G3x5_PFDTrafficInsetMapContainer extends WT_G3x5_PFDElement {
             return;
         }
 
-        if (value && this.instrument.insetMap) {
-            this.instrument.insetMap.showSetting.setValue(false);
+        if (value && this.instrument.insetNavMap) {
+            this.instrument.insetNavMap.showSetting.setValue(false);
         }
 
         this._mapContainer.style.display = value ? "block" : "none";

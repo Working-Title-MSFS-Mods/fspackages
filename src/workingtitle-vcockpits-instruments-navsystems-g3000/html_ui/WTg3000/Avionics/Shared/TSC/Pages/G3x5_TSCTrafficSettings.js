@@ -88,8 +88,7 @@ class WT_G3x5_TSCTrafficSettings extends WT_G3x5_TSCPageElement {
     }
 
     changeRange(delta) {
-        let target = Math.max(0, Math.min(this._rangeSetting.ranges.length - 1, this._rangeSetting.getValue() + delta));
-        this._rangeSetting.setValue(target);
+        this._rangeSetting.changeRange(delta);
     }
 }
 
