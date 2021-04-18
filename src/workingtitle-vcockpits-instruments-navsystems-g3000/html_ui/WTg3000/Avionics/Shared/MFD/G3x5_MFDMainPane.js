@@ -288,8 +288,8 @@ class WT_G3x5_MFDHalfPane {
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
         this._chartsPane = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
-        this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
-        this._nearestWaypointPane = new WT_G3x5_NearestWaypointDisplayPane(this._createNearestWaypoint(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers));
+        this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
+        this._nearestWaypointPane = new WT_G3x5_NearestWaypointDisplayPane(this._createNearestWaypoint(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
 
         this._displayMode;
         /**
@@ -334,15 +334,15 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_WaypointInfoDisplay}
      */
-    _createWaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers) {
-        return new WT_G3x5_WaypointInfoDisplay(id, airplane, icaoWaypointFactory, icaoSearchers);
+    _createWaypointInfo(id, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
+        return new WT_G3x5_WaypointInfoDisplay(id, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel);
     }
 
     /**
      * @returns {WT_G3x5_NearestWaypointDisplay}
      */
-    _createNearestWaypoint(id, airplane, icaoWaypointFactory, icaoSearchers) {
-        return new WT_G3x5_NearestWaypointDisplay(id, airplane, icaoWaypointFactory, icaoSearchers);
+    _createNearestWaypoint(id, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
+        return new WT_G3x5_NearestWaypointDisplay(id, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel);
     }
 
     async _initDisplayPanes() {

@@ -1,11 +1,12 @@
 class WT_G3x5_WaypointDisplay {
-    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers) {
+    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
         this._instrumentID = instrumentID;
         this._settingModelID = this._getSettingModelID(instrumentID);
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._icaoSearchers = icaoSearchers;
+        this._unitsSettingModel = unitsSettingModel;
 
         this._waypointRequestID = 0;
     }
@@ -54,7 +55,7 @@ class WT_G3x5_WaypointDisplay {
     }
 
     _initMapModel() {
-        this.mapModel.addModule(new WT_MapModelUnitsModule());
+        this._unitsAdapter = new WT_G3x5_UnitsSettingModelMapModelAdapter(this._unitsSettingModel, this.mapModel);
         this.mapModel.addModule(new WT_MapModelCrosshairModule());
         this.mapModel.addModule(new WT_MapModelAirplaneIconModule());
         this.mapModel.addModule(new WT_MapModelTerrainModule());
