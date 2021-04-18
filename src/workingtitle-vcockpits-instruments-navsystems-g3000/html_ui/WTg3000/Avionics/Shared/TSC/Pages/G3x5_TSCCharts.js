@@ -231,7 +231,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
 
     _updateChartFromID(id) {
         this._chart = this._findChart(id);
-        console.log(`updated chart from ID: ${this._chart} from ${id}`);
     }
 
     /**
@@ -301,22 +300,18 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {Boolean} fromSync
      */
     async _setAirport(airport, fromSync) {
-        console.log(`setting airport: ${airport ? airport.ident : "null"} from ${this._airport ? this._airport.ident : "null"}`);
-
         if ((airport === null && this._airport === null) || (airport && airport.equals(this._airport))) {
             return;
         }
 
         this._airport = airport;
         if (!fromSync) {
-            console.log(`setting icao setting value to ${this._airport ? this._airport.icao : ""}`);
             this._icaoSetting.setValue(this._airport ? this._airport.icao : "");
         }
         if (this.htmlElement && this.htmlElement.isInitialized) {
             this.htmlElement.setAirport(this._airport);
         }
         await this._updateCharts();
-        console.log(`charts updated: size ${this._charts.length}`);
         if (!fromSync) {
             this._updateChartIDFromAirport(this._airport);
         } else {
@@ -330,7 +325,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {Boolean} fromSync
      */
     async _setAirportICAO(icao, fromSync) {
-        console.log(`setting icao: ${icao} from ${this._icao}`);
         if (this._icao === icao) {
             return;
         }
@@ -370,7 +364,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _onChartIDSettingChanged(setting, newValue, oldValue) {
-        console.log(`chart ID setting changed from ${oldValue} to ${newValue}`);
         this._setChartID(newValue);
     }
 
