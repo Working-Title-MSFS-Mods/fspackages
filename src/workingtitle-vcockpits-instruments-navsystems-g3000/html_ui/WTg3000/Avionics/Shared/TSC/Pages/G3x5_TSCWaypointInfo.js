@@ -451,8 +451,8 @@ class WT_G3x5_TSCSimpleWaypointInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHT
 
     _initDistanceFormatter() {
         let formatterOpts = {
-            precision: 0.01,
-            forceDecimalZeroes: false,
+            precision: 0.1,
+            forceDecimalZeroes: true,
             maxDigits: 3,
             unitCaps: true
         };
@@ -568,8 +568,8 @@ class WT_G3x5_TSCSimpleWaypointInfoLocationRowHTMLElement extends HTMLElement {
 
     _initDistanceFormatter() {
         let formatterOpts = {
-            precision: 0.01,
-            forceDecimalZeroes: false,
+            precision: 0.1,
+            forceDecimalZeroes: true,
             maxDigits: 3,
             unitCaps: true
         };
