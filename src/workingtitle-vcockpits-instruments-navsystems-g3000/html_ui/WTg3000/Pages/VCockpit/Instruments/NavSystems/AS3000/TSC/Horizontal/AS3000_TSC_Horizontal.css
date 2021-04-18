@@ -1018,7 +1018,8 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .airportInfo wt-tsc-air
         margin: 0.25vh;
     }
 
-as3000-tsc-horizontal-element .vorInfo wt-tsc-vorinfo {
+as3000-tsc-horizontal-element .vorInfo wt-tsc-vorinfo,
+as3000-tsc-horizontal-element .ndbInfo wt-tsc-ndbinfo {
     position: absolute;
     left: 15%;
     top: 0%;

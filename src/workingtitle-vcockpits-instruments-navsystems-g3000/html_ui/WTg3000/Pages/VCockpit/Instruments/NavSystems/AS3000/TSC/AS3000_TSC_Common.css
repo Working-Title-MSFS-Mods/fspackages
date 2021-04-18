@@ -291,6 +291,8 @@
 #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
 #Electricity #PagesDisplay[state=VORInfoLeft] #VORInfoLeft,
 #Electricity #PagesDisplay[state=VORInfoRight] #VORInfoRight,
+#Electricity #PagesDisplay[state=NDBInfoLeft] #NDBInfoLeft,
+#Electricity #PagesDisplay[state=NDBInfoRight] #NDBInfoRight,
 #Electricity #PagesDisplay[state=NearestWaypointSelection] #NearestWaypointSelection,
 #Electricity #PagesDisplay[state=NearestAirportLeft] #NearestAirportLeft,
 #Electricity #PagesDisplay[state=NearestAirportRight] #NearestAirportRight,

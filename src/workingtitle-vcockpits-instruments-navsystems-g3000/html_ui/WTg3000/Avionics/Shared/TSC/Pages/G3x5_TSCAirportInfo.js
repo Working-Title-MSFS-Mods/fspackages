@@ -392,11 +392,11 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
 
     _updateCityRegion() {
         if (this._airport) {
-            this._city.innerHTML = this._airport.city ? this._airport.city.toString() : "";
-            this._region.innerHTML = this._airport.region ? this._airport.region : "";
+            this._city.textContent = this._airport.city ? this._airport.city.toString() : "";
+            this._region.textContent = WT_G3x5_RegionNames.getName(this._airport.region);
         } else {
-            this._city.innerHTML = "";
-            this._region.innerHTML = "";
+            this._city.textContent = "";
+            this._region.textContent = "";
         }
     }
 
