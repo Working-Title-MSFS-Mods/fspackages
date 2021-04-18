@@ -49,7 +49,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
         this._initButtons();
         this._isReady = true;
-        this._updateFromContext();
+        this._initOnEnter();
     }
 
     onInit() {
@@ -140,7 +140,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         this._setLightThresholdButtonValue(this.context.chartsPage.lightThresholdSetting.getValue());
     }
 
-    _updateFromContext() {
+    _initOnEnter() {
         if (!this.context || !this._isReady) {
             return;
         }
@@ -149,7 +149,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
         this._initLightThresholdSettingListener();
     }
 
-    _cleanUpContext() {
+    _cleanUpOnExit() {
         this._cleanUpButtonManagers();
         this._cleanUpLightThresholdSettingListener();
     }
@@ -157,7 +157,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
     onEnter() {
         super.onEnter();
 
-        this._updateFromContext();
+        this._initOnEnter();
     }
 
     _updateSectionAllButton() {
@@ -185,7 +185,7 @@ class WT_G3x5_TSCChartsOptions extends WT_G3x5_TSCPopUpElement {
     onExit() {
         super.onExit();
 
-        this._cleanUpContext();
+        this._cleanUpOnExit();
     }
 }
 WT_G3x5_TSCChartsOptions.LIGHT_MODE_TEXT = [
