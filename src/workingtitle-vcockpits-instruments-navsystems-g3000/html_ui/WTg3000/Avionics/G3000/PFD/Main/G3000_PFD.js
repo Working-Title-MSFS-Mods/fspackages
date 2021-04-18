@@ -180,7 +180,7 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
             new WT_G3000_PFDSoftKeyElement("Map Range&nbsp−", this._changeMapRange.bind(this, -1), null, null, this._getMapRangeSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("Map Range&nbsp+", this._changeMapRange.bind(this, 1), null, null, this._getMapRangeSoftkeyState.bind(this)),
             new WT_G3000_PFDSoftKeyElement("PFD Map Settings", this._switchSoftkeyMenu.bind(this, this._pfdMapMenu)),
-            new WT_G3000_PFDSoftKeyElement("Traffic Inset", this._toggleTrafficInsetMap.bind(this), this._trafficInsetMapCompare.bind(this, true)),
+            new WT_G3000_PFDSoftKeyElement("Traffic Map", this._toggleTrafficInsetMap.bind(this), this._trafficInsetMapEnabledCompare.bind(this, true)),
             new WT_G3000_PFDSoftKeyElement("PFD Settings", this._switchSoftkeyMenu.bind(this, this._pfdMenu)),
             new WT_G3000_PFDSoftKeyElement("OBS"),
             new WT_G3000_PFDSoftKeyElement("Active&nbsp;NAV", this.gps.computeEvent.bind(this.gps, "SoftKey_CDI"), null, this._getNavSourceValue.bind(this)),
@@ -219,11 +219,11 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
             new WT_G3000_PFDSoftKeyElement("")
         ];
         this._pfdMapLayoutMenu.elements = [
-            new WT_G3000_PFDSoftKeyElement("Map Off", this._deactivateInsetMap.bind(this), this._insetMapCompare.bind(this, false)),
-            new WT_G3000_PFDSoftKeyElement("Inset Map", this._activateInsetMap.bind(this), this._insetMapCompare.bind(this, true)),
+            new WT_G3000_PFDSoftKeyElement("Map Off", this._deactivateInsetMap.bind(this), this._insetMapEnabledCompare.bind(this, false)),
+            new WT_G3000_PFDSoftKeyElement("Inset Map", this._activateNavInsetMap.bind(this), this._navInsetMapEnabledCompare.bind(this, true)),
             new WT_G3000_PFDSoftKeyElement("HSI Map", null, this._constElement.bind(this, false)),
             new WT_G3000_PFDSoftKeyElement(""),
-            new WT_G3000_PFDSoftKeyElement("Inset Traffic"),
+            new WT_G3000_PFDSoftKeyElement("Inset Traffic", this._activateTrafficInsetMap.bind(this), this._trafficInsetMapEnabledCompare.bind(this, true)),
             new WT_G3000_PFDSoftKeyElement("HSI Traffic"),
             new WT_G3000_PFDSoftKeyElement(""),
             new WT_G3000_PFDSoftKeyElement(""),
@@ -307,28 +307,37 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
 
     // PFD inset map softkeys should be greyed out if the map is not shown.
     _getInsetMapSoftkeyState() {
-        return this.instrument.insetNavMap.isEnabled ? "None" : "Greyed";
+        return this.instrument.navInsetMap.isEnabled ? "None" : "Greyed";
     }
 
     _getMapRangeSoftkeyState() {
-        return (this.instrument.insetNavMap.isEnabled || this.instrument.trafficInsetMap.isEnabled) ? "None" : "Greyed";
+        return (this.instrument.navInsetMap.isEnabled || this.instrument.trafficInsetMap.isEnabled) ? "None" : "Greyed";
     }
 
     _changeMapRange(delta) {
-        let setting = this.instrument.insetNavMap.isEnabled ? this.instrument.insetNavMap.navMap.rangeSetting : this.instrument.trafficInsetMap.trafficMap.rangeSetting;
+        let setting = this.instrument.navInsetMap.isEnabled ? this.instrument.navInsetMap.navMap.rangeSetting : this.instrument.trafficInsetMap.trafficMap.rangeSetting;
         setting.changeRange(delta);
     }
 
-    _activateInsetMap() {
-        this.instrument.insetNavMap.showSetting.setValue(true);
+    _activateNavInsetMap() {
+        this.instrument.navInsetMap.showSetting.setValue(true);
     }
 
     _deactivateInsetMap() {
-        this.instrument.insetNavMap.showSetting.setValue(false);
+        this.instrument.navInsetMap.showSetting.setValue(false);
+        this.instrument.trafficInsetMap.showSetting.setValue(false);
     }
 
-    _insetMapCompare(value) {
-        return this.instrument.insetNavMap.showSetting.getValue() === value;
+    _insetMapEnabledCompare(value) {
+        return (this.instrument.navInsetMap.isEnabled || this.instrument.trafficInsetMap.isEnabled) === value;
+    }
+
+    _navInsetMapEnabledCompare(value) {
+        return this.instrument.navInsetMap.isEnabled === value;
+    }
+
+    _activateTrafficInsetMap() {
+        this.instrument.trafficInsetMap.showSetting.setValue(true);
     }
 
     _toggleTrafficInsetMap() {
@@ -336,45 +345,45 @@ class WT_G3000_PFDMainPage extends WT_G3x5_PFDMainPage {
         setting.setValue(!setting.getValue());
     }
 
-    _trafficInsetMapCompare(value) {
-        return this.instrument.trafficInsetMap.showSetting.getValue() === value;
+    _trafficInsetMapEnabledCompare(value) {
+        return this.instrument.trafficInsetMap.isEnabled === value;
     }
 
     _toggleDCLTR() {
-        let currentValue = this.instrument.insetNavMap.navMap.dcltrSetting.getValue();
+        let currentValue = this.instrument.navInsetMap.navMap.dcltrSetting.getValue();
         let newValue = (currentValue + 1) % WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS.length;
-        this.instrument.insetNavMap.navMap.dcltrSetting.setValue(newValue);
+        this.instrument.navInsetMap.navMap.dcltrSetting.setValue(newValue);
     }
 
     _getDCLTRValue() {
-        return WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS[this.instrument.insetNavMap.navMap.dcltrSetting.getValue()];
+        return WT_G3x5_NavMap.DCLTR_DISPLAY_TEXTS[this.instrument.navInsetMap.navMap.dcltrSetting.getValue()];
     }
 
     _toggleTerrain() {
-        let currentValue = this.instrument.insetNavMap.navMap.terrainSetting.getValue();
+        let currentValue = this.instrument.navInsetMap.navMap.terrainSetting.getValue();
         let newValue = (currentValue + 1) % WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT.length;
-        this.instrument.insetNavMap.navMap.terrainSetting.setValue(newValue);
+        this.instrument.navInsetMap.navMap.terrainSetting.setValue(newValue);
     }
 
     _getTerrainValue() {
-        return WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.instrument.insetNavMap.navMap.terrainSetting.getValue()];
+        return WT_G3x5_NavMap.TERRAIN_MODE_DISPLAY_TEXT[this.instrument.navInsetMap.navMap.terrainSetting.getValue()];
     }
 
     _toggleInsetMapTraffic() {
-        let setting = this.instrument.insetNavMap.navMap.trafficShowSetting;
+        let setting = this.instrument.navInsetMap.navMap.trafficShowSetting;
         setting.setValue(!setting.getValue());
     }
 
     _insetMapTrafficCompare(value) {
-        return this.instrument.insetNavMap.navMap.trafficShowSetting.getValue() === value;
+        return this.instrument.navInsetMap.navMap.trafficShowSetting.getValue() === value;
     }
 
     _toggleWX() {
-        this.instrument.insetNavMap.navMap.nexradShowSetting.setValue(!this.instrument.insetNavMap.navMap.nexradShowSetting.getValue());
+        this.instrument.navInsetMap.navMap.nexradShowSetting.setValue(!this.instrument.navInsetMap.navMap.nexradShowSetting.getValue());
     }
 
     _getWXOverlayValue() {
-        return this.instrument.insetNavMap.navMap.nexradShowSetting.getValue() ? "NEXRAD" : "OFF";
+        return this.instrument.navInsetMap.navMap.nexradShowSetting.getValue() ? "NEXRAD" : "OFF";
     }
 
     _toggleSyntheticVision() {
