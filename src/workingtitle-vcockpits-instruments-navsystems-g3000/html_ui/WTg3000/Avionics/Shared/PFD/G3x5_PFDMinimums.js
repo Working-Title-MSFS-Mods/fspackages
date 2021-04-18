@@ -221,7 +221,7 @@ class WT_G3x5_PFDMinimumsHTMLElement extends HTMLElement {
         let state = this._context.model.state;
         this._setState(state);
         if (state !== this._lastState) {
-            if (state === WT_G3x5_PFDMinimumsModel.State.BELOW) {
+            if (state === WT_G3x5_PFDMinimumsModel.State.BELOW && (this._lastState === WT_G3x5_PFDMinimumsModel.State.WITHIN_100_FT || this._lastState === WT_G3x5_PFDMinimumsModel.State.ABOVE)) {
                 this._context.model.instrument.playInstrumentSound("aural_minimums");
             }
             this._lastState = state;
