@@ -524,6 +524,7 @@ class CJ4_PFD extends BaseAirliners {
         WTDataStore.set("CJ4_FD_MODE", this.fdMode);
 
         const aoaSetting = _dict.get(CJ4_PopupMenu_Key.AOA);
+        WTDataStore.set("L:WT_CJ4_PFD1_AOA", aoaSetting);
         if (aoaSetting) {
             if (aoaSetting == "AUTO") {
                 SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
@@ -687,13 +688,15 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.UNITS_PRESS, (baroHPA) ? "HPA" : "IN");
         _dict.set(CJ4_PopupMenu_Key.UNITS_MTR_ALT, (this.horizon.isMTRSVisible()) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.FLT_DIR, (this.fdMode == 1) ? "X-PTR" : "V-BAR");
-        const aoaSettingFill = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number").toFixed(0);
+        
+        const aoaSettingFill = WTDataStore.get("L:WT_CJ4_PFD1_AOA");
+        console.log(aoaSettingFill)
         if (aoaSettingFill) {
-            if (aoaSettingFill == 0) {
+            if (aoaSettingFill == "AUTO") {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "AUTO");
-            } else if (aoaSettingFill == 1) {
+            } else if (aoaSettingFill == "ON") {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "ON");
-            } else if (aoaSettingFill == 2) {
+            } else if (aoaSettingFill == "OFF") {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "OFF");
             }
         }
@@ -783,7 +786,7 @@ class CJ4_AOA extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var angle = fastToFixed(Simplane.getAngleOfAttack(), 1);
+        var angle = Simplane.getAngleOfAttack();
         //AoA only visible when flaps 35
         this.aoa.setAttribute("angle", angle);
         const flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
