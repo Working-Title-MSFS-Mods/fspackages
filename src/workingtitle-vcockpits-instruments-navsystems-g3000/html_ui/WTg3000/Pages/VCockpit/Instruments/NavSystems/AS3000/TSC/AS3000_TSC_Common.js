@@ -228,6 +228,8 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
                 this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.intInfo = new NavSystemPage("INT Info Left", "INTInfoLeft", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.intInfo = new NavSystemPage("INT Info Right", "INTInfoRight", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
                 this._mfdPagesLeft.vorInfo = new NavSystemPage("VOR Info Left", "VORInfoLeft", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
                 this._mfdPagesRight.vorInfo = new NavSystemPage("VOR Info Right", "VORInfoRight", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
                 this._mfdPagesLeft.ndbInfo = new NavSystemPage("NDB Info Left", "NDBInfoLeft", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
