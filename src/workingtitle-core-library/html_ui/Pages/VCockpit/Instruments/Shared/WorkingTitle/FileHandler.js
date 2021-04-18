@@ -42,27 +42,6 @@ class WTConfigLoader {
     }
 
     /**
-     * Parses an XML file with multiple root nodes
-     * @param {string} filename Path to the file relative to aircraft's top-level directory
-     * @returns {Promise} An XMLDocument representing the file's contents wrapped in a FAKEROOT tag
-     */
-    loadFrenchXml(filename) {
-        // The model xml files aren't properly formed because they have multiple root
-        // nodes. (Seriously?)   We'll wrap them in a fake root node so that we can
-        // parse them properly.  Hopefully that's actually a consistent format.
-        return new Promise((resolve) => {
-            Utils.loadFile(`${this._vfspath}/${filename}`, (text) => {
-                // This ugly regex is to remove the XML DTD
-                text = text.replace(/\<\?.*\?\>/, '');
-                text = `<FAKEROOT>${text}</FAKEROOT>`;
-                let parser = new DOMParser();
-                let out = parser.parseFromString(text, "text/xml");
-                resolve(out);
-            });
-        });
-    }
-
-    /**
      * Opens and returns the text of any arbitrary file
      * @param {string} filename Path to the file relative to aircraft's top-level directory
      * @returns {Promise} The contents of the file as a string

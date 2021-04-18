@@ -648,8 +648,9 @@ class CJ4_FMC_NavRadioPage {
                 case 3:
                     return normalizeInput(parseFloat(input) / 10);
                 case 4:
-                    return normalizeInput(parseFloat(input) / 100);
                 case 5:
+                    return normalizeInput(parseFloat(input) / 100);
+                case 6:
                     return normalizeInput(parseFloat(input) / 1000);
             }
         }
@@ -858,25 +859,7 @@ class CJ4_FMC_ComControlPageOne {
         WTDataStore.set(`CJ4_COM_RADIO_PRES`, JSON.stringify(this.presets));
         //console.log(WTDataStore.get(`CJ4_COM_RADIO_PRES`, JSON.stringify(this.presets)));
     }
-
-    parseFrequencyInput(value) {
-        let frequency = parseFloat(value);
-        if (isFinite(frequency)) {
-            if (frequency >= 118 && frequency <= 135.950) {
-                return frequency;
-            }
-            if (frequency >= 18 && frequency <= 35.95) {
-                return frequency + 100;
-            }
-            if (frequency >= 180 && frequency <= 359) {
-                return (frequency / 10) + 100;
-            }
-            if (frequency >= 1800 && frequency <= 3595) {
-                return (frequency / 100) + 100;
-            }
-        }
-        return NaN;
-    }
+    
     render() {
         const rows = [];
         rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM1 CONTROL[blue]`]);
@@ -974,7 +957,7 @@ class CJ4_FMC_ComControlPageOne {
     */
     handleFreqPressed(getter, setter) {
         if (this._fmc.inOut !== undefined && this._fmc.inOut !== '') {
-            const numValue = this.parseFrequencyInput(this._fmc.inOut);
+            const numValue = CJ4_FMC_NavRadioPage.parseRadioInput(this._fmc.inOut);
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.950 && RadioNav.isHz833Compliant(numValue)) {
                 setter(numValue);
                 this._fmc.inOut = '';
@@ -1148,7 +1131,7 @@ class CJ4_FMC_ComControlPageTwo {
     */
     handleFreqPressed(getter, setter) {
         if (this._fmc.inOut !== undefined && this._fmc.inOut !== '') {
-            const numValue = this.parseFrequencyInput(this._fmc.inOut);
+            const numValue = CJ4_FMC_NavRadioPage.parseRadioInput(this._fmc.inOut);
             if (isFinite(numValue) && numValue >= 118 && numValue <= 136.950 && RadioNav.isHz833Compliant(numValue)) {
                 setter(numValue);
                 this._fmc.inOut = '';

@@ -565,7 +565,7 @@ export class ManagedFlightPlan {
 
     if (departureIndex !== -1 && runwayIndex !== -1) {
       const runwayTransition = airportInfo.departures[departureIndex].runwayTransitions[runwayIndex];
-      if(runwayTransition !== undefined){
+      if (runwayTransition !== undefined) {
         legs.push(...runwayTransition.legs);
       }
     }
@@ -725,7 +725,9 @@ export class ManagedFlightPlan {
         const fromIndex = missedStartIndex - missedSegment.offset - 2;
         const toIndex = missedStartIndex - missedSegment.offset - 1;
 
-        segment.waypoints.push(missedSegment.waypoints[fromIndex]);
+        if (fromIndex > -1) {
+          segment.waypoints.push(missedSegment.waypoints[fromIndex]);
+        }
         segment.waypoints.push(missedSegment.waypoints[toIndex]);
 
         this.reflowSegments();
@@ -737,7 +739,7 @@ export class ManagedFlightPlan {
 
       this.removeSegment(SegmentType.Missed);
       missedSegment = this.addSegment(SegmentType.Missed);
-      
+
       if (segment === FlightPlanSegment.Empty) {
         segment = this.addSegment(SegmentType.Approach);
         startIndex = segment.offset;
@@ -799,7 +801,7 @@ export class ManagedFlightPlan {
           missedStartIndex = missedSegment.offset;
           const missedProcedure = new LegsProcedure(destinationInfo.approaches[approachIndex].missedLegs, this.getWaypoint(missedStartIndex - 1),
             this.getWaypoint(missedStartIndex - 2), this._parentInstrument);
-         
+
           while (missedProcedure.hasNext()) {
             const waypoint = await missedProcedure.getNext();
             if (waypoint !== undefined) {

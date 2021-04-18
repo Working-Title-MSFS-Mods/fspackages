@@ -1268,9 +1268,10 @@ export class FlightPlanManager {
 
   /**
    * Gets the approach waypoints for the current flight plan.
+   * @param fpIndex The flight plan index.
    */
-  public getApproachWaypoints(): WayPoint[] {
-    return this._flightPlans[this._currentFlightPlanIndex].approach.waypoints;
+  public getApproachWaypoints(fpIndex = this._currentFlightPlanIndex): WayPoint[] {
+    return this._flightPlans[fpIndex].approach.waypoints;
   }
 
   /**
