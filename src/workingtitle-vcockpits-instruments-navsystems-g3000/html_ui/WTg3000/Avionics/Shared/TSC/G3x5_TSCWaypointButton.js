@@ -267,7 +267,7 @@ class WT_G3x5_TSCWaypointButtonIconSrcFactory {
                 case WT_ICAOWaypoint.Type.NDB:
                     return `${this._imageDir}/ICON_TSC_WAYPOINT_NDB.svg`;
                 case WT_ICAOWaypoint.Type.INT:
-                    return `${this._imageDir}/ICON_TSC_WAYPOINT_INT.svg`;
+                    return `${this._imageDir}/ICON_TSC_WAYPOINT_INTERSECTION.svg`;
             }
         } else {
             return `${this._imageDir}/ICON_TSC_WAYPOINT_USER.svg`;
