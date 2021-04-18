@@ -5,13 +5,6 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._isModConfigLoaded = false;
 
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
-        this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
-        };
-
         this._unitsSettingModel = new WT_G3x5_UnitsSettingModel();
     }
 
@@ -63,29 +56,8 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         return this._unitsSettingModel;
     }
 
-    _createAirplane() {
-        switch (WT_PlayerAirplane.getAircraftType()) {
-            case WT_PlayerAirplane.Type.TBM930:
-                return new WT_TBM930Airplane();
-            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                return new WT_CitationLongitudeAirplane();
-        }
-    }
-
-    _initAirplane() {
-        this._airplane = this._createAirplane();
-    }
-
-    _initFlightPlanManager() {
-        this._fpm = new WT_FlightPlanManager(this.airplane, this.icaoWaypointFactory);
-        this._lastFPMSyncTime = 0;
-        this.airplane.fms.setFlightPlanManager(this._fpm);
-    }
-
     async _loadModConfig() {
         this._modConfig = await WT_g3000_ModConfig.initialize();
-        this._initAirplane();
-        this._initFlightPlanManager();
         this._isModConfigLoaded = true;
     }
 
@@ -119,6 +91,42 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._isConnected = true;
         console.log("MainLoop created");
         requestAnimationFrame(updateLoop);
+    }
+
+    _initICAOSearchers() {
+        this._icaoSearchers = {
+            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
+            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
+            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
+            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
+        };
+    }
+
+    _createAirplane() {
+        switch (WT_PlayerAirplane.getAircraftType()) {
+            case WT_PlayerAirplane.Type.TBM930:
+                return new WT_TBM930Airplane();
+            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                return new WT_CitationLongitudeAirplane();
+        }
+    }
+
+    _initAirplane() {
+        this._airplane = this._createAirplane();
+    }
+
+    _initFlightPlanManager() {
+        this._fpm = new WT_FlightPlanManager(this.airplane, this.icaoWaypointFactory);
+        this._lastFPMSyncTime = 0;
+        this.airplane.fms.setFlightPlanManager(this._fpm);
+    }
+
+    Init() {
+        super.Init();
+
+        this._initAirplane();
+        this._initFlightPlanManager();
+        this._initICAOSearchers();
     }
 
     _updateICAOWaypointFactory(currentTime) {
