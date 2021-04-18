@@ -78,7 +78,7 @@ WT_G3x5_TSCUtilitiesSetupHTMLElement.TEMPLATE.innerHTML = `
     </style>
     <div id="wrapper">
         <wt-tsc-button-img id="avionicssettings" class="button" labeltext="Avionics Settings" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_AVIONICS_SETTINGS.png"></wt-tsc-button-img>
-        <wt-tsc-button-img id="databasestatus" class="button" labeltext="Database Status"></wt-tsc-button-img>
+        <wt-tsc-button-img id="databasestatus" class="button" labeltext="Database Status" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_DATABASE_STATUS.png"></wt-tsc-button-img>
     </div>
 `;
 

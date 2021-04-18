@@ -457,7 +457,7 @@ class WT_TSCImageButton extends WT_TSCLabeledButton {
             #img {
                 position: absolute;
                 left: 50%;
-                top: var(--button-img-image-top, 0%);
+                top: var(--button-img-image-top, 5%);
                 max-width: 90%;
                 height: var(--button-img-image-height, 50%);
                 transform: translateX(-50%);
