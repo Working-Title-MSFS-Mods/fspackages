@@ -1894,9 +1894,9 @@ customElements.define(WT_G3x5_TSCNearestNDBRowHTMLElement.NAME, WT_G3x5_TSCNeare
     }
 
     _onInfoButtonPressed() {
-        //let airportInfoPage = this._mfdPanePages.airportInfo;
-        //airportInfoPage.element.icaoSetting.setValue(this.selectedWaypoint.icao);
-        //this.instrument.SwitchToPageName("MFD", airportInfoPage.name);
+        let infoPage = this._mfdPanePages.intInfo;
+        infoPage.element.setWaypoint(this.selectedWaypoint);
+        this.instrument.SwitchToPageName("MFD", infoPage.name);
     }
 }
 
