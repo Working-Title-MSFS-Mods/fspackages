@@ -110,7 +110,7 @@ WT_G3x5_TSCNearestWaypointSelectionHTMLElement.TEMPLATE.innerHTML = `
         <wt-tsc-button-img id="airport" class="button" labeltext="Airport" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_AIRPORT.png"></wt-tsc-button-img>
         <wt-tsc-button-img id="int" class="button" labeltext="INT" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_INTERSECTION.png"></wt-tsc-button-img>
         <wt-tsc-button-img id="vor" class="button" labeltext="VOR" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_VOR.png"></wt-tsc-button-img>
-        <wt-tsc-button-img id="ndb" class="button" labeltext="NDB"></wt-tsc-button-img>
+        <wt-tsc-button-img id="ndb" class="button" labeltext="NDB" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_NDB.png"></wt-tsc-button-img>
     </div>
 `;
 
