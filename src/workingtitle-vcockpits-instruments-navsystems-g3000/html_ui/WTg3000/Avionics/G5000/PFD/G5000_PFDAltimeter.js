@@ -3,7 +3,6 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
         super();
 
         this._pfdBaroSetting = WT_Unit.HPA.createNumber(0);
-        this._skipBaroSync = false;
     }
 
     _createModel() {
@@ -60,11 +59,6 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
             return;
         }
 
-        if (this._skipBaroSync) {
-            this._skipBaroSync = false;
-            return;
-        }
-
         this._altimeter.baroPressure(this._pfdBaroSetting);
         this._autopilotAltimeter.setBaroPressure(this._pfdBaroSetting);
     }
@@ -79,13 +73,9 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
         switch (event) {
             case "BARO_DEC":
                 this._altimeter.decrementBaroPressure();
-                this._autopilotAltimeter.decrementBaroPressure();
-                this._skipBaroSync = true;
                 break;
             case "BARO_INC":
                 this._altimeter.incrementBaroPressure();
-                this._autopilotAltimeter.decrementBaroPressure();
-                this._skipBaroSync = true;
                 break;
         }
     }
