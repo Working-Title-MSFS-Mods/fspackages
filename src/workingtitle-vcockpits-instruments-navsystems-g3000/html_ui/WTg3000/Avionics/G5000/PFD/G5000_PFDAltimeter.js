@@ -3,6 +3,8 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
         super();
 
         this._pfdBaroSetting = WT_Unit.HPA.createNumber(0);
+        this._lastPfdBaroSetting = this._pfdBaroSetting.copy();
+        this._skipBaroSync = false;
     }
 
     _createModel() {
@@ -58,9 +60,27 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
         if (this._altimeter.index === this._autopilotAltimeter.index) {
             return;
         }
+        // because there's no way (that I know of) to make the AP use altimeter 2 (which is the PFD altimeter) instead
+        // of altimeter 1 (the standby altimeter), we will use a workaround to sync both altimeters' baro settings.
+
+        if (this._skipBaroSync) {
+            // do not sync on the update cycle immediately after manually incrementing/decrementing the standby
+            // altimeter baro setting to prevent a starvation situation.
+            this._skipBaroSync = false;
+            return;
+        }
 
         this._altimeter.baroPressure(this._pfdBaroSetting);
-        this._autopilotAltimeter.setBaroPressure(this._pfdBaroSetting);
+        if (this._pfdBaroSetting.equals(this._lastPfdBaroSetting)) {
+            this._autopilotAltimeter.baroPressure(this._pfdBaroSetting);
+            this._altimeter.setBaroPressure(this._pfdBaroSetting);
+        } else {
+            // the only way for the PFD altimeter to have changed baro settings between updates is if the knob was
+            // pressed. Since this is an intentional act by the player, we will sync the standby altimeter to the
+            // PFD altimeter instead of the other way around.
+            this._autopilotAltimeter.setBaroPressure(this._pfdBaroSetting);
+        }
+        this._lastPfdBaroSetting.set(this._pfdBaroSetting);
     }
 
     onUpdate(deltaTime) {
@@ -72,10 +92,12 @@ class WT_G5000_PFDAltimeter extends WT_G3x5_PFDAltimeter {
     _handleBaroEvent(event) {
         switch (event) {
             case "BARO_DEC":
-                this._altimeter.decrementBaroPressure();
+                this._autopilotAltimeter.decrementBaroPressure();
+                this._skipBaroSync = true;
                 break;
             case "BARO_INC":
-                this._altimeter.incrementBaroPressure();
+                this._autopilotAltimeter.incrementBaroPressure();
+                this._skipBaroSync = true;
                 break;
         }
     }
