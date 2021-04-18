@@ -117,12 +117,17 @@ WT_G3x5_TSCNearestWaypointSelectionHTMLElement.TEMPLATE.innerHTML = `
 customElements.define(WT_G3x5_TSCNearestWaypointSelectionHTMLElement.NAME, WT_G3x5_TSCNearestWaypointSelectionHTMLElement);
 
 /**
+ * @abstract
  * @template {WT_ICAOWaypoint} T
  */
 class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPanePages, mfdPaneSettings) {
         super(homePageGroup, homePageName);
 
+        /**
+         * @type {WT_ReadOnlyArray<T>}
+         */
+        this._waypoints = null;
         this._selectedWaypoint = null;
 
         this._settingModelID = this._getSettingModelID(instrumentID, halfPaneID);
@@ -259,10 +264,30 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _onUpPressed() {
+        if (this.selectedWaypoint && this._waypoints) {
+            let index = this._waypoints.findIndex(waypoint => waypoint.equals(this.selectedWaypoint));
+            if (index - 1 >= 0) {
+                let waypoint = this._waypoints.get(index - 1);
+                this._setSelectedWaypoint(waypoint);
+                this.htmlElement.scrollToWaypoint(waypoint);
+                return;
+            }
+        }
+
         this.htmlElement.scrollUp();
     }
 
     _onDownPressed() {
+        if (this.selectedWaypoint && this._waypoints) {
+            let index = this._waypoints.findIndex(waypoint => waypoint.equals(this.selectedWaypoint));
+            if (index + 1 >= 0 && index + 1 < this._waypoints.length) {
+                let waypoint = this._waypoints.get(index + 1);
+                this._setSelectedWaypoint(waypoint);
+                this.htmlElement.scrollToWaypoint(waypoint);
+                return;
+            }
+        }
+
         this.htmlElement.scrollDown();
     }
 
@@ -287,10 +312,10 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _updateWaypoints() {
-        let waypoints = this._getWaypoints();
-        this.htmlElement.setWaypoints(waypoints);
+        this._waypoints = this._getWaypoints();
+        this.htmlElement.setWaypoints(this._waypoints);
 
-        if (this.selectedWaypoint !== null && !waypoints.some(waypoint => waypoint.equals(this.selectedWaypoint), this)) {
+        if (this.selectedWaypoint !== null && !this._waypoints.some(waypoint => waypoint.equals(this.selectedWaypoint), this)) {
             this._setSelectedWaypoint(null);
         }
     }
@@ -365,6 +390,7 @@ class WT_G3x5_TSCNearestWaypointUnitsModel extends WT_G3x5_UnitsSettingModelAdap
 }
 
 /**
+ * @abstract
  * @template {WT_ICAOWaypoint} T
  */
 class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
@@ -612,6 +638,13 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
     scrollDown() {
         this._waypointsList.scrollManager.scrollDown();
     }
+
+    scrollToWaypoint(waypoint) {
+        let targetRow = this._rows.find(row => row.waypoint.equals(waypoint));
+        if (targetRow) {
+            this._waypointsList.scrollManager.scrollToElement(targetRow);
+        }
+    }
 }
 WT_G3x5_TSCNearestWaypointHTMLElement.ROW_CLASS = "nearestWaypointRow";
 WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE = document.createElement("template");
@@ -753,6 +786,7 @@ class WT_G3x5_TSCNearestWaypointRowRecycler extends WT_CustomHTMLElementRecycler
 }
 
 /**
+ * @abstract
  * @template {WT_ICAOWaypoint} T
  */
 class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
@@ -1361,6 +1395,7 @@ customElements.define(WT_G3x5_TSCNearestAirportRowHTMLElement.NAME, WT_G3x5_TSCN
 // NEAREST VOR/NDB
 
 /**
+ * @abstract
  * @template {WT_VOR|WT_NDB} T
  * @extends WT_G3x5_TSCNearestWaypoint<T>
  */
@@ -1436,6 +1471,7 @@ class WT_G3x5_TSCNearestNavAid extends WT_G3x5_TSCNearestWaypoint {
 }
 
 /**
+ * @abstract
  * @template {WT_VOR|WT_NDB} T
  * @extends WT_G3x5_TSCNearestWaypointHTMLElement<T>
  */
@@ -1525,6 +1561,7 @@ WT_G3x5_TSCNearestNavAidHTMLElement.EventType = {
 };
 
 /**
+ * @abstract
  * @template {WT_VOR|WT_NDB} T
  * @extends WT_G3x5_TSCNearestWaypointRowHTMLElement<T>
  */
