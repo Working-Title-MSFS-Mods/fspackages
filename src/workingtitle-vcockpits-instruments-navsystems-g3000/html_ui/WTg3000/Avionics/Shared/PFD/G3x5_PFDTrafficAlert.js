@@ -32,13 +32,13 @@ class WT_G3x5_PFDTrafficAlert extends WT_G3x5_PFDElement {
     }
 
     _enableNavMapTrafficOverlay() {
-        this.instrument.insetMap.navMap.trafficShowSetting.setValue(true);
+        this.instrument.navInsetMap.navMap.trafficShowSetting.setValue(true);
     }
 
     _updateTrafficMapAutoOpen() {
         let shouldOpen = this._shouldOpenTrafficMap();
         if (shouldOpen) {
-            if (this.instrument.insetMap.showSetting.getValue()) {
+            if (this.instrument.navInsetMap.showSetting.getValue()) {
                 this._enableNavMapTrafficOverlay();
             } else {
                 this._openTrafficInsetMap();
