@@ -16,7 +16,7 @@ class WT_G3x5_TSCWaypointInfoSelection extends WT_G3x5_TSCDirectoryPage {
     }
 
     _initINTButton() {
-        //this.htmlElement.intButton.addButtonListener(this._openPage.bind(this, "intInfo"));
+        this.htmlElement.intButton.addButtonListener(this._openPage.bind(this, "intInfo"));
     }
 
     _initVORButton() {
@@ -497,6 +497,8 @@ class WT_G3x5_TSCSimpleWaypointInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHT
             WT_CustomElementSelector.select(this.shadowRoot, this._getOptionsButtonQuery(), WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, this._getLocationRowQuery(), WT_G3x5_TSCSimpleWaypointInfoLocationRowHTMLElement)
         ]);
+
+        this._regionText = this.shadowRoot.querySelector(this._getRegionTextQuery());
     }
 
     _initButtons() {
@@ -513,6 +515,10 @@ class WT_G3x5_TSCSimpleWaypointInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHT
         this._isInit = true;
     }
 
+    _updateRegionText() {
+        this._regionText.textContent = this._waypoint ? WT_G3x5_RegionNames.getName(this._waypoint.region) : "";
+    }
+
     _updateLocationRowWaypoint() {
         this._locationRow.setWaypoint(this._waypoint);
     }
@@ -520,6 +526,7 @@ class WT_G3x5_TSCSimpleWaypointInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHT
     _updateFromWaypoint() {
         super._updateFromWaypoint();
 
+        this._updateRegionText();
         this._updateLocationRowWaypoint();
     }
 
@@ -601,8 +608,8 @@ class WT_G3x5_TSCSimpleWaypointInfoLocationRowHTMLElement extends HTMLElement {
         this._bearingArrow = await WT_CustomElementSelector.select(this.shadowRoot, `#bearingarrow`, WT_TSCBearingArrow);
 
         this._coordinates = this.shadowRoot.querySelector(`#coordinates`);
-        this._bearingText = this.shadowRoot.querySelector(`#bearingtext`);
-        this._distance = this.shadowRoot.querySelector(`#distancetext`);
+        this._bearingText = new WT_CachedElement(this.shadowRoot.querySelector(`#bearingtext`));
+        this._distance = new WT_CachedElement(this.shadowRoot.querySelector(`#distancetext`));
     }
 
     async _connectedCallbackHelper() {
@@ -829,12 +836,7 @@ class WT_G3x5_TSCNavAidInfoHTMLElement extends WT_G3x5_TSCSimpleWaypointInfoHTML
             WT_CustomElementSelector.select(this.shadowRoot, this._getFrequencyButtonQuery(), WT_TSCContentButton)
         ]);
 
-        this._regionText = this.shadowRoot.querySelector(this._getRegionTextQuery());
         this._frequencyText = this.shadowRoot.querySelector(this._getFrequencyTextQuery());
-    }
-
-    _updateRegionText() {
-        this._regionText.textContent = this._waypoint ? WT_G3x5_RegionNames.getName(this._waypoint.region) : "";
     }
 
     _updateFrequencyText() {
@@ -848,7 +850,6 @@ class WT_G3x5_TSCNavAidInfoHTMLElement extends WT_G3x5_TSCSimpleWaypointInfoHTML
     _updateFromWaypoint() {
         super._updateFromWaypoint();
 
-        this._updateRegionText();
         this._updateFrequencyText();
     }
 }
@@ -1214,14 +1215,6 @@ class WT_G3x5_TSCNDBInfoHTMLElement extends WT_G3x5_TSCNavAidInfoHTMLElement {
         return `#frequencytext`;
     }
 
-    async _defineChildren() {
-        await super._defineChildren();
-
-        this._classText = this.shadowRoot.querySelector(`#class`);
-        this._typeText = this.shadowRoot.querySelector(`#type`);
-        this._magVar = this.shadowRoot.querySelector(`#magvar`);
-    }
-
     _getFrequencyText(frequency) {
         return frequency.hertz(WT_Frequency.Prefix.KHz).toFixed(1);
     }
@@ -1293,13 +1286,6 @@ WT_G3x5_TSCNDBInfoHTMLElement.TEMPLATE.innerHTML = `
                             width: 100%;
                             height: var(--simplewaypointinfo-info-locationrow-height, 100%);
                         }
-                    #row3 {
-                        display: grid;
-                        grid-template-rows: 50% 50%;
-                        grid-template-columns: 50% 50%;
-                        justify-items: start;
-                        align-items: center;
-                    }
                         #frequencycontent {
                             position: relative;
                             width: 100%;
@@ -1353,3 +1339,307 @@ WT_G3x5_TSCNDBInfoHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_TSCNDBInfoHTMLElement.NAME, WT_G3x5_TSCNDBInfoHTMLElement);
+
+// INT
+
+/**
+ * @extends WT_G3x5_TSCWaypointInfo<WT_Intersection>
+ */
+ class WT_G3x5_TSCINTInfo extends WT_G3x5_TSCWaypointInfo {
+    constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPaneDisplaySetting) {
+        super(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPaneDisplaySetting, WT_ICAOWaypoint.Type.INT);
+    }
+
+    _getTitle() {
+        return "Intersection Information";
+    }
+
+    _createHTMLElement() {
+        let htmlElement = new WT_G3x5_TSCINTInfoHTMLElement();
+        htmlElement.setContext({
+            parentPage: this,
+            airplane: this.instrument.airplane,
+            unitsModel: this._unitsModel
+        })
+        return htmlElement;
+    }
+
+    async _createWaypointFromICAO(icao) {
+        return this.instrument.icaoWaypointFactory.getINT(icao);
+    }
+}
+
+/**
+ * @extends WT_G3x5_TSCSimpleWaypointInfoHTMLElement<WT_Intersection>
+ */
+class WT_G3x5_TSCINTInfoHTMLElement extends WT_G3x5_TSCSimpleWaypointInfoHTMLElement {
+    constructor() {
+        super();
+
+        this._lastBearingUnit = null;
+        this._lastDistanceUnit = null;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCINTInfoHTMLElement.TEMPLATE;
+    }
+
+    _getSelectButtonQuery() {
+        return `#selectbutton`;
+    }
+
+    _getOptionsButtonQuery() {
+        return `#optionsbutton`;
+    }
+
+    _getLocationRowQuery() {
+        return `#locationrow`;
+    }
+
+    _getRegionTextQuery() {
+        return `#region`;
+    }
+
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._vorIdent = this.shadowRoot.querySelector(`#nrstvorident`);
+        this._vorSymbol = this.shadowRoot.querySelector(`#nrstvorsymbol`);
+        this._vorRadial = this.shadowRoot.querySelector(`#nrstvorradial .value`);
+        this._vorDistance = this.shadowRoot.querySelector(`#nrstvordistance .value`);
+    }
+
+    _updateVORIdent() {
+        this._vorIdent.textContent = this._waypoint ? this._waypoint.nearestVOR.icao.substring(7, 12).replace(/ /g, "") : "";
+    }
+
+    _getVORSymbolImagePath(vorType) {
+        let dir = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
+        switch(vorType) {
+            case WT_VOR.Type.VOR_DME:
+                return `${dir}/ICON_TSC_WAYPOINT_VOR_VORDME.svg`;
+            case WT_VOR.Type.DME:
+                return `${dir}/ICON_TSC_WAYPOINT_VOR_DME.svg`;
+            case WT_VOR.Type.VORTAC:
+                return `${dir}/ICON_TSC_WAYPOINT_VOR_VORTAC.svg`;
+            case WT_VOR.Type.TACAN:
+                return `${dir}/ICON_TSC_WAYPOINT_VOR_TACAN.svg`;
+            default:
+                return `${dir}/ICON_TSC_WAYPOINT_VOR_VOR.svg`;
+        }
+    }
+
+    _updateVORSymbol() {
+        this._vorSymbol.src = this._waypoint ? this._getVORSymbolImagePath(this._waypoint.nearestVOR.vorType) : "";
+    }
+
+    _updateVORRadial() {
+        let unit = this._context.unitsModel.bearingUnit;
+        if (this._waypoint) {
+            let isMagnetic = unit.isMagnetic;
+            let text;
+            if (isMagnetic) {
+                text = `${this._waypoint.nearestVOR.radialMagnetic}°`;
+            } else {
+                text = `${this._waypoint.nearestVOR.radialTrue}°ᵀ`;
+            }
+            this._vorRadial.textContent = text;
+        } else {
+            this._vorRadial.textContent = "";
+        }
+        this._lastBearingUnit = unit;
+    }
+
+    _updateVORDistance() {
+        let unit = this._context.unitsModel.distanceUnit;
+        this._vorDistance.innerHTML = this._waypoint ? this._distanceFormatter.getFormattedHTML(this._waypoint.nearestVOR.distance, unit) : "";
+        this._lastDistanceUnit = unit;
+    }
+
+    _updateNearestVOR() {
+        this._updateVORIdent();
+        this._updateVORSymbol();
+        this._updateVORRadial();
+        this._updateVORDistance();
+    }
+
+    _updateFromWaypoint() {
+        super._updateFromWaypoint();
+
+        this._updateNearestVOR();
+    }
+
+    _checkUnits() {
+        if (!this._context.unitsModel.bearingUnit.equals(this._lastBearingUnit)) {
+            this._updateVORRadial();
+        }
+        if (!this._context.unitsModel.distanceUnit.equals(this._lastDistanceUnit)) {
+            this._updateVORDistance();
+        }
+    }
+
+    _doUpdate() {
+        super._doUpdate();
+
+        this._checkUnits();
+    }
+}
+WT_G3x5_TSCINTInfoHTMLElement.NAME = "wt-tsc-intinfo";
+WT_G3x5_TSCINTInfoHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCINTInfoHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            border-radius: 5px;
+            border: 3px solid var(--wt-g3x5-bordergray);
+            background: black;
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--simplewaypointinfo-padding-left, 0.2em);
+            top: var(--simplewaypointinfo-padding-top, 0.2em);
+            width: calc(100% - var(--simplewaypointinfo-padding-left, 0.2em) - var(--simplewaypointinfo-padding-right, 0.2em));
+            height: calc(100% - var(--simplewaypointinfo-padding-top, 0.2em) - var(--simplewaypointinfo-padding-bottom, 0.2em));
+            display: grid;
+            grid-template-rows: var(--simplewaypointinfo-header-height, 4em) 1fr;
+            grid-template-columns: 100%;
+            grid-gap: var(--simplewaypointinfo-header-margin-bottom, 0.2em) 0;
+            justify-items: center;
+        }
+            #header {
+                position: relative;
+                width: var(--simplewaypointinfo-header-width, 90%);
+                display: grid;
+                grid-template-rows: 100%;
+                grid-template-columns: var(--simplewaypointinfo-selectbutton-width, 67%) 1fr;
+                grid-gap: 0 var(--simplewaypointinfo-header-button-margin, 0.5em);
+            }
+            #info {
+                position: relative;
+                width: var(--simplewaypointinfo-info-width, 80%);
+                display: grid;
+                grid-template-columns: 100%;
+                grid-template-rows: var(--intinfo-grid-rows, 1fr 1fr 2fr);
+                color: white;
+            }
+                .infoRowContainer {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                }
+                .borderRow {
+                    border-top: var(--simplewaypointinfo-info-row-border, 1px solid var(--wt-g3x5-bordergray));
+                }
+                    .infoRow {
+                        position: absolute;
+                        left: var(--simplewaypointinfo-info-row-padding-left, 0.2em);
+                        top: var(--simplewaypointinfo-info-row-padding-top, 0.2em);
+                        width: calc(100% - var(--simplewaypointinfo-info-row-padding-left, 0.2em) - var(--simplewaypointinfo-info-row-padding-right, 0.2em));
+                        height: calc(100% - var(--simplewaypointinfo-info-row-padding-top, 0.2em) - var(--simplewaypointinfo-info-row-padding-bottom, 0.2em));
+                    }
+                        #region {
+                            position: absolute;
+                            left: 0%;
+                            top: 50%;
+                            transform: translateY(-50%);
+                        }
+                        #locationrow {
+                            position: absolute;
+                            top: 50%;
+                            width: 100%;
+                            transform: translateY(-50%);
+                            height: var(--simplewaypointinfo-info-locationrow-height, 50%);
+                        }
+                        #nrstvorcontainer {
+                            position: absolute;
+                            left: 50%;
+                            top: 50%;
+                            width: 100%;
+                            height: var(--intinfo-nrstvor-height, 75%);
+                            transform: translate(-50%, -50%);
+                            display: grid;
+                            grid-template-rows: var(--intinfo-nrstvor-title-height, 1.5em) 1fr;
+                            grid-template-columns: 100%;
+                        }
+                            #nrstvortitle {
+                                text-align: left;
+                            }
+                            #nrstvorinfo {
+                                position: relative;
+                                width: 100%;
+                                height: 100%;
+                                display: grid;
+                                grid-template-rows: 1.5em 1fr;
+                                grid-template-columns: 50% 50%;
+                                justify-items: center;
+                                align-items: center;
+                            }
+                                #nrstvorid {
+                                    justify-self: stretch;
+                                    text-align: right;
+                                }
+                                    #nrstvorsymbol {
+                                        width: 1.2em;
+                                        height: 1.2em;
+                                        vertical-align: bottom;
+                                    }
+                                #nrstvorradial {
+                                    grid-area: 2 / 1;
+                                    text-align: center;
+                                }
+                                #nrstvordistance {
+                                    grid-area: 2 / 2;
+                                    text-align: center;
+                                }
+                                    .title {
+                                        font-size: var(--intinfo-nrstvor-radialdistance-title-font-size, 0.85em);
+                                    }
+
+        .${WT_G3x5_TSCSimpleWaypointInfoHTMLElement.UNIT_CLASS} {
+            font-size: var(--waypointinfo-unit-font-size, 0.75em);
+        }
+    </style>
+    <div id="wrapper">
+        <div id="header">
+            <wt-tsc-button-waypoint id="selectbutton" emptytext="Select Intersection"></wt-tsc-button-waypoint>
+            <wt-tsc-button-label id="optionsbutton" labeltext="Waypoint Options"></wt-tsc-button-label>
+        </div>
+        <div id="info">
+            <div class="infoRowContainer">
+                <div id="row1" class="infoRow">
+                    <div id="region"></div>
+                </div>
+            </div>
+            <div class="infoRowContainer borderRow">
+                <div id="row2" class="infoRow">
+                    <wt-tsc-simplewaypointinfo-locationrow id="locationrow"></wt-tsc-simplewaypointinfo-locationrow>
+                </div>
+            </div>
+            <div class="infoRowContainer borderRow">
+                <div id="row3" class="infoRow">
+                    <div id="nrstvorcontainer">
+                        <div id="nrstvortitle">Nearest VOR</div>
+                        <div id="nrstvorinfo">
+                            <div id="nrstvorid">
+                                <span id="nrstvorident"></span>
+                                <img id="nrstvorsymbol"></img>
+                            </div>
+                            <div id="nrstvorradial">
+                                <div class="title">RAD</div>
+                                <div class="value"></div>
+                            </div>
+                            <div id="nrstvordistance">
+                                <div class="title">DIS</div>
+                                <div class="value"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCINTInfoHTMLElement.NAME, WT_G3x5_TSCINTInfoHTMLElement);

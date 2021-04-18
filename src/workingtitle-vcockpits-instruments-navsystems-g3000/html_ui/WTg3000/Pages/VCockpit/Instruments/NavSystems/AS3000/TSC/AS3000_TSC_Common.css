@@ -289,6 +289,8 @@
 #Electricity #PagesDisplay[state=WaypointInfoSelection] #WaypointInfoSelection,
 #Electricity #PagesDisplay[state=AirportInfoLeft] #AirportInfoLeft,
 #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
+#Electricity #PagesDisplay[state=INTInfoLeft] #INTInfoLeft,
+#Electricity #PagesDisplay[state=INTInfoRight] #INTInfoRight,
 #Electricity #PagesDisplay[state=VORInfoLeft] #VORInfoLeft,
 #Electricity #PagesDisplay[state=VORInfoRight] #VORInfoRight,
 #Electricity #PagesDisplay[state=NDBInfoLeft] #NDBInfoLeft,
