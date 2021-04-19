@@ -44,20 +44,6 @@ class WT_Airway {
         return this._status;
     }
 
-    _waitForBuilderLoop(resolve) {
-        if (this._builder.isDone) {
-            resolve();
-        } else {
-            requestAnimationFrame(this._waitForBuilderLoop.bind(this, resolve));
-        }
-    }
-
-    _waitForBuilder() {
-        return new Promise(resolve => {
-            this._waitForBuilderLoop(resolve);
-        });
-    }
-
     /**
      * Gets the waypoints belonging to this airway, in order.
      * @returns {Promise<WT_ICAOWaypoint[]>} a Promise to return an array of waypoints belong to this airway.
@@ -66,7 +52,7 @@ class WT_Airway {
         if (!this._builder.hasStarted) {
             this._builder.startBuild().then(value => this._status = value);
         }
-        await this._waitForBuilder();
+        await WT_Wait.awaitCallback(() => this._builder.isDone, this);
         return this._waypoints;
     }
 }

@@ -21,7 +21,7 @@ class WT_MapViewAirwayCanvasRenderer {
          */
         this.desiredLabelDistance = desiredLabelDistance;
         /**
-         * @property {Number} updateTimeBudget - the amount of time this renderer can spend actively rendering per update cycle.
+         * The amount of time this renderer can spend actively rendering per update cycle.
          * @type {Number}
          */
         this.updateTimeBudget = updateTimeBudget;
@@ -238,15 +238,20 @@ class WT_MapViewAirwayCanvasRenderer {
      *                               if the current render task is aborted.
      */
     async _enqueueAirwayData(airway, renderID) {
-        let waypoints = await airway.getWaypoints();
+        let waypoints;
+        try {
+            waypoints = await airway.getWaypoints();
+        } catch (e) {
+            console.log(e);
+        }
+
         if (this._shouldAbort || !this._isRendering || renderID !== this._renderID) {
             throw new Error("Render aborted.");
         }
 
-        if (waypoints.length < 2) {
-            return;
+        if (waypoints && waypoints.length >= 2) {
+            this._airwayQueue.push({airway: airway, waypoints: waypoints});
         }
-        this._airwayQueue.push({airway: airway, waypoints: waypoints});
     }
 
     /**
@@ -257,7 +262,7 @@ class WT_MapViewAirwayCanvasRenderer {
      *                                 if the current render task is aborted.
      */
     _prepareAirwayData(airways, renderID) {
-        return Promise.all(airways.map(airway => this._enqueueAirwayData(airway, renderID)));
+        return Promise.all(airways.map(airway => this._enqueueAirwayData(airway, renderID), this));
     }
 
     _setRenderOptions(airways, renderer) {

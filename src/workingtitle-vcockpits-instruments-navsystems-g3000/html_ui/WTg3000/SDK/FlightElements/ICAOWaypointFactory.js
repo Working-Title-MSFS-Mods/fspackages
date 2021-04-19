@@ -508,7 +508,7 @@ class WT_ICAOWaypointFactoryAirwayBuilder extends WT_AirwayBuilder {
         let current = this._initialData;
         while (!isDone && current) {
             let nextICAO = current.nextIcao;
-            if (nextICAO && nextICAO.length > 0 && nextICAO[0] != " ") {
+            if (nextICAO && nextICAO.length > 0 && nextICAO[0] != " " && !this.airway._waypoints.find(waypoint => waypoint.icao === nextICAO)) {
                 let entry = await this._requestEntry(nextICAO);
                 this.airway._waypoints.push(entry.waypoint);
                 current = entry.routes.find(route => route.name === current.name);
@@ -523,7 +523,7 @@ class WT_ICAOWaypointFactoryAirwayBuilder extends WT_AirwayBuilder {
         let current = this._initialData;
         while (!isDone && current) {
             let prevICAO = current.prevIcao;
-            if (prevICAO && prevICAO.length > 0 && prevICAO[0] != " ") {
+            if (prevICAO && prevICAO.length > 0 && prevICAO[0] != " " && !this.airway._waypoints.find(waypoint => waypoint.icao === prevICAO)) {
                 let entry = await this._requestEntry(prevICAO);
                 this.airway._waypoints.splice(0, 0, entry.waypoint);
                 current = entry.routes.find(route => route.name === current.name);
