@@ -184,11 +184,13 @@
       left: 0%;
       bottom: 14%; }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome {
+      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay #MFDHome {
         position: absolute;
         width: 100%;
         height: 100%;
         font-size: 3vh;
+        line-height: 3vh;
       }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome .button {
           width: 18vh;

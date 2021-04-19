@@ -248,7 +248,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT, this.icaoWaypointFactory)),
                 this._mfdPagesLeft.chartsTouchControl = new NavSystemPage("Charts Touch Control Left", "ChartsTouchControlLeft", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesLeft.charts.element)),
                 this._mfdPagesRight.chartsTouchControl = new NavSystemPage("Charts Touch Control Right", "ChartsTouchControlRight", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesRight.charts.element)),
-                new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
+                new NavSystemPage("Aircraft Systems", "AircraftSystems", this._createAircraftSystemsPage()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
                 new NavSystemPage("Setup", "UtilitiesSetup", new WT_G3x5_TSCUtilitiesSetup("MFD", "MFD Home")),
@@ -1603,37 +1603,6 @@ class AS3000_TSC_ApproachSelection extends NavSystemTouch_ApproachSelection {
     }
     close() {
         this.gps.SwitchToPageName("MFD", "Procedures");
-    }
-}
-
-/*
- * Aircraft Systems Page (via MFD Home)
- */
-class AS3000_TSC_AircraftSystems extends NavSystemElement {
-    init(root) {
-        this.lightingButton = this.gps.getChildById("LightingConfigButton");
-
-        this.gps.makeButton(this.lightingButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Lighting Configuration"));
-    }
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-    onEvent(_event) {
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        return true;
     }
 }
 

@@ -37,6 +37,10 @@ class AS3000_TSC_Horizontal extends AS3000_TSC {
         return new WT_G3000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, instrumentID, halfPaneID);
     }
 
+    _createAircraftSystemsPage() {
+        return new WT_G3000_TSCAircraftSystems("MFD", "MFD Home");
+    }
+
     _createChartsLightThresholdPopUp() {
         return new WT_G3x5_TSCChartsLightThreshold(() => WTDataStore.get(AS3000_TSC_LightingConfig.VARNAME_DISPLAY_LIGHTING, 1));
     }
