@@ -645,6 +645,7 @@ class WT_MapViewRoadLabelCandidatePruneHandler extends WT_GeoKDTreeSearchHandler
  */
 class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     /**
+     * @param {WT_MapViewRoadFeatureCollection.Type} - the type of road associated with the new label.
      * @param {WT_GeoPoint} location - the geogaphical location of the new label.
      * @param {String} name - the name of the road associated with the new label.
      */
@@ -657,8 +658,8 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The type of road associated with this label.
      * @readonly
-     * @property {WT_MapViewRoadFeatureCollection.Type} roadType - the type of the road associated with this label.
      * @type {WT_MapViewRoadFeatureCollection.Type}
      */
     get roadType() {
@@ -666,9 +667,9 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The display priority of this label. Text labels with greater priority values are always drawn above labels with
+     * lower priority values.
      * @readonly
-     * @property {Number} priority - the display priority of this label. Text labels with greater priority values
-     *                               are always drawn above and culled after labels with lower priority values.
      * @type {Number}
      */
     get priority() {
@@ -676,8 +677,8 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The geographical location of this label.
      * @readonly
-     * @property {WT_GeoPointReadOnly} location - the geographical location of this label.
      * @type {WT_GeoPointReadOnly}
      */
     get location() {
@@ -685,8 +686,8 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The name of the road associated with this label.
      * @readonly
-     * @property {String} name - the name of the road associated with this label.
      * @type {String}
      */
     get name() {
@@ -699,6 +700,7 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
  */
 class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
     /**
+     * @param {WT_MapViewRoadFeatureCollection.Type} - the type of road associated with the new label.
      * @param {WT_GeoPoint} location - the geogaphical location of the new label.
      * @param {String} name - the name of the road associated with the new label.
      * @param {String} imagePath - the path to the background image file of the new label.
@@ -834,6 +836,7 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
      * @param {CanvasRenderingContext2D} context
      * @param {WT_GVector2} center
      * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
+     * @param {String[]} text
      */
     _drawText(state, context, center, bounds, text) {
         let width = bounds.right - bounds.left;
