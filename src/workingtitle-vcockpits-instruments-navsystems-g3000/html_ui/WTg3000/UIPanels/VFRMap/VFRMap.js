@@ -43,13 +43,17 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initMap() {
-        switch (WT_PlayerAirplane.getAircraftType()) {
-            case WT_PlayerAirplane.Type.TBM930:
-            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                this._initWTMap();
-                break;
-            default:
-                this._initAsoboMap();
+        if (WT_g3000_ModConfig.INSTANCE.vfrMap.useCustom) {
+            switch (WT_PlayerAirplane.getAircraftType()) {
+                case WT_PlayerAirplane.Type.TBM930:
+                case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                    this._initWTMap();
+                    break;
+                default:
+                    this._initAsoboMap();
+            }
+        } else {
+            this._initAsoboMap();
         }
 
         this._map.htmlElement.setAttribute("active", "true");

@@ -34,6 +34,9 @@ class WT_g3000_ModConfig {
     }
 }
 WT_g3000_ModConfig.SECTIONS = [
+    {cfgName: "VFRMAP", objName: "vfrMap", options: {
+        useCustom: {default: true, auto: true}
+    }},
     {cfgName: "ROADS", objName: "roads", options: {
         quality: {default: 3, auto: true},
         showInVFRMap: {default: true, auto: true},
