@@ -644,7 +644,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     _startDrawAirways(state) {
         this._airwayLayer.syncBuffer(state);
-        this._airwayRenderer.render(this._getAirwaysToDraw(state, this._standaloneWaypoints), this._airwayLayer.buffer.projectionRenderer);
+        let airways = this._getAirwaysToDraw(state, this._standaloneWaypoints);
+        this._airwayRenderer.render(airways, this._airwayLayer.buffer.projectionRenderer);
     }
 
     /**
