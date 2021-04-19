@@ -105,9 +105,9 @@ class Jet_PFD_AOAIndicator extends HTMLElement {
                     var text = document.createElementNS(Avionics.SVG.NS, "text");
                     text.textContent = _gradTexts[_textId];
                     text.setAttribute("x", (_gradX - len - 5).toString());
-                    text.setAttribute("y", y.toString());
+                    text.setAttribute("y", (y + 3).toString());
                     text.setAttribute("fill", "#a1a1a1");
-                    text.setAttribute("font-size", (this.fontSize * 0.7).toString());
+                    text.setAttribute("font-size", this.fontSize.toString());
                     text.setAttribute("font-family", "Roboto-Light");
                     text.setAttribute("text-anchor", "end");
                     text.setAttribute("alignment-baseline", "central");
@@ -185,7 +185,7 @@ class Jet_PFD_AOAIndicator extends HTMLElement {
         switch (name) {
             case "angle":
                 let angle = parseFloat(newValue);
-                angle = Math.min(Math.max(angle, 0), 16) / 16;
+                angle = Math.min(Math.max(angle, 0), 11) / 11;
                 if (this.cursorSVG) {
                     var posY = Math.min(this.cursorMinY + (this.cursorMaxY - this.cursorMinY) * (1.25 * angle - 0.25), 390);
                     this.cursorSVG.setAttribute("y", (posY - this.cursorHeight * 0.5).toString());

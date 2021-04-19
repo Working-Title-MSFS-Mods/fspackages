@@ -58,7 +58,7 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
-        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", WTDataStore.get("L:WT_CJ4_PFD1_AOA"));
         SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_VR_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_V2_ON", "Bool", false);
@@ -690,14 +690,16 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.FLT_DIR, (this.fdMode == 1) ? "X-PTR" : "V-BAR");
         
         const aoaSettingFill = WTDataStore.get("L:WT_CJ4_PFD1_AOA");
-        console.log(aoaSettingFill)
         if (aoaSettingFill) {
             if (aoaSettingFill == "AUTO") {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "AUTO");
+                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
             } else if (aoaSettingFill == "ON") {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "ON");
+                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 1);
             } else if (aoaSettingFill == "OFF") {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "OFF");
+                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 2);
             }
         }
         const v1 = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
