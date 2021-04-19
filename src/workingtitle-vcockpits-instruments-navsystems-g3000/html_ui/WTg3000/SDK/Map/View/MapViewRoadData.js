@@ -76,51 +76,6 @@ class WT_MapViewRoadFeatureCollection {
         this._checkReady();
     }
 
-    async _onZipOpened(region, type, entries) {
-        let fileRoot = `${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}`;
-
-        for (let i = 0; i < WT_MapViewRoadFeatureCollection.LOD_COUNT; i++) {
-            let fileName = `${fileRoot}_lod${i}.json`;
-            let entry = entries.find(e => e.filename === fileName);
-            let data = await entry.getData(new zip.TextWriter());
-            this._loadFeatureData(region, type, i, data);
-        }
-
-        let fileName = `${fileRoot}_bvh.json`;
-        let entry = entries.find(e => e.filename === fileName);
-        let data = await entry.getData(new zip.TextWriter());
-        this._loadBVHData(region, type, data);
-    }
-
-    _openZipForType(dir, region, type) {
-        let path = `${dir}/${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}.zip`;
-        let request = new XMLHttpRequest();
-        request.responseType = "arraybuffer";
-
-        request.addEventListener("load",
-            (async function() {
-                let zipReader = new zip.ZipReader(new zip.Uint8ArrayReader(new Uint8Array(request.response)));
-                let entries = await zipReader.getEntries();
-                this._onZipOpened(region, type, entries);
-            }).bind(this)
-        );
-        request.open("GET", path);
-        request.send();
-    }
-
-    _openZipsForRegion(region) {
-        let dir = `${WT_MapViewRoadFeatureCollection.DATA_FILE_DIR}/${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}`;
-        for (let type of this._types) {
-            this._openZipForType(dir, region, type);
-        }
-    }
-
-    _openZips() {
-        for (let region of this._regions) {
-            this._openZipsForRegion(region);
-        }
-    }
-
     _openFile(path, loadFunc) {
         let request = new XMLHttpRequest();
         request.overrideMimeType("application/json");
