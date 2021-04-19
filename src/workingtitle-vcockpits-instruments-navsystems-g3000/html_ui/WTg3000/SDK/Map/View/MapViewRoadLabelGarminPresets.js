@@ -24,7 +24,8 @@ WT_Garmin_MapViewGenericNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/I
 WT_Garmin_MapViewGenericNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
-    textOffset: {x: 0, y: -0.075}
+    textOffset: {x: 0, y: -0.075},
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4}
 };
 
 class WT_Garmin_MapViewGenericLocalHighwayLabel extends WT_MapViewRoadImageLabel {
@@ -115,7 +116,8 @@ class WT_Garmin_MapViewUSRouteLabel extends WT_MapViewRoadImageLabel {
 WT_Garmin_MapViewUSRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_US_ROUTE.png";
 WT_Garmin_MapViewUSRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
-    fontColor: "black"
+    fontColor: "black",
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4}
 };
 
 // MEXICO
