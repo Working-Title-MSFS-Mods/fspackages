@@ -43,11 +43,13 @@ as3000-tsc-horizontal-element {
       background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_BACKGROUND_HORIZONTAL.png");
       background-color: #141619; }
 
-      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome {
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome,
+      as3000-tsc-horizontal-element #Electricity #PagesDisplay #MFDHome {
         position: absolute;
         width: 100%;
         height: 100%;
         font-size: 4vh;
+        line-height: 4vh;
       }
         as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDHome .button {
           width: 27vh;
@@ -909,6 +911,17 @@ as3000-tsc-horizontal-element .chartsTouchControl wt-tsc-chartstouchcontrol {
     --chartstouchcontrol-header-height: 15vh;
     --chartstouchcontrol-header-button-width: 20vh;
     --chartstouchcontrol-header-margin-bottom: 2vh;
+}
+
+as3000-tsc-horizontal-element #AircraftSystems wt-tsc-aircraftsystems {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    font-size: 4vh;
+    line-height: 4vh;
+    --aircraftsystems-grid-row: 21vh;
+    --aircraftsystems-grid-column: 27vh;
 }
 
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig .backgroundBox {
