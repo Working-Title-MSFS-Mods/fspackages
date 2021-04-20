@@ -1911,6 +1911,16 @@ as3000-tsc-vertical-element #NumKeyboard wt-tsc-numkeyboard {
     --numkeyboard-button-size: 10vh;
 }
 
+as3000-tsc-vertical-element #TimeKeyboard wt-tsc-timekeyboard {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 85%;
+    font-size: 4.5vh;
+    --timekeyboard-button-size: 10vh;
+}
+
 as3000-tsc-vertical-element #TransponderMode wt-tsc-transpondermode-mode {
     position: absolute;
     left: 2%;
