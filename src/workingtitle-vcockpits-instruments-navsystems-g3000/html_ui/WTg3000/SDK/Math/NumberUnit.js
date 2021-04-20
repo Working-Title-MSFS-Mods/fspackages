@@ -598,6 +598,7 @@ WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180, "degree"
 WT_Unit.ARC_MIN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180 / 60, "minute", "minutes", "'");
 WT_Unit.ARC_SEC = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180 / 3600, "second", "seconds", "\"");
 
+WT_Unit.MILLISECOND = new WT_SimpleUnit(WT_Unit.Family.TIME, 0.001, "millisecond", "milliseconds", "ms");
 WT_Unit.SECOND = new WT_SimpleUnit(WT_Unit.Family.TIME, 1, "second", "seconds", "s");
 WT_Unit.MINUTE = new WT_SimpleUnit(WT_Unit.Family.TIME, 60, "minute", "minutes", "m");
 WT_Unit.HOUR = new WT_SimpleUnit(WT_Unit.Family.TIME, 3600, "hour", "hours", "h");
