@@ -261,7 +261,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers .timerDisplayButt
     height: 12vh;
     width: 40%;
     font-size: 0.67em;
-    --value-font-size: 5vh;
+    --button-value-font-size: 5vh;
 }
 as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers .timerCountBox {
     position: absolute;
