@@ -271,8 +271,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.audioRadioWindow.setGPS(this);
         this.frequencyKeyboard = new NavSystemElementContainer("Frequency Keyboard", "frequencyKeyboard", new AS3000_TSC_FrequencyKeyboard());
         this.frequencyKeyboard.setGPS(this);
-        this.timeKeyboard = new NavSystemElementContainer("Time Keyboard", "timeKeyboard", new AS3000_TSC_TimeKeyboard());
-        this.timeKeyboard.setGPS(this);
         this.speedKeyboard = new NavSystemElementContainer("Speed Keyboard", "speedKeyboard", new AS3000_TSC_SpeedKeyboard());
         this.speedKeyboard.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Keyboard", "fullKeyboard", new AS3000_TSC_FullKeyboard());
@@ -297,6 +295,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.numKeyboard = new NavSystemElementContainer("Numeric Keyboard", "NumKeyboard", new WT_G3x5_TSCNumericKeyboard());
         this.numKeyboard.setGPS(this);
+
+        this.timeKeyboard = new NavSystemElementContainer("Time Keyboard", "TimeKeyboard", new WT_G3x5_TSCTimeKeyboard());
+        this.timeKeyboard.setGPS(this);
 
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);

@@ -1078,6 +1078,7 @@ class WT_G3x5_TSCMapSettingsFuelRingTabRow extends WT_G3x5_TSCMapSettingsToggleT
         super(toggleButtonLabel, toggleSettingKey);
 
         this._reserveTimeSettingKey = reserveTimeSettingKey;
+        this._tempSec = WT_Unit.SECOND.createNumber(0);
     }
 
     _initRight() {
@@ -1087,14 +1088,21 @@ class WT_G3x5_TSCMapSettingsFuelRingTabRow extends WT_G3x5_TSCMapSettingsToggleT
     }
 
     _onReserveButtonPressed() {
-        let currentSettingValue = WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey) * 60000;
-        this.context.instrument.timeKeyboard.element.setContext(this._setReserveTimeSetting.bind(this), currentSettingValue, this.context.homePageGroup, this.context.homePageName);
+        let currentSettingSeconds = WT_MapSettingModel.getSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey) * 60;
+        this.context.instrument.timeKeyboard.element.setContext({
+            title: "Fuel Ring Reserve Time",
+            homePageGroup: this.context.homePageGroup,
+            homePageName: this.context.homePageName,
+            positiveOnly: true,
+            limit24Hours: false,
+            initialValue: this._tempSec.set(currentSettingSeconds),
+            valueEnteredCallback: this._setReserveTimeSetting.bind(this)
+        });
         this.context.instrument.switchToPopUpPage(this.context.instrument.timeKeyboard);
     }
 
     _setReserveTimeSetting(value) {
-        let reserveTime = Math.max(1, Math.round(value / 60000));
-        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey, reserveTime, true);
+        WT_MapSettingModel.setSettingValue(this.context.getSettingModelID(), this._reserveTimeSettingKey, Math.max(1, Math.round(value.asUnit(WT_Unit.MINUTE))), true);
     }
 
     _updateReserveButton() {

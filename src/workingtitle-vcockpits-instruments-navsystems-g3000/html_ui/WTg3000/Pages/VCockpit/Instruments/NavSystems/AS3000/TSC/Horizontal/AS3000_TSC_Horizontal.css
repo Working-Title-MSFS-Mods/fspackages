@@ -1929,6 +1929,16 @@ as3000-tsc-horizontal-element #NumKeyboard wt-tsc-numkeyboard {
     --numkeyboard-button-size: 15vh;
 }
 
+as3000-tsc-horizontal-element #TimeKeyboard wt-tsc-timekeyboard {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: 85%;
+    font-size: 7vh;
+    --timekeyboard-button-size: 15vh;
+}
+
 as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
     position: absolute;
     left: 15%;
