@@ -271,7 +271,7 @@ class WT_G3x5_TSCAirportInfoInfoTab extends WT_G3x5_TSCAirportInfoTab {
     _createHTMLElement() {
         let htmlElement = new WT_G3x5_TSCAirportInfoTabHTMLElement();
         htmlElement.setContext({
-            airplane: this.parentPage.instrument.airplane,
+            instrument: this.parentPage.instrument,
             unitsModel: this.parentPage.unitsModel
         });
         return htmlElement;
@@ -295,7 +295,7 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         this.shadowRoot.appendChild(WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.content.cloneNode(true));
 
         /**
-         * @type {{airplane:WT_PlayerAirplane, unitsModel:WT_G3x5_TSCWaypointInfoUnitsModel}}
+         * @type {{instrument:AS3000_TSC, unitsModel:WT_G3x5_TSCWaypointInfoUnitsModel}}
          */
         this._context = null;
 
@@ -379,6 +379,7 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         this._disValue = new WT_CachedElement(this.shadowRoot.querySelector(`#dis .value`));
         this._latLong = this.shadowRoot.querySelector(`#latlong`);
         this._elevationValue = this.shadowRoot.querySelector(`#elevation .value`);
+        this._utcOffsetValue = new WT_CachedElement(this.shadowRoot.querySelector(`#utcoffset .value`));
         this._privacyValue = this.shadowRoot.querySelector(`#privacy .value`);
     }
 
@@ -402,7 +403,7 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
 
     _updateBearingDistance() {
         if (this._airport) {
-            let airplane = this._context.airplane;
+            let airplane = this._context.instrument.airplane;
             let ppos = airplane.navigation.position(this._tempGeoPoint);
             let heading = airplane.navigation.headingTrue();
             let bearing = this._tempTrueBearing.set(ppos.bearingTo(this._airport.location));
@@ -461,6 +462,16 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         }
     }
 
+    _updateUTCOffset() {
+        if (this._airport) {
+            let offset = this._airport.timezone.offset(this._context.instrument.time);
+            let prefix = offset >= 0 ? "+" : "−";
+            this._utcOffsetValue.textContent = `UTC${prefix}${Math.abs(offset)}`;
+        } else {
+            this._utcOffsetValue.textContent = "";
+        }
+    }
+
     /**
      *
      * @param {WT_Airport} airport
@@ -472,6 +483,8 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         this._updateLatLong();
         this._updateElevation();
         this._updatePrivacy();
+        this._updateUTCOffset(); // while technically UTC offsets can change with time (i.e. DST), it's unlikely the change will happen in the middle of
+                                 // having this tab open, so to save on performance we will update only on setting the airport.
     }
 
     _updateAltitudeUnit() {
@@ -573,6 +586,12 @@ WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.innerHTML = `
                     top: 50%;
                     transform: translate(-50%, -50%);
                 }
+                #utcoffset {
+                    position: absolute;
+                    left: 75%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                }
 
                 #fuel {
                     position: absolute;
@@ -609,6 +628,10 @@ WT_G3x5_TSCAirportInfoTabHTMLElement.TEMPLATE.innerHTML = `
         <div class="row" id="row3">
             <div id="elevation">
                 <div class="title">Elev</div>
+                <div class="value"></div>
+            </div>
+            <div id="utcoffset">
+                <div class="title">Time</div>
                 <div class="value"></div>
             </div>
         </div>

@@ -108,6 +108,7 @@ class WT_Airport extends WT_ICAOWaypoint {
         this._frequencies = new WT_AirportFrequencyList(this._initFrequencies(data.frequencies));
         this._runways = new WT_RunwayList(this._initRunways(data.runways));
         this._size = this._calculateSize();
+        this._timezone = new WT_Timezone(tzlookup(this.location.lat, this.location.long));
 
         this._departures = new WT_ProcedureList(data.departures.map(this._departureMap.bind(this)));
         this._arrivals = new WT_ProcedureList(data.arrivals.map(this._arrivalMap.bind(this)));
@@ -170,6 +171,15 @@ class WT_Airport extends WT_ICAOWaypoint {
      */
     get elevation() {
         return this._elevation ? this._elevation.readonly() : undefined;
+    }
+
+    /**
+     * The timezone of this airport.
+     * @readonly
+     * @type {WT_TimezoneReadOnly}
+     */
+    get timezone() {
+        return this._timezone.readonly();
     }
 
     /**
