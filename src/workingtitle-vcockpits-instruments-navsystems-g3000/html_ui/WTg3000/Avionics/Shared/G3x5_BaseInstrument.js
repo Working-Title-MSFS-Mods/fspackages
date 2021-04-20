@@ -18,6 +18,14 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     /**
      * @readonly
+     * @type {WT_TimeReadOnly}
+     */
+    get time() {
+        return this._time.readonly();
+    }
+
+    /**
+     * @readonly
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
@@ -93,13 +101,8 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         requestAnimationFrame(updateLoop);
     }
 
-    _initICAOSearchers() {
-        this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
-        };
+    _initTime() {
+        this._time = new WT_Time(WT_Time.absoluteTimeToUnix(SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds")));
     }
 
     _createAirplane() {
@@ -121,12 +124,26 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this.airplane.fms.setFlightPlanManager(this._fpm);
     }
 
+    _initICAOSearchers() {
+        this._icaoSearchers = {
+            airport: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.AIRPORT),
+            vor: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.VOR),
+            ndb: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.NDB),
+            int: new WT_ICAOSearcher(this.instrumentIdentifier, WT_ICAOSearcher.Keys.INT)
+        };
+    }
+
     Init() {
         super.Init();
 
+        this._initTime();
         this._initAirplane();
         this._initFlightPlanManager();
         this._initICAOSearchers();
+    }
+
+    _updateTime() {
+        this._time.set(WT_Time.absoluteTimeToUnix(SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds")));
     }
 
     _updateICAOWaypointFactory(currentTime) {
@@ -141,6 +158,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     _doUpdates(currentTime) {
+        this._updateTime();
         this._updateICAOWaypointFactory(currentTime);
         this._updateFlightPlanManager(currentTime);
     }

@@ -583,9 +583,13 @@ WT_G3x5_PFDBottomInfoBearingCellHTMLElement.SOURCE_TEXT = [
 ];
 
 class WT_G3x5_PFDBottomInfoTimeCell extends WT_G3x5_PFDBottomInfoCell {
-    constructor() {
+    /**
+     * @param {WT_G3x5_PFD} instrument
+     */
+    constructor(instrument) {
         super();
 
+        this._instrument = instrument;
         this._initTimer();
         this._initUTCModel();
         this._setHTMLElementContext();
@@ -601,9 +605,10 @@ class WT_G3x5_PFDBottomInfoTimeCell extends WT_G3x5_PFDBottomInfoCell {
     }
 
     _initUTCModel() {
-        this._utcModel = new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {
-            updateValue(value) {
-                value.set(SimVar.GetGlobalVarValue("ZULU TIME", "seconds") % 86400);
+        let instrument = this._instrument;
+        this._currentTimeModel = new WT_TimeModelAutoUpdated("{hour-24-pad}:{minute-pad}:{second-pad}", {
+            updateTime(time) {
+                time.set(instrument.time);
             }
         });
     }
@@ -611,7 +616,7 @@ class WT_G3x5_PFDBottomInfoTimeCell extends WT_G3x5_PFDBottomInfoCell {
     _setHTMLElementContext() {
         this.htmlElement.setContext({
             timer: this._timer,
-            utcModel: this._utcModel
+            currentTimeModel: this._currentTimeModel
         });
     }
 
@@ -631,7 +636,7 @@ class WT_G3x5_PFDBottomInfoTimeCellHTMLElement extends HTMLElement {
         this._formatter = new WT_TimeFormatter({round: 0});
 
         /**
-         * @type {{timer:WT_Timer,utcModel:WT_NumberUnitModel}}
+         * @type {{timer:WT_Timer,currentTimeModel:WT_TimeModel}}
          */
         this._context = null;
         this._isInit = false;
@@ -653,12 +658,12 @@ class WT_G3x5_PFDBottomInfoTimeCellHTMLElement extends HTMLElement {
 
     _updateTimer() {
         let timer = this._context.timer;
-        this._timerValue.innerHTML = this._formatter.getFormattedString(timer.value);
+        this._timerValue.textContent = this._formatter.getFormattedString(timer.value);
     }
 
     _updateUTC() {
-        let utcModel = this._context.utcModel;
-        this._utcValue.innerHTML = this._formatter.getFormattedString(utcModel.getValue());
+        let utcModel = this._context.currentTimeModel;
+        this._utcValue.textContent = utcModel.getTimezone().format(utcModel.getTime(), utcModel.getFormat());
     }
 
     update() {
