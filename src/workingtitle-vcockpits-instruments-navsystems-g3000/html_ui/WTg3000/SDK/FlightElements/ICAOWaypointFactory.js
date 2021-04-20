@@ -70,9 +70,8 @@ class WT_ICAOWaypointFactory {
     _buildAirway(waypoint, route) {
         let airway = this._airwayCache.get(route.name);
         if (!airway) {
-            let builder = new WT_ICAOWaypointFactoryAirwayBuilder(route, this._getWaypointEntry.bind(this));
+            let builder = new WT_ICAOWaypointFactoryAirwayBuilder(route, this._getWaypointEntry.bind(this), waypoint);
             airway = new WT_Airway(route.name, route.type, builder);
-            airway._waypoints.push(waypoint);
             this._airwayCache.set(route.name, airway);
         }
         return airway;
@@ -497,40 +496,34 @@ WT_ICAOWaypointFactory.RELOAD_ATTEMPT_INTERVAL = 200; // ms
  */
 
 class WT_ICAOWaypointFactoryAirwayBuilder extends WT_AirwayBuilder {
-    constructor(initialData, requestEntry) {
+    constructor(initialData, requestEntry, initialWaypoint) {
         super();
         this._initialData = initialData;
         this._requestEntry = requestEntry;
+        this._initialWaypoint = initialWaypoint;
+    }
+
+    async _step(nextICAOPropertyName, arrayInsertFunc) {
+        let isDone = false;
+        let current = this._initialData;
+        while (!isDone && current) {
+            let nextICAO = current[nextICAOPropertyName];
+            if (nextICAO && nextICAO.length > 0 && nextICAO[0] != " " && !this._waypointsArray.find(waypoint => waypoint.icao === nextICAO)) {
+                let entry = await this._requestEntry(nextICAO);
+                arrayInsertFunc(entry.waypoint);
+                current = entry.routes.find(route => route.name === current.name);
+            } else {
+                isDone = true;
+            }
+        }
     }
 
     async _stepForward() {
-        let isDone = false;
-        let current = this._initialData;
-        while (!isDone && current) {
-            let nextICAO = current.nextIcao;
-            if (nextICAO && nextICAO.length > 0 && nextICAO[0] != " " && !this.airway._waypoints.find(waypoint => waypoint.icao === nextICAO)) {
-                let entry = await this._requestEntry(nextICAO);
-                this.airway._waypoints.push(entry.waypoint);
-                current = entry.routes.find(route => route.name === current.name);
-            } else {
-                isDone = true;
-            }
-        }
+        return this._step("nextIcao", this._waypointsArray.push.bind(this._waypointsArray));
     }
 
     async _stepBackward() {
-        let isDone = false;
-        let current = this._initialData;
-        while (!isDone && current) {
-            let prevICAO = current.prevIcao;
-            if (prevICAO && prevICAO.length > 0 && prevICAO[0] != " " && !this.airway._waypoints.find(waypoint => waypoint.icao === prevICAO)) {
-                let entry = await this._requestEntry(prevICAO);
-                this.airway._waypoints.splice(0, 0, entry.waypoint);
-                current = entry.routes.find(route => route.name === current.name);
-            } else {
-                isDone = true;
-            }
-        }
+        return this._step("prevIcao", this._waypointsArray.unshift.bind(this._waypointsArray));
     }
 
     /**
@@ -544,6 +537,7 @@ class WT_ICAOWaypointFactoryAirwayBuilder extends WT_AirwayBuilder {
         }
         return new Promise(resolve => {
             this._hasStarted = true;
+            this._waypointsArray.push(this._initialWaypoint);
             Promise.all([
                 this._stepForward(),
                 this._stepBackward()
