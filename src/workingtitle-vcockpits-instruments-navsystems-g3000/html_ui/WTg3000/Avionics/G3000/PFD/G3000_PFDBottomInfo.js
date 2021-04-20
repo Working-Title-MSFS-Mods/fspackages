@@ -11,7 +11,7 @@ class WT_G3000_PFDBottomInfo extends WT_G3x5_PFDBottomInfo {
         bearingCellRight.htmlElement.setOrientation(WT_G3000_PFDBottomInfoBearingCellHTMLElement.Orientation.RIGHT);
         this.addCell(bearingCellRight);
 
-        this.addCell(new WT_G3x5_PFDBottomInfoTimeCell());
+        this.addCell(new WT_G3x5_PFDBottomInfoTimeCell(this.instrument));
     }
 }
 
