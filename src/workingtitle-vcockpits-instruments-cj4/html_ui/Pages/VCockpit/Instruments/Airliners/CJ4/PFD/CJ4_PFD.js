@@ -58,7 +58,7 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
-        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", WTDataStore.get("L:WT_CJ4_PFD1_AOA"));
+        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", WTDataStore.get("CJ4_PFD1_AOA"));
         SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_VR_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_V2_ON", "Bool", false);
@@ -524,7 +524,6 @@ class CJ4_PFD extends BaseAirliners {
         WTDataStore.set("CJ4_FD_MODE", this.fdMode);
 
         const aoaSetting = _dict.get(CJ4_PopupMenu_Key.AOA);
-        WTDataStore.set("L:WT_CJ4_PFD1_AOA", aoaSetting);
         if (aoaSetting) {
             if (aoaSetting == "AUTO") {
                 SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
@@ -534,6 +533,8 @@ class CJ4_PFD extends BaseAirliners {
                 SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 2);
             }
         }
+        WTDataStore.set("CJ4_PFD1_AOA", SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number"));
+
         const v1 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V1);
         const vR = _dict.get(CJ4_PopupMenu_Key.VSPEED_VR);
         const v2 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V2);
@@ -689,17 +690,14 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.UNITS_MTR_ALT, (this.horizon.isMTRSVisible()) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.FLT_DIR, (this.fdMode == 1) ? "X-PTR" : "V-BAR");
         
-        const aoaSettingFill = WTDataStore.get("L:WT_CJ4_PFD1_AOA");
+        const aoaSettingFill = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number").toFixed(0);
         if (aoaSettingFill) {
-            if (aoaSettingFill == "AUTO") {
+            if (aoaSettingFill == 0) {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "AUTO");
-                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
-            } else if (aoaSettingFill == "ON") {
+            } else if (aoaSettingFill == 1) {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "ON");
-                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 1);
-            } else if (aoaSettingFill == "OFF") {
+            } else if (aoaSettingFill == 2) {
                 _dict.set(CJ4_PopupMenu_Key.AOA, "OFF");
-                SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 2);
             }
         }
         const v1 = SimVar.GetSimVarValue("L:WT_CJ4_V1_SPEED", "Knots").toFixed(0);
