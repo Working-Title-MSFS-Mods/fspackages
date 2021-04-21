@@ -85,7 +85,7 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
      * @param {WT_FlightPlanLeg} leg
      */
      _isLegFAF(leg) {
-        return leg.segment === WT_FlightPlan.Segment.APPROACH && leg.index === leg.flightPlan.legCount() - 2;
+        return leg.segment === WT_FlightPlan.Segment.APPROACH && leg.index === leg.flightPlan.legs.length - 2;
     }
 
     /**
@@ -335,19 +335,14 @@ class WT_G3x5_PFDNavStatusDISModel extends WT_G3x5_PFDNavStatusNumberUnitModel {
 
     _updateValue() {
         let fpm = this._airplane.fms.flightPlanManager;
-        let target = null;
+        let result;
         if (fpm.directTo.isActive()) {
-            target = fpm.directTo.getDestination().location;
+            result = fpm.distanceToDirectTo(true, this._value);
         } else {
-            let activeLeg = fpm.getActiveLeg(true);
-            if (activeLeg) {
-                target = activeLeg.fix.location;
-            }
+            result = fpm.distanceToActiveLegFix(true, this._value);
         }
 
-        if (target) {
-            this._value.set(target.distance(this._airplane.navigation.position(this._tempGeoPoint)));
-        } else {
+        if (!result) {
             this._value.set(NaN);
         }
     }
@@ -406,7 +401,7 @@ class WT_G3x5_PFDNavStatusETEModel extends WT_G3x5_PFDNavStatusNumberUnitModel {
             } else {
                 let activeLeg = fpm.getActiveLeg(true);
                 if (activeLeg) {
-                    distance = fpm.distanceToActiveFix(true, this._tempNM);
+                    distance = fpm.distanceToActiveLegFix(true, this._tempNM);
                 }
             }
 
