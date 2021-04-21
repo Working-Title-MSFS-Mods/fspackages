@@ -152,7 +152,7 @@ class WT_G3x5_NavDataInfoViewNumberFormatter extends WT_G3x5_NavDataInfoViewForm
      * @param {String} [defaultText]
      * @param {{isDefault(value:WT_NumberUnit):Boolean}} [defaultChecker]
      */
-    constructor(formatter, defaultText = "", defaultChecker = {isDefault: value => isNaN(value.number)}) {
+    constructor(formatter, defaultText = "___", defaultChecker = {isDefault: value => value.isNaN()}) {
         super();
 
         this._formatter = formatter;
@@ -212,7 +212,14 @@ class WT_G3x5_NavDataInfoViewDurationFormatter extends WT_G3x5_NavDataInfoViewNu
 }
 
 class WT_G3x5_NavDataInfoViewTimeFormatter {
-    constructor() {
+    /**
+     * @param {String} [defaultText]
+     * @param {{isDefault(value:WT_Time):Boolean}} [defaultChecker]
+     */
+    constructor(defaultText = "__:__", defaultChecker = {isDefault: time => !time.isValid()}) {
+        this._defaultText = defaultText;
+        this._defaultChecker = defaultChecker;
+
         this._offsetTime = new WT_Time();
     }
 
@@ -226,19 +233,27 @@ class WT_G3x5_NavDataInfoViewTimeFormatter {
     }
 
     /**
+     *
+     * @param {WT_G3x5_NavDataInfoTime} navDataInfo
+     * @param {WT_TimeObject} time
+     * @returns {String}
+     */
+    _getFormattedTime(navDataInfo, time) {
+        let format = navDataInfo.getFormat();
+        if (format !== WT_G3x5_TimeFormatSetting.Mode.UTC) {
+            time = this._offsetTime.set(time).add(navDataInfo.getLocalOffset());
+        }
+        return time.format(WT_Timezone.UTC, this._getFormatString(format));
+    }
+
+    /**
      * Gets the display HTML string of a nav data info's current value.
      * @param {WT_G3x5_NavDataInfoTime} navDataInfo - a nav data info object.
      * @returns {String} the HTML string of the nav data info's current value.
      */
     getDisplayHTML(navDataInfo) {
-        let format = navDataInfo.getFormat();
-        let time;
-        if (format === WT_G3x5_TimeFormatSetting.Mode.UTC) {
-            time = navDataInfo.getValue();
-        } else {
-            time = this._offsetTime.set(navDataInfo.getValue()).add(navDataInfo.getLocalOffset());
-        }
-        return time.format(WT_Timezone.UTC, this._getFormatString(format));
+        let time = navDataInfo.getValue();
+        return this._defaultChecker.isDefault(time) ? this._defaultText : this._getFormattedTime(navDataInfo, time);
     }
 }
 WT_G3x5_NavDataInfoViewTimeFormatter.FORMAT_STRINGS = [

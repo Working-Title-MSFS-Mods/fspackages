@@ -26,10 +26,25 @@ class WT_G3x5_NavDataBarModel {
                     airplane.navigation.position(location);
                 }
             }, "PLANE HEADING DEGREES MAGNETIC", "degree")),
-            DIS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelSimVar(WT_Unit.NMILE, "GPS WP DISTANCE", "nautical miles")),
+            DIS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {
+                updateValue(value) {
+                    let result;
+                    if (flightPlanManager.directTo.isActive()) {
+                        result = flightPlanManager.distanceToDirectTo(true, value);
+                    } else {
+                        result = flightPlanManager.distanceToActiveLegFix(true, value);
+                    }
+                    if (!result) {
+                        value.set(NaN);
+                    }
+                }
+            })),
             DTG: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DTG, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {
                 updateValue(value) {
-                    return flightPlanManager.directTo.isActive() ? flightPlanManager.distanceToDirectTo(true, value) : flightPlanManager.distanceToDestination(true, value);
+                    let result = flightPlanManager.distanceToDestination(true, value);
+                    if (!result) {
+                        value.set(NaN);
+                    }
                 }
             })),
             DTK: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DTK, new WT_NavAngleModelSimVar(true, {
@@ -50,15 +65,44 @@ class WT_G3x5_NavDataBarModel {
                     }
                 }
             })),
-            ENR: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ENR, new WT_NumberUnitModelSimVar(WT_Unit.SECOND, "GPS ETE", "seconds")),
+            ENR: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ENR, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {
+                updateValue(value) {
+                    let result = flightPlanManager.timeToDestination(true, value);
+                    if (!result) {
+                        value.set(NaN);
+                    }
+                }
+            })),
             ETA: new WT_G3x5_NavDataInfoTime(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ETA, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {
+                _tempSec: WT_Unit.SECOND.createNumber(0),
                 updateTime(time) {
-                    time.set(instrument.time);
-                    let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
-                    time.add(ete, WT_Unit.SECOND);
+                    let ete;
+                    if (flightPlanManager.directTo.isActive()) {
+                        ete = flightPlanManager.timeToDirectTo(true, this._tempSec);
+                    } else {
+                        ete = flightPlanManager.timeToActiveLegFix(true, this._tempSec);
+                    }
+                    if (ete) {
+                        time.set(instrument.time);
+                        time.add(ete);
+                    } else {
+                        time.set(NaN);
+                    }
                 }
             }), instrument.avionicsSystemSettingModel.timeFormatSetting, instrument.avionicsSystemSettingModel.timeLocalOffsetSetting)),
-            ETE: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ETE, new WT_NumberUnitModelSimVar(WT_Unit.SECOND, "GPS WP ETE", "seconds")),
+            ETE: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ETE, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {
+                updateValue(value) {
+                    let result;
+                    if (flightPlanManager.directTo.isActive()) {
+                        result = flightPlanManager.timeToDirectTo(true, value);
+                    } else {
+                        result = flightPlanManager.timeToActiveLegFix(true, value);
+                    }
+                    if (!result) {
+                        value.set(NaN);
+                    }
+                }
+            })),
             FOB: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOB, new WT_NumberUnitModelSimVar(WT_Unit.GALLON, "FUEL TOTAL QUANTITY", "gallons")),
             FOD: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOD, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON, {
                 tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
@@ -72,10 +116,15 @@ class WT_G3x5_NavDataBarModel {
             })),
             GS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.GS, new WT_NumberUnitModelSimVar(WT_Unit.KNOT, "GPS GROUND SPEED", "knots")),
             LDG: new WT_G3x5_NavDataInfoTime(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.LDG, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {
+                _tempSec: WT_Unit.SECOND.createNumber(0),
                 updateTime(time) {
-                    time.set(instrument.time);
-                    let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
-                    time.add(enr, WT_Unit.SECOND);
+                    let enr = flightPlanManager.timeToDestination(true, this._tempSec);
+                    if (enr) {
+                        time.set(instrument.time);
+                        time.add(enr);
+                    } else {
+                        time.set(NaN);
+                    }
                 }
             }), instrument.avionicsSystemSettingModel.timeFormatSetting, instrument.avionicsSystemSettingModel.timeLocalOffsetSetting)),
             TAS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.TAS, new WT_NumberUnitModelSimVar(WT_Unit.KNOT, "AIRSPEED TRUE", "knots")),
@@ -229,17 +278,17 @@ class WT_G3x5_NavDataBarView extends HTMLElement {
             timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
             delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
         }
-        let timeFormatter = new WT_TimeFormatter(timeOpts);
+        let durationFormatter = new WT_TimeFormatter(timeOpts);
 
         this._formatters = {
             BRG: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
             DIS: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
             DTG: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
             DTK: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
-            END: new WT_G3x5_NavDataInfoViewDurationFormatter(timeFormatter, "__:__"),
-            ENR: new WT_G3x5_NavDataInfoViewDurationFormatter(timeFormatter, "__:__", {isDefault: value => value.equals(0)}),
+            END: new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__"),
+            ENR: new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__"),
             ETA: new WT_G3x5_NavDataInfoViewTimeFormatter(),
-            ETE: new WT_G3x5_NavDataInfoViewDurationFormatter(timeFormatter, "__:__", {isDefault: value => value.equals(0)}),
+            ETE: new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__"),
             FOB: new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter),
             FOD: new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter),
             GS: new WT_G3x5_NavDataInfoViewNumberFormatter(speedFormatter),
