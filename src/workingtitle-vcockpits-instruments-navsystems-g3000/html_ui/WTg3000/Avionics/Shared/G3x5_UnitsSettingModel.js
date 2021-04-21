@@ -343,7 +343,7 @@ class WT_G3x5_UnitsSettingModelMapModelAdapter extends WT_G3x5_UnitsSettingModel
 class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
-     * @param {WT_NavDataBarModel} navDataBarModel
+     * @param {WT_G3x5_NavDataBarModel} navDataBarModel
      */
     constructor(unitsSettingModel, navDataBarModel) {
         super(unitsSettingModel);
@@ -355,7 +355,7 @@ class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsSetting
 
     /**
      * @readonly
-     * @type {WT_NavDataBarModel}
+     * @type {WT_G3x5_NavDataBarModel}
      */
     get navDataBarModel() {
         return this._navDataBarModel;

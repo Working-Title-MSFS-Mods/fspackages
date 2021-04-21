@@ -46,12 +46,12 @@ class WT_G5000_PFDBottomInfoNavStatusCell extends WT_G3x5_PFDBottomInfoCell {
 
         this._infos = [
             {
-                model: new WT_NavDataInfoNumber({shortName: "DIS", longName: "Distance to Next Waypoint"}, new WT_G3x5_PFDNavStatusDISModel(this._airplane)),
-                formatter: new WT_NavDataInfoViewNumberFormatter(distanceFormatter, "___")
+                model: new WT_G3x5_NavDataInfoNumber({shortName: "DIS", longName: "Distance to Next Waypoint"}, new WT_G3x5_PFDNavStatusDISModel(this._airplane)),
+                formatter: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter, "___")
             },
             {
-                model: new WT_NavDataInfoNumber({shortName: "ETE", longName: "Estimated Time Enroute"}, new WT_G3x5_PFDNavStatusETEModel(this._airplane)),
-                formatter: new WT_NavDataInfoViewTimeFormatter(eteFormatter, "__:__")
+                model: new WT_G3x5_NavDataInfoNumber({shortName: "ETE", longName: "Estimated Time Enroute"}, new WT_G3x5_PFDNavStatusETEModel(this._airplane)),
+                formatter: new WT_G3x5_NavDataInfoViewDurationFormatter(eteFormatter, "__:__")
             }
         ];
 
@@ -157,7 +157,7 @@ customElements.define(WT_G5000_PFDBottomInfoNavStatusCellHTMLElement.NAME, WT_G5
 class WT_G5000_UnitsSettingModelNavStatusAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
-     * @param {WT_NavDataBarModel} navDataBarModel
+     * @param {WT_G3x5_NavDataBarModel} navDataBarModel
      */
     constructor(unitsSettingModel, disInfo, eteInfo) {
         super(unitsSettingModel);

@@ -10,7 +10,7 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
          */
         this._context = null;
         /**
-         * @type {{model:WT_NavDataInfo, view:WT_NavDataInfoView, formatter:WT_NavDataInfoViewFormatter}[]}
+         * @type {{model:WT_G3x5_NavDataInfo, view:WT_G3x5_NavDataInfoView, formatter:WT_G3x5_NavDataInfoViewFormatter}[]}
          */
         this._infos = [];
         this._isInit = false;
@@ -26,7 +26,7 @@ class WT_G3x5_PFDNavStatusHTMLElement extends HTMLElement {
         this._right = new WT_CachedElement(this.shadowRoot.querySelector(`#mainright`));
         this._infosContainer = this.shadowRoot.querySelector(`#infoscontainer`);
 
-        this._navDataInfoViewRecycler = new WT_NavDataInfoViewRecycler(this._infosContainer);
+        this._navDataInfoViewRecycler = new WT_G3x5_NavDataInfoViewRecycler(this._infosContainer);
     }
 
     connectedCallback() {
@@ -284,7 +284,7 @@ customElements.define(WT_G3x5_PFDNavStatusHTMLElement.NAME, WT_G3x5_PFDNavStatus
 /**
  * @typedef WT_G3x5_PFDNavStatusContext
  * @property {WT_PlayerAirplane} airplane
- * @property {{model:WT_NavDataInfo, formatter:WT_NavDataInfoViewFormatter}[]} infos
+ * @property {{model:WT_G3x5_NavDataInfo, formatter:WT_G3x5_NavDataInfoViewFormatter}[]} infos
  */
 
  class WT_G3x5_PFDNavStatusNumberUnitModel extends WT_NumberUnitModel {
