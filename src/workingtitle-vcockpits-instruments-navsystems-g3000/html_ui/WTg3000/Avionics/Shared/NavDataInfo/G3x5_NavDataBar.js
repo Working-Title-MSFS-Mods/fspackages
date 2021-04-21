@@ -2,13 +2,12 @@
  * This class implements the Navigation data bar (also referred to as navigation status bar) found on Garmin units.
  * It has support for an arbitrary number of data bar fields.
  */
-class WT_NavDataBarModel {
+class WT_G3x5_NavDataBarModel {
     /**
-     * @param {WT_FlightPlanManager} flightPlanManager
+     * @param {WT_G3x5_BaseInstrument} instrument
      */
-    constructor(airplane, flightPlanManager) {
-        this._airplane = airplane;
-        this._fpm = flightPlanManager;
+    constructor(instrument) {
+        this._instrument = instrument;
 
         this._dataFieldCount = 0;
         this._dataFields = [];
@@ -17,32 +16,33 @@ class WT_NavDataBarModel {
     }
 
     _initInfos() {
-        let flightPlanManager = this._fpm;
-        let airplaneModel = this._airplane;
+        let instrument = this._instrument;
+        let flightPlanManager = this._instrument.flightPlanManagerWT;
+        let airplane = this._instrument.airplane;
 
         this._infos = {
-            BRG: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.BRG, new WT_NavAngleModelSimVar(true, {
+            BRG: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.BRG, new WT_NavAngleModelSimVar(true, {
                 updateLocation(location) {
-                    airplaneModel.navigation.position(location);
+                    airplane.navigation.position(location);
                 }
             }, "PLANE HEADING DEGREES MAGNETIC", "degree")),
-            DIS: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelSimVar(WT_Unit.NMILE, "GPS WP DISTANCE", "nautical miles")),
-            DTG: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DTG, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {
+            DIS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DIS, new WT_NumberUnitModelSimVar(WT_Unit.NMILE, "GPS WP DISTANCE", "nautical miles")),
+            DTG: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DTG, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {
                 updateValue(value) {
                     return flightPlanManager.directTo.isActive() ? flightPlanManager.distanceToDirectTo(true, value) : flightPlanManager.distanceToDestination(true, value);
                 }
             })),
-            DTK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.DTK, new WT_NavAngleModelSimVar(true, {
+            DTK: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.DTK, new WT_NavAngleModelSimVar(true, {
                 updateLocation(location) {
-                    airplaneModel.navigation.position(location);
+                    airplane.navigation.position(location);
                 }
             }, "GPS WP DESIRED TRACK", "degree")),
-            END: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.END, new WT_NumberUnitModelAutoUpdated(WT_Unit.HOUR, {
+            END: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.END, new WT_NumberUnitModelAutoUpdated(WT_Unit.HOUR, {
                 tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
                 tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
                 updateValue(value) {
-                    let fuelRemaining = airplaneModel.engineering.fuelOnboard(this.tempGal);
-                    let fuelFlow = airplaneModel.engineering.fuelFlowTotal(this.tempGPH);
+                    let fuelRemaining = airplane.engineering.fuelOnboard(this.tempGal);
+                    let fuelFlow = airplane.engineering.fuelFlowTotal(this.tempGPH);
                     if (fuelFlow.number == 0) {
                         value.set(0);
                     } else {
@@ -50,42 +50,42 @@ class WT_NavDataBarModel {
                     }
                 }
             })),
-            ENR: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.ENR, new WT_NumberUnitModelSimVar(WT_Unit.SECOND, "GPS ETE", "seconds")),
-            ETA: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.ETA, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {
-                updateValue(value) {
-                    let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            ENR: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ENR, new WT_NumberUnitModelSimVar(WT_Unit.SECOND, "GPS ETE", "seconds")),
+            ETA: new WT_G3x5_NavDataInfoTime(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ETA, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {
+                updateTime(time) {
+                    time.set(instrument.time);
                     let ete = SimVar.GetSimVarValue("GPS WP ETE", "seconds");
-                    value.set((currentTime + ete) % (24 * 3600));
+                    time.add(ete, WT_Unit.SECOND);
                 }
-            })),
-            ETE: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.ETE, new WT_NumberUnitModelSimVar(WT_Unit.SECOND, "GPS WP ETE", "seconds")),
-            FOB: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.FOB, new WT_NumberUnitModelSimVar(WT_Unit.GALLON, "FUEL TOTAL QUANTITY", "gallons")),
-            FOD: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.FOD, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON, {
+            }), instrument.avionicsSystemSettingModel.timeFormatSetting, instrument.avionicsSystemSettingModel.timeLocalOffsetSetting)),
+            ETE: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.ETE, new WT_NumberUnitModelSimVar(WT_Unit.SECOND, "GPS WP ETE", "seconds")),
+            FOB: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOB, new WT_NumberUnitModelSimVar(WT_Unit.GALLON, "FUEL TOTAL QUANTITY", "gallons")),
+            FOD: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.FOD, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON, {
                 tempGal: new WT_NumberUnit(0, WT_Unit.GALLON),
                 tempGPH: new WT_NumberUnit(0, WT_Unit.GPH),
                 updateValue(value) {
-                    let fuelRemaining = airplaneModel.engineering.fuelOnboard(this.tempGal);
-                    let fuelFlow = airplaneModel.engineering.fuelFlowTotal(this.tempGPH);
+                    let fuelRemaining = airplane.engineering.fuelOnboard(this.tempGal);
+                    let fuelFlow = airplane.engineering.fuelFlowTotal(this.tempGPH);
                     let enr = SimVar.GetSimVarValue("GPS ETE", "seconds") / 3600;
                     value.set(fuelRemaining.number - enr * fuelFlow.number);
                 }
             })),
-            GS: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.GS, new WT_NumberUnitModelSimVar(WT_Unit.KNOT, "GPS GROUND SPEED", "knots")),
-            LDG: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.LDG, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {
-                updateValue(value) {
-                    let currentTime = SimVar.GetSimVarValue("E:ZULU TIME", "seconds");
+            GS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.GS, new WT_NumberUnitModelSimVar(WT_Unit.KNOT, "GPS GROUND SPEED", "knots")),
+            LDG: new WT_G3x5_NavDataInfoTime(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.LDG, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {
+                updateTime(time) {
+                    time.set(instrument.time);
                     let enr = SimVar.GetSimVarValue("GPS ETE", "seconds");
-                    value.set((currentTime + enr) % (24 * 3600));
+                    time.add(enr, WT_Unit.SECOND);
                 }
-            })),
-            TAS: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.TAS, new WT_NumberUnitModelSimVar(WT_Unit.KNOT, "AIRSPEED TRUE", "knots")),
-            TKE: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.TKE, new WT_NumberUnitModelSimVar(WT_Unit.DEGREE, "GPS WP TRACK ANGLE ERROR", "degree")),
-            TRK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.TRK, new WT_NavAngleModelSimVar(true, {
+            }), instrument.avionicsSystemSettingModel.timeFormatSetting, instrument.avionicsSystemSettingModel.timeLocalOffsetSetting)),
+            TAS: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.TAS, new WT_NumberUnitModelSimVar(WT_Unit.KNOT, "AIRSPEED TRUE", "knots")),
+            TKE: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.TKE, new WT_NumberUnitModelSimVar(WT_Unit.DEGREE, "GPS WP TRACK ANGLE ERROR", "degree")),
+            TRK: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.TRK, new WT_NavAngleModelSimVar(true, {
                 updateLocation(location) {
-                    airplaneModel.navigation.position(location);
+                    airplane.navigation.position(location);
                 }
             }, "GPS GROUND MAGNETIC TRACK", "degree")),
-            XTK: new WT_NavDataInfoNumber(WT_NavDataBarModel.INFO_DESCRIPTION.XTK, new WT_NumberUnitModelSimVar(WT_Unit.METER, "GPS WP CROSS TRK", "meters"))
+            XTK: new WT_G3x5_NavDataInfoNumber(WT_G3x5_NavDataBarModel.INFO_DESCRIPTION.XTK, new WT_NumberUnitModelSimVar(WT_Unit.METER, "GPS WP CROSS TRK", "meters"))
         };
     }
 
@@ -100,7 +100,7 @@ class WT_NavDataBarModel {
 
     /**
      * Gets an array of all of this nav data bar's data info objects.
-     * @returns {WT_NavDataInfo[]} an array of all of this nav data bar's data info objects.
+     * @returns {WT_G3x5_NavDataInfo[]} an array of all of this nav data bar's data info objects.
      */
     getAllNavDataInfo() {
         return Object.getOwnPropertyNames(this._infos).map(id => this._infos[id]);
@@ -109,7 +109,7 @@ class WT_NavDataBarModel {
     /**
      * Gets one of this nav data bar's nav data info objects by its ID.
      * @param {String} id - a string ID.
-     * @returns {WT_NavDataInfo} the nav data info object matching the supplied ID.
+     * @returns {WT_G3x5_NavDataInfo} the nav data info object matching the supplied ID.
      */
     getNavDataInfo(id) {
         return this._infos[id];
@@ -130,7 +130,7 @@ class WT_NavDataBarModel {
     /**
      * Gets the nav data info object assigned to a data field.
      * @param {Number} index - the index of the data field.
-     * @returns {WT_NavDataInfo} a nava data info object.
+     * @returns {WT_G3x5_NavDataInfo} a nava data info object.
      */
     getDataFieldInfo(index) {
         return this._dataFields[index];
@@ -139,7 +139,7 @@ class WT_NavDataBarModel {
     /**
      * Assigns a nav data info object to a data field.
      * @param {Number} index - the index of the data field.
-     * @param {WT_NavDataInfo} info - the nav data info object to assign.
+     * @param {WT_G3x5_NavDataInfo} info - the nav data info object to assign.
      */
     setDataFieldInfo(index, info) {
         if (index < 0 || index >= this._dataFieldCount) {
@@ -149,7 +149,7 @@ class WT_NavDataBarModel {
         this._dataFields[index] = info;
     }
 }
-WT_NavDataBarModel.INFO_DESCRIPTION = {
+WT_G3x5_NavDataBarModel.INFO_DESCRIPTION = {
     BRG: {shortName: "BRG", longName: "Bearing"},
     DIS: {shortName: "DIS", longName: "Distance to Next Waypoint"},
     DTG: {shortName: "DTG", longName: "Distance to Destination"},
@@ -168,16 +168,16 @@ WT_NavDataBarModel.INFO_DESCRIPTION = {
     XTK: {shortName: "XTK", longName: "Cross-track Error"},
 };
 
-class WT_NavDataBarView extends HTMLElement {
+class WT_G3x5_NavDataBarView extends HTMLElement {
     constructor() {
         super();
 
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_NavDataBarView.TEMPLATE.content.cloneNode(true));
+        this.shadowRoot.appendChild(WT_G3x5_NavDataBarView.TEMPLATE.content.cloneNode(true));
 
-        this._fieldViewRecycler = new WT_NavDataInfoViewRecycler(this);
+        this._fieldViewRecycler = new WT_G3x5_NavDataInfoViewRecycler(this);
         /**
-         * @type {WT_NavDataInfoView[]}
+         * @type {WT_G3x5_NavDataInfoView[]}
          */
         this._fieldViews = [];
 
@@ -189,7 +189,7 @@ class WT_NavDataBarView extends HTMLElement {
     /**
      * @readonly
      * @property {WT_NavDataBar} model
-     * @type {WT_NavDataBarModel}
+     * @type {WT_G3x5_NavDataBarModel}
      */
     get model() {
         return this._model;
@@ -231,28 +231,23 @@ class WT_NavDataBarView extends HTMLElement {
         }
         let timeFormatter = new WT_TimeFormatter(timeOpts);
 
-        let utcOpts = {
-            timeFormat: WT_TimeFormatter.Format.HH_MM
-        }
-        let utcFormatter = new WT_TimeFormatter(utcOpts);
-
         this._formatters = {
-            BRG: new WT_NavDataInfoViewDegreeFormatter(bearingFormatter),
-            DIS: new WT_NavDataInfoViewNumberFormatter(distanceFormatter),
-            DTG: new WT_NavDataInfoViewNumberFormatter(distanceFormatter),
-            DTK: new WT_NavDataInfoViewDegreeFormatter(bearingFormatter),
-            END: new WT_NavDataInfoViewTimeFormatter(timeFormatter, "__:__"),
-            ENR: new WT_NavDataInfoViewTimeFormatter(timeFormatter, "__:__", {isDefault: value => value.equals(0)}),
-            ETA: new WT_NavDataInfoViewUTCFormatter(utcFormatter),
-            ETE: new WT_NavDataInfoViewTimeFormatter(timeFormatter, "__:__", {isDefault: value => value.equals(0)}),
-            FOB: new WT_NavDataInfoViewNumberFormatter(volumeFormatter),
-            FOD: new WT_NavDataInfoViewNumberFormatter(volumeFormatter),
-            GS: new WT_NavDataInfoViewNumberFormatter(speedFormatter),
-            LDG: new WT_NavDataInfoViewUTCFormatter(utcFormatter),
-            TAS: new WT_NavDataInfoViewNumberFormatter(speedFormatter),
-            TKE: new WT_NavDataInfoViewDegreeFormatter(bearingFormatter),
-            TRK: new WT_NavDataInfoViewDegreeFormatter(bearingFormatter),
-            XTK: new WT_NavDataInfoViewNumberFormatter(distanceFormatter),
+            BRG: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
+            DIS: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
+            DTG: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
+            DTK: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
+            END: new WT_G3x5_NavDataInfoViewDurationFormatter(timeFormatter, "__:__"),
+            ENR: new WT_G3x5_NavDataInfoViewDurationFormatter(timeFormatter, "__:__", {isDefault: value => value.equals(0)}),
+            ETA: new WT_G3x5_NavDataInfoViewTimeFormatter(),
+            ETE: new WT_G3x5_NavDataInfoViewDurationFormatter(timeFormatter, "__:__", {isDefault: value => value.equals(0)}),
+            FOB: new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter),
+            FOD: new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter),
+            GS: new WT_G3x5_NavDataInfoViewNumberFormatter(speedFormatter),
+            LDG: new WT_G3x5_NavDataInfoViewTimeFormatter(),
+            TAS: new WT_G3x5_NavDataInfoViewNumberFormatter(speedFormatter),
+            TKE: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
+            TRK: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
+            XTK: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
         };
     }
 
@@ -282,7 +277,7 @@ class WT_NavDataBarView extends HTMLElement {
 
     /**
      * Sets the nav data bar model for this view.
-     * @param {WT_NavDataBarModel} model - a nav data bar model.
+     * @param {WT_G3x5_NavDataBarModel} model - a nav data bar model.
      */
     setModel(model) {
         if (this.model === model) {
@@ -302,9 +297,9 @@ class WT_NavDataBarView extends HTMLElement {
         }
     }
 }
-WT_NavDataBarView.NAME = "wt-navdatabar-view";
-WT_NavDataBarView.TEMPLATE = document.createElement("template");
-WT_NavDataBarView.TEMPLATE.innerHTML = `
+WT_G3x5_NavDataBarView.NAME = "wt-navdatabar-view";
+WT_G3x5_NavDataBarView.TEMPLATE = document.createElement("template");
+WT_G3x5_NavDataBarView.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
@@ -324,9 +319,9 @@ WT_NavDataBarView.TEMPLATE.innerHTML = `
     <slot name="fields" id="fields"></slot>
 `;
 
-customElements.define(WT_NavDataBarView.NAME, WT_NavDataBarView);
+customElements.define(WT_G3x5_NavDataBarView.NAME, WT_G3x5_NavDataBarView);
 
-class WT_NavDataBarSettingModel extends WT_DataStoreSettingModel {
+class WT_G3x5_NavDataBarSettingModel extends WT_DataStoreSettingModel {
     constructor(id, navDataBarModel) {
         super(id);
 
@@ -336,7 +331,7 @@ class WT_NavDataBarSettingModel extends WT_DataStoreSettingModel {
     /**
      * The nav data bar model associated with this setting model.
      * @readonly
-     * @type {WT_NavDataBarModel}
+     * @type {WT_G3x5_NavDataBarModel}
      */
     get navDataBarModel() {
         return this._navDataBarModel;
@@ -346,10 +341,10 @@ class WT_NavDataBarSettingModel extends WT_DataStoreSettingModel {
      * Creates and adds a data field setting to this setting model. The index of the setting is automatically set to
      * the next available index based on the number of settings already added to this model.
      * @param {String} defaultValue - the default value of the setting to add.
-     * @returns {WT_NavDataBarFieldSetting} the setting that was added.
+     * @returns {WT_G3x5_NavDataBarFieldSetting} the setting that was added.
      */
     addDataFieldSetting(defaultValue) {
-        let setting = new WT_NavDataBarFieldSetting(this, this._settings.length, defaultValue);
+        let setting = new WT_G3x5_NavDataBarFieldSetting(this, this._settings.length, defaultValue);
         this.addSetting(setting);
         return setting;
     }
@@ -357,16 +352,16 @@ class WT_NavDataBarSettingModel extends WT_DataStoreSettingModel {
     /**
      * Gets the setting for the data field at the specified index.
      * @param {Number} index - the index of the data field.
-     * @returns {WT_NavDataBarFieldSetting} a data field setting.
+     * @returns {WT_G3x5_NavDataBarFieldSetting} a data field setting.
      */
     getDataFieldSetting(index) {
         return this._settings[index];
     }
 }
 
-class WT_NavDataBarSetting extends WT_DataStoreSetting {
+class WT_G3x5_NavDataBarSetting extends WT_DataStoreSetting {
     /**
-     * @param {WT_NavDataBarSettingModel} model - the model with which to associate the new setting.
+     * @param {WT_G3x5_NavDataBarSettingModel} model - the model with which to associate the new setting.
      * @param {String} key - the data store key of the new setting.
      * @param {*} [defaultValue] - the value to which the new setting should default if it is not persistent or if a value cannot be retrieved
      *                             from the data store.
@@ -381,15 +376,15 @@ class WT_NavDataBarSetting extends WT_DataStoreSetting {
     /**
      * The nav data bar model associated with this setting.
      * @readonly
-     * @type {WT_NavDataBarModel}
+     * @type {WT_G3x5_NavDataBarModel}
      */
     get navDataBarModel() {
         return this._model.navDataBarModel;
     }
 }
 
-class WT_NavDataBarFieldSetting extends WT_NavDataBarSetting {
-    constructor(model, index, defaultValue, autoUpdate = true, isPersistent = true, keyRoot = WT_NavDataBarFieldSetting.KEY_ROOT) {
+class WT_G3x5_NavDataBarFieldSetting extends WT_G3x5_NavDataBarSetting {
+    constructor(model, index, defaultValue, autoUpdate = true, isPersistent = true, keyRoot = WT_G3x5_NavDataBarFieldSetting.KEY_ROOT) {
         super(model, `${keyRoot}_${index}`, defaultValue, autoUpdate, isPersistent);
 
         this._index = index;
@@ -408,4 +403,4 @@ class WT_NavDataBarFieldSetting extends WT_NavDataBarSetting {
         this.navDataBarModel.setDataFieldInfo(this._index, this.navDataBarModel.getNavDataInfo(this.getValue()));
     }
 }
-WT_NavDataBarFieldSetting.KEY_ROOT = "WT_NavDataBar_FieldAssignment";
+WT_G3x5_NavDataBarFieldSetting.KEY_ROOT = "WT_NavDataBar_FieldAssignment";

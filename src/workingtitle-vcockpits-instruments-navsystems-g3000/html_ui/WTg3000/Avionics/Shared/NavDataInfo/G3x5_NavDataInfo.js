@@ -1,7 +1,7 @@
 /**
  * A type of nav data info that can be assigned to a data field on the navigational data bar.
  */
-class WT_NavDataInfo {
+class WT_G3x5_NavDataInfo {
     /**
      * @param {Object} description - a description object containing the short name and long name of the new nav data info.
      */
@@ -50,11 +50,10 @@ class WT_NavDataInfo {
  * A nav data info type whose value is a WT_NumberUnit object.
  * @abstract
  */
-class WT_NavDataInfoNumber extends WT_NavDataInfo {
+class WT_G3x5_NavDataInfoNumber extends WT_G3x5_NavDataInfo {
     /**
      * @param {Object} description - a description object containing the short name and long name of the new nav data info.
-     * @param {WT_NumberunitModel} numberUnitModel - the unit of the new nav data info's number value. The display unit type of the new nav data
-     *                                               info will also be initialized to this unit.
+     * @param {WT_NumberUnitModel} numberUnitModel - the number unit model to use for the new nav data info.
      */
     constructor(description, numberUnitModel) {
         super(description);
@@ -88,10 +87,58 @@ class WT_NavDataInfoNumber extends WT_NavDataInfo {
     }
 }
 
-class WT_NavDataInfoViewFormatter {
+/**
+ * A nav data info type whose value is a WT_Time object.
+ * @abstract
+ */
+class WT_G3x5_NavDataInfoTime extends WT_G3x5_NavDataInfo {
+    /**
+     * @param {Object} description - a description object containing the short name and long name of the new nav data info.
+     * @param {WT_G3x5_TimeModel} timeModel - the time model to use for the new nav data info.
+     */
+    constructor(description, timeModel) {
+        super(description);
+
+        this._timeModel = timeModel;
+    }
+
+    /**
+     * Gets this nav data info's current value.
+     * @returns {WT_TimeReadOnly} this nav data info's current value.
+     */
+    getValue() {
+        return this._timeModel.getTime();
+    }
+
+    /**
+     * Gets this nav data info's current time format.
+     * @returns {WT_G3x5_TimeFormatSetting.Mode} this nav data info's current time format.
+     */
+    getFormat() {
+        return this._timeModel.getFormat();
+    }
+
+    /**
+     * Gets this nav data info's current time format string.
+     * @returns {String} this nav data info's current time format string.
+     */
+    getFormatString() {
+        return this._timeModel.getFormatString();
+    }
+
+    /**
+     * Gets this nav data info's current local time offset.
+     * @returns {WT_NumberUnitReadOnly} this nav data info's current local time offset.
+     */
+    getLocalOffset() {
+        return this._timeModel.getLocalOffset();
+    }
+}
+
+class WT_G3x5_NavDataInfoViewFormatter {
     /**
      * Gets the display HTML string of a nav data info's current value.
-     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfo} navDataInfo - a nav data info object.
      * @returns {String} the HTML string of the nav data info's current value.
      */
     getDisplayHTML(navDataInfo) {
@@ -99,7 +146,7 @@ class WT_NavDataInfoViewFormatter {
     }
 }
 
-class WT_NavDataInfoViewNumberFormatter extends WT_NavDataInfoViewFormatter {
+class WT_G3x5_NavDataInfoViewNumberFormatter extends WT_G3x5_NavDataInfoViewFormatter {
     /**
      * @param {WT_NumberFormatter} formatter
      * @param {String} [defaultText]
@@ -115,7 +162,7 @@ class WT_NavDataInfoViewNumberFormatter extends WT_NavDataInfoViewFormatter {
 
     /**
      * Gets the number part of the formatted display text of a nav data info's value.
-     * @param {WT_NavDataInfoNumber} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
      * @returns {String} a formatted text representation of a nav data info's current value.
      */
     _getNumberText(navDataInfo) {
@@ -125,7 +172,7 @@ class WT_NavDataInfoViewNumberFormatter extends WT_NavDataInfoViewFormatter {
 
     /**
      * Gets the unit part of the formatted display text of a nav data info's value.
-     * @param {WT_NavDataInfoNumber} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
      * @returns {String} a formatted text representation of a nav data info's current display unit.
      */
     _getUnitText(navDataInfo) {
@@ -134,18 +181,18 @@ class WT_NavDataInfoViewNumberFormatter extends WT_NavDataInfoViewFormatter {
 
     /**
      * Gets the display HTML string of a nav data info's current value.
-     * @param {WT_NavDataInfoNumber} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
      * @returns {String} the HTML string of the nav data info's current value.
      */
     getDisplayHTML(navDataInfo) {
-        return `<span>${this._getNumberText(navDataInfo)}</span><span class="${WT_NavDataInfoView.UNIT_CLASS}">${this._getUnitText(navDataInfo)}</span>`;
+        return `<span>${this._getNumberText(navDataInfo)}</span><span class="${WT_G3x5_NavDataInfoView.UNIT_CLASS}">${this._getUnitText(navDataInfo)}</span>`;
     }
 }
 
-class WT_NavDataInfoViewDegreeFormatter extends WT_NavDataInfoViewNumberFormatter {
+class WT_G3x5_NavDataInfoViewDegreeFormatter extends WT_G3x5_NavDataInfoViewNumberFormatter {
     /**
      * Gets the display HTML string of a nav data info's current value.
-     * @param {WT_NavDataInfoNumber} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
      * @returns {String} the HTML string of the nav data info's current value.
      */
     getDisplayHTML(navDataInfo) {
@@ -153,10 +200,10 @@ class WT_NavDataInfoViewDegreeFormatter extends WT_NavDataInfoViewNumberFormatte
     }
 }
 
-class WT_NavDataInfoViewTimeFormatter extends WT_NavDataInfoViewNumberFormatter {
+class WT_G3x5_NavDataInfoViewDurationFormatter extends WT_G3x5_NavDataInfoViewNumberFormatter {
     /**
      * Gets the unit part of the formatted display text of a nav data info's value.
-     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
+     * @param {WT_G3x5_NavDataInfoNumber} navDataInfo - a nav data info object.
      * @returns {String} a formatted text representation of a nav data info's current display unit.
      */
     _getUnitText(navDataInfo) {
@@ -164,31 +211,56 @@ class WT_NavDataInfoViewTimeFormatter extends WT_NavDataInfoViewNumberFormatter 
     }
 }
 
-class WT_NavDataInfoViewUTCFormatter extends WT_NavDataInfoViewNumberFormatter {
+class WT_G3x5_NavDataInfoViewTimeFormatter {
+    constructor() {
+        this._offsetTime = new WT_Time();
+    }
+
     /**
-     * Gets the unit part of the formatted display text of a nav data info's value.
-     * @param {WT_NavDataInfo} navDataInfo - a nav data info object.
-     * @returns {String} a formatted text representation of a nav data info's current display unit.
+     *
+     * @param {WT_G3x5_TimeFormatSetting.Mode} timeFormat
+     * @returns {String}
      */
-    _getUnitText(navDataInfo) {
-        return "UTC";
+    _getFormatString(timeFormat) {
+        return WT_G3x5_NavDataInfoViewTimeFormatter.FORMAT_STRINGS[timeFormat];
+    }
+
+    /**
+     * Gets the display HTML string of a nav data info's current value.
+     * @param {WT_G3x5_NavDataInfoTime} navDataInfo - a nav data info object.
+     * @returns {String} the HTML string of the nav data info's current value.
+     */
+    getDisplayHTML(navDataInfo) {
+        let format = navDataInfo.getFormat();
+        let time;
+        if (format === WT_G3x5_TimeFormatSetting.Mode.UTC) {
+            time = navDataInfo.getValue();
+        } else {
+            time = this._offsetTime.set(navDataInfo.getValue()).add(navDataInfo.getLocalOffset());
+        }
+        return time.format(WT_Timezone.UTC, this._getFormatString(format));
     }
 }
+WT_G3x5_NavDataInfoViewTimeFormatter.FORMAT_STRINGS = [
+    `{hour-pad}:{minute-pad}<span class="unit" style="text-transform: uppercase;">{ampm}</span>`,
+    `{hour-24-pad}:{minute-pad}`,
+    `{hour-24-pad}:{minute-pad}<span class="unit">UTC</span>`
+];
 
-class WT_NavDataInfoViewRecycler extends WT_HTMLElementRecycler {
+class WT_G3x5_NavDataInfoViewRecycler extends WT_HTMLElementRecycler {
     _createElement() {
-        let element = new WT_NavDataInfoView();
+        let element = new WT_G3x5_NavDataInfoView();
         element.slot = "fields";
         return element;
     }
 }
 
-class WT_NavDataInfoView extends HTMLElement {
+class WT_G3x5_NavDataInfoView extends HTMLElement {
     constructor() {
         super();
 
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_NavDataInfoView.TEMPLATE.content.cloneNode(true));
+        this.shadowRoot.appendChild(WT_G3x5_NavDataInfoView.TEMPLATE.content.cloneNode(true));
 
         this._isInit = false;
     }
@@ -210,8 +282,8 @@ class WT_NavDataInfoView extends HTMLElement {
 
     /**
      *
-     * @param {WT_NavDataInfo} navDataInfo
-     * @param {WT_NavDataInfoViewFormatter} formatter
+     * @param {WT_G3x5_NavDataInfo} navDataInfo
+     * @param {WT_G3x5_NavDataInfoViewFormatter} formatter
      */
     update(navDataInfo, formatter) {
         if (!this._isInit) {
@@ -226,10 +298,10 @@ class WT_NavDataInfoView extends HTMLElement {
         }
     }
 }
-WT_NavDataInfoView.UNIT_CLASS = "unit";
-WT_NavDataInfoView.NAME = "wt-navdatainfo-view";
-WT_NavDataInfoView.TEMPLATE = document.createElement("template");
-WT_NavDataInfoView.TEMPLATE.innerHTML = `
+WT_G3x5_NavDataInfoView.UNIT_CLASS = "unit";
+WT_G3x5_NavDataInfoView.NAME = "wt-navdatainfo-view";
+WT_G3x5_NavDataInfoView.TEMPLATE = document.createElement("template");
+WT_G3x5_NavDataInfoView.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
@@ -254,7 +326,7 @@ WT_NavDataInfoView.TEMPLATE.innerHTML = `
             #value {
                 color: var(--navdatainfo-value-color, white);
             }
-                .${WT_NavDataInfoView.UNIT_CLASS} {
+                .${WT_G3x5_NavDataInfoView.UNIT_CLASS} {
                     font-size: var(--navdatainfo-unit-font-size, 0.75em);
                 }
     </style>
@@ -265,4 +337,4 @@ WT_NavDataInfoView.TEMPLATE.innerHTML = `
     </div>
 `;
 
-customElements.define(WT_NavDataInfoView.NAME, WT_NavDataInfoView);
+customElements.define(WT_G3x5_NavDataInfoView.NAME, WT_G3x5_NavDataInfoView);
