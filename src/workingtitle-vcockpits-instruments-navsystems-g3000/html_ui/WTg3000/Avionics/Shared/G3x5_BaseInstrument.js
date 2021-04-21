@@ -6,6 +6,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._unitsSettingModel = new WT_G3x5_UnitsSettingModel();
+        this._avionicsSystemSettingModel = new WT_G3x5_AvionicsSystemSettingModel();
     }
 
     /**
@@ -54,6 +55,14 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
      */
     get flightPlanManagerWT() {
         return this._fpm;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_AvionicsSystemSettingModel}
+     */
+    get avionicsSystemSettingModel() {
+        return this._avionicsSystemSettingModel;
     }
 
     /**

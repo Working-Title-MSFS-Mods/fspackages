@@ -132,11 +132,12 @@ WT_G3x5_TSCAvionicsSettingsHTMLElement.TEMPLATE.innerHTML = `
 customElements.define("tsc-avionicssettings", WT_G3x5_TSCAvionicsSettingsHTMLElement);
 
 class WT_G3x5_TSCAvionicsSettingsTab extends WT_G3x5_TSCTabContent {
-    constructor(title, parentPage) {
+    constructor(title, parentPage, tabClass) {
         super(title);
 
         this._parentPage = parentPage;
         this._htmlElement = this._createHTMLElement();
+        this._htmlElement.classList.add(tabClass);
     }
 
     /**
@@ -186,6 +187,45 @@ class WT_G3x5_TSCAvionicsSettingsScrollTab extends WT_G3x5_TSCAvionicsSettingsTa
     _onDownPressed() {
     }
 }
+
+class WT_G3x5_TSCAvionicsSettingsRowTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
+    _createHTMLElement() {
+        return new WT_TSCScrollList();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCAvionicsSettingsRow} row
+     */
+    attachRow(row) {
+        row.slot = "content";
+        row.classList.add(WT_G3x5_TSCAvionicsSettingsRowTab.ROW_CLASS);
+        this.htmlElement.appendChild(row);
+    }
+
+    _cancelScroll() {
+        this.htmlElement.scrollManager.cancelScroll();
+    }
+
+    onDeactivated() {
+        super.onDeactivated();
+
+        this._cancelScroll();
+    }
+
+    update() {
+        this.htmlElement.scrollManager.update();
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollManager.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollManager.scrollDown();
+    }
+}
+WT_G3x5_TSCAvionicsSettingsRowTab.ROW_CLASS = "avionicsSettingsRow";
 
 class WT_G3x5_TSCAvionicsSettingsRow extends HTMLElement {
     constructor() {
@@ -361,25 +401,87 @@ WT_G3x5_TSCAvionicsSettingsLabeledButtonRow.TEMPLATE.innerHTML = `
     </div>
 `;
 
-class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
-    constructor(parentPage) {
-        super(WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE, parentPage);
+class WT_G3x5_TSCAvionicsSettingsManagedLabeledButtonRow extends WT_G3x5_TSCAvionicsSettingsLabeledButtonRow {
+    _cleanUpContext() {
+        if (this._buttonManager) {
+            this._buttonManager.destroy();
+        }
     }
 
-    _createHTMLElement() {
-        let htmlElement = new WT_TSCScrollList();
-        htmlElement.classList.add(WT_G3x5_TSCAvionicsSettingsSystemTab.CLASS);
-        return htmlElement;
+    _initTitle() {
+        this._title.textContent = this._context.rowTitle;
+    }
+
+    _initSelectionWindowContext() {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(this._context.valueText);
+        this._selectionWindowContext = {
+            title: this._context.selectionWindowTitle,
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            homePageGroup: this._context.parentPage.homePageGroup,
+            homePageName: this._context.parentPage.homePageName
+        };
+    }
+
+    _initButtonManager() {
+        let instrument = this._context.parentPage.instrument;
+        this._buttonManager = new WT_TSCSettingLabeledButtonManager(instrument, this._button, this._context.setting, instrument.selectionListWindow1, this._selectionWindowContext, value => this._context.valueText[value]);
+        this._buttonManager.init();
+    }
+
+    _updateFromContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._initTitle();
+        this._initSelectionWindowContext();
+        this._initButtonManager();
+    }
+}
+WT_G3x5_TSCAvionicsSettingsManagedLabeledButtonRow.NAME = "wt-tsc-avionicssettings-managedlabelbuttonrow";
+
+customElements.define(WT_G3x5_TSCAvionicsSettingsManagedLabeledButtonRow.NAME, WT_G3x5_TSCAvionicsSettingsManagedLabeledButtonRow);
+
+class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsRowTab {
+    constructor(parentPage) {
+        super(WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE, parentPage, WT_G3x5_TSCAvionicsSettingsSystemTab.CLASS);
+    }
+
+    _initTimeFormatRow() {
+        this._timeFormatRow = new WT_G3x5_TSCAvionicsSettingsManagedLabeledButtonRow();
+        this._timeFormatRow.setContext({
+            parentPage: this.parentPage,
+            rowTitle: "Time Format",
+            setting: this.parentPage.instrument.avionicsSystemSettingModel.timeFormatSetting,
+            valueText: WT_G3x5_TSCAvionicsSettingsSystemTab.TIME_FORMAT_VALUE_TEXT,
+            selectionWindowTitle: "Select Time Format"
+        });
+        this.attachRow(this._timeFormatRow);
+    }
+
+    _initTimeOffsetRow() {
+        this._timeOffsetRow = new WT_G3x5_TSCSystemTimeOffsetRow();
+        this._timeOffsetRow.setContext({
+            parentPage: this.parentPage,
+            formatSetting: this.parentPage.instrument.avionicsSystemSettingModel.timeFormatSetting,
+            offsetSetting: this.parentPage.instrument.avionicsSystemSettingModel.timeLocalOffsetSetting
+        });
+        this.attachRow(this._timeOffsetRow);
     }
 
     _initRunwaySurfaceRow() {
-        this._runwaySurfaceRow = new WT_G3x5_TSCSystemRunwaySurfaceRow();
+        this._runwaySurfaceRow = new WT_G3x5_TSCAvionicsSettingsManagedLabeledButtonRow();
         this._runwaySurfaceRow.setContext({
             parentPage: this.parentPage,
-            setting: this.parentPage.instrument.nearestAirportList.runwaySurfaceSetting
+            rowTitle: "Nearest Airport Runway Surface",
+            setting: this.parentPage.instrument.nearestAirportList.runwaySurfaceSetting,
+            valueText: WT_G3x5_TSCAvionicsSettingsSystemTab.RUNWAY_SURFACE_VALUE_TEXT,
+            selectionWindowTitle: "Select Runway Surface"
         });
-        this._runwaySurfaceRow.slot = "content";
-        this.htmlElement.appendChild(this._runwaySurfaceRow);
+        this.attachRow(this._runwaySurfaceRow);
     }
 
     _initRunwayLengthRow() {
@@ -388,11 +490,12 @@ class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsSc
             parentPage: this.parentPage,
             setting: this.parentPage.instrument.nearestAirportList.runwayLengthSetting
         });
-        this._runwayLengthRow.slot = "content";
-        this.htmlElement.appendChild(this._runwayLengthRow);
+        this.attachRow(this._runwayLengthRow);
     }
 
     _initRows() {
+        this._initTimeFormatRow();
+        this._initTimeOffsetRow();
         this._initRunwaySurfaceRow();
         this._initRunwayLengthRow();
     }
@@ -402,73 +505,85 @@ class WT_G3x5_TSCAvionicsSettingsSystemTab extends WT_G3x5_TSCAvionicsSettingsSc
 
         this._initRows();
     }
-
-    _cancelScroll() {
-        this.htmlElement.scrollManager.cancelScroll();
-    }
-
-    onDeactivated() {
-        super.onDeactivated();
-
-        this._cancelScroll();
-    }
-
-    update() {
-        this.htmlElement.scrollManager.update();
-    }
-
-    _onUpPressed() {
-        this.htmlElement.scrollManager.scrollUp();
-    }
-
-    _onDownPressed() {
-        this.htmlElement.scrollManager.scrollDown();
-    }
 }
 WT_G3x5_TSCAvionicsSettingsSystemTab.TITLE = "System";
 WT_G3x5_TSCAvionicsSettingsSystemTab.CLASS = "systemTab";
+WT_G3x5_TSCAvionicsSettingsSystemTab.TIME_FORMAT_VALUE_TEXT = [
+    "Local 12hr",
+    "Local 24hr",
+    "UTC"
+];
+WT_G3x5_TSCAvionicsSettingsSystemTab.RUNWAY_SURFACE_VALUE_TEXT = [
+    "All",
+    "Hard Surface",
+    "Soft Surface"
+];
 
-class WT_G3x5_TSCSystemRunwaySurfaceRow extends WT_G3x5_TSCAvionicsSettingsLabeledButtonRow {
+class WT_G3x5_TSCSystemTimeOffsetRow extends WT_G3x5_TSCAvionicsSettingsRow {
     constructor() {
         super();
 
-        this._initSelectionWindowContext();
+        this._timeFormatSettingListener = this._onTimeFormatSettingChanged.bind(this);
+        this._timeOffsetSettingListener = this._onTimeOffsetSettingChanged.bind(this);
+        this._initTimeKeyboardContext();
+        this._initTimeFormatter();
     }
 
-    _initSelectionWindowContext() {
-        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT);
-        this._selectionWindowContext = {
-            title: "Select Runway Surface",
-            subclass: "standardDynamicSelectionListWindow",
-            closeOnSelect: true,
-            elementConstructor: elementHandler,
-            elementUpdater: elementHandler
+    _getTemplate() {
+        return WT_G3x5_TSCSystemTimeOffsetRow.TEMPLATE;
+    }
+
+    _initTimeKeyboardContext() {
+        this._timeKeyboardContext = {
+            title: "Enter Time Offset",
+            isPositive: false,
+            limit24Hours: true,
+            valueEnteredCallback: this._onValueEntered.bind(this)
         };
     }
 
+    _initTimeFormatter() {
+        this._formatter = new WT_TimeFormatter({
+            timeFormat: WT_TimeFormatter.Format.HH_MM
+        });
+    }
+
+    async _defineChildren() {
+        await super._defineChildren();
+
+        this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#button`, WT_TSCLabeledButton);
+        this._display = this.shadowRoot.querySelector(`#display`);
+    }
+
     _initTitle() {
-        this._title.textContent = "Nearest Airport Runway Surface";
+        this._title.textContent = "Time Offset";
+    }
+
+    _initButton() {
+        this._button.addButtonListener(this._onButtonPressed.bind(this));
     }
 
     _initChildren() {
         this._initTitle();
+        this._initButton();
+    }
+
+    _cleanUpListeners() {
+        this._context.formatSetting.removeListener(this._timeFormatSettingListener);
+        this._context.offsetSetting.removeListener(this._timeOffsetSettingListener);
     }
 
     _cleanUpContext() {
-        if (this._buttonManager) {
-            this._buttonManager.destroy();
+        if (!this._context) {
+            return;
         }
+
+        this._cleanUpListeners();
     }
 
-    _updateSelectionWindowContext() {
-        this._selectionWindowContext.homePageGroup = this._context.parentPage.homePageGroup;
-        this._selectionWindowContext.homePageName = this._context.parentPage.homePageName;
-    }
-
-    _initButtonManager() {
-        let instrument = this._context.parentPage.instrument;
-        this._buttonManager = new WT_TSCSettingLabeledButtonManager(instrument, this._button, this._context.setting, instrument.selectionListWindow1, this._selectionWindowContext, value => WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT[value]);
-        this._buttonManager.init();
+    _initSettingListeners() {
+        this._context.formatSetting.addListener(this._timeFormatSettingListener);
+        this._context.offsetSetting.addListener(this._timeOffsetSettingListener);
     }
 
     _updateFromContext() {
@@ -476,18 +591,121 @@ class WT_G3x5_TSCSystemRunwaySurfaceRow extends WT_G3x5_TSCAvionicsSettingsLabel
             return;
         }
 
-        this._updateSelectionWindowContext();
-        this._initButtonManager();
+        this._initSettingListeners();
+        this._updateRight(this._context.formatSetting.getValue());
+        this._updateButton();
+    }
+
+    _updateRight(timeFormat) {
+        if (timeFormat === WT_G3x5_TimeFormatSetting.Mode.UTC) {
+            this._wrapper.setAttribute("right", "display");
+        } else {
+            this._wrapper.setAttribute("right", "button");
+        }
+    }
+
+    _updateButton() {
+        let offset = this._context.offsetSetting.getOffset();
+        let prefix = offset.number < 0 ? "−" : "+";
+        this._button.labelText = `${prefix}${this._formatter.getFormattedString(offset.abs(true))}`;
+    }
+
+    _onTimeFormatSettingChanged(setting, newValue, oldValue) {
+        this._updateRight(newValue);
+    }
+
+    _onTimeOffsetSettingChanged(setting, newValue, oldValue) {
+        this._updateButton();
+    }
+
+    _updateTimeKeyboardContext() {
+        this._timeKeyboardContext.initialValue = this._context.offsetSetting.getOffset();
+        this._timeKeyboardContext.homePageGroup = this._context.parentPage.homePageGroup;
+        this._timeKeyboardContext.homePageName = this._context.parentPage.homePageName;
+    }
+
+    _openTimeKeyboard() {
+        this._updateTimeKeyboardContext();
+        let instrument = this._context.parentPage.instrument;
+
+        instrument.timeKeyboard.element.setContext(this._timeKeyboardContext);
+        instrument.switchToPopUpPage(instrument.timeKeyboard);
+    }
+
+    _onButtonPressed(button) {
+        if (!this._context) {
+            return;
+        }
+
+        this._openTimeKeyboard();
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnitReadOnly} value
+     */
+    _onValueEntered(value) {
+        if (!this._context) {
+            return;
+        }
+
+        this._context.offsetSetting.setOffset(value.set(Math.round(value.asUnit(WT_Unit.MINUTE)), WT_Unit.MINUTE));
     }
 }
-WT_G3x5_TSCSystemRunwaySurfaceRow.NAME = "wt-tsc-avionicssettings-runwaysurfacerow";
-WT_G3x5_TSCSystemRunwaySurfaceRow.VALUE_TEXT = [
-    "All",
-    "Hard Surface",
-    "Soft Surface"
-];
+WT_G3x5_TSCSystemTimeOffsetRow.NAME = "wt-tsc-avionicssettings-timeoffsetrow";
+WT_G3x5_TSCSystemTimeOffsetRow.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCSystemTimeOffsetRow.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            width: 100%;
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 5px;
+        }
 
-customElements.define(WT_G3x5_TSCSystemRunwaySurfaceRow.NAME, WT_G3x5_TSCSystemRunwaySurfaceRow);
+        #wrapper {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: 100%;
+            grid-template-columns: var(--avionicssettings-row-left-width, 50%) var(--avionicssettings-row-right-width, 50%);
+        }
+            #title {
+                text-align: center;
+                align-self: center;
+            }
+            #button {
+                display: none;
+                position: relative;
+                margin: var(--avionicssettings-row-button-margin, 0.1em);
+                color: var(--wt-g3x5-lightblue);
+                font-size: 1.33em;
+                grid-area: 1 / 2;
+            }
+            #wrapper[right="button"] #button {
+                display: block;
+            }
+            #display {
+                display: none;
+                color: white;
+                font-size: 1.33em;
+                grid-area: 1 / 2;
+                text-align: center;
+                align-self: center;
+            }
+            #wrapper[right="display"] #display {
+                display: block;
+            }
+    </style>
+    <div id="wrapper">
+        <div id="title"></div>
+        <wt-tsc-button-label id="button"></wt-tsc-button-label>
+        <div id="display">––:––</div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCSystemTimeOffsetRow.NAME, WT_G3x5_TSCSystemTimeOffsetRow);
 
 class WT_G3x5_TSCSystemRunwayLengthRow extends WT_G3x5_TSCAvionicsSettingsRow {
     constructor() {
@@ -644,15 +862,9 @@ WT_G3x5_TSCSystemRunwayLengthRow.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G3x5_TSCSystemRunwayLengthRow.NAME, WT_G3x5_TSCSystemRunwayLengthRow);
 
-class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
+class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsRowTab {
     constructor(parentPage) {
-        super(WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE, parentPage);
-    }
-
-    _createHTMLElement() {
-        let htmlElement = new WT_TSCScrollList();
-        htmlElement.classList.add(WT_G3x5_TSCAvionicsSettingsUnitsTab.CLASS);
-        return htmlElement;
+        super(WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE, parentPage, WT_G3x5_TSCAvionicsSettingsUnitsTab.CLASS);
     }
 
     /**
@@ -673,8 +885,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
             homePageGroup: this.parentPage.homePageGroup,
             homePageName: this.parentPage.homePageName
         });
-        row.slot = "content";
-        this.htmlElement.appendChild(row);
+        this.attachRow(row);
     }
 
     _initDisplayRow(row, title, getDisplayText) {
@@ -682,8 +893,7 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
             title: title,
             getDisplayText: getDisplayText
         });
-        row.slot = "content";
-        this.htmlElement.appendChild(row);
+        this.attachRow(row);
     }
 
     _initRows() {
@@ -718,27 +928,10 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsScr
         this._initRows();
     }
 
-    _cancelScroll() {
-        this.htmlElement.scrollManager.cancelScroll();
-    }
-
-    onDeactivated() {
-        super.onDeactivated();
-
-        this._cancelScroll();
-    }
-
     update() {
+        super.update();
+
         this._magVarRow.update();
-        this.htmlElement.scrollManager.update();
-    }
-
-    _onUpPressed() {
-        this.htmlElement.scrollManager.scrollUp();
-    }
-
-    _onDownPressed() {
-        this.htmlElement.scrollManager.scrollDown();
     }
 }
 WT_G3x5_TSCAvionicsSettingsUnitsTab.TITLE = "Units";
@@ -970,17 +1163,11 @@ class WT_G3x5_TSCAvionicsSettingsAlertsTab extends WT_G3x5_TSCAvionicsSettingsTa
 }
 WT_G3x5_TSCAvionicsSettingsAlertsTab.TITLE = "Alerts";
 
-class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSettingsScrollTab {
+class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSettingsRowTab {
     constructor(parentPage, instrumentID) {
-        super(WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.TITLE, parentPage);
+        super(WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.TITLE, parentPage, WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.CLASS);
 
         this._instrumentID = instrumentID;
-    }
-
-    _createHTMLElement() {
-        let htmlElement = new WT_TSCScrollList();
-        htmlElement.classList.add(WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.CLASS);
-        return htmlElement;
     }
 
     _initModel() {
@@ -1008,8 +1195,7 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
                 homePageGroup: this.parentPage.homePageGroup,
                 homePageName: this.parentPage.homePageName
             });
-            row.slot = "content";
-            this.htmlElement.appendChild(row);
+            this.attachRow(row);
         }
     }
 
@@ -1019,28 +1205,6 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
         this._initModel();
         this._initSettingModel();
         this._initRows();
-    }
-
-    _cancelScroll() {
-        this.htmlElement.scrollManager.cancelScroll();
-    }
-
-    onDeactivated() {
-        super.onDeactivated();
-
-        this._cancelScroll();
-    }
-
-    update() {
-        this.htmlElement.scrollManager.update();
-    }
-
-    _onUpPressed() {
-        this.htmlElement.scrollManager.scrollUp();
-    }
-
-    _onDownPressed() {
-        this.htmlElement.scrollManager.scrollDown();
     }
 }
 WT_G3x5_TSCAvionicsSettingsMFDFieldsTab.TITLE = "MFD<br>Fields";

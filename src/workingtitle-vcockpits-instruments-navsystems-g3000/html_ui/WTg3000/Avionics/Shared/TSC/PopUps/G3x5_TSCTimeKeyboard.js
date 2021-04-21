@@ -16,6 +16,11 @@ class WT_G3x5_TSCTimeKeyboard extends WT_G3x5_TSCPopUpElement {
         this.popUpWindow.appendChild(this.htmlElement);
     }
 
+    _deactivateScrollButtons() {
+        this.instrument.deactivateNavButton(5, false);
+        this.instrument.deactivateNavButton(6, false);
+    }
+
     _activateEnterButton() {
         this.instrument.activateNavButton(6, "Enter", this._onEnterPressed.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
     }
@@ -27,6 +32,7 @@ class WT_G3x5_TSCTimeKeyboard extends WT_G3x5_TSCPopUpElement {
     _activateNavButtons() {
         super._activateNavButtons();
 
+        this._deactivateScrollButtons();
         this._activateEnterButton();
     }
 

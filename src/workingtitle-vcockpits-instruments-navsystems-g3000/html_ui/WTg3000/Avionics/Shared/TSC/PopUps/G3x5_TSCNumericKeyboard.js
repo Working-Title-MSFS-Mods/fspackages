@@ -16,16 +16,30 @@ class WT_G3x5_TSCNumericKeyboard extends WT_G3x5_TSCPopUpElement {
         this.popUpWindow.appendChild(this.htmlElement);
     }
 
+    _deactivateScrollButtons() {
+        this.instrument.deactivateNavButton(5, false);
+        this.instrument.deactivateNavButton(6, false);
+    }
+
+    _activateEnterButton() {
+        this.instrument.activateNavButton(6, "Enter", this._onEnterPressed.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
+    }
+
+    _deactivateEnterButton() {
+        this.instrument.deactivateNavButton(6, true);
+    }
+
     _activateNavButtons() {
         super._activateNavButtons();
 
-        this.instrument.activateNavButton(6, "Enter", this._onEnterPressed.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
+        this._deactivateScrollButtons();
+        this._activateEnterButton();
     }
 
     _deactivateNavButtons() {
         super._activateNavButtons();
 
-        this.instrument.deactivateNavButton(6, true);
+        this._deactivateEnterButton();
     }
 
     _onEnterPressed() {
