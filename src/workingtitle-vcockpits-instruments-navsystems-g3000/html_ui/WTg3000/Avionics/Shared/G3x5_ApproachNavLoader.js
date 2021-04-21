@@ -92,8 +92,8 @@ class WT_G3x5_ApproachNavLoader {
      * @param {WT_FlightPlanLeg} activeLeg
      */
     _checkApproachOnFinal(activeLeg) {
-        let fafIndex = this._fpm.activePlan.legCount() - 2;
-        return activeLeg.index > fafIndex || (activeLeg.index === fafIndex && this._fpm.distanceToActiveFix(true, this._tempNM).compare(WT_G3x5_ApproachNavLoader.NAV_SWITCH_MAX_FAF_DISTANCE) <= 0);
+        let fafIndex = this._fpm.activePlan.legs.length - 2;
+        return activeLeg.index > fafIndex || (activeLeg.index === fafIndex && this._fpm.distanceToActiveLegFix(true, this._tempNM).compare(WT_G3x5_ApproachNavLoader.NAV_SWITCH_MAX_FAF_DISTANCE) <= 0);
     }
 
     _switchAutopilotToNav() {

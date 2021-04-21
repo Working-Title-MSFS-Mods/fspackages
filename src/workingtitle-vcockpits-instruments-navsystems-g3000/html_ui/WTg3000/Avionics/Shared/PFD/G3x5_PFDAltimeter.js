@@ -392,7 +392,7 @@ class WT_G3x5_PFDAltimeterModel {
             let activeLeg = this.airplane.fms.flightPlanManager.getActiveLeg(true);
             let beforeFAF = activeLeg &&
                         activeLeg.segment === WT_FlightPlan.Segment.APPROACH &&
-                        activeLeg.index < this.airplane.fms.flightPlanManager.activePlan.legCount() - 2;
+                        activeLeg.index < this.airplane.fms.flightPlanManager.activePlan.legs.length - 2;
             if (beforeFAF) {
                 if (this.airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
                     isActive = true;
@@ -420,7 +420,7 @@ class WT_G3x5_PFDAltimeterModel {
         let activeLeg = this.airplane.fms.flightPlanManager.getActiveLeg(true);
         let atFAF = activeLeg &&
                     activeLeg.segment === WT_FlightPlan.Segment.APPROACH &&
-                    activeLeg.index >= this.airplane.fms.flightPlanManager.activePlan.legCount() - 2;
+                    activeLeg.index >= this.airplane.fms.flightPlanManager.activePlan.legs.length - 2;
         if (atFAF) {
             if (this.airplane.fms.approachType() === WT_AirplaneFMS.ApproachType.RNAV) {
                 this._verticalTrackDeflection = this._calculateGlidepathDeflection(this.airplane.fms.glidepathAngle(), this.airplane.fms.glidepathError(), this.airplane.fms.glidepathDeviation(this._tempFoot1));

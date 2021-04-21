@@ -39,6 +39,14 @@ class WT_Time {
     }
 
     /**
+     * Checks whether this is a valid time.
+     * @returns {Boolean} whether this is a valid time.
+     */
+    isValid() {
+        return typeof this.unix === "number" && !isNaN(this.unix);
+    }
+
+    /**
      * Sets the instant in time represented by this time object.
      * @param {WT_TimeObject|Number} time - the new time.
      * @returns {WT_Time} this time object, after it has been changed.
@@ -234,6 +242,14 @@ class WT_TimeReadOnly {
      */
     get absoluteTime() {
         return this._source.absoluteTime;
+    }
+
+    /**
+     * Checks whether this is a valid time.
+     * @returns {Boolean} whether this is a valid time.
+     */
+    isValid() {
+        return this._source.isValid();
     }
 
     /**
