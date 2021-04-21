@@ -16,7 +16,7 @@ class WT_WeatherRadarSettingModel extends WT_DataStoreSettingModel {
 
 class WT_WeatherRadarSetting extends WT_DataStoreSetting {
     /**
-     * @param {WT_NavDataBarSettingModel} model - the model with which to associate the new setting.
+     * @param {WT_WeatherRadarSettingModel} model - the model with which to associate the new setting.
      * @param {String} key - the data store key of the new setting.
      * @param {*} [defaultValue] - the value to which the new setting should default if it is not persistent or if a value cannot be retrieved
      *                             from the data store.

@@ -1171,12 +1171,12 @@ class WT_G3x5_TSCAvionicsSettingsMFDFieldsTab extends WT_G3x5_TSCAvionicsSetting
     }
 
     _initModel() {
-        this._model = new WT_NavDataBarModel(this.parentPage.instrument.airplane, null);
+        this._model = new WT_G3x5_NavDataBarModel(this.parentPage.instrument);
         this._model.setDataFieldCount(WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT);
     }
 
     _initSettingModel() {
-        this._settingModel = new WT_NavDataBarSettingModel(this._instrumentID, this._model);
+        this._settingModel = new WT_G3x5_NavDataBarSettingModel(this._instrumentID, this._model);
         for (let i = 0; i < WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT; i++) {
             this._settingModel.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
         }
@@ -1412,7 +1412,7 @@ customElements.define(WT_G3x5_TSCNavDataFieldButton.NAME, WT_G3x5_TSCNavDataFiel
 class WT_G3x5_TSCNavDataFieldSelectionElementHandler {
     /**
      *
-     * @param {WT_NavDataBarModel} model
+     * @param {WT_G3x5_NavDataBarModel} model
      * @param {Number} fieldIndex
      */
     constructor(model, fieldIndex) {

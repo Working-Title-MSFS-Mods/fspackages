@@ -160,6 +160,26 @@ class WT_Time {
     }
 
     /**
+     * Gets a formatted string of this time localized to a specific timezone.
+     * @param {WT_TimezoneObject} timezone - the timezone for which to get the formatted string.
+     * @param {String} format - a formatting string defining the format of the output.
+     * @returns {String} a formatted string of this time.
+     */
+    format(timezone, format) {
+        return spacetime(this.unix).goto(timezone.iana).format(format);
+    }
+
+    /**
+     * Gets a formatted string of this time localized to a specific timezone using standard UNIX formatting.
+     * @param {WT_TimezoneObject} timezone - the timezone for which to get the formatted string.
+     * @param {String} format - a UNIX time formatting string defining the format of the output.
+     * @returns {String} a formatted string of this time.
+     */
+    formatUnix(timezone, format) {
+        return spacetime(this.unix).goto(timezone.iana).unixFmt(format);
+    }
+
+    /**
      * Gets a read-only version of this time object.
      * @returns {WT_TimeReadOnly} a read-only version of this time object.
      */
@@ -316,6 +336,26 @@ class WT_TimeReadOnly {
     }
 
     /**
+     * Gets a formatted string of this time localized to a specific timezone.
+     * @param {WT_TimezoneObject} timezone - the timezone for which to get the formatted string.
+     * @param {String} format - a formatting string defining the format of the output.
+     * @returns {String} a formatted string of this time.
+     */
+    format(timezone, format) {
+        return this._source.format(timezone, format);
+    }
+
+    /**
+     * Gets a formatted string of this time localized to a specific timezone using standard UNIX formatting.
+     * @param {WT_TimezoneObject} timezone - the timezone for which to get the formatted string.
+     * @param {String} format - a UNIX time formatting string defining the format of the output.
+     * @returns {String} a formatted string of this time.
+     */
+    formatUnix(timezone, format) {
+        return this._source.formatUnix(timezone, format);
+    }
+
+    /**
      * Gets a read-only version of this time object.
      * @returns {WT_TimeReadOnly} a read-only version of this time object.
      */
@@ -427,7 +467,7 @@ class WT_Timezone {
      * @returns {String} a formatted string of the specified time.
      */
     formatUnix(time, format) {
-        return spacetime(time.unix).goto(this.iana).fmtUnix(format);
+        return spacetime(time.unix).goto(this.iana).unixFmt(format);
     }
 
     /**
@@ -536,3 +576,12 @@ class WT_TimezoneReadOnly {
         return this;
     }
 }
+
+/**
+ * @typedef {WT_Timezone|WT_TimezoneReadOnly} WT_TimezoneObject
+ */
+
+/**
+ * The UTC +0 timezone.
+ */
+ WT_Timezone.UTC = new WT_Timezone();

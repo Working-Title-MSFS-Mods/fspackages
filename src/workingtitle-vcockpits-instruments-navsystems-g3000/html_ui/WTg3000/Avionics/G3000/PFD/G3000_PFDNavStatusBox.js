@@ -30,12 +30,12 @@ class WT_G3000_PFDNavStatusBox extends WT_G3x5_PFDElement {
 
         this._infos = [
             {
-                model: new WT_NavDataInfoNumber({shortName: "DIS", longName: "Distance to Next Waypoint"}, new WT_G3x5_PFDNavStatusDISModel(this.instrument.airplane)),
-                formatter: new WT_NavDataInfoViewNumberFormatter(distanceFormatter, "___")
+                model: new WT_G3x5_NavDataInfoNumber({shortName: "DIS", longName: "Distance to Next Waypoint"}, new WT_G3x5_PFDNavStatusDISModel(this.instrument.airplane)),
+                formatter: new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter, "___")
             },
             {
-                model: new WT_NavDataInfoNumber({shortName: "BRG", longName: "Bearing to Next Waypoint"}, new WT_G3x5_PFDNavStatusBRGModel(this.instrument.airplane)),
-                formatter: new WT_NavDataInfoViewDegreeFormatter(bearingFormatter, "___")
+                model: new WT_G3x5_NavDataInfoNumber({shortName: "BRG", longName: "Bearing to Next Waypoint"}, new WT_G3x5_PFDNavStatusBRGModel(this.instrument.airplane)),
+                formatter: new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter, "___")
             }
         ];
 
@@ -155,7 +155,7 @@ customElements.define(WT_G3000_PFDNavStatusBoxHTMLElement.NAME, WT_G3000_PFDNavS
 class WT_G3000_UnitsSettingModelNavStatusAdapter extends WT_G3x5_UnitsSettingModelAdapter {
     /**
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
-     * @param {WT_NavDataBarModel} navDataBarModel
+     * @param {WT_G3x5_NavDataBarModel} navDataBarModel
      */
     constructor(unitsSettingModel, disInfo, brgInfo) {
         super(unitsSettingModel);
