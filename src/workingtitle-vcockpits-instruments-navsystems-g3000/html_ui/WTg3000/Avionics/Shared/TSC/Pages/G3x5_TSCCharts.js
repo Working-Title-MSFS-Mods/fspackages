@@ -294,6 +294,15 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         }
     }
 
+    async _updateChartsFromAirport(fromSync) {
+        await this._updateCharts();
+        if (!fromSync) {
+            this._updateChartIDFromAirport(this._airport);
+        } else {
+            this._updateChartFromID(this._chartID);
+        }
+    }
+
     /**
      *
      * @param {WT_Airport} airport
@@ -311,12 +320,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         if (this.htmlElement && this.htmlElement.isInitialized) {
             this.htmlElement.setAirport(this._airport);
         }
-        await this._updateCharts();
-        if (!fromSync) {
-            this._updateChartIDFromAirport(this._airport);
-        } else {
-            this._updateChartFromID(this._chartID);
-        }
+        await this._updateChartsFromAirport(fromSync);
     }
 
     /**
@@ -475,6 +479,11 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         let airportToSelect = this._chooseAutoSelectAirport();
         if (airportToSelect && airportToSelect.icao !== this._icao) {
             this._setAirportICAO(airportToSelect.icao, false);
+        } else if (this._airport && this._dataFail) {
+            // there was an error retrieving charts for the selected airport the last time the page was open,
+            // so we will force another charts update in case the issue preventing chart retrieval has since
+            // been resolved
+            this._updateChartsFromAirport(false);
         }
     }
 
