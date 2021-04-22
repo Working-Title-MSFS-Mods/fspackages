@@ -225,6 +225,174 @@ WT_Garmin_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
 };
 
+// EN
+
+class WT_Garmin_MapViewENRouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_Garmin_MapViewENRouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.E_ROAD:
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.NORWAY_NATIONAL_ROAD:
+                        return new WT_Garmin_MapViewERoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.DENMARK_NATIONAL_ROAD:
+                        return new WT_Garmin_MapViewDenmarkNationalRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.DENMARK_SECONDARY_ROAD:
+                        return new WT_Garmin_MapViewDenmarkSecondaryRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.NORWAY_PROVINCIAL_ROAD:
+                        return new WT_Garmin_MapViewNorwayProvincialRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.NORWAY_RING_ROAD:
+                        return new WT_Garmin_MapViewNorwayRingRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.SWEDEN_NATIONAL_ROAD:
+                        return new WT_Garmin_MapViewSwedenNationalRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.SWEDEN_COUNTY_ROAD:
+                        return new WT_Garmin_MapViewSwedenCountyRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.FINLAND_MAIN_ROAD_CLASS1:
+                        return new WT_Garmin_MapViewFinlandMainRoadClass1Label(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.FINLAND_MAIN_ROAD_CLASS2:
+                        return new WT_Garmin_MapViewFinlandMainRoadClass2Label(roadType, location, name);
+                    case WT_Garmin_MapViewENRouteCollection.RouteType.FINLAND_REGIONAL_ROAD:
+                        return new WT_Garmin_MapViewFinlandRegionalRoadLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_Garmin_MapViewENRouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/EN_labels.json";
+/**
+ * @enum {String}
+ */
+ WT_Garmin_MapViewENRouteCollection.RouteType = {
+    E_ROAD: "e-road",
+    DENMARK_NATIONAL_ROAD: "denmark_nat_road",
+    DENMARK_SECONDARY_ROAD: "denmark_secondary_road",
+    NORWAY_NATIONAL_ROAD: "norway_nat_road",
+    NORWAY_PROVINCIAL_ROAD: "norway_prov_road",
+    NORWAY_RING_ROAD: "norway_ring_road",
+    SWEDEN_NATIONAL_ROAD: "sweden_nat_road",
+    SWEDEN_COUNTY_ROAD: "sweden_county_road",
+    FINLAND_MAIN_ROAD_CLASS1: "finland_main_road_cl1",
+    FINLAND_MAIN_ROAD_CLASS2: "finland_main_road_cl2",
+    FINLAND_REGIONAL_ROAD: "finland_reg_road"
+};
+
+class WT_Garmin_MapViewDenmarkNationalRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewDenmarkNationalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewDenmarkNationalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewDenmarkNationalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_DENMARK_NATIONALROAD.png";
+WT_Garmin_MapViewDenmarkNationalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    minWidthEm: 3
+};
+
+class WT_Garmin_MapViewDenmarkSecondaryRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewDenmarkSecondaryRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewDenmarkSecondaryRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewDenmarkSecondaryRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ITALY_MUNICIPALROAD.png";
+WT_Garmin_MapViewDenmarkSecondaryRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black"
+};
+
+class WT_Garmin_MapViewNorwayProvincialRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewNorwayProvincialRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewNorwayProvincialRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewNorwayProvincialRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ICELAND_ROUTE.png";
+WT_Garmin_MapViewNorwayProvincialRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black"
+};
+
+class WT_Garmin_MapViewNorwayRingRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewNorwayRingRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewNorwayRingRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewNorwayRingRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ICELAND_ROUTE.png";
+WT_Garmin_MapViewNorwayRingRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black"
+};
+
+class WT_Garmin_MapViewSwedenNationalRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewSwedenNationalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewSwedenNationalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewSwedenNationalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SWEDEN_NATIONALROAD.png";
+WT_Garmin_MapViewSwedenNationalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+};
+
+class WT_Garmin_MapViewSwedenCountyRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewSwedenCountyRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewSwedenCountyRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewSwedenCountyRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SWEDEN_NATIONALROAD.png";
+WT_Garmin_MapViewSwedenCountyRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+};
+
+class WT_Garmin_MapViewFinlandMainRoadClass1Label extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewFinlandMainRoadClass1Label.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewFinlandMainRoadClass1Label.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewFinlandMainRoadClass1Label.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_FINLAND_MAINROADCLASS1.png";
+WT_Garmin_MapViewFinlandMainRoadClass1Label.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+};
+
+class WT_Garmin_MapViewFinlandMainRoadClass2Label extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewFinlandMainRoadClass2Label.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewFinlandMainRoadClass2Label.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewFinlandMainRoadClass2Label.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_FINLAND_MAINROADCLASS2.png";
+WT_Garmin_MapViewFinlandMainRoadClass2Label.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black"
+};
+
+class WT_Garmin_MapViewFinlandRegionalRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewFinlandRegionalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewFinlandRegionalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewFinlandRegionalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ICELAND_ROUTE.png";
+WT_Garmin_MapViewFinlandRegionalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black"
+};
+
 // EW
 
 class WT_Garmin_MapViewEWRouteCollection extends WT_MapViewRoadLabelCollection {

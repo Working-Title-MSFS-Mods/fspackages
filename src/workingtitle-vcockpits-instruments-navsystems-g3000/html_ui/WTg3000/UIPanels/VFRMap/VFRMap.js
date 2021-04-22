@@ -412,6 +412,9 @@ class WT_VFRMapWT extends WT_VFRMap {
                 case WT_MapViewRoadFeatureCollection.Region.EI:
                     data.push(new WT_Garmin_MapViewEIRouteCollection());
                     break;
+                case WT_MapViewRoadFeatureCollection.Region.EN:
+                    data.push(new WT_Garmin_MapViewENRouteCollection());
+                    break;
                 case WT_MapViewRoadFeatureCollection.Region.EW:
                     data.push(new WT_Garmin_MapViewEWRouteCollection());
                     break;
@@ -458,8 +461,9 @@ class WT_VFRMapWT extends WT_VFRMap {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
         this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = this._initBorderData();
+        let roadData;
         if (modConfig.roads.showInVFRMap) {
-            let roadData = this._initRoadData(modConfig);
+            roadData = this._initRoadData(modConfig);
             this._loadRoadData(roadData.feature, roadData.label);
         }
 
