@@ -7,7 +7,7 @@ class WT_Garmin_MapViewGenericInternationalHighwayLabel extends WT_MapViewRoadIm
         this.setOptions(WT_Garmin_MapViewGenericInternationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewGenericInternationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_INTERNATIONAL_HIGHWAY.png";
+WT_Garmin_MapViewGenericInternationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_INTERNATIONAL_HIGHWAY.png";
 WT_Garmin_MapViewGenericInternationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black"
@@ -20,7 +20,7 @@ class WT_Garmin_MapViewGenericNationalHighwayLabel extends WT_MapViewRoadImageLa
         this.setOptions(WT_Garmin_MapViewGenericNationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewGenericNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_NATIONAL_HIGHWAY.png";
+WT_Garmin_MapViewGenericNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_NATIONAL_HIGHWAY.png";
 WT_Garmin_MapViewGenericNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -35,7 +35,7 @@ class WT_Garmin_MapViewGenericLocalHighwayLabel extends WT_MapViewRoadImageLabel
         this.setOptions(WT_Garmin_MapViewGenericLocalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewGenericLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_LOCAL_HIGHWAY.png";
+WT_Garmin_MapViewGenericLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_LOCAL_HIGHWAY.png";
 WT_Garmin_MapViewGenericLocalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black"
@@ -50,7 +50,7 @@ class WT_Garmin_MapViewERoadLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewERoadLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewERoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_EROAD.png";
+WT_Garmin_MapViewERoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_EROAD.png";
 WT_Garmin_MapViewERoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
@@ -99,7 +99,7 @@ class WT_Garmin_MapViewUSInterstateLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewUSInterstateLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewUSInterstateLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_US_INTERSTATE.png";
+WT_Garmin_MapViewUSInterstateLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_US_INTERSTATE.png";
 WT_Garmin_MapViewUSInterstateLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.55, right: 0.4, bottom: 0.55},
@@ -113,7 +113,7 @@ class WT_Garmin_MapViewUSRouteLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewUSRouteLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewUSRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_US_ROUTE.png";
+WT_Garmin_MapViewUSRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_US_ROUTE.png";
 WT_Garmin_MapViewUSRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -146,7 +146,7 @@ class WT_Garmin_MapViewMexicoFederalHighwayLabel extends WT_MapViewRoadImageLabe
         this.setOptions(WT_Garmin_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewMexicoFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_MEXICO_FEDERALHIGHWAY.png";
+WT_Garmin_MapViewMexicoFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_MEXICO_FEDERALHIGHWAY.png";
 WT_Garmin_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -192,7 +192,7 @@ class WT_Garmin_MapViewIcelandRouteLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewIcelandRouteLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewIcelandRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_ICELAND_ROUTE.png";
+WT_Garmin_MapViewIcelandRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ICELAND_ROUTE.png";
 WT_Garmin_MapViewIcelandRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -206,7 +206,7 @@ class WT_Garmin_MapViewUKMotorwayLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewUKMotorwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewUKMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_UK_MOTORWAY.png";
+WT_Garmin_MapViewUKMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_UK_MOTORWAY.png";
 WT_Garmin_MapViewUKMotorwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold"
 };
@@ -218,7 +218,7 @@ class WT_Garmin_MapViewUKARoadLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewUKARoadLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewUKARoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_UK_AROAD.png";
+WT_Garmin_MapViewUKARoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_UK_AROAD.png";
 WT_Garmin_MapViewUKARoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffd200",
@@ -435,7 +435,7 @@ class WT_Garmin_MapViewFranceAutorouteLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewFranceAutorouteLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewFranceAutorouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_FRANCE_AUTOROUTE.png";
+WT_Garmin_MapViewFranceAutorouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_FRANCE_AUTOROUTE.png";
 WT_Garmin_MapViewFranceAutorouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold"
 };
@@ -447,7 +447,7 @@ class WT_Garmin_MapViewFranceDepartmentalRouteLabel extends WT_MapViewRoadImageL
         this.setOptions(WT_Garmin_MapViewFranceDepartmentalRouteLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewFranceDepartmentalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_FRANCE_DEPARTMENTALROUTE.png";
+WT_Garmin_MapViewFranceDepartmentalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_FRANCE_DEPARTMENTALROUTE.png";
 WT_Garmin_MapViewFranceDepartmentalRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black"
@@ -524,7 +524,7 @@ class WT_Garmin_MapViewGermanyAutobahnLabel extends WT_MapViewRoadImageLabel {
         return [this.name.replace(/^[^\d]+/, "")];
     }
 }
-WT_Garmin_MapViewGermanyAutobahnLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_GERMANY_AUTOBAHN.png";
+WT_Garmin_MapViewGermanyAutobahnLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_GERMANY_AUTOBAHN.png";
 WT_Garmin_MapViewGermanyAutobahnLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     minWidthEm: 2.5
@@ -541,7 +541,7 @@ class WT_Garmin_MapViewGermanyBundesstrasseLabel extends WT_MapViewRoadImageLabe
         return [this.name.replace(/^[^\d]+/, "")];
     }
 }
-WT_Garmin_MapViewGermanyBundesstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_GERMANY_BUNDESSTRASSE.png";
+WT_Garmin_MapViewGermanyBundesstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_GERMANY_BUNDESSTRASSE.png";
 WT_Garmin_MapViewGermanyBundesstrasseLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -559,7 +559,7 @@ class WT_Garmin_MapViewAustriaBundesstrasseLabel extends WT_MapViewRoadImageLabe
         return [this.name.charAt(0) === "B" ? this.name : this.name.replace(/^[^\d]+/, "")];
     }
 }
-WT_Garmin_MapViewAustriaBundesstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AUSTRIA_BUNDESSTRASSE.png";
+WT_Garmin_MapViewAustriaBundesstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_AUSTRIA_BUNDESSTRASSE.png";
 WT_Garmin_MapViewAustriaBundesstrasseLabel.OPTION_DEFAULTS = {
     fontWeight: "bold"
 };
@@ -575,7 +575,7 @@ class WT_Garmin_MapViewSwitzerlandAutobahnLabel extends WT_MapViewRoadImageLabel
         return [this.name.replace(/^[^\d]+/, "")];
     }
 }
-WT_Garmin_MapViewSwitzerlandAutobahnLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_SWITZERLAND_AUTOBAHN.png";
+WT_Garmin_MapViewSwitzerlandAutobahnLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SWITZERLAND_AUTOBAHN.png";
 WT_Garmin_MapViewSwitzerlandAutobahnLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     minWidthEm: 2.5
@@ -588,7 +588,7 @@ class WT_Garmin_MapViewSwitzerlandHauptstrasseLabel extends WT_MapViewRoadImageL
         this.setOptions(WT_Garmin_MapViewSwitzerlandHauptstrasseLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewSwitzerlandHauptstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_SWITZERLAND_HAUPTSTRASSE.png";
+WT_Garmin_MapViewSwitzerlandHauptstrasseLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SWITZERLAND_HAUPTSTRASSE.png";
 WT_Garmin_MapViewSwitzerlandHauptstrasseLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
@@ -615,7 +615,7 @@ class WT_Garmin_MapViewItalyMotorwayLabel extends WT_Garmin_MapViewItalyRoadLabe
         this.setOptions(WT_Garmin_MapViewItalyMotorwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewItalyMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_ITALY_MOTORWAY.png";
+WT_Garmin_MapViewItalyMotorwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ITALY_MOTORWAY.png";
 WT_Garmin_MapViewItalyMotorwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4},
@@ -628,7 +628,7 @@ class WT_Garmin_MapViewItalyStateHighwayLabel extends WT_Garmin_MapViewItalyRoad
         this.setOptions(WT_Garmin_MapViewItalyStateHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewItalyStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_ITALY_STATEHIGHWAY.png";
+WT_Garmin_MapViewItalyStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ITALY_STATEHIGHWAY.png";
 WT_Garmin_MapViewItalyStateHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.5, top: 0.4, right: 0.5, bottom: 0.4}
@@ -641,7 +641,7 @@ class WT_Garmin_MapViewItalyMunicipalRoadLabel extends WT_Garmin_MapViewItalyRoa
         this.setOptions(WT_Garmin_MapViewItalyMunicipalRoadLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewItalyMunicipalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_ITALY_MUNICIPALROAD.png";
+WT_Garmin_MapViewItalyMunicipalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ITALY_MUNICIPALROAD.png";
 WT_Garmin_MapViewItalyMunicipalRoadLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -674,7 +674,7 @@ class WT_Garmin_MapViewRussiaFederalHighwayLabel extends WT_MapViewRoadImageLabe
         this.setOptions(WT_Garmin_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewRussiaFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_RU_FEDERALHIGHWAY.png";
+WT_Garmin_MapViewRussiaFederalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_RU_FEDERALHIGHWAY.png";
 WT_Garmin_MapViewRussiaFederalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold"
 };
@@ -722,7 +722,7 @@ class WT_Garmin_MapViewChinaNationalExpresswayLabel extends WT_MapViewRoadImageL
         this.setOptions(WT_Garmin_MapViewChinaNationalExpresswayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewChinaNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_CHINA_NATIONALEXPRESSWAY.png";
+WT_Garmin_MapViewChinaNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_CHINA_NATIONALEXPRESSWAY.png";
 WT_Garmin_MapViewChinaNationalExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.25, top: 0.65, right: 0.25, bottom: 0.25}
@@ -735,7 +735,7 @@ class WT_Garmin_MapViewChinaProvincialExpresswayLabel extends WT_MapViewRoadImag
         this.setOptions(WT_Garmin_MapViewChinaProvincialExpresswayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewChinaProvincialExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_CHINA_PROVINCIALEXPRESSWAY.png";
+WT_Garmin_MapViewChinaProvincialExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_CHINA_PROVINCIALEXPRESSWAY.png";
 WT_Garmin_MapViewChinaProvincialExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.25, top: 0.65, right: 0.25, bottom: 0.25}
@@ -748,7 +748,7 @@ class WT_Garmin_MapViewChinaNationalHighwayLabel extends WT_MapViewRoadImageLabe
         this.setOptions(WT_Garmin_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewChinaNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_CHINA_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewChinaNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_CHINA_NATIONALHIGHWAY.png";
 WT_Garmin_MapViewChinaNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.25}
@@ -761,7 +761,7 @@ class WT_Garmin_MapViewTaiwanNationalHighwayLabel extends WT_MapViewRoadImageLab
         this.setOptions(WT_Garmin_MapViewTaiwanNationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_TAIWAN_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewTaiwanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_TAIWAN_NATIONALHIGHWAY.png";
 WT_Garmin_MapViewTaiwanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -776,7 +776,7 @@ class WT_Garmin_MapViewTaiwanProvincialHighwayLabel extends WT_MapViewRoadImageL
         this.setOptions(WT_Garmin_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewTaiwanProvincialHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_TAIWAN_PROVINCIALHIGHWAY.png";
+WT_Garmin_MapViewTaiwanProvincialHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_TAIWAN_PROVINCIALHIGHWAY.png";
 WT_Garmin_MapViewTaiwanProvincialHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
@@ -826,7 +826,7 @@ class WT_Garmin_MapViewJapanExpresswayLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewJapanExpresswayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewJapanExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_JAPAN_EXPRESSWAY.png";
+WT_Garmin_MapViewJapanExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_JAPAN_EXPRESSWAY.png";
 WT_Garmin_MapViewJapanExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold"
 };
@@ -838,7 +838,7 @@ class WT_Garmin_MapViewJapanNationalHighwayLabel extends WT_MapViewRoadImageLabe
         this.setOptions(WT_Garmin_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewJapanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_JAPAN_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewJapanNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_JAPAN_NATIONALHIGHWAY.png";
 WT_Garmin_MapViewJapanNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
@@ -852,7 +852,7 @@ class WT_Garmin_MapViewSKNationalExpresswayLabel extends WT_MapViewRoadImageLabe
         this.setOptions(WT_Garmin_MapViewSKNationalExpresswayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewSKNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_SK_NATIONALEXPRESSWAY.png";
+WT_Garmin_MapViewSKNationalExpresswayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SK_NATIONALEXPRESSWAY.png";
 WT_Garmin_MapViewSKNationalExpresswayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.65, right: 0.4, bottom: 0.45},
@@ -866,7 +866,7 @@ class WT_Garmin_MapViewSKNationalHighwayLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewSKNationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewSKNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_SK_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewSKNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SK_NATIONALHIGHWAY.png";
 WT_Garmin_MapViewSKNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     minWidthEm: 2.4
@@ -879,7 +879,7 @@ class WT_Garmin_MapViewSKLocalHighwayLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewSKLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_SK_LOCALHIGHWAY.png";
+WT_Garmin_MapViewSKLocalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_SK_LOCALHIGHWAY.png";
 WT_Garmin_MapViewSKLocalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#2f2fbf",
@@ -929,7 +929,7 @@ class WT_Garmin_MapViewAUAlphaNumLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewAUAlphaNumLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewAUAlphaNumLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AU_ALPHANUMROUTE.png";
+WT_Garmin_MapViewAUAlphaNumLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_AU_ALPHANUMROUTE.png";
 WT_Garmin_MapViewAUAlphaNumLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffa709"
@@ -942,7 +942,7 @@ class WT_Garmin_MapViewAUNationalHighwayLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewAUNationalHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewAUNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AU_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewAUNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_AU_NATIONALHIGHWAY.png";
 WT_Garmin_MapViewAUNationalHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "#ffa709",
@@ -956,7 +956,7 @@ class WT_Garmin_MapViewAUNationalRouteLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewAUNationalRouteLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewAUNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AU_NATIONALROUTE.png";
+WT_Garmin_MapViewAUNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_AU_NATIONALROUTE.png";
 WT_Garmin_MapViewAUNationalRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     fontColor: "black",
@@ -970,7 +970,7 @@ class WT_Garmin_MapViewAUStateRouteLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewAUStateRouteLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewAUStateRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AU_STATEROUTE.png";
+WT_Garmin_MapViewAUStateRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_AU_STATEROUTE.png";
 WT_Garmin_MapViewAUStateRouteLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
@@ -984,7 +984,7 @@ class WT_Garmin_MapViewNZStateHighwayLabel extends WT_MapViewRoadImageLabel {
         this.setOptions(WT_Garmin_MapViewNZStateHighwayLabel.OPTION_DEFAULTS);
     }
 }
-WT_Garmin_MapViewNZStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_NZ_STATEHIGHWAY.png";
+WT_Garmin_MapViewNZStateHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_NZ_STATEHIGHWAY.png";
 WT_Garmin_MapViewNZStateHighwayLabel.OPTION_DEFAULTS = {
     fontWeight: "bold",
     backgroundPaddingEm: {left: 0.4, top: 0.45, right: 0.4, bottom: 0.65},
