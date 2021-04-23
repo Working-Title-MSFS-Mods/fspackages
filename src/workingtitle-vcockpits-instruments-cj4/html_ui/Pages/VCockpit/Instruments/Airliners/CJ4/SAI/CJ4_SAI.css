@@ -49,7 +49,25 @@ html {
 
 @font-face {
   font-family: "Roboto-Bold";
-  src: url("/Fonts/RobotoMono-Bold.ttf") format("truetype");
+  src: url("/Fonts/Roboto-Bold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Collins ProLine";
+  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-LightCondensed.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Jost-SemiBold";
+  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Jost-SemiBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Jost-Bold";
+  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Jost-Bold.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
 
