@@ -1012,12 +1012,30 @@ class WT_G3x5_TSCChartsTabHTMLElement extends HTMLElement {
         }
     }
 
+    _shiftSelectedEntry(delta) {
+        let currentIndex = this._filteredChartEntries.indexOf(this._highlightedEntry);
+        if (currentIndex < 0) {
+            return;
+        }
+
+        let targetIndex = currentIndex + delta;
+        if (targetIndex >= 0 && targetIndex < this._filteredChartEntries.length) {
+            let entry = this._filteredChartEntries[targetIndex];
+            this._notifyChartSelectListeners(entry.chart);
+            this._scrollList.scrollManager.scrollToElement(entry.button);
+        }
+    }
+
     scrollUp() {
         if (!this._isInit) {
             return;
         }
 
-        this._scrollList.scrollManager.scrollUp();
+        if (this._highlightedEntry) {
+            this._shiftSelectedEntry(-1);
+        } else {
+            this._scrollList.scrollManager.scrollUp();
+        }
     }
 
     scrollDown() {
@@ -1025,7 +1043,11 @@ class WT_G3x5_TSCChartsTabHTMLElement extends HTMLElement {
             return;
         }
 
-        this._scrollList.scrollManager.scrollDown();
+        if (this._highlightedEntry) {
+            this._shiftSelectedEntry(1);
+        } else {
+            this._scrollList.scrollManager.scrollDown();
+        }
     }
 
     _scrollToHighlightedButton() {
