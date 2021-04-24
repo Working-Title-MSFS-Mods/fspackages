@@ -251,7 +251,6 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         this.appendChild(this.rootSVG);
     }
     update(dTime) {
-        console.log()
         var indicatedSpeed = Simplane.getIndicatedSpeed();
         this.updateArcScrolling(indicatedSpeed);
         this.updateGraduationScrolling(indicatedSpeed);
@@ -273,7 +272,6 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
 
         const alt = Simplane.getAltitude();
         let maxMach = 260;
-        
         if (alt >= 8000 && alt <= 27884) {
             maxMach = 305;
         }
@@ -283,7 +281,9 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             const machScalar4 = Math.pow(0.77, 4);
             maxMach = Math.sqrt(ambientPressure / 29.92) * Math.sqrt(1 + machScalar2 / 4 + machScalar4 / 40) * 0.77 * 661.5;
         }
-        if (((this.machSpeed >= maxMach) && alt >= 27884 ) || ((indicatedSpeed >= maxMach) && alt < 27884)) {
+        if (indicatedSpeed >= maxMach) {
+            this.machSVG.setAttribute("fill", "red");
+        } else if (this.machSpeed >= maxMach) {
             this.machSVG.setAttribute("fill", "red");
         } else {
             this.machSVG.setAttribute("fill", "#11d011");
@@ -421,10 +421,10 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
     connectedCallback() {
         this.graduationScroller = new Avionics.Scroller(this.nbPrimaryGraduations, 500, true);
         this.cursorIntegrals = new Array();
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 68, 1, 10, 1000));
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 68, 1, 10, 100));
-        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 68, 1, 10, 10));
-        this.cursorDecimals = new Avionics.AltitudeScroller(3, 28, 10, 100);
+        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 1000));
+        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 100));
+        this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 10));
+        this.cursorDecimals = new Avionics.AltitudeScroller(3, 34, 10, 100);
         this.construct();
     }
     construct() {
@@ -521,10 +521,10 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             this.centerSVG.appendChild(graduationGroup);
         }
         this.rootGroup.appendChild(this.centerSVG);
-        var cursorPosX = _left + 20;
+        var cursorPosX = _left + 18;
         var cursorPosY = _top + _height * 0.5;
-        var cursorWidth = width * 1.1;
-        var cursorHeight = 42;
+        var cursorWidth = width * 1.2;
+        var cursorHeight = 44;
         if (!this.cursorSVG) {
             this.cursorSVG = document.createElementNS(Avionics.SVG.NS, "svg");
             this.cursorSVG.setAttribute("id", "CursorGroup");
@@ -534,37 +534,45 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         this.cursorSVG.setAttribute("x", cursorPosX.toString());
         this.cursorSVG.setAttribute("y", (cursorPosY - cursorHeight * 0.5).toString());
         this.cursorSVG.setAttribute("width", cursorWidth.toString());
-        this.cursorSVG.setAttribute("height", cursorHeight.toString());
+        this.cursorSVG.setAttribute("height", (cursorHeight + 8).toString());
         this.cursorSVG.setAttribute("viewBox", "0 2 " + cursorWidth + " " + cursorHeight);
         {
             let _scale = 0.6;
             var trs = document.createElementNS(Avionics.SVG.NS, "g");
             trs.setAttribute("transform", "scale(" + _scale + ")");
             this.cursorSVG.appendChild(trs);
+
+/*             this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "path");
+            this.cursorSVGClip.setAttribute("fill", "transparent");
+            this.cursorSVGClip.setAttribute("d", "M0 19 L62 19 L62 2 L123 2 L123 76 L62 76 L62 59 L0 59 Z");
+            this.cursorSVGClip.setAttribute("stroke", "white");
+            this.cursorSVGClip.setAttribute("stroke-width", "4");
+            trs.appendChild(this.cursorSVGClip); */
+
             if (!this.cursorSVGShape)
                 this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
             this.cursorSVGShape.setAttribute("fill", "black");
-            this.cursorSVGShape.setAttribute("d", "M0 22 L65 22 L65 5 L120 5 L120 73 L65 73 L65 56 L0 56 Z");
+            this.cursorSVGShape.setAttribute("d", "M0 25 L70 25 L70 0 L123 0 L123 84 L70 84 L70 59 L0 59 Z");
             this.cursorSVGShape.setAttribute("stroke", "white");
             this.cursorSVGShape.setAttribute("stroke-width", "3");
             trs.appendChild(this.cursorSVGShape);
             var _cursorWidth = (cursorWidth / _scale);
-            var _cursorHeight = (cursorHeight / _scale + 5);
-            var _cursorPosX = 8;
+            var _cursorHeight = (cursorHeight / _scale + 1);
+            var _cursorPosX = 3;
             var _cursorPosY = _cursorHeight * 0.5;
             let integralsGroup = document.createElementNS(Avionics.SVG.NS, "svg");
             integralsGroup.setAttribute("x", "0");
-            integralsGroup.setAttribute("y", "23");
+            integralsGroup.setAttribute("y", "28");
             integralsGroup.setAttribute("width", _cursorWidth.toString());
-            integralsGroup.setAttribute("height", (_cursorHeight - 39).toString());
+            integralsGroup.setAttribute("height", (_cursorHeight - 42).toString());
             integralsGroup.setAttribute("viewBox", "0 0 " + (_cursorWidth) + " " + (_cursorHeight));
             trs.appendChild(integralsGroup);
             {
-                this.cursorIntegrals[0].construct(integralsGroup, _cursorPosX - 22, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3, "#11d011");
-                this.cursorIntegrals[1].construct(integralsGroup, _cursorPosX + 25, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3, "#11d011");
-                this.cursorIntegrals[2].construct(integralsGroup, _cursorPosX + 73, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3, "#11d011");
+                this.cursorIntegrals[0].construct(integralsGroup, _cursorPosX - 24, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.5, "#11d011");
+                this.cursorIntegrals[1].construct(integralsGroup, _cursorPosX + 26, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.5, "#11d011");
+                this.cursorIntegrals[2].construct(integralsGroup, _cursorPosX + 79, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.5, "#11d011");
             }
-            this.cursorDecimals.construct(trs, _cursorPosX + 110, _cursorPosY, _width, "Jost-Bold", this.fontSize * 1.5, "#11d011");
+            this.cursorDecimals.construct(trs, _cursorPosX + 119, _cursorPosY + 6, _width, "Jost-Bold", this.fontSize * 1.6, "#11d011");
             this.rootGroup.appendChild(this.cursorSVG);
         }
         var baroGroup = document.createElementNS(Avionics.SVG.NS, "g");
