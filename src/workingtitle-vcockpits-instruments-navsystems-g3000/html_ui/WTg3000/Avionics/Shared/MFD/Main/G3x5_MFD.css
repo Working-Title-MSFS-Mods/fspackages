@@ -303,9 +303,9 @@ as3000-mfd-element #Electricity .weatherRadar {
     as3000-mfd-element #Electricity weatherradar-view {
         position: absolute;
         left: 0%;
-        bottom: 35%;
+        bottom: 20%;
         width: 100%;
-        height: 50%;
+        height: 70%;
         display: block;
     }
     as3000-mfd-element #Electricity weatherradar-view-scale {
