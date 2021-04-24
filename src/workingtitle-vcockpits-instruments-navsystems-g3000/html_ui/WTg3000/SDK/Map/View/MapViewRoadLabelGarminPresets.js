@@ -153,6 +153,211 @@ WT_Garmin_MapViewMexicoFederalHighwayLabel.OPTION_DEFAULTS = {
     backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.55}
 };
 
+// SA
+
+class WT_Garmin_MapViewSARouteCollection extends WT_MapViewRoadLabelCollection {
+    constructor() {
+        super(WT_Garmin_MapViewSARouteCollection.DATA_FILE_PATH, {
+            createLabel(roadType, routeType, location, name) {
+                switch (routeType) {
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.ARGENTINA_NATIONAL_ROUTE:
+                        return new WT_Garmin_MapViewArgentinaNationalRouteLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.ARGENTINA_PROVINCIAL_ROUTE:
+                        return new WT_Garmin_MapViewArgentinaProvincialRouteLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.BOLIVIA_NATIONAL_ROAD:
+                        return new WT_Garmin_MapViewBoliviaNationalRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.BRAZIL_NATIONAL_HIGHWAY:
+                        return new WT_Garmin_MapViewBrazilNationalHighwayLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.BRAZIL_REGIONAL_HIGHWAY:
+                        return new WT_Garmin_MapViewBrazilRegionalHighwayLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.CHILE_NATIONAL_ROAD:
+                        return new WT_Garmin_MapViewChileNationalRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.CHILE_REGIONAL_ROAD:
+                        return new WT_Garmin_MapViewChileRegionalRoadLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.PARAGUAY_NATIONAL_ROUTE:
+                        return new WT_Garmin_MapViewParaguayNationalRouteLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.PARAGUAY_DEPARTMENTAL_ROUTE:
+                        return new WT_Garmin_MapViewGenericLocalHighwayLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.PERU_NATIONAL_HIGHWAY:
+                        return new WT_Garmin_MapViewPeruNationalHighwayLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.PERU_DEPARTMENTAL_ROAD:
+                        return new WT_Garmin_MapViewGenericLocalHighwayLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.PERU_RURAL_ROAD:
+                        return new WT_Garmin_MapViewGenericLocalHighwayLabel(roadType, location, name);
+                    case WT_Garmin_MapViewSARouteCollection.RouteType.URUGUAY_NATIONAL_ROUTE:
+                        return new WT_Garmin_MapViewUruguayNationalRouteLabel(roadType, location, name);
+                    default:
+                        return null;
+                }
+            }
+        });
+    }
+}
+WT_Garmin_MapViewSARouteCollection.DATA_FILE_PATH = "/Data/Roads/Labels/SA_labels.json";
+/**
+ * @enum {String}
+ */
+ WT_Garmin_MapViewSARouteCollection.RouteType = {
+    ARGENTINA_NATIONAL_ROUTE: "argentina_nat_route",
+    ARGENTINA_PROVINCIAL_ROUTE: "argentina_prov_route",
+    BOLIVIA_NATIONAL_ROAD: "bolivia_nat_road",
+    BRAZIL_NATIONAL_HIGHWAY: "brazil_nat_highway",
+    BRAZIL_REGIONAL_HIGHWAY: "brazil_reg_highway",
+    CHILE_NATIONAL_ROAD: "chile_nat_road",
+    CHILE_REGIONAL_ROAD: "chile_reg_road",
+    PARAGUAY_NATIONAL_ROUTE: "paraguay_nat_route",
+    PARAGUAY_DEPARTMENTAL_ROUTE: "paraguay_dep_route",
+    PERU_NATIONAL_HIGHWAY: "peru_nat_highway",
+    PERU_DEPARTMENTAL_ROAD: "peru_dep_road",
+    PERU_RURAL_ROAD: "peru_rural_road",
+    URUGUAY_NATIONAL_ROUTE: "uruguay_nat_route"
+};
+
+class WT_Garmin_MapViewArgentinaNationalRouteLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewArgentinaNationalRouteLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewArgentinaNationalRouteLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewArgentinaNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ARGENTINA_NATIONALROUTE.png";
+WT_Garmin_MapViewArgentinaNationalRouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.55}
+};
+
+class WT_Garmin_MapViewArgentinaProvincialRouteLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewArgentinaProvincialRouteLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewArgentinaProvincialRouteLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewArgentinaProvincialRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ITALY_MUNICIPALROAD.png";
+WT_Garmin_MapViewArgentinaProvincialRouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black"
+};
+
+class WT_Garmin_MapViewBoliviaNationalRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewBoliviaNationalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewBoliviaNationalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewBoliviaNationalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_BOLIVIA_NATIONALROAD.png";
+WT_Garmin_MapViewBoliviaNationalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.4, top: 0.55, right: 0.4, bottom: 0.4}
+};
+
+class WT_Garmin_MapViewBrazilNationalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewBrazilNationalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewBrazilNationalHighwayLabel.OPTION_DEFAULTS);
+    }
+
+    _initText() {
+        return ["BR", this.name];
+    }
+}
+WT_Garmin_MapViewBrazilNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_BRAZIL_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewBrazilNationalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    lineHeightEm: 1,
+    backgroundPaddingEm: {left: 0.4, top: 0.25, right: 0.4, bottom: 0.4}
+};
+
+class WT_Garmin_MapViewBrazilRegionalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewBrazilRegionalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewBrazilRegionalHighwayLabel.OPTION_DEFAULTS);
+    }
+
+    _initText() {
+        return this.name.split("-");
+    }
+}
+WT_Garmin_MapViewBrazilRegionalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_BRAZIL_REGIONALHIGHWAY.png";
+WT_Garmin_MapViewBrazilRegionalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    lineHeightEm: 1,
+    backgroundPaddingEm: {left: 0.55, top: 0.7, right: 0.55, bottom: 0.4}
+};
+
+class WT_Garmin_MapViewChileNationalRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewChileNationalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewChileNationalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewChileNationalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_BOLIVIA_NATIONALROAD.png";
+WT_Garmin_MapViewChileNationalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.4, top: 0.55, right: 0.4, bottom: 0.4}
+};
+
+class WT_Garmin_MapViewChileRegionalRoadLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewChileRegionalRoadLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewChileRegionalRoadLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewChileRegionalRoadLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_BOLIVIA_NATIONALROAD.png";
+WT_Garmin_MapViewChileRegionalRoadLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.4}
+};
+
+class WT_Garmin_MapViewParaguayNationalRouteLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewParaguayNationalRouteLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewParaguayNationalRouteLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewParaguayNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_ARGENTINA_NATIONALROUTE.png";
+WT_Garmin_MapViewParaguayNationalRouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.55}
+};
+
+class WT_Garmin_MapViewPeruNationalHighwayLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewPeruNationalHighwayLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewPeruNationalHighwayLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewPeruNationalHighwayLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_PERU_NATIONALHIGHWAY.png";
+WT_Garmin_MapViewPeruNationalHighwayLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    fontColor: "black",
+    backgroundPaddingEm: {left: 0.4, top: 0.55, right: 0.4, bottom: 0.4}
+};
+
+class WT_Garmin_MapViewUruguayNationalRouteLabel extends WT_MapViewRoadImageLabel {
+    constructor(roadType, location, name) {
+        super(roadType, location, name, WT_Garmin_MapViewUruguayNationalRouteLabel.IMAGE_PATH);
+
+        this.setOptions(WT_Garmin_MapViewUruguayNationalRouteLabel.OPTION_DEFAULTS);
+    }
+}
+WT_Garmin_MapViewUruguayNationalRouteLabel.IMAGE_PATH = "/WTg3000/SDK/Assets/Images/Garmin/Map/Roads/ICON_MAP_URUGUAY_NATIONALROUTE.png";
+WT_Garmin_MapViewUruguayNationalRouteLabel.OPTION_DEFAULTS = {
+    fontWeight: "bold",
+    backgroundPaddingEm: {left: 0.4, top: 0.4, right: 0.4, bottom: 0.55}
+};
+
 // EI
 
 class WT_Garmin_MapViewEIRouteCollection extends WT_MapViewRoadLabelCollection {
