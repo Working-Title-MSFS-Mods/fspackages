@@ -63,6 +63,9 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
                 case WT_MapViewRoadFeatureCollection.Region.CA:
                     data.push(new WT_Garmin_MapViewMexicoRouteCollection());
                     break;
+                case WT_MapViewRoadFeatureCollection.Region.SA:
+                    data.push(new WT_Garmin_MapViewSARouteCollection());
+                    break;
                 case WT_MapViewRoadFeatureCollection.Region.EI:
                     data.push(new WT_Garmin_MapViewEIRouteCollection());
                     break;
