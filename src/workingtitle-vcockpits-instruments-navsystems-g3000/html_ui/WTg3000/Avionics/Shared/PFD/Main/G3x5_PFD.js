@@ -323,6 +323,7 @@ class WT_G3x5_PFDInsetMap extends WT_G3x5_PFDElement {
     }
 }
 WT_G3x5_PFDInsetMap.LAYER_OPTIONS = {
+    pointer: false,
     miniCompass: true,
     rangeDisplay: true,
     windData: false,
