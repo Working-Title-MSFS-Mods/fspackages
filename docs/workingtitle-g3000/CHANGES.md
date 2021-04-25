@@ -1,8 +1,50 @@
 # Changelog
 
+### v0.6.0
+**New Features**
+- \[General\] Implemented traffic awareness and alert systems for both the TBM930 and Longitude.
+  - When the system is active, traffic alerts (TAs) will display a "TRAFFIC" annunciation on the PFD. Additionally, if no PFD inset is enabled, the PFD inset traffic map will automatically be displayed. Alternatively, if the PFD inset map is enabled, the traffic overlay for the inset map will automatically be displayed.
+  - Traffic can be visualized in several ways:
+    - Enable the traffic pane on the MFD by using the GTC to navigate to MFD Home -> Traffic.
+    - Enable the traffic overlay in the navigation map by using the GTC to navigate to MFD Home -> Map -> Map Settings -> Sensors tab -> Traffic.
+    - Enable the traffic inset on the PFD by using the GTC to navigate to PFD Home -> Traffic Map.
+      - Alternatively, in the TBM930 only, press the Traffic Map PFD softkey, or navigate to PFD Map Settings -> Map Layout -> Inset Traffic.
+    - Enable the traffic overlay in the PFD inset map by using the GTC to navigate to PFD Home -> PFD Map Settings -> Sensors tab -> Traffic.
+      - Alternatively, in the TBM930 only, use the PFD softkeys to navigate to PFD Map Settings -> Traffic.
+  - The traffic settings menu can be found by using the GTC to navigate to MFD Home -> Traffic -> Traffic Settings _or_ MFD Home -> Map -> Map Settings -> Sensors tab -> Traffic Settings _or_ PFD Home -> PFD Map Settings -> Sensors tab -> Traffic Settings.
+  - Settings specific to the navigation map traffic overlay can be found by using the GTC to navigate to MFD Home -> Map -> Map Settings -> Sensors tab -> Traffic Settings -> Map Settings _or_ PFD Home -> PFD Map Settings -> Sensors tab -> Traffic Settings -> Map Settings.
+- \[General\] Added Navigraph charts integration. *Use of this feature requires a paid Navigraph subscription*.
+  - To link a Navigraph account, use the GTC to navigate to MFD Home -> Utilities -> Database Status -> Navigraph Charts.
+  - To enable the charts pane on the MFD, use the GTC to navigate to MFD Home -> Charts.
+    - Charts can be rotated, zoomed, and scrolled using the GTC Charts Control page.
+    - The charts pane supports a live airplane icon overlay for geo-referenced charts while in Plan View.
+  - Use the Charts page on the touchscreen controller to select desired charts for viewing.
+- \[General\] Added settings to configure Time Format and Local Time Offset.
+  - The following time formats are available: Local 12 hr, Local 24 hr, and UTC.
+  - To change these settings, use the GTC to navigate to MFD Home -> Utilities -> Avionics Settings -> System tab.
+- \[General\] Added settings to filter airports which appear in the Nearest Airports list. Airports may be filtered by runway length and/or runway surface type.
+  - To change these settings, use the GTC to navigate to MFD Home -> Utilities -> Avionics Settings -> System tab.
+- \[MFD\] Added support for the Nearest Waypoint pane. When active, this pane highlights the selected nearest waypoint (airport, intersection, VOR, NDB).
+- \[GTC\] Added information pages for Intersections, VORs, and NDBs. These pages can be found by navigating to MFD Home -> Waypoint Info.
+
+**Changed Features**
+- \[MFD\] Increased the size of the weather radar display in the WX Radar Pane.
+- \[GTC\] Removed map pointer control scroll speed limit.
+- \[GTC\] The Airport Info page now displays the time zone offset for the selected airport.
+- \[GTC\] Updated the Nearest Waypoint pages to more closely match the real-life units.
+- \[VFR Map\] Added an option in the mod config file to enable/disable the custom VFR Map.
+- \[VFR Map\] Increased font size for the custom VFR map.
+
+**Fixes**
+- \[Compatibility\] For the Longitude: increased the default CRU thrust limit to 95% N1. This will allow the airplane to maintain Mmo at higher altitudes for those who have installed dakfly's Longitude performance mod.
+- \[General\] The aural minimums alert no longer triggers immediately after takeoff.
+- \[General\] Calculations for distance and ETE are now more accurate for flight plan legs that involve transition turns.
+- \[General\] For the Longitude: altimeter pressure setting increment/decrement hotkeys now work properly again.
+- \[NavMap\] Fixed a game freeze related to rendering certain airways.
+
 ### v0.5.1
 **Fixes**
-- \[Compatibility\] Fixed compatibility issue with darkfly's Longitude performance mod.
+- \[Compatibility\] Fixed compatibility issue with dakfly's Longitude performance mod.
 - \[PFD\] The autopilot display will now correctly flash an autopilot disconnect warning when the autopilot is disconnected through means other than pressing the AP key.
   - For the TBM 930: the warning will flash indefinitely until it is acknowledged by pressing the AP/Trim disconnect switch on the control wheel.
   - For the Longitude: the warning will flash for 5 seconds, then stop.
