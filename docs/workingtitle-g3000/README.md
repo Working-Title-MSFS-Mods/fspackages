@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.5.1
+### Latest version: v0.6.0
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,37 +8,44 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.5.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.6.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
-If you want to enable the road display for the navigation map, you must also download `workingtitle-g3000-roaddata-v0.1.0.zip` from the Github release page. To install the road data package, copy the `workingtitle-g3000-roaddata` folder from the zip file into your `Community` directory. Requires 1.3 GB of hard drive space.
+If you want to enable the road display for the navigation map, you must also download `workingtitle-g3000-roaddata-v0.2.0.zip` from the Github release page. To install the road data package, copy the `workingtitle-g3000-roaddata` folder from the zip file into your `Community` directory. Requires 1.4 GB of hard drive space.
 
 ### Configuration File
 Certain mod settings can be customized via a configuration file which is located at `workingtitle-g3000\html_ui\WTg3000.cfg`. Documentation for the various settings can be found in the file itself. If you make changes to the file while the game is running, you must restart the game for the changes to take effect.
 
-### Release Highlights for v0.5.1
+### Navigraph Account Linking
+This mod enables the G3000/5000 to natively display Navigraph charts. Use of this feature requires an active Navigraph Ultimate subscription (and internet connection). You will also need to link your Navigraph account within the sim. To do so, follow the instructions below:
+1. Use the GTC (touchscreen controller) to navigate to MFD Home -> Utilities -> Database Status.
+2. Click on the Navigraph Charts row. A pop-up will appear.
+3. A browser window should open automatically. If this does not happen, you will need to manually open a browser and navigate to the provided URL.
+4. You will be prompted to log in to your Navigraph account and allow access. *The mod does not store your Navigraph username or password anywhere, nor does it even have access to this information at any point during the authentication process*.
+5. After completing step 4, press the "Link Account" button on the GTC pop-up. A message will appear on the GTC indicating either success or failure.
+
+During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
+
+### Release Highlights for v0.6.0
+*Please refer to the changelog for a more detailed description of changes in this release.*
+- Implemented traffic awareness and alert systems for both the TBM930 and Longitude.
+- Added Navigraph charts integration. *Use of this feature requires a paid Navigraph subscription*.
+- Updated the touchscreen controller Nearest Waypoints pages, and added the ability to filter airports by runway surface and length.
+- Added Intersection, VOR, and NDB Info pages for the touchscreen controller.
+- Added an option to turn off the custom VFR Map in the mod config file. If the custom VFR Map is disabled, the game will revert to using the default VFR Map.
 
 **Fixes**
-- \[Compatibility\] Fixed compatibility issue with darkfly's Longitude performance mod.
-- \[PFD\] The autopilot display will now correctly flash an autopilot disconnect warning when the autopilot is disconnected through means other than pressing the AP key.
-  - For the TBM 930: the warning will flash indefinitely until it is acknowledged by pressing the AP/Trim disconnect switch on the control wheel.
-  - For the Longitude: the warning will flash for 5 seconds, then stop.
-- \[PFD\] Fixed airspeed indicator behavior when IAS is below the minimum reportable speed (20 KIAS for the TBM930, 40 KIAS for the Longitude):
-  - The IAS display shows "---" instead of the minimum speed.
-  - The trend vector is hidden.
-- \[PFD\] For the Longitude: the autopilot display will now flash an autothrottle disconnect caution alert when the autothrottle is turned off.
-- \[PFD\] For the Longitude: fixed erroneous display in the navigation status display ETE field when ground speed is 0.
-- \[PFD\] For the Longitude: the airspeed indicator now always shows the reference speed (and bug).
-- \[PFD\] For the Longitude: 'NO WIND DATA' annunciation no longer overflows its container.
-- \[GTC\] The "Home" button in the Timers page now works properly.
-- \[GTC\] When in the Map Pointer Control page, pressing the bottom knob will now exit the page as intended.
+- \[Compatibility\] For the Longitude: increased the default CRU thrust limit to 95% N1. This will allow the airplane to maintain Mmo at higher altitudes for those who have installed dakfly's Longitude performance mod.
+- \[General\] The aural minimums alert no longer triggers immediately after takeoff.
+- \[General\] Calculations for distance and ETE are now more accurate for flight plan legs that involve transition turns.
+- \[General\] For the Longitude: altimeter pressure setting increment/decrement hotkeys now work properly again.
+- \[NavMap\] Fixed a game freeze related to rendering certain airways.
 
 ### Known Issues
-- \[PFD\] Citation Longitude: the standby altimeter baro knob does not function properly. The standby altimeter is now slaved to the PFD altimeter (so changing the PFD altimeter baro setting automatically changes the standby altimeter's as well).
+- \[PFD\] Citation Longitude: the PFD altimeter baro setting may be a bit slow to update when turning the PFD baro knobs. As a side effect of syncing the PFD altimeter baro settings to that of the standby altimeter, the sync is paused as long as the baro knobs are being turned in order to prevent inputs from being eaten.
 - \[PFD\] TBM 930: Co-pilot PFD softkeys are nonfunctional.
 - \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
-- \[NavMap\] Traffic is temporarily disabled. This feature will be added back in a future release.
 - \[NavMap\] The flight plan renderer currently does not draw turn anticipation arcs or turn to intercept legs. These will be added later.
 - \[NavMap\] All airport waypoints are shown as if they are serviced, regardless of whether they actually are. This is because waypoint data from the game is currently missing this information.
 - \[NavMap\] Airport waypoint symbols will only show around a certain geographic distance from the center of the map (this does not apply to airports that are part of the active flight plan). This is due to the way the game searches for airports (the number of results is limited for performance reasons and there is no option to filter the search e.g. by size to reduce the performance penalty).
@@ -64,3 +71,4 @@ Certain mod settings can be customized via a configuration file which is located
 - Thank you to StuTozer/ElectrikKar for allowing us to integrate his Touchscreen Restyled Mod.
 - This mod uses the Roboto family of fonts (designed by Christian Robertson), licensed under Apache 2.0.
 - This mod uses the d3-array, d3-geo, and topojson libraries.
+- This mod uses the spacetime and tz-lookup libraries.
