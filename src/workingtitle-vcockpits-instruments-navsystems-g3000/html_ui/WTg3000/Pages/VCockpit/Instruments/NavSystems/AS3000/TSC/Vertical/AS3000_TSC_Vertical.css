@@ -419,27 +419,14 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapse
                 font-size: 3vh;
             }
 
-as3000-tsc-vertical-element #Electricity .mapPointerControl tsc-mappointercontrol {
+as3000-tsc-vertical-element #Electricity .mapPointerControl wt-tsc-mappointercontrol {
     position: absolute;
     left: 1%;
     top: 0%;
     width: 98%;
     height: 99%;
+    font-size: 3vh;
 }
-    as3000-tsc-vertical-element #Electricity .mapPointerControl #touchpad {
-        position: absolute;
-        left: 1%;
-        right: 1%;
-        top: 13vh;
-        bottom: 1%;
-        height: auto;
-        width: auto;
-        border: 0.25vh solid white;
-        border-radius: 2vh;
-        background-size: 5vh 5vh;
-        background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
-        background-position: center;
-    }
 
 as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings {
     font-size: 3vh;
