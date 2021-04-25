@@ -221,7 +221,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
 
     _moveRefSpeedBug(tapePos) {
         let translate = Math.max(-40, Math.min(50, (tapePos - 0.5) * 100));
-        this._refSpeedBugContainer.setAttribute("style", `transform: translateY(${translate}%);`);
+        this._refSpeedBugContainer.setAttribute("style", `transform: translateY(${translate}%) rotateX(0deg);`);
     }
 
     _showMach(value) {
@@ -260,7 +260,7 @@ class WT_G3000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
      */
     _moveSpeedBug(entry, tapePos) {
         let translate = Math.max(this._isRefSpeedVisible ? -40 : -50, Math.min(50, (tapePos - 0.5) * 100));
-        entry.htmlElement.setAttribute("style", `transform: translateY(${translate}%);`);
+        entry.htmlElement.setAttribute("style", `transform: translateY(${translate}%) rotateX(0deg);`);
     }
 }
 WT_G3000_PFDAirspeedIndicatorHTMLElement.UNIT_CLASS = "unit";
@@ -283,6 +283,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
             position: relative;
             width: 100%;
             height: 100%;
+            transform: rotateX(0deg);
         }
             #minspeedcontainer {
                 position: absolute;
@@ -406,6 +407,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             stroke: #299aa0;
                             stroke-width: 5;
                             display: none;
+                            transform: rotateX(0deg);
                         }
                         #wrapper[show-refspeed="true"] #refspeedbug {
                             display: block;
@@ -544,6 +546,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                     height: 100%;
                     font-family: "Roboto-Condensed";
                     font-size: var(--airspeedindicator-speedbug-font-size, 0.67em);
+                    transform: rotateX(0deg);
                 }
             #machcontainer {
                 position: absolute;
