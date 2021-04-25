@@ -126,6 +126,7 @@ WT_G3000_TrafficAdvisorySystem.AlertLevel = {
 /**
  * @typedef WT_G3000_TrafficAdvisorySystemIntruderEntryUpdateOptions
  * @property {WT_G5000_TCASII.OperatingMode} operatingMode
+ * @property {Boolean} isOnGround
  * @property {Number} taHysteresis
  * @property {{horizontalSeparation:WT_NumberUnit, verticalSeparation:WT_NumberUnit}} proximityAdvisoryParams
  */
@@ -210,7 +211,12 @@ class WT_G3000_TrafficAdvisorySystemIntruderEntry extends WT_G3x5_TrafficSystemI
 
         let isTA = false;
         let currentTime = this.intruder.lastUpdatedTime.asUnit(WT_Unit.SECOND);
-        if (this.intruder.tcaNorm <= 1) {
+        if (options.isOnGround) {
+            // suppress traffic advisories while own aircraft is on the ground
+            if (this._alertLevel === WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
+                this._taOffTime = currentTime;
+            }
+        } else if (this.intruder.tcaNorm <= 1) {
             if (this._alertLevel !== WT_G3000_TrafficAdvisorySystem.AlertLevel.TRAFFIC_ADVISORY) {
                 let dt = currentTime - this._taOffTime;
                 if (dt >= options.taOnHysteresis) {

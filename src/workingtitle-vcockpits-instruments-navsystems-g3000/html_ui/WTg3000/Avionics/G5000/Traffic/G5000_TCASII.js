@@ -252,7 +252,12 @@ class WT_G5000_TCASIIIntruderEntry extends WT_G3x5_TrafficSystemIntruderEntry {
 
         let isTA = false;
         let currentTime = this.intruder.lastUpdatedTime.asUnit(WT_Unit.SECOND);
-        if (this.intruder.tcaNorm <= 1) {
+        if (options.isOnGround) {
+            // suppress traffic advisories while own aircraft is on the ground
+            if (this._alertLevel === WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY) {
+                this._taOffTime = currentTime;
+            }
+        } else if (this.intruder.tcaNorm <= 1) {
             if (this._alertLevel !== WT_G5000_TCASII.AlertLevel.TRAFFIC_ADVISORY) {
                 let dt = currentTime - this._taOffTime;
                 if (dt >= options.taOnHysteresis) {

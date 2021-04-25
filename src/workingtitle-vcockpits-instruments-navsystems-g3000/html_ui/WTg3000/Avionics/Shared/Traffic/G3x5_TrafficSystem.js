@@ -157,6 +157,10 @@ class WT_G3x5_TrafficSystem {
         }
     }
 
+    _updateOnGround() {
+        this._entryUpdateOptions.isOnGround = this._airplane.sensors.isOnGround();
+    }
+
     _updateSensitivity() {
         this._sensitivity.update();
     }
@@ -190,6 +194,7 @@ class WT_G3x5_TrafficSystem {
     }
 
     _doUpdate(currentTime) {
+        this._updateOnGround();
         this._updateSensitivity();
         this._updateProtectedZone();
         this._updateTAS();
