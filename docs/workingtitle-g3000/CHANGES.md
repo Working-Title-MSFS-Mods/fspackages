@@ -28,6 +28,7 @@
 - \[GTC\] Added information pages for Intersections, VORs, and NDBs. These pages can be found by navigating to MFD Home -> Waypoint Info.
 
 **Changed Features**
+- \[NavMap\] Having many waypoints displayed on the map now incurs less of a performance cost.
 - \[MFD\] Increased the size of the weather radar display in the WX Radar Pane.
 - \[GTC\] Removed map pointer control scroll speed limit.
 - \[GTC\] The Airport Info page now displays the time zone offset for the selected airport.
