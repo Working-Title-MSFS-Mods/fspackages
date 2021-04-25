@@ -209,6 +209,9 @@ class WT_G3x5_NavMap {
     _initSettingModel() {
         this.settingModel.addSetting(this._rangeTargetRotationController = new WT_G3x5_MapRangeTargetRotationController(this.settingModel));
         this.settingModel.addSetting(this._terrainSetting = new WT_MapTerrainModeSetting(this.settingModel));
+        if (this._layerOptions.pointer) {
+            this.settingModel.addSetting(new WT_G3x5_MapPointerShowSetting(this.settingModel, true));
+        }
         this.settingModel.addSetting(new WT_MapTrackVectorSettingGroup(this.settingModel));
         this.settingModel.addSetting(new WT_MapFuelRingSettingGroup(this.settingModel));
         this.settingModel.addSetting(new WT_MapAltitudeInterceptSetting(this.settingModel));
@@ -308,6 +311,10 @@ class WT_G3x5_NavMap {
         this.trafficSettingModel.update();
     }
 
+    _initPointerController() {
+        this._pointerController = new WT_G3x5_NavMapPointerController(this.model, this.view, new WT_G3x5_NavMapPointerEventHandler(this.instrumentID));
+    }
+
     init(viewElement) {
         this._model = new WT_MapModel(this._airplane);
         this._view = viewElement;
@@ -319,6 +326,9 @@ class WT_G3x5_NavMap {
         this._initView();
         this._initSettingModel();
         this._initTrafficSettingModel();
+        if (this._layerOptions.pointer) {
+            this._initPointerController();
+        }
     }
 
     sleep() {
@@ -329,12 +339,14 @@ class WT_G3x5_NavMap {
     }
 
     update() {
+        this._pointerController.update();
         this._rangeTargetRotationController.update();
         this.view.update();
         this._waypointRenderer.update(this.view.state);
     }
 }
 WT_G3x5_NavMap.LAYER_OPTIONS_DEFAULT = {
+    pointer: true,
     miniCompass: true,
     rangeDisplay: false,
     windData: true,
@@ -477,12 +489,10 @@ class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
         this._rangeSetting = new WT_MapRangeSetting(model, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.MAP_RANGE_DEFAULT, true, false);
         this._orientationSetting = new WT_MapSetting(model, WT_G3x5_NavMap.ORIENTATION_KEY, WT_G3x5_NavMap.Orientation.HDG, true, false, true);
         this._autoNorthUpSetting = new WT_MapAutoNorthUpSettingGroup(model, WT_G3x5_NavMap.MAP_RANGE_LEVELS, WT_G3x5_NavMap.NORTHUP_RANGE_DEFAULT);
-        this._pointerSetting = new WT_G3x5_MapPointerSettingGroup(model);
 
         this.addSetting(this._rangeSetting);
         this.addSetting(this._orientationSetting);
         this.addSetting(this._autoNorthUpSetting);
-        this.addSetting(this._pointerSetting);
 
         model.mapView.setTargetOffsetHandler(this);
         model.mapView.setRangeInterpreter(this);
@@ -571,8 +581,8 @@ class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
 
     _updateTarget() {
         let target = this._tempGeoPoint;
-        if (this._pointerSetting.isPointerActive()) {
-            target.set(this._pointerSetting.getTargetLatLong());
+        if (this.mapModel.pointer.show) {
+            target.set(this.mapModel.pointer.target);
             this.mapModel.crosshair.show = true;
         } else {
             this.mapModel.airplane.navigation.position(target);
@@ -593,7 +603,7 @@ class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
         }
 
         // handle cursor
-        if (this._pointerSetting.isPointerActive()) {
+        if (this.mapModel.pointer.show) {
             return true;
         }
 
@@ -640,7 +650,6 @@ class WT_G3x5_MapRangeTargetRotationController extends WT_MapSettingGroup {
     }
 
     update() {
-        this._pointerSetting.update();
         this._updateRange();
         this._updateTarget();
         this._updateRotation();
