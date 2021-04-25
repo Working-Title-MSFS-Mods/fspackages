@@ -668,6 +668,7 @@ WT_G3x5_PFDAltimeterHTMLElement.TEMPLATE.innerHTML = `
                 top: 0%;
                 width: 12.5%;
                 height: 100%;
+                transform: rotateX(0deg);
             }
             #${WT_G3x5_PFDAltimeterHTMLElement.ALTITUDE_ID} {
                 position: absolute;
@@ -675,6 +676,7 @@ WT_G3x5_PFDAltimeterHTMLElement.TEMPLATE.innerHTML = `
                 top: 0%;
                 width: 50%;
                 height: 100%;
+                transform: rotateX(0deg);
             }
             #${WT_G3x5_PFDAltimeterHTMLElement.VSPEED_ID} {
                 position: absolute;
@@ -682,6 +684,7 @@ WT_G3x5_PFDAltimeterHTMLElement.TEMPLATE.innerHTML = `
                 top: 0%;
                 width: 37.5%;
                 height: 100%;
+                transform: rotateX(0deg);
             }
     </style>
     <div id="wrapper">
@@ -1217,7 +1220,7 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
     }
 
     _movePointer(pos) {
-        this._pointerContainer.setAttribute("style", `transform: translateY(${Math.min(0.5, Math.max(-0.5, pos)) * 100}%);`);
+        this._pointerContainer.setAttribute("style", `transform: translateY(${Math.min(0.5, Math.max(-0.5, pos)) * 100}%) rotateX(0deg);`);
     }
 
     _updatePointer() {
@@ -1240,7 +1243,7 @@ class WT_G3x5_PFDAltimeterVSpeedHTMLElement extends HTMLElement {
     }
 
     _moveReferenceBug(pos) {
-        this._referenceBugContainer.setAttribute("style", `transform: translateY(${Math.min(0.5, Math.max(-0.5, pos)) * 100}%);`);
+        this._referenceBugContainer.setAttribute("style", `transform: translateY(${Math.min(0.5, Math.max(-0.5, pos)) * 100}%) rotateX(0deg);`);
     }
 
     _updateReference() {
@@ -1383,6 +1386,7 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                         top: 0%;
                         width: var(--altimeter-vspeed-minortick-width, 15%);
                         height: 100%;
+                        transform: rotateX(0deg);
                     }
                         #referencemanualbug {
                             position: absolute;
@@ -1407,6 +1411,7 @@ WT_G3x5_PFDAltimeterVSpeedHTMLElement.TEMPLATE.innerHTML = `
                     height: 100%;
                     font-size: var(--altimeter-vspeed-pointer-font-size, 0.9em);
                     color: white;
+                    transform: rotateX(0deg);
                 }
                     #pointer {
                         position: absolute;
