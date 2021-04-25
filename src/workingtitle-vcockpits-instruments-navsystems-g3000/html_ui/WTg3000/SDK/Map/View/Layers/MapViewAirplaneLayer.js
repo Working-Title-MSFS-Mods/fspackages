@@ -18,14 +18,10 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
     }
 
     _createHTMLElement() {
-        this._icon = document.createElementNS(Avionics.SVG.NS, "svg");
-        this._icon.setAttribute("viewBox", `0 0 64 64`);
+        this._icon = document.createElement("img");
         this._icon.style.position = "absolute";
         this._icon.style.overflow = "hidden";
-        this._image = document.createElementNS(Avionics.SVG.NS, "image");
-        this._image.setAttribute("width", "100%");
-        this._image.setAttribute("height", "100%");
-        this._icon.appendChild(this._image);
+        this._icon.style.transform = "scale3d(1, 1, 1)"; // create CoherentGT layer
         return this._icon;
     }
 
@@ -52,7 +48,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
             this._setPropertyFromConfig(property);
         }
 
-        this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", this.config.imagePath);
+        this._icon.src = this.config.imagePath;
     }
 
     /**
@@ -79,7 +75,7 @@ class WT_MapViewAirplaneLayer extends WT_MapViewLayer {
         let viewPosY = Math.round(state.viewPlane.y * 10) / 10;
 
         if (iconRotation !== this._lastRotation || viewPosX !== this._lastViewPos.x || viewPosY !== this._lastViewPos.y) {
-            this._icon.style.transform = `translate(${viewPosX}px, ${viewPosY}px) rotate(${iconRotation}deg)`;
+            this._icon.style.transform = `translate(${viewPosX}px, ${viewPosY}px) rotate(${iconRotation}deg) scale3d(1, 1, 1)`;
             this._lastRotation = iconRotation;
             this._lastViewPos.x = viewPosX;
             this._lastViewPos.y = viewPosY;
