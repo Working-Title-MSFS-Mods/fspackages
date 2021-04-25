@@ -67,13 +67,13 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         var height = 250;
         var posX = width * 0.5;
         var posY = 0;
-        var gradWidth = 90;
+/*         var gradWidth = 90;
         this.refHeight = height;
         this.graduationSpacing = 27.5;
         this.graduationScroller = new Avionics.Scroller(this.nbPrimaryGraduations, 10);
         this.graduationVLine = null;
         this.stripBorderSize = 0;
-        this.stripOffsetX = 0;
+        this.stripOffsetX = 0; */
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
             this.rootGroup.setAttribute("id", "Airspeed");
@@ -219,8 +219,8 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             this.machSVG.setAttribute("text-anchor", "middle");
             this.machSVG.setAttribute("alignment-baseline", "central");
             this.machGroup.appendChild(this.machSVG);
-        }
-            var stripViewPosX = _left + gradWidth + 2;
+        //}
+/*             var stripViewPosX = _left + gradWidth - 5;
             var stripViewPosY = this.stripBorderSize;
             var stripViewWidth = width;
             var stripViewHeight = _height - this.stripBorderSize * 2;
@@ -245,7 +245,7 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                     shape.setAttribute("fill", "red");
                     shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
                     this.vMaxStripSVG.appendChild(shape);
-                }
+                } */
         }
         this.rootSVG.appendChild(this.rootGroup);
         this.appendChild(this.rootSVG);
@@ -424,7 +424,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 1000));
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 100));
         this.cursorIntegrals.push(new Avionics.AltitudeScroller(3, 72, 1, 10, 10));
-        this.cursorDecimals = new Avionics.AltitudeScroller(3, 34, 10, 100);
+        this.cursorDecimals = new Avionics.AltitudeScroller(3, 36, 10, 100);
         this.construct();
     }
     construct() {
@@ -535,7 +535,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         this.cursorSVG.setAttribute("y", (cursorPosY - cursorHeight * 0.5).toString());
         this.cursorSVG.setAttribute("width", cursorWidth.toString());
         this.cursorSVG.setAttribute("height", (cursorHeight + 8).toString());
-        this.cursorSVG.setAttribute("viewBox", "0 2 " + cursorWidth + " " + cursorHeight);
+        this.cursorSVG.setAttribute("viewBox", "0 3 " + cursorWidth + " " + cursorHeight);
         {
             let _scale = 0.6;
             var trs = document.createElementNS(Avionics.SVG.NS, "g");
@@ -572,7 +572,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
                 this.cursorIntegrals[1].construct(integralsGroup, _cursorPosX + 26, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.5, "#11d011");
                 this.cursorIntegrals[2].construct(integralsGroup, _cursorPosX + 79, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.5, "#11d011");
             }
-            this.cursorDecimals.construct(trs, _cursorPosX + 119, _cursorPosY + 6, _width, "Jost-Bold", this.fontSize * 1.6, "#11d011");
+            this.cursorDecimals.construct(trs, _cursorPosX + 119, _cursorPosY + 6, _width, "Jost-Bold", this.fontSize * 1.55, "#11d011");
             this.rootGroup.appendChild(this.cursorSVG);
         }
         var baroGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -1157,7 +1157,7 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
                             line.SVGText1.setAttribute("x", "2");
                             line.SVGText1.setAttribute("y", (linePosY + lineHeight + 15).toString());
                             line.SVGText1.setAttribute("fill", "white");
-                            line.SVGText1.setAttribute("font-size", (this.fontSize * 1.25).toString());
+                            line.SVGText1.setAttribute("font-size", (this.fontSize * 1.5).toString());
                             line.SVGText1.setAttribute("font-family", "Jost-SemiBold");
                             line.SVGText1.setAttribute("text-anchor", "middle");
                             line.SVGText1.setAttribute("alignment-baseline", "central");
@@ -1213,7 +1213,7 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
                 var posY = this.graduationScrollPosY;
                 this.graduations[i].SVGLine.setAttribute("transform", "translate(" + posX.toString() + " " + posY.toString() + ")");
                 if (this.graduations[i].SVGText1) {
-                    var roundedVal = Math.floor(currentVal / 10);
+                     var roundedVal = Math.floor(currentVal / 10);
                     if (roundedVal % 3 == 0) {
                         if (roundedVal == 0)
                             this.graduations[i].SVGText1.textContent = "N";
@@ -1225,6 +1225,8 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
                             this.graduations[i].SVGText1.textContent = "W";
                         else
                             this.graduations[i].SVGText1.textContent = roundedVal.toString().padStart(2,"0");
+                            this.graduations[i].SVGLine.setAttribute("height", "18");
+                            this.graduations[i].SVGText1.setAttribute("y", "36")
                     }
                     else {
                         this.graduations[i].SVGText1.textContent = "";
