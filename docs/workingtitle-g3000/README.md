@@ -34,6 +34,7 @@ During a flight, you can check your Navigraph account link status in the GTC Dat
 - Updated the touchscreen controller Nearest Waypoints pages, and added the ability to filter airports by runway surface and length.
 - Added Intersection, VOR, and NDB Info pages for the touchscreen controller.
 - Added an option to turn off the custom VFR Map in the mod config file. If the custom VFR Map is disabled, the game will revert to using the default VFR Map.
+- Performance optimizations for the navigation map.
 
 **Fixes**
 - \[Compatibility\] For the Longitude: increased the default CRU thrust limit to 95% N1. This will allow the airplane to maintain Mmo at higher altitudes for those who have installed dakfly's Longitude performance mod.
