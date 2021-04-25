@@ -70,18 +70,6 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
 
     onEvent(event) {
         switch (event) {
-            case "TopKnob_Small_INC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanUp");
-                break;
-            case "TopKnob_Small_DEC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanDown");
-                break;
-            case "TopKnob_Large_INC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanRight");
-                break;
-            case "TopKnob_Large_DEC":
-                LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", "AS3000_MFD_PanLeft");
-                break;
             case "TopKnob_Push":
                 this.instrument.goBack();
                 break;
@@ -89,6 +77,7 @@ class WT_G3x5_TSCMapPointerControl extends WT_G3x5_TSCPageElement {
     }
 }
 WT_G3x5_TSCMapPointerControl.TITLE = "Map Pointer Control";
+WT_G3x5_TSCMapPointerControl.SCROLL_KNOB_QUANTUM = 10; // pixels
 
 class WT_G3x5_TSCMapPointerControlHTMLElement extends HTMLElement {
     constructor() {
