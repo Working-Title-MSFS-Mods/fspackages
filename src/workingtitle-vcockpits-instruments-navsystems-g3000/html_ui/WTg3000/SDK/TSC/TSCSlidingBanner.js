@@ -115,114 +115,114 @@ WT_TSCSlidingBanner.TEMPLATE.innerHTML = `
         @keyframes slidein-left {
             0% {
                 visibility: hidden;
-                right: 100%;
+                transform: translate(-100%, 0%) rotateX(0deg);
             }
             0.1% {
                 visibility: visible;
-                right: 100%;
+                transform: translate(-100%, 0%) rotateX(0deg);
             }
             100% {
                 visibility: visible;
-                right: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
         @keyframes slidein-top {
             0% {
                 visibility: hidden;
-                bottom: 100%;
+                transform: translate(0%, -100%) rotateX(0deg);
             }
             0.1% {
                 visibility: visible;
-                bottom: 100%;
+                transform: translate(0%, -100%) rotateX(0deg);
             }
             100% {
                 visibility: visible;
-                bottom: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
         @keyframes slidein-right {
             0% {
                 visibility: hidden;
-                left: 100%;
+                transform: translate(100%, 0%) rotateX(0deg);
             }
             0.1% {
                 visibility: visible;
-                left: 100%;
+                transform: translate(100%, 0%) rotateX(0deg);
             }
             100% {
                 visibility: visible;
-                left: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
         @keyframes slidein-bottom {
             0% {
                 visibility: hidden;
-                top: 100%;
+                transform: translate(0%, 100%) rotateX(0deg);
             }
             0.1% {
                 visibility: visible;
-                top: 100%;
+                transform: translate(0%, 100%) rotateX(0deg);
             }
             100% {
                 visibility: visible;
-                top: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
 
         @keyframes slideout-left {
             100% {
                 visibility: hidden;
-                right: 100%;
+                transform: translate(-100%, 0%) rotateX(0deg);
             }
             99.9% {
                 visibility: visible;
-                right: 100%;
+                transform: translate(-100%, 0%) rotateX(0deg);
             }
             0% {
                 visibility: visible;
-                right: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
         @keyframes slideout-top {
             100% {
                 visibility: hidden;
-                bottom: 100%;
+                transform: translate(0%, -100%) rotateX(0deg);
             }
             99.9% {
                 visibility: visible;
-                bottom: 100%;
+                transform: translate(0%, -100%) rotateX(0deg);
             }
             0% {
                 visibility: visible;
-                bottom: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
         @keyframes slideout-right {
             100% {
                 visibility: hidden;
-                left: 100%;
+                transform: translate(100%, 0%) rotateX(0deg);
             }
             99.9% {
                 visibility: visible;
-                left: 100%;
+                transform: translate(100%, 0%) rotateX(0deg);
             }
             0% {
                 visibility: visible;
-                left: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
         @keyframes slideout-bottom {
             100% {
                 visibility: hidden;
-                top: 100%;
+                transform: translate(0%, 100%) rotateX(0deg);
             }
             99.9% {
                 visibility: visible;
-                top: 100%;
+                transform: translate(0%, 100%) rotateX(0deg);
             }
             0% {
                 visibility: visible;
-                top: 0%;
+                transform: translate(0%, 0%) rotateX(0deg);
             }
         }
 
@@ -234,6 +234,7 @@ WT_TSCSlidingBanner.TEMPLATE.innerHTML = `
             height: 100%;
             visibility: hidden;
             pointer-events: auto;
+            transform: rotateX(0deg);
         }
         #wrapper[state="popin"] {
             visibility: visible;
