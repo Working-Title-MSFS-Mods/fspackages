@@ -250,7 +250,7 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
 
     _moveSelectedAltitudeBug(tapePos) {
         let translate = Math.max(-50, Math.min(50, (tapePos - 0.5) * 100));
-        this._selectedAltBugContainer.setAttribute("style", `transform: translateY(${translate}%);`);
+        this._selectedAltBugContainer.setAttribute("style", `transform: translateY(${translate}%) rotateX(0deg);`);
     }
 
     _showMinimums(value) {
@@ -259,7 +259,7 @@ class WT_G5000_PFDAltimeterAltitudeHTMLElement extends WT_G3x5_PFDAltimeterAltit
 
     _moveMinimumsBug(tapePos) {
         let translate = Math.max(-100, Math.min(100, (tapePos - 0.5) * 100));
-        this._minimumsContainer.setAttribute("style", `transform: translateY(${translate}%);`);
+        this._minimumsContainer.setAttribute("style", `transform: translateY(${translate}%) rotateX(0deg);`);
     }
 
     _setMinimumsState(state) {
@@ -598,6 +598,7 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                         width: calc(var(--altimeter-minortick-width, 12%) * 1);
                         height: 100%;
                         display: none;
+                        transform: rotateX(0deg);
                     }
                     #wrapper[show-minimums="true"] #minimumsbugcontainer {
                         display: block;
@@ -634,6 +635,7 @@ WT_G5000_PFDAltimeterAltitudeHTMLElement.TEMPLATE.innerHTML = `
                         top: 0%;
                         width: calc(var(--altimeter-minortick-width, 12%) * 1.25);
                         height: 100%;
+                        transform: rotateX(0deg);
                     }
                         #selectedaltbug {
                             position: absolute;
