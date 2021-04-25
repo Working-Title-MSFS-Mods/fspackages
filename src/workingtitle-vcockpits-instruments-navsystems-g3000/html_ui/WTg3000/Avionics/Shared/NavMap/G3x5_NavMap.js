@@ -339,7 +339,9 @@ class WT_G3x5_NavMap {
     }
 
     update() {
-        this._pointerController.update();
+        if (this._layerOptions.pointer) {
+            this._pointerController.update();
+        }
         this._rangeTargetRotationController.update();
         this.view.update();
         this._waypointRenderer.update(this.view.state);
