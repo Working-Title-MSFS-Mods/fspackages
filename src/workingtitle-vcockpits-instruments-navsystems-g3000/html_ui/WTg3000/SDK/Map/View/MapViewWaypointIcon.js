@@ -108,27 +108,27 @@ class WT_MapViewAirportImageIcon extends WT_MapViewWaypointImageIcon {
             case WT_Airport.Class.PAVED_SURFACE:
                 if (this.waypoint.isTowered) {
                     return fuel ?
-                        "ICON_MAP_AIRPORT_PAVED_TOWERED_SERVICED.svg" :
-                        "ICON_MAP_AIRPORT_PAVED_TOWERED_NONSERVICED.svg";
+                        "ICON_MAP_AIRPORT_PAVED_TOWERED_SERVICED.png" :
+                        "ICON_MAP_AIRPORT_PAVED_TOWERED_NONSERVICED.png";
                 } else {
                     return fuel ?
-                        "ICON_MAP_AIRPORT_PAVED_NONTOWERED_SERVICED.svg" :
-                        "ICON_MAP_AIRPORT_PAVED_NONTOWERED_NONSERVICED.svg";
+                        "ICON_MAP_AIRPORT_PAVED_NONTOWERED_SERVICED.png" :
+                        "ICON_MAP_AIRPORT_PAVED_NONTOWERED_NONSERVICED.png";
                 }
             case WT_Airport.Class.SOFT_SURFACE:
                 return fuel ?
-                    "ICON_MAP_AIRPORT_SOFT_SERVICED.svg" :
-                    "ICON_MAP_AIRPORT_SOFT_NONSERVICED.svg";
+                    "ICON_MAP_AIRPORT_SOFT_SERVICED.png" :
+                    "ICON_MAP_AIRPORT_SOFT_NONSERVICED.png";
             //case WT_Airport.Class.SEAPLANE:
             //    return this.waypoint.isTowered ?
             //        "ICON_MAP_AIRPORT_SEAPLANE_TOWERED.svg" :
             //        "ICON_MAP_AIRPORT_SEAPLANE_NONTOWERED.svg";
             case WT_Airport.Class.HELIPORT:
-                return "ICON_MAP_AIRPORT_HELIPORT.svg";
+                return "ICON_MAP_AIRPORT_HELIPORT.png";
             case WT_Airport.Class.RESTRICTED:
-                return "ICON_MAP_AIRPORT_RESTRICTED.svg";
+                return "ICON_MAP_AIRPORT_RESTRICTED.png";
             default:
-                return "ICON_MAP_AIRPORT_UNKNOWN.svg";
+                return "ICON_MAP_AIRPORT_UNKNOWN.png";
         }
     }
 
@@ -170,15 +170,15 @@ class WT_MapViewVORImageIcon extends WT_MapViewWaypointImageIcon {
     get imageFileName() {
         switch(this.waypoint.vorType) {
             case WT_VOR.Type.VOR_DME:
-                return "ICON_MAP_VOR_VORDME.svg";
+                return "ICON_MAP_VOR_VORDME.png";
             case WT_VOR.Type.DME:
-                return "ICON_MAP_VOR_DME.svg";
+                return "ICON_MAP_VOR_DME.png";
             case WT_VOR.Type.VORTAC:
-                return "ICON_MAP_VOR_VORTAC.svg";
+                return "ICON_MAP_VOR_VORTAC.png";
             case WT_VOR.Type.TACAN:
-                return "ICON_MAP_VOR_TACAN.svg";
+                return "ICON_MAP_VOR_TACAN.png";
             default:
-                return "ICON_MAP_VOR_VOR.svg";
+                return "ICON_MAP_VOR_VOR.png";
         }
     }
 }
@@ -188,7 +188,7 @@ class WT_MapViewVORImageIcon extends WT_MapViewWaypointImageIcon {
  */
 class WT_MapViewNDBImageIcon extends WT_MapViewWaypointImageIcon {
     get imageFileName() {
-        return "ICON_MAP_NDB.svg";
+        return "ICON_MAP_NDB.png";
     }
 }
 
@@ -197,7 +197,7 @@ class WT_MapViewNDBImageIcon extends WT_MapViewWaypointImageIcon {
  */
 class WT_MapViewINTImageIcon extends WT_MapViewWaypointImageIcon {
     get imageFileName() {
-        return "ICON_MAP_INTERSECTION.svg";
+        return "ICON_MAP_INTERSECTION.png";
     }
 }
 
@@ -206,7 +206,7 @@ class WT_MapViewINTImageIcon extends WT_MapViewWaypointImageIcon {
  */
 class WT_MapViewRunwayWaypointImageIcon extends WT_MapViewWaypointImageIcon {
     get imageFileName() {
-        return "ICON_MAP_INTERSECTION.svg";
+        return "ICON_MAP_INTERSECTION.png";
     }
 }
 
