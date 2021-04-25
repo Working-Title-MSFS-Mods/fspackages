@@ -400,6 +400,11 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
+        this._airplanePosition = new WT_GeoPoint(0, 0);
+        this._state = {
+            airplanePosition: this._airplanePosition.readonly()
+        };
+
         /**
          * @type {WT_G3x5_TSCNearestWaypointRowHTMLElement<T>[]}
          */
@@ -589,8 +594,13 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
     open() {
     }
 
+    _updateState() {
+        this._context.airplane.navigation.position(this._airplanePosition);
+        this._state.airplaneHeadingTrue = this._context.airplane.navigation.headingTrue();
+    }
+
     _updateRows() {
-        this._rows.forEach(row => row.update());
+        this._rows.forEach(row => row.update(this._state), this);
     }
 
     _updateMapButton() {
@@ -614,6 +624,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
     }
 
     _doUpdate() {
+        this._updateState();
         this._updateRows();
         this._updateOptions();
         this._waypointsList.scrollManager.update();
@@ -816,7 +827,6 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
 
         this._tempGARad = new WT_NumberUnit(0, WT_Unit.GA_RADIAN);
         this._tempTrueBearing = new WT_NavAngleUnit(false).createNumber(0);
-        this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
     _initDistanceFormatter() {
@@ -956,16 +966,19 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         this._bearingText.textContent = "";
     }
 
-    _updateBearing(planePosition) {
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    _updateBearing(state) {
         if (!this.waypoint) {
             this._clearBearingInfo();
         }
 
-        let bearing = this._tempTrueBearing.set(planePosition.bearingTo(this.waypoint.location));
-        bearing.unit.setLocation(planePosition);
+        let bearing = this._tempTrueBearing.set(state.airplanePosition.bearingTo(this.waypoint.location));
+        bearing.unit.setLocation(state.airplanePosition);
 
-        let heading = this._context.airplane.navigation.headingTrue();
-        this._bearingArrow.setBearing(bearing.number - heading);
+        this._bearingArrow.setBearing(bearing.number - state.airplaneHeadingTrue);
 
         let unit = this._context.unitsModel.bearingUnit;
         this._bearingText.textContent = this._bearingFormatter.getFormattedString(bearing, unit);
@@ -975,29 +988,40 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         this._distanceText.innerHTML = "";
     }
 
-    _updateDistance(planePosition) {
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    _updateDistance(state) {
         if (!this.waypoint) {
             this._clearDistanceInfo();
         }
 
-        let distance = this._tempGARad.set(this.waypoint.location.distance(planePosition));
+        let distance = this._tempGARad.set(this.waypoint.location.distance(state.airplanePosition));
         let unit = this._context.unitsModel.distanceUnit;
         this._distanceText.innerHTML = this._distanceFormatter.getFormattedHTML(distance, unit);
     }
 
-    _doUpdate() {
-        let planePosition = this._context.airplane.navigation.position(this._tempGeoPoint);
-        this._updateHighlight();
-        this._updateBearing(planePosition);
-        this._updateDistance(planePosition);
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    _doUpdate(state) {
+        this._updateHighlight(state);
+        this._updateBearing(state);
+        this._updateDistance(state);
     }
 
-    update() {
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    update(state) {
         if (!this._isInit || !this._context) {
             return;
         }
 
-        this._doUpdate();
+        this._doUpdate(state);
     }
 }
 WT_G3x5_TSCNearestWaypointRowHTMLElement.WAYPOINT_ICON_PATH = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
@@ -1271,17 +1295,25 @@ class WT_G3x5_TSCNearestAirportRowHTMLElement extends WT_G3x5_TSCNearestWaypoint
         return WT_G3x5_TSCNearestAirportRowHTMLElement.EventType.WAYPOINT_BUTTON_PRESSED;
     }
 
-    _updateLengthUnit() {
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    _updateLengthUnit(state) {
         let unit = this._context.unitsModel.lengthUnit;
         if (!unit.equals(this._lastLengthUnit)) {
             this._updateRunway();
         }
     }
 
-    _doUpdate() {
-        super._doUpdate();
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    _doUpdate(state) {
+        super._doUpdate(state);
 
-        this._updateLengthUnit();
+        this._updateLengthUnit(state);
     }
 }
 /**
