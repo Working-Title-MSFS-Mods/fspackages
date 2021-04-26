@@ -406,11 +406,10 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
 
     _clearRenderedWaypoints() {
         for (let waypoint of this._fpRenderer.getWaypointsRendered()) {
-            this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
+            this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN);
         }
-        this._waypointRenderer.deregister(this._drctRenderer.originRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
-        this._waypointRenderer.deregister(this._drctRenderer.destinationRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN | WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN_ACTIVE);
-        this._lastActiveWaypoint = null;
+        this._waypointRenderer.deregister(this._drctRenderer.originRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN);
+        this._waypointRenderer.deregister(this._drctRenderer.destinationRendered(), WT_MapViewWaypointCanvasRenderer.Context.FLIGHT_PLAN);
     }
 
     _registerRenderedWaypoints() {
