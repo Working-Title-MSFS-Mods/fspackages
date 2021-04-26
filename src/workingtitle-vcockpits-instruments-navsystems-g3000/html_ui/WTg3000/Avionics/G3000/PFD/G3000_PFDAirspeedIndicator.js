@@ -395,6 +395,7 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                         top: 0%;
                         width: var(--airspeedindicator-minortick-width, 12%);
                         height: 100%;
+                        transform: rotateX(0deg);
                     }
                         #refspeedbug {
                             position: absolute;
@@ -407,7 +408,6 @@ WT_G3000_PFDAirspeedIndicatorHTMLElement.TEMPLATE.innerHTML = `
                             stroke: #299aa0;
                             stroke-width: 5;
                             display: none;
-                            transform: rotateX(0deg);
                         }
                         #wrapper[show-refspeed="true"] #refspeedbug {
                             display: block;
