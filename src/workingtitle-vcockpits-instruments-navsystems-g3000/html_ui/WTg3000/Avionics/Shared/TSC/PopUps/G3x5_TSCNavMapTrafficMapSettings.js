@@ -34,54 +34,47 @@ class WT_G3x5_TSCNavMapTrafficMapSettingsHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
+        this._symbolRangeListener = this._onSymbolRangeSettingChanged.bind(this);
+        this._labelRangeListener = this._onLabelRangeSettingChanged.bind(this);
+
         /**
-         * @type {{instrument:AS3000_TSC, getSettingModelID:() => String, homePageGroup:String, homePageName:String}}
+         * @type {{instrument:AS3000_TSC, settings:WT_G3x5_NavMapSettings, homePageGroup:String, homePageName:String}}
          */
         this._context = null;
         this._isInit = false;
+
+        this._lastDistanceUnit = null;
     }
 
     _getTemplate() {
         return WT_G3x5_TSCNavMapTrafficMapSettingsHTMLElement.TEMPLATE;
     }
 
-    _defineChildren() {
-        let labelShowButton = this.shadowRoot.querySelector(`#labelshow`);
-        let symbolRangeButton = this.shadowRoot.querySelector(`#symbolrange`);
-        let labelRangeButton = this.shadowRoot.querySelector(`#labelrange`);
-        if (labelShowButton instanceof WT_TSCStatusBarButton && symbolRangeButton instanceof WT_G3x5_TSCRangeTypeDisplayButton && labelRangeButton instanceof WT_G3x5_TSCRangeTypeDisplayButton) {
-            this._labelShowButton = new WT_CachedElement(labelShowButton);
-            this._symbolRangeButton = symbolRangeButton;
-            this._labelRangeButton = labelRangeButton;
-            return true;
-        } else {
-            return false;
-        }
+    async _defineChildren() {
+        [
+            this._labelShowButton,
+            this._symbolRangeButton,
+            this._labelRangeButton
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#labelshow`, WT_TSCStatusBarButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#symbolrange`, WT_G3x5_TSCRangeTypeDisplayButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#labelrange`, WT_G3x5_TSCRangeTypeDisplayButton)
+        ]);
     }
 
     _initSymbolRangeWindowContext() {
-        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_NavMap.MAP_RANGE_LEVELS.filter(value => value.compare(WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_MAX) <= 0), this._context.instrument.unitsSettingModel);
         this._symbolRangeWindowContext = {
             title: "Map Traffic Symbol Range",
             subclass: "standardDynamicSelectionListWindow",
-            closeOnSelect: true,
-            callback: this._setRangeSetting.bind(this, WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_KEY),
-            elementConstructor: elementHandler,
-            elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this._getSettingModelID.bind(this), WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_KEY),
+            closeOnSelect: true
         };
     }
 
     _initLabelRangeWindowContext() {
-        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(WT_G3x5_NavMap.MAP_RANGE_LEVELS.filter(value => value.compare(WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_MAX) <= 0), this._context.instrument.unitsSettingModel);
         this._labelRangeWindowContext = {
             title: "Map Traffic Label Range",
             subclass: "standardDynamicSelectionListWindow",
-            closeOnSelect: true,
-            callback: this._setRangeSetting.bind(this, WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_KEY),
-            elementConstructor: elementHandler,
-            elementUpdater: elementHandler,
-            currentIndexGetter: new WT_G3x5_TSCMapSettingIndexGetter(this._getSettingModelID.bind(this), WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_KEY),
+            closeOnSelect: true
         };
     }
 
@@ -91,47 +84,105 @@ class WT_G3x5_TSCNavMapTrafficMapSettingsHTMLElement extends HTMLElement {
     }
 
     _initButtonListeners() {
-        this._labelShowButton.element.addButtonListener(this._onLabelShowButtonPressed.bind(this));
         this._symbolRangeButton.addButtonListener(this._onSymbolRangeButtonPressed.bind(this));
         this._labelRangeButton.addButtonListener(this._onLabelRangeButtonPressed.bind(this));
     }
 
     async _connectedCallbackHelper() {
-        await WT_Wait.awaitCallback(this._defineChildren.bind(this));
+        await this._defineChildren();
         this._initSelectionListWindowContexts();
         this._initButtonListeners();
         this._isInit = true;
+        if (this._context) {
+            this._updateFromContext();
+        }
     }
 
     connectedCallback() {
         this._connectedCallbackHelper();
     }
 
+    _cleanUpButtonManagers() {
+        this._labelShowButtonManager.destroy();
+    }
+
+    _cleanUpSettingListeners() {
+        this._context.settings.trafficSymbolRangeSetting.removeListener(this._symbolRangeListener);
+        this._context.settings.trafficLabelRangeSetting.removeListener(this._labelRangeListener);
+    }
+
+    _cleanUpContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._cleanUpButtonManagers();
+        this._cleanUpSettingListeners();
+    }
+
+    _updateSymbolRangeWindowContext() {
+        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(this._context.settings.rangeSetting.ranges.filter(value => value.compare(WT_G3x5_NavMapSettings.TRAFFIC_SYMBOL_RANGE_MAX) <= 0), this._context.instrument.unitsSettingModel);
+
+        this._symbolRangeWindowContext.elementConstructor = elementHandler;
+        this._symbolRangeWindowContext.elementUpdater = elementHandler;
+        this._symbolRangeWindowContext.callback = this._setRangeSetting.bind(this, this._context.settings.trafficSymbolRangeSetting);
+        this._symbolRangeWindowContext.currentIndexGetter = new WT_G3x5_TSCMapSettingIndexGetter(this._context.settings.trafficSymbolRangeSetting);
+    }
+
+    _updateLabelRangeWindowContext() {
+        let elementHandler = new WT_G3x5_TSCRangeSelectionElementHandler(this._context.settings.rangeSetting.ranges.filter(value => value.compare(WT_G3x5_NavMapSettings.TRAFFIC_LABEL_RANGE_MAX) <= 0), this._context.instrument.unitsSettingModel);
+
+        this._labelRangeWindowContext.elementConstructor = elementHandler;
+        this._labelRangeWindowContext.elementUpdater = elementHandler;
+        this._labelRangeWindowContext.callback = this._setRangeSetting.bind(this, this._context.settings.trafficLabelRangeSetting);
+        this._labelRangeWindowContext.currentIndexGetter = new WT_G3x5_TSCMapSettingIndexGetter(this._context.settings.trafficLabelRangeSetting);
+    }
+
+    _updateWindowContexts() {
+        this._updateSymbolRangeWindowContext();
+        this._updateLabelRangeWindowContext();
+    }
+
+    _initButtonManagers() {
+        this._labelShowButtonManager = new WT_TSCSettingStatusBarButtonManager(this._labelShowButton, this._context.settings.trafficLabelShowSetting);
+        this._labelShowButtonManager.init();
+    }
+
+    _initSettingListeners() {
+        this._context.settings.trafficSymbolRangeSetting.addListener(this._symbolRangeListener);
+        this._context.settings.trafficLabelRangeSetting.addListener(this._labelRangeListener);
+    }
+
+    _updateFromContext() {
+        if (!this._context) {
+            return;
+        }
+
+        this._updateWindowContexts();
+        this._initButtonManagers();
+        this._initSettingListeners();
+    }
+
     setContext(context) {
+        this._cleanUpContext();
         this._context = context;
-    }
-
-    _getSettingModelID() {
-        return this._context.getSettingModelID();
-    }
-
-    _toggleLabelShow() {
-        if (!this._context) {
-            return;
+        if (this._isInit) {
+            this._updateFromContext();
         }
-
-        let settingModelID = this._getSettingModelID();
-        let labelShow = WT_MapSettingModel.getSettingValue(settingModelID, WT_G3x5_NavMap.TRAFFIC_LABEL_SHOW_KEY, true);
-        WT_MapSettingModel.setSettingValue(settingModelID, WT_G3x5_NavMap.TRAFFIC_LABEL_SHOW_KEY, !labelShow, true);
     }
 
-    _setRangeSetting(key, value) {
-        if (!this._context) {
-            return;
-        }
+    _onSymbolRangeSettingChanged(setting, newValue, oldValue) {
+        let distanceUnit = this._context.instrument.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        this._updateRangeButton(this._symbolRangeButton, this._context.settings.trafficSymbolRangeSetting.getValue(), distanceUnit);
+    }
 
-        let settingModelID = this._getSettingModelID();
-        WT_MapSettingModel.setSettingValue(settingModelID, key, value, true);
+    _onLabelRangeSettingChanged(setting, newValue, oldValue) {
+        let distanceUnit = this._context.instrument.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        this._updateRangeButton(this._labelRangeButton, this._context.settings.trafficLabelRangeSetting.getValue(), distanceUnit);
+    }
+
+    _setRangeSetting(setting, value) {
+        setting.setValue(value);
     }
 
     _openSelectionListWindow(windowContext) {
@@ -146,10 +197,6 @@ class WT_G3x5_TSCNavMapTrafficMapSettingsHTMLElement extends HTMLElement {
         instrument.switchToPopUpPage(instrument.selectionListWindow1);
     }
 
-    _onLabelShowButtonPressed(button) {
-        this._toggleLabelShow();
-    }
-
     _onSymbolRangeButtonPressed(button) {
         this._openSelectionListWindow(this._symbolRangeWindowContext);
     }
@@ -158,30 +205,23 @@ class WT_G3x5_TSCNavMapTrafficMapSettingsHTMLElement extends HTMLElement {
         this._openSelectionListWindow(this._labelRangeWindowContext);
     }
 
-    _updateSymbolRangeButton(settingModelID, unit) {
-        let range = WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapSettingModel.getSettingValue(settingModelID, WT_G3x5_NavMap.TRAFFIC_SYMBOL_RANGE_KEY, 0)];
-
-        this._symbolRangeButton.setRange(range);
-        this._symbolRangeButton.setUnit(unit);
+    _updateRangeButton(button, value, unit) {
+        let range = this._context.settings.rangeSetting.ranges.get(value);
+        button.setRange(range);
+        button.setUnit(unit);
     }
 
-    _updateLabelShowButton(settingModelID) {
-        let labelShow = WT_MapSettingModel.getSettingValue(settingModelID, WT_G3x5_NavMap.TRAFFIC_LABEL_SHOW_KEY, true);
-        this._labelShowButton.setAttribute("toggle", labelShow ? "on" : "off");
-    }
-
-    _updateLabelRangeButton(settingModelID, unit) {
-        let range = WT_G3x5_NavMap.MAP_RANGE_LEVELS[WT_MapSettingModel.getSettingValue(settingModelID, WT_G3x5_NavMap.TRAFFIC_LABEL_RANGE_KEY, 0)];
-        this._labelRangeButton.setRange(range);
-        this._symbolRangeButton.setUnit(unit);
+    _updateUnits() {
+        let distanceUnit = this._context.instrument.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        if (!distanceUnit.equals(this._lastDistanceUnit)) {
+            this._updateRangeButton(this._symbolRangeButton, this._context.settings.trafficSymbolRangeSetting.getValue(), distanceUnit);
+            this._updateRangeButton(this._labelRangeButton, this._context.settings.trafficLabelRangeSetting.getValue(), distanceUnit);
+        }
+        this._lastDistanceUnit = distanceUnit;
     }
 
     _doUpdate() {
-        let settingModelID = this._getSettingModelID();
-        let unit = this._context.instrument.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
-        this._updateSymbolRangeButton(settingModelID, unit);
-        this._updateLabelShowButton(settingModelID);
-        this._updateLabelRangeButton(settingModelID, unit);
+        this._updateUnits();
     }
 
     update() {

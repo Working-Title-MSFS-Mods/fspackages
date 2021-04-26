@@ -237,43 +237,43 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay #PFDSettings .pfdSettin
         --pfdsettings-row-right-width: 60%;
     }
 
-as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-pfdmapsettings,
-as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapsettings {
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-pfdmapsettings,
+as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-mfdmapsettings {
     width: 100%;
     height: 100%;
     font-size: 4vh;
     --mapsettings-left-width: 22.5%;
     --mapsettings-right-width: 1fr;
 }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .leftButton {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings .leftButton {
         left: 1%;
         width: 98%;
         height: 15vh;
         margin: 1vh 0;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings wt-tsc-button-mapdetail.leftButton {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-button-mapdetail.leftButton {
         height: 25vh;
     }
-    as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-tabbedview {
+    as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings tsc-tabbedview {
         position: absolute;
         right: 1%;
         width: 98%;
         --tab-content-width: 73vh;
         --tab-content-height: 90vh;
     }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings wt-tsc-button-tab {
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-button-tab {
             width: 23vh;
             height: 15vh;
             margin: 2.5vh 0;
         }
-        as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .tab {
+        as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings .tab {
             width: 100%;
             height: 100%;
         }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings tsc-mapsettings-tabrow {
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-mapsettings-tabrow {
                 height: 17vh;
             }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .MapSettings .mapSettingsTabRowRight {
+            as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings .mapSettingsTabRowRight {
                 font-size: 5vh;
             }
 

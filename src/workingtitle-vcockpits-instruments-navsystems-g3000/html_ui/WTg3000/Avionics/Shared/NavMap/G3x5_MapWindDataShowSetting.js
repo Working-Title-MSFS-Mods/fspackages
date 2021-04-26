@@ -1,6 +1,6 @@
 class WT_G3x5_MapWindDataShowSetting extends WT_MapSetting {
-    constructor(model, defaultValue = false, isSyncable = true, isPersistent = true, key = WT_G3x5_MapWindDataShowSetting.KEY) {
-        super(model, key, defaultValue, isSyncable, true, isPersistent);
+    constructor(model, autoUpdate, defaultValue = false, isSyncable = true, isPersistent = true, key = WT_G3x5_MapWindDataShowSetting.KEY) {
+        super(model, key, defaultValue, isSyncable, autoUpdate, isPersistent);
     }
 
     update() {

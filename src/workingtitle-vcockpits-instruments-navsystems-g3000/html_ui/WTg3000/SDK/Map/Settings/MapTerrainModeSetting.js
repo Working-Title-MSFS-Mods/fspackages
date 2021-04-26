@@ -5,8 +5,8 @@
  * Terrain RELATIVE enables display of terrain color information based on height above/below the plane.
  */
 class WT_MapTerrainModeSetting extends WT_MapSetting {
-    constructor(model, defaultValue = WT_MapModelTerrainModule.TerrainMode.OFF, isSyncable = true, isPersistent = true, key = WT_MapTerrainModeSetting.KEY_DEFAULT) {
-        super(model, key, defaultValue, isSyncable, true, isPersistent);
+    constructor(model, autoUpdate, defaultValue = WT_MapModelTerrainModule.TerrainMode.OFF, isSyncable = true, isPersistent = true, key = WT_MapTerrainModeSetting.KEY_DEFAULT) {
+        super(model, key, defaultValue, isSyncable, autoUpdate, isPersistent);
     }
 
     update() {
