@@ -9,13 +9,15 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
      * @param {String} optionName - the name of the option controlled by the new setting.
      * @param {String} key - the data store key of the new setting.
      * @param {WT_MapSetting} dcltrSetting - the declutter setting to use to override this setting when decluttering the map view.
+     * @param {Boolean} autoUpdate - whether the new setting should automatically call its update() method whenever its value
+     *                               changes.
      * @param {Boolean} [defaultValue] - the value to which the new setting should default if it is not persistent or if a value cannot
      *                                   be retrieved from the data store.
      * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(model, symbolID, moduleName, optionName, key, dcltrSetting, defaultValue = true, isSyncable = true, isPersistent = true) {
-        super(model, key, defaultValue, isSyncable, true, isPersistent);
+    constructor(model, symbolID, moduleName, optionName, key, dcltrSetting, autoUpdate, defaultValue = true, isSyncable = true, isPersistent = true) {
+        super(model, key, defaultValue, isSyncable, autoUpdate, isPersistent);
 
         this._dcltrSetting = dcltrSetting;
         this._dcltrSetting.addListener(this._dcltrSettingChanged.bind(this));
@@ -40,7 +42,9 @@ class WT_MapSymbolShowSetting extends WT_MapSetting {
     }
 
     _dcltrSettingChanged(setting, newValue, oldValue) {
-        this.update();
+        if (this._autoUpdate) {
+            this.update();
+        }
     }
 }
 
@@ -77,11 +81,13 @@ class WT_MapSymbolRangeSetting extends WT_MapSetting {
      * @param {String} key - the data store key of the new setting.
      * @param {WT_NumberUnit[]} ranges - an array of map zoom ranges.
      * @param {WT_NumberUnit} defaultRange - the default maximum range of the new setting.
+     * @param {Boolean} autoUpdate - whether the new setting should automatically call its update() method whenever its value
+     *                               changes.
      * @param {Boolean} [isSyncable] - whether the new setting is sync-able. True by default.
      * @param {Boolean} [isPersistent] - whether the new setting persists across sessions.
      */
-    constructor(model, key, componentName, optionName, ranges, defaultRange, isSyncable = true, isPersistent = true) {
-        super(model, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, true, isPersistent);
+    constructor(model, key, componentName, optionName, ranges, defaultRange, autoUpdate, isSyncable = true, isPersistent = true) {
+        super(model, key, ranges.findIndex(range => range.equals(defaultRange)), isSyncable, autoUpdate, isPersistent);
 
         this._componentName = componentName;
         this._optionName = optionName;

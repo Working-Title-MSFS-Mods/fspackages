@@ -275,7 +275,8 @@
 #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
 #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
 #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
-#Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
+#Electricity #PagesDisplay[state=MFDMapSettingsLeft] #MFDMapSettingsLeft,
+#Electricity #PagesDisplay[state=MFDMapSettingsRight] #MFDMapSettingsRight,
 #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
 #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
 #Electricity #PagesDisplay[state=TrafficMapSettingsLeft] #TrafficMapSettingsLeft,
@@ -366,14 +367,14 @@
         margin-bottom: 5%;
     }
 
-tsc-mapsettings-tabrow {
+wt-tsc-mapsettings-tabrow {
     display: block;
     width: 100%;
 }
-tsc-mapsettings-tabrow > * {
+wt-tsc-mapsettings-tabrow > * {
     margin: 0.25vh;
 }
-tsc-mapsettings-tabrow .mapSettingsTabRowRight {
+wt-tsc-mapsettings-tabrow .mapSettingsTabRowRight {
     color: var(--wt-g3x5-lightblue);
 }
 

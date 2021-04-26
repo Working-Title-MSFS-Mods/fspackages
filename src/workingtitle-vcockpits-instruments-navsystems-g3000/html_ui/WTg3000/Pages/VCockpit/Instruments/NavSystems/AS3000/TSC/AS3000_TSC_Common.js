@@ -182,10 +182,10 @@ class AS3000_TSC extends NavSystemTouch {
     _createPFDSettingsPage() {
     }
 
-    _createTrafficMapSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
+    _createTrafficMapSettingsPage(homePageGroup, homePageName) {
     }
 
-    _createNavMapTrafficSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
+    _createNavMapTrafficSettingsPage(homePageGroup, homePageName, mapSettings) {
     }
 
     _initPages() {
@@ -203,18 +203,19 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD", "PFD Home", "Generic")),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
                 this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
-                this.pfdNavMapTrafficSettings = new NavSystemPage("PFD NavMap Traffic Settings", "PFDNavMapTrafficSettings", this._createNavMapTrafficSettingsPage("PFD", "PFD Home", "PFD")),
+                this.pfdNavMapTrafficSettings = new NavSystemPage("PFD NavMap Traffic Settings", "PFDNavMapTrafficSettings", this._createNavMapTrafficSettingsPage("PFD", "PFD Home", this._pfdMapSettings.element.mapSettings)),
                 new NavSystemPage("PFD Settings", "PFDSettings", this._createPFDSettingsPage()),
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
-                this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD")),
+                this._mfdPagesLeft.mapSettings = new NavSystemPage("Map Settings Left", "MFDMapSettingsLeft", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.mapSettings = new NavSystemPage("Map Settings Right", "MFDMapSettingsRight", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.trafficMap = new NavSystemPage("Traffic Map Settings Left", "TrafficMapSettingsLeft", this._createTrafficMapSettingsPage("MFD", "MFD Home")),
                 this._mfdPagesRight.trafficMap = new NavSystemPage("Traffic Map Settings Right", "TrafficMapSettingsRight", this._createTrafficMapSettingsPage("MFD", "MFD Home")),
-                this._mfdPagesLeft.navMapTraffic = new NavSystemPage("NavMap Traffic Settings Left", "NavMapTrafficSettingsLeft", this._createNavMapTrafficSettingsPage("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
-                this._mfdPagesRight.navMapTraffic = new NavSystemPage("NavMap Traffic Settings Right", "NavMapTrafficSettingsRight", this._createNavMapTrafficSettingsPage("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.navMapTraffic = new NavSystemPage("NavMap Traffic Settings Left", "NavMapTrafficSettingsLeft", this._createNavMapTrafficSettingsPage("MFD", "MFD Home", this._mfdPagesLeft.mapSettings.element.mapSettings)),
+                this._mfdPagesRight.navMapTraffic = new NavSystemPage("NavMap Traffic Settings Right", "NavMapTrafficSettingsRight", this._createNavMapTrafficSettingsPage("MFD", "MFD Home", this._mfdPagesRight.mapSettings.element.mapSettings)),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
                 this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
@@ -496,7 +497,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage) {
-        if (currentPageGroup.name === "MFD" && (currentPage.name === "Map Settings" || currentPage.title === "Map Pointer Control" || currentPage.element instanceof WT_G3x5_TSCNavMapTrafficSettings)) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Map Settings" || currentPage.title === "Map Pointer Control" || currentPage.element instanceof WT_G3x5_TSCNavMapTrafficSettings)) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
@@ -564,20 +565,6 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _changeMFDMapRange(delta) {
-        let settingModelID = `MFD-${this.getSelectedMFDPane()}`;
-        let currentIndex = WT_MapSettingModel.getSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapSettingModel.setSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
-    }
-
-    _changePFDMapRange(delta) {
-        let settingModelID = "PFD";
-        let currentIndex = WT_MapSettingModel.getSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapSettingModel.setSettingValue(settingModelID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
-    }
-
     _changePFDTrafficMapRange(delta) {
         let settingModelID = WT_G3x5_TrafficMap.SETTING_MODEL_ID;
         let key = WT_G3x5_TrafficMapRangeSetting.KEY_DEFAULT;
@@ -590,10 +577,10 @@ class AS3000_TSC extends NavSystemTouch {
         if (this._pfdMapSettings.element.insetMapShowSetting.getValue()) {
             switch (event) {
                 case "BottomKnob_Small_INC":
-                    this._changePFDMapRange(1);
+                    this._pfdMapSettings.element.mapSettings.rangeSetting.changeRange(1);
                     break;
                 case "BottomKnob_Small_DEC":
-                    this._changePFDMapRange(-1);
+                    this._pfdMapSettings.element.mapSettings.rangeSetting.changeRange(-1);
                     break;
             }
         } else if (WT_DataStoreSettingModel.getSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, false)) {
@@ -613,10 +600,10 @@ class AS3000_TSC extends NavSystemTouch {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 switch (event) {
                     case "BottomKnob_Small_INC":
-                        this._changeMFDMapRange(1);
+                        this.getSelectedMFDPanePages().mapSettings.element.mapSettings.rangeSetting.changeRange(1);
                         break;
                     case "BottomKnob_Small_DEC":
-                        this._changeMFDMapRange(-1);
+                        this.getSelectedMFDPanePages().mapSettings.element.mapSettings.rangeSetting.changeRange(-1);
                         break;
                 }
                 break;
@@ -997,7 +984,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _openMapSettingsPage() {
-        this.gps.SwitchToPageName("MFD", "Map Settings");
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().mapSettings.name);
     }
 
     _openWeatherSelectPage() {

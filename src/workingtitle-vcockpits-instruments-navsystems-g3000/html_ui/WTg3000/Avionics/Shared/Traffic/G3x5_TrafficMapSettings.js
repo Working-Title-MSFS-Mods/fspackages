@@ -147,8 +147,8 @@ WT_G3x5_TrafficMapMotionVectorLookaheadSetting.LOOKAHEAD_VALUES_DEFAULT = [30, 6
 WT_G3x5_TrafficMapMotionVectorLookaheadSetting.LOOKAHEAD_DEFAULT = WT_Unit.SECOND.createNumber(60);
 
 class WT_G3x5_NavMapTrafficShowSetting extends WT_MapSetting {
-    constructor(model, defaultValue = false, key = WT_G3x5_NavMapTrafficShowSetting.KEY) {
-        super(model, key, defaultValue, true, true, true);
+    constructor(model, autoUpdate, defaultValue = false, key = WT_G3x5_NavMapTrafficShowSetting.KEY) {
+        super(model, key, defaultValue, true, autoUpdate, true);
     }
 
     update() {

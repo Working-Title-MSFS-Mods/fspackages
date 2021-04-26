@@ -33,8 +33,8 @@ class AS3000_TSC_Horizontal extends AS3000_TSC {
         return new WT_G3000_TSCTrafficMapSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID);
     }
 
-    _createNavMapTrafficSettingsPage(homePageGroup, homePageName, instrumentID, halfPaneID) {
-        return new WT_G3000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, instrumentID, halfPaneID);
+    _createNavMapTrafficSettingsPage(homePageGroup, homePageName, mapSettings) {
+        return new WT_G3000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, mapSettings);
     }
 
     _createAircraftSystemsPage() {
