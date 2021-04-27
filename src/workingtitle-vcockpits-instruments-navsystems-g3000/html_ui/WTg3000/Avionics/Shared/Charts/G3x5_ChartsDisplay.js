@@ -249,26 +249,63 @@ class WT_G3x5_ChartsMapController {
 
         this._geoRef = {
             /**
+             * The currently displayed chart.
              * @type {WT_NavigraphChartDefinition}
              */
             chart: null,
+            /**
+             * Whether the displayed chart has valid georeference data.
+             */
             isValid: false,
 
             /**
+             * The maximum visible bounds of the displayed chart, in chart coordinate space.
+             */
+            chartVisibleBounds: {left: 0, top: 0, right: 0, bottom: 0},
+            /**
+             * The height of the maximum visible area of the displayed chart, in chart coordinate space.
+             */
+            chartVisibleHeight: 0,
+
+            /**
+             * The geographic bounds of this data's georeferenced area.
              * @type {Number[]}
              */
             geoBounds: null,
+            /**
+             * The angular width (degrees longitude) of this data's georeferenced area.
+             */
             geoAngularWidth: 0,
+            /**
+             * The angular height (degrees latitude) of this data's georeferenced area.
+             */
             geoAngularHeight: 0,
+            /**
+             * The absolute width (east-west) of this data's geoferenced area.
+             */
             geoWidth: WT_Unit.GA_RADIAN.createNumber(0),
+            /**
+             * The absolute height (north-south) of this data's georeferenced area.
+             */
             geoHeight: WT_Unit.GA_RADIAN.createNumber(0),
 
             /**
+             * The projected bounds of this data's georeferenced area, in chart coordinate space.
              * @type {Number[]}
              */
-            viewBounds: null,
-            viewWidth: 0,
-            viewHeight: 0,
+            projectedBounds: null,
+            /**
+             * The projected width of this data's georeferenced area, in chart coordinate space.
+             */
+            projectedWidth: 0,
+            /**
+             * The projected height of this data's georeferenced area, in chart coordinate space.
+             */
+            projectedHeight: 0,
+
+            /**
+             * The center of the viewing window, in chart coordinate space.
+             */
             viewCenter: new WT_GVector2(0, 0),
         };
 
@@ -277,15 +314,18 @@ class WT_G3x5_ChartsMapController {
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
-    _imgBoundToViewBound(value, index, array) {
-        switch (index) {
-            case WT_NavigraphChart.BoundsIndex.LEFT:
-            case WT_NavigraphChart.BoundsIndex.RIGHT:
-                return value - array[WT_NavigraphChart.BoundsIndex.LEFT];
-            case WT_NavigraphChart.BoundsIndex.TOP:
-            case WT_NavigraphChart.BoundsIndex.BOTTOM:
-                return value - array[WT_NavigraphChart.BoundsIndex.TOP];
-        }
+    _areBoundsEqual(bounds1, bounds2) {
+        return bounds1.left === bounds2.left &&
+               bounds1.top === bounds2.top &&
+               bounds1.right === bounds2.right &&
+               bounds1.bottom === bounds2.bottom;
+    }
+
+    _copyBounds(from, to) {
+        to.left = from.left;
+        to.top = from.top;
+        to.right = from.right;
+        to.bottom = from.bottom;
     }
 
     _updateChart() {
@@ -294,17 +334,20 @@ class WT_G3x5_ChartsMapController {
 
     _updateGeoRef() {
         let chart = this._chartsModel.chart;
-        if (!chart || !chart.georef || this._chartsModel.sectionMode !== WT_G3x5_ChartsModel.SectionMode.PLAN || !chart.planview) {
+        if (!chart || !chart.georef) {
             this._geoRef.isValid = false;
             return;
         }
 
-        if ((this._geoRef.chart && chart.id === this._geoRef.chart.id) && this._geoRef.isValid) {
+        if (this._geoRef.isValid && (this._geoRef.chart && chart.id === this._geoRef.chart.id) && this._areBoundsEqual(this._geoRef.chartVisibleBounds, this._chartsView.chartBounds)) {
+            // chart has not changed since the last time georeference data was computed; no need to update
             return;
         }
 
         this._geoRef.chart = chart;
         this._geoRef.isValid = true;
+        this._copyBounds(this._chartsView.chartBounds, this._geoRef.chartVisibleBounds);
+        this._geoRef.chartVisibleHeight = this._geoRef.chartVisibleBounds.bottom - this._geoRef.chartVisibleBounds.top;
         this._geoRef.geoBounds = chart.planview.bbox_geo;
 
         let deltaLat = chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.TOP] - chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.BOTTOM];
@@ -319,10 +362,10 @@ class WT_G3x5_ChartsMapController {
         this._geoRef.geoWidth.set(this._tempGeoPoint.set(centerLat, chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.LEFT]).distance(centerLat, chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.RIGHT]));
         this._geoRef.geoHeight.set(this._tempGeoPoint.set(chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.TOP], centerLong).distance(chart.planview.bbox_geo[WT_NavigraphChart.BoundsIndex.BOTTOM], centerLong));
 
-        this._geoRef.viewBounds = chart.planview.bbox_local.map(this._imgBoundToViewBound.bind(this));
-        this._geoRef.viewWidth = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.RIGHT] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.LEFT];
-        this._geoRef.viewHeight = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.BOTTOM] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.TOP];
-        this._geoRef.viewCenter.set(this._geoRef.viewWidth / 2, this._geoRef.viewHeight / 2);
+        this._geoRef.projectedBounds = chart.planview.bbox_local;
+        this._geoRef.projectedWidth = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.RIGHT] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.LEFT];
+        this._geoRef.projectedHeight = chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.BOTTOM] - chart.planview.bbox_local[WT_NavigraphChart.BoundsIndex.TOP];
+        this._geoRef.viewCenter.set((this._geoRef.chartVisibleBounds.left + this._geoRef.chartVisibleBounds.right) / 2, (this._geoRef.chartVisibleBounds.top + this._geoRef.chartVisibleBounds.bottom) / 2);
     }
 
     _updateRotation() {
@@ -333,15 +376,14 @@ class WT_G3x5_ChartsMapController {
         let viewTargetX = this._geoRef.viewCenter.x + this._chartsModel.offset.x;
         let viewTargetY = this._geoRef.viewCenter.y + this._chartsModel.offset.y;
 
-        let geoTargetLat = this._geoRef.geoBounds[WT_NavigraphChart.BoundsIndex.TOP] - viewTargetY / this._geoRef.viewHeight * this._geoRef.geoAngularHeight;
-        let geoTargetLong = this._geoRef.geoBounds[WT_NavigraphChart.BoundsIndex.LEFT] + viewTargetX / this._geoRef.viewWidth * this._geoRef.geoAngularWidth;
+        let geoTargetLat = this._geoRef.geoBounds[WT_NavigraphChart.BoundsIndex.TOP] - (viewTargetY - this._geoRef.projectedBounds[WT_NavigraphChart.BoundsIndex.TOP]) / this._geoRef.projectedHeight * this._geoRef.geoAngularHeight;
+        let geoTargetLong = this._geoRef.geoBounds[WT_NavigraphChart.BoundsIndex.LEFT] + (viewTargetX - this._geoRef.projectedBounds[WT_NavigraphChart.BoundsIndex.LEFT]) / this._geoRef.projectedWidth * this._geoRef.geoAngularWidth;
 
         this._mapModel.target = this._tempGeoPoint.set(geoTargetLat, geoTargetLong);
     }
 
     _updateRange() {
-        let scaleFactor = this._chartsView.viewHeight / this._chartsView.chartReferenceDisplayHeight / this._chartsModel.scaleFactor;
-
+        let scaleFactor = this._chartsView.viewHeight / this._chartsView.chartReferenceDisplayHeight / this._chartsModel.scaleFactor * this._geoRef.chartVisibleHeight / this._geoRef.projectedHeight;
         this._mapModel.range = this._tempGARad.set(this._geoRef.geoHeight).scale(scaleFactor, true);
     }
 
@@ -363,9 +405,12 @@ class WT_G3x5_ChartsMapController {
     _updateShowAirplane() {
         let show = false;
         if (this._geoRef.isValid) {
-            let chartBounds = this._chartsView.chartBounds;
-            let chartPos = this._chartsView.chartTransformInverse.apply(this._tempVector2.set(this._mapView.state.viewPlane), true).add(chartBounds.left, chartBounds.top);
-            if (chartPos.x >= chartBounds.left && chartPos.x <= chartBounds.right && chartPos.y >= chartBounds.top && chartPos.y <= chartBounds.bottom) {
+            let chartPos = this._chartsView.chartTransformInverse.apply(this._tempVector2.set(this._mapView.state.viewPlane), true).add(this._geoRef.chartVisibleBounds.left, this._geoRef.chartVisibleBounds.top);
+            if (chartPos.x >= this._geoRef.projectedBounds[WT_NavigraphChart.BoundsIndex.LEFT] &&
+                chartPos.x <= this._geoRef.projectedBounds[WT_NavigraphChart.BoundsIndex.RIGHT] &&
+                chartPos.y >= this._geoRef.projectedBounds[WT_NavigraphChart.BoundsIndex.TOP] &&
+                chartPos.y <= this._geoRef.projectedBounds[WT_NavigraphChart.BoundsIndex.BOTTOM]) {
+
                 show = !this._isInInset(this._chartsModel.chart.insets, chartPos);
             }
         }
