@@ -177,6 +177,7 @@ class WT_TrafficContact {
 
         this._maxValidGroundSpeed = WT_Unit.KNOT.createNumber(0);
         this._maxValidVerticalSpeed = WT_Unit.FPM.createNumber(0);
+        this._minGroundTrackDistance = WT_Unit.FOOT.createNumber(0);
 
         this._optsManager = new WT_OptionsManager(this, WT_TrafficContact.OPTION_DEFS);
         this._optsManager.setOptions(options);
@@ -284,6 +285,17 @@ class WT_TrafficContact {
     }
 
     /**
+     * @type {WT_NumberUnit}
+     */
+    get minGroundTrackDistance() {
+        return this._minGroundTrackDistance.readonly();
+    }
+
+    set minGroundTrackDistance(speed) {
+        this._minGroundTrackDistance.set(speed);
+    }
+
+    /**
      * Calculates the predicted position and altitude of this contact at a specified time based on the most recent
      * available data and stores the results in the supplied objects. If insufficient data are available to calculate
      * the prediction, the results will be equal to NaN.
@@ -309,11 +321,10 @@ class WT_TrafficContact {
     /**
      *
      * @param {Number} dt
-     * @param {WT_GeoPoint} newPosition
+     * @param {Number} distanceNM
      */
-     _updateGroundSpeed(dt, newPosition) {
+     _updateGroundSpeed(dt, distanceNM) {
         let dtHours = dt / 3600;
-        let distanceNM = WT_Unit.GA_RADIAN.convert(newPosition.distance(this.lastPosition), WT_Unit.NMILE);
         let speedKnots = distanceNM / dtHours;
         this._computedGroundSpeed.set(this._groundSpeedSmoother.next(speedKnots, dt));
     }
@@ -321,21 +332,30 @@ class WT_TrafficContact {
     /**
      *
      * @param {Number} dt
-     * @param {WT_GeoPoint} newPosition
+     * @param {Number} track
+     * @param {Number} distanceNM
      */
-    _updateGroundTrack(dt, newPosition) {
-        let track = newPosition.bearingFrom(this._lastPosition);
-        // need to handle wraparounds
+    _updateGroundTrack(dt, track, distanceNM) {
         let last = this._groundSpeedSmoother.last();
-        let delta = track - last;
-        if (delta > 180) {
-            delta = delta - 360;
-        } else if (delta < -180) {
-            delta = delta + 360;
+        if (distanceNM >= this.minGroundTrackDistance.asUnit(WT_Unit.NMILE)) {
+            if (last !== null && !isNaN(last)) {
+                // need to handle wraparounds
+                let delta = track - last;
+                if (delta > 180) {
+                    delta = delta - 360;
+                } else if (delta < -180) {
+                    delta = delta + 360;
+                }
+                track = last + delta;
+            }
+        } else {
+            // if distance between current and last position is too small, computed ground track will be unreliable
+            // (and if distance = 0 the track will be meaningless), so we just copy forward the last computed track,
+            // or NaN if there is no previously computed track
+            track = last === null ? NaN : last;
         }
-        track = last + delta;
-
-        this._computedGroundTrack = this._groundTrackSmoother.next(track, dt);
+        let next = isNaN(last) ? this._groundTrackSmoother.reset(track) : this._groundTrackSmoother.next(track, dt);
+        this._computedGroundTrack = (next + 360) % 360; // enforce range 0-359
     }
 
     /**
@@ -349,6 +369,14 @@ class WT_TrafficContact {
         let deltaAltFeet = newAltitude.asUnit(WT_Unit.FOOT) - this._lastAltitude.number;
         let vsFPM = deltaAltFeet / dtMin;
         this._computedVerticalSpeed.set(this._verticalSpeedSmoother.next(vsFPM, dt));
+    }
+
+    _updateComputedValues(dt, position, altitude, heading) {
+        let distanceNM = WT_Unit.GA_RADIAN.convert(position.distance(this.lastPosition), WT_Unit.NMILE);
+        let track = position.bearingFrom(this._lastPosition);
+        this._updateGroundSpeed(dt, distanceNM);
+        this._updateGroundTrack(dt, track, distanceNM);
+        this._updateVerticalSpeed(dt, altitude);
     }
 
     _checkValidity() {
@@ -380,9 +408,7 @@ class WT_TrafficContact {
         }
 
         if (dt > 0) {
-            this._updateGroundSpeed(dt, position);
-            this._updateGroundTrack(dt, position);
-            this._updateVerticalSpeed(dt, altitude);
+            this._updateComputedValues(dt, position, altitude, heading);
         }
 
         if (this._checkValidity()) {
@@ -416,5 +442,6 @@ WT_TrafficContact.OPTION_DEFS = {
     verticalSpeedSmoothingConstant: {default: 2, auto: true},
     contactTimeResetThreshold: {default: 5, auto: true},
     maxValidGroundSpeed: {default: WT_Unit.KNOT.createNumber(1500)},
-    maxValidVerticalSpeed: {default: WT_Unit.FPM.createNumber(10000)}
+    maxValidVerticalSpeed: {default: WT_Unit.FPM.createNumber(10000)},
+    minGroundTrackDistance: {default: WT_Unit.FOOT.createNumber(1)}
 };
