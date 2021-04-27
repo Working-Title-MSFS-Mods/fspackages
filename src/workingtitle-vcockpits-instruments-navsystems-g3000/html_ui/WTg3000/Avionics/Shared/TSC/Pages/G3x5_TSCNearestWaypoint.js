@@ -121,6 +121,14 @@ customElements.define(WT_G3x5_TSCNearestWaypointSelectionHTMLElement.NAME, WT_G3
  * @template {WT_ICAOWaypoint} T
  */
 class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
+    /**
+     * @param {String} homePageGroup
+     * @param {String} homePageName
+     * @param {String} instrumentID
+     * @param {WT_G3x5_MFDHalfPane.ID} halfPaneID
+     * @param {Object} mfdPanePages
+     * @param {Object} mfdPaneSettings
+     */
     constructor(homePageGroup, homePageName, instrumentID, halfPaneID, mfdPanePages, mfdPaneSettings) {
         super(homePageGroup, homePageName);
 
@@ -173,6 +181,12 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         return new WT_G3x5_TSCNearestWaypointUnitsModel(this.instrument.unitsSettingModel);
     }
 
+    _initWaypointList() {
+        this._waypointList = this._getWaypointList();
+        this._waypointList.addListener(this._onWaypointListChanged.bind(this));
+        this._updateWaypoints();
+    }
+
     _initHTMLElement() {
         this.htmlElement.addListener(this._onHTMLElementEvent.bind(this));
     }
@@ -184,7 +198,21 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
 
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
+        this._initWaypointList();
         this._initHTMLElement();
+    }
+
+    _updateWaypoints() {
+        this._waypoints = this._waypointList.waypoints;
+        this.htmlElement.setWaypoints(this._waypoints);
+
+        if (this.selectedWaypoint !== null && !this._waypoints.some(waypoint => waypoint.equals(this.selectedWaypoint), this)) {
+            this._setSelectedWaypoint(null);
+        }
+    }
+
+    _onWaypointListChanged(source) {
+        this._updateWaypoints();
     }
 
     /**
@@ -311,17 +339,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
         this.htmlElement.open();
     }
 
-    _updateWaypoints() {
-        this._waypoints = this._getWaypoints();
-        this.htmlElement.setWaypoints(this._waypoints);
-
-        if (this.selectedWaypoint !== null && !this._waypoints.some(waypoint => waypoint.equals(this.selectedWaypoint), this)) {
-            this._setSelectedWaypoint(null);
-        }
-    }
-
     onUpdate(deltaTime) {
-        this._updateWaypoints();
         this.htmlElement.update();
     }
 
@@ -482,6 +500,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         this._initHeader();
         this._initOptions();
         this._isInit = true;
+        this._updateFromWaypoints();
     }
 
     connectedCallback() {
@@ -550,18 +569,10 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         }
     }
 
-    /**
-     *
-     * @param {WT_ReadOnlyArray<T>} waypoints
-     */
-    setWaypoints(waypoints) {
-        if (waypoints.length === this._waypoints.length && waypoints.every((waypoint, index) => waypoint.equals(this._waypoints[index]))) {
-            return;
-        }
-
+    _updateFromWaypoints() {
         for (let i = 0; i < this._rows.length; i++) {
             let row = this._rows[i];
-            let index = waypoints.findIndex(waypoint => waypoint.equals(row.waypoint));
+            let index = this._waypoints.findIndex(waypoint => waypoint.equals(row.waypoint));
             if (index < 0) {
                 this._waypointRowRecycler.recycle(row);
                 this._rows.splice(i, 1);
@@ -569,8 +580,8 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
             }
         }
 
-        for (let i = 0; i < waypoints.length; i++) {
-            let waypoint = waypoints.get(i);
+        for (let i = 0; i < this._waypoints.length; i++) {
+            let waypoint = this._waypoints[i];
             let index = this._rows.findIndex(row => row.waypoint.equals(waypoint));
             let row;
             if (index >= 0) {
@@ -587,8 +598,21 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
             }
             row.style.order = `${i}`;
         }
+    }
+
+    /**
+     *
+     * @param {WT_ReadOnlyArray<T>} waypoints
+     */
+    setWaypoints(waypoints) {
+        if (waypoints.length === this._waypoints.length && waypoints.every((waypoint, index) => waypoint.equals(this._waypoints[index]))) {
+            return;
+        }
 
         this._waypoints = waypoints.slice();
+        if (this._isInit) {
+            this._updateFromWaypoints();
+        }
     }
 
     open() {
@@ -1048,8 +1072,8 @@ class WT_G3x5_TSCNearestAirport extends WT_G3x5_TSCNearestWaypoint {
         return htmlElement;
     }
 
-    _getWaypoints() {
-        return this.instrument.nearestAirportList.airports;
+    _getWaypointList() {
+        return this.instrument.nearestAirportList;
     }
 
     _getWaypointButtonEventType() {
@@ -1774,8 +1798,8 @@ class WT_G3x5_TSCNearestVOR extends WT_G3x5_TSCNearestNavAid {
         return htmlElement;
     }
 
-    _getWaypoints() {
-        return this.instrument.nearestVORList.waypoints;
+    _getWaypointList() {
+        return this.instrument.nearestVORList;
     }
 
     _getInfoPage() {
@@ -1859,8 +1883,8 @@ class WT_G3x5_TSCNearestNDB extends WT_G3x5_TSCNearestNavAid {
         return htmlElement;
     }
 
-    _getWaypoints() {
-        return this.instrument.nearestNDBList.waypoints;
+    _getWaypointList() {
+        return this.instrument.nearestNDBList;
     }
 
     _getInfoPage() {
@@ -1944,8 +1968,8 @@ customElements.define(WT_G3x5_TSCNearestNDBRowHTMLElement.NAME, WT_G3x5_TSCNeare
         return htmlElement;
     }
 
-    _getWaypoints() {
-        return this.instrument.nearestINTList.waypoints;
+    _getWaypointList() {
+        return this.instrument.nearestINTList;
     }
 
     _getWaypointButtonEventType() {

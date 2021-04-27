@@ -15,6 +15,11 @@ class WT_G3x5_NearestAirportList {
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_NearestAirportList.OPTION_DEFS);
 
+        /**
+         * @type {((source:WT_G3x5_NearestAirportList) => void)[]}
+         */
+         this._listeners = [];
+
         this._initSettingModel();
     }
 
@@ -34,6 +39,14 @@ class WT_G3x5_NearestAirportList {
      */
     _airportArrayComparator(a, b) {
         return a.location.distance(this._center) - b.location.distance(this._center);
+    }
+
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_Airport>}
+     */
+    get waypoints() {
+        return this._airportsReadOnly;
     }
 
     /**
@@ -71,8 +84,31 @@ class WT_G3x5_NearestAirportList {
         return this._runwayLengthSetting;
     }
 
+    /**
+     * Adds a listener to this list. The listener will be called whenever the contents of this list change.
+     * @param {(source:WT_NearestWaypointList<T>) => void} listener - the listener to add.
+     */
+    addListener(listener) {
+        this._listeners.push(listener);
+    }
+
+    /**
+     * Removes a previously added listener from this list.
+     * @param {(source:WT_NearestWaypointList<T>) => void} listener - the listener to remove.
+     */
+    removeListener(listener) {
+        let index = this._listeners.indexOf(listener);
+        if (index >= 0) {
+            this._listeners.splice(index, 1);
+        }
+    }
+
     _getRunwaySurfaces(runwaySurfaceMode) {
         return WT_G3x5_NearestAirportList.RUNWAY_SURFACES[runwaySurfaceMode];
+    }
+
+    _notifyListeners() {
+        this._listeners.forEach(listener => listener(this));
     }
 
     /**
@@ -94,7 +130,7 @@ class WT_G3x5_NearestAirportList {
         await this._list.update();
 
         let airports = this._list.waypoints;
-        this._airports.splice(0, this._airports.length);
+        let oldAirports = this._airports.splice(0, this._airports.length);
         let runwaySurfaces = this._getRunwaySurfaces(this.runwaySurfaceSetting.getValue());
         let minRunwayLength = this.runwayLengthSetting.getLength();
         for (let i = 0; this._airports.length < this.searchLimit && i < airports.length; i++) {
@@ -102,6 +138,10 @@ class WT_G3x5_NearestAirportList {
             if (this._filterAirport(airport, runwaySurfaces, minRunwayLength)) {
                 this._airports.push(airport);
             }
+        }
+
+        if (oldAirports.length !== this._airports.length || oldAirports.some((airport, index) => !airport.equals(this._airports[index]))) {
+            this._notifyListeners();
         }
     }
 }
