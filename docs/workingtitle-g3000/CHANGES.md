@@ -2,6 +2,7 @@
 
 ### v0.6.1
 **Changed Features**
+- \[Charts\] The airplane icon is now visible in ALL view as long as the chart is geo-referenced and the projected position of the airplane is not in an inset.
 - \[GTC\] Improved performance while the Map Settings page is open.
 - \[GTC\] Improved performance while the Nearest Waypoints pages are open.
 
@@ -11,6 +12,7 @@
 - \[NavMap\] Fixed an error that would sometimes cause the active flight plan waypoint to become "stuck" on the map after removing it from the flight plan.
 - \[Traffic\] If a contact is lost while triggering a traffic advisory, the traffic advisory is now properly removed.
 - \[PFD\] Fixed a regression introduced in v0.6.0 that caused the airspeed indicator reference speed bug to be slightly out of position.
+- \[PFD\] The NAV/DME info and bearing info displays now correctly report DME distance from DME-only stations, and will not report data from stations from which they are not receiving a signal.
 
 ### v0.6.0
 **New Features**
