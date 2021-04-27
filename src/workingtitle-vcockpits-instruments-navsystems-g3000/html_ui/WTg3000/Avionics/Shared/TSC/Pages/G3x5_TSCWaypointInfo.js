@@ -987,9 +987,9 @@ WT_G3x5_TSCVORInfoHTMLElement.VOR_TYPE_TEXT = [
     "UNKNOWN",
     "VOR",
     "VOR/DME",
-    "VOR-DME",
+    "DME",
+    "TACAN",
     "VOR-TACAN",
-    "VORTAC",
     "ILS",
     "VOT"
 ];
