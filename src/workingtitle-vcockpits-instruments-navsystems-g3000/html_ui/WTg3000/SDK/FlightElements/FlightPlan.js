@@ -180,7 +180,7 @@ class WT_FlightPlan {
             if (this._approach) {
                 this._legs.push(...this._approach.legs);
             }
-            if (!this._approach) {
+            if (!this._approach || !this._approach.procedure.runway) {
                 this._legs.push(...this._destination.legs);
             }
         }
@@ -541,7 +541,9 @@ class WT_FlightPlan {
             await this._buildLegsFromProcedure(transition.legs, legs);
         }
         await this._buildLegsFromProcedure(approach.finalLegs, legs);
-        legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway))); // runway fix
+        if (runway) {
+            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway))); // runway fix
+        }
         let eventData = {types: 0};
         this._changeApproach(new WT_FlightPlanApproach(approach, transitionIndex, legs), eventData);
         if (this.hasArrival()) {
@@ -1833,7 +1835,16 @@ class WT_FlightPlanEnroute extends WT_FlightPlanSegment {
     }
 }
 
+/**
+ * @abstract
+ * @template {WT_Procedure} T
+ */
 class WT_FlightPlanProcedureSegment extends WT_FlightPlanSegment {
+    /**
+     * @param {T} procedure
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {WT_FlightPlanLeg[]} legs
+     */
     constructor(procedure, segment, legs) {
         super(null, segment, legs);
         this._procedure = procedure;
@@ -1841,14 +1852,26 @@ class WT_FlightPlanProcedureSegment extends WT_FlightPlanSegment {
 
     /**
      * @readonly
-     * @type {WT_Procedure}
+     * @type {T}
      */
     get procedure() {
         return this._procedure;
     }
 }
 
+/**
+ * @abstract
+ * @template {WT_Departure|WT_Arrival} T
+ * @extends WT_FlightPlanProcedureSegment<T>
+ */
 class WT_FlightPlanDepartureArrival extends WT_FlightPlanProcedureSegment {
+    /**
+     * @param {T} procedure
+     * @param {Number} runwayTransitionIndex
+     * @param {Number} enrouteTransitionIndex
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {WT_FlightPlanLeg[]} legs
+     */
     constructor(procedure, runwayTransitionIndex, enrouteTransitionIndex, segment, legs) {
         super(procedure, segment, legs);
 
@@ -1873,7 +1896,16 @@ class WT_FlightPlanDepartureArrival extends WT_FlightPlanProcedureSegment {
     }
 }
 
+/**
+ * @extends WT_FlightPlanDepartureArrival<WT_Departure>
+ */
 class WT_FlightPlanDeparture extends WT_FlightPlanDepartureArrival {
+    /**
+     * @param {WT_Departure} departure
+     * @param {Number} runwayTransitionIndex
+     * @param {Number} enrouteTransitionIndex
+     * @param {WT_FlightPlanLeg[]} legs
+     */
     constructor(departure, runwayTransitionIndex, enrouteTransitionIndex, legs) {
         super(departure, runwayTransitionIndex, enrouteTransitionIndex, WT_FlightPlan.Segment.DEPARTURE, legs);
     }
@@ -1892,7 +1924,16 @@ class WT_FlightPlanDeparture extends WT_FlightPlanDepartureArrival {
     }
 }
 
+/**
+ * @extends WT_FlightPlanDepartureArrival<WT_Arrival>
+ */
 class WT_FlightPlanArrival extends WT_FlightPlanDepartureArrival {
+    /**
+     * @param {WT_Arrival} departure
+     * @param {Number} runwayTransitionIndex
+     * @param {Number} enrouteTransitionIndex
+     * @param {WT_FlightPlanLeg[]} legs
+     */
     constructor(arrival, runwayTransitionIndex, enrouteTransitionIndex, legs) {
         super(arrival, runwayTransitionIndex, enrouteTransitionIndex, WT_FlightPlan.Segment.ARRIVAL, legs);
     }
@@ -1911,7 +1952,15 @@ class WT_FlightPlanArrival extends WT_FlightPlanDepartureArrival {
     }
 }
 
+/**
+ * @extends WT_FlightPlanProcedureSegment<WT_Approach>
+ */
 class WT_FlightPlanApproach extends WT_FlightPlanProcedureSegment {
+    /**
+     * @param {WT_Approach} departure
+     * @param {Number} transitionIndex
+     * @param {WT_FlightPlanLeg[]} legs
+     */
     constructor(approach, transitionIndex, legs) {
         super(approach, WT_FlightPlan.Segment.APPROACH, legs);
 
