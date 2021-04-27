@@ -169,8 +169,8 @@ class WT_Approach extends WT_Procedure {
             return;
         }
 
-        let name = `ILS RW${this.runway.number.toFixed(0).padStart(2, "0")}${this.runway.suffix}`;
-        let airportFreq = this.airport.frequencies.array.find(airportFreq => airportFreq.name === name);
+        let name = `RW${this.runway.number.toFixed(0).padStart(2, "0")}${this.runway.suffix}`;
+        let airportFreq = this.airport.frequencies.array.find(airportFreq => airportFreq.name.search(name) >= 0);
         if (airportFreq) {
             this._frequency = airportFreq.frequency;
         }
