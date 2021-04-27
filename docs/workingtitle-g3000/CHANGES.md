@@ -1,5 +1,17 @@
 # Changelog
 
+### v0.6.1
+**Changed Features**
+- \[GTC\] Improved performance while the Map Settings page is open.
+- \[GTC\] Improved performance while the Nearest Waypoints pages are open.
+
+**Fixes**
+- \[Compatibility\] Fixed an error related to parsing certain Navigraph approach data that would cause major performance degradation as well as other undesired effects related to flight plan logic and rendering.
+- \[Compatibility\] Automatic ILS frequency loading now works properly when using Navigraph FMS data.
+- \[NavMap\] Fixed an error that would sometimes cause the active flight plan waypoint to become "stuck" on the map after removing it from the flight plan.
+- \[Traffic\] If a contact is lost while triggering a traffic advisory, the traffic advisory is now properly removed.
+- \[PFD\] Fixed a regression introduced in v0.6.0 that caused the airspeed indicator reference speed bug to be slightly out of position.
+
 ### v0.6.0
 **New Features**
 - \[General\] Implemented traffic awareness and alert systems for both the TBM930 and Longitude.

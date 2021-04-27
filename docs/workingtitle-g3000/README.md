@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.6.0
+### Latest version: v0.6.1
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.6.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.6.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -27,21 +27,16 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
-### Release Highlights for v0.6.0
+### Release Highlights for v0.6.1
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Implemented traffic awareness and alert systems for both the TBM930 and Longitude.
-- Added Navigraph charts integration. *Use of this feature requires a paid Navigraph subscription*.
-- Updated the touchscreen controller Nearest Waypoints pages, and added the ability to filter airports by runway surface and length.
-- Added Intersection, VOR, and NDB Info pages for the touchscreen controller.
-- Added an option to turn off the custom VFR Map in the mod config file. If the custom VFR Map is disabled, the game will revert to using the default VFR Map.
-- Performance optimizations for the navigation map.
+- Performance optimizations for the GTC Map Settings and Nearest Waypoints pages.
 
 **Fixes**
-- \[Compatibility\] For the Longitude: increased the default CRU thrust limit to 95% N1. This will allow the airplane to maintain Mmo at higher altitudes for those who have installed dakfly's Longitude performance mod.
-- \[General\] The aural minimums alert no longer triggers immediately after takeoff.
-- \[General\] Calculations for distance and ETE are now more accurate for flight plan legs that involve transition turns.
-- \[General\] For the Longitude: altimeter pressure setting increment/decrement hotkeys now work properly again.
-- \[NavMap\] Fixed a game freeze related to rendering certain airways.
+- \[Compatibility\] Fixed an error related to parsing certain Navigraph approach data that would cause major performance degradation as well as other undesired effects related to flight plan logic and rendering.
+- \[Compatibility\] Automatic ILS frequency loading now works properly when using Navigraph FMS data.
+- \[NavMap\] Fixed an error that would sometimes cause the active flight plan waypoint to become "stuck" on the map after removing it from the flight plan.
+- \[Traffic\] If a contact is lost while triggering a traffic advisory, the traffic advisory is now properly removed.
+- \[PFD\] Fixed a regression introduced in v0.6.0 that caused the airspeed indicator reference speed bug to be slightly out of position.
 
 ### Known Issues
 - \[PFD\] Citation Longitude: the PFD altimeter baro setting may be a bit slow to update when turning the PFD baro knobs. As a side effect of syncing the PFD altimeter baro settings to that of the standby altimeter, the sync is paused as long as the baro knobs are being turned in order to prevent inputs from being eaten.
@@ -65,6 +60,8 @@ During a flight, you can check your Navigraph account link status in the GTC Dat
   - **A**: The single largest performance sink (when it comes to avionics) is the navigational map. The mod actually uses a completely new code base for the navmap that is _more_ performant than the default. However, the mod also allows many more features to be drawn on the map than is possible with the unmodded map (as well as allowing for two independent navmaps to be displayed on the MFD), which is where performance can start to suffer. Generally, the more _waypoints_ and _text labels_ drawn on the map, the greater the impact on performance.
 - **Q**: Does the mod support VNAV or inputting airways into the flight plan?
   - **A**: Not yet. Support will be coming with a future update.
+- **Q**: Why can't I see multiplayer traffic on the traffic displays?
+  - **A**: Currently only Live AI traffic is supported due to limitations in which traffic data is available to JS/HTML instruments.
 
 ### Credits
 - Custom city database is sourced from simplemaps (simplemaps.com/data/world-cities) under the CC Attribution 4.0 license.
