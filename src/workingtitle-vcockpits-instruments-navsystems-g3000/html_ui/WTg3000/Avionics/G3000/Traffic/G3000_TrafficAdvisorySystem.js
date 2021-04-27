@@ -7,6 +7,9 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
     constructor(airplane, trafficTracker, options) {
         super(airplane, trafficTracker, options);
 
+        /**
+         * @type {WT_G3000_TrafficAdvisorySystemIntruderEntry[]}
+         */
         this._taEntries = [];
         this._taEntriesReadOnly = new WT_ReadOnlyArray(this._taEntries);
     }
@@ -84,6 +87,15 @@ class WT_G3000_TrafficAdvisorySystem extends WT_G3x5_TrafficSystem {
             } else {
                 this._taEntries.splice(this._taEntries.indexOf(entry), 1);
             }
+        }
+    }
+
+    _onIntruderRemoved(eventType, intruder) {
+        super._onIntruderRemoved(eventType, intruder);
+
+        let index = this._taEntries.findIndex(entry => entry.intruder === intruder);
+        if (index >= 0) {
+            this._taEntries.splice(index, 1);
         }
     }
 
