@@ -112,7 +112,7 @@ class WT_Airport extends WT_ICAOWaypoint {
 
         this._departures = new WT_ProcedureList(data.departures.map(this._departureMap.bind(this)));
         this._arrivals = new WT_ProcedureList(data.arrivals.map(this._arrivalMap.bind(this)));
-        this._approaches = new WT_ProcedureList(data.approaches.map(this._approachMap.bind(this)).filter(approach => approach !== null));
+        this._approaches = new WT_ProcedureList(data.approaches.map(this._approachMap.bind(this)));
     }
 
     /**
