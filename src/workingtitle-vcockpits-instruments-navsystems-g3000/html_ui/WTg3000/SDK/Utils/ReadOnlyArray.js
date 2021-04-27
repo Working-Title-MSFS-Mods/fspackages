@@ -71,7 +71,7 @@ class WT_ReadOnlyArray {
      *                                                                     in ascending order, until it returns true.
      * @param {Object} [thisArg] - if provided, it will be used as the this value for each invocation of predicate. If
      *                             it is not provided, undefined is used instead.
-     * @returns {T} the first element in this array where predicate is true, or -1 if no such element was found.
+     * @returns {T} the first element in this array where predicate is true, or undefined if no such element was found.
      */
     find(predicate, thisArg) {
         return this._array.find(predicate, thisArg);

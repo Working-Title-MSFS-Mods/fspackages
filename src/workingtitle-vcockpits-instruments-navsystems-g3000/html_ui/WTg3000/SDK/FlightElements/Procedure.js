@@ -165,7 +165,7 @@ class WT_Approach extends WT_Procedure {
     }
 
     _initFrequency() {
-        if (this.type !== WT_Approach.Type.ILS_LOC) {
+        if (this.type !== WT_Approach.Type.ILS_LOC || !this.runway) {
             return;
         }
 
@@ -193,7 +193,7 @@ class WT_Approach extends WT_Procedure {
     }
 
     /**
-     * The runway for this approach.
+     * The runway for this approach. If this approach has no assigned runway, this property is undefined.
      * @readonly
      * @type {WT_Runway}
      */
