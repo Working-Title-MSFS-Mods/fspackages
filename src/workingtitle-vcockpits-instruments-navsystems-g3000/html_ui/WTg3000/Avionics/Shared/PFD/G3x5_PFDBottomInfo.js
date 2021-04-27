@@ -545,7 +545,7 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
 
     _updateBearing(source, hasData) {
         let text;
-        if (hasData) {
+        if (hasData && this._context.model.hasBearing()) {
             let numberModel = this._context.model.getBearing();
             text = this._bearingFormatter.getFormattedString(numberModel.getValue(), numberModel.getUnit());
         } else {

@@ -910,12 +910,28 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
         SimVar.SetSimVarValue(`K:NAV${this.index}_RADIO_SWAP`, "Bool", 1);
     }
 
+    /**
+     * Checks whether this radio is currently receiving a signal.
+     * @returns {Boolean} whether this radio is currently receiving a signal.
+     */
     isReceiving() {
-        return SimVar.GetSimVarValue(`NAV HAS NAV:${this.index}`, "Bool") !== 0;
+        return SimVar.GetSimVarValue(`NAV SIGNAL:${this.index}`, "number") > 0;
     }
 
+    /**
+     * Gets the identifier of the tuned navigation station.
+     * @returns {String} the identifier of the tuned navigation station, or null if this radio is not currently receiving.
+     */
     ident() {
         return this.isReceiving() ? SimVar.GetSimVarValue(`NAV IDENT:${this.index}`, "string") : null;
+    }
+
+    /**
+     * Checks whether the tuned navigation station is sending directional information.
+     * @returns {Boolean} whether the tuned navigation station is sending directional information.
+     */
+    hasDirection() {
+        return SimVar.GetSimVarValue(`NAV HAS NAV:${this.index}`, "Bool") !== 0;
     }
 
     /**
@@ -923,10 +939,11 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
      * @param {WT_NumberUnit} [reference] - a WT_NumberUnit object in which to store the result. If not supplied, a new WT_NumberUnit
      *                                      object will be created with units of magnetic bearing.
      * @returns {WT_NumberUnit} the radial of the tuned navigation station on which the airplane's current position lies, or null if
-     *                          this radio is not currently receiving.
+     *                          this radio is not currently receiving or the tuned navigation station is not sending directional
+     *                          information.
      */
     radial(reference) {
-        if (!this.isReceiving()) {
+        if (!this.isReceiving() || !this.hasDirection()) {
             return null;
         }
 
@@ -943,8 +960,8 @@ class WT_AirplaneNavSlot extends WT_AirplaneRadioSlot {
     }
 
     /**
-     * Checks whether the tuned navigation station is equipped with DME.
-     * @returns {Boolean} whether the tuned navigation station is equipped with DME.
+     * Checks whether the tuned navigation station is sending DME distance information.
+     * @returns {Boolean} whether the tuned navigation station is sending DME distance information.
      */
     hasDME() {
         return SimVar.GetSimVarValue(`NAV HAS DME:${this.index}`, "Boolean") !== 0;
