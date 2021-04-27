@@ -101,6 +101,10 @@ class WT_G3x5_PFDBearingInfoModel {
         return this._selectAdapter().hasDistance();
     }
 
+    hasBearing() {
+        return this._selectAdapter().hasBearing();
+    }
+
     _updateDistance(value) {
         this._selectAdapter().updateDistance(value);
     }
@@ -145,6 +149,9 @@ class WT_G3x5_PFDBearingInfoModelSourceAdapter {
     hasDistance() {
     }
 
+    hasBearing() {
+    }
+
     updateDistance(value) {
     }
 
@@ -162,6 +169,10 @@ class WT_G3x5_PFDBearingInfoModelNoSourceAdapter extends WT_G3x5_PFDBearingInfoM
     }
 
     hasDistance() {
+        return false;
+    }
+
+    hasBearing() {
         return false;
     }
 
@@ -197,6 +208,10 @@ class WT_G3x5_PFDBearingInfoModelNAVAdapter extends WT_G3x5_PFDBearingInfoModelS
         return this._nav.isReceiving() && this._nav.hasDME();
     }
 
+    hasBearing() {
+        return this._nav.isReceiving() && this._nav.hasDirection();
+    }
+
     updateDistance(value) {
         if (this.hasDistance()) {
             this._nav.dme(value);
@@ -206,7 +221,7 @@ class WT_G3x5_PFDBearingInfoModelNAVAdapter extends WT_G3x5_PFDBearingInfoModelS
     }
 
     updateBearing(value) {
-        if (this._nav.isReceiving()) {
+        if (this.hasBearing()) {
             this._nav.radial(value);
             value.set((value.number + 180) % 360);
         } else {
@@ -234,6 +249,10 @@ class WT_G3x5_PFDBearingInfoModelFMSAdapter extends WT_G3x5_PFDBearingInfoModelS
     }
 
     hasDistance() {
+        return this._fms.hasTarget();
+    }
+
+    hasBearing() {
         return this._fms.hasTarget();
     }
 
@@ -277,12 +296,16 @@ class WT_G3x5_PFDBearingInfoModelADFAdapter extends WT_G3x5_PFDBearingInfoModelS
         return false;
     }
 
+    hasBearing() {
+        return this._adf.isReceiving();
+    }
+
     updateDistance(value) {
         value.set(0);
     }
 
     updateBearing(value) {
-        if (this._adf.isReceiving()) {
+        if (this.hasBearing()) {
             this._airplane.navigation.heading(value);
             value.set((value.number + this._adf.bearing()) % 360);
         } else {
