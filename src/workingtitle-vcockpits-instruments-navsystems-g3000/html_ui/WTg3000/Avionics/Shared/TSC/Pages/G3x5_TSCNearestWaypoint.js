@@ -931,12 +931,8 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         this._context = context;
     }
 
-    _updateWaypointButton() {
-        this._waypointButton.setWaypoint(this._waypoint);
-    }
-
     _updateFromWaypoint() {
-        this._updateWaypointButton();
+        this._waypointButton.setWaypoint(this._waypoint);
     }
 
     /**
@@ -975,6 +971,14 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
 
     _onWaypointButtonPressed(button) {
         this._fireEvent(this._getWaypointButtonEvent());
+    }
+
+    /**
+     *
+     * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
+     */
+    _updateWaypointButton(state) {
+        this._waypointButton.update(state.airplaneHeadingTrue);
     }
 
     _updateHighlight() {
@@ -1031,6 +1035,7 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
      * @param {{airplanePosition:WT_GeoPointReadOnly, airplaneHeadingTrue:Number}} state
      */
     _doUpdate(state) {
+        this._updateWaypointButton(state);
         this._updateHighlight(state);
         this._updateBearing(state);
         this._updateDistance(state);

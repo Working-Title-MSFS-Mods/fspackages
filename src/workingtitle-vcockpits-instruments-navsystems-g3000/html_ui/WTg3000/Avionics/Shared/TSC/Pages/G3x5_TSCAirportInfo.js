@@ -152,6 +152,10 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHTMLEleme
         this._main.setActiveTabIndex(this._lastActiveTabIndex);
     }
 
+    _updateSelectButton() {
+        this._selectButton.update(this._context.airplane.navigation.headingTrue());
+    }
+
     _updateParentTitle() {
         let activeTab = this.mainTabView.getActiveTab();
         let title;
@@ -172,6 +176,7 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHTMLEleme
     }
 
     _doUpdate() {
+        this._updateSelectButton();
         this.mainTabView.getActiveTab().update();
         this._updateParentTitle();
     }

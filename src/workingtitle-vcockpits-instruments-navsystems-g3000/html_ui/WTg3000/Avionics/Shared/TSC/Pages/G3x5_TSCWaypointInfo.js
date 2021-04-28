@@ -396,17 +396,17 @@ class WT_G3x5_TSCWaypointInfoHTMLElement extends HTMLElement {
         this._context = context;
     }
 
-    _updateSelectButton() {
+    _updateSelectButtonFromWaypoint() {
         this.selectButton.setWaypoint(this._waypoint);
     }
 
-    _updateOptionsButton() {
+    _updateOptionsButtonFromWaypoint() {
         this.optionsButton.enabled = `${this._waypoint !== null}`;
     }
 
     _updateFromWaypoint() {
-        this._updateSelectButton();
-        this._updateOptionsButton();
+        this._updateSelectButtonFromWaypoint();
+        this._updateOptionsButtonFromWaypoint();
     }
 
     setWaypoint(waypoint) {

@@ -4,6 +4,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
 
         this._iconSrcFactory = null;
         this._waypoint = null;
+        this._airportLongestRunwayHeading = NaN;
         this._isInit = false;
     }
 
@@ -50,6 +51,8 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 top: 10%;
                 height: 40%;
                 max-width: 15%;
+                fill: white;
+                transform: rotateX(0deg);
             }
         `;
     }
@@ -87,8 +90,22 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         this._ident.id = "ident";
         this._name = document.createElement("div");
         this._name.id = "name";
-        this._icon = document.createElement("img");
+        this._icon = document.createElementNS(Avionics.SVG.NS, "svg");
         this._icon.id = "icon";
+        this._icon.setAttribute("viewBox", "-50 -50 100 100");
+        this._iconImage = document.createElementNS(Avionics.SVG.NS, "image");
+        this._iconImage.setAttribute("x", "-50");
+        this._iconImage.setAttribute("y", "-50");
+        this._iconImage.setAttribute("width", "100");
+        this._iconImage.setAttribute("height", "100");
+        this._airportRunwaySymbol = document.createElementNS(Avionics.SVG.NS, "rect");
+        this._airportRunwaySymbol.setAttribute("x", "-5");
+        this._airportRunwaySymbol.setAttribute("y", "-25");
+        this._airportRunwaySymbol.setAttribute("width", "10");
+        this._airportRunwaySymbol.setAttribute("height", "50");
+        this._airportRunwaySymbolCached = new WT_CachedElement(this._airportRunwaySymbol);
+        this._icon.appendChild(this._iconImage);
+        this._icon.appendChild(this._airportRunwaySymbol);
 
         this._empty = document.createElement("div");
         this._empty.id = "empty";
@@ -151,11 +168,21 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
 
         this._ident.innerHTML = waypoint.ident;
         this._name.innerHTML = waypoint.name;
-        this._icon.src = this._iconSrcFactory ? this._iconSrcFactory.getSrc(waypoint) : "";
+        this._iconImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", this._iconSrcFactory ? this._iconSrcFactory.getSrc(waypoint) : "");
 
         this._ident.style.display = "block";
         this._name.style.display = "block";
         this._icon.style.display = "block";
+
+        this._airportLongestRunwayHeading = NaN;
+        if (waypoint instanceof WT_Airport && waypoint.class === WT_Airport.Class.PAVED_SURFACE) {
+            let longestRunway = waypoint.runways.longest();
+            if (longestRunway) {
+                this._airportLongestRunwayHeading = longestRunway.direction;
+            }
+        }
+
+        this._airportRunwaySymbol.style.display = isNaN(this._airportLongestRunwayHeading) ? "none" : "inherit";
     }
 
     _showEmptyText() {
@@ -163,6 +190,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         this._name.style.display = "none";
         this._icon.style.display = "none";
         this._empty.style.display = "block";
+        this._airportLongestRunwayHeading = NaN;
     }
 
     _updateWaypoint() {
@@ -186,6 +214,37 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         if (this._isInit) {
             this._updateWaypoint();
         }
+    }
+
+    /**
+     *
+     * @param {Number} airplane
+     */
+    _updateAirportRunwaySymbol(airplaneHeadingTrue) {
+        let rotation = this._airportLongestRunwayHeading - airplaneHeadingTrue;
+        this._airportRunwaySymbolCached.setAttribute("transform", `rotate(${rotation.toFixed(1)})`);
+    }
+
+    /**
+     *
+     * @param {Number} airplaneHeadingTrue
+     */
+    _doUpdate(airplaneHeadingTrue) {
+        if (!isNaN(this._airportLongestRunwayHeading)) {
+            this._updateAirportRunwaySymbol(airplaneHeadingTrue);
+        }
+    }
+
+    /**
+     *
+     * @param {Number} airplaneHeadingTrue
+     */
+    update(airplaneHeadingTrue) {
+        if (!this._isInit || !this.waypoint) {
+            return;
+        }
+
+        this._doUpdate(airplaneHeadingTrue);
     }
 }
 WT_G3x5_TSCWaypointButton.NAME = "wt-tsc-button-waypoint";
