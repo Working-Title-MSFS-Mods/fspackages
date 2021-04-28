@@ -337,7 +337,7 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         if (tapePos <= 0.25 || tapePos >= 0.75) {
             let majorTick = scale.majorTick;
             this._updateTapeMin(Math.max(scale.min, Math.floor((knots - scale.window) / majorTick) * majorTick));
-            tapePos = this._calculateAbsoluteTapePosition(knots);
+            tapePos = Math.max(0, Math.min(1, this._calculateAbsoluteTapePosition(knots)));
         }
 
         this._moveTape(tapePos);
@@ -474,12 +474,12 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
         if (refSpeed) {
             let refSpeedKnots = refSpeed.asUnit(WT_Unit.KNOT);
             this._setRefSpeedDisplay(refSpeed, false);
-            this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
+            this._moveRefSpeedBug(this._calculateTranslatedTapePosition(Math.max(this._context.scale.min, refSpeedKnots)));
             this._showRefSpeed(true);
         } else if (refMach !== null) {
             let refSpeedKnots = this._context.model.airplane.sensors.machToIAS(refMach, this._tempKnot).number;
             this._setRefSpeedDisplay(refMach, true);
-            this._moveRefSpeedBug(this._calculateTranslatedTapePosition(refSpeedKnots));
+            this._moveRefSpeedBug(this._calculateTranslatedTapePosition(Math.max(this._context.scale.min, refSpeedKnots)));
             this._showRefSpeed(true);
         } else {
             this._showRefSpeed(false);
@@ -545,7 +545,8 @@ class WT_G3x5_PFDAirspeedIndicatorHTMLElement extends HTMLElement {
      */
     _updateSpeedBug(entry) {
         if (entry.bug.show) {
-            this._moveSpeedBug(entry, this._calculateTranslatedTapePosition(entry.bug.speed.asUnit(WT_Unit.KNOT)));
+            let speedKnots = entry.bug.speed.asUnit(WT_Unit.KNOT);
+            this._moveSpeedBug(entry, this._calculateTranslatedTapePosition(Math.max(this._context.scale.min, speedKnots)));
             this._showSpeedBug(entry, true);
         } else {
             this._showSpeedBug(entry, false);
