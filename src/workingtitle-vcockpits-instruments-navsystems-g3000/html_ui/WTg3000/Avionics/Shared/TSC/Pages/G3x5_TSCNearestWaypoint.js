@@ -1382,6 +1382,7 @@ WT_G3x5_TSCNearestAirportRowHTMLElement.TEMPLATE.innerHTML = `
             }
             #bearing {
                 position: relative;
+                transform: rotateX(0deg);
             }
                 #bearingarrow {
                     position: absolute;
@@ -1400,6 +1401,7 @@ WT_G3x5_TSCNearestAirportRowHTMLElement.TEMPLATE.innerHTML = `
                 }
             #distance {
                 position: relative;
+                transform: rotateX(0deg);
             }
                 #distancetext {
                     position: absolute;
@@ -1729,6 +1731,7 @@ WT_G3x5_TSCNearestNavAidRowHTMLElement.TEMPLATE.innerHTML = `
             }
             #bearing {
                 position: relative;
+                transform: rotateX(0deg);
             }
                 #bearingarrow {
                     position: absolute;
@@ -1747,6 +1750,7 @@ WT_G3x5_TSCNearestNavAidRowHTMLElement.TEMPLATE.innerHTML = `
                 }
             #distance {
                 position: relative;
+                transform: rotateX(0deg);
             }
                 #distancetext {
                     position: absolute;
@@ -2146,6 +2150,7 @@ WT_G3x5_TSCNearestINTRowHTMLElement.TEMPLATE.innerHTML = `
             }
             #bearing {
                 position: relative;
+                transform: rotateX(0deg);
             }
                 #bearingarrow {
                     position: absolute;
@@ -2164,6 +2169,7 @@ WT_G3x5_TSCNearestINTRowHTMLElement.TEMPLATE.innerHTML = `
                 }
             #distance {
                 position: relative;
+                transform: rotateX(0deg);
             }
                 #distancetext {
                     position: absolute;
