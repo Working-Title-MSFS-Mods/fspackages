@@ -2,12 +2,14 @@ class WT_G3x5_TrafficMap {
     /**
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_G3x5_TrafficSystem} trafficSystem
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(airplane, trafficSystem) {
+    constructor(airplane, trafficSystem, unitsSettingModel) {
         this._settingModelID = WT_G3x5_TrafficMap.SETTING_MODEL_ID;
 
         this._airplane = airplane;
         this._trafficSystem = trafficSystem;
+        this._unitsSettingModel = unitsSettingModel;
     }
 
     /**
@@ -53,6 +55,10 @@ class WT_G3x5_TrafficMap {
         return this._rangeTargetController.rangeSetting;
     }
 
+    _initUnitsAdapter() {
+        this._unitsAdapter = new WT_G3x5_UnitsSettingModelMapModelAdapter(this._unitsSettingModel, this.model);
+    }
+
     /**
      * @returns {WT_G3x5_MapModelTrafficModule}
      */
@@ -61,7 +67,7 @@ class WT_G3x5_TrafficMap {
     }
 
     _initModel() {
-        this.model.addModule(new WT_MapModelUnitsModule());
+        this._initUnitsAdapter();
         this.model.addModule(new WT_MapModelOrientationModule());
         this.model.addModule(new WT_MapModelAirplaneIconModule());
         this.model.addModule(this._trafficModule = this._createTrafficModule());

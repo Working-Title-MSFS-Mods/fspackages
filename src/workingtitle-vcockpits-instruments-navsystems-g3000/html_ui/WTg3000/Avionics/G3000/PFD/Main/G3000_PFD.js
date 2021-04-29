@@ -44,7 +44,7 @@ class WT_G3000_PFDInsetMap extends WT_G3x5_PFDInsetMap {
 
 class WT_G3000_PFDTrafficInsetMapContainer extends WT_G3x5_PFDTrafficInsetMapContainer {
     _createTrafficMap() {
-        return new WT_G3000_PFDTrafficInsetMap(this.instrument.airplane, this.instrument.trafficSystem);
+        return new WT_G3000_PFDTrafficInsetMap(this.instrument.airplane, this.instrument.trafficSystem, this.instrument.unitsSettingModel);
     }
 }
 

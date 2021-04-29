@@ -291,7 +291,7 @@ class WT_G3x5_MFDHalfPane {
         this._displaySetting.addListener(this._onDisplaySettingChanged.bind(this));
 
         this._navMapPane = new WT_G3x5_NavMapDisplayPane(this._createNavMap(id, data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
-        this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem));
+        this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem, data.unitsSettingModel));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
         this._chartsPane = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
         this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
@@ -321,7 +321,7 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_TrafficMap}
      */
-    _createTrafficMap(airplane, trafficSystem) {
+    _createTrafficMap(airplane, trafficSystem, unitsSettingModel) {
     }
 
     /**
