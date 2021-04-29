@@ -454,7 +454,7 @@ class WT_TrafficContact {
      * @param {Number} distanceNM
      */
     _updateGroundTrack(dt, track, distanceNM) {
-        let last = this._groundSpeedSmoother.last();
+        let last = this._groundTrackSmoother.last();
         if (distanceNM >= this.minGroundTrackDistance.asUnit(WT_Unit.NMILE)) {
             if (last !== null && !isNaN(last)) {
                 // need to handle wraparounds
