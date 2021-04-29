@@ -37,7 +37,8 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         this.redColor = "red";
         this.fontSize = 25;
         this.machVisible = false;
-        this.machSpeed;
+        this.machSpeed = 0;
+        this._stallSpeed = 0;
         this._maxSpeed = 600;
         this.graduationScrollPosX = 0;
         this.graduationScrollPosY = 0;
@@ -48,11 +49,14 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         this.stripsSVG = null;
         this.vMaxStripSVG = null;
         this.stallStripSVG = null;
-        this._lastMaxSpeedOverride = 600;
-        this._lastMaxSpeedOverrideTime = 0;
+        this.refHeight = 0;
         this.stripHeight = 0;
         this.stripBorderSize = 0;
         this.stripOffsetX = 0;
+        this._smoothFactor = 0.5;
+        this._alphaProtectionMin = 0;
+        this._alphaProtectionMax = 0;
+        this._lowestSelectableSpeed = 0;
         this.totalGraduations = this.nbPrimaryGraduations + ((this.nbPrimaryGraduations - 1) * this.nbSecondaryGraduations);
     }
     connectedCallback() {
@@ -104,10 +108,11 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             bg.setAttribute("width", _width.toString());
             bg.setAttribute("height", _height.toString());
             bg.setAttribute("fill", "#30323d");
+            //bg.setAttribute("fill", "transparent");
             this.centerSVG.appendChild(bg);
 
-            var graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
-            graduationGroup.setAttribute("id", "Graduations");
+            this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
+            this.graduationGroup.setAttribute("id", "Graduations");
             {
                 this.graduationScrollPosX = _left + _width;
                 this.graduationScrollPosY = _top + _height * 0.5;
@@ -137,12 +142,12 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 }
                 for (var i = 0; i < this.totalGraduations; i++) {
                     var line = this.graduations[i];
-                    graduationGroup.appendChild(line.SVGLine);
+                    this.graduationGroup.appendChild(line.SVGLine);
                     if (line.SVGText1) {
-                        graduationGroup.appendChild(line.SVGText1);
+                        this.graduationGroup.appendChild(line.SVGText1);
                     }
                 }
-                this.centerSVG.appendChild(graduationGroup);
+                this.centerSVG.appendChild(this.graduationGroup);
             }
             var cursorPosX = _left - 13;
             var cursorPosY = _top + _height * 0.5;
@@ -188,9 +193,9 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                     this.cursorIntegrals[1].construct(this.integralsGroup, _cursorPosX + 89, _cursorPosY - 5, _width, "Jost-SemiBold", this.fontSize * 2.7, "#11d011");
                 }
                 this.cursorDecimals.construct(trs, _cursorPosX + 87, _cursorPosY - 1, _width, "Jost-SemiBold", this.fontSize * 1.3, "#11d011");
-                this.centerSVG.appendChild(this.cursorSVG);
+                
             }
-            var stripViewPosX = _left + gradWidth - 5;
+            var stripViewPosX = _left + gradWidth - 15;
             var stripViewPosY = this.stripBorderSize;
             var stripViewWidth = width;
             var stripViewHeight = _height - this.stripBorderSize * 2;
@@ -226,45 +231,46 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                     shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
                     this.stallStripSVG.appendChild(shape);
                 }
+                this.stripsSVG.appendChild(this.stallStripSVG);
             }
-            this.stripsSVG.appendChild(this.stallStripSVG);
             this.centerSVG.appendChild(this.stripsSVG);
-            this.rootGroup.appendChild(this.centerSVG);
-            {
-                this.machGroup = document.createElementNS(Avionics.SVG.NS, "g");
-                this.machGroup.setAttribute("id", "Mach");
-                this.rootGroup.appendChild(this.machGroup);
-                var x = 0;
-                var y = 0;
-                var w = 50;
-                var h = 22;
-                this.machBg = document.createElementNS(Avionics.SVG.NS, "rect");
-                this.machBg.setAttribute("x", x.toString());
-                this.machBg.setAttribute("y", y.toString());
-                this.machBg.setAttribute("width", w.toString());
-                this.machBg.setAttribute("height", h.toString());
-                this.machBg.setAttribute("fill", "black");
-                this.rootGroup.appendChild(this.machBg);
-                if (!this.machSVG)
-                this.machSVG = document.createElementNS(Avionics.SVG.NS, "text");
-                this.machSVG.textContent = "---";
-                this.machSVG.setAttribute("x", "25");
-                this.machSVG.setAttribute("y", (y + 13));
-                this.machSVG.setAttribute("fill", "#11d011");
-                this.machSVG.setAttribute("font-size", (this.fontSize * 0.65).toString());
-                this.machSVG.setAttribute("font-family", "Jost-SemiBold");
-                this.machSVG.setAttribute("text-anchor", "middle");
-                this.machSVG.setAttribute("alignment-baseline", "central");
-                this.rootGroup.appendChild(this.machSVG);
-            }
-            this.rootSVG.appendChild(this.rootGroup);
-            this.appendChild(this.rootSVG);
+            this.centerSVG.appendChild(this.cursorSVG);
         }
+        this.rootGroup.appendChild(this.centerSVG);
+        this.machGroup = document.createElementNS(Avionics.SVG.NS, "g");
+        this.machGroup.setAttribute("id", "Mach");
+        {
+            this.rootGroup.appendChild(this.machGroup);
+            var x = 0;
+            var y = 0;
+            var w = 50;
+            var h = 22;
+            this.machBg = document.createElementNS(Avionics.SVG.NS, "rect");
+            this.machBg.setAttribute("x", x.toString());
+            this.machBg.setAttribute("y", y.toString());
+            this.machBg.setAttribute("width", w.toString());
+            this.machBg.setAttribute("height", h.toString());
+            this.machBg.setAttribute("fill", "black");
+            this.machGroup.appendChild(this.machBg);
+            if (!this.machSVG)
+            this.machSVG = document.createElementNS(Avionics.SVG.NS, "text");
+            this.machSVG.textContent = "---";
+            this.machSVG.setAttribute("x", "25");
+            this.machSVG.setAttribute("y", (y + 13));
+            this.machSVG.setAttribute("fill", "#11d011");
+            this.machSVG.setAttribute("font-size", (this.fontSize * 0.65).toString());
+            this.machSVG.setAttribute("font-family", "Jost-SemiBold");
+            this.machSVG.setAttribute("text-anchor", "middle");
+            this.machSVG.setAttribute("alignment-baseline", "central");
+            this.machGroup.appendChild(this.machSVG);
+        }
+        this.rootSVG.appendChild(this.rootGroup);
+        this.appendChild(this.rootSVG);
     }
     update(dTime) {
-        var indicatedSpeed = Simplane.getIndicatedSpeed();
+        let indicatedSpeed = Simplane.getIndicatedSpeed();
         this.updateGraduationScrolling(indicatedSpeed);
-        this.updateCursorScrolling(indicatedSpeed, this.speedColor);     
+        this.updateCursorScrolling(indicatedSpeed);     
 
         var trueMach = Simplane.getMachSpeed();
             this.machSpeed = Utils.SmoothSin(this.machSpeed, trueMach, 0.25, dTime / 1000);
@@ -281,33 +287,54 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
 
         
         const alt = Simplane.getAltitude();
-        let maxSpeed = 260;
+        this.maxSpeed = 260;
         if (alt >= 8000 && alt <= 27884) {
-            maxSpeed = 305;
+            this.maxSpeed = 305;
         }
         else if (alt > 27884) {
             const ambientPressure = SimVar.GetSimVarValue('AMBIENT PRESSURE', 'inHG');
             const machScalar2 = Math.pow(0.77, 2);
             const machScalar4 = Math.pow(0.77, 4);
-            maxSpeed = Math.sqrt(ambientPressure / 29.92) * Math.sqrt(1 + machScalar2 / 4 + machScalar4 / 40) * 0.77 * 661.5;
+            this.maxSpeed = Math.sqrt(ambientPressure / 29.92) * Math.sqrt(1 + machScalar2 / 4 + machScalar4 / 40) * 0.77 * 661.5;
         }
-        if (indicatedSpeed >= maxSpeed) {
+        
+        if (indicatedSpeed >= this.maxSpeed) {
             this.machSVG.setAttribute("fill", "red");
 
-        } else if (this.machSpeed >= maxSpeed) {
+        } else if (this.machSpeed >= this.maxSpeed) {
             this.machSVG.setAttribute("fill", "red");
         } else {
             this.machSVG.setAttribute("fill", "#11d011");
         }
+        let maxSpeed = this.maxSpeed
         let lowestSelectableSpeed = Simplane.getLowestSelectableSpeed();
         let stallProtectionMin = Simplane.getStallProtectionMinSpeed();
         let stallProtectionMax = Simplane.getStallProtectionMaxSpeed();
         let stallSpeed = Simplane.getStallSpeed();
         let planeOnGround = Simplane.getIsGrounded();
-        this.updateStrip(this.vMaxStripSVG, indicatedSpeed, this._maxSpeed, false, true);
-        this.updateStrip(this.stallStripSVG, indicatedSpeed, this._stallSpeed, planeOnGround, false);  
         this.smoothSpeeds(indicatedSpeed, dTime, maxSpeed, lowestSelectableSpeed, stallProtectionMin, stallProtectionMax, stallSpeed);
-        this.updateSpeedOverride(dTime);
+        this.updateStrip(this.vMaxStripSVG, indicatedSpeed, this._maxSpeed, false, true);
+        this.updateStrip(this.stallStripSVG, indicatedSpeed, this._stallSpeed, planeOnGround, false);
+        
+    }
+    smoothSpeeds(_indicatedSpeed, _dTime, _maxSpeed, _lowestSelectableSpeed, _stallProtectionMin, _stallProtectionMax, _stallSpeed) {
+        let refSpeed = _maxSpeed;
+        if (this.stallStripSVG) {
+            let delta = _stallSpeed - refSpeed;
+            if (delta >= 0)
+                _stallProtectionMax -= delta + 5;
+            refSpeed = _stallSpeed;
+        }
+        let seconds = _dTime / 1000;
+        this._maxSpeed = Utils.SmoothSin(this._maxSpeed, _maxSpeed, this._smoothFactor, seconds);
+        this._lowestSelectableSpeed = Utils.SmoothSin(this._lowestSelectableSpeed, _lowestSelectableSpeed, this._smoothFactor, seconds);
+        this._alphaProtectionMin = Utils.SmoothSin(this._alphaProtectionMin, _stallProtectionMin, this._smoothFactor, seconds);
+        this._alphaProtectionMax = Utils.SmoothSin(this._alphaProtectionMax, _stallProtectionMax, this._smoothFactor, seconds);
+        this._stallSpeed = Utils.SmoothSin(this._stallSpeed, _stallSpeed, this._smoothFactor, seconds);
+        let delta = this._alphaProtectionMax - _indicatedSpeed;
+        if (delta >= 0) {
+            this._alphaProtectionMax -= delta;
+        }
     }
     valueToSvg(current, target) {
         var _top = 0;
@@ -318,7 +345,7 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         let deltaSVG = deltaValue * this.graduationSpacing * (this.nbSecondaryGraduations + 1) / this.graduationScroller.increment;
         var posY = _top + _height * 0.5 + deltaSVG;
         posY += 2.5;
-        return posY;
+        return posY;    
     }
     updateStrip(_strip, currentAirspeed, maxSpeed, _forceHide, _topToBottom) {
         if (_strip) {
@@ -405,56 +432,6 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             if (this.cursorDecimals) {
                 this.cursorDecimals.update(_speed);
             }
-        }
-    }
-    smoothSpeeds(_indicatedSpeed, _dTime, _maxSpeed, _lowestSelectableSpeed, _stallProtectionMin, _stallProtectionMax, _stallSpeed) {
-        let refSpeed = _maxSpeed;
-        if (this.vLSStripSVG) {
-            let delta = _lowestSelectableSpeed - refSpeed;
-            if (delta >= 0)
-                _lowestSelectableSpeed -= delta + 5;
-            refSpeed = _lowestSelectableSpeed;
-        }
-        if (this.stallProtMinStripSVG) {
-            let delta = _stallProtectionMin - refSpeed;
-            if (delta >= 0)
-                _stallProtectionMin -= delta + 5;
-            refSpeed = _stallProtectionMin;
-        }
-        if (this.stallProtMaxStripSVG) {
-            let delta = _stallProtectionMax - refSpeed;
-            if (delta >= 0)
-                _stallProtectionMax -= delta + 5;
-            refSpeed = _stallProtectionMax;
-        }
-        if (this.stallStripSVG) {
-            let delta = _stallSpeed - refSpeed;
-            if (delta >= 0)
-                _stallProtectionMax -= delta + 5;
-            refSpeed = _stallSpeed;
-        }
-        let seconds = _dTime / 1000;
-        this._maxSpeed = Utils.SmoothSin(this._maxSpeed, _maxSpeed, this._smoothFactor, seconds);
-        this._lowestSelectableSpeed = Utils.SmoothSin(this._lowestSelectableSpeed, _lowestSelectableSpeed, this._smoothFactor, seconds);
-        this._alphaProtectionMin = Utils.SmoothSin(this._alphaProtectionMin, _stallProtectionMin, this._smoothFactor, seconds);
-        this._alphaProtectionMax = Utils.SmoothSin(this._alphaProtectionMax, _stallProtectionMax, this._smoothFactor, seconds);
-        this._stallSpeed = Utils.SmoothSin(this._stallSpeed, _stallSpeed, this._smoothFactor, seconds);
-        let delta = this._alphaProtectionMax - _indicatedSpeed;
-        if (delta >= 0) {
-            this._alphaProtectionMax -= delta;
-        }
-    }
-    updateSpeedOverride(_dTime) {
-        if (Math.abs(this._maxSpeed - this._lastMaxSpeedOverride) >= 0) {
-            this._lastMaxSpeedOverrideTime += _dTime / 1000;
-            if (this._lastMaxSpeedOverrideTime > 5) {
-                SimVar.SetGameVarValue("AIRCRAFT_MAXSPEED_OVERRIDE", "knots", this._maxSpeed - 3);
-                this._lastMaxSpeedOverride = this._maxSpeed;
-                this._lastMaxSpeedOverrideTime = 0;
-            }
-        }
-        else {
-            this._lastMaxSpeedOverrideTime = 0;
         }
     }
 }
