@@ -3,7 +3,6 @@ class WT_G3x5_PFD extends NavSystem {
         super();
         this.initDuration = 7000;
 
-        this._trafficTracker = new WT_TrafficTracker();
         this._lastTrafficUpdateTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
@@ -139,6 +138,11 @@ class WT_G3x5_PFD extends NavSystem {
         this._approachNavLoader = this._createApproachNavLoader();
     }
 
+    _initTrafficTracker() {
+        let dataRetriever = this.modConfig.traffic.useTrafficService ? new WT_TrafficServiceTrafficDataRetriever(this.modConfig.traffic.trafficServicePort) : new WT_CoherentTrafficDataRetriever();
+        this._trafficTracker = new WT_TrafficTracker(dataRetriever);
+    }
+
     /**
      *
      * @returns {WT_G3x5_TrafficSystem}
@@ -155,6 +159,7 @@ class WT_G3x5_PFD extends NavSystem {
 
         this._initReferenceSensors();
         this._initApproachNavLoader();
+        this._initTrafficTracker();
         this._initTrafficSystem();
     }
 
@@ -187,7 +192,7 @@ class WT_G3x5_PFD extends NavSystem {
     }
 
     _updateTrafficTracker(currentTime) {
-        if (currentTime - this._lastTrafficUpdateTime >= 1000) {
+        if (currentTime - this._lastTrafficUpdateTime >= 1000 && !this._trafficTracker.isBusy()) {
             this._trafficTracker.update();
             this._lastTrafficUpdateTime = currentTime;
         }

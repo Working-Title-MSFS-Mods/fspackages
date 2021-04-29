@@ -4,9 +4,12 @@
  */
 class WT_TrafficTracker {
     /**
+     * @param {{getTrafficData():Promise<WT_TrafficDataEntry[]>}} dataRetriever - the object to use to retrieve traffic data.
      * @param {Object} [options] - optional options to pass to the new tracker.
      */
-    constructor(options) {
+    constructor(dataRetriever, options) {
+        this._dataRetriever = dataRetriever;
+
         /**
          * @type {Map<String,WT_TrafficContact>}
          */
@@ -25,6 +28,12 @@ class WT_TrafficTracker {
         this._optsManager = new WT_OptionsManager(this, WT_TrafficTracker.OPTION_DEFS);
         this._optsManager.setOptions(options);
 
+        /**
+         * @type {(() => void)[]}
+         */
+        this._updateQueue = [];
+        this._isBusy = false;
+
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
         this._tempMeters = WT_Unit.METER.createNumber(0);
         this._tempBearingTrue = new WT_NavAngleUnit(false).createNumber(0);
@@ -40,8 +49,16 @@ class WT_TrafficTracker {
     }
 
     /**
+     * Checks whether this tracker is currently busy with an update.
+     * @returns {Boolean} whether this tracker is currently busy with an update.
+     */
+    isBusy() {
+        return this._isBusy;
+    }
+
+    /**
      *
-     * @param {Object} entry
+     * @param {WT_TrafficDataEntry} entry
      */
     _createContact(entry) {
         let id = `${entry.uId}`;
@@ -57,7 +74,7 @@ class WT_TrafficTracker {
     /**
      *
      * @param {WT_TrafficContact} contact
-     * @param {Object} entry
+     * @param {WT_TrafficDataEntry} entry
      */
     _updateContact(contact, entry) {
         let position = this._tempGeoPoint.set(entry.lat, entry.lon);
@@ -67,6 +84,10 @@ class WT_TrafficTracker {
         this._listeners[WT_TrafficTracker.EventType.CONTACT_UPDATED].forEach(listener => listener(WT_TrafficTracker.EventType.CONTACT_UPDATED, contact));
     }
 
+    /**
+     *
+     * @param {WT_TrafficDataEntry[]} data
+     */
     _updateContacts(data) {
         data.forEach(entry => {
             let contact = this._tracked.get(`${entry.uId}`);
@@ -115,23 +136,36 @@ class WT_TrafficTracker {
         }
     }
 
+    _resolveUpdateQueue() {
+        let queue = this._updateQueue.splice(0, this._updateQueue.length);
+        queue.forEach(resolve => resolve());
+    }
+
     /**
      * Updates this tracker. This will create new contacts as they are found, update existing contacts based on new
      * data, and remove contacts which can no longer be found.
      * @returns {Promise<void>} a Promise which resolves when the update is complete.
      */
-    async update() {
-        let data;
-        try {
-            data = await Coherent.call("GET_AIR_TRAFFIC");
-        } catch (e) {
-            console.log(e);
-        }
+    update() {
+        return new Promise(async resolve => {
+            this._updateQueue.push(resolve);
+            if (!this._isBusy) {
+                this._isBusy = true;
+                let data;
+                try {
+                    data = await Promise.race([this._dataRetriever.getTrafficData(), WT_Wait.wait(this.dataRetrievalTimeout)]);
+                } catch (e) {
+                    console.log(e);
+                }
 
-        if (data) {
-            this._updateContacts(data);
-            this._deprecateContacts();
-        }
+                if (data) {
+                    this._updateContacts(data);
+                    this._deprecateContacts();
+                }
+                this._isBusy = false;
+                this._resolveUpdateQueue();
+            }
+        });
     }
 }
 /**
@@ -143,8 +177,92 @@ WT_TrafficTracker.EventType = {
     CONTACT_REMOVED: 2
 };
 WT_TrafficTracker.OPTION_DEFS = {
+    dataRetrievalTimeout: {default: 5000, auto: true},
     contactDeprecateTime: {default: 10, auto: true},
     contactOptions: {default: {}, auto: true}
+};
+
+/**
+ * @typedef WT_TrafficDataEntry
+ * @property {Number} uId - a unique ID assigned to this entry's aircraft.
+ * @property {Number} lat - the latitude of this entry's aircraft.
+ * @property {Number} lon - the longitude of this entry's aircraft.
+ * @property {Number} alt - the altitude of this entry's aircraft, in meters.
+ * @property {Number} heading - the true heading of this entry's aircraft.
+ */
+
+/**
+ * Retrieves traffic data via Coherent calls.
+ */
+class WT_CoherentTrafficDataRetriever {
+    /**
+     * Retrieves traffic data.
+     * @returns {Promise<WT_TrafficDataEntry[]>} a Promise to return traffic data.
+     */
+    getTrafficData() {
+        return Coherent.call("GET_AIR_TRAFFIC");
+    }
+}
+
+/**
+ * Retrieves traffic data from MSFS Traffic Service, and uses Coherent calls as a fallback.
+ */
+class WT_TrafficServiceTrafficDataRetriever {
+    /**
+     * @param {Number} port
+     * @param {Object} [options]
+     */
+    constructor(port, options) {
+        this._port = port;
+
+        this._optsManager = new WT_OptionsManager(this, WT_TrafficServiceTrafficDataRetriever.OPTION_DEFS);
+        if (options) {
+            this._optsManager.setOptions(options);
+        }
+    }
+
+    _getURL(path) {
+        return `http://localhost:${this._port}${path}`;
+    }
+
+    _request(url, timeout) {
+        return new Promise((resolve, reject) => {
+            let request = new XMLHttpRequest();
+            request.timeout = timeout;
+            request.addEventListener("load",
+                () => {
+                    try {
+                        resolve(JSON.parse(request.responseText));
+                    } catch (e) {
+                        reject(new Error("Error parsing traffic service JSON."));
+                    }
+                }
+            );
+            request.addEventListener("error", () => reject(new Error("Traffic service request error")));
+            request.addEventListener("timeout", () => reject(new Error("Traffic service request timed out")));
+            request.open("GET", url);
+            request.send();
+        });
+    }
+
+    /**
+     * Retrieves traffic data.
+     * @returns {Promise<WT_TrafficDataEntry[]>} a Promise to return traffic data.
+     */
+    async getTrafficData() {
+        try {
+            if (await this._request(this._getURL("/ready"))) {
+                let data = await this._request(this._getURL("/traffic"), this.timeout);
+                return data;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        return Coherent.call("GET_AIR_TRAFFIC");
+    }
+}
+WT_TrafficServiceTrafficDataRetriever.OPTION_DEFS = {
+    timeout: {default: 500, auto: true}
 };
 
 /**

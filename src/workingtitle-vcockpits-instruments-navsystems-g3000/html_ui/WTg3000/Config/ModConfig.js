@@ -34,6 +34,10 @@ class WT_g3000_ModConfig {
     }
 }
 WT_g3000_ModConfig.SECTIONS = [
+    {cfgName: "TRAFFIC", objName: "traffic", options: {
+        useTrafficService: {default: false, auto: true},
+        trafficServicePort: {default: 8383, auto: true}
+    }},
     {cfgName: "VFRMAP", objName: "vfrMap", options: {
         useCustom: {default: true, auto: true}
     }},

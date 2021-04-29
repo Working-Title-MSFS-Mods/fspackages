@@ -111,6 +111,11 @@ class WT_G3x5_MFD extends NavSystem {
         this._referenceAltimeter = this._getReferenceAltimeter();
     }
 
+    _initTrafficTracker() {
+        let dataRetriever = this.modConfig.traffic.useTrafficService ? new WT_TrafficServiceTrafficDataRetriever(this.modConfig.traffic.trafficServicePort) : new WT_CoherentTrafficDataRetriever();
+        this._trafficTracker = new WT_TrafficTracker(dataRetriever);
+    }
+
     /**
      *
      * @returns {WT_G3x5_TrafficSystem}
@@ -130,6 +135,7 @@ class WT_G3x5_MFD extends NavSystem {
         super.Init();
 
         this._initReferenceSensors();
+        this._initTrafficTracker();
         this._initTrafficSystem();
         this._initNavigraphAPI();
     }

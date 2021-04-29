@@ -11,10 +11,17 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     /**
      * @readonly
+     */
+    get gameState() {
+        return this._gameState;
+    }
+
+    /**
+     * @readonly
      * @type {WT_g3000_ModConfig}
      */
     get modConfig() {
-        return this._isModConfig;
+        return this._modConfig;
     }
 
     /**
