@@ -1006,7 +1006,7 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         let bearing = this._tempTrueBearing.set(state.airplanePosition.bearingTo(this.waypoint.location));
         bearing.unit.setLocation(state.airplanePosition);
 
-        this._bearingArrow.setBearing(bearing.number - state.airplaneHeadingTrue);
+        this._bearingArrow.setBearing(Math.round((bearing.number - state.airplaneHeadingTrue) * 10) / 10);
 
         let unit = this._context.unitsModel.bearingUnit;
         this._bearingText.textContent = this._bearingFormatter.getFormattedString(bearing, unit);
