@@ -1,5 +1,19 @@
 # Changelog
 
+### v0.6.2
+**New Features**
+- \[Traffic\] Enabled support for laurinius's MSFS Traffic Service app, which adds Offline AI traffic and SimConnect-injected traffic to the mod's traffic systems.
+  - Configuration settings for this feature can be found in the mod config file.
+
+**Changed Features**
+- \[GTC\] Airport icons, when shown, now indicate the direction of the longest runway at the airport.
+
+**Fixes**
+- \[General\] Fixed a bug with initializing airport data with no listed runways.
+- \[Traffic\] Fixed an error with ground track computation for traffic contacts.
+- \[PFD\] Airspeed altimeter speed bugs are no longer mispositioned when airspeed is below the minimum indicated airspeed.
+- \[GTC\] Fixed a bug where the Charts page would sometimes automatically change the selected airport after closing a popup or navigating back to it from the pan/zoom control page.
+
 ### v0.6.1
 **Changed Features**
 - \[Charts\] The airplane icon is now visible in ALL view as long as the chart is geo-referenced and the projected position of the airplane is not in an inset.
