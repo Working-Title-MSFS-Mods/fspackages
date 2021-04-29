@@ -54,12 +54,6 @@ html {
   font-style: normal; }
 
 @font-face {
-  font-family: "Collins ProLine";
-  src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/CollinsProLine-LightCondensed.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
   font-family: "Jost-SemiBold";
   src: url("/Pages/VCockpit/Instruments/Airliners/CJ4/Shared/Jost-SemiBold.ttf") format("truetype");
   font-weight: normal;
