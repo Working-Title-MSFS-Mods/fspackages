@@ -108,7 +108,6 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             bg.setAttribute("width", _width.toString());
             bg.setAttribute("height", _height.toString());
             bg.setAttribute("fill", "#30323d");
-            //bg.setAttribute("fill", "transparent");
             this.centerSVG.appendChild(bg);
 
             this.graduationGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -166,16 +165,27 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             this.cursorSVG.setAttribute("viewBox", "0 4 " + cursorWidth + " " + cursorHeight);
             {
                 let _scale = 0.6;
-                var trs = document.createElementNS(Avionics.SVG.NS, "g");
-                trs.setAttribute("transform", "scale(" + _scale + ")");
-                this.cursorSVG.appendChild(trs);
+                this.trs = document.createElementNS(Avionics.SVG.NS, "g");
+                this.trs.setAttribute("fill", "#11d011");
+                this.trs.setAttribute("transform", "scale(" + _scale + ")");
+                this.cursorSVG.appendChild(this.trs);
+                
+                this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "path");
+                this.cursorSVGClip.setAttribute("fill", "transparent");
+                this.cursorSVGClip.setAttribute("d", "M24 22 L62 22 L62 7 L86 7 L86 70 L62 70 L62 56 L24 56 Z");
+                this.cursorSVGClip.setAttribute("stroke", "white");
+                this.cursorSVGClip.setAttribute("stroke-width", "3");
+                this.trs.appendChild(this.cursorSVGClip);               
+                
                 if (!this.cursorSVGShape)
                     this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGShape.setAttribute("fill", "black");
                 this.cursorSVGShape.setAttribute("d", "M24 22 L62 22 L62 7 L86 7 L86 70 L62 70 L62 56 L24 56 Z");
                 this.cursorSVGShape.setAttribute("stroke", "white");
-                this.cursorSVGShape.setAttribute("stroke-width", "3");
-                trs.appendChild(this.cursorSVGShape);
+                this.cursorSVGShape.setAttribute("stroke-width", "0");
+                this.trs.appendChild(this.cursorSVGShape);
+
+
 
                 var _cursorWidth = (cursorWidth / _scale);
                 var _cursorHeight = (cursorHeight / _scale + 10);
@@ -183,19 +193,19 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 var _cursorPosY = cursorHeight * 0.5 + 20;
                 this.integralsGroup = document.createElementNS(Avionics.SVG.NS, "svg");
                 this.integralsGroup.setAttribute("x", "0");
+                this.integralsGroup.setAttribute("fill", "#11d011");
                 this.integralsGroup.setAttribute("y", "21");
                 this.integralsGroup.setAttribute("width", _cursorWidth.toString());
                 this.integralsGroup.setAttribute("height", (_cursorHeight - 39).toString());
                 this.integralsGroup.setAttribute("viewBox", "0 0 " + (_cursorWidth) + " " + (_cursorHeight - 5));
-                trs.appendChild(this.integralsGroup);
+                this.trs.appendChild(this.integralsGroup);
                 {
-                    this.cursorIntegrals[0].construct(this.integralsGroup, _cursorPosX + 50, _cursorPosY - 5, _width, "Jost-SemiBold", this.fontSize * 2.7, "#11d011");
-                    this.cursorIntegrals[1].construct(this.integralsGroup, _cursorPosX + 89, _cursorPosY - 5, _width, "Jost-SemiBold", this.fontSize * 2.7, "#11d011");
+                    this.cursorIntegrals[0].construct(this.integralsGroup, _cursorPosX + 50, _cursorPosY - 5, _width, "Jost-SemiBold", this.fontSize * 2.7);
+                    this.cursorIntegrals[1].construct(this.integralsGroup, _cursorPosX + 89, _cursorPosY - 5, _width, "Jost-SemiBold", this.fontSize * 2.7);
                 }
-                this.cursorDecimals.construct(trs, _cursorPosX + 87, _cursorPosY - 1, _width, "Jost-SemiBold", this.fontSize * 1.3, "#11d011");
-                
+                this.cursorDecimals.construct(this.trs, _cursorPosX + 87, _cursorPosY - 1, _width, "Jost-SemiBold", this.fontSize * 1.3); 
             }
-            var stripViewPosX = _left + gradWidth - 15;
+            var stripViewPosX = _left + 34;
             var stripViewPosY = this.stripBorderSize;
             var stripViewWidth = width;
             var stripViewHeight = _height - this.stripBorderSize * 2;
@@ -215,7 +225,7 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 this.vMaxStripSVG = document.createElementNS(Avionics.SVG.NS, "g");
                 this.vMaxStripSVG.setAttribute("id", "VMax");
                 {
-                    let stripWidth = 9;
+                    let stripWidth = 10;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
                     shape.setAttribute("fill", "red");
                     shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
@@ -225,7 +235,7 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 this.stallStripSVG = document.createElementNS(Avionics.SVG.NS, "g");
                 this.stallStripSVG.setAttribute("id", "Stall");
                 {
-                    let stripWidth = 9;
+                    let stripWidth = 10;
                     let shape = document.createElementNS(Avionics.SVG.NS, "path");
                     shape.setAttribute("fill", "red");
                     shape.setAttribute("d", "M 0 0 l " + stripWidth + " 0 l 0 " + (this.stripHeight) + " l " + (-stripWidth) + " 0 Z");
@@ -234,7 +244,10 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 this.stripsSVG.appendChild(this.stallStripSVG);
             }
             this.centerSVG.appendChild(this.stripsSVG);
+            this.centerSVG.appendChild(this.graduationGroup);
             this.centerSVG.appendChild(this.cursorSVG);
+            this.trs.appendChild(this.cursorSVGClip);
+
         }
         this.rootGroup.appendChild(this.centerSVG);
         this.machGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -268,9 +281,9 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         this.appendChild(this.rootSVG);
     }
     update(dTime) {
+        let speedColor = "#11d011";
         let indicatedSpeed = Simplane.getIndicatedSpeed();
         this.updateGraduationScrolling(indicatedSpeed);
-        this.updateCursorScrolling(indicatedSpeed);     
 
         var trueMach = Simplane.getMachSpeed();
             this.machSpeed = Utils.SmoothSin(this.machSpeed, trueMach, 0.25, dTime / 1000);
@@ -285,7 +298,6 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             this.machGroup.setAttribute("visibility", "hidden");
         }
 
-        
         const alt = Simplane.getAltitude();
         this.maxSpeed = 260;
         if (alt >= 8000 && alt <= 27884) {
@@ -297,14 +309,21 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             const machScalar4 = Math.pow(0.77, 4);
             this.maxSpeed = Math.sqrt(ambientPressure / 29.92) * Math.sqrt(1 + machScalar2 / 4 + machScalar4 / 40) * 0.77 * 661.5;
         }
-        
         if (indicatedSpeed >= this.maxSpeed) {
             this.machSVG.setAttribute("fill", "red");
-
+            this.integralsGroup.setAttribute("fill", "red");
+            this.trs.setAttribute("fill", "red");
+            speedColor = "red";
         } else if (this.machSpeed >= this.maxSpeed) {
             this.machSVG.setAttribute("fill", "red");
+            this.integralsGroup.setAttribute("fill", "red");
+            this.trs.setAttribute("fill", "red");
+            speedColor = "red";
         } else {
             this.machSVG.setAttribute("fill", "#11d011");
+            this.integralsGroup.setAttribute("fill", "#11d011");
+            this.trs.setAttribute("fill", "#11d011");
+            speedColor = "#11d011";
         }
         let maxSpeed = this.maxSpeed
         let lowestSelectableSpeed = Simplane.getLowestSelectableSpeed();
@@ -312,6 +331,7 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         let stallProtectionMax = Simplane.getStallProtectionMaxSpeed();
         let stallSpeed = Simplane.getStallSpeed();
         let planeOnGround = Simplane.getIsGrounded();
+        this.updateCursorScrolling(indicatedSpeed, speedColor);
         this.smoothSpeeds(indicatedSpeed, dTime, maxSpeed, lowestSelectableSpeed, stallProtectionMin, stallProtectionMax, stallSpeed);
         this.updateStrip(this.vMaxStripSVG, indicatedSpeed, this._maxSpeed, false, true);
         this.updateStrip(this.stallStripSVG, indicatedSpeed, this._stallSpeed, planeOnGround, false);
@@ -408,12 +428,13 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             }
         }
     }
-    updateCursorScrolling(_speed) {
+    updateCursorScrolling(_speed, _speedColor) {
+        console.log(_speedColor);
         var startSpeed = 40;
         if (_speed < 40) {
             startSpeed = 40;
         } else {
-            startSpeed = _speed
+            startSpeed = _speed;
         }
         if (_speed <= this.graduationMinValue) {
             if (this.cursorIntegrals) {
@@ -600,19 +621,19 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             trs.setAttribute("transform", "scale(" + _scale + ")");
             this.cursorSVG.appendChild(trs);
 
-/*             this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "path");
+            this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "path");
             this.cursorSVGClip.setAttribute("fill", "transparent");
-            this.cursorSVGClip.setAttribute("d", "M0 19 L62 19 L62 2 L123 2 L123 76 L62 76 L62 59 L0 59 Z");
+            this.cursorSVGClip.setAttribute("d", "M0 25 L70 25 L70 -1 L123 -1 L123 84 L71 84 L71 59 L0 59 Z");
             this.cursorSVGClip.setAttribute("stroke", "white");
-            this.cursorSVGClip.setAttribute("stroke-width", "4");
-            trs.appendChild(this.cursorSVGClip); */
+            this.cursorSVGClip.setAttribute("stroke-width", "3");
+            trs.appendChild(this.cursorSVGClip);
 
             if (!this.cursorSVGShape)
                 this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
             this.cursorSVGShape.setAttribute("fill", "black");
             this.cursorSVGShape.setAttribute("d", "M0 25 L70 25 L70 0 L123 0 L123 84 L70 84 L70 59 L0 59 Z");
             this.cursorSVGShape.setAttribute("stroke", "white");
-            this.cursorSVGShape.setAttribute("stroke-width", "3");
+            this.cursorSVGShape.setAttribute("stroke-width", "0");
             trs.appendChild(this.cursorSVGShape);
             var _cursorWidth = (cursorWidth / _scale);
             var _cursorHeight = (cursorHeight / _scale + 1);
@@ -631,6 +652,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
                 this.cursorIntegrals[2].construct(integralsGroup, _cursorPosX + 79, _cursorPosY - 2, _width, "Jost-Bold", this.fontSize * 3.5, "#11d011");
             }
             this.cursorDecimals.construct(trs, _cursorPosX + 119, _cursorPosY + 6, _width, "Jost-Bold", this.fontSize * 1.55, "#11d011");
+            trs.appendChild(this.cursorSVGClip);
             this.rootGroup.appendChild(this.cursorSVG);
         }
         var baroGroup = document.createElementNS(Avionics.SVG.NS, "g");
