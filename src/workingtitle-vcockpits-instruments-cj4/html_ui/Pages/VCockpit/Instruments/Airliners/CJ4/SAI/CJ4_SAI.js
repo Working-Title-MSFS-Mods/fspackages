@@ -281,8 +281,8 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         this.appendChild(this.rootSVG);
     }
     update(dTime) {
-        let speedColor = "#11d011";
         let indicatedSpeed = Simplane.getIndicatedSpeed();
+        this.updateCursorScrolling(indicatedSpeed);
         this.updateGraduationScrolling(indicatedSpeed);
 
         var trueMach = Simplane.getMachSpeed();
@@ -313,25 +313,21 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             this.machSVG.setAttribute("fill", "red");
             this.integralsGroup.setAttribute("fill", "red");
             this.trs.setAttribute("fill", "red");
-            speedColor = "red";
         } else if (this.machSpeed >= this.maxSpeed) {
             this.machSVG.setAttribute("fill", "red");
             this.integralsGroup.setAttribute("fill", "red");
             this.trs.setAttribute("fill", "red");
-            speedColor = "red";
         } else {
             this.machSVG.setAttribute("fill", "#11d011");
             this.integralsGroup.setAttribute("fill", "#11d011");
             this.trs.setAttribute("fill", "#11d011");
-            speedColor = "#11d011";
         }
-        let maxSpeed = this.maxSpeed
+        let maxSpeed = this.maxSpeed;
         let lowestSelectableSpeed = Simplane.getLowestSelectableSpeed();
         let stallProtectionMin = Simplane.getStallProtectionMinSpeed();
         let stallProtectionMax = Simplane.getStallProtectionMaxSpeed();
         let stallSpeed = Simplane.getStallSpeed();
         let planeOnGround = Simplane.getIsGrounded();
-        this.updateCursorScrolling(indicatedSpeed, speedColor);
         this.smoothSpeeds(indicatedSpeed, dTime, maxSpeed, lowestSelectableSpeed, stallProtectionMin, stallProtectionMax, stallSpeed);
         this.updateStrip(this.vMaxStripSVG, indicatedSpeed, this._maxSpeed, false, true);
         this.updateStrip(this.stallStripSVG, indicatedSpeed, this._stallSpeed, planeOnGround, false);
@@ -390,11 +386,11 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
         }
     }
     updateGraduationScrolling(_speed) {
-        var startSpeed = this.graduationMinValue
+        var startSpeed = this.graduationMinValue;
         if (_speed < this.graduationMinValue) {
-            startSpeed = this.graduationMinValue
+            startSpeed = this.graduationMinValue;
         } else {
-            startSpeed = _speed
+            startSpeed = _speed;
         }
         if (this.graduations) {
             this.graduationScroller.scroll(startSpeed);
@@ -428,8 +424,7 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
             }
         }
     }
-    updateCursorScrolling(_speed, _speedColor) {
-        console.log(_speedColor);
+    updateCursorScrolling(_speed) {
         var startSpeed = 40;
         if (_speed < 40) {
             startSpeed = 40;
@@ -511,9 +506,9 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         this.rootSVG = document.createElementNS(Avionics.SVG.NS, "svg");
         this.rootSVG.setAttribute("id", "ViewBox");
         this.rootSVG.setAttribute("viewBox", "0 0 250 500");
-        var width = 66;
+        var width = 57;
         var height = 250;
-        var posX = width * 0.5;
+        var posX = width * 0.5 + 11;
         var posY = 0;
         if (!this.rootGroup) {
             this.rootGroup = document.createElementNS(Avionics.SVG.NS, "g");
@@ -600,9 +595,9 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
             this.centerSVG.appendChild(graduationGroup);
         }
         this.rootGroup.appendChild(this.centerSVG);
-        var cursorPosX = _left + 18;
+        var cursorPosX = _left + 21;
         var cursorPosY = _top + _height * 0.5 - 4;
-        var cursorWidth = width * 1.2;
+        var cursorWidth = width * 1.3;
         var cursorHeight = 44;
         if (!this.cursorSVG) {
             this.cursorSVG = document.createElementNS(Avionics.SVG.NS, "svg");
@@ -659,24 +654,24 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         baroGroup.setAttribute("id", "Barometer");
         this.rootGroup.appendChild(baroGroup);
         {
-            var x = posX - width * 0.19;
+            var x = posX - 12;
             var y = posY;
             var w = width;
             var h = 22;
             var baroBg = document.createElementNS(Avionics.SVG.NS, "rect");
             baroBg.setAttribute("x", x.toString());
             baroBg.setAttribute("y", y.toString());
-            baroBg.setAttribute("width", "90".toString());
+            baroBg.setAttribute("width", "67".toString());
             baroBg.setAttribute("height", h.toString());
             baroBg.setAttribute("fill", "black");
             baroGroup.appendChild(baroBg);
             if (!this.pressureSVG)
                 this.pressureSVG = document.createElementNS(Avionics.SVG.NS, "text");
             this.pressureSVG.textContent = "---";
-            this.pressureSVG.setAttribute("x", (x + w * 0.60).toString());
+            this.pressureSVG.setAttribute("x", (x + w * 0.57).toString());
             this.pressureSVG.setAttribute("y", (y + 13));
             this.pressureSVG.setAttribute("fill", "cyan");
-            this.pressureSVG.setAttribute("font-size", (this.fontSize * 0.7).toString());
+            this.pressureSVG.setAttribute("font-size", (this.fontSize * 0.65).toString());
             this.pressureSVG.setAttribute("font-family", "Jost-SemiBold");
             this.pressureSVG.setAttribute("text-anchor", "middle");
             this.pressureSVG.setAttribute("alignment-baseline", "central");
@@ -705,8 +700,8 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
                 this.pressureSVG.textContent = pressure.toFixed(2) + " in";
                 SimVar.SetSimVarValue("KOHLSMAN SETTING STD:2", "Bool", false);
             } else if (baroMode == "STD")  {
-                    this.pressureSVG.textContent = "STD";
-                    SimVar.SetSimVarValue("KOHLSMAN SETTING STD:2", "Bool", true);
+                this.pressureSVG.textContent = "STD";
+                SimVar.SetSimVarValue("KOHLSMAN SETTING STD:2", "Bool", true);
             }
         }
     }
@@ -780,9 +775,8 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
     constructor() {
         super();
         this.backgroundVisible = true;
-        this.bankSizeRatio = -7;
+        this.bankSizeRatio = -6.5;
         this.bankSizeRatioFactor = 1.0;
-        this.horizonAngleFactor = this.bankSizeRatio * 1.67;
     }
     static get observedAttributes() {
         return [
@@ -797,7 +791,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
     }
     construct() {
         Utils.RemoveAllChildren(this);
-        //this.bankSizeRatioFactor = 0.60;
+        this.bankSizeRatioFactor = 0.60;
         {
             this.horizon_root = document.createElementNS(Avionics.SVG.NS, "svg");
             this.horizon_root.setAttribute("width", "100%");
@@ -858,7 +852,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 var x = -115;
                 var y = -122;
                 var w = 230;
-                var h = 235;
+                var h = 230;
                 let attitudePitchContainer = document.createElementNS(Avionics.SVG.NS, "svg");
                 attitudePitchContainer.setAttribute("width", w.toString());
                 attitudePitchContainer.setAttribute("height", h.toString());
@@ -935,19 +929,19 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                                 let leftText = document.createElementNS(Avionics.SVG.NS, "text");
                                 leftText.textContent = Math.abs(angle).toString();
                                 leftText.setAttribute("x", ((-width / 2) - 2).toString());
-                                leftText.setAttribute("y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) - 0).toString());
+                                leftText.setAttribute("y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) + 1).toString());
                                 leftText.setAttribute("text-anchor", "end");
-                                leftText.setAttribute("font-size", (fontSize * 1.5).toString());
-                                leftText.setAttribute("font-family", "Collins ProLine");
+                                leftText.setAttribute("font-size", (fontSize * 1.6).toString());
+                                leftText.setAttribute("font-family", "Jost-Medium");
                                 leftText.setAttribute("fill", "white");
                                 this.attitude_pitch.appendChild(leftText);
                                 let rightText = document.createElementNS(Avionics.SVG.NS, "text");
                                 rightText.textContent = Math.abs(angle).toString();
                                 rightText.setAttribute("x", ((width / 2) + 2).toString());
-                                rightText.setAttribute("y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) - 0).toString());
+                                rightText.setAttribute("y", ((this.bankSizeRatio * angle - height / 2 + fontSize / 2) + 1).toString());
                                 rightText.setAttribute("text-anchor", "start");
-                                rightText.setAttribute("font-size", (fontSize * 1.5).toString());
-                                rightText.setAttribute("font-family", "Collins ProLine");
+                                rightText.setAttribute("font-size", (fontSize * 1.6).toString());
+                                rightText.setAttribute("font-family", "Jost-Medium");
                                 rightText.setAttribute("fill", "white");
                                 this.attitude_pitch.appendChild(rightText);
                             }
@@ -998,7 +992,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 this.attitude_bank = document.createElementNS(Avionics.SVG.NS, "g");
                 this.attitude_root.appendChild(this.attitude_bank);
                 let topTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                topTriangle.setAttribute("d", "M0 -145 l-13 -20 l26 0 Z");
+                topTriangle.setAttribute("d", "M0 -160 l-13 -20 l26 0 Z");
                 topTriangle.setAttribute("fill", "white");
                 topTriangle.setAttribute("stroke", "white");
                 topTriangle.setAttribute("stroke-width", "1");
@@ -1006,7 +1000,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 this.attitude_bank.appendChild(topTriangle);
                 let smallDashesAngle = [-60, -30, -20, -10, 10, 20, 30, 60];
                 let smallDashesHeight = [18, 30, 18, 18, 18, 18, 30, 18];
-                let radius = 145;
+                let radius = 160;
                 for (let i = 0; i < smallDashesAngle.length; i++) {
                     let dash = document.createElementNS(Avionics.SVG.NS, "line");
                     dash.setAttribute("x1", "0");
@@ -1022,7 +1016,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
             }
             {
                 let leftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                leftTriangle.setAttribute("d", "M 0 -145 l -8 -10 l 15 0 Z");
+                leftTriangle.setAttribute("d", "M 0 -160 l -8 -10 l 15 0 Z");
                 leftTriangle.setAttribute("fill", "white");
                 leftTriangle.setAttribute("stroke", "white");
                 leftTriangle.setAttribute("stroke-width", "2");
@@ -1030,7 +1024,7 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 leftTriangle.setAttribute("transform", "rotate(45,0,0)");
                 this.attitude_bank.appendChild(leftTriangle);
                 let rightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                rightTriangle.setAttribute("d", "M 0 -145 l -8 -10 l 15 0 Z");
+                rightTriangle.setAttribute("d", "M 0 -160 l -8 -10 l 15 0 Z");
                 rightTriangle.setAttribute("fill", "white");
                 rightTriangle.setAttribute("stroke", "white");
                 rightTriangle.setAttribute("stroke-width", "2");
@@ -1041,14 +1035,14 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 let cursors = document.createElementNS(Avionics.SVG.NS, "g");
                 this.attitude_root.appendChild(cursors);
                 let leftUpper = document.createElementNS(Avionics.SVG.NS, "path");
-                leftUpper.setAttribute("d", "M-100 0 l0 -10 l55 0 l0 32 l-10 0 l0 -22 l-40 0 Z");
+                leftUpper.setAttribute("d", "M-100 5 l0 -10 l55 0 l0 32 l-10 0 l0 -22 l-40 0 Z");
                 leftUpper.setAttribute("fill", "black");
                 leftUpper.setAttribute("stroke", "white");
                 leftUpper.setAttribute("stroke-width", "3");
                 leftUpper.setAttribute("stroke-opacity", "1.0");
                 cursors.appendChild(leftUpper);
                 let rightUpper = document.createElementNS(Avionics.SVG.NS, "path");
-                rightUpper.setAttribute("d", "M100 0 l0 -10 l-55 0 l0 32 l10 0 l0 -22 l40 0 Z");
+                rightUpper.setAttribute("d", "M100 5 l0 -10 l-55 0 l0 32 l10 0 l0 -22 l40 0 Z");
                 rightUpper.setAttribute("fill", "black");
                 rightUpper.setAttribute("stroke", "white");
                 rightUpper.setAttribute("stroke-width", "3");
@@ -1056,18 +1050,18 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 cursors.appendChild(rightUpper);
                 let centerRect = document.createElementNS(Avionics.SVG.NS, "rect");
                 centerRect.setAttribute("x", "-4");
-                centerRect.setAttribute("y", "-11");
+                centerRect.setAttribute("y", "-5");
                 centerRect.setAttribute("height", "10");
                 centerRect.setAttribute("width", "10");
                 centerRect.setAttribute("stroke", "white");
                 centerRect.setAttribute("stroke-width", "3");
                 cursors.appendChild(centerRect);
                 this.slipSkidTriangle = document.createElementNS(Avionics.SVG.NS, "path");
-                this.slipSkidTriangle.setAttribute("d", "M0 -145 l-13 20 l26 0 Z");
+                this.slipSkidTriangle.setAttribute("d", "M0 -160 l-13 20 l26 0 Z");
                 this.slipSkidTriangle.setAttribute("fill", "white");
                 this.attitude_root.appendChild(this.slipSkidTriangle);
                 this.slipSkid = document.createElementNS(Avionics.SVG.NS, "path");
-                this.slipSkid.setAttribute("d", "M-13 -121 L-13 -125 L13 -125 L13 -121 Z");
+                this.slipSkid.setAttribute("d", "M-13 -136 L-13 -140 L13 -140 L13 -136 Z");
                 this.slipSkid.setAttribute("fill", "white");
                 this.attitude_root.appendChild(this.slipSkid);
             }
@@ -1100,11 +1094,11 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
     }
     applyAttributes() {
         if (this.bottomPart)
-            this.bottomPart.setAttribute("transform", "rotate(" + this.bank + ", 0, 0) translate(0," + (this.pitch * this.horizonAngleFactor) + ")");
+            this.bottomPart.setAttribute("transform", "rotate(" + this.bank + ", 0, 0) translate(0," + (this.pitch * this.bankSizeRatio * 1.67) + ")");
         if (this.pitch_root_group)
             this.pitch_root_group.setAttribute("transform", "rotate(" + this.bank + ", 0, 0)");
         if (this.attitude_pitch)
-            this.attitude_pitch.setAttribute("transform", "translate(0," + (this.pitch * this.bankSizeRatio * this.bankSizeRatioFactor) + ")");
+            this.attitude_pitch.setAttribute("transform", "translate(0," + (this.pitch * this.bankSizeRatio * this.bankSizeRatioFactor * 1.67) + ")");
         if (this.slipSkid)
             this.slipSkid.setAttribute("transform", "rotate(" + this.bank + ", 0, 0) translate(" + (this.slipSkidValue * 40) + ", 0)");
         if (this.slipSkidTriangle)
