@@ -119,7 +119,8 @@ class WT_G3x5_NearestAirportList {
      * @returns {Boolean}
      */
     _filterAirport(airport, runwaySurfaces, minRunwayLength) {
-        if (airport.runways.longest().length.compare(minRunwayLength) < 0) {
+        let longestRunway = airport.runways.longest();
+        if (!longestRunway || longestRunway.length.compare(minRunwayLength) < 0) {
             return false;
         }
 

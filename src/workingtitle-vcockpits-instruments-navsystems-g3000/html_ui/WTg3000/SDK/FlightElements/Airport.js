@@ -347,7 +347,7 @@ class WT_RunwayList {
     constructor(runways) {
         this._array = new WT_ReadOnlyArray(runways);
 
-        this._longest = this._array.reduce((previous, current) => (current.length.compare(previous.length) > 0) ? current : previous);
+        this._longest = this._array.length > 0 ? this._array.reduce((previous, current) => (current.length.compare(previous.length) > 0) ? current : previous) : null;
     }
 
     /**
