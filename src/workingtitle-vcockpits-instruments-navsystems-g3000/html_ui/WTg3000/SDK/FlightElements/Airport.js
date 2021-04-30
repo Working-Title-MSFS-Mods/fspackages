@@ -405,6 +405,7 @@ class WT_Runway {
             default: this._suffix = WT_Runway.Suffix.NONE;
         }
         this._designation = this._number + this._suffix;
+        this._designationFull = this._number.toFixed(0).padStart(2, "0") + this._suffix;
         this._location = new WT_GeoPoint(data.latitude, data.longitude);
         this._elevation = new WT_NumberUnit(data.elevation, WT_Unit.METER);
         this._direction = reverse ? (data.direction + 180) % 360 : data.direction;
@@ -454,6 +455,16 @@ class WT_Runway {
     }
 
     /**
+     * The full designation of this runway, consisting of the runway number padded to 2 digits followed by an optional
+     * L/C/R suffix.
+     * @readonly
+     * @type {String}
+     */
+    get designationFull() {
+        return this._designationFull;
+    }
+
+    /**
      * The designation of the runway pair that contains this runway, or simply this runway's designation if
      * this runway has no reciprocal.
      * @readonly
@@ -461,6 +472,16 @@ class WT_Runway {
      */
     get pairDesignation() {
         return this._pairDesignation;
+    }
+
+    /**
+     * The full designation of the runway pair that contains this runway, or simply this runway's full designation if
+     * this runway has no reciprocal.
+     * @readonly
+     * @type {String}
+     */
+    get pairDesignationFull() {
+        return this._pairDesignationFull;
     }
 
     /**
@@ -585,13 +606,17 @@ class WT_Runway {
             returnValue.push(new WT_Runway(airport, parseInt(designations[1]), data, true));
 
             let pairDesignation = `${returnValue[0].designation}-${returnValue[1].designation}`;
+            let pairDesignationFull = `${returnValue[0].designationFull}-${returnValue[1].designationFull}`;
 
             returnValue[0]._pairDesignation = pairDesignation;
+            returnValue[0]._pairDesignationFull = pairDesignationFull;
             returnValue[0]._reciprocal = returnValue[1];
             returnValue[1]._pairDesignation = pairDesignation;
+            returnValue[1]._pairDesignationFull = pairDesignationFull;
             returnValue[1]._reciprocal = returnValue[0];
         } else {
             returnValue[0]._pairDesignation = returnValue[0].designation;
+            returnValue[0]._pairDesignationFull = returnValue[0].designationFull;
             returnValue[0]._reciprocal = null;
         }
         return returnValue;

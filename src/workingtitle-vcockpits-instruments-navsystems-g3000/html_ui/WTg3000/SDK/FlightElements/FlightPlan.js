@@ -118,7 +118,7 @@ class WT_FlightPlan {
     /**
      *
      * @param {Number} segment
-     * @returns {WT_FlightPlanElement}
+     * @returns {WT_FlightPlanSegment}
      */
     getSegment(segment) {
         switch (segment) {
@@ -548,8 +548,10 @@ class WT_FlightPlan {
         this._changeApproach(new WT_FlightPlanApproach(approach, transitionIndex, legs), eventData);
         if (this.hasArrival()) {
             this._approach._setPrevious(this._arrival);
+            this._destination._setPrevious(this._arrival);
         } else {
             this._approach._setPrevious(this._enroute);
+            this._destination._setPrevious(this._enroute);
         }
         this._updateLegs();
         this._fireEvent(eventData);
@@ -593,9 +595,9 @@ class WT_FlightPlan {
         let eventData = {types: 0};
         this._changeApproach(null, eventData);
         if (this.hasArrival()) {
-            this._destinationLeg._setPrevious(this._arrival);
+            this._destination._setPrevious(this._arrival);
         } else {
-            this._destinationLeg._setPrevious(this._enroute);
+            this._destination._setPrevious(this._enroute);
         }
         this._updateLegs();
         this._fireEvent(eventData);
@@ -603,7 +605,7 @@ class WT_FlightPlan {
 
     /**
      *
-     * @param {WT_FlightPlanElement} segmentElement
+     * @param {WT_FlightPlanSegment} segmentElement
      * @param {WT_FlightPlanElement[]} elements
      * @param {Number} index
      * @param {Object} eventData
@@ -644,13 +646,13 @@ class WT_FlightPlan {
 
     /**
      *
-     * @param {WT_FlightPlanElement} segmentElement
+     * @param {WT_FlightPlanSegment} segmentElement
      * @param {Number} index
      * @param {Number} count
      * @param {Object} eventData
      */
     _removeFromSegment(segmentElement, index, count, eventData) {
-        if (index < 0 || index >= segmentElement.length() || count === 0) {
+        if (index < 0 || index >= segmentElement.length || count === 0) {
             return;
         }
 
@@ -677,8 +679,8 @@ class WT_FlightPlan {
         if (!eventData.elementsRemoved[segmentElement.segment]) {
             eventData.elementsRemoved[segmentElement.segment] = [];
         }
-        for (let i = index; i < index + count && i < segmentElement.length(); i++) {
-            let removed = segmentElement.getElement(i);
+        for (let i = index; i < index + count && i < segmentElement.length; i++) {
+            let removed = segmentElement.elements.get(i);
             removed._index = -1;
             eventData.elementsRemoved[segmentElement.segment].push({element: removed, index: i});
         }
@@ -686,27 +688,18 @@ class WT_FlightPlan {
     }
 
     _clearSegment(segmentElement, eventData) {
-        this._removeFromSegment(segmentElement, 0, segmentElement.length(), eventData);
+        this._removeFromSegment(segmentElement, 0, segmentElement.length, eventData);
     }
 
     /**
      *
-     * @param {WT_FlightPlanElement} segmentElement
+     * @param {WT_FlightPlanSegment} segmentElement
      * @param {WT_FlightPlanElement[]} elements
      * @param {Object} eventData
      */
     _setSegmentTo(segmentElement, elements, eventData) {
-        if (segmentElement.length() === elements.length) {
-            let equals = true;
-            for (let i = 0; i < elements.length; i++) {
-                if (!segmentElement.getElement(i).equals(elements[i])) {
-                    equals = false;
-                    break;
-                }
-            }
-            if (equals) {
-                return;
-            }
+        if (segmentElement.length === elements.length && segmentElement.elements.every((element, index) => element.equals(elements[index]))) {
+            return;
         }
 
         this._clearSegment(segmentElement, eventData);
@@ -739,7 +732,7 @@ class WT_FlightPlan {
             case WT_FlightPlan.Segment.APPROACH:
                 let segmentElement = this.getSegment(segment);
                 if (index === undefined) {
-                    index = segmentElement.length();
+                    index = segmentElement.length;
                 }
 
                 let waypoints = await airway.getWaypoints();
@@ -789,7 +782,7 @@ class WT_FlightPlan {
             case WT_FlightPlan.Segment.APPROACH:
                 let segmentElement = this.getSegment(segment);
                 if (index === undefined) {
-                    index = segmentElement.length();
+                    index = segmentElement.length;
                 }
                 let elements = waypointEntries.map(entry => {
                     if (entry.steps && entry.steps.length > 0) {
@@ -819,7 +812,7 @@ class WT_FlightPlan {
             case WT_FlightPlan.Segment.ARRIVAL:
             case WT_FlightPlan.Segment.APPROACH:
                 let segmentElement = this.getSegment(segment);
-                if (index >= 0 && index < segmentElement.length()) {
+                if (index >= 0 && index < segmentElement.length) {
                     let eventData = {types: 0};
                     this._removeFromSegment(segmentElement, index, count, eventData);
                     this._updateFromSegment(segment);
@@ -865,7 +858,7 @@ class WT_FlightPlan {
         }
         this._enroute._setPrevious(this._departure ? this._departure : this._origin);
         if (!flightPlan.getEnroute().equals(this._enroute)) {
-            let enrouteElements = flightPlan.getEnroute().elements().map(element => element.copy());
+            let enrouteElements = flightPlan.getEnroute().elements.map(element => element.copy());
             this._clearSegment(this._enroute, eventData);
             this._insertToSegment(this._enroute, enrouteElements, 0, eventData);
         }
@@ -1186,8 +1179,9 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
          */
         this._firstStep = firstStep;
         this._firstStep._setLeg(this);
+        this._stepCount = 1;
         this._altitudeConstraint = altitudeConstraint ? altitudeConstraint : WT_AltitudeConstraint.NO_CONSTRAINT;
-        this._desiredTrack;
+        this._desiredTrack = new WT_NavAngleUnit(false).createNumber(NaN);
         this._index = -1;
 
         this._legs.push(this);
@@ -1195,7 +1189,6 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 
     /**
      * @readonly
-     * @property {WT_GeoPointReadOnly} endpoint
      * @type {WT_GeoPointReadOnly}
      */
     get endpoint() {
@@ -1203,9 +1196,8 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
     }
 
     /**
+     * The index of this leg in its parent flight plan, or -1 if this leg does not belong to a flight plan.
      * @readonly
-     * @property {Number} index - the index of this leg in its parent flight plan, or -1 if this leg does not belong to a
-     *                            flight plan.
      * @type {Number}
      */
     get index() {
@@ -1214,7 +1206,6 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 
     /**
      * @readonly
-     * @property {WT_Waypoint} fix
      * @type {WT_Waypoint}
      */
     get fix() {
@@ -1223,16 +1214,14 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
 
     /**
      * @readonly
-     * @property {Number} desiredTrack
-     * @type {Number}
+     * @type {WT_NumberUnitReadOnly}
      */
     get desiredTrack() {
-        return this._desiredTrack;
+        return this._desiredTrack.readonly();
     }
 
     /**
      * @readonly
-     * @property {Boolean} discontinuity
      * @type {Boolean}
      */
     get discontinuity() {
@@ -1260,6 +1249,7 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
     }
 
     _updateSteps() {
+        this._stepCount = 0;
         let currentStep = this.firstStep();
         let prevStep = null;
         while (currentStep) {
@@ -1269,6 +1259,7 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
             }
             prevStep = currentStep;
             currentStep = currentStep.next();
+            this._stepCount++;
         }
     }
 
@@ -1285,7 +1276,12 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
     }
 
     _updateDTK() {
-        //this._desiredTrack = (this._prev && this._prev.endpoint) ? this._prev.endpoint.bearingTo(this.endpoint) : undefined;
+        if (this._prev && this._prev.endpoint && this._stepCount === 1) {
+            this._desiredTrack.unit.setLocation(this._prev.endpoint);
+            this._desiredTrack.set(this._prev.endpoint.bearingTo(this.endpoint));
+        } else {
+            this._desiredTrack.set(NaN);
+        }
     }
 
     _update() {
@@ -1613,6 +1609,7 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
          * @type {WT_FlightPlanElement[]}
          */
         this._elements = [];
+        this._elementsReadOnly = new WT_ReadOnlyArray(this._elements);
 
         if (elements) {
             this._insertMultiple(elements);
@@ -1636,25 +1633,20 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
         return undefined;
     }
 
-    length() {
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get length() {
         return this._elements.length;
     }
 
     /**
-     *
-     * @param {Number} index
-     * @returns {WT_FlightPlanElement}
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_FlightPlanElement>}
      */
-    getElement(index) {
-        return this._elements[index];
-    }
-
-    /**
-     *
-     * @returns {WT_FlightPlanElement[]}
-     */
-    elements() {
-        return this._elements.slice();
+    get elements() {
+        return this._elementsReadOnly;
     }
 
     _updateDistance() {
@@ -1710,9 +1702,7 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
     }
 
     _clear() {
-        this._elements.forEach(element => element._setParent(null));
-        this._elements = [];
-        this._update();
+        this._removeByIndex(0, this._elements.length);
     }
 
     _copyElements() {
@@ -1727,7 +1717,7 @@ class WT_FlightPlanSequence extends WT_FlightPlanElement {
         if (!(other instanceof WT_FlightPlanSequence)) {
             return false;
         }
-        if (this.length() !== other.length()) {
+        if (this.length !== other.length) {
             return false;
         }
 

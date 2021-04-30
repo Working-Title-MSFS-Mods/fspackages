@@ -274,6 +274,7 @@
 #Electricity #PagesDisplay[state=PFDSettings] #PFDSettings,
 #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
 #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
+#Electricity #PagesDisplay[state=FlightPlan] #FlightPlan,
 #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
 #Electricity #PagesDisplay[state=MFDMapSettingsLeft] #MFDMapSettingsLeft,
 #Electricity #PagesDisplay[state=MFDMapSettingsRight] #MFDMapSettingsRight,
