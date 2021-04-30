@@ -18,10 +18,10 @@ class WT_Wait {
             return;
         }
 
-        if (callback.apply(this)) {
+        if (callback.apply(thisArg)) {
             resolve();
         } else {
-            requestAnimationFrame(WT_Wait._awaitLoop.bind(this, resolve, reject, callback, timeout, elapsed));
+            requestAnimationFrame(WT_Wait._awaitLoop.bind(this, resolve, reject, callback, thisArg, timeout, elapsed));
         }
     }
 
