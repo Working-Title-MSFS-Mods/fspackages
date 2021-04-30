@@ -387,7 +387,7 @@ class WT_FlightPlan {
         let legs = [];
         if (runwayTransition) {
             let runway = runwayTransition.runway;
-            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_CustomWaypoint(runway.designation, runway.end))); // runway fix
+            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway, WT_RunwayWaypoint.Reference.END))); // runway fix
             await this._buildLegsFromProcedure(runwayTransition.legs, legs);
         }
         await this._buildLegsFromProcedure(departure.commonLegs, legs);
@@ -542,7 +542,7 @@ class WT_FlightPlan {
         }
         await this._buildLegsFromProcedure(approach.finalLegs, legs);
         if (runway) {
-            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway))); // runway fix
+            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway, WT_RunwayWaypoint.Reference.START))); // runway fix
         }
         let eventData = {types: 0};
         this._changeApproach(new WT_FlightPlanApproach(approach, transitionIndex, legs), eventData);
