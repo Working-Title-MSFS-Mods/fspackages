@@ -610,7 +610,8 @@ class WT_G3x5_TSCFlightPlanRowHeaderHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
-        this._headerText = "";
+        this._titleText = "";
+        this._subtitleText = "";
         this._isInit = false;
     }
 
@@ -619,31 +620,50 @@ class WT_G3x5_TSCFlightPlanRowHeaderHTMLElement extends HTMLElement {
     }
 
     async _defineChildren() {
-        this._headerButton = await WT_CustomElementSelector.select(this.shadowRoot, `#header`, WT_TSCLabeledButton);
+        this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#header`, WT_TSCContentButton);
+
+        this._title = this.shadowRoot.querySelector(`#title`);
+        this._subtitle = this.shadowRoot.querySelector(`#subtitle`);
     }
 
     async _connectedCallbackHelper() {
         await this._defineChildren();
         this._isInit = true;
-        this._updateFromHeaderText();
+        this._updateFromTitleText();
+        this._updateFromSubtitleText();
     }
 
     connectedCallback() {
         this._connectedCallbackHelper();
     }
 
-    _updateFromHeaderText() {
-        this._headerButton.labelText = this._headerText;
+    _updateFromTitleText() {
+        this._title.innerHTML = this._titleText;
     }
 
-    setHeaderText(text) {
-        if (this._headerText === text) {
+    setTitleText(text) {
+        if (this._titleText === text) {
             return;
         }
 
-        this._headerText = text;
+        this._titleText = text;
         if (this._isInit) {
-            this._updateFromHeaderText();
+            this._updateFromTitleText();
+        }
+    }
+
+    _updateFromSubtitleText() {
+        this._subtitle.innerHTML = this._subtitleText;
+    }
+
+    setSubtitleText(text) {
+        if (this._subtitleText === text) {
+            return;
+        }
+
+        this._subtitleText = text;
+        if (this._isInit) {
+            this._updateFromSubtitleText();
         }
     }
 }
@@ -670,9 +690,35 @@ WT_G3x5_TSCFlightPlanRowHeaderHTMLElement.TEMPLATE.innerHTML = `
             #header {
                 grid-column: 1 / span 3;
             }
+                #headercontent {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-flow: column nowrap;
+                    justify-content: center;
+                    align-items: center;
+                }
+                    #title {
+                        color: var(--wt-g3x5-lightblue);
+                    }
+                    #subtitle {
+                        color: white;
+                    }
+                    #header[highlight="true"] #title,
+                    #header[primed="true"] #title,
+                    #header[highlight="true"] #subtitle,
+                    #header[primed="true"] #subtitle, {
+                        color: black;
+                    }
     </style>
     <div id="wrapper">
-        <wt-tsc-button-label id="header"></wt-tsc-button-label>
+        <wt-tsc-button-content id="header">
+            <div id="headercontent" slot="content">
+                <div id="title"></div>
+                <div id="subtitle"></div>
+            </div>
+        </wt-tsc-button-content>
     </div>
 `;
 
@@ -889,9 +935,11 @@ class WT_G3x5_TSCFlightPlanOriginRenderer extends WT_G3x5_TSCFlightPlanSegmentRe
         super._drawHeader(htmlElement);
 
         if (this.element.waypoint) {
-            this._headerModeHTMLElement.setHeaderText(`Origin – ${this.element.waypoint.ident}`);
+            this._headerModeHTMLElement.setTitleText(`Origin – ${this.element.waypoint.ident}`);
+            this._headerModeHTMLElement.setSubtitleText("");
         } else {
-            this._headerModeHTMLElement.setHeaderText("Add Origin");
+            this._headerModeHTMLElement.setTitleText("");
+            this._headerModeHTMLElement.setSubtitleText("Add Origin");
         }
     }
 }
@@ -908,9 +956,11 @@ class WT_G3x5_TSCFlightPlanDestinationRenderer extends WT_G3x5_TSCFlightPlanSegm
         super._drawHeader(htmlElement);
 
         if (this.element.waypoint) {
-            this._headerModeHTMLElement.setHeaderText(`Destination – ${this.element.waypoint.ident}`);
+            this._headerModeHTMLElement.setTitleText(`Destination – ${this.element.waypoint.ident}`);
+            this._headerModeHTMLElement.setSubtitleText("");
         } else {
-            this._headerModeHTMLElement.setHeaderText("Add Destination");
+            this._headerModeHTMLElement.setTitleText("");
+            this._headerModeHTMLElement.setSubtitleText("Add Destination");
         }
     }
 }
@@ -931,7 +981,7 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
         let enrouteTransition = departure.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
         let prefix = `RW${rwyTransition ? rwyTransition.runway.designationFull : "ALL"}.`;
         let suffix = enrouteTransition ? `.${this.element.legs.get(this.element.legs.length - 1).fix.ident}` : "";
-        this._headerModeHTMLElement.setHeaderText(`Departure –<br>${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
+        this._headerModeHTMLElement.setTitleText(`Departure –<br>${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
     }
 }
 
@@ -953,7 +1003,7 @@ class WT_G3x5_TSCFlightPlanEnrouteRenderer extends WT_G3x5_TSCFlightPlanSegmentR
     _drawHeader(htmlElement) {
         if (this.element.length > 0) {
             super._drawHeader(htmlElement);
-            this._headerModeHTMLElement.setHeaderText("Enroute");
+            this._headerModeHTMLElement.setTitleText("Enroute");
         }
     }
 
@@ -993,7 +1043,7 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
         let rwyTransition = arrival.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
         let prefix = enrouteTransition ? `${this.element.legs.get(0).fix.ident}.` : "";
         let suffix = `.RW${rwyTransition ? rwyTransition.runway.designationFull : "ALL"}`;
-        this._headerModeHTMLElement.setHeaderText(`Arrival –<br>${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
+        this._headerModeHTMLElement.setTitleText(`Arrival –<br>${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
     }
 }
 
@@ -1009,7 +1059,7 @@ class WT_G3x5_TSCFlightPlanApproachRenderer extends WT_G3x5_TSCFlightPlanSegment
         super._drawHeader(htmlElement);
 
         let approach = this.element.procedure;
-        this._headerModeHTMLElement.setHeaderText(`Approach –<br>${approach.airport.ident}–${approach.name}`);
+        this._headerModeHTMLElement.setTitleText(`Approach –<br>${approach.airport.ident}–${approach.name}`);
     }
 }
 
