@@ -736,7 +736,6 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         }
     }
     updateCursorScrolling(_altitude) {
-        console.log(_altitude)
         if (this.cursorIntegrals) {
             this.cursorIntegrals[0].update(_altitude, 10000, 10000);
             this.cursorIntegrals[1].update(_altitude, 1000, 1000);
@@ -1271,7 +1270,7 @@ class CJ4_SAI_CompassIndicator extends HTMLElement {
                     var roundedVal = Math.floor(currentVal / 10);
                     if (roundedVal % 3 == 0) {
                         this.graduations[i].SVGLine.setAttribute("height", "18");
-                        this.graduations[i].SVGText1.setAttribute("y", "36")
+                        this.graduations[i].SVGText1.setAttribute("y", "36");
                         if (roundedVal == 0)
                             this.graduations[i].SVGText1.textContent = "N";
                         else if (roundedVal == 9)
