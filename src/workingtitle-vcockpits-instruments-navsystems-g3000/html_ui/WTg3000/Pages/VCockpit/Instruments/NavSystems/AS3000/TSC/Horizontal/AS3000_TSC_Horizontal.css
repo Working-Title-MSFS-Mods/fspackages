@@ -421,6 +421,15 @@ as3000-tsc-horizontal-element #Electricity .weatherRadarSettings tsc-weatherrada
               left: 30%;
               width: 39%; }
 
+as3000-tsc-horizontal-element #FlightPlan wt-tsc-flightplan {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 5vh;
+}
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
           position: absolute;
           top: 20%;

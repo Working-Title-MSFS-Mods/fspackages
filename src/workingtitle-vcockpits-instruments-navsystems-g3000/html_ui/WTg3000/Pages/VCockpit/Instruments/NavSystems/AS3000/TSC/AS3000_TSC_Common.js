@@ -222,6 +222,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesRight.weatherRadar = new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
+                new NavSystemPage("Flight Plan", "FlightPlan", new WT_G3x5_TSCFlightPlan("MFD", "MFD Home")),
                 new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
                 new NavSystemPage("Departure Selection", "DepartureSelection", new AS3000_TSC_DepartureSelection()),
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
@@ -965,7 +966,11 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this._trafficButton, this._onTrafficButtonPressed.bind(this));
         this.gps.makeButton(this._weatherButton, this._onWeatherButtonPressed.bind(this));
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
-        this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
+        if (this.gps.urlConfig.index === 1) {
+            this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Flight Plan"));
+        } else {
+            this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
+        }
         this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
         this.gps.makeButton(this._chartsButton, this._onChartsButtonPressed.bind(this));
         this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Waypoint Selection"));

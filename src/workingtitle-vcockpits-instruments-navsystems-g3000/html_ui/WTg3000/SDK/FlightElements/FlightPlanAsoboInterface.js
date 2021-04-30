@@ -69,7 +69,7 @@ class WT_FlightPlanAsoboInterface {
         if (data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
             let removeStart = data.departureRunwayIndex < 0 ? 0 : 1; // don't remove runway fix.
-            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length() - removeStart);
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length - removeStart);
             await this._getWaypointEntriesFromData(data.waypoints.slice(departureStart, enrouteStart), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypointEntries);
             waypointEntries = [];
@@ -81,14 +81,14 @@ class WT_FlightPlanAsoboInterface {
         if (data.arrivalProcIndex >= 0) {
             waypointEntries = [];
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
-            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length());
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length);
             await this._getWaypointEntriesFromData(data.waypoints.slice(arrivalStart, destinationStart), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypointEntries, 0);
         }
         if (data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
             // replace all waypoints except for the last, which should always be a runway fix.
-            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, tempFlightPlan.getApproach().length() - 1);
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, tempFlightPlan.getApproach().length - 1);
             waypointEntries = [];
             await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - 1), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.APPROACH, waypointEntries, 0);
