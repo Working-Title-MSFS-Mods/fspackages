@@ -863,11 +863,14 @@ class WT_G3x5_TSCNearestWaypointRowHTMLElement extends HTMLElement {
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_TSCNearestWaypointRowHTMLElement.UNIT_CLASS],
+
                 getNumberClassList() {
-                    return [];
+                    return this._numberClassList;
                 },
                 getUnitClassList() {
-                    return [WT_G3x5_TSCNearestWaypointRowHTMLElement.UNIT_CLASS];
+                    return this._unitClassList;
                 }
             }
         };
@@ -1214,11 +1217,14 @@ class WT_G3x5_TSCNearestAirportRowHTMLElement extends WT_G3x5_TSCNearestWaypoint
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_TSCNearestWaypointRowHTMLElement.UNIT_CLASS],
+
                 getNumberClassList() {
-                    return [];
+                    return this._numberClassList;
                 },
                 getUnitClassList() {
-                    return [WT_G3x5_TSCNearestWaypointRowHTMLElement.UNIT_CLASS];
+                    return this._unitClassList;
                 }
             }
         };

@@ -36,11 +36,14 @@ class WT_G3x5_TSCRangeDisplayButton extends WT_TSCLabeledButton {
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
+                _numberClassList: [],
+                _unitClassList: ["unit"],
+
                 getNumberClassList() {
-                    return [];
+                    return this._numberClassList;
                 },
                 getUnitClassList() {
-                    return ["unit"];
+                    return this._unitClassList;
                 }
             }
         };

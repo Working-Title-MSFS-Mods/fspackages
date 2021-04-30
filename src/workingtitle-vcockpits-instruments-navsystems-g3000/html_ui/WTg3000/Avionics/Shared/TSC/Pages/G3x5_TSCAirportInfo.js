@@ -328,11 +328,14 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
+                _numberClassList: ["number"],
+                _unitClassList: ["unit"],
+
                 getNumberClassList() {
-                    return ["number"];
+                    return this._numberClassList;
                 },
                 getUnitClassList() {
-                    return ["unit"];
+                    return this._unitClassList;
                 }
             }
         };
@@ -354,11 +357,14 @@ class WT_G3x5_TSCAirportInfoTabHTMLElement extends HTMLElement {
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
+                _numberClassList: ["number"],
+                _unitClassList: ["unit"],
+
                 getNumberClassList() {
-                    return ["number"];
+                    return this._numberClassList;
                 },
                 getUnitClassList() {
-                    return ["unit"];
+                    return this._unitClassList;
                 }
             }
         };

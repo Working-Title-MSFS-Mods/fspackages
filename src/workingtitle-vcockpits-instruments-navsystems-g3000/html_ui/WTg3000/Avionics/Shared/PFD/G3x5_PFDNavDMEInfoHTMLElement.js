@@ -22,8 +22,15 @@ class WT_G3x5_PFDNavDMEInfoHTMLElement extends HTMLElement {
         });
         this._distanceFormatter = new WT_NumberHTMLFormatter(formatter, {
             classGetter: {
-                getNumberClassList: (numberUnit, forceUnit) => [],
-                getUnitClassList: (numberUnit, forceUnit) => [WT_G3x5_PFDNavDMEInfoHTMLElement.UNIT_CLASS]
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_PFDNavDMEInfoHTMLElement.UNIT_CLASS],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
+                },
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
+                }
             },
             numberUnitDelim: ""
         });

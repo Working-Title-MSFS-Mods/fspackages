@@ -119,11 +119,14 @@ class WT_G3x5_MapViewPointerInfoHTMLElement extends HTMLElement {
         let distanceHTMLFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
-                getNumberClassList() {
-                    return ["distanceNumber"];
+                _numberClassList: ["distanceNumber"],
+                _unitClassList: ["distanceUnit"],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
                 },
-                getUnitClassList() {
-                    return ["distanceUnit"];
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
                 }
             }
         };

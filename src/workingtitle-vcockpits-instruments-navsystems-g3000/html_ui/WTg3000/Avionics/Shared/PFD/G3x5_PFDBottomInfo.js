@@ -159,8 +159,15 @@ class WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement extends HTMLElement {
         });
         this._htmlFormatter = new WT_NumberHTMLFormatter(formatter, {
             classGetter: {
-                getNumberClassList: (numberUnit, forceUnit) => [],
-                getUnitClassList: (numberUnit, forceUnit) => [WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.UNIT_CLASS]
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_PFDBottomInfoAirspeedCellHTMLElement.UNIT_CLASS],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
+                },
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
+                }
             },
             numberUnitDelim: ""
         });
@@ -316,8 +323,15 @@ class WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement extends HTMLElement {
         });
         this._htmlFormatter = new WT_NumberHTMLFormatter(formatter, {
             classGetter: {
-                getNumberClassList: (numberUnit, forceUnit) => [],
-                getUnitClassList: (numberUnit, forceUnit) => [WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.UNIT_CLASS]
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_PFDBottomInfoTemperatureCellHTMLElement.UNIT_CLASS],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
+                },
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
+                }
             },
             numberUnitDelim: ""
         });
@@ -462,8 +476,15 @@ class WT_G3x5_PFDBottomInfoBearingCellHTMLElement extends HTMLElement {
         });
         this._distanceFormatter = new WT_NumberHTMLFormatter(formatter, {
             classGetter: {
-                getNumberClassList: (numberUnit, forceUnit) => [],
-                getUnitClassList: (numberUnit, forceUnit) => [WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS]
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_PFDBottomInfoBearingCellHTMLElement.UNIT_CLASS],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
+                },
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
+                }
             },
             numberUnitDelim: ""
         });

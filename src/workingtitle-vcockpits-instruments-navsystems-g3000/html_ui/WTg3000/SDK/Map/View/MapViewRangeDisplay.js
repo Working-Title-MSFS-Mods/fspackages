@@ -29,11 +29,14 @@ class WT_MapViewRangeDisplay extends HTMLElement {
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
-                getNumberClassList() {
-                    return ["rangeNumber"];
+                _numberClassList: ["rangeNumber"],
+                _unitClassList: ["rangeUnit"],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
                 },
-                getUnitClassList() {
-                    return ["rangeUnit"];
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
                 }
             }
         };

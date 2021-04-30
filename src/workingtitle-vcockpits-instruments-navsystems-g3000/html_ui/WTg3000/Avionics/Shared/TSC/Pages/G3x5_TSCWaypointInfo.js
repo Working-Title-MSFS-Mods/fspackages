@@ -459,11 +459,14 @@ class WT_G3x5_TSCSimpleWaypointInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHT
         let htmlFormatterOpts = {
             numberUnitDelim: "",
             classGetter: {
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_TSCSimpleWaypointInfoHTMLElement.UNIT_CLASS],
+
                 getNumberClassList() {
-                    return [];
+                    return this._numberClassList;
                 },
                 getUnitClassList() {
-                    return [WT_G3x5_TSCSimpleWaypointInfoHTMLElement.UNIT_CLASS];
+                    return this._unitClassList;
                 }
             }
         };

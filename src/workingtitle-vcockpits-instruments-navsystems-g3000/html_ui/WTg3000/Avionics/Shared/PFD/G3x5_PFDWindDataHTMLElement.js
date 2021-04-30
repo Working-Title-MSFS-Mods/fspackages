@@ -217,8 +217,15 @@ class WT_G3x5_PFDWindDataHTMLElement extends HTMLElement {
         });
         this._speedFormatter = new WT_NumberHTMLFormatter(formatter, {
             classGetter: {
-                getNumberClassList: (numberUnit, forceUnit) => [],
-                getUnitClassList: (numberUnit, forceUnit) => [WT_G3x5_PFDWindDataHTMLElement.UNIT_CLASS]
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_PFDWindDataHTMLElement.UNIT_CLASS],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
+                },
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
+                }
             },
             numberUnitDelim: ""
         });

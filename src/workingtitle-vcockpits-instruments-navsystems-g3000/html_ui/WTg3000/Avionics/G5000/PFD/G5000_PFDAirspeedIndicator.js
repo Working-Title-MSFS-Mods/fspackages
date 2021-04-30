@@ -270,8 +270,15 @@ class WT_G5000_PFDAirspeedIndicatorHTMLElement extends WT_G3x5_PFDAirspeedIndica
         });
         this._refKnotsFormatter = new WT_NumberHTMLFormatter(formatter, {
             classGetter: {
-                getNumberClassList: (numberUnit, forceUnit) => [],
-                getUnitClassList: (numberUnit, forceUnit) => [WT_G5000_PFDAirspeedIndicatorHTMLElement.UNIT_CLASS]
+                _numberClassList: [],
+                _unitClassList: [WT_G5000_PFDAirspeedIndicatorHTMLElement.UNIT_CLASS],
+
+                getNumberClassList(numberUnit, forceUnit) {
+                    return this._numberClassList;
+                },
+                getUnitClassList(numberUnit, forceUnit) {
+                    return this._unitClassList;
+                }
             },
             numberUnitDelim: ""
         });
