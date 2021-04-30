@@ -666,17 +666,30 @@ WT_Runway.Surface = {
 class WT_RunwayWaypoint extends WT_Waypoint {
     /**
      * @param {WT_Runway} runway - the runway associated with the new waypoint.
+     * @param {WT_RunwayWaypoint.Reference} reference - the runway reference point for the new waypoint.
      */
-    constructor(runway) {
+    constructor(runway, reference) {
         super();
 
         this._runway = runway;
-        this._ident = `RW${this.runway.number.toString().padStart(2, "0")}${this.runway.suffix}`;
+        this._ident = `RW${this.runway.designationFull}`;
+        this._reference = reference;
+        switch (reference) {
+            case WT_RunwayWaypoint.Reference.START:
+                this._location = this.runway.start;
+                break;
+            case WT_RunwayWaypoint.Reference.CENTER:
+                this._location = this.runway.location;
+                break;
+            case WT_RunwayWaypoint.Reference.END:
+                this._location = this.runway.end;
+                break;
+        }
     }
 
     /**
+     * The runway associated with this waypoint.
      * @readonly
-     * @property {WT_Runway} runway - the runway associated with this waypoint.
      * @type {WT_Runway}
      */
     get runway() {
@@ -684,8 +697,17 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The runway reference point for this waypoint. Either start, center, or end.
      * @readonly
-     * @property {String} uniqueID - a unique identifier for this waypoint.
+     * @type {WT_RunwayWaypoint.Reference}
+     */
+    get reference() {
+        return this._reference;
+    }
+
+    /**
+     * A unique identifier for this waypoint.
+     * @readonly
      * @type {String}
      */
     get uniqueID() {
@@ -693,8 +715,8 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The ident string for this waypoint.
      * @readonly
-     * @property {String} ident - the ident string for this waypoint.
      * @type {String}
      */
     get ident() {
@@ -702,8 +724,8 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The name of this waypoint.
      * @readonly
-     * @property {String} name - the name of this waypoint.
      * @type {String}
      */
     get name() {
@@ -711,13 +733,21 @@ class WT_RunwayWaypoint extends WT_Waypoint {
     }
 
     /**
+     * The lat/long coordinates of this waypoint.
      * @readonly
-     * @property {WT_GeoPoint} location - the lat/long coordinates of this waypoint.
-     * @type {WT_GeoPoint}
+     * @type {WT_GeoPointReadOnly}
      */
     get location() {
-        return this.runway.location;
+        return this._location;
     }
+}
+/**
+ * @enum {Number}
+ */
+WT_RunwayWaypoint.Reference = {
+    START: 0,
+    CENTER: 1,
+    END: 2
 }
 
 /**
