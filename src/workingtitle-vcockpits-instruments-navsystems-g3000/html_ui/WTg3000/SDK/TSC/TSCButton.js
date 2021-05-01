@@ -55,10 +55,10 @@ class WT_TSCButton extends HTMLElement {
         return `
             #wrapper {
                 position: absolute;
-                left: 1%;
-                top: 1%;
-                right: 1%;
-                bottom: 1%;
+                left: var(--button-padding-left, 1%);
+                top: var(--button-padding-top, 1%);
+                width: calc(100% - var(--button-padding-left, 1%) - var(--button-padding-right, 1%));
+                height: calc(100% - var(--button-padding-top, 1%) - var(--button-padding-bottom, 1%));
             }
         `;
     }

@@ -5,6 +5,17 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     constructor(homePageGroup, homePageName) {
         super(homePageGroup, homePageName);
+
+        /**
+         * @type {WT_G3x5_TSCFlightPlanState}
+         */
+        this._state = {
+            _activeLeg: null,
+
+            get activeLeg() {
+                return this._activeLeg;
+            }
+        };
     }
 
     /**
@@ -34,8 +45,22 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     _setDisplayedFlightPlan(flightPlan) {
         this.htmlElement.setFlightPlan(flightPlan);
     }
+
+    _updateState() {
+        this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
+    }
+
+    onUpdate(deltaTime) {
+        this._updateState();
+        this.htmlElement.update(this._state);
+    }
 }
 WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
+
+/**
+ * @typedef WT_G3x5_TSCFlightPlanState
+ * @property {readonly WT_FlightPlanLeg} activeLeg
+ */
 
 class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     constructor() {
@@ -44,13 +69,16 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
+        this._flightPlanListener = this._onFlightPlanChanged.bind(this);
+
         /**
          * @type {WT_FlightPlan}
          */
         this._flightPlan = null;
+        this._activeArrowShow = null;
+        this._activeArrowFrom = 0;
+        this._activeArrowTo = 0;
         this._isInit = false;
-
-        this._flightPlanListener = this._onFlightPlanChanged.bind(this);
     }
 
     _getTemplate() {
@@ -58,6 +86,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     }
 
     async _defineChildren() {
+        this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
+
         this._nameTitle = this.shadowRoot.querySelector(`#nametitle`);
 
         [
@@ -69,6 +99,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         ]);
 
         this._rowsContainer = this.shadowRoot.querySelector(`#rowscontainer`);
+        this._activeArrowStemRect = this.shadowRoot.querySelector(`#activearrowstem rect`);
+        this._activeArrowHead = this.shadowRoot.querySelector(`#activearrowhead`);
     }
 
     _initRowRecycler() {
@@ -82,6 +114,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         if (this._flightPlan) {
             this._updateFromFlightPlan();
         }
+        this._updateFromActiveArrowShow();
+        this._updateFromActiveArrowPosition();
     }
 
     connectedCallback() {
@@ -152,6 +186,34 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         }
     }
 
+    _updateFromActiveArrowShow() {
+        this._wrapper.setAttribute("activearrow-show", `${this._activeArrowShow}`);
+    }
+
+    setActiveArrowVisible(value) {
+        this._activeArrowShow = value;
+        if (this._isInit) {
+            this._updateFromActiveArrowShow();
+        }
+    }
+
+    _updateFromActiveArrowPosition() {
+        let top = Math.min(this._activeArrowFrom, this._activeArrowTo);
+        let height = Math.abs(this._activeArrowTo - this._activeArrowFrom);
+
+        this._activeArrowStemRect.setAttribute("y", `${top}`);
+        this._activeArrowStemRect.setAttribute("height", `${height}`);
+        this._activeArrowHead.style.transform = `translateY(${this._activeArrowTo}px) rotateX(0deg)`;
+    }
+
+    moveActiveArrow(from, to) {
+        this._activeArrowFrom = from;
+        this._activeArrowTo = to;
+        if (this._isInit) {
+            this._updateFromActiveArrowPosition();
+        }
+    }
+
     _drawName() {
         let originWaypoint = this._flightPlan.getOrigin().waypoint;
         let destinationWaypoint = this._flightPlan.getDestination().waypoint;
@@ -178,6 +240,18 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         } else {
         }
     }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
+    update(state) {
+        if (!this._isInit || !this._flightPlan) {
+            return;
+        }
+
+        this._flightPlanRenderer.update(this, state);
+    }
 }
 WT_G3x5_TSCFlightPlanHTMLElement.NAME = "wt-tsc-flightplan";
 WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE = document.createElement("template");
@@ -189,80 +263,118 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
             height: 100%;
         }
 
-        #grid {
-            position: absolute;
-            left: 0%;
-            top: 0%;
+        #wrapper {
             width: 100%;
             height: 100%;
-            display: grid;
-            grid-template-rows: 100%;
-            grid-template-columns: var(--flightplan-left-width, 4em) 1fr;
-            grid-gap: 0 var(--flightplan-left-margin-right, 0.2em);
         }
-            #left {
-                position: relative;
+            #grid {
+                position: absolute;
+                left: 0%;
+                top: 0%;
                 width: 100%;
                 height: 100%;
                 display: grid;
-                grid-template-rows: repeat(5, 1fr);
-                grid-template-columns: 100%;
-                grid-gap: var(--flightplan-left-button-margin-vertical, 0.2em) 0;
+                grid-template-rows: 100%;
+                grid-template-columns: var(--flightplan-left-width, 4em) 1fr;
+                grid-gap: 0 var(--flightplan-left-margin-right, 0.2em);
             }
-            #tablecontainer {
-                position: relative;
-                border-radius: 3px;
-                background: linear-gradient(#1f3445, black 25px);
-                border: 3px solid var(--wt-g3x5-bordergray);
-            }
-                #table {
-                    position: absolute;
-                    left: var(--flightplan-table-padding-left, 0.1em);
-                    top: var(--flightplan-table-padding-top, 0.1em);
-                    width: calc(100% - var(--flightplan-table-padding-left, 0.1em) - var(--databasestatus-table-padding-right, 0.1em));
-                    height: calc(100% - var(--flightplan-table-padding-top, 0.1em) - var(--databasestatus-table-padding-bottom, 0.1em));
+                #left {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
                     display: grid;
+                    grid-template-rows: repeat(5, 1fr);
                     grid-template-columns: 100%;
-                    grid-template-rows: var(--flightplan-table-head-height, 1em) 1fr;
-                    grid-gap: var(--flightplan-table-head-margin-bottom, 0.1em) 0;
+                    grid-gap: var(--flightplan-left-button-margin-vertical, 0.2em) 0;
                 }
-                    #header {
-                        position: relative;
-                        width: calc(100% - var(--scrolllist-scrollbar-width, 1vw) - var(--flightplan-table-row-margin-right, 0.2em));
-                        height: 100%;
+                #tablecontainer {
+                    position: relative;
+                    border-radius: 3px;
+                    background: linear-gradient(#1f3445, black 25px);
+                    border: 3px solid var(--wt-g3x5-bordergray);
+                }
+                    #table {
+                        position: absolute;
+                        left: var(--flightplan-table-padding-left, 0.1em);
+                        top: var(--flightplan-table-padding-top, 0.1em);
+                        width: calc(100% - var(--flightplan-table-padding-left, 0.1em) - var(--databasestatus-table-padding-right, 0.1em));
+                        height: calc(100% - var(--flightplan-table-padding-top, 0.1em) - var(--databasestatus-table-padding-bottom, 0.1em));
                         display: grid;
-                        grid-template-rows: 100%;
-                        grid-template-columns: var(--flightplan-table-grid-columns, 2fr 1fr 1fr);
-                        grid-gap: 0 var(--flightplan-table-grid-column-gap, 0.2em);
-                        align-items: center;
-                        justify-items: center;
-                        font-size: var(--flightplan-table-header-font-size, 0.85em);
-                        color: white;
+                        grid-template-columns: 100%;
+                        grid-template-rows: var(--flightplan-table-head-height, 1em) 1fr;
+                        grid-gap: var(--flightplan-table-head-margin-bottom, 0.1em) 0;
                     }
-                        #nametitle {
-                            justify-self: start;
-                            margin: 0 0.2em;
+                        #header {
+                            position: relative;
+                            width: calc(100% - var(--scrolllist-scrollbar-width, 1vw) - var(--flightplan-table-row-margin-right, 0.2em));
+                            height: 100%;
+                            display: grid;
+                            grid-template-rows: 100%;
+                            grid-template-columns: var(--flightplan-table-grid-columns, 2fr 1fr 1fr);
+                            grid-gap: 0 var(--flightplan-table-grid-column-gap, 0.2em);
+                            align-items: center;
+                            justify-items: center;
+                            font-size: var(--flightplan-table-header-font-size, 0.85em);
+                            color: white;
                         }
-                    #rows {
-                        position: relative;
-                        width: 100%;
-                        height: 100%;
-                        --scrolllist-padding-left: 0%;
-                        --scrolllist-padding-right: var(--flightplan-table-row-margin-right, 0.2em);
-                        --scrolllist-padding-top: 0%;
-                    }
-                        #rowscontainer {
+                            #nametitle {
+                                justify-self: start;
+                                margin: 0 0.2em;
+                            }
+                        #rows {
                             position: relative;
                             width: 100%;
                             height: 100%;
-                            display: flex;
-                            flex-flow: column nowrap;
-                            align-items: stretch;
+                            --scrolllist-padding-left: 0%;
+                            --scrolllist-padding-right: var(--flightplan-table-row-margin-right, 0.2em);
+                            --scrolllist-padding-top: 0%;
                         }
-                            wt-tsc-flightplan-row {
-                                height: var(--flightplan-table-row-height, 3em);
-                                margin-bottom: var(--flightplan-table-row-margin-vertical, 0.1em);
+                            #scrollcontainer {
+                                position: relative;
+                                width: 100%;
                             }
+                            #rowscontainer {
+                                position: relative;
+                                width: 100%;
+                                display: flex;
+                                flex-flow: column nowrap;
+                                align-items: stretch;
+                            }
+                                wt-tsc-flightplan-row {
+                                    height: var(--flightplan-table-row-height, 3em);
+                                    margin-bottom: var(--flightplan-table-row-margin-vertical, 0.1em);
+                                }
+                            .activeArrow {
+                                display: none;
+                            }
+                            #wrapper[activearrow-show="true"] .activeArrow {
+                                display: block;
+                            }
+                            #activearrowstem {
+                                position: absolute;
+                                left: var(--flightplan-table-arrow-left, 0.2em);
+                                top: 0%;
+                                width: calc(100% - var(--flightplan-table-arrow-right, calc(100% - 1.2em)) - var(--flightplan-table-arrow-left, 0.2em) - var(--flightplan-table-arrow-head-size, 0.5em) / 2);
+                                height: 100%;
+                                transform: rotateX(0deg);
+                            }
+                                #activearrowstem rect {
+                                    stroke-width: var(--flightplan-table-arrow-stroke-width, 0.2em);
+                                    stroke: var(--wt-g3x5-purple);
+                                    fill: transparent;
+                                    transform: translate(calc(var(--flightplan-table-arrow-stroke-width, 0.2em) / 2), 0);
+                                }
+                            #activearrowhead {
+                                position: absolute;
+                                right: var(--flightplan-table-arrow-right, calc(100% - 1.2em));
+                                top: calc(-1 * var(--flightplan-table-arrow-head-size, 0.5em) / 2);
+                                width: var(--flightplan-table-arrow-head-size, 0.5em);
+                                height: var(--flightplan-table-arrow-head-size, 0.5em);
+                                transform: rotateX(0deg);
+                            }
+                                #activearrowhead polygon {
+                                    fill: var(--wt-g3x5-purple);
+                                }
     </style>
     <div id="wrapper">
         <div id="grid">
@@ -275,7 +387,15 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                         <div id="dtkdistitle">DTK/DIS</div>
                     </div>
                     <wt-tsc-scrolllist id="rows">
-                        <div id="rowscontainer" slot="content"></div>
+                        <div id="scrollcontainer" slot="content">
+                            <div id="rowscontainer"></div>
+                            <svg id="activearrowstem" class="activeArrow">
+                                <rect x="0" y="0" rx="10" ry="10" width="1000" height="0" />
+                            </svg>
+                            <svg id="activearrowhead" class="activeArrow" viewBox="0 0 86.6 100">
+                                <polygon points="0,0 86.6,50 0,100" />
+                            </svg>
+                        </div>
                     </wt-tsc-scrolllist>
                 </div>
             </div>
@@ -419,6 +539,64 @@ WT_G3x5_TSCFlightPlanRowHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G3x5_TSCFlightPlanRowHTMLElement.NAME, WT_G3x5_TSCFlightPlanRowHTMLElement);
 
+class WT_G3x5_TSCFlightPlanWaypointButton extends WT_G3x5_TSCWaypointButton {
+    constructor() {
+        super();
+    }
+
+    _createIdentStyle() {
+        return `
+            #ident {
+                position: absolute;
+                left: 2%;
+                top: 5%;
+                font-size: var(--waypoint-ident-font-size, 1.67em);
+                text-align: left;
+                color: var(--waypoint-ident-color, var(--wt-g3x5-lightblue));
+            }
+            :host([active=true]) #ident {
+                color: var(--wt-g3x5-purple);
+            }
+            :host([highlight=true][primed=false][active=false]) #ident {
+                color: black;
+            }
+        `;
+    }
+
+    _createNameStyle() {
+        return `
+            #name {
+                position: absolute;
+                left: 2%;
+                width: 90%;
+                bottom: 5%;
+                font-size: var(--waypoint-name-font-size, 1em);
+                text-align: left;
+                white-space: nowrap;
+                overflow: hidden;
+                color: var(--waypoint-name-color, white);
+            }
+            :host([active=true]) #name {
+                color: var(--wt-g3x5-purple);
+            }
+            :host([highlight=true][primed=false][active=false]) #name {
+                color: black;
+            }
+        `;
+    }
+
+    get active() {
+        return this.getAttribute("active");
+    }
+
+    set active(value) {
+        this.setAttribute("active", value);
+    }
+}
+WT_G3x5_TSCFlightPlanWaypointButton.NAME = "wt-tsc-button-fpwaypoint";
+
+customElements.define(WT_G3x5_TSCFlightPlanWaypointButton.NAME, WT_G3x5_TSCFlightPlanWaypointButton);
+
 class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     constructor() {
         super();
@@ -431,6 +609,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._waypoint = null;
         this._dtk = new WT_NavAngleUnit(true).createNumber(0);
         this._distance = WT_Unit.NMILE.createNumber(0);
+        this._isActive = false;
         this._isInit = false;
     }
 
@@ -479,7 +658,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
             this._waypointButton,
             this._altitudeButton
         ] = await Promise.all([
-            WT_CustomElementSelector.select(this.shadowRoot, `#waypoint`, WT_G3x5_TSCWaypointButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#waypoint`, WT_G3x5_TSCFlightPlanWaypointButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#alt`, WT_TSCLabeledButton)
         ]);
     }
@@ -495,6 +674,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._updateFromWaypoint();
         this._updateFromDTK();
         this._updateFromDistance();
+        this._updateFromActive();
     }
 
     connectedCallback() {
@@ -550,6 +730,21 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
             this._updateFromDistance();
         }
     }
+
+    _updateFromActive() {
+        this._waypointButton.active = `${this._isActive}`;
+    }
+
+    setActive(value) {
+        if (value === this._isActive) {
+            return;
+        }
+
+        this._isActive = value;
+        if (this._isInit) {
+            this._updateFromActive();
+        }
+    }
 }
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS = "unit";
@@ -575,6 +770,7 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypoint {
                 font-size: var(--flightplan-table-row-waypointbutton-font-size, 0.85em);
+                --button-padding-left: var(--flightplan-table-row-leg-waypointbutton-padding-left, 1.5em);
             }
             #dtkdis {
                 position: relative;
@@ -592,7 +788,7 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
         }
     </style>
     <div id="wrapper">
-        <wt-tsc-button-waypoint id="waypoint"></wt-tsc-button-waypoint>
+        <wt-tsc-button-fpwaypoint id="waypoint"></wt-tsc-button-fpwaypoint>
         <wt-tsc-button-label id="alt"></wt-tsc-button-label>
         <div id="dtkdis">
             <div id="dtk"></div>
@@ -799,13 +995,22 @@ class WT_G3x5_TSCFlightPlanRenderer {
     constructor(flightPlan) {
         this._flightPlan = flightPlan;
 
-        this._origin = new WT_G3x5_TSCFlightPlanOriginRenderer(flightPlan.getOrigin());
-        this._enroute = new WT_G3x5_TSCFlightPlanEnrouteRenderer(flightPlan.getEnroute());
-        this._destination = new WT_G3x5_TSCFlightPlanDestinationRenderer(flightPlan.getDestination());
+        this._origin = new WT_G3x5_TSCFlightPlanOriginRenderer(this, flightPlan.getOrigin());
+        this._enroute = new WT_G3x5_TSCFlightPlanEnrouteRenderer(this, flightPlan.getEnroute());
+        this._destination = new WT_G3x5_TSCFlightPlanDestinationRenderer(this, flightPlan.getDestination());
 
         this._departure = null;
         this._arrival = null;
         this._approach = null;
+
+        /**
+         * @type {Map<WT_FlightPlanLeg,WT_G3x5_TSCFlightPlanRowHTMLElement>}
+         */
+        this._legRows = new Map();
+        /**
+         * @type {WT_FlightPlanLeg}
+         */
+        this._activeLeg = null;
     }
 
     /**
@@ -816,28 +1021,101 @@ class WT_G3x5_TSCFlightPlanRenderer {
         return this._flightPlan;
     }
 
+    clearLegRows() {
+        this._legRows.clear();
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @param {WT_G3x5_TSCFlightPlanRowHTMLElement} row
+     */
+    registerLegRow(leg, row) {
+        this._legRows.set(leg, row);
+    }
+
     /**
      *
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
     draw(htmlElement) {
+        this.clearLegRows();
+        this._updateActiveLeg(htmlElement, null);
+
         if (this.flightPlan.hasDeparture()) {
-            this._departure = new WT_G3x5_TSCFlightPlanDepartureRenderer(this.flightPlan.getDeparture());
+            this._departure = new WT_G3x5_TSCFlightPlanDepartureRenderer(this, this.flightPlan.getDeparture());
             this._departure.draw(htmlElement);
         } else {
             this._origin.draw(htmlElement);
+            this._departure = null;
         }
         this._enroute.draw(htmlElement);
         if (this.flightPlan.hasArrival()) {
-            this._arrival = new WT_G3x5_TSCFlightPlanArrivalRenderer(this.flightPlan.getArrival());
+            this._arrival = new WT_G3x5_TSCFlightPlanArrivalRenderer(this, this.flightPlan.getArrival());
             this._arrival.draw(htmlElement);
         } else {
             this._destination.draw(htmlElement);
+            this._arrival = null;
         }
         if (this.flightPlan.hasApproach()) {
-            this._approach = new WT_G3x5_TSCFlightPlanApproachRenderer(this.flightPlan.getApproach());
+            this._approach = new WT_G3x5_TSCFlightPlanApproachRenderer(this, this.flightPlan.getApproach());
             this._approach.draw(htmlElement);
+        } else {
+            this._approach = null;
         }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_FlightPlanLeg} activeLeg
+     */
+    _updateActiveLeg(htmlElement, activeLeg) {
+        if (this._activeLeg === activeLeg) {
+            return;
+        }
+
+        this._activeLeg = activeLeg;
+        let showArrow = false;
+        if (activeLeg) {
+            let previousLeg = activeLeg.previousLeg();
+            if (previousLeg) {
+                let activeLegRow = this._legRows.get(activeLeg);
+                let previousLegRow = this._legRows.get(previousLeg);
+                if (activeLegRow && previousLegRow) {
+                    let previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
+                    let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
+                    htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
+                    showArrow = true;
+                }
+            }
+        }
+        htmlElement.setActiveArrowVisible(showArrow);
+    }
+
+    _updateChildren(htmlElement, state) {
+        this._origin.update(htmlElement, state);
+        if (this._departure) {
+            this._departure.update(htmlElement, state);
+        }
+        this._enroute.update(htmlElement, state);
+        if (this._arrival) {
+            this._arrival.update(htmlElement, state);
+        }
+        if (this._approach) {
+            this._approach.update(htmlElement, state);
+        }
+        this._destination.update(htmlElement, state);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
+    update(htmlElement, state) {
+        this._updateActiveLeg(htmlElement, state.activeLeg);
+        this._updateChildren(htmlElement, state);
     }
 }
 
@@ -846,9 +1124,11 @@ class WT_G3x5_TSCFlightPlanRenderer {
  */
 class WT_G3x5_TSCFlightPlanElementRenderer {
     /**
+     * @param {WT_G3x5_TSCFlightPlanRenderer} parent
      * @param {T} element
      */
-    constructor(element) {
+    constructor(parent, element) {
+        this._parent = parent;
         this._element = element;
     }
 
@@ -864,7 +1144,15 @@ class WT_G3x5_TSCFlightPlanElementRenderer {
      *
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
-    draw(pageElement) {
+    draw(htmlElement) {
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
+    update(htmlElement, state) {
     }
 }
 
@@ -874,10 +1162,11 @@ class WT_G3x5_TSCFlightPlanElementRenderer {
  */
 class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElementRenderer {
     /**
+     * @param {WT_G3x5_TSCFlightPlanRenderer} parent
      * @param {T} sequence
      */
-    constructor(sequence) {
-        super(sequence);
+    constructor(parent, sequence) {
+        super(parent, sequence);
 
         /**
          * @type {WT_G3x5_TSCFlightPlanElementRenderer[]}
@@ -887,9 +1176,9 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
 
     _mapElementToRenderer(element) {
         if (element instanceof WT_FlightPlanSequence) {
-            return new WT_G3x5_TSCFlightPlanSequenceRenderer(element);
+            return new WT_G3x5_TSCFlightPlanSequenceRenderer(this._parent, element);
         } else if (element instanceof WT_FlightPlanLeg) {
-            return new WT_G3x5_TSCFlightPlanLegRenderer(element);
+            return new WT_G3x5_TSCFlightPlanLegRenderer(this._parent, element);
         }
         return null;
     }
@@ -924,6 +1213,19 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
         this._initChildren();
         this._drawHeader(htmlElement);
         this._drawChildren(htmlElement);
+    }
+
+    _updateChildren(htmlElement, state) {
+        this._children.forEach(child => child.update(htmlElement, state));
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
+    update(htmlElement, state) {
+        this._updateChildren(htmlElement, state);
     }
 }
 
@@ -1002,6 +1304,7 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
         let prefix = `RW${rwyTransition ? rwyTransition.runway.designationFull : "ALL"}.`;
         let suffix = enrouteTransition ? `.${this.element.legs.get(this.element.legs.length - 1).fix.ident}` : "";
         this._headerModeHTMLElement.setTitleText(`Departure –<br>${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
+        this._headerModeHTMLElement.setSubtitleText("");
     }
 }
 
@@ -1010,13 +1313,6 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
  */
 class WT_G3x5_TSCFlightPlanEnrouteRenderer extends WT_G3x5_TSCFlightPlanSegmentRenderer {
     /**
-     * @param {WT_FlightPlanEnroute} sequence
-     */
-    constructor(sequence) {
-        super(sequence);
-    }
-
-    /**
      *
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
@@ -1024,6 +1320,7 @@ class WT_G3x5_TSCFlightPlanEnrouteRenderer extends WT_G3x5_TSCFlightPlanSegmentR
         if (this.element.length > 0) {
             super._drawHeader(htmlElement);
             this._headerModeHTMLElement.setTitleText("Enroute");
+            this._headerModeHTMLElement.setSubtitleText("");
         }
     }
 
@@ -1071,6 +1368,7 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
         let prefix = enrouteTransition ? `${this.element.legs.get(0).fix.ident}.` : "";
         let suffix = `.RW${rwyTransition ? rwyTransition.runway.designationFull : "ALL"}`;
         this._headerModeHTMLElement.setTitleText(`Arrival –<br>${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
+        this._headerModeHTMLElement.setSubtitleText("");
     }
 }
 
@@ -1087,6 +1385,7 @@ class WT_G3x5_TSCFlightPlanApproachRenderer extends WT_G3x5_TSCFlightPlanSegment
 
         let approach = this.element.procedure;
         this._headerModeHTMLElement.setTitleText(`Approach –<br>${approach.airport.ident}–${approach.name}`);
+        this._headerModeHTMLElement.setSubtitleText("");
     }
 }
 
@@ -1095,13 +1394,6 @@ class WT_G3x5_TSCFlightPlanApproachRenderer extends WT_G3x5_TSCFlightPlanSegment
  */
 class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRenderer {
     /**
-     * @param {WT_FlightPlanLeg} leg
-     */
-    constructor(leg) {
-        super(leg);
-    }
-
-    /**
      *
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
@@ -1109,9 +1401,29 @@ class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRende
         this._row = htmlElement.requestRow();
         this._row.setMode(WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG);
 
-        let modeHTMLElement = this._row.getActiveModeHTMLElement();
-        modeHTMLElement.setWaypoint(this.element.fix);
-        modeHTMLElement.setDTK(this.element.desiredTrack);
-        modeHTMLElement.setDistance(this.element.distance);
+        this._modeHTMLElement = this._row.getActiveModeHTMLElement();
+        this._modeHTMLElement.setWaypoint(this.element.fix);
+        this._modeHTMLElement.setDTK(this.element.desiredTrack);
+        this._modeHTMLElement.setDistance(this.element.distance);
+
+        this._parent.registerLegRow(this.element, this._row);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
+    _updateActive(htmlElement, state) {
+        this._modeHTMLElement.setActive(state.activeLeg === this.element);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
+    update(htmlElement, state) {
+        this._updateActive(htmlElement, state);
     }
 }
