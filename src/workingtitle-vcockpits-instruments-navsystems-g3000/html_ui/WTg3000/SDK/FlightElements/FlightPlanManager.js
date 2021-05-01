@@ -14,6 +14,7 @@ class WT_FlightPlanManager {
         this._directTo = new WT_DirectTo();
 
         this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
+        this._lastActiveSyncTime = 0;
 
         this._activeLegCached = null;
     }
@@ -45,6 +46,15 @@ class WT_FlightPlanManager {
         return this._directTo;
     }
 
+    /**
+     * The timestamp of the most recent time the active flight plan was synced from the game.
+     * @readonly
+     * @type {Number}
+     */
+    get lastActiveSyncTime() {
+        return this._lastActiveSyncTime;
+    }
+
     async copyToActive(flightPlan) {
         this._active.copyFrom(flightPlan);
         await this.syncActiveToGame();
@@ -63,6 +73,7 @@ class WT_FlightPlanManager {
      * @returns {Promise<void>} a Promise which is fulfilled when the sync completes.
      */
     async syncActiveFromGame() {
+        this._lastActiveSyncTime = Date.now();
         await this._interface.syncFromGame(this._active, this._directTo);
 
         if (!this.directTo.isActive()) {

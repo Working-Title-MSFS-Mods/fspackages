@@ -264,6 +264,7 @@ WT_TSCSlidingBanner.TEMPLATE.innerHTML = `
             animation: slideout-bottom var(--slidingbanner-slideout-duration, 1s) var(--slidingbanner-slideout-timing, ease) forwards;
         }
             #content {
+                display: block;
                 position: absolute;
                 left: var(--slidingbanner-padding-left, 0px);
                 top: var(--slidingbanner-padding-top, 0px);
