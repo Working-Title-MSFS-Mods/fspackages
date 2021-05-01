@@ -280,7 +280,7 @@ class WT_FlightPlanAsoboInterface {
                 return index + 1; // add one to index since origin is at index 0.
             case WT_FlightPlan.Segment.ENROUTE:
                 let asoboEnrouteStartIndex = this._asoboFPM.getOrigin() === null ? 0 : (this._asoboFPM.getDepartureWaypointsCount() + 1);
-                return leg.index = leg.flightPlan.getEnroute().legs.get(0).index + asoboEnrouteStartIndex;
+                return leg.index - leg.flightPlan.getEnroute().legs.get(0).index + asoboEnrouteStartIndex;
             case WT_FlightPlan.Segment.ARRIVAL:
                 return leg.index - leg.flightPlan.getArrival().legs.get(0).index + asoboWaypointsCount - this._asoboFPM.getArrivalWaypointsCount() - 1;
             case WT_FlightPlan.Segment.APPROACH:
