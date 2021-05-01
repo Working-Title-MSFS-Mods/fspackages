@@ -26,6 +26,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 return this._activeLeg;
             }
         };
+
+        this._drctWaypoint = null;
     }
 
     /**
@@ -97,6 +99,11 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
     }
 
+    _openDRCTPage(waypoint) {
+        this._drctWaypoint = waypoint;
+        this.instrument.SwitchToPageName("MFD", "Direct To");
+    }
+
     _openWaypointInfoPage(waypoint) {
         if (!waypoint || !(waypoint instanceof WT_ICAOWaypoint)) {
             return;
@@ -163,6 +170,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onLegWaypointButtonPressed(event) {
         this.htmlElement.toggleRowSelection(event.row);
     }
@@ -191,6 +202,22 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     _onDestinationInfoButtonPressed(event) {
         let destination = this._fpm.activePlan.getDestination().waypoint;
         this._openWaypointInfoPage(destination);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
+    _onWaypointDRCTButtonPressed(event) {
+        this._openDRCTPage(event.leg.fix);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
+    _onWaypointInfoButtonPressed(event) {
+        this._openWaypointInfoPage(event.leg.fix);
     }
 
     /**
@@ -226,6 +253,12 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_INFO:
                 this._onDestinationInfoButtonPressed(event);
                 break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_DRCT:
+                this._onWaypointDRCTButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_INFO:
+                this._onWaypointInfoButtonPressed(event);
+                break;
         }
     }
 
@@ -245,10 +278,16 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.htmlElement.update(this._state);
     }
 
+    _updateDirectTo() {
+        // TODO: Implement a more sane way to push data to direct to page.
+        this.instrument.lastRelevantICAO = (this._drctWaypoint && this._drctWaypoint instanceof WT_ICAOWaypoint) ? this._drctWaypoint.icao : null;
+    }
+
     onExit() {
         super.onExit();
 
         this.htmlElement.close();
+        this._updateDirectTo();
     }
 }
 WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
@@ -360,6 +399,20 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         ]);
     }
 
+    async _defineWaypointBannerButtons() {
+        [
+            this._waypointDRCTButton,
+            this._activateLegButton,
+            this._waypointRemoveButton,
+            this._waypointInfoButton
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#waypointdrct`, WT_TSCImageButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#activateleg`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#waypointremove`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#waypointinfo`, WT_TSCLabeledButton),
+        ]);
+    }
+
     async _defineChildren() {
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
@@ -372,7 +425,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             WT_CustomElementSelector.select(this.shadowRoot, `#rows`, WT_TSCScrollList),
             WT_CustomElementSelector.select(this.shadowRoot, `#banner`, WT_TSCSlidingBanner),
             this._defineOriginBannerButtons(),
-            this._defineDestinationBannerButtons()
+            this._defineDestinationBannerButtons(),
+            this._defineWaypointBannerButtons()
         ]);
 
         this._rowsContainer = this.shadowRoot.querySelector(`#rowscontainer`);
@@ -410,9 +464,17 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         }));
     }
 
+    _initWaypointBannerButtonListeners() {
+        this._waypointDRCTButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_DRCT));
+        this._activateLegButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_LEG));
+        this._waypointRemoveButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_REMOVE));
+        this._waypointInfoButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_INFO));
+    }
+
     _initButtonListeners() {
         this._initOriginBannerButtonListeners();
         this._initDestinationBannerButtonListeners();
+        this._initWaypointBannerButtonListeners();
     }
 
     _initRowRecycler() {
@@ -697,6 +759,20 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._notifyButtonListeners(event);
     }
 
+    _onWaypointBannerButtonPressed(eventType, button) {
+        let row = this.getSelectedRow();
+        let leg = row.getMode() === WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG ? row.getActiveModeHTMLElement().leg : null;
+
+        if (leg) {
+            this._notifyButtonListeners({
+                button: button,
+                type: eventType,
+                row: row,
+                leg: leg
+            });
+        }
+    }
+
     open() {
     }
 
@@ -749,7 +825,14 @@ WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType = {
     ARRIVAL_SELECT: 10,
     APPROACH_SELECT: 11,
     DESTINATION_REMOVE: 12,
-    DESTINATION_INFO: 13
+    DESTINATION_INFO: 13,
+    INSERT_BEFORE: 14,
+    INSERT_AFTER: 15,
+    WAYPOINT_DRCT: 16,
+    ACTIVATE_LEG: 17,
+    LOAD_AIRWAY: 18,
+    WAYPOINT_REMOVE: 19,
+    WAYPOINT_INFO: 20
 };
 WT_G3x5_TSCFlightPlanHTMLElement.NAME = "wt-tsc-flightplan";
 WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE = document.createElement("template");
@@ -908,6 +991,9 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                     #wrapper[banner-mode="destination"] #destinationbanner {
                         display: grid;
                     }
+                    #wrapper[banner-mode="waypoint"] #waypointbanner {
+                        display: grid;
+                    }
                         .bannerPosition11 {
                             grid-area: 1 / 1;
                         }
@@ -937,6 +1023,9 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                         }
                         .bannerPosition52 {
                             grid-area: 5 / 2;
+                        }
+                        #waypointdrct {
+                            --button-img-image-height: 100%;
                         }
     </style>
     <div id="wrapper">
@@ -981,6 +1070,18 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                     <wt-tsc-button-label id="destinationremove" class="bannerPosition51" labeltext="Remove Destination Airport"></wt-tsc-button-label>
                     <wt-tsc-button-label id="destinationinfo" class="bannerPosition12" labeltext="Waypoint Info"></wt-tsc-button-label>
                     <wt-tsc-button-label id="landingdata" class="bannerPosition22" labeltext="Landing Data" enabled="false"></wt-tsc-button-label>
+                </div>
+                <div id="waypointbanner" class="bannerContent">
+                    <wt-tsc-button-label id="insertbefore" class="bannerPosition11" labeltext="Insert Before"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="insertafter" class="bannerPosition12" labeltext="Insert After"></wt-tsc-button-label>
+                    <wt-tsc-button-img id="waypointdrct" class="bannerPosition21" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png"></wt-tsc-button-img>
+                    <wt-tsc-button-label id="activateleg" class="bannerPosition22" labeltext="Activate Leg to Waypoint"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="loadairway" class="bannerPosition31" labeltext="Load Airway"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="alongtrack" class="bannerPosition32" labeltext="Along Track Waypoint" enabled="false"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="hold" class="bannerPosition41" labeltext="Hold at Waypoint" enabled="false"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="waypointinfo" class="bannerPosition42" labeltext="Waypoint Info"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="waypointremove" class="bannerPosition51" labeltext="Remove Waypoint"></wt-tsc-button-label>
+                    <wt-tsc-button-statusbar id="flyover" class="bannerPosition52" labeltext="Fly Over Waypoint" enabled="false"></wt-tsc-button-statusbar>
                 </div>
             </div>
         </wt-tsc-slidingbanner>
