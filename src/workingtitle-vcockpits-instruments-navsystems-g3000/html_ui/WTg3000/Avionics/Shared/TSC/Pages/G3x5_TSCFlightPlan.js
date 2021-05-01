@@ -97,6 +97,33 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
     }
 
+    _openWaypointInfoPage(waypoint) {
+        if (!waypoint || !(waypoint instanceof WT_ICAOWaypoint)) {
+            return;
+        }
+
+        let infoPage;
+        let pages = this.instrument.getSelectedMFDPanePages();
+        switch (waypoint.type) {
+            case WT_ICAOWaypoint.Type.AIRPORT:
+                infoPage = pages.airportInfo;
+                break;
+            case WT_ICAOWaypoint.Type.VOR:
+                infoPage = pages.vorInfo;
+                break;
+            case WT_ICAOWaypoint.Type.NDB:
+                infoPage = pages.ndbInfo;
+                break;
+            case WT_ICAOWaypoint.Type.INT:
+                infoPage = pages.intInfo;
+                break;
+        }
+        if (infoPage) {
+            infoPage.element.setWaypoint(waypoint);
+            this.instrument.SwitchToPageName("MFD", infoPage.name);
+        }
+    }
+
     /**
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
@@ -148,12 +175,22 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._removeOrigin();
     }
 
+    _onOriginInfoButtonPressed(event) {
+        let origin = this._fpm.activePlan.getOrigin().waypoint;
+        this._openWaypointInfoPage(origin);
+    }
+
     _onDestinationSelectButtonPressed(event) {
         this._openWaypointKeyboard(this._selectDestination.bind(this));
     }
 
     _onDestinationRemoveButtonPressed(event) {
         this._removeDestination();
+    }
+
+    _onDestinationInfoButtonPressed(event) {
+        let destination = this._fpm.activePlan.getDestination().waypoint;
+        this._openWaypointInfoPage(destination);
     }
 
     /**
@@ -177,11 +214,17 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_REMOVE:
                 this._onOriginRemoveButtonPressed(event);
                 break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_INFO:
+                this._onOriginInfoButtonPressed(event);
+                break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_SELECT:
                 this._onDestinationSelectButtonPressed(event);
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_REMOVE:
                 this._onDestinationRemoveButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_INFO:
+                this._onDestinationInfoButtonPressed(event);
                 break;
         }
     }
@@ -191,9 +234,21 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
     }
 
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.open();
+    }
+
     onUpdate(deltaTime) {
         this._updateState();
         this.htmlElement.update(this._state);
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
     }
 }
 WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
@@ -334,6 +389,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             button: this._originRemoveButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_REMOVE
         }));
+        this._originInfoButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._originInfoButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_INFO
+        }));
     }
 
     _initDestinationBannerButtonListeners() {
@@ -344,6 +403,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._destinationRemoveButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._destinationRemoveButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_REMOVE
+        }));
+        this._destinationInfoButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._destinationInfoButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_INFO
         }));
     }
 
@@ -632,6 +695,16 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
     _onRowButtonPressed(event) {
         this._notifyButtonListeners(event);
+    }
+
+    open() {
+    }
+
+    close() {
+        this.unselectRow();
+        if (this._isInit) {
+            this._banner.popOut();
+        }
     }
 
     /**
