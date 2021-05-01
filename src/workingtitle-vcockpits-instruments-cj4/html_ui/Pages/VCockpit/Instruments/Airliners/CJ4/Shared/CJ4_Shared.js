@@ -1953,7 +1953,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTLeftCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (this.ignLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let endValue = (this.isStartingLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
@@ -1967,7 +1967,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTRightCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (this.ignRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let endValue = (this.isStartingRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
@@ -1975,24 +1975,26 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
     }
     updateIGN() {
+        this.isStartingLeft = ((this.ignLeft && this.N2Eng1 > 11.0 && this.N2Eng1 < 51.5) == 1);
+        this.isStartingRight = ((this.ignRight && this.N2Eng2 > 11.0 && this.N2Eng2 < 51.5) == 1);
         this.ignLeft = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:1", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:1", "number") == 1));
         this.ignRight = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:2", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:2", "number") == 1));
 
         this.IgnLeft.setAttribute("visibility", this.ignLeft ? "visible" : "hidden");
         this.IgnRight.setAttribute("visibility", this.ignRight ? "visible" : "hidden");
-        this.redLineLeftTriangle.setAttribute("visibility", this.ignLeft ? "visible" : "hidden");
-        this.redLineRightTriangle.setAttribute("visibility", this.ignRight ? "visible" : "hidden");
-        this.redLineLeft.setAttribute("visibility", this.ignLeft ? "hidden" : "visible");
-        this.redLineRight.setAttribute("visibility", this.ignRight ? "hidden" : "visible");
+        this.redLineLeftTriangle.setAttribute("visibility", this.isStartingLeft ? "visible" : "hidden");
+        this.redLineRightTriangle.setAttribute("visibility", this.isStartingRight ? "visible" : "hidden");
+        this.redLineLeft.setAttribute("visibility", this.isStartingLeft ? "hidden" : "visible");
+        this.redLineRight.setAttribute("visibility", this.isStartingRight ? "hidden" : "visible");
     }
     updateN2() {
         {
-            let N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
-            this.N2LeftValue.textContent = N2Eng1.toFixed(1);
+            this.N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
+            this.N2LeftValue.textContent = this.N2Eng1.toFixed(1);
         }
         {
-            let N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
-            this.N2RightValue.textContent = N2Eng2.toFixed(1);
+            this.N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
+            this.N2RightValue.textContent = this.N2Eng2.toFixed(1);
         }
     }
     updateOil() {
