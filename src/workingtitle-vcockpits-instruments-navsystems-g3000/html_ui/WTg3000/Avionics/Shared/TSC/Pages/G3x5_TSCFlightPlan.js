@@ -1184,18 +1184,20 @@ class WT_G3x5_TSCFlightPlanRenderer {
     }
 
     _updateChildren(htmlElement, state) {
-        this._origin.update(htmlElement, state);
         if (this._departure) {
             this._departure.update(htmlElement, state);
+        } else {
+            this._origin.update(htmlElement, state);
         }
         this._enroute.update(htmlElement, state);
         if (this._arrival) {
             this._arrival.update(htmlElement, state);
+        } else {
+            this._destination.update(htmlElement, state);
         }
         if (this._approach) {
             this._approach.update(htmlElement, state);
         }
-        this._destination.update(htmlElement, state);
     }
 
     /**
@@ -1377,7 +1379,7 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
 
         if (!this.element.procedure.runwayTransitions.getByIndex(this.element.runwayTransitionIndex)) {
             // if the departure does not have a runway selected, add the origin as the first "leg"
-            this._children.unshift(new WT_G3x5_TSCFlightPlanLegRenderer(this.element.flightPlan.getOrigin().leg()));
+            this._children.unshift(new WT_G3x5_TSCFlightPlanLegRenderer(this._parent, this.element.flightPlan.getOrigin().leg()));
         }
     }
 
@@ -1442,7 +1444,7 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
         super._initChildren();
 
         // we need to manually add the destination "leg" to the end of the arrival since the sim doesn't give it to us automatically
-        this._children.push(new WT_G3x5_TSCFlightPlanLegRenderer(this.element.flightPlan.getDestination().leg()));
+        this._children.push(new WT_G3x5_TSCFlightPlanLegRenderer(this._parent, this.element.flightPlan.getDestination().leg()));
     }
 
     /**
