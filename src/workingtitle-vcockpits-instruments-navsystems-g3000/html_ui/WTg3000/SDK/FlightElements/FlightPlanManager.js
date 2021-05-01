@@ -128,8 +128,82 @@ class WT_FlightPlanManager {
             return new Promise(async resolve => {
                 await this.syncActiveFromGame();
                 resolve(this._getDestinationWaypoint());
-            })
+            });
         }
+    }
+
+    /**
+     * Sets the active flight plan's origin waypoint and syncs the active flight plan after the origin has been
+     * changed.
+     * @param {WT_ICAOWaypoint} waypoint - the waypoint to set as the origin.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the origin has been successfully changed,
+     *                          or rejected if the provided waypoint could not be set as the origin.
+     */
+    async setActiveOrigin(waypoint) {
+        return this.setActiveOriginICAO(waypoint ? waypoint.icao : "");
+    }
+
+    /**
+     * Sets the active flight plan's origin waypoint and syncs the active flight plan after the origin has been
+     * changed.
+     * @param {String} icao - the ICAO string of the waypoint to set as the origin.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the origin has been successfully changed,
+     *                          or rejected if the provided string was not a valid ICAO string.
+     */
+    async setActiveOriginICAO(icao) {
+        if (icao === "") {
+            throw new Error("Invalid waypoint ICAO to set as origin");
+        }
+
+        await this._interface.setOrigin(icao);
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Sets the active flight plan's destination waypoint and syncs the active flight plan after the destination has
+     * been changed.
+     * @param {WT_ICAOWaypoint} waypoint - the waypoint to set as the destination.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the destination has been successfully changed,
+     *                          or rejected if the provided waypoint could not be set as the destination.
+     */
+    async setActiveDestination(waypoint) {
+        return this.setActiveDestinationICAO(waypoint ? waypoint.icao : "");
+    }
+
+    /**
+     * Sets the active flight plan's destination waypoint and syncs the active flight plan after the destination has
+     * been changed.
+     * @param {String} icao - the ICAO string of the waypoint to set as the destination.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the destination has been successfully changed,
+     *                          or rejected if the provided string was not a valid ICAO string.
+     */
+    async setActiveDestinationICAO(icao) {
+        if (icao === "") {
+            throw new Error("Invalid waypoint ICAO to set as destination");
+        }
+
+        await this._interface.setDestination(icao);
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Removes the active flight plan's origin waypoint and syncs the active flight plan after the origin has been
+     * removed.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the origin has been removed.
+     */
+    async removeActiveOrigin() {
+        await this._interface.removeOrigin();
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Removes the active flight plan's destination waypoint and syncs the active flight plan after the destination has
+     * been removed.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the destination has been removed.
+     */
+    async removeActiveDestination() {
+        await this._interface.removeDestination();
+        await this.syncActiveFromGame();
     }
 
     /**
@@ -156,7 +230,7 @@ class WT_FlightPlanManager {
      * Sets the currently active flight plan leg and syncs the active flight plan after the active leg has been
      * changed.
      * @param {WT_FlightPlanLeg} leg - the leg to set as the active leg.
-     * @returns {Promise<void>} a Promise which will be fulfilled when the active leg has been successfully updated, or
+     * @returns {Promise<void>} a Promise which will be fulfilled when the active leg has been successfully changed, or
      *                          rejected if the provided leg was not able to be set as the active leg.
      */
     async setActiveLeg(leg) {
