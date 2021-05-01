@@ -218,6 +218,36 @@ class WT_FlightPlanAsoboInterface {
 
     /**
      *
+     * @param {WT_FlightPlanLeg} leg
+     * @returns {Number}
+     */
+    _findAsoboIndex(leg) {
+        let asoboWaypointsCount = this.asoboFPM.getWaypointsCount();
+        switch (leg.segment) {
+            case WT_FlightPlan.Segment.ORIGIN:
+                return this.asoboFPM.getOrigin() === null ? -1 : 0;
+            case WT_FlightPlan.Segment.DESTINATION:
+                return this.asoboFPM.getDestination() === null ? -1 : asoboWaypointsCount - 1;
+            case WT_FlightPlan.Segment.DEPARTURE:
+                let firstDepartureLeg = leg.flightPlan.getDeparture().legs.get(0);
+                let index = leg.index - firstDepartureLeg.index;
+                if (firstDepartureLeg.fix instanceof WT_RunwayWaypoint) {
+                    // need to subtract 1 from index because the sim's flight plan does not include departure runway fixes.
+                    index--;
+                }
+                return index + 1; // add one to index since origin is at index 0.
+            case WT_FlightPlan.Segment.ENROUTE:
+                let asoboEnrouteStartIndex = this.asoboFPM.getOrigin() === null ? 0 : (this.asoboFPM.getDepartureWaypointsCount() + 1);
+                return leg.index - leg.flightPlan.getEnroute().legs.get(0).index + asoboEnrouteStartIndex;
+            case WT_FlightPlan.Segment.ARRIVAL:
+                return leg.index - leg.flightPlan.getArrival().legs.get(0).index + asoboWaypointsCount - this.asoboFPM.getArrivalWaypointsCount() - 1;
+            case WT_FlightPlan.Segment.APPROACH:
+                return leg.index - leg.flightPlan.getApproach().legs.get(0).index;
+        }
+    }
+
+    /**
+     *
      * @param {String} icao
      * @returns {Promise<void>}
      */
@@ -248,6 +278,27 @@ class WT_FlightPlanAsoboInterface {
      */
     removeDestination() {
         return new Promise(resolve => this.asoboFPM.removeWaypoint(this.asoboFPM.getWaypointsCount() - 1, false, resolve));
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @returns {Promise<void>}
+     */
+    removeLeg(leg) {
+        return new Promise(async (resolve, reject) => {
+            if (leg.segment === WT_FlightPlan.Segment.APPROACH) {
+                resolve();
+            }
+
+            await this.updateAsoboFPM();
+            let index = this._findAsoboIndex(leg);
+            if (index < 0) {
+                reject(new Error("Could not find leg in Asobo flight plan"));
+            }
+
+            this.asoboFPM.removeWaypoint(index, false, resolve);
+        });
     }
 
     /**
@@ -299,35 +350,6 @@ class WT_FlightPlanAsoboInterface {
             }
         }
         return leg ? leg: null;
-    }
-
-    /**
-     *
-     * @param {WT_FlightPlanLeg} leg
-     */
-    _findAsoboIndex(leg) {
-        let asoboWaypointsCount = this.asoboFPM.getWaypointsCount();
-        switch (leg.segment) {
-            case WT_FlightPlan.Segment.ORIGIN:
-                return this.asoboFPM.getOrigin() === null ? -1 : 0;
-            case WT_FlightPlan.Segment.DESTINATION:
-                return this.asoboFPM.getDestination() === null ? -1 : asoboWaypointsCount - 1;
-            case WT_FlightPlan.Segment.DEPARTURE:
-                let firstDepartureLeg = leg.flightPlan.getDeparture().legs.get(0);
-                let index = leg.index - firstDepartureLeg.index;
-                if (firstDepartureLeg.fix instanceof WT_RunwayWaypoint) {
-                    // need to subtract 1 from index because the sim's flight plan does not include departure runway fixes.
-                    index--;
-                }
-                return index + 1; // add one to index since origin is at index 0.
-            case WT_FlightPlan.Segment.ENROUTE:
-                let asoboEnrouteStartIndex = this.asoboFPM.getOrigin() === null ? 0 : (this.asoboFPM.getDepartureWaypointsCount() + 1);
-                return leg.index - leg.flightPlan.getEnroute().legs.get(0).index + asoboEnrouteStartIndex;
-            case WT_FlightPlan.Segment.ARRIVAL:
-                return leg.index - leg.flightPlan.getArrival().legs.get(0).index + asoboWaypointsCount - this.asoboFPM.getArrivalWaypointsCount() - 1;
-            case WT_FlightPlan.Segment.APPROACH:
-                return leg.index - leg.flightPlan.getApproach().legs.get(0).index;
-        }
     }
 
     /**

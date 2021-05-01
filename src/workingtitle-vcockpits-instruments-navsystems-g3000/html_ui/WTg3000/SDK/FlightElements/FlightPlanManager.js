@@ -207,6 +207,21 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * Removes a leg from the active flight plan and syncs the active flight plan after the leg has been removed.
+     * @param {WT_FlightPlanLeg} leg - the leg to remove.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the leg has been removed, or rejected if the leg
+     *                          could not be removed.
+     */
+    async removeLegFromActive(leg) {
+        if (leg.flightPlan !== this.activePlan) {
+            throw new Error("Attempted to remove a leg that was not in the active flight plan.");
+        }
+
+        await this._interface.removeLeg(leg);
+        await this.syncActiveFromGame();
+    }
+
+    /**
      * Gets the currently active flight plan leg. If there is no active flight plan leg, null is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
      *                             based on data cached from the last time the active flight plan was synced from the
