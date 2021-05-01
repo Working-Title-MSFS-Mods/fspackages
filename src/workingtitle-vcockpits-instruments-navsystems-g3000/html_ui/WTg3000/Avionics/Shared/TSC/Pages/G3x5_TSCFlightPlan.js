@@ -66,12 +66,11 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _removeOrigin() {
-        this.instrument.currFlightPlanManager.removeWaypoint(0, false, () => this._fpm.syncActiveFromGame());
+        this._fpm.removeActiveOrigin();
     }
 
     _removeDestination() {
-        let destinationIndex = this.instrument.currFlightPlanManager.getWaypointsCount() - 1;
-        this.instrument.currFlightPlanManager.removeWaypoint(destinationIndex, false, () => this._fpm.syncActiveFromGame());
+        this._fpm.removeActiveDestination();
     }
 
     _selectOrigin(icao) {
@@ -79,8 +78,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             return;
         }
 
-        // set the origin, then force an active flight plan sync from the sim.
-        this.instrument.currFlightPlanManager.setOrigin(icao, () => this._fpm.syncActiveFromGame(), true);
+        this._fpm.setActiveOriginICAO(icao);
     }
 
     _selectDestination(icao) {
@@ -88,8 +86,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             return;
         }
 
-        // set the destination, then force an active flight plan sync from the sim.
-        this.instrument.currFlightPlanManager.setDestination(icao, () => this._fpm.syncActiveFromGame(), true);
+        this._fpm.setActiveDestinationICAO(icao);
     }
 
     _openWaypointKeyboard(callback) {
