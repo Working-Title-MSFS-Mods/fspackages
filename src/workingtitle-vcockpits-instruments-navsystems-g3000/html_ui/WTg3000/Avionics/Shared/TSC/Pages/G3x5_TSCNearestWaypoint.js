@@ -735,12 +735,12 @@ WT_G3x5_TSCNearestWaypointHTMLElement.TEMPLATE.innerHTML = `
                 }
             #optionsbanner {
                 position: absolute;
-                right: -1vw;
+                right: var(--nearestwaypoints-options-right, -1vw);
                 top: 50%;
-                width: calc(var(--nearestwaypoints-options-width, 25%) + 1vw + var(--nearestwaypoints-options-margin-right, 0px));
+                width: calc(var(--nearestwaypoints-options-width, 25%) - var(--nearestwaypoints-options-right, -1vw) + var(--nearestwaypoints-options-margin-right, 0px));
                 height: var(--nearestwaypoints-options-height, 100%);
                 transform: translateY(-50%);
-                --slidingbanner-padding-right: calc(1vw + var(--nearestwaypoints-options-margin-right, 0px));
+                --slidingbanner-padding-right: calc(-1 * var(--nearestwaypoints-options-right, -1vw) + var(--nearestwaypoints-options-margin-right, 0px));
             }
                 #optionspadding {
                     position: relative;
