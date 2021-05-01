@@ -10,7 +10,17 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
          * @type {WT_G3x5_TSCFlightPlanState}
          */
         this._state = {
+            _unitsModel: null,
+            _airplaneHeadingTrue: 0,
             _activeLeg: null,
+
+            get unitsModel() {
+                return this._unitsModel;
+            },
+
+            get airplaneHeadingTrue() {
+                return this._airplaneHeadingTrue;
+            },
 
             get activeLeg() {
                 return this._activeLeg;
@@ -36,6 +46,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     init(root) {
         this._fpm = this.instrument.flightPlanManagerWT;
+        this._state._unitsModel = new WT_G3x5_TSCFlightPlanUnitsModel(this.instrument.unitsSettingModel);
+
         this.container.title = WT_G3x5_TSCFlightPlan.TITLE;
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
@@ -47,6 +59,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _updateState() {
+        this._state._airplaneHeadingTrue = this.instrument.airplane.navigation.headingTrue();
         this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
     }
 
@@ -59,8 +72,46 @@ WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
 
 /**
  * @typedef WT_G3x5_TSCFlightPlanState
+ * @property {readonly WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+ * @property {readonly Number} airplaneHeadingTrue
  * @property {readonly WT_FlightPlanLeg} activeLeg
  */
+
+class WT_G3x5_TSCFlightPlanUnitsModel extends WT_G3x5_UnitsSettingModelAdapter {
+    /**
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
+     */
+    constructor(unitsSettingModel) {
+        super(unitsSettingModel);
+
+        this._initListeners();
+        this._initModel();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NavAngleUnit}
+     */
+    get bearingUnit() {
+        return this._bearingUnit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_Unit}
+     */
+    get distanceUnit() {
+        return this._distanceUnit;
+    }
+
+    _updateBearing() {
+        this._bearingUnit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
+    }
+
+    _updateDistance() {
+        this._distanceUnit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+    }
+}
 
 class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     constructor() {
@@ -608,7 +659,9 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
 
         this._waypoint = null;
         this._dtk = new WT_NavAngleUnit(true).createNumber(0);
+        this._bearingUnit = null;
         this._distance = WT_Unit.NMILE.createNumber(0);
+        this._distanceUnit = null;
         this._isActive = false;
         this._isInit = false;
     }
@@ -701,7 +754,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     _updateFromDTK() {
-        this._dtkDisplay.textContent = `${this._dtk.isNaN() ? "___" : this._dtkFormatter.getFormattedNumber(this._dtk)}${this._dtkFormatter.getFormattedUnit(this._dtk)}`;
+        this._dtkDisplay.textContent = `${this._dtk.isNaN() ? "___" : this._dtkFormatter.getFormattedNumber(this._dtk, this._bearingUnit)}${this._dtkFormatter.getFormattedUnit(this._dtk, this._bearingUnit)}`;
     }
 
     /**
@@ -717,7 +770,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     _updateFromDistance() {
-        this._distanceDisplay.innerHTML = this._distanceFormatter.getFormattedHTML(this._distance, WT_Unit.NMILE);
+        this._distanceDisplay.innerHTML = this._distanceFormatter.getFormattedHTML(this._distance, this._distanceUnit);
     }
 
     /**
@@ -744,6 +797,43 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         if (this._isInit) {
             this._updateFromActive();
         }
+    }
+
+    /**
+     *
+     * @param {Number} airplaneHeadingTrue
+     */
+    _updateWaypointButton(airplaneHeadingTrue) {
+        this._waypointButton.update(airplaneHeadingTrue);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+     */
+    _updateUnits(unitsModel) {
+        if (!unitsModel.bearingUnit.equals(this._bearingUnit)) {
+            this._bearingUnit = unitsModel.bearingUnit;
+            this._updateFromDTK();
+        }
+        if (!unitsModel.distanceUnit.equals(this._distanceUnit)) {
+            this._distanceUnit = unitsModel.distanceUnit;
+            this._updateFromDistance();
+        }
+    }
+
+    /**
+     *
+     * @param {Number} airplaneHeadingTrue
+     * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+     */
+    update(airplaneHeadingTrue, unitsModel) {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._updateWaypointButton(airplaneHeadingTrue);
+        this._updateUnits(unitsModel);
     }
 }
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
@@ -1414,6 +1504,15 @@ class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRende
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
+    _updateModeHTMLElement(htmlElement, state) {
+        this._modeHTMLElement.update(state.airplaneHeadingTrue, state.unitsModel);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     * @param {WT_G3x5_TSCFlightPlanState} state
+     */
     _updateActive(htmlElement, state) {
         this._modeHTMLElement.setActive(state.activeLeg === this.element);
     }
@@ -1424,6 +1523,7 @@ class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRende
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
     update(htmlElement, state) {
+        this._updateModeHTMLElement(htmlElement, state);
         this._updateActive(htmlElement, state);
     }
 }
