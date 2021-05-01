@@ -2328,7 +2328,7 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
         let departure = this.element.procedure;
         let rwyTransition = departure.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
         let enrouteTransition = departure.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
-        let prefix = `RW${rwyTransition ? rwyTransition.runway.designationFull : "ALL"}.`;
+        let prefix = `${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}.`;
         let suffix = enrouteTransition ? `.${this.element.legs.get(this.element.legs.length - 1).fix.ident}` : "";
         this._headerModeHTMLElement.setTitleText(`Departure –<br>${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
         this._headerModeHTMLElement.setSubtitleText("");
@@ -2393,7 +2393,7 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
         let enrouteTransition = arrival.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
         let rwyTransition = arrival.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
         let prefix = enrouteTransition ? `${this.element.legs.get(0).fix.ident}.` : "";
-        let suffix = `.RW${rwyTransition ? rwyTransition.runway.designationFull : "ALL"}`;
+        let suffix = `.${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}`;
         this._headerModeHTMLElement.setTitleText(`Arrival –<br>${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
