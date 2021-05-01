@@ -1291,9 +1291,8 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
     }
 
     previousLeg() {
-        if (this._prev) {
-            let prevLegs = this._prev.legs;
-            return (prevLegs && prevLegs.length > 0) ? prevLegs.get(prevLegs.length - 1) : null;
+        if (this.flightPlan && this.index > 0) {
+            return this.flightPlan.legs.get(this.index - 1);
         } else {
             return null;
         }
