@@ -417,13 +417,19 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
     async _defineWaypointBannerButtons() {
         [
+            this._insertBeforeButton,
+            this._insertAfterButton,
             this._waypointDRCTButton,
             this._activateLegButton,
+            this._loadAirway,
             this._waypointRemoveButton,
             this._waypointInfoButton
         ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#insertbefore`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#insertafter`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#waypointdrct`, WT_TSCImageButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#activateleg`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#loadairway`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#waypointremove`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#waypointinfo`, WT_TSCLabeledButton),
         ]);
@@ -623,6 +629,24 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         return undefined;
     }
 
+    _updateWaypointBanner() {
+        let row = this.getSelectedRow();
+        let leg = row.getActiveModeHTMLElement().leg;
+        let isEditable = leg.segment === WT_FlightPlan.Segment.ENROUTE;
+        let isRemovable = isEditable || leg.segment === WT_FlightPlan.Segment.ORIGIN || leg.segment === WT_FlightPlan.Segment.DESTINATION;
+
+        this._insertBeforeButton.enabled = isEditable;
+        this._insertAfterButton.enabled = isEditable;
+        this._loadAirway.enabled = isEditable;
+        this._waypointRemoveButton.enabled = isRemovable;
+    }
+
+    _updateBanner(mode) {
+        if (mode === WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.WAYPOINT) {
+            this._updateWaypointBanner();
+        }
+    }
+
     _initSelectedRow() {
         let row = this.getSelectedRow();
         let bannerMode;
@@ -633,6 +657,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
         if (bannerMode !== undefined) {
             this.setBannerMode(bannerMode);
+            this._updateBanner(bannerMode);
             this.showBanner();
         } else {
             this.hideBanner();
