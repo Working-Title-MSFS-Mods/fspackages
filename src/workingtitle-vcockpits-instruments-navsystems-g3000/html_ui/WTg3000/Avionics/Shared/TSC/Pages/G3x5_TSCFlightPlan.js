@@ -104,6 +104,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
 
+    async _activateLeg(leg) {
+        try {
+            this._fpm.setActiveLeg(leg);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     _openWaypointInfoPage(waypoint) {
         if (!waypoint || !(waypoint instanceof WT_ICAOWaypoint)) {
             return;
@@ -216,6 +224,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
+    _onActivateLegButtonPressed(event) {
+        this._activateLeg(event.leg);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onWaypointInfoButtonPressed(event) {
         this._openWaypointInfoPage(event.leg.fix);
     }
@@ -255,6 +271,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_DRCT:
                 this._onWaypointDRCTButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_LEG:
+                this._onActivateLegButtonPressed(event);
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_INFO:
                 this._onWaypointInfoButtonPressed(event);
