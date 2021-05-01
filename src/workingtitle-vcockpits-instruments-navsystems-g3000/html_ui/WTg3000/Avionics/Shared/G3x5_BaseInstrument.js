@@ -136,7 +136,6 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     _initFlightPlanManager() {
         this._fpm = new WT_FlightPlanManager(this.airplane, this.icaoWaypointFactory);
-        this._lastFPMSyncTime = 0;
         this.airplane.fms.setFlightPlanManager(this._fpm);
     }
 
@@ -167,9 +166,8 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     _updateFlightPlanManager(currentTime) {
-        if (currentTime - this._lastFPMSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
+        if (currentTime - this.flightPlanManagerWT.lastActiveSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
             this.flightPlanManagerWT.syncActiveFromGame();
-            this._lastFPMSyncTime = currentTime;
         }
     }
 
