@@ -11,8 +11,8 @@ class WT_Wait {
         return new Promise(resolve => setTimeout(resolve, timeout));
     }
 
-    static _awaitLoop(resolve, reject, callback, thisArg, timeout, elapsed, dt) {
-        elapsed += dt;
+    static _awaitLoop(resolve, reject, callback, thisArg, timeout, t0, timeStamp) {
+        let elapsed = timeStamp - t0;
         if (elapsed >= timeout) {
             reject(new Error(`Wait timed out after ${elapsed} ms`));
             return;
@@ -21,7 +21,7 @@ class WT_Wait {
         if (callback.apply(thisArg)) {
             resolve();
         } else {
-            requestAnimationFrame(WT_Wait._awaitLoop.bind(this, resolve, reject, callback, thisArg, timeout, elapsed));
+            requestAnimationFrame(WT_Wait._awaitLoop.bind(this, resolve, reject, callback, thisArg, timeout, t0));
         }
     }
 
@@ -39,7 +39,8 @@ class WT_Wait {
      */
     static awaitCallback(callback, thisArg, timeout = Infinity) {
         return new Promise((resolve, reject) => {
-            WT_Wait._awaitLoop(resolve, reject, callback, thisArg, timeout, 0, 0);
+            let t0 = performance.now();
+            WT_Wait._awaitLoop(resolve, reject, callback, thisArg, timeout, t0, t0);
         });
     }
 
