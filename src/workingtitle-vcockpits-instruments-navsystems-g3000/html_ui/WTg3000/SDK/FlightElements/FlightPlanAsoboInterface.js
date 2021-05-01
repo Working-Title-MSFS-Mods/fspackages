@@ -1,6 +1,12 @@
 class WT_FlightPlanAsoboInterface {
-    constructor(icaoWaypointFactory) {
+    /**
+     *
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     * @param {FlightPlanManager} asoboFPM
+     */
+    constructor(icaoWaypointFactory, asoboFPM) {
         this._icaoWaypointFactory = icaoWaypointFactory;
+        this._asoboFPM = asoboFPM;
         RegisterViewListener("JS_LISTENER_FLIGHTPLAN");
     }
 
@@ -14,6 +20,12 @@ class WT_FlightPlanAsoboInterface {
 
     isApproachActive() {
         return SimVar.GetSimVarValue("C:fs9gps:FlightPlanIsActiveApproach", "Bool");
+    }
+
+    updateAsoboFPM() {
+        return new Promise(resolve => {
+            this._asoboFPM.updateFlightPlan(resolve);
+        });
     }
 
     async _getWaypointEntriesFromData(data, array) {
@@ -245,5 +257,65 @@ class WT_FlightPlanAsoboInterface {
             }
         }
         return leg ? leg: null;
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    _findAsoboIndex(leg) {
+        let asoboWaypointsCount = this._asoboFPM.getWaypointsCount();
+        switch (leg.segment) {
+            case WT_FlightPlan.Segment.ORIGIN:
+                return this._asoboFPM.getOrigin() === null ? -1 : 0;
+            case WT_FlightPlan.Segment.DESTINATION:
+                return this._asoboFPM.getDestination() === null ? -1 : asoboWaypointsCount - 1;
+            case WT_FlightPlan.Segment.DEPARTURE:
+                let firstDepartureLeg = leg.flightPlan.getDeparture().legs.get(0);
+                let index = leg.index - firstDepartureLeg.index;
+                if (firstDepartureLeg.fix instanceof WT_RunwayWaypoint) {
+                    // need to subtract 1 from index because the sim's flight plan does not include departure runway fixes.
+                    index--;
+                }
+                return index + 1; // add one to index since origin is at index 0.
+            case WT_FlightPlan.Segment.ENROUTE:
+                let asoboEnrouteStartIndex = this._asoboFPM.getOrigin() === null ? 0 : (this._asoboFPM.getDepartureWaypointsCount() + 1);
+                return leg.index = leg.flightPlan.getEnroute().legs.get(0).index + asoboEnrouteStartIndex;
+            case WT_FlightPlan.Segment.ARRIVAL:
+                return leg.index - leg.flightPlan.getArrival().legs.get(0).index + asoboWaypointsCount - this._asoboFPM.getArrivalWaypointsCount() - 1;
+            case WT_FlightPlan.Segment.APPROACH:
+                return leg.index - leg.flightPlan.getApproach().legs.get(0).index;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    setActiveLeg(leg) {
+        return new Promise(async (resolve, reject) => {
+            await this.updateAsoboFPM();
+            let index = this._findAsoboIndex(leg);
+            if (index < 0) {
+                reject(new Error("Could not find leg in Asobo flight plan"));
+            }
+
+            let isApproachActive = this.isApproachActive();
+            if (leg.segment === WT_FlightPlan.Segment.APPROACH && !isApproachActive) {
+                this._asoboFPM.activateApproach((() => {
+                    this._asoboFPM.setActiveWaypointIndex(index + 1, resolve); // need to add 1 to index because once approach is activated, a USR waypoint is added to the beginning of the approach
+                }).bind(this));
+            } else if (leg.segment !== WT_FlightPlan.Segment.APPROACH && isApproachActive) {
+                this._asoboFPM.deactivateApproach();
+                try {
+                    await WT_Wait.awaitCallback(() => !this.isApproachActive(), this, 1000);
+                    this._asoboFPM.setActiveWaypointIndex(index, resolve);
+                } catch (e) {
+                    reject(new Error("Approach deactivation timed out"));
+                }
+            } else {
+                this._asoboFPM.setActiveWaypointIndex(index, resolve);
+            }
+        });
     }
 }

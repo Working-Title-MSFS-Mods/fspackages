@@ -135,7 +135,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     _initFlightPlanManager() {
-        this._fpm = new WT_FlightPlanManager(this.airplane, this.icaoWaypointFactory);
+        this._fpm = new WT_FlightPlanManager(this.airplane, this.icaoWaypointFactory, this._getAsoboFlightPlanManager());
         this.airplane.fms.setFlightPlanManager(this._fpm);
     }
 

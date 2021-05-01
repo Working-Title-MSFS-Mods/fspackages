@@ -5,15 +5,16 @@ class WT_FlightPlanManager {
     /**
      * @param {WT_PlayerAirplane} airplane - the player airplane.
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - the waypoint factory used to create ICAO waypoint objects.
+     * @param {FlightPlanManager} asoboFPM - the sim's default flight plan manager.
      */
-    constructor(airplane, icaoWaypointFactory) {
+    constructor(airplane, icaoWaypointFactory, asoboFPM) {
         this._airplane = airplane;
 
         this._active = new WT_FlightPlan(icaoWaypointFactory);
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
         this._directTo = new WT_DirectTo();
 
-        this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
+        this._interface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory, asoboFPM);
         this._lastActiveSyncTime = 0;
 
         this._activeLegCached = null;
@@ -149,6 +150,22 @@ class WT_FlightPlanManager {
                 resolve(this._activeLegCached);
             });
         }
+    }
+
+    /**
+     * Sets the currently active flight plan leg and syncs the active flight plan after the active leg has been
+     * changed.
+     * @param {WT_FlightPlanLeg} leg - the leg to set as the active leg.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the active leg has been successfully updated, or
+     *                          rejected if the provided leg was not able to be set as the active leg.
+     */
+    async setActiveLeg(leg) {
+        if (leg.flightPlan !== this.activePlan) {
+            throw new Error("Attempted to activate a leg that was not in the active flight plan.");
+        }
+
+        await this._interface.setActiveLeg(leg);
+        await this.syncActiveFromGame();
     }
 
     _getDirectToLeg() {
