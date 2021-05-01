@@ -1862,10 +1862,8 @@ WT_G3x5_TSCFlightPlanRowHeaderHTMLElement.TEMPLATE.innerHTML = `
                     #subtitle {
                         color: white;
                     }
-                    #header[highlight="true"] #title,
-                    #header[primed="true"] #title,
-                    #header[highlight="true"] #subtitle,
-                    #header[primed="true"] #subtitle, {
+                    #header[highlight=true][primed=false] #title,
+                    #header[highlight=true][primed=false] #subtitle {
                         color: black;
                     }
     </style>
