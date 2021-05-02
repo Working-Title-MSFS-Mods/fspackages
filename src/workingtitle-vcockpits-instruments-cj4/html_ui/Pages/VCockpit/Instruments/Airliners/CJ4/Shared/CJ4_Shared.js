@@ -1955,7 +1955,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTLeftCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (this.isStartingLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let endValue = (this.isStartingLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue - (this.isMinimized ? 0 : 52));
             this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
@@ -1969,7 +1969,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTRightCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (this.isStartingRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let endValue = (this.isStartingRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue - (this.isMinimized ? 0 : 52));
             this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
