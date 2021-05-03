@@ -97,6 +97,25 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         await this._fpm.removeActiveDestination();
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @param {Number} deltaIndex
+     * @param {String} icao
+     */
+    async _insertWaypoint(leg, deltaIndex, icao) {
+        if (icao === "" || leg.flightPlan !== this._fpm.activePlan) {
+            return;
+        }
+
+        try {
+            let legSegmentIndex = leg.index - leg.flightPlan.getSegment(leg.segment).legs.get(0).index;
+            await this._fpm.addWaypointICAOToActive(leg.segment, icao, legSegmentIndex + deltaIndex);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     async _appendToEnroute(icao) {
         if (icao === "") {
             return;
@@ -254,6 +273,22 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
+    _onInsertBeforeButtonPressed(event) {
+        this._openWaypointKeyboard(this._insertWaypoint.bind(this, event.leg, 0));
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
+    _onInsertAfterButtonPressed(event) {
+        this._openWaypointKeyboard(this._insertWaypoint.bind(this, event.leg, 1));
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onWaypointDRCTButtonPressed(event) {
         this._openDRCTPage(event.leg.fix);
     }
@@ -317,6 +352,12 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_INFO:
                 this._onDestinationInfoButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.INSERT_BEFORE:
+                this._onInsertBeforeButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.INSERT_AFTER:
+                this._onInsertAfterButtonPressed(event);
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_DRCT:
                 this._onWaypointDRCTButtonPressed(event);
@@ -557,6 +598,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     }
 
     _initWaypointBannerButtonListeners() {
+        this._insertBeforeButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.INSERT_BEFORE));
+        this._insertAfterButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.INSERT_AFTER));
         this._waypointDRCTButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_DRCT));
         this._activateLegButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_LEG));
         this._waypointRemoveButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_REMOVE));
@@ -1202,8 +1245,8 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                     <wt-tsc-button-label id="landingdata" class="bannerPosition22" labeltext="Landing Data" enabled="false"></wt-tsc-button-label>
                 </div>
                 <div id="waypointbanner" class="bannerContent">
-                    <wt-tsc-button-label id="insertbefore" class="bannerPosition11" labeltext="Insert Before"></wt-tsc-button-label>
-                    <wt-tsc-button-label id="insertafter" class="bannerPosition12" labeltext="Insert After"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="insertbefore" class="bannerPosition11" labeltext="Insert<br>Before"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="insertafter" class="bannerPosition12" labeltext="Insert<br>After"></wt-tsc-button-label>
                     <wt-tsc-button-img id="waypointdrct" class="bannerPosition21" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png"></wt-tsc-button-img>
                     <wt-tsc-button-label id="activateleg" class="bannerPosition22" labeltext="Activate Leg to Waypoint"></wt-tsc-button-label>
                     <wt-tsc-button-label id="loadairway" class="bannerPosition31" labeltext="Load Airway"></wt-tsc-button-label>
