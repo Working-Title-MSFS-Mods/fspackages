@@ -300,33 +300,26 @@ class WT_FlightPlanAsoboInterface {
      */
     addWaypoint(plan, segment, icao, index) {
         return new Promise(async (resolve, reject) => {
+            let segmentElement = plan.getSegment(segment);
+            let segmentLength = segmentElement ? segmentElement.legs.length : 0;
             if (index === undefined) {
-                index = plan.getSegment(segment).legs.length;
+                index = segmentLength;
             }
+            index = Math.max(0, Math.min(segmentLength, index));
 
             await this.updateAsoboFPM();
             let legBefore = null;
             switch (segment) {
                 case WT_FlightPlan.Segment.ORIGIN:
                 case WT_FlightPlan.Segment.DESTINATION:
-                case WT_FlightPlan.Segment.APPROACH:
-                    reject(new Error("Cannot add waypoint to origin, destination, or approach segments"));
-                    return;
-                case WT_FlightPlan.Segment.ARRIVAL:
-                    if (plan.hasArrival()) {
-                        let arrival = plan.getArrival();
-                        legBefore = arrival.legs.length > 0 ? arrival.legs.get(arrival.legs.length - 1) : null;
-                    }
-                case WT_FlightPlan.Segment.ENROUTE:
-                    if (!legBefore) {
-                        let enroute = plan.getEnroute();
-                        legBefore = enroute.legs.length > 0 ? enroute.legs.get(enroute.legs.length - 1) : null;
-                    }
                 case WT_FlightPlan.Segment.DEPARTURE:
-                    if (!legBefore && plan.hasDeparture()) {
-                        let departure = plan.getDeparture();
-                        legBefore = departure.legs.length > 0 ? departure.legs.get(departure.legs.length - 1) : null;
-                    }
+                case WT_FlightPlan.Segment.ARRIVAL:
+                case WT_FlightPlan.Segment.APPROACH:
+                    reject(new Error("Cannot add waypoint to origin, destination, departure, arrival, or approach segments"));
+                    return;
+                case WT_FlightPlan.Segment.ENROUTE:
+                    let enroute = plan.getEnroute();
+                    legBefore = (index > 0 && enroute.legs.length > 0) ? enroute.legs.get(index - 1) : null;
             }
 
             let asoboIndex;
