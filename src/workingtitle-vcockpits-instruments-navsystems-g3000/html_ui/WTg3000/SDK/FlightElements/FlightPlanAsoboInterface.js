@@ -36,6 +36,14 @@ class WT_FlightPlanAsoboInterface {
         });
     }
 
+    _asoboHasOrigin() {
+        return SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean") !== 0;
+    }
+
+    _asoboHasDestination() {
+        return SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean") !== 0;
+    }
+
     async _getWaypointEntriesFromData(data, array) {
         for (let i = 0; i < data.length; i++) {
             let leg = data[i];
@@ -62,19 +70,19 @@ class WT_FlightPlanAsoboInterface {
         }
     }
 
-    async _syncFlightPlan(flightPlan, data, approachData) {
+    async _syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination) {
         let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
 
         let origin;
         let firstICAO = data.waypoints[0].icao;
-        if (firstICAO[0] === "A") {
-            origin = await this._icaoWaypointFactory.getAirport(firstICAO);
+        if (this._asoboHasOrigin()) {
+            origin = await this._icaoWaypointFactory.getWaypoint(firstICAO);
             tempFlightPlan.setOrigin(origin);
         }
         let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
         let destination;
-        if (data.waypoints.length > 1 && lastICAO[0] === "A") {
-            destination = await this._icaoWaypointFactory.getAirport(data.waypoints[data.waypoints.length - 1].icao);
+        if (data.waypoints.length > 1 && (forceDRCTDestination || this._asoboHasDestination())) {
+            destination = await this._icaoWaypointFactory.getWaypoint(lastICAO);
             tempFlightPlan.setDestination(destination);
         }
 
@@ -145,30 +153,32 @@ class WT_FlightPlanAsoboInterface {
         let data = await Coherent.call("GET_FLIGHTPLAN");
         let approachData = await Coherent.call("GET_APPROACH_FLIGHTPLAN");
 
-        if (data.waypoints.length === 0) {
-            return;
-        }
-
         let isDRCTActive = false;
         let drctOrigin = null;
         let drctDestination = null;
 
-        let firstICAO = data.waypoints[0].icao;
-        if (!(firstICAO[0] === "U" && data.waypoints.length === 2 && data.approachIndex < 0)) {
-            await this._syncFlightPlan(flightPlan, data, approachData);
-        } else {
+        if (data.waypoints.length === 0) {
             flightPlan.clear();
+        } else {
+            let forceDRCTDestination = false;
+            let firstICAO = data.waypoints[0].icao;
+            let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
+            if ((firstICAO[0] === "U" && data.waypoints.length === 2 && lastICAO[0] === "A" && data.approachIndex < 0)) {
+                isDRCTActive = true;
+                drctOrigin = data.waypoints[0].lla;
+                drctDestination = data.waypoints[1];
+                forceDRCTDestination = true;
+            }
+            await this._syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination);
+        }
+
+        if (data.isDirectTo) {
             isDRCTActive = true;
-            drctOrigin = data.waypoints[0].lla;
-            drctDestination = data.waypoints[1];
+            drctOrigin = data.directToOrigin;
+            drctDestination = data.directToTarget;
         }
 
         if (directTo) {
-            if (data.isDirectTo) {
-                isDRCTActive = true;
-                drctOrigin = data.directToOrigin;
-                drctDestination = data.directToTarget;
-            }
             await this._syncDirectTo(directTo, isDRCTActive, drctOrigin, drctDestination);
         }
     }
@@ -282,6 +292,59 @@ class WT_FlightPlanAsoboInterface {
 
     /**
      *
+     * @param {WT_FlightPlan} plan
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {String} icao
+     * @param {Number} [index]
+     * @returns {Promise<void>}
+     */
+    addWaypoint(plan, segment, icao, index) {
+        return new Promise(async (resolve, reject) => {
+            if (index === undefined) {
+                index = plan.getSegment(segment).legs.length;
+            }
+
+            await this.updateAsoboFPM();
+            let legBefore = null;
+            switch (segment) {
+                case WT_FlightPlan.Segment.ORIGIN:
+                case WT_FlightPlan.Segment.DESTINATION:
+                case WT_FlightPlan.Segment.APPROACH:
+                    reject(new Error("Cannot add waypoint to origin, destination, or approach segments"));
+                    return;
+                case WT_FlightPlan.Segment.ARRIVAL:
+                    if (plan.hasArrival()) {
+                        let arrival = plan.getArrival();
+                        legBefore = arrival.legs.length > 0 ? arrival.legs.get(arrival.legs.length - 1) : null;
+                    }
+                case WT_FlightPlan.Segment.ENROUTE:
+                    if (!legBefore) {
+                        let enroute = plan.getEnroute();
+                        legBefore = enroute.legs.length > 0 ? enroute.legs.get(enroute.legs.length - 1) : null;
+                    }
+                case WT_FlightPlan.Segment.DEPARTURE:
+                    if (!legBefore && plan.hasDeparture()) {
+                        let departure = plan.getDeparture();
+                        legBefore = departure.legs.length > 0 ? departure.legs.get(departure.legs.length - 1) : null;
+                    }
+            }
+
+            let asoboIndex;
+            if (legBefore) {
+                asoboIndex = this._findAsoboIndex(legBefore) + 1;
+                if (asoboIndex < 0) {
+                    reject(new Error("Asobo flight plan is out of sync"));
+                    return;
+                }
+            } else {
+                asoboIndex = this.asoboFPM.getOrigin() ? 1 : 0;
+            }
+            this.asoboFPM.addWaypoint(icao, asoboIndex, resolve);
+        });
+    }
+
+    /**
+     *
      * @param {WT_FlightPlanLeg} leg
      * @returns {Promise<void>}
      */
@@ -295,6 +358,7 @@ class WT_FlightPlanAsoboInterface {
             let index = this._findAsoboIndex(leg);
             if (index < 0) {
                 reject(new Error("Could not find leg in Asobo flight plan"));
+                return;
             }
 
             this.asoboFPM.removeWaypoint(index, false, resolve);
@@ -362,6 +426,7 @@ class WT_FlightPlanAsoboInterface {
             let index = this._findAsoboIndex(leg);
             if (index < 0) {
                 reject(new Error("Could not find leg in Asobo flight plan"));
+                return;
             }
 
             let isApproachActive = this.isApproachActive();

@@ -207,6 +207,39 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * Adds a waypoint to the active flight plan and syncs the active flight plan after the waypoint has been added.
+     * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the new waypoint.
+     * @param {WT_ICAOWaypoint} waypoint - the waypoint to add.
+     * @param {Number} [index] - the index within the specified flight plan segment at which to add the new waypoint.
+     *                           If this argument is not supplied, the waypoint will be added to the end of the
+     *                           segment.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the waypoint has been added, or rejected if the
+     *                          waypoint could not be added.
+     */
+    async addWaypointToActive(segment, waypoint, index) {
+        return this.addWaypointICAOToActive(segment, waypoint ? waypoint.icao : "", index);
+    }
+
+    /**
+     * Adds a waypoint to the active flight plan and syncs the active flight plan after the waypoint has been added.
+     * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the new waypoint.
+     * @param {String} icao - the ICAO string of the waypoint to add.
+     * @param {Number} [index] - the index within the specified flight plan segment at which to add the new waypoint.
+     *                           If this argument is not supplied, the waypoint will be added to the end of the
+     *                           segment.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the waypoint has been added, or rejected if the
+     *                          waypoint could not be added.
+     */
+    async addWaypointICAOToActive(segment, icao, index) {
+        if (icao === "") {
+            throw new Error("Invalid waypoint ICAO to add to the flight plan");
+        }
+
+        await this._interface.addWaypoint(this.activePlan, segment, icao, index);
+        await this.syncActiveFromGame();
+    }
+
+    /**
      * Removes a leg from the active flight plan and syncs the active flight plan after the leg has been removed.
      * @param {WT_FlightPlanLeg} leg - the leg to remove.
      * @returns {Promise<void>} a Promise which will be fulfilled when the leg has been removed, or rejected if the leg
