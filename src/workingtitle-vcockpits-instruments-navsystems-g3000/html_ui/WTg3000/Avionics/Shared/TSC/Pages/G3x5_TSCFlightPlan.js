@@ -97,6 +97,18 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         await this._fpm.removeActiveDestination();
     }
 
+    async _appendToEnroute(icao) {
+        if (icao === "") {
+            return;
+        }
+
+        try {
+            await this._fpm.addWaypointICAOToActive(WT_FlightPlan.Segment.ENROUTE, icao);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     async _removeLeg(leg) {
         try {
             await this._fpm.removeLegFromActive(leg);
@@ -197,6 +209,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     _onLegWaypointButtonPressed(event) {
         this.htmlElement.toggleRowSelection(event.row);
+    }
+
+    _onEnrouteAddButtonPressed(event) {
+        this._openWaypointKeyboard(this._appendToEnroute.bind(this));
     }
 
     _onOriginSelectButtonPressed(event) {
