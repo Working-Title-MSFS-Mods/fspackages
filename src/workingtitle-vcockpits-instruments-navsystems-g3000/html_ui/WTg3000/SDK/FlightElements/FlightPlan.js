@@ -708,49 +708,14 @@ class WT_FlightPlan {
 
     /**
      *
-     * @param {Number} segment
+     * @param {WT_FlightPlan.Segment} segment
      * @param {WT_FlightPlanWaypointEntry} waypointEntry
      * @param {Number} [index]
+     * @returns {Promise<WT_FlightPlanLeg>}
      */
     async insertWaypoint(segment, waypointEntry, index) {
-        await this.insertWaypoints(segment, [waypointEntry], index);
-    }
-
-    /**
-     *
-     * @param {Number} segment
-     * @param {WT_Airway} airway
-     * @param {WT_Waypoint} enter
-     * @param {WT_Waypoint} exit
-     * @param {Number} [index]
-     */
-    async insertAirway(segment, airway, enter, exit, index) {
-        switch (segment) {
-            case WT_FlightPlan.Segment.DEPARTURE:
-            case WT_FlightPlan.Segment.ENROUTE:
-            case WT_FlightPlan.Segment.ARRIVAL:
-            case WT_FlightPlan.Segment.APPROACH:
-                let segmentElement = this.getSegment(segment);
-                if (index === undefined) {
-                    index = segmentElement.length;
-                }
-
-                let waypoints = await airway.getWaypoints();
-                let waypointCompare = (compare, waypoint) => waypoint.uniqueID === compare.uniqueID;
-                let enterIndex = waypoints.findIndex(waypointCompare.bind(enter));
-                let exitIndex = waypoints.findIndex(waypointCompare.bind(exit));
-                if (enterIndex < 0 || exitIndex < 0 || enterIndex > exitIndex) {
-                    throw new Error("Invalid enter and/or exit points.");
-                }
-
-                let element = new WT_FlightPlanAirwaySequence(airway, waypoints.slice(enterIndex, exitIndex + 1).map(waypoint => new WT_FlightPlanDirectToWaypointLeg(waypoint)));
-
-                let eventData = {types: 0};
-                this._insertToSegment(segmentElement, [element], index, eventData);
-                this._updateFromSegment(segment);
-                this._updateLegs();
-                this._fireEvent(eventData);
-        }
+        let elements = await this.insertWaypoints(segment, [waypointEntry], index);
+        return elements.length > 0 ? elements[0] : null;
     }
 
     /**
@@ -770,11 +735,13 @@ class WT_FlightPlan {
 
     /**
      *
-     * @param {Number} segment
+     * @param {WT_FlightPlan.Segment} segment
      * @param {WT_FlightPlanWaypointEntry[]} waypointEntries
      * @param {Number} index
+     * @returns {Promise<WT_FlightPlanLeg[]>}
      */
     async insertWaypoints(segment, waypointEntries, index) {
+        let elements;
         switch (segment) {
             case WT_FlightPlan.Segment.DEPARTURE:
             case WT_FlightPlan.Segment.ENROUTE:
@@ -784,7 +751,7 @@ class WT_FlightPlan {
                 if (index === undefined) {
                     index = segmentElement.length;
                 }
-                let elements = waypointEntries.map(entry => {
+                elements = waypointEntries.map(entry => {
                     if (entry.steps && entry.steps.length > 0) {
                         return new WT_FlightPlanWaypointFixLeg(entry.waypoint, this._createLegSteps(entry.waypoint, entry.steps));
                     } else {
@@ -797,11 +764,71 @@ class WT_FlightPlan {
                 this._updateLegs();
                 this._fireEvent(eventData);
         }
+        return elements ? elements : [];
     }
 
     /**
      *
-     * @param {Number} segment
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {WT_Airway} airway
+     * @param {WT_Waypoint} enter
+     * @param {WT_Waypoint} exit
+     * @param {Number} [index]
+     * @returns {Promise<WT_FlightPlanAirwaySequence>}
+     */
+    async insertAirway(segment, airway, enter, exit, index) {
+        let element = null;
+        switch (segment) {
+            case WT_FlightPlan.Segment.DEPARTURE:
+            case WT_FlightPlan.Segment.ENROUTE:
+            case WT_FlightPlan.Segment.ARRIVAL:
+            case WT_FlightPlan.Segment.APPROACH:
+                let segmentElement = this.getSegment(segment);
+                if (index === undefined) {
+                    index = segmentElement.length;
+                }
+
+                let waypoints = await airway.getWaypoints();
+                let enterIndex = waypoints.findIndex(waypoint => waypoint.equals(enter));
+                let exitIndex = waypoints.findIndex(waypoint => waypoint.equals(exit));
+                if (enterIndex < 0 || exitIndex < 0) {
+                    throw new Error("Invalid enter and/or exit points.");
+                }
+
+                let min = Math.min(enterIndex, exitIndex);
+                let max = Math.max(enterIndex, exitIndex);
+                let waypointSequence = waypoints.slice(min, max + 1);
+                if (exitIndex < enterIndex) {
+                    waypointSequence.reverse();
+                }
+
+                element = new WT_FlightPlanAirwaySequence(airway, waypointSequence.map(waypoint => new WT_FlightPlanDirectToWaypointLeg(waypoint)));
+
+                let eventData = {types: 0};
+                this._insertToSegment(segmentElement, [element], index, eventData);
+                this._updateFromSegment(segment);
+                this._updateLegs();
+                this._fireEvent(eventData);
+        }
+        return element;
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {WT_FlightPlanElement} element
+     */
+    removeElement(segment, element) {
+        let segmentElement = this.getSegment(segment);
+        let index = segmentElement.elements.indexOf(element);
+        if (index >= 0) {
+            this.removeByIndex(segment, index);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan.Segment} segment
      * @param {Number} index
      * @param {Number} [count]
      */
@@ -878,6 +905,61 @@ class WT_FlightPlan {
         }
         if (this.hasDestination()) {
             this._destination._setPrevious(this._arrival ? this._arrival : this._enroute);
+        }
+        if (eventData.types !== 0) {
+            this._updateLegs();
+            this._fireEvent(eventData);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan} flightPlan
+     * @param {WT_FlightPlan.Segment} segment
+     */
+    copySegmentFrom(flightPlan, segment) {
+        let eventData = {types: 0};
+        switch (segment) {
+            case WT_FlightPlan.Segment.ORIGIN:
+                this._changeOrigin(flightPlan.getOrigin().waypoint, eventData);
+                break;
+            case WT_FlightPlan.Segment.DEPARTURE:
+                if (flightPlan.hasDeparture()) {
+                    let departure = flightPlan.getDeparture();
+                    this._changeDeparture(departure.copy(), eventData);
+                    this._departure._setPrevious(this._origin);
+                } else {
+                    this._changeDeparture(null, eventData);
+                }
+                break;
+            case WT_FlightPlan.Segment.ENROUTE:
+                if (!flightPlan.getEnroute().equals(this._enroute)) {
+                    let enrouteElements = flightPlan.getEnroute().elements.map(element => element.copy());
+                    this._clearSegment(this._enroute, eventData);
+                    this._insertToSegment(this._enroute, enrouteElements, 0, eventData);
+                }
+                break;
+            case WT_FlightPlan.Segment.ARRIVAL:
+                if (flightPlan.hasArrival()) {
+                    let arrival = flightPlan.getArrival();
+                    this._changeArrival(arrival.copy(), eventData);
+                    this._arrival._setPrevious(this._enroute);
+                } else {
+                    this._changeArrival(null, eventData);
+                }
+                if (this.hasDestination()) {
+                    this._destination._setPrevious(this._arrival ? this._arrival : this._enroute);
+                }
+                break;
+            case WT_FlightPlan.Segment.APPROACH:
+                if (flightPlan.hasApproach()) {
+                    let approach = flightPlan.getApproach();
+                    this._changeApproach(approach.copy(), eventData);
+                    this._approach._setPrevious(this._arrival ? this._arrival : this._enroute);
+                } else {
+                    this._changeApproach(null, eventData);
+                }
+                break;
         }
         if (eventData.types !== 0) {
             this._updateLegs();

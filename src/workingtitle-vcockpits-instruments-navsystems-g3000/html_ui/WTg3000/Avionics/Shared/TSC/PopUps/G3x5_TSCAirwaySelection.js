@@ -53,12 +53,14 @@ class WT_G3x5_TSCAirwaySelection extends WT_G3x5_TSCPopUpElement {
         this.instrument.deactivateNavButton(6);
     }
 
-    _initOnEnter() {
+    async _initOnEnter() {
         if (!this.context || !this._isReady) {
             return;
         }
 
-        this.htmlElement.setEntryWaypoint(this.context.entryWaypoint);
+        this.htmlElement.setMode(WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT);
+        await this.htmlElement.setEntryWaypoint(this.context.entryWaypoint);
+        await this.htmlElement.setAirway(null);
     }
 
     onEnter() {
@@ -343,7 +345,11 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
             await this.setAirway(null);
         }
         await this._updateWaypointSequence();
-        this._updateFromMode();
+        if (this.getMode() === WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT) {
+            this._updateFromMode();
+        } else {
+            this.setMode(WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT);
+        }
     }
 
     async setEntryWaypoint(waypoint) {
@@ -369,7 +375,11 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
         }
         await this.setExitWaypoint(null);
         await this._updateWaypointSequence();
-        this._updateFromMode();
+        if (this.getMode() === WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT) {
+            this._updateFromMode();
+        } else {
+            this.setMode(WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT);
+        }
     }
 
     async setAirway(airway) {
@@ -392,7 +402,11 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
             this._loadButton.enabled = "false";
         }
         await this._updateWaypointSequence();
-        this._updateFromMode();
+        if (this.getMode() === WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT) {
+            this._updateFromMode();
+        } else {
+            this.setMode(WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT);
+        }
     }
 
     async setExitWaypoint(waypoint) {
