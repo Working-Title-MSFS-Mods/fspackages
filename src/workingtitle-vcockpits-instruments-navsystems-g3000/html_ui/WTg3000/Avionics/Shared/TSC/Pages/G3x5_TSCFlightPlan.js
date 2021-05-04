@@ -2079,8 +2079,8 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
         <svg id="airwaylink">
             <defs>
                 <linearGradient id="airwaylink-gradient" gradientTransform="rotate(90)">
-                    <stop offset="55%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="0" />
-                    <stop offset="70%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="1" />
+                    <stop offset="55%" stop-color="#bce8eb" stop-opacity="0" />
+                    <stop offset="70%" stop-color="#bce8eb" stop-opacity="1" />
                 </linearGradient>
             </defs>
             <rect id="stem" x="0" y="0" rx="10" ry="10" width="200%" height="200%" stroke="url(#airwaylink-gradient)" />
@@ -2298,8 +2298,8 @@ WT_G3x5_TSCFlightPlanRowHeaderHTMLElement.TEMPLATE.innerHTML = `
         <svg id="airwaylink" viewBox="0 0 100 100">
             <defs>
                 <radialGradient id="airwaylink-header-gradient">
-                    <stop offset="70%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="1" />
-                    <stop offset="100%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="0" />
+                    <stop offset="70%" stop-color="#bce8eb" stop-opacity="1" />
+                    <stop offset="100%" stop-color="#bce8eb" stop-opacity="0" />
                 </radialGradient>
             </defs>
             <circle cx="50" cy="50" r="50" fill="url(#airwaylink-header-gradient)" />
