@@ -128,6 +128,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
     async _removeLeg(leg) {
         try {
             await this._fpm.removeLegFromActive(leg);
@@ -136,9 +140,37 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
     async _activateLeg(leg) {
         try {
             await this._fpm.setActiveLeg(leg);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @param {WT_Airway} airway
+     * @param {WT_ICAOWaypoint[]} waypointSequence
+     */
+    async _insertAirway(leg, airway, waypointSequence) {
+        if (leg.flightPlan !== this._fpm.activePlan) {
+            return;
+        }
+
+        let enter = waypointSequence[0];
+        let exit = waypointSequence[waypointSequence.length - 1];
+        if (enter.equals(leg.fix)) {
+            enter = waypointSequence[1];
+        }
+
+        try {
+
         } catch (e) {
             console.log(e);
         }
@@ -181,6 +213,20 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             infoPage.element.setWaypoint(waypoint);
             this.instrument.SwitchToPageName("MFD", infoPage.name);
         }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    _openAirwaySelectPopUp(leg) {
+        this.instrument.airwaySelection.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            entryWaypoint: leg.fix,
+            callback: this._insertAirway.bind(this, leg)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.airwaySelection);
     }
 
     _onDRCTButtonPressed(event) {
@@ -305,6 +351,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
+    _onLoadAirwayButtonPressed(event) {
+        this._openAirwaySelectPopUp(event.leg);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onWaypointRemoveButtonPressed(event) {
         this._removeLeg(event.leg);
     }
@@ -364,6 +418,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_LEG:
                 this._onActivateLegButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.LOAD_AIRWAY:
+                this._onLoadAirwayButtonPressed(event);
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_REMOVE:
                 this._onWaypointRemoveButtonPressed(event);
@@ -517,7 +574,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             this._insertAfterButton,
             this._waypointDRCTButton,
             this._activateLegButton,
-            this._loadAirway,
+            this._loadAirwayButton,
             this._waypointRemoveButton,
             this._waypointInfoButton
         ] = await Promise.all([
@@ -602,6 +659,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._insertAfterButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.INSERT_AFTER));
         this._waypointDRCTButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_DRCT));
         this._activateLegButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_LEG));
+        this._loadAirwayButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.LOAD_AIRWAY));
         this._waypointRemoveButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_REMOVE));
         this._waypointInfoButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_INFO));
     }
@@ -751,7 +809,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
         this._insertBeforeButton.enabled = isEditable;
         this._insertAfterButton.enabled = isEditable;
-        this._loadAirway.enabled = isEditable;
+        this._loadAirwayButton.enabled = (isEditable && leg.fix.airways && leg.fix.airways.length > 0);
         this._waypointRemoveButton.enabled = isRemovable;
     }
 

@@ -739,7 +739,7 @@ class WT_FlightPlan {
                 let waypointCompare = (compare, waypoint) => waypoint.uniqueID === compare.uniqueID;
                 let enterIndex = waypoints.findIndex(waypointCompare.bind(enter));
                 let exitIndex = waypoints.findIndex(waypointCompare.bind(exit));
-                if (enterIndex < 0 || exitIndex < 0 || enterIndex >= exitIndex) {
+                if (enterIndex < 0 || exitIndex < 0 || enterIndex > exitIndex) {
                     throw new Error("Invalid enter and/or exit points.");
                 }
 
