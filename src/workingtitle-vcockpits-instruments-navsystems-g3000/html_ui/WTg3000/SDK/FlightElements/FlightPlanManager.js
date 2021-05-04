@@ -236,7 +236,7 @@ class WT_FlightPlanManager {
     }
 
     /**
-     * Adds a waypoint to the active flight plan and syncs the active flight plan after the waypoint has been added.
+     * Adds a waypoint to the active flight plan.
      * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the new waypoint.
      * @param {WT_ICAOWaypoint} waypoint - the waypoint to add.
      * @param {Number} [index] - the index within the specified flight plan segment at which to add the new waypoint.
@@ -250,7 +250,7 @@ class WT_FlightPlanManager {
     }
 
     /**
-     * Adds a waypoint to the active flight plan and syncs the active flight plan after the waypoint has been added.
+     * Adds a waypoint to the active flight plan.
      * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the new waypoint.
      * @param {String} icao - the ICAO string of the waypoint to add.
      * @param {Number} [index] - the index within the specified flight plan segment at which to add the new waypoint.
@@ -276,16 +276,22 @@ class WT_FlightPlanManager {
                 };
                 this._syncHandler.fireEvent(syncEvent);
             }
+        } else {
+            throw new Error("Cannot add waypoint to a non-enroute segment");
         }
     }
 
     /**
-     *
+     * Adds an airway sequence to the active flight plan.
      * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the airway sequence.
-     * @param {WT_Airway} airway
-     * @param {WT_ICAOWaypoint} enter
-     * @param {WT_ICAOWaypoint} exit
-     * @param {Number} [index]
+     * @param {WT_Airway} airway - the airway to which the sequence to be added belongs.
+     * @param {WT_ICAOWaypoint} enter - the entry waypoint of the airway sequence.
+     * @param {WT_ICAOWaypoint} exit - the exit waypoint of the airway sequence.
+     * @param {Number} [index] - the index within the specified flight plan segment at which to add the airway
+     *                           sequence. If this argument is not supplied, the waypoint will be added to the
+     *                           end of the segment.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the airway sequence has been added, or rejected
+     *                          if the sequence could not be added.
      */
     async addAirwaySequenceToActive(segment, airway, enter, exit, index) {
         if (segment === WT_FlightPlan.Segment.ENROUTE) {
@@ -302,14 +308,16 @@ class WT_FlightPlanManager {
                 };
                 this._syncHandler.fireEvent(syncEvent);
             }
+        } else {
+            throw new Error("Cannot add airway to a non-enroute segment");
         }
     }
 
     /**
-     * Removes a leg from the active flight plan and syncs the active flight plan after the leg has been removed.
-     * @param {WT_FlightPlanElement} element - the leg to remove.
-     * @returns {Promise<void>} a Promise which will be fulfilled when the leg has been removed, or rejected if the leg
-     *                          could not be removed.
+     * Removes a flight plan element from the active flight plan.
+     * @param {WT_FlightPlanElement} element - the element to remove.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the element has been removed, or rejected if the
+     *                          element could not be removed.
      */
     async removeFromActive(element) {
         if (element.flightPlan !== this.activePlan) {
@@ -330,6 +338,8 @@ class WT_FlightPlanManager {
                 index: index
             };
             this._syncHandler.fireEvent(syncEvent);
+        } else {
+            throw new Error("Cannot remove element from a non-enroute segment");
         }
     }
 
