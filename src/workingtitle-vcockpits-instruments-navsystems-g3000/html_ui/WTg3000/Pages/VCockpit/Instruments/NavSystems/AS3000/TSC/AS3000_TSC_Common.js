@@ -315,6 +315,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointOptions", new WT_G3x5_TSCWaypointOptions());
         this.waypointOptions.setGPS(this);
+
+        this.airwaySelection = new NavSystemElementContainer("Airway Selection", "AirwaySelection", new WT_G3x5_TSCAirwaySelection());
+        this.airwaySelection.setGPS(this);
     }
 
     _initNavButtons() {

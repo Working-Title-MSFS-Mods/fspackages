@@ -39,7 +39,7 @@ class WT_TSCButton extends HTMLElement {
                 border-color: #7dddff;
             }
             :host([highlight=true][primed=false]) {
-                color: black;
+                color: var(--button-highlighted-color, black);
             }
             :host([enabled=true][primed=true]) {
                 background: linear-gradient(#62f0f5, #0eb8d4 8%, #018cb5 30%, #0285ac 90%);
@@ -379,6 +379,9 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
                 transform: translateY(-50%);
                 color: var(--button-value-color, white);
                 font-size: var(--button-value-font-size, 1em);
+            }
+            :host([highlight=true][primed=false]) #value {
+                color: var(--button-highlighted-value-color, black);
             }
         `;
     }

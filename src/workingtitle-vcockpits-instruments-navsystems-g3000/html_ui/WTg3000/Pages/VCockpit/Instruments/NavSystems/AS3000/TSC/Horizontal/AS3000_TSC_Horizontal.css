@@ -1942,6 +1942,15 @@ as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-map
     font-size: 5vh;
 }
 
+as3000-tsc-horizontal-element #AirwaySelection wt-tsc-airwayselection {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 90%;
+    font-size: 5vh;
+}
+
 as3000-tsc-horizontal-element #NavigraphLink wt-tsc-navigraphlink {
     position: absolute;
     left: 5%;
