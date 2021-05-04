@@ -83,9 +83,10 @@ class WT_FlightPlanAsoboInterface {
      * @param {Object} data
      * @param {Object} approachData
      * @param {Boolean} forceDRCTDestination
+     * @param {Boolean} forceEnrouteSync
      * @returns {Promise<void>}
      */
-    async _syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination) {
+    async _syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination, forceEnrouteSync) {
         let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
 
         let origin;
@@ -136,10 +137,12 @@ class WT_FlightPlanAsoboInterface {
             waypointEntries = [];
         }
 
-        //await this._getWaypointEntriesFromData(data.waypoints.slice(enrouteStart, enrouteEnd), waypointEntries);
-        //await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
-
-        tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
+        if (forceEnrouteSync) {
+            await this._getWaypointEntriesFromData(data.waypoints.slice(enrouteStart, enrouteEnd), waypointEntries);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
+        } else {
+            tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
+        }
 
         if (data.arrivalProcIndex >= 0) {
             waypointEntries = [];
@@ -183,8 +186,9 @@ class WT_FlightPlanAsoboInterface {
      *
      * @param {WT_FlightPlan} flightPlan
      * @param {WT_DirectTo} [directTo]
+     * @param {Boolean} [forceEnrouteSync]
      */
-    async syncFromGame(flightPlan, directTo) {
+    async syncFromGame(flightPlan, directTo, forceEnrouteSync) {
         let data = await Coherent.call("GET_FLIGHTPLAN");
         let approachData = await Coherent.call("GET_APPROACH_FLIGHTPLAN");
 
@@ -204,7 +208,7 @@ class WT_FlightPlanAsoboInterface {
                 drctDestination = data.waypoints[1];
                 forceDRCTDestination = true;
             }
-            await this._syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination);
+            await this._syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination, forceEnrouteSync);
         }
 
         if (data.isDirectTo) {

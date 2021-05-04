@@ -76,11 +76,13 @@ class WT_FlightPlanManager {
 
     /**
      * Syncs this manager's active flight plan from the sim's default flight plan manager.
+     * @param {Boolean} [forceEnrouteSyn] - whether to force syncing of the enroute segment from the sim's flight plan
+     *                                      manager. False by default.
      * @returns {Promise<void>} a Promise which is fulfilled when the sync completes.
      */
-    async syncActiveFromGame() {
+    async syncActiveFromGame(forceEnrouteSync) {
         this._lastActiveSyncTime = Date.now();
-        await this._asoboInterface.syncFromGame(this._active, this._directTo);
+        await this._asoboInterface.syncFromGame(this._active, this._directTo, forceEnrouteSync);
 
         if (!this.directTo.isActive()) {
             this._activeLegCached = await this._asoboInterface.getActiveLeg(this._active);

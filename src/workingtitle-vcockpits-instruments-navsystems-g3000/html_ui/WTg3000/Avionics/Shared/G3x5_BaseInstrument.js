@@ -134,9 +134,18 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._airplane = this._createAirplane();
     }
 
+    async _loadATCFlightPlan() {
+        await Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
+        await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
+        await WT_Wait.awaitCallback(() => this.gameState === GameState.ingame, this);
+        this._needSyncEnrouteFromAsobo = true;
+    }
+
     _initFlightPlanManager() {
         this._fpm = new WT_FlightPlanManager(this.instrumentIdentifier, this.airplane, this.icaoWaypointFactory);
         this.airplane.fms.setFlightPlanManager(this._fpm);
+        this._needSyncEnrouteFromAsobo = false;
+        this._loadATCFlightPlan();
     }
 
     _initICAOSearchers() {
@@ -167,7 +176,13 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     _updateFlightPlanManager(currentTime) {
         if (currentTime - this.flightPlanManagerWT.lastActiveSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this.flightPlanManagerWT.syncActiveFromGame();
+            try {
+                console.log(`syncing flight plan, force enroute sync ${this._needSyncEnrouteFromAsobo}`);
+                this.flightPlanManagerWT.syncActiveFromGame(this._needSyncEnrouteFromAsobo);
+                this._needSyncEnrouteFromAsobo = false;
+            } catch (e) {
+                console.log(e);
+            }
         }
     }
 
