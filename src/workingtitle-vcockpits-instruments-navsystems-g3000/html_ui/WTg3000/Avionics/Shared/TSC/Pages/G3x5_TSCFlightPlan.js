@@ -1722,6 +1722,8 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     async _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+
         this._dtkDisplay = this.shadowRoot.querySelector(`#dtk`);
         this._distanceDisplay = this.shadowRoot.querySelector(`#dis`);
         [
@@ -1761,6 +1763,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._distanceDisplay.innerHTML = "";
     }
 
+    _clearAirway() {
+        this._wrapper.setAttribute("airway", "false");
+    }
+
     _updateWaypointFromLeg() {
         this._waypointButton.setWaypoint(this._leg.fix);
     }
@@ -1774,15 +1780,21 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._distanceDisplay.innerHTML = this._distanceFormatter.getFormattedHTML(this._leg.distance, this._distanceUnit);
     }
 
+    _updateAirwayFromLeg() {
+        this._wrapper.setAttribute("airway", `${this._leg.parent instanceof WT_FlightPlanAirwaySequence}`);
+    }
+
     _updateFromLeg() {
         if (this._leg) {
             this._updateWaypointFromLeg();
             this._updateDTKFromLeg();
             this._updateDistanceFromLeg();
+            this._updateAirwayFromLeg();
         } else {
             this._clearWaypointButton();
             this._clearDTK();
             this._clearDistance();
+            this._clearAirway();
         }
     }
 
@@ -1906,36 +1918,73 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
             position: relative;
             width: 100%;
             height: 100%;
-            display: grid;
-            grid-template-rows: 100%;
-            grid-template-columns: var(--flightplan-table-grid-columns, 2fr 1fr 1fr);
-            grid-gap: 0 var(--flightplan-table-grid-column-gap, 0.2em);
         }
-            #waypoint {
-                font-size: var(--flightplan-table-row-waypointbutton-font-size, 0.85em);
-                --button-padding-left: var(--flightplan-table-row-leg-waypointbutton-padding-left, 1.5em);
+            #airwaylink {
+                display: none;
+                position: absolute;
+                left: var(--flightplan-table-row-airwaylink-left, 0.25em);
+                top: -50%;
+                width: calc(100% - var(--flightplan-table-row-airwaylink-right, calc(100% - 1em)) - var(--flightplan-table-row-airwaylink-left, 0.25em));
+                height: 100%;
             }
-            #dtkdis {
+            #wrapper[airway="true"] #airwaylink {
+                display: block;
+            }
+                #airwaylink #stem {
+                    stroke-width: var(--flightplan-table-row-airwaylink-stroke-width, 0.2em);
+                    fill: transparent;
+                    transform: translate(calc(var(--flightplan-table-row-airwaylink-stroke-width, 0.2em) / 2), calc(-100% - var(--flightplan-table-row-airwaylink-stroke-width, 0.2em) / 2));
+                }
+            #grid {
                 position: relative;
                 width: 100%;
                 height: 100%;
                 display: grid;
-                grid-template-columns: 100%;
-                grid-template-rows: 50% 50%;
-                justify-items: end;
-                align-items: center;
+                grid-template-rows: 100%;
+                grid-template-columns: var(--flightplan-table-grid-columns, 2fr 1fr 1fr);
+                grid-gap: 0 var(--flightplan-table-grid-column-gap, 0.2em);
             }
+                #waypoint {
+                    font-size: var(--flightplan-table-row-waypointbutton-font-size, 0.85em);
+                    --button-padding-left: var(--flightplan-table-row-leg-waypointbutton-padding-left, 1.5em);
+                }
+                #wrapper[airway="true"] #waypoint {
+                    justify-self: end;
+                    width: calc(var(--flightplan-table-row-airwaylink-right, calc(100% - 1em)) - var(--flightplan-table-row-airwaylink-left, 0.25em));
+                    --button-padding-left: var(--flightplan-table-row-leg-waypointbutton-airway-padding-left, 0.5em);
+                }
+                #dtkdis {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    display: grid;
+                    grid-template-columns: 100%;
+                    grid-template-rows: 50% 50%;
+                    justify-items: end;
+                    align-items: center;
+                }
 
         .${WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS} {
             font-size: var(--flightplan-unit-font-size, 0.75em);
         }
     </style>
     <div id="wrapper">
-        <wt-tsc-button-fpwaypoint id="waypoint"></wt-tsc-button-fpwaypoint>
-        <wt-tsc-button-label id="alt"></wt-tsc-button-label>
-        <div id="dtkdis">
-            <div id="dtk"></div>
-            <div id="dis"></div>
+        <svg id="airwaylink">
+            <defs>
+                <linearGradient id="airwaylink-gradient" gradientTransform="rotate(90)">
+                    <stop offset="55%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="0" />
+                    <stop offset="70%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="1" />
+                </linearGradient>
+            </defs>
+            <rect id="stem" x="0" y="0" rx="10" ry="10" width="200%" height="200%" stroke="url(#airwaylink-gradient)" />
+        </svg>
+        <div id="grid">
+            <wt-tsc-button-fpwaypoint id="waypoint"></wt-tsc-button-fpwaypoint>
+            <wt-tsc-button-label id="alt"></wt-tsc-button-label>
+            <div id="dtkdis">
+                <div id="dtk"></div>
+                <div id="dis"></div>
+            </div>
         </div>
     </div>
 `;
@@ -1976,6 +2025,8 @@ class WT_G3x5_TSCFlightPlanRowHeaderHTMLElement extends HTMLElement {
     }
 
     async _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+
         this._button = await WT_CustomElementSelector.select(this.shadowRoot, `#header`, WT_TSCContentButton);
 
         this._title = this.shadowRoot.querySelector(`#title`);
@@ -1985,6 +2036,7 @@ class WT_G3x5_TSCFlightPlanRowHeaderHTMLElement extends HTMLElement {
     async _connectedCallbackHelper() {
         await this._defineChildren();
         this._isInit = true;
+        this._updateFromSequence();
         this._updateFromTitleText();
         this._updateFromSubtitleText();
     }
@@ -1993,12 +2045,31 @@ class WT_G3x5_TSCFlightPlanRowHeaderHTMLElement extends HTMLElement {
         this._connectedCallbackHelper();
     }
 
+    _clearAirway() {
+        this._wrapper.setAttribute("airway", "false");
+    }
+
+    _updateAirwayFromSequence() {
+        this._wrapper.setAttribute("airway", `${this._sequence instanceof WT_FlightPlanAirwaySequence}`);
+    }
+
+    _updateFromSequence() {
+        if (this._sequence) {
+            this._updateAirwayFromSequence();
+        } else {
+            this._clearAirway();
+        }
+    }
+
     /**
      *
      * @param {WT_FlightPlanSequence} sequence
      */
     setSequence(sequence) {
         this._sequence = sequence;
+        if (this._isInit) {
+            this._updateFromSequence();
+        }
     }
 
     _updateFromTitleText() {
@@ -2097,6 +2168,18 @@ WT_G3x5_TSCFlightPlanRowHeaderHTMLElement.TEMPLATE.innerHTML = `
                     #header[highlight=true][primed=false] #subtitle {
                         color: black;
                     }
+            #airwaylink {
+                display: none;
+                position: absolute;
+                left: calc(var(--flightplan-table-row-airwaylink-left, 0.25em) + var(--flightplan-table-row-airwaylink-stroke-width, 0.2em) / 2);
+                top: 50%;
+                width: var(--flightplan-table-row-airwaylink-header-size, 0.5em);
+                height: var(--flightplan-table-row-airwaylink-header-size, 0.5em);
+                transform: translate(-50%, -50%);
+            }
+                #wrapper[airway="true"] #airwaylink {
+                    display: block;
+                }
     </style>
     <div id="wrapper">
         <wt-tsc-button-content id="header">
@@ -2105,6 +2188,15 @@ WT_G3x5_TSCFlightPlanRowHeaderHTMLElement.TEMPLATE.innerHTML = `
                 <div id="subtitle"></div>
             </div>
         </wt-tsc-button-content>
+        <svg id="airwaylink" viewBox="0 0 100 100">
+            <defs>
+                <radialGradient id="airwaylink-header-gradient">
+                    <stop offset="70%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="1" />
+                    <stop offset="100%" stop-color="var(--wt-g3x5-lightblue)" stop-opacity="0" />
+                </radialGradient>
+            </defs>
+            <circle cx="50" cy="50" r="50" fill="url(#airwaylink-header-gradient)" />
+        </svg>
     </div>
 `;
 
@@ -2413,8 +2505,8 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
     }
 
     _mapElementToRenderer(element) {
-        if (element instanceof WT_FlightPlanSequence) {
-            return new WT_G3x5_TSCFlightPlanSequenceRenderer(this._parent, element);
+        if (element instanceof WT_FlightPlanAirwaySequence) {
+            return new WT_G3x5_FlightPlanAirwayRenderer(this._parent, element);
         } else if (element instanceof WT_FlightPlanLeg) {
             return new WT_G3x5_TSCFlightPlanLegRenderer(this._parent, element);
         }
@@ -2465,6 +2557,22 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
      */
     update(htmlElement, state) {
         this._updateChildren(htmlElement, state);
+    }
+}
+
+/**
+ * @extends WT_G3x5_TSCFlightPlanSequenceRenderer<WT_FlightPlanAirwaySequence>
+ */
+class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRenderer {
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
+     */
+    _drawHeader(htmlElement) {
+        super._drawHeader(htmlElement);
+
+        this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.get(this.element.legs.length - 1)}`);
+        this._headerModeHTMLElement.setSubtitleText("");
     }
 }
 
