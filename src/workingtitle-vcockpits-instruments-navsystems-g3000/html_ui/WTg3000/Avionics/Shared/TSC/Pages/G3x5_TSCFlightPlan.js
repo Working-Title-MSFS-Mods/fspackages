@@ -1252,7 +1252,7 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                                 position: absolute;
                                 left: var(--flightplan-table-arrow-left, 0.2em);
                                 top: 0%;
-                                width: calc(100% - var(--flightplan-table-arrow-right, calc(100% - 1.2em)) - var(--flightplan-table-arrow-left, 0.2em) - var(--flightplan-table-arrow-head-size, 0.5em) / 2);
+                                width: calc(100% - var(--flightplan-table-arrow-right, calc(100% - 1.5em)) - var(--flightplan-table-arrow-left, 0.2em) - var(--flightplan-table-arrow-head-size, 0.75em) / 2);
                                 height: 100%;
                                 transform: rotateX(0deg);
                             }
@@ -1264,10 +1264,10 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                                 }
                             #activearrowhead {
                                 position: absolute;
-                                right: var(--flightplan-table-arrow-right, calc(100% - 1.2em));
-                                top: calc(-1 * var(--flightplan-table-arrow-head-size, 0.5em) / 2);
-                                width: var(--flightplan-table-arrow-head-size, 0.5em);
-                                height: var(--flightplan-table-arrow-head-size, 0.5em);
+                                right: var(--flightplan-table-arrow-right, calc(100% - 1.5em));
+                                top: calc(-1 * var(--flightplan-table-arrow-head-size, 0.75em) / 2);
+                                width: var(--flightplan-table-arrow-head-size, 0.75em);
+                                height: var(--flightplan-table-arrow-head-size, 0.75em);
                                 transform: rotateX(0deg);
                             }
                                 #activearrowhead polygon {
