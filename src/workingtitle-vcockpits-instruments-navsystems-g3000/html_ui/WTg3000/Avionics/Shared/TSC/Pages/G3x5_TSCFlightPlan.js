@@ -131,30 +131,6 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     /**
      *
      * @param {WT_FlightPlanLeg} leg
-     */
-    async _removeLeg(leg) {
-        try {
-            await this._fpm.removeLegFromActive(leg);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    /**
-     *
-     * @param {WT_FlightPlanLeg} leg
-     */
-    async _activateLeg(leg) {
-        try {
-            await this._fpm.setActiveLeg(leg);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    /**
-     *
-     * @param {WT_FlightPlanLeg} leg
      * @param {WT_Airway} airway
      * @param {WT_ICAOWaypoint[]} waypointSequence
      */
@@ -170,7 +146,64 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
 
         try {
+            let segmentElement = leg.flightPlan.getSegment(leg.segment);
+            let index;
+            if (leg.parent instanceof WT_FlightPlanAirwaySequence) {
+                index = segmentElement.elements.indexOf(leg.parent);
+            } else {
+                index = segmentElement.elements.indexOf(leg);
+            }
+            if (index >= 0) {
+                await this._fpm.addAirwaySequenceToActive(leg.segment, airway, enter, exit, index + 1);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    async _removeLeg(leg) {
+        try {
+            switch (leg.segment) {
+                case WT_FlightPlan.Segment.ORIGIN:
+                    await this._fpm.removeActiveOrigin();
+                    break;
+                case WT_FlightPlan.Segment.ENROUTE:
+                    await this._fpm.removeFromActive(leg);
+                    break;
+                case WT_FlightPlan.Segment.DESTINATION:
+                    await this._fpm.removeActiveDestination();
+                    break;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanAirwaySequence} sequence
+     */
+    async _removeAirwaySequence(sequence) {
+        try {
+            if (sequence.segment === WT_FlightPlan.Segment.ENROUTE) {
+                await this._fpm.removeFromActive(sequence);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    async _activateLeg(leg) {
+        try {
+            await this._fpm.setActiveLeg(leg);
         } catch (e) {
             console.log(e);
         }
@@ -268,12 +301,22 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
+    _onAirwaySequenceHeaderButtonPressed(event) {
+        this.htmlElement.toggleRowSelection(event.row);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onHeaderButtonPressed(event) {
         let flightPlan = this._fpm.activePlan;
         if (event.sequence === flightPlan.getOrigin() || event.sequence === flightPlan.getDeparture()) {
             this._onOriginHeaderButtonPressed(event);
         } else if (event.sequence === flightPlan.getDestination() || event.sequence === flightPlan.getArrival()) {
             this._onDestinationHeaderButtonPressed(event);
+        } else if (event.sequence instanceof WT_FlightPlanAirwaySequence) {
+            this._onAirwaySequenceHeaderButtonPressed(event);
         }
     }
 
@@ -375,6 +418,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
+    _onAirwayRemoveButtonPressed(event) {
+        this._removeAirwaySequence(event.sequence);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onButtonPressed(event) {
         switch (event.type) {
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DRCT:
@@ -427,6 +478,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_INFO:
                 this._onWaypointInfoButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.AIRWAY_REMOVE:
+                this._onAirwayRemoveButtonPressed(event);
                 break;
         }
     }
@@ -588,6 +642,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         ]);
     }
 
+    async _defineAirwayBannerButtons() {
+        [
+            this._airwayRemoveButton,
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#airwayremove`, WT_TSCLabeledButton)
+        ]);
+    }
+
     async _defineChildren() {
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
@@ -605,7 +667,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             WT_CustomElementSelector.select(this.shadowRoot, `#banner`, WT_TSCSlidingBanner),
             this._defineOriginBannerButtons(),
             this._defineDestinationBannerButtons(),
-            this._defineWaypointBannerButtons()
+            this._defineWaypointBannerButtons(),
+            this._defineAirwayBannerButtons()
         ]);
 
         this._rowsContainer = this.shadowRoot.querySelector(`#rowscontainer`);
@@ -664,11 +727,16 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._waypointInfoButton.addButtonListener(this._onWaypointBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.WAYPOINT_INFO));
     }
 
+    _initAirwayBannerButtonListeners() {
+        this._airwayRemoveButton.addButtonListener(this._onAirwayBannerButtonPressed.bind(this, WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.AIRWAY_REMOVE));
+    }
+
     _initButtonListeners() {
         this._initLeftButtonListeners();
         this._initOriginBannerButtonListeners();
         this._initDestinationBannerButtonListeners();
         this._initWaypointBannerButtonListeners();
+        this._initAirwayBannerButtonListeners();
     }
 
     _initRowRecycler() {
@@ -793,6 +861,8 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
                     return WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.ORIGIN;
                 } else if ((sequence === this._flightPlan.getDestination() && this._flightPlan.hasDestination()) || sequence === this._flightPlan.getArrival()) {
                     return WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.DESTINATION;
+                } else if (sequence instanceof WT_FlightPlanAirwaySequence) {
+                    return WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.AIRWAY;
                 }
                 break;
             case WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG:
@@ -804,12 +874,12 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     _updateWaypointBanner() {
         let row = this.getSelectedRow();
         let leg = row.getActiveModeHTMLElement().leg;
-        let isEditable = leg.segment === WT_FlightPlan.Segment.ENROUTE;
+        let isEditable = leg.parent === leg.flightPlan.getEnroute();
         let isRemovable = isEditable || leg.segment === WT_FlightPlan.Segment.ORIGIN || leg.segment === WT_FlightPlan.Segment.DESTINATION;
 
         this._insertBeforeButton.enabled = isEditable;
         this._insertAfterButton.enabled = isEditable;
-        this._loadAirwayButton.enabled = (isEditable && leg.fix.airways && leg.fix.airways.length > 0);
+        this._loadAirwayButton.enabled = leg.segment === WT_FlightPlan.Segment.ENROUTE && leg.fix.airways && leg.fix.airways.length > 0;
         this._waypointRemoveButton.enabled = isRemovable;
     }
 
@@ -986,6 +1056,20 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         }
     }
 
+    _onAirwayBannerButtonPressed(eventType, button) {
+        let row = this.getSelectedRow();
+        let sequence = row.getMode() === WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.HEADER ? row.getActiveModeHTMLElement().sequence : null;
+
+        if (sequence) {
+            this._notifyButtonListeners({
+                button: button,
+                type: eventType,
+                row: row,
+                sequence: sequence
+            });
+        }
+    }
+
     open() {
     }
 
@@ -1014,12 +1098,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 WT_G3x5_TSCFlightPlanHTMLElement.BannerMode = {
     ORIGIN: 0,
     DESTINATION: 1,
-    WAYPOINT: 2
+    WAYPOINT: 2,
+    AIRWAY: 3
 };
 WT_G3x5_TSCFlightPlanHTMLElement.BANNER_MODE_ATTRIBUTES = [
     "origin",
     "destination",
-    "waypoint"
+    "waypoint",
+    "airway"
 ];
 /**
  * @enum {Number}
@@ -1050,7 +1136,13 @@ WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType = {
     ACTIVATE_LEG: 22,
     LOAD_AIRWAY: 23,
     WAYPOINT_REMOVE: 24,
-    WAYPOINT_INFO: 25
+    WAYPOINT_INFO: 25,
+    AIRWAY_COLLAPSE: 26,
+    AIRWAY_EXPAND: 27,
+    AIRWAY_COLLAPSE_ALL: 28,
+    AIRWAY_EXPAND_ALL: 29,
+    AIRWAY_REMOVE: 30,
+    AIRWAY_EDIT: 31
 };
 WT_G3x5_TSCFlightPlanHTMLElement.NAME = "wt-tsc-flightplan";
 WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE = document.createElement("template");
@@ -1219,6 +1311,9 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                     #wrapper[banner-mode="waypoint"] #waypointbanner {
                         display: grid;
                     }
+                    #wrapper[banner-mode="airway"] #airwaybanner {
+                        display: grid;
+                    }
                         .bannerPosition11 {
                             grid-area: 1 / 1;
                         }
@@ -1251,6 +1346,9 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                         }
                         #waypointdrct {
                             --button-img-image-height: 90%;
+                        }
+                        #loadnewairways {
+                            grid-area: 3 / 1 / 4 / 3;
                         }
     </style>
     <div id="wrapper">
@@ -1313,6 +1411,15 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                     <wt-tsc-button-label id="waypointinfo" class="bannerPosition42" labeltext="Waypoint Info"></wt-tsc-button-label>
                     <wt-tsc-button-label id="waypointremove" class="bannerPosition51" labeltext="Remove Waypoint"></wt-tsc-button-label>
                     <wt-tsc-button-statusbar id="flyover" class="bannerPosition52" labeltext="Fly Over Waypoint" enabled="false"></wt-tsc-button-statusbar>
+                </div>
+                <div id="airwaybanner" class="bannerContent">
+                    <wt-tsc-button-label id="airwaycollapse" class="bannerPosition11" labeltext="Collapse<br>Airway" enabled="false"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="airwayexpand" class="bannerPosition12" labeltext="Expand<br>Airway" enabled="false"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="collapseall" class="bannerPosition21" labeltext="Collapse<br>All" enabled="false"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="expandall" class="bannerPosition22" labeltext="Expand<br>All" enabled="false"></wt-tsc-button-label>
+                    <wt-tsc-button-value id="loadnewairways" labeltext="Load New Airways" valuetext="Expanded" enabled="false"></wt-tsc-button-value>
+                    <wt-tsc-button-label id="airwayremove" class="bannerPosition51" labeltext="Remove Airway"></wt-tsc-button-label>
+                    <wt-tsc-button-statusbar id="airwayedit" class="bannerPosition52" labeltext="Edit Airway" enabled="false"></wt-tsc-button-statusbar>
                 </div>
             </div>
         </wt-tsc-slidingbanner>
@@ -2571,7 +2678,7 @@ class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRend
     _drawHeader(htmlElement) {
         super._drawHeader(htmlElement);
 
-        this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.get(this.element.legs.length - 1)}`);
+        this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.get(this.element.legs.length - 1).fix.ident}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
 }
