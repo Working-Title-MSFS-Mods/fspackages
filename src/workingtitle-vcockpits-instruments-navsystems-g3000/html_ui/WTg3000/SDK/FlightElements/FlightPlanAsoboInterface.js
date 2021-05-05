@@ -72,6 +72,9 @@ class WT_FlightPlanAsoboInterface {
                 if (leg.transitionLLas && leg.transitionLLas.length > 1) {
                     entry.steps = leg.transitionLLas.slice(0, leg.transitionLLas.length - 1).map(lla => new WT_GeoPoint(lla.lat, lla.long));
                 }
+                if (leg.lla.alt > 0) {
+                    entry.advisoryAltitude = WT_Unit.METER.createNumber(leg.lla.alt);
+                }
                 array.push(entry);
             }
         }
