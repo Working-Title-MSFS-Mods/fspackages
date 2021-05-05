@@ -29,6 +29,22 @@ class WT_ReadOnlyArray {
     }
 
     /**
+     * Retrieves the first element of this array.
+     * @returns {T} the first element of this array, or undefined if this array is empty.
+     */
+    first() {
+        return this._array[0];
+    }
+
+    /**
+     * Retrieves the last element of this array.
+     * @returns {T} the last element of this array, or undefined if this array is empty.
+     */
+    last() {
+        return this._array[this._array.length - 1];
+    }
+
+    /**
      * Returns the index of the first occurrence of a value in this array.
      * @param {T} element - the value to locate in the array.
      * @param {Number} [fromIndex] - the array index at which to begin the search. If fromIndex is omitted, the search
