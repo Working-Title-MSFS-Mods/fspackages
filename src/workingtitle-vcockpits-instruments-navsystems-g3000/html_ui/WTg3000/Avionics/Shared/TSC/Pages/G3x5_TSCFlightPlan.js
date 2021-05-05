@@ -28,6 +28,16 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         };
 
         this._drctWaypoint = null;
+
+        this._initSettingModel();
+    }
+
+    _initSettingModel() {
+        this._settingModel = new WT_DataStoreSettingModel(WT_G3x5_TSCFlightPlan.SETTING_MODEL_ID);
+
+        this._settingModel.addSetting(this._newAirwayCollapseSetting = new WT_DataStoreSetting(this._settingModel, WT_G3x5_TSCFlightPlan.NEW_AIRWAY_COLLAPSE_SETTING_KEY, true, false, true));
+
+        this._settingModel.init();
     }
 
     /**
@@ -38,11 +48,20 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         return this._htmlElement;
     }
 
+    /**
+     * @readonly
+     * @type {WT_DataStoreSetting}
+     */
+    get newAirwayCollapseSetting() {
+        return this._newAirwayCollapseSetting;
+    }
+
     _createHTMLElement() {
         return new WT_G3x5_TSCFlightPlanHTMLElement();
     }
 
     _initHTMLElement() {
+        this.htmlElement.setParentPage(this);
         this._setDisplayedFlightPlan(this._fpm.activePlan);
     }
 
@@ -591,6 +610,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.htmlElement.scrollDown();
     }
 }
+WT_G3x5_TSCFlightPlan.SETTING_MODEL_ID = "GTC";
+WT_G3x5_TSCFlightPlan.NEW_AIRWAY_COLLAPSE_SETTING_KEY = "WT_FlightPlan_NewAirway_Collapse"
 WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
 
 /**
@@ -652,6 +673,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._airwayCollapseMap = new Map();
 
         /**
+         * @type {WT_G3x5_TSCFlightPlan}
+         */
+        this._parentPage = null;
+        /**
          * @type {WT_FlightPlan}
          */
         this._flightPlan = null;
@@ -674,6 +699,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
     _getTemplate() {
         return WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCFlightPlan}
+     */
+    get parentPage() {
+        return this._parentPage;
     }
 
     async _defineOriginBannerButtons() {
@@ -732,12 +765,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             this._airwayExpandButton,
             this._airwayCollapseAllButton,
             this._airwayExpandAllButton,
+            this._airwayLoadNewButton,
             this._airwayRemoveButton,
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#airwaycollapse`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#airwayexpand`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#collapseall`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#expandall`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#loadnewairways`, WT_TSCValueButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#airwayremove`, WT_TSCLabeledButton)
         ]);
     }
@@ -844,6 +879,9 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._initButtonListeners();
         this._initRowRecycler();
         this._isInit = true;
+        if (this._parentPage) {
+            this._updateFromParentPage();
+        }
         if (this._flightPlan) {
             this._updateFromFlightPlan();
         }
@@ -853,6 +891,40 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
     connectedCallback() {
         this._connectedCallbackHelper();
+    }
+
+    _initAirwayLoadNewButtonManager() {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(["Expanded", "Collapsed"]);
+        let context = {
+            title: "Load New Airways Setting",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            homePageGroup: this.parentPage.homePageGroup,
+            homePageName: this.parentPage.homePageName
+        };
+        this._airwayLoadNewButtonManager = new WT_TSCSettingValueButtonManager(this.parentPage.instrument, this._airwayLoadNewButton, this.parentPage.newAirwayCollapseSetting, this.parentPage.instrument.selectionListWindow1, context, value => value ? "Collapsed" : "Expanded", [false, true]);
+        this._airwayLoadNewButtonManager.init();
+    }
+
+    _updateFromParentPage() {
+        this._initAirwayLoadNewButtonManager();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlan} parentPage
+     */
+    setParentPage(parentPage) {
+        if (!parentPage || this.parentPage) {
+            return;
+        }
+
+        this._parentPage = parentPage;
+        if (this._isInit) {
+            this._updateFromParentPage();
+        }
     }
 
     _cleanUpFlightPlanListener() {
@@ -1111,7 +1183,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     getAirwaySequenceCollapse(airwaySequence) {
         let value = this._airwayCollapseMap.get(airwaySequence);
         if (value === undefined) {
-            value = false;
+            value = this._parentPage.newAirwayCollapseSetting.getValue();
             this._airwayCollapseMap.set(airwaySequence, value);
         }
         return value;
@@ -1632,7 +1704,7 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                     <wt-tsc-button-label id="airwayexpand" class="bannerPosition12" labeltext="Expand<br>Airway"></wt-tsc-button-label>
                     <wt-tsc-button-label id="collapseall" class="bannerPosition21" labeltext="Collapse<br>All"></wt-tsc-button-label>
                     <wt-tsc-button-label id="expandall" class="bannerPosition22" labeltext="Expand<br>All"></wt-tsc-button-label>
-                    <wt-tsc-button-value id="loadnewairways" labeltext="Load New Airways" valuetext="Expanded" enabled="false"></wt-tsc-button-value>
+                    <wt-tsc-button-value id="loadnewairways" labeltext="Load New Airways"></wt-tsc-button-value>
                     <wt-tsc-button-label id="airwayremove" class="bannerPosition51" labeltext="Remove Airway"></wt-tsc-button-label>
                     <wt-tsc-button-statusbar id="airwayedit" class="bannerPosition52" labeltext="Edit Airway" enabled="false"></wt-tsc-button-statusbar>
                 </div>
