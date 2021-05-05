@@ -280,7 +280,7 @@ class WT_FlightPlanAsoboInterface {
             case WT_FlightPlan.Segment.DESTINATION:
                 return this._asoboFlightPlanInfo.destinationIndex;
             case WT_FlightPlan.Segment.DEPARTURE:
-                let firstDepartureLeg = leg.flightPlan.getDeparture().legs.get(0);
+                let firstDepartureLeg = leg.flightPlan.getDeparture().legs.first();
                 let index = leg.index - firstDepartureLeg.index;
                 if (firstDepartureLeg.fix instanceof WT_RunwayWaypoint) {
                     // need to subtract 1 from index because the sim's flight plan does not include departure runway fixes.
@@ -288,11 +288,11 @@ class WT_FlightPlanAsoboInterface {
                 }
                 return index + 1; // add one to index since origin is at index 0.
             case WT_FlightPlan.Segment.ENROUTE:
-                return leg.index - leg.flightPlan.getEnroute().legs.get(0).index + this._asoboFlightPlanInfo.enrouteStartIndex;
+                return leg.index - leg.flightPlan.getEnroute().legs.first().index + this._asoboFlightPlanInfo.enrouteStartIndex;
             case WT_FlightPlan.Segment.ARRIVAL:
-                return leg.index - leg.flightPlan.getArrival().legs.get(0).index + this._asoboFlightPlanInfo.arrivalStartIndex;
+                return leg.index - leg.flightPlan.getArrival().legs.first().index + this._asoboFlightPlanInfo.arrivalStartIndex;
             case WT_FlightPlan.Segment.APPROACH:
-                return leg.index - leg.flightPlan.getApproach().legs.get(0).index;
+                return leg.index - leg.flightPlan.getApproach().legs.first().index;
         }
     }
 
@@ -374,7 +374,7 @@ class WT_FlightPlanAsoboInterface {
             throw "Attempted to sync a non-enroute airway sequence";
         }
 
-        let legBefore = airwaySequence.legs.get(0).previousLeg();
+        let legBefore = airwaySequence.legs.first().previousLeg();
         let asoboIndex;
         if (legBefore) {
             asoboIndex = this._findAsoboIndex(legBefore) + 1;
@@ -418,7 +418,7 @@ class WT_FlightPlanAsoboInterface {
             return;
         }
 
-        let startIndex = this._findAsoboIndex(airwaySequence.legs.get(0));
+        let startIndex = this._findAsoboIndex(airwaySequence.legs.first());
         if (startIndex < 0) {
             throw "Could not find leg in Asobo flight plan";
         }
