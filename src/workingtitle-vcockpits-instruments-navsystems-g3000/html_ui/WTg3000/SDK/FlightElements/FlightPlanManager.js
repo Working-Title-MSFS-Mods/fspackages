@@ -706,8 +706,6 @@ class WT_FlightPlanManager {
                 this._doRemoveEnrouteElement(event.index);
                 break;
         }
-        console.log(event);
-        console.log(this.activePlan);
     }
 }
 WT_FlightPlanManager._tempNM = WT_Unit.NMILE.createNumber(0);

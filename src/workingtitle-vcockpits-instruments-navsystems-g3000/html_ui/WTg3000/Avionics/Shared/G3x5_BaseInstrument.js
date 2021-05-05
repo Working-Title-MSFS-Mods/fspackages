@@ -177,7 +177,6 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     _updateFlightPlanManager(currentTime) {
         if (currentTime - this.flightPlanManagerWT.lastActiveSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
             try {
-                console.log(`syncing flight plan, force enroute sync ${this._needSyncEnrouteFromAsobo}`);
                 this.flightPlanManagerWT.syncActiveFromGame(this._needSyncEnrouteFromAsobo);
                 this._needSyncEnrouteFromAsobo = false;
             } catch (e) {
