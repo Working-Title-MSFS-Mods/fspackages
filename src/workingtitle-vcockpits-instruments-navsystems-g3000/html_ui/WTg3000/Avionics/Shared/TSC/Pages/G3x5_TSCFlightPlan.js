@@ -485,15 +485,29 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
-    _updateState() {
-        this._state._airplaneHeadingTrue = this.instrument.airplane.navigation.headingTrue();
-        this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
+    _activateNavButtons() {
+        super._activateNavButtons();
+
+        this.instrument.activateNavButton(5, "Up", this._onUpPressed.bind(this), true, "ICON_TSC_BUTTONBAR_UP.png");
+        this.instrument.activateNavButton(6, "Down", this._onDownPressed.bind(this), true, "ICON_TSC_BUTTONBAR_DOWN.png");
+    }
+
+    _deactivateNavButtons() {
+        super._deactivateNavButtons();
+
+        this.instrument.deactivateNavButton(5);
+        this.instrument.deactivateNavButton(6);
     }
 
     onEnter() {
         super.onEnter();
 
         this.htmlElement.open();
+    }
+
+    _updateState() {
+        this._state._airplaneHeadingTrue = this.instrument.airplane.navigation.headingTrue();
+        this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
     }
 
     onUpdate(deltaTime) {
@@ -511,6 +525,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
         this.htmlElement.close();
         this._updateDirectTo();
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollDown();
     }
 }
 WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
@@ -894,6 +916,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         let bannerMode;
         if (row) {
             row.onSelected();
+            this._rows.scrollManager.scrollToElement(row);
             bannerMode = this._getBannerModeFromRow(row);
         }
 
@@ -1077,7 +1100,59 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this.unselectRow();
         if (this._isInit) {
             this._banner.popOut();
+            this._rows.scrollManager.cancelScroll();
         }
+    }
+
+    _scrollSelectedRow(direction) {
+        let index = this._visibleRows.indexOf(this.getSelectedRow());
+        if (index < 0) {
+            return;
+        }
+
+        index += direction;
+        let row = this._visibleRows[index];
+        while (row) {
+            if (row.getMode() === WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG) {
+                this.selectRow(row);
+                return;
+            }
+            index += direction;
+            row = this._visibleRows[index];
+        }
+    }
+
+    scrollUp() {
+        if (!this._isInit) {
+            return;
+        }
+
+        if (this.getSelectedRow()) {
+            this._scrollSelectedRow(-1);
+        } else {
+            this._rows.scrollManager.scrollUp();
+        }
+    }
+
+    scrollDown() {
+        if (!this._isInit) {
+            return;
+        }
+
+        if (this.getSelectedRow()) {
+            this._scrollSelectedRow(1);
+        } else {
+            this._rows.scrollManager.scrollDown();
+        }
+    }
+
+    _updateScroll() {
+        this._rows.scrollManager.update();
+    }
+
+    _doUpdate(state) {
+        this._flightPlanRenderer.update(this, state);
+        this._updateScroll();
     }
 
     /**
@@ -1089,7 +1164,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             return;
         }
 
-        this._flightPlanRenderer.update(this, state);
+        this._doUpdate(state);
     }
 }
 /**
