@@ -295,9 +295,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _onDRCTButtonPressed(event) {
         let selectedRow = this.htmlElement.getSelectedRow();
+        let selectedRowModeHTMLElement = selectedRow ? selectedRow.getActiveModeHTMLElement() : null;
         let waypoint = null;
-        if (selectedRow && selectedRow.getMode() === WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG) {
-            waypoint = selectedRow.getActiveModeHTMLElement().leg.fix;
+        if (selectedRow && selectedRowModeHTMLElement.leg) {
+            waypoint = selectedRowModeHTMLElement.leg.fix;
         }
         this._openDRCTPage(waypoint);
     }
