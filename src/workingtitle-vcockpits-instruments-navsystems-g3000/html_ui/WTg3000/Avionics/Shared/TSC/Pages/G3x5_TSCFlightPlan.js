@@ -649,12 +649,24 @@ class WT_G3x5_TSCFlightPlanUnitsModel extends WT_G3x5_UnitsSettingModelAdapter {
         return this._distanceUnit;
     }
 
+    /**
+     * @readonly
+     * @type {WT_Unit}
+     */
+    get altitudeUnit() {
+        return this._altitudeUnit;
+    }
+
     _updateBearing() {
         this._bearingUnit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
     }
 
     _updateDistance() {
         this._distanceUnit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+    }
+
+    _updateAltitude() {
+        this._altitudeUnit = this.unitsSettingModel.altitudeSetting.getAltitudeUnit();
     }
 }
 
@@ -1257,6 +1269,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             this._updateAirwayCollapseMap();
             this._redrawFlightPlan();
         } else {
+            this._flightPlanRenderer.updateAltitudeConstraint(event.changedConstraint.leg);
         }
     }
 
@@ -2100,6 +2113,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._leg = null;
         this._bearingUnit = null;
         this._distanceUnit = null;
+        this._altitudeUnit = null;
         this._isActive = false;
         this._isInit = false;
     }
@@ -2165,10 +2179,12 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._distanceDisplay = this.shadowRoot.querySelector(`#dis`);
         [
             this._waypointButton,
-            this._altitudeButton
+            this._altitudeConstraintButton,
+            this._altitudeConstraint
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#waypoint`, WT_G3x5_TSCFlightPlanWaypointButton),
-            WT_CustomElementSelector.select(this.shadowRoot, `#alt`, WT_TSCLabeledButton)
+            WT_CustomElementSelector.select(this.shadowRoot, `#altconstraintbutton`, WT_TSCContentButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#altconstraint`, WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement)
         ]);
     }
 
@@ -2192,6 +2208,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._waypointButton.setWaypoint(null);
     }
 
+    _clearAltitudeConstraint() {
+        this._altitudeConstraint.update(null, this._altitudeUnit);
+    }
+
     _clearDTK() {
         this._dtkDisplay.textContent = "";
     }
@@ -2206,6 +2226,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
 
     _updateWaypointFromLeg() {
         this._waypointButton.setWaypoint(this._leg.fix);
+    }
+
+    _updateAltitudeConstraintFromLeg() {
+        this._altitudeConstraint.update(this._leg.altitudeConstraint, this._altitudeUnit);
     }
 
     _updateDTKFromLeg() {
@@ -2224,11 +2248,13 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     _updateFromLeg() {
         if (this._leg) {
             this._updateWaypointFromLeg();
+            this._updateAltitudeConstraintFromLeg();
             this._updateDTKFromLeg();
             this._updateDistanceFromLeg();
             this._updateAirwayFromLeg();
         } else {
             this._clearWaypointButton();
+            this._clearAltitudeConstraint();
             this._clearDTK();
             this._clearDistance();
             this._clearAirway();
@@ -2282,7 +2308,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
             return;
         }
 
-        this._altitudeButton.addButtonListener(listener);
+        this._altitudeConstraintButton.addButtonListener(listener);
     }
 
     removeAltitudeButtonListener(listener) {
@@ -2290,7 +2316,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
             return;
         }
 
-        this._altitudeButton.removeButtonListener(listener);
+        this._altitudeConstraintButton.removeButtonListener(listener);
     }
 
     onUnselected() {
@@ -2299,6 +2325,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
 
     onSelected() {
         this._waypointButton.highlight = "true";
+    }
+
+    updateAltitudeConstraint() {
+        this._updateAltitudeConstraintFromLeg();
     }
 
     /**
@@ -2321,6 +2351,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         if (!unitsModel.distanceUnit.equals(this._distanceUnit)) {
             this._distanceUnit = unitsModel.distanceUnit;
             this._updateDistanceFromLeg();
+        }
+        if (!unitsModel.altitudeUnit.equals(this._altitudeUnit)) {
+            this._altitudeUnit = unitsModel.altitudeUnit;
+            this._updateAltitudeConstraintFromLeg();
         }
     }
 
@@ -2417,7 +2451,9 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
         </svg>
         <div id="grid">
             <wt-tsc-button-fpwaypoint id="waypoint"></wt-tsc-button-fpwaypoint>
-            <wt-tsc-button-label id="alt"></wt-tsc-button-label>
+            <wt-tsc-button-content id="altconstraintbutton">
+                <wt-tsc-flightplan-row-altitudeconstraint id="altconstraint" slot="content"></wt-tsc-flightplan-row-altitudeconstraint>
+            </wt-tsc-button-content>
             <div id="dtkdis">
                 <div id="dtk"></div>
                 <div id="dis"></div>
@@ -2441,6 +2477,187 @@ class WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement extends WT_G3x5_TS
 WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement.NAME = "wt-tsc-flightplan-row-airwayfooter";
 
 customElements.define(WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement.NAME, WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement);
+
+class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._constraint = null;
+        this._altitudeUnit = null;
+        this._isInit = false;
+
+        this._initFormatter();
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE;
+    }
+
+    _initFormatter() {
+        let formatterOpts = {
+            precision: 1,
+            unitCaps: true
+        };
+        let htmlFormatterOpts = {
+            numberUnitDelim: "",
+            classGetter: {
+                _numberClassList: [],
+                _unitClassList: [WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.UNIT_CLASS],
+                getNumberClassList() {
+                    return this._numberClassList;
+                },
+                getUnitClassList() {
+                    return this._unitClassList;
+                }
+            }
+        };
+        this._altitudeFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
+    }
+
+    _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+
+        this._ceilText = this.shadowRoot.querySelector(`#ceiltext`);
+        this._floorText = this.shadowRoot.querySelector(`#floortext`);
+    }
+
+    connectedCallback() {
+        this._defineChildren();
+        this._isInit = true;
+        this._doUpdate();
+    }
+
+    _displayNone() {
+        this._ceilText.innerHTML = `_____${this._altitudeFormatter.getFormattedUnitHTML(WT_Unit.FOOT.createNumber(0), this._altitudeUnit)}`;
+        this._wrapper.setAttribute("mode", "none");
+    }
+
+    _displayAdvisoryAltitude(altitude) {
+        this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(altitude, this._altitudeUnit);
+        this._wrapper.setAttribute("mode", "advisory");
+    }
+
+    /**
+     *
+     * @param {WT_AltitudeConstraint} constraint
+     */
+    _displayPublishedConstraint(constraint) {
+        switch (constraint.type) {
+            case WT_AltitudeConstraint.Type.AT_OR_ABOVE:
+                this._floorText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.floor, this._altitudeUnit);
+                this._wrapper.setAttribute("mode", "above");
+                break;
+            case WT_AltitudeConstraint.Type.AT_OR_BELOW:
+                this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.ceiling, this._altitudeUnit);
+                this._wrapper.setAttribute("mode", "below");
+                break;
+            case WT_AltitudeConstraint.Type.AT:
+                this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.ceiling, this._altitudeUnit);
+                this._wrapper.setAttribute("mode", "at");
+                break;
+            case WT_AltitudeConstraint.Type.BETWEEN:
+                this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.ceiling, this._altitudeUnit);
+                this._floorText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.floor, this._altitudeUnit);
+                this._wrapper.setAttribute("mode", "between");
+                break;
+        }
+    }
+
+    _doUpdate() {
+        if (this._constraint) {
+            if (this._constraint.advisoryAltitude) {
+                this._displayAdvisoryAltitude(this._constraint.advisoryAltitude);
+            } else if (this._constraint.publishedConstraint) {
+                this._displayPublishedConstraint(this._constraint.publishedConstraint);
+            } else {
+                this._displayNone();
+            }
+        } else {
+            this._displayNone();
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLegAltitudeConstraint} constraint
+     */
+    update(constraint, altitudeUnit) {
+        this._constraint = constraint;
+        this._altitudeUnit = altitudeUnit;
+        if (this._isInit) {
+            this._doUpdate();
+        }
+    }
+}
+WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.UNIT_CLASS = "unit";
+WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.NAME = "wt-tsc-flightplan-row-altitudeconstraint";
+WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--flightplanaltitudeconstraint-padding-left, 0.2em);
+            top: var(--flightplanaltitudeconstraint-padding-top, 0.2em);
+            width: calc(100% - var(--flightplanaltitudeconstraint-padding-left, 0.2em) - var(--flightplanaltitudeconstraint-padding-right, 0.2em));
+            height: calc(100% - var(--flightplanaltitudeconstraint-padding-top, 0.2em) - var(--flightplanaltitudeconstraint-padding-bottom, 0.2em));
+            color: white;
+        }
+            #altitude {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: center;
+            }
+                .altitudeComponent {
+                    display: none;
+                }
+                #wrapper[mode="none"] .none,
+                #wrapper[mode="advisory"] .advisory,
+                #wrapper[mode="above"] .above,
+                #wrapper[mode="below"] .below,
+                #wrapper[mode="at"] .at,
+                #wrapper[mode="between"] .between {
+                    display: block;
+                }
+                #ceilbar {
+                    width: 100%;
+                    height: 0;
+                    border-bottom: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) white;
+                }
+                #floorbar {
+                    width: 100%;
+                    height: 0;
+                    border-top: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) white;
+                }
+
+        .${WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.UNIT_CLASS} {
+            font-size: var(--flightplanaltitudeconstraint-unit-font-size, 0.75em)
+        }
+    </style>
+    <div id="wrapper">
+        <div id="altitude">
+            <div id="ceilbar" class="altitudeComponent between at below"></div>
+            <div id="ceiltext" class="altitudeComponent between at below advisory none"></div>
+            <div id="floortext" class="altitudeComponent between above"></div>
+            <div id="floorbar" class="altitudeComponent between at above"></div>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.NAME, WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement);
 
 class WT_G3x5_TSCFlightPlanRowHeaderHTMLElement extends HTMLElement {
     constructor() {
@@ -2853,6 +3070,13 @@ class WT_G3x5_TSCFlightPlanRenderer {
         }
     }
 
+    updateAltitudeConstraint(leg) {
+        let row = this._legRows.get(leg);
+        if (row) {
+            row.getActiveModeHTMLElement().updateAltitudeConstraint();
+        }
+    }
+
     /**
      *
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
@@ -3147,7 +3371,7 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
         let rwyTransition = departure.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
         let enrouteTransition = departure.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
         let prefix = `${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}.`;
-        let suffix = enrouteTransition ? `.${this.element.legs.get(this.element.legs.length - 1).fix.ident}` : "";
+        let suffix = (enrouteTransition && this.element.legs.length > 0) ? `.${this.element.legs.get(this.element.legs.length - 1).fix.ident}` : "";
         this._headerModeHTMLElement.setTitleText(`Departure –<br>${departure.airport.ident}–${prefix}${departure.name}${suffix}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
@@ -3214,7 +3438,7 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
         let arrival = this.element.procedure;
         let enrouteTransition = arrival.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
         let rwyTransition = arrival.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
-        let prefix = enrouteTransition ? `${this.element.legs.get(0).fix.ident}.` : "";
+        let prefix = (enrouteTransition && this.element.legs.length > 0) ? `${this.element.legs.get(0).fix.ident}.` : "";
         let suffix = `.${rwyTransition ? `RW${rwyTransition.runway.designationFull}` : "ALL"}`;
         this._headerModeHTMLElement.setTitleText(`Arrival –<br>${arrival.airport.ident}–${prefix}${arrival.name}${suffix}`);
         this._headerModeHTMLElement.setSubtitleText("");
