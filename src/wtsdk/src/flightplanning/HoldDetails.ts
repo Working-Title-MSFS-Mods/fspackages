@@ -73,7 +73,7 @@ export class HoldDetails {
    * @returns The hold entry type for a given set of courses.
    */
   static calculateEntryType(holdCourse: number, inboundCourse: number, turnDirection: HoldTurnDirection): HoldEntry {
-    const courseDiff = Avionics.Utils.angleDiff(inboundCourse, holdCourse);
+    const courseDiff = Avionics.Utils.diffAngle(inboundCourse, holdCourse);
     if (turnDirection === HoldTurnDirection.Right) {
       if (courseDiff >= -130 && courseDiff <= 70) {
         return HoldEntry.Direct;

@@ -515,7 +515,7 @@ export class ManagedFlightPlan {
     const planeHeading = SimVar.GetSimVarValue("PLANE HEADING DEGREES TRUE", "Radians") * Avionics.Utils.RAD2DEG;
 
     const headingToFix = Avionics.Utils.computeGreatCircleHeading(planeCoords, waypoint.infos.coordinates);
-    const angleDiff = Math.abs(Avionics.Utils.angleDiff(planeHeading, headingToFix));
+    const angleDiff = Math.abs(Avionics.Utils.diffAngle(planeHeading, headingToFix));
 
     const turnDurationSeconds = (angleDiff / 3) + 6;
     const interceptDistance = (groundSpeed / 60 / 60) * turnDurationSeconds * 1.25;
