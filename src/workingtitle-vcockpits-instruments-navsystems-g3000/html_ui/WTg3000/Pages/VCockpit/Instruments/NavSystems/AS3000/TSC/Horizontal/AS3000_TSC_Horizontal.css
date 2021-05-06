@@ -430,6 +430,15 @@ as3000-tsc-horizontal-element #FlightPlan wt-tsc-flightplan {
     font-size: 5vh;
 }
 
+as3000-tsc-horizontal-element #ProceduresWT wt-tsc-procedures {
+    position: absolute;
+    left: 5%;
+    top: 5%;
+    width: 90%;
+    height: 90%;
+    font-size: 5vh;
+}
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
           position: absolute;
           top: 20%;
