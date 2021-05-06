@@ -169,14 +169,12 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 this.trs.setAttribute("fill", "#11d011");
                 this.trs.setAttribute("transform", "scale(" + _scale + ")");
                 this.cursorSVG.appendChild(this.trs);
-                
                 this.cursorSVGClip = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGClip.setAttribute("fill", "transparent");
                 this.cursorSVGClip.setAttribute("d", "M24 22 L62 22 L62 7 L86 7 L86 70 L62 70 L62 56 L24 56 Z");
                 this.cursorSVGClip.setAttribute("stroke", "white");
                 this.cursorSVGClip.setAttribute("stroke-width", "3");
-                this.trs.appendChild(this.cursorSVGClip);               
-                
+                this.trs.appendChild(this.cursorSVGClip);
                 if (!this.cursorSVGShape)
                     this.cursorSVGShape = document.createElementNS(Avionics.SVG.NS, "path");
                 this.cursorSVGShape.setAttribute("fill", "black");
@@ -184,8 +182,6 @@ class CJ4_SAI_AirspeedIndicator extends HTMLElement {
                 this.cursorSVGShape.setAttribute("stroke", "white");
                 this.cursorSVGShape.setAttribute("stroke-width", "0");
                 this.trs.appendChild(this.cursorSVGShape);
-
-
 
                 var _cursorWidth = (cursorWidth / _scale);
                 var _cursorHeight = (cursorHeight / _scale + 10);
@@ -845,14 +841,22 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
             this.pitch_root.setAttribute("viewBox", "-200 -200 400 300");
             this.pitch_root.setAttribute("overflow", "visible");
             this.pitch_root.setAttribute("style", "position:absolute; z-index: -2;");
+            let pitchSvgDefs = document.createElementNS(Avionics.SVG.NS, "defs");
+            let pitchSvgClip = document.createElementNS(Avionics.SVG.NS, "clipPath");
+            pitchSvgClip.setAttribute("id", "pitchClip");
+            let attitudePitchContainerShape = document.createElementNS(Avionics.SVG.NS, "path");
+            attitudePitchContainerShape.setAttribute("d", "M 0 -130 L -120 -70 L -120 70 L 0 130 L 120 70 L 120 -70 Z");
+            pitchSvgClip.appendChild(attitudePitchContainerShape);
+            pitchSvgDefs.appendChild(pitchSvgClip);
+            this.pitch_root.appendChild(pitchSvgDefs);
             pitchContainer.appendChild(this.pitch_root);
             {
                 this.pitch_root_group = document.createElementNS(Avionics.SVG.NS, "g");
                 this.pitch_root.appendChild(this.pitch_root_group);
                 var x = -115;
-                var y = -122;
-                var w = 230;
-                var h = 235;
+                var y = -102;
+                var w = 240;
+                var h = 270;              
                 let attitudePitchContainer = document.createElementNS(Avionics.SVG.NS, "svg");
                 attitudePitchContainer.setAttribute("width", w.toString());
                 attitudePitchContainer.setAttribute("height", h.toString());
@@ -861,9 +865,12 @@ class CJ4_SAI_AttitudeIndicator extends HTMLElement {
                 attitudePitchContainer.setAttribute("viewBox", x + " " + y + " " + w + " " + h);
                 attitudePitchContainer.setAttribute("overflow", "hidden");
                 this.pitch_root_group.appendChild(attitudePitchContainer);
+                let attitudePitchInnerContainer = document.createElementNS(Avionics.SVG.NS, "g");
+                attitudePitchInnerContainer.setAttribute("clip-path", "url(#pitchClip)");
+                attitudePitchContainer.appendChild(attitudePitchInnerContainer);
                 {
                     this.attitude_pitch = document.createElementNS(Avionics.SVG.NS, "g");
-                    attitudePitchContainer.appendChild(this.attitude_pitch);
+                    attitudePitchInnerContainer.appendChild(this.attitude_pitch);
                     let maxDash = 80;
                     let fullPrecisionLowerLimit = -10;
                     let fullPrecisionUpperLimit = 10;
