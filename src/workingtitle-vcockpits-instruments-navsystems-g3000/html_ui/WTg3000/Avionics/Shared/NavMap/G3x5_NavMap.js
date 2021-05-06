@@ -185,7 +185,7 @@ class WT_G3x5_NavMap {
         this.view.addLayer(new WT_MapViewRangeRingLayer());
         this.view.addLayer(new WT_MapViewRangeCompassArcLayer({
             getForwardTickBearing: function(state) {
-                return state.model.orientation.mode === WT_G3x5_NavMap.Orientation.TRK ? state.model.airplane.navigation.trackTrue() : state.model.airplane.navigation.headingTrue();
+                return (state.model.orientation.mode === WT_G3x5_NavMap.Orientation.TRK && !state.model.airplane.sensors.isOnGround()) ? state.model.airplane.navigation.trackTrue() : state.model.airplane.navigation.headingTrue();
             }
         }));
         this.view.addLayer(new WT_MapViewCrosshairLayer());
