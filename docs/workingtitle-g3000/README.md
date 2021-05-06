@@ -27,12 +27,22 @@ This mod enables the G3000/5000 to natively display Navigraph charts. Use of thi
 
 During a flight, you can check your Navigraph account link status in the GTC Database Status page. If both the Standby and Active fields display "Available", this means an account has been linked and chart database access is available. If the Standby field displays "Available" and the Active field displays "None", this means an account was linked but access has expired and you need to re-authenticate using the above process to restore chart database access. If both fields display "None", this means no Navigraph account has been linked.
 
+### Enabling Offline AI and SimConnect (e.g. VATSIM) Traffic
+The base sim only provides information on Live AI Traffic to JS/HTML instruments. As a result, by default the mod's traffic systems only support Live AI traffic. However, the mod provides the option to enable support for Offline AI and SimConnect-injected traffic using a third-party app. To do so, please complete the following steps:
+1. Download and install laurinius's MSFS Traffic Service app (https://github.com/laurinius/MSFSTrafficService). The app requires .NET Core 3.1 to run (https://dotnet.microsoft.com/download).
+2. Change the `useTrafficService` setting in the mod configuration file to `true`.
+3. Start the MSFS Traffic Service app and ensure that the service is running (this can be done before or after starting the sim).
+4. (Optional) Configure the port used by MSFS Traffic Service app by changing the port number within the app itself and changing the `trafficServicePort` setting in the mod configuration file to match. Not recommended unless the default port (8383) is not working and you know what you are doing.
+
+Once you have completed these steps, the mod will display and issue traffic alerts for the additional types of traffic supported by the MSFS Traffic Service app. If the mod encounters any errors retrieving traffic data from the traffic service app during a flight, it will fall back to using the default sim's traffic data until it detects that the traffic service app is sending good data again. Lastly, it is recommended to set the `useTrafficService` mod configuration setting to `false` when you are not planning to use the traffic service app; while leaving the setting at `true` will not result in any errors, it does incur a small and otherwise unnecessary performance cost.
+
 ### Release Highlights for v0.6.2
 *Please refer to the changelog for a more detailed description of changes in this release.*
 - Enabled support for laurinius's MSFS Traffic Service app (available on Github), which adds Offline AI traffic and SimConnect-injected traffic to the mod's traffic systems. *This feature requires that you download and install laurinius's app separately and must be manually enabled via the mod config file*.
 
 **Fixes**
 - \[General\] Fixed a bug with initializing airport data with no listed runways.
+- \[NavMap\] While in TRACK UP mode on the ground, the compass arc's reference tick mark now correctly indicates the aircraft's current heading instead of ground track (which cannot always be reliably calculated on the ground).
 - \[Traffic\] Fixed an error with ground track computation for traffic contacts.
 - \[PFD\] Airspeed altimeter speed bugs are no longer mispositioned when airspeed is below the minimum indicated airspeed.
 - \[GTC\] Fixed a bug where the Charts page would sometimes automatically change the selected airport after closing a popup or navigating back to it from the pan/zoom control page.

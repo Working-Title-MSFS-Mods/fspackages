@@ -10,6 +10,7 @@
 
 **Fixes**
 - \[General\] Fixed a bug with initializing airport data with no listed runways.
+- \[NavMap\] While in TRACK UP mode on the ground, the compass arc's reference tick mark now correctly indicates the aircraft's current heading instead of ground track (which cannot always be reliably calculated on the ground).
 - \[Traffic\] Fixed an error with ground track computation for traffic contacts.
 - \[PFD\] Airspeed altimeter speed bugs are no longer mispositioned when airspeed is below the minimum indicated airspeed.
 - \[GTC\] Fixed a bug where the Charts page would sometimes automatically change the selected airport after closing a popup or navigating back to it from the pan/zoom control page.
