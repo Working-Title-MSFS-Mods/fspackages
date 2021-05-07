@@ -49,45 +49,44 @@ class AS3000_TSC extends NavSystemTouch {
     constructor() {
         super();
 
-        this.speedBugs = this.createSpeedBugsPage();
         this.pfdPrefix = "AS3000_PFD_1";
         this._isChangingPages = false;
         this.history = [];
         this.initDuration = 4000;
 
-        this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
-        this._icaoSearchers = {
-            airport: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.AIRPORT),
-            vor: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.VOR),
-            ndb: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.NDB),
-            int: new WT_ICAOSearcher(this, WT_ICAOSearcher.Keys.INT)
-        };
+        this._initUnitsSettingModel();
+        this._initLightingControl();
+        this._initNavigraphAPI();
+        this._initMFDPaneSettings();
 
-        this._mfdMainPaneSettings = {controller: new WT_DataStoreController("MFD", null)};
-        this._mfdMainPaneSettings.controller.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.controller));
+        this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
+        this._mfdPaneControlID;
+    }
+
+    _initUnitsSettingModel() {
+        this.unitsSettingModel.init();
+    }
+
+    _initHalfPaneController(paneSettings) {
+        paneSettings.settingModel.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.settingModel));
+        paneSettings.settingModel.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.settingModel));
+        paneSettings.settingModel.update();
+    }
+
+    _initMFDPaneSettings() {
+        this._mfdMainPaneSettings = {settingModel: new WT_DataStoreSettingModel("MFD", null)};
+        this._mfdMainPaneSettings.settingModel.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.settingModel));
         this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
 
-        this._mfdLeftPaneSettings = {controller: new WT_DataStoreController(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
-        this._mfdRightPaneSettings = {controller: new WT_DataStoreController(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
+        this._mfdLeftPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
+        this._mfdRightPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
         this._initHalfPaneController(this._mfdLeftPaneSettings);
         this._initHalfPaneController(this._mfdRightPaneSettings);
 
         this._mfdLeftPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
         this._mfdRightPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
 
-        this._mfdMainPaneSettings.controller.update();
-
-        this._initLightingControl();
-
-        this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
-        this._mfdPaneControlID;
-    }
-
-    _initHalfPaneController(paneSettings) {
-        paneSettings.controller.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.controller));
-        paneSettings.controller.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.controller));
-        paneSettings.controller.addSetting(paneSettings.waypoint = new WT_G3x5_MFDHalfPaneWaypointSetting(paneSettings.controller));
-        paneSettings.controller.update();
+        this._mfdMainPaneSettings.settingModel.update();
     }
 
     _initLightingControl() {
@@ -97,23 +96,11 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    /**
-     * @readonly
-     * @property {WT_ICAOWaypointFactory} icaoWaypointFactory
-     * @type {WT_ICAOWaypointFactory}
-     */
-    get icaoWaypointFactory() {
-        return this._icaoWaypointFactory;
+    _initNavigraphAPI() {
+        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
     }
 
-    /**
-     * @readonly
-     * @property {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}} icaoSearchers
-     * @type {{airport:WT_ICAOSearcher, vor:WT_ICAOSearcher, ndb:WT_ICAOSearcher, int:WT_ICAOSearcher}}
-     */
-    get icaoSearchers() {
-        return this._icaoSearchers;
-    }
+    get templateID() { return "AS3000_TSC"; }
 
     get mfdPaneControlID() {
         return this._mfdPaneControlID;
@@ -129,6 +116,38 @@ class AS3000_TSC extends NavSystemTouch {
 
     get mfdRightPaneSettings() {
         return this._mfdRightPaneSettings;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NearestAirportList}
+     */
+    get nearestAirportList() {
+        return this._nearestAirportList;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NearestWaypointList<WT_VOR>}
+     */
+    get nearestVORList() {
+        return this._nearestVORList;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NearestWaypointList<WT_NDB>}
+     */
+    get nearestNDBList() {
+        return this._nearestNDBList;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NearestWaypointList<WT_Intersection>}
+     */
+    get nearestINTList() {
+        return this._nearestINTList;
     }
 
     getSelectedMFDPane() {
@@ -147,46 +166,56 @@ class AS3000_TSC extends NavSystemTouch {
         return AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT.has(SimVar.GetSimVarValue("ATC MODEL", "string"));
     }
 
-    createSpeedBugsPage() {
-        return new AS3000_TSC_SpeedBugs();
-    }
-
-    get templateID() { return "AS3000_TSC"; }
-
-    _initMFDPaneControlID() {
-        this._mfdPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
-    }
-
-    _initMFDPaneSelectDisplay() {
-        this._mfdPaneSelectDisplay = this.getChildById("Softkey_1_Container").querySelector(`tsc-mfdpaneselectdisplay`);
-        this._mfdPaneSelectDisplay.selectColor = this.urlConfig.index === 1 ? WT_G3x5_MFDMainPane.LEFT_TSC_COLOR : WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR;
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-        this.pagesContainer = this.getChildById("PagesDisplay");
+    _defineSoftKeys() {
         this.pageTitle = this.getChildById("PageTitle");
         this.pfdSoftkey = this.getChildById("SoftKey_2");
         this.mfdSoftkey = this.getChildById("SoftKey_3");
         this.navcomSoftkey = this.getChildById("SoftKey_4");
+    }
+
+    _defineLabelBar() {
+    }
+
+    _createSpeedBugsPage() {
+    }
+
+    _createPFDSettingsPage() {
+    }
+
+    _createTrafficMapSettingsPage(homePageGroup, homePageName) {
+    }
+
+    _createNavMapTrafficSettingsPage(homePageGroup, homePageName, mapSettings) {
+    }
+
+    _initPages() {
+        this.pagesContainer = this.getChildById("PagesDisplay");
 
         this._mfdPagesLeft = {};
         this._mfdPagesRight = {};
 
+        this._speedBugs = this._createSpeedBugsPage();
+
         this.pageGroups = [
             new NavSystemPageGroup("PFD", this, [
                 new NavSystemPage("PFD Home", "PFDHome", new AS3000_TSC_PFDHome()),
-                new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
-                new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD Home", "PFD", "Generic")),
+                new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
+                new NavSystemPage("Timers", "Timers", new WT_G3x5_TSCTimer("PFD", "PFD Home", "Generic")),
                 new NavSystemPage("Minimums", "Minimums", new AS3000_TSC_Minimums()),
                 this._pfdMapSettings = new NavSystemPage("PFD Map Settings", "PFDMapSettings", new WT_G3x5_TSCPFDMapSettings("PFD", "PFD Home", "PFD")),
-                new NavSystemPage("PFD Settings", "PFDSettings", new WT_G3000_TSCPFDSettings("PFD", "PFD Home", "PFD")),
+                this.pfdNavMapTrafficSettings = new NavSystemPage("PFD NavMap Traffic Settings", "PFDNavMapTrafficSettings", this._createNavMapTrafficSettingsPage("PFD", "PFD Home", this._pfdMapSettings.element.mapSettings)),
+                new NavSystemPage("PFD Settings", "PFDSettings", this._createPFDSettingsPage()),
             ]),
             new NavSystemPageGroup("MFD", this, [
                 this._mfdHome = new NavSystemPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
-                this._mfdMapSettingsPage = new NavSystemPage("Map Settings", "MFDMapSettings", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD")),
+                this._mfdPagesLeft.mapSettings = new NavSystemPage("Map Settings Left", "MFDMapSettingsLeft", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
+                this._mfdPagesRight.mapSettings = new NavSystemPage("Map Settings Right", "MFDMapSettingsRight", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.mapPointerControl = new NavSystemPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.mapPointerControl = new NavSystemPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.trafficMap = new NavSystemPage("Traffic Map Settings Left", "TrafficMapSettingsLeft", this._createTrafficMapSettingsPage("MFD", "MFD Home")),
+                this._mfdPagesRight.trafficMap = new NavSystemPage("Traffic Map Settings Right", "TrafficMapSettingsRight", this._createTrafficMapSettingsPage("MFD", "MFD Home")),
+                this._mfdPagesLeft.navMapTraffic = new NavSystemPage("NavMap Traffic Settings Left", "NavMapTrafficSettingsLeft", this._createNavMapTrafficSettingsPage("MFD", "MFD Home", this._mfdPagesLeft.mapSettings.element.mapSettings)),
+                this._mfdPagesRight.navMapTraffic = new NavSystemPage("NavMap Traffic Settings Right", "NavMapTrafficSettingsRight", this._createNavMapTrafficSettingsPage("MFD", "MFD Home", this._mfdPagesRight.mapSettings.element.mapSettings)),
                 this._mfdPagesLeft.weatherSelection = new NavSystemPage("Weather Selection Left", "WeatherSelectionLeft", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Left")),
                 this._mfdPagesRight.weatherSelection = new NavSystemPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 this._mfdPagesLeft.weatherRadar = new NavSystemPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
@@ -197,41 +226,52 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Departure Selection", "DepartureSelection", new AS3000_TSC_DepartureSelection()),
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
                 new NavSystemPage("Approach Selection", "ApproachSelection", new AS3000_TSC_ApproachSelection()),
-                new NavSystemPage("Waypoint Info", "WaypointsInfo", new AS3000_TSC_WaypointInfo()),
-                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfoPage("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display, this.mfdLeftPaneSettings.waypoint, this.icaoWaypointFactory)),
-                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfoPage("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display, this.mfdRightPaneSettings.waypoint, this.icaoWaypointFactory)),
-                new NavSystemPage("Nearest", "Nearest", new AS3000_TSC_NRST()),
-                new NavSystemPage("Nearest Airport", "NearestAirport", new AS3000_TSC_NRST_Airport()),
-                new NavSystemPage("Nearest Intersection", "NearestIntersection", new AS3000_TSC_NRST_Intersection()),
-                new NavSystemPage("Nearest VOR", "NearestVOR", new AS3000_TSC_NRST_VOR()),
-                new NavSystemPage("Nearest NDB", "NearestNDB", new AS3000_TSC_NRST_NDB()),
-                new NavSystemPage("Speed Bugs", "SpeedBugs", this.speedBugs),
-                new NavSystemPage("Aircraft Systems", "AircraftSystems", new AS3000_TSC_AircraftSystems()),
+                new NavSystemPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
+                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.intInfo = new NavSystemPage("INT Info Left", "INTInfoLeft", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.intInfo = new NavSystemPage("INT Info Right", "INTInfoRight", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.vorInfo = new NavSystemPage("VOR Info Left", "VORInfoLeft", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.vorInfo = new NavSystemPage("VOR Info Right", "VORInfoRight", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.ndbInfo = new NavSystemPage("NDB Info Left", "NDBInfoLeft", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.ndbInfo = new NavSystemPage("NDB Info Right", "NDBInfoRight", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
+                new NavSystemPage("Nearest Waypoint Selection", "NearestWaypointSelection", new WT_G3x5_TSCNearestWaypointSelection("MFD", "MFD Home")),
+                this._mfdPagesLeft.nearestAirport = new NavSystemPage("Nearest Airport Left", "NearestAirportLeft", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestAirport = new NavSystemPage("Nearest Airport Right", "NearestAirportRight", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestINT = new NavSystemPage("Nearest INT Left", "NearestINTLeft", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestINT = new NavSystemPage("Nearest INT Right", "NearestINTRight", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestVOR = new NavSystemPage("Nearest VOR Left", "NearestVORLeft", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestVOR = new NavSystemPage("Nearest VOR Right", "NearestVORRight", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestNDB = new NavSystemPage("Nearest NDB Left", "NearestNDBLeft", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestNDB = new NavSystemPage("Nearest NDB Right", "NearestNDBRight", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
+                this._mfdPagesLeft.charts = new NavSystemPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.LEFT, this.icaoWaypointFactory)),
+                this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT, this.icaoWaypointFactory)),
+                this._mfdPagesLeft.chartsTouchControl = new NavSystemPage("Charts Touch Control Left", "ChartsTouchControlLeft", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesLeft.charts.element)),
+                this._mfdPagesRight.chartsTouchControl = new NavSystemPage("Charts Touch Control Right", "ChartsTouchControlRight", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesRight.charts.element)),
+                new NavSystemPage("Aircraft Systems", "AircraftSystems", this._createAircraftSystemsPage()),
                 new NavSystemPage("Lighting Configuration", "LightingConfig", new AS3000_TSC_LightingConfig()),
                 new NavSystemPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
-                new NavSystemPage("Setup", "UtilitiesSetup", new AS3000_TSC_UtilitiesSetup()),
-                new NavSystemPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD"))
+                new NavSystemPage("Setup", "UtilitiesSetup", new WT_G3x5_TSCUtilitiesSetup("MFD", "MFD Home")),
+                new NavSystemPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD")),
+                new NavSystemPage("Database Status", "DatabaseStatus", new WT_G3x5_TSCDatabaseStatus("MFD", "MFD Home", this._navigraphAPI))
             ]),
             new NavSystemPageGroup("NavCom", this, [
                 new NavSystemPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
             ]),
         ];
-        this.navButtons = [
-            new AS3000_TSC_NavButton("NavBar_1", this),
-            new AS3000_TSC_NavButton("NavBar_2", this),
-            new AS3000_TSC_NavButton("NavBar_3", this),
-            new AS3000_TSC_NavButton("NavBar_4", this),
-            new AS3000_TSC_NavButton("NavBar_5", this),
-            new AS3000_TSC_NavButton("NavBar_6", this)
-        ];
-        this.transponderWindow = new NavSystemElementContainer("Transponder", "TransponderWindow", new AS3000_TSC_Transponder());
+    }
+
+    _createTransponderPopUp() {
+    }
+
+    _initPopUpWindows() {
+        this.transponderWindow = new NavSystemElementContainer("Transponder", "TransponderWindow", this._createTransponderPopUp());
         this.transponderWindow.setGPS(this);
         this.audioRadioWindow = new NavSystemElementContainer("Audio & Radios", "AudioRadiosWindow", new AS3000_TSC_AudioRadios());
         this.audioRadioWindow.setGPS(this);
         this.frequencyKeyboard = new NavSystemElementContainer("Frequency Keyboard", "frequencyKeyboard", new AS3000_TSC_FrequencyKeyboard());
         this.frequencyKeyboard.setGPS(this);
-        this.timeKeyboard = new NavSystemElementContainer("Time Keyboard", "timeKeyboard", new AS3000_TSC_TimeKeyboard());
-        this.timeKeyboard.setGPS(this);
         this.speedKeyboard = new NavSystemElementContainer("Speed Keyboard", "speedKeyboard", new AS3000_TSC_SpeedKeyboard());
         this.speedKeyboard.setGPS(this);
         this.fullKeyboard = new NavSystemElementContainer("Keyboard", "fullKeyboard", new AS3000_TSC_FullKeyboard());
@@ -244,8 +284,6 @@ class AS3000_TSC extends NavSystemTouch {
         this.duplicateWaypointSelection.setGPS(this);
         this.loadFrequencyWindow = new NavSystemElementContainer("Frequency Window", "LoadFrequencyPopup", new WT_G3x5_TSCLoadFrequency());
         this.loadFrequencyWindow.setGPS(this);
-        this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointInfo_WaypointOptions", new WT_G3x5_TSCWaypointOptions());
-        this.waypointOptions.setGPS(this);
         this.confirmationWindow = new AS3000_TSC_ConfirmationWindow();
         this.terrainAlerts = new AS3000_TSC_TerrainAlert();
         this.addIndependentElementContainer(new NavSystemElementContainer("Terrain Alert", "terrainAlert", this.terrainAlerts));
@@ -256,8 +294,56 @@ class AS3000_TSC extends NavSystemTouch {
         this.selectionListWindow2 = new NavSystemElementContainer("Dynamic Selection List Window 2", "DynamicSelectionListWindow2", new WT_G3x5_TSCSelectionListWindow());
         this.selectionListWindow2.setGPS(this);
 
+        this.numKeyboard = new NavSystemElementContainer("Numeric Keyboard", "NumKeyboard", new WT_G3x5_TSCNumericKeyboard());
+        this.numKeyboard.setGPS(this);
+
+        this.timeKeyboard = new NavSystemElementContainer("Time Keyboard", "TimeKeyboard", new WT_G3x5_TSCTimeKeyboard());
+        this.timeKeyboard.setGPS(this);
+
         this.mapDetailSelect = new NavSystemElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
+
+        this.navMapTrafficMapSettings = new NavSystemElementContainer("Nav Map Traffic Map Settings", "NavMapTrafficMapSettings", new WT_G3x5_TSCNavMapTrafficMapSettings());
+        this.navMapTrafficMapSettings.setGPS(this);
+
+        this.chartsOptions = new NavSystemElementContainer("Charts Options", "ChartsOptions", new WT_G3x5_TSCChartsOptions());
+        this.chartsOptions.setGPS(this);
+
+        this.chartsLightThreshold = new NavSystemElementContainer("Charts Light Threshold", "ChartsLightThreshold", this._createChartsLightThresholdPopUp());
+        this.chartsLightThreshold.setGPS(this);
+
+        this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointOptions", new WT_G3x5_TSCWaypointOptions());
+        this.waypointOptions.setGPS(this);
+    }
+
+    _initNavButtons() {
+        this.navButtons = [
+            new AS3000_TSC_NavButton("NavBar_1", this),
+            new AS3000_TSC_NavButton("NavBar_2", this),
+            new AS3000_TSC_NavButton("NavBar_3", this),
+            new AS3000_TSC_NavButton("NavBar_4", this),
+            new AS3000_TSC_NavButton("NavBar_5", this),
+            new AS3000_TSC_NavButton("NavBar_6", this)
+        ];
+    }
+
+    _initMFDPaneControlID() {
+        this._mfdPaneControlID = this.urlConfig.index === 1 ? WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.LEFT : WT_G3x5_MFDHalfPaneControlSetting.Touchscreen.RIGHT;
+    }
+
+    _initMFDPaneSelectDisplay() {
+        this._mfdPaneSelectDisplay = this.getChildById("Softkey_1_Container").querySelector(`tsc-mfdpaneselectdisplay`);
+        this._mfdPaneSelectDisplay.selectColor = this.urlConfig.index === 1 ? WT_G3x5_MFDMainPane.LEFT_TSC_COLOR : WT_G3x5_MFDMainPane.RIGHT_TSC_COLOR;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._defineSoftKeys();
+        this._defineLabelBar();
+        this._initPages();
+        this._initPopUpWindows();
+        this._initNavButtons();
 
         this._initMFDPaneControlID();
         this._initMFDPaneSelectDisplay();
@@ -274,13 +360,52 @@ class AS3000_TSC extends NavSystemTouch {
             this.pfdPrefix = pfdPrefix_elem[0].textContent;
         }
     }
+
     disconnectedCallback() {
         super.disconnectedCallback();
     }
+
     reboot() {
         super.reboot();
         if (this.terrainAlerts)
             this.terrainAlerts.reset();
+    }
+
+    _initNearestAirportList() {
+        this._nearestAirportList = new WT_G3x5_NearestAirportList(this.airplane, this.icaoWaypointFactory, this.icaoSearchers.airport);
+        this._nearestAirportListUpdated = false;
+    }
+
+    _initNearestVORList() {
+        this._nearestVORList = new WT_NearestWaypointList(this.airplane, this.icaoWaypointFactory.getVORs.bind(this.icaoWaypointFactory), this.icaoSearchers.vor);
+        this._nearestVORList.searchLimit = 25;
+        this._nearestVORListUpdated = false;
+    }
+
+    _initNearestNDBList() {
+        this._nearestNDBList = new WT_NearestWaypointList(this.airplane, this.icaoWaypointFactory.getNDBs.bind(this.icaoWaypointFactory), this.icaoSearchers.ndb);
+        this._nearestNDBList.searchLimit = 25;
+        this._nearestNDBListUpdated = false;
+    }
+
+    _initNearestINTList() {
+        this._nearestINTList = new WT_NearestWaypointList(this.airplane, this.icaoWaypointFactory.getINTs.bind(this.icaoWaypointFactory), this.icaoSearchers.int);
+        this._nearestINTList.searchLimit = 25;
+        this._nearestINTListUpdated = false;
+    }
+
+    _initNearestWaypoints() {
+        this._initNearestAirportList();
+        this._initNearestVORList();
+        this._initNearestNDBList();
+        this._initNearestINTList();
+        this._lastNearestWaypointListUpdateTime = 0;
+    }
+
+    Init() {
+        super.Init();
+
+        this._initNearestWaypoints();
     }
 
     _updatePageTitle() {
@@ -292,7 +417,8 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _updateMFDPaneSelectDisplay() {
-        if (this.getCurrentPageGroup().name === "MFD" && this.getCurrentPage().title !== "Map Pointer Control") {
+        let currentPage = this.getCurrentPage();
+        if (this.getCurrentPageGroup().name === "MFD" && currentPage.title !== "Map Pointer Control" && currentPage.title !== WT_G3x5_TSCChartsTouchControl.TITLE) {
             if (this._mfdPaneSelectDisplay.style.display !== "block") {
                 this._mfdPaneSelectDisplay.style.display = "block";
             }
@@ -323,12 +449,42 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    onUpdate() {
-        this.icaoWaypointFactory.update();
+    _updateNearestWaypoints(currentTime) {
+        // stagger updates for performance
+        let delta = currentTime - this._lastNearestWaypointListUpdateTime;
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 3) && !this._nearestAirportListUpdated) {
+            this.nearestAirportList.update();
+            this._nearestAirportListUpdated = true;
+        }
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 2) && !this._nearestVORListUpdated) {
+            this.nearestVORList.update();
+            this._nearestVORListUpdated = true;
+        }
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 1) && !this._nearestNDBListUpdated) {
+            this.nearestNDBList.update();
+            this._nearestNDBListUpdated = true;
+        }
+        if ((delta >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL / 4 * 0) && !this._nearestINTListUpdated) {
+            this.nearestINTList.update();
+            this._nearestINTListUpdated = true;
+        }
+
+        if (currentTime - this._lastNearestWaypointListUpdateTime >= AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL) {
+            this._lastNearestWaypointListUpdateTime = currentTime;
+            this._nearestAirportListUpdated = false;
+            this._nearestVORListUpdated = false;
+            this._nearestNDBListUpdated = false;
+            this._nearestINTListUpdated = false;
+        }
+    }
+
+    _doUpdates(currentTime) {
+        super._doUpdates(currentTime);
 
         this._updatePageTitle();
         this._updateSoftkeyLabels();
         this._updateMFDPaneSelectDisplay();
+        this._updateNearestWaypoints(currentTime);
     }
 
     _onMFDMainPaneModeChanged(setting, newValue, oldValue) {
@@ -341,14 +497,28 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage) {
-        if (currentPageGroup.name === "MFD" && currentPage.name === "Map Settings" && currentPage.title === "Map Pointer Control") {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Map Settings" || currentPage.title === "Map Pointer Control" || currentPage.element instanceof WT_G3x5_TSCNavMapTrafficSettings)) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
+    _onMFDPaneTrafficDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && currentPage.element instanceof WT_G3x5_TSCTrafficMapSettings) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
     }
 
     _onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage) {
-        if (currentPageGroup.name === "MFD" && currentPage.title === "Weather Selection" && currentPage.title === "Weather Radar Settings") {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === "Weather Selection" || currentPage.title === "Weather Radar Settings")) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", "MFD Home");
+        }
+    }
+
+    _onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage) {
+        if (currentPageGroup.name === "MFD" && (currentPage.title === WT_G3x5_TSCCharts.TITLE || currentPage.title === WT_G3x5_TSCChartsTouchControl.TITLE)) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
         }
@@ -362,8 +532,14 @@ class AS3000_TSC extends NavSystemTouch {
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                     this._onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage);
                     break;
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                    this._onMFDPaneTrafficDisplaySwitch(currentPageGroup, currentPage);
+                    break;
                 case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
                     this._onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage);
+                    break;
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+                    this._onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage);
                     break;
             }
         }
@@ -389,32 +565,33 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _changeMFDMapRange(delta) {
-        let controllerID = `MFD-${this.getSelectedMFDPane()}`;
-        let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
-    }
-
-    _changePFDMapRange(delta) {
-        let controllerID = "PFD";
-        let currentIndex = WT_MapController.getSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT);
-        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_NavMap.MAP_RANGE_LEVELS.length - 1), 0);
-        WT_MapController.setSettingValue(controllerID, WT_MapRangeSetting.KEY_DEFAULT, newIndex, true);
+    _changePFDTrafficMapRange(delta) {
+        let settingModelID = WT_G3x5_TrafficMap.SETTING_MODEL_ID;
+        let key = WT_G3x5_TrafficMapRangeSetting.KEY_DEFAULT;
+        let currentIndex = WT_MapSettingModel.getSettingValue(settingModelID, key);
+        let newIndex = Math.max(Math.min(currentIndex + delta, WT_G3x5_TrafficMap.MAP_RANGE_LEVELS.length - 1), 0);
+        WT_MapSettingModel.setSettingValue(settingModelID, key, newIndex, true);
     }
 
     _handleZoomEventPFD(event) {
-        if (!this._pfdMapSettings.element.insetMapShowSetting.getValue()) {
-            return;
-        }
-
-        switch (event) {
-            case "BottomKnob_Small_INC":
-                this._changePFDMapRange(1);
-                break;
-            case "BottomKnob_Small_DEC":
-                this._changePFDMapRange(-1);
-                break;
+        if (this._pfdMapSettings.element.insetMapShowSetting.getValue()) {
+            switch (event) {
+                case "BottomKnob_Small_INC":
+                    this._pfdMapSettings.element.mapSettings.rangeSetting.changeRange(1);
+                    break;
+                case "BottomKnob_Small_DEC":
+                    this._pfdMapSettings.element.mapSettings.rangeSetting.changeRange(-1);
+                    break;
+            }
+        } else if (WT_DataStoreSettingModel.getSettingValue("PFD", WT_G3x5_PFDTrafficInsetMapShowSetting.KEY, false)) {
+            switch (event) {
+                case "BottomKnob_Small_INC":
+                    this._changePFDTrafficMapRange(1);
+                    break;
+                case "BottomKnob_Small_DEC":
+                    this._changePFDTrafficMapRange(-1);
+                    break;
+            }
         }
     }
 
@@ -423,10 +600,20 @@ class AS3000_TSC extends NavSystemTouch {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 switch (event) {
                     case "BottomKnob_Small_INC":
-                        this._changeMFDMapRange(1);
+                        this.getSelectedMFDPanePages().mapSettings.element.mapSettings.rangeSetting.changeRange(1);
                         break;
                     case "BottomKnob_Small_DEC":
-                        this._changeMFDMapRange(-1);
+                        this.getSelectedMFDPanePages().mapSettings.element.mapSettings.rangeSetting.changeRange(-1);
+                        break;
+                }
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this.getSelectedMFDPanePages().trafficMap.element.changeRange(1);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this.getSelectedMFDPanePages().trafficMap.element.changeRange(-1);
                         break;
                 }
                 break;
@@ -437,6 +624,16 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                     case "BottomKnob_Small_DEC":
                         this.getSelectedMFDPanePages().weatherRadar.element.changeRange(-1);
+                        break;
+                }
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+                switch (event) {
+                    case "BottomKnob_Small_INC":
+                        this.getSelectedMFDPanePages().charts.element.changeZoom(-1);
+                        break;
+                    case "BottomKnob_Small_DEC":
+                        this.getSelectedMFDPanePages().charts.element.changeZoom(1);
                         break;
                 }
                 break;
@@ -495,10 +692,28 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _handleMapPointerEvent(event) {
-        if (event === "BottomKnob_Push" && this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+    _handleMapPointerControlNavigationEvent(event) {
+        if (this.getCurrentPage().title === "Map Pointer Control") {
+            this.goBack();
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
+        }
+    }
+
+    _handleChartsTouchControlNavigationEvent(event) {
+        if (this.getCurrentPage().title === WT_G3x5_TSCChartsTouchControl.TITLE) {
+            this.goBack();
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS) {
+            this.closePopUpElement();
+            this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().chartsTouchControl.name);
+        }
+    }
+
+    _handleBottomKnobPushEvent(event) {
+        if (event === "BottomKnob_Push") {
+            this._handleMapPointerControlNavigationEvent(event);
+            this._handleChartsTouchControlNavigationEvent(event);
         }
     }
 
@@ -508,7 +723,7 @@ class AS3000_TSC extends NavSystemTouch {
         this._handleNavigationEvent(event);
         this._handleZoomEvent(event);
         this._handleControlEvent(event);
-        this._handleMapPointerEvent(event);
+        this._handleBottomKnobPushEvent(event);
     }
 
     goBack() {
@@ -528,7 +743,7 @@ class AS3000_TSC extends NavSystemTouch {
         let data = new AS3000_TSC_NavButton_Data();
         data.title = _title;
         data.callback = _callback;
-        data.imagePath = "/WTg3000/SDK/Assets/Images/TSC/" + _imagePath;
+        data.imagePath = "/WTg3000/SDK/Assets/Images/Garmin/TSC/" + _imagePath;
         data.isActive = true;
         this.navButtons[_id - 1].setState(data, _fromPopUp);
     }
@@ -587,11 +802,33 @@ class AS3000_TSC extends NavSystemTouch {
 AS3000_TSC.LIGHTING_CONTROL_ALLOWED_AIRCRAFT = new Set([
     "TT:ATCCOM.AC_MODEL_TBM9.0.text"
 ]);
+AS3000_TSC.NEAREST_WAYPOINT_LIST_UPDATE_INTERVAL = 5000;
 
 class AS3000_TSC_PageInfos {
 }
 class AS3000_TSC_PFDHome extends NavSystemElement {
-    init(root) {
+    constructor() {
+        super();
+
+        this._initTrafficInsetMapSettingModel();
+    }
+
+    _initTrafficInsetMapSettingModel() {
+        this._trafficInsetMapSettingModel = new WT_DataStoreSettingModel("PFD");
+        this._trafficInsetMapSettingModel.addSetting(this._trafficInsetMapShowSetting = new WT_G3x5_PFDTrafficInsetMapShowSetting(this._trafficInsetMapSettingModel));
+    }
+
+    _defineTrafficMapButton(root) {
+        let trafficMapButton = root.querySelector(`#TrafficMapButton`);
+        if (trafficMapButton instanceof WT_TSCStatusBarImageButton) {
+            this._trafficMapButton = trafficMapButton;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async _defineChildren(root) {
         this.NavSourceButton = this.gps.getChildById("NavSourceButton");
         this.NavSourceButton_Value = this.NavSourceButton.getElementsByClassName("lowerValue")[0];
         this.OBSButton = this.gps.getChildById("OBSButton");
@@ -604,10 +841,14 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
         this.SpeedBugsButton = this.gps.getChildById("SpeedBugsButton_PFD");
         this.TimersButton = this.gps.getChildById("TimersButton");
         this.MinimumsButton = this.gps.getChildById("MinimumsButton");
-        this.TrafficMapButton = this.gps.getChildById("TrafficMapButton");
         this.PFDMapSettingsButton = this.gps.getChildById("PFDMapSettingsButton");
         this.SensorsButton = this.gps.getChildById("SensorsButton");
         this.PFDSettingsButton = this.gps.getChildById("PFDSettingsButton");
+
+        await WT_Wait.awaitCallback(this._defineTrafficMapButton.bind(this, root));
+    }
+
+    _initButtonListeners() {
         this.gps.makeButton(this.NavSourceButton, this.sendMouseEvent.bind(this.gps, this.gps.pfdPrefix + "_NavSourceSwitch"));
         this.gps.makeButton(this.Bearing1Button, this.sendMouseEvent.bind(this.gps, this.gps.pfdPrefix + "_BRG1Switch"));
         this.gps.makeButton(this.Bearing2Button, this.sendMouseEvent.bind(this.gps, this.gps.pfdPrefix + "_BRG2Switch"));
@@ -617,10 +858,27 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
         this.gps.makeButton(this.PFDMapSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "PFD Map Settings"));
         this.gps.makeButton(this.PFDSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "PFD", "PFD Settings"));
     }
+
+    _initButtonManagers() {
+        this._trafficMapButtonManager = new WT_TSCSettingStatusBarButtonManager(this._trafficMapButton, this._trafficInsetMapShowSetting);
+        this._trafficMapButtonManager.init();
+    }
+
+    async _initHelper(root) {
+        await this._defineChildren(root);
+        this._initButtonListeners();
+        this._initButtonManagers();
+    }
+
+    init(root) {
+        this._initHelper(root);
+    }
+
     onEnter() {
         this.gps.setTopKnobText("");
         this.gps.setBottomKnobText("-Range+");
     }
+
     onUpdate(_deltaTime) {
         if (SimVar.GetSimVarValue("GPS DRIVES NAV1", "Boolean")) {
             Avionics.Utils.diffAndSet(this.NavSourceButton_Value, "FMS");
@@ -670,10 +928,13 @@ class AS3000_TSC_PFDHome extends NavSystemElement {
                 break;
         }
     }
+
     onExit() {
     }
+
     onEvent(_event) {
     }
+
     sendMouseEvent(_event) {
         LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", _event);
     }
@@ -687,24 +948,29 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     init(root) {
         this._mapButton = this.gps.getChildById("MapButton");
         this._mapButtonTitle = this._mapButton.getElementsByClassName("label")[0];
+        this._trafficButton = this.gps.getChildById("TrafficButton");
+        this._trafficButtonTitle = this._trafficButton.getElementsByClassName("label")[0];
         this._weatherButton = this.gps.getChildById("WeatherButton");
         this._weatherButtonTitle = this._weatherButton.getElementsByClassName("label")[0];
         this.directToButton = this.gps.getChildById("DirectToButton");
         this.FlightPlanButton = this.gps.getChildById("FlightPlanButton");
         this.procButton = this.gps.getChildById("ProcButton");
+        this._chartsButton = this.gps.getChildById("ChartsButton");
         this.NearestButton = this.gps.getChildById("NearestButton");
         this.speedBugsButton = this.gps.getChildById("SpeedBugsButton_MFD");
         this.WaypointsInfoButton = this.gps.getChildById("WaypointInfoButton");
         this.aircraftSystemsButton = this.gps.getChildById("AircraftSystemsButton");
         this.utilitiesButton = this.gps.getChildById("UtilitiesButton");
         this.gps.makeButton(this._mapButton, this._onMapButtonPressed.bind(this));
+        this.gps.makeButton(this._trafficButton, this._onTrafficButtonPressed.bind(this));
         this.gps.makeButton(this._weatherButton, this._onWeatherButtonPressed.bind(this));
         this.gps.makeButton(this.directToButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Direct To"));
         this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
         this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
-        this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest"));
+        this.gps.makeButton(this._chartsButton, this._onChartsButtonPressed.bind(this));
+        this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Waypoint Selection"));
         this.gps.makeButton(this.speedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Speed Bugs"));
-        this.gps.makeButton(this.WaypointsInfoButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Waypoint Info"));
+        this.gps.makeButton(this.WaypointsInfoButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Waypoint Info Selection"));
         this.gps.makeButton(this.aircraftSystemsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Aircraft Systems"));
         this.gps.makeButton(this.utilitiesButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Utilities"));
 
@@ -714,15 +980,19 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.mfdLeftPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
         this.gps.mfdRightPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
 
-        this._updateMapWeatherButtons();
+        this._updatePaneDisplayButtons();
+    }
+
+    _openMapSettingsPage() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().mapSettings.name);
     }
 
     _openWeatherSelectPage() {
         this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().weatherSelection.name);
     }
 
-    _openMapSettingsPage() {
-        this.gps.SwitchToPageName("MFD", "Map Settings");
+    _openTrafficSettingsPage() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().trafficMap.name);
     }
 
     _onMapButtonPressed() {
@@ -731,6 +1001,15 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
             this._openMapSettingsPage();
         } else {
             settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        }
+    }
+
+    _onTrafficButtonPressed() {
+        let settings = this.gps.getSelectedMFDPaneSettings();
+        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC) {
+            this._openTrafficSettingsPage();
+        } else {
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC);
         }
     }
 
@@ -743,45 +1022,63 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         }
     }
 
-    _updateMapWeatherButtons() {
+    _onChartsButtonPressed() {
+        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().charts.name);
+    }
+
+    _updatePaneDisplayButtons() {
         let display = this.gps.getSelectedMFDPaneSettings().display.getValue();
         switch (display) {
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
                 this._mapButton.setAttribute("state", "Active");
-                this._mapButtonTitle.innerHTML = "Map Settings";
+                this._mapButtonTitle.textContent = "Map Settings";
+                this._trafficButton.setAttribute("state", "");
+                this._trafficButtonTitle.textContent = "Traffic";
                 this._weatherButton.setAttribute("state", "");
-                this._weatherButtonTitle.innerHTML = "Weather";
+                this._weatherButtonTitle.textContent = "Weather";
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                this._mapButton.setAttribute("state", "");
+                this._mapButtonTitle.textContent = "Map";
+                this._trafficButton.setAttribute("state", "Active");
+                this._trafficButtonTitle.textContent = "Traffic Settings";
+                this._weatherButton.setAttribute("state", "");
+                this._weatherButtonTitle.textContent = "Weather";
                 break;
             case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
-                this._weatherButton.setAttribute("state", "Active");
-                this._weatherButtonTitle.innerHTML = "Weather<br>Selection";
                 this._mapButton.setAttribute("state", "");
-                this._mapButtonTitle.innerHTML = "Map";
+                this._mapButtonTitle.textContent = "Map";
+                this._trafficButton.setAttribute("state", "");
+                this._trafficButtonTitle.textContent = "Traffic";
+                this._weatherButton.setAttribute("state", "Active");
+                this._weatherButtonTitle.textContent = "Weather Selection";
                 break;
             default:
-                this._weatherButton.setAttribute("state", "");
-                this._weatherButtonTitle.innerHTML = "Weather";
                 this._mapButton.setAttribute("state", "");
-                this._mapButtonTitle.innerHTML = "Map";
+                this._mapButtonTitle.textContent = "Map";
+                this._trafficButton.setAttribute("state", "");
+                this._trafficButtonTitle.textContent = "Traffic";
+                this._weatherButton.setAttribute("state", "");
+                this._weatherButtonTitle.textContent = "Weather";
         }
     }
 
     _onPaneControlChanged(setting, newValue, oldValue) {
         if (this.gps.mfdPaneControlID !== undefined && ((newValue & this.gps.mfdPaneControlID) !== (oldValue & this.gps.mfdPaneControlID))) {
-            this._updateMapWeatherButtons();
+            this._updatePaneDisplayButtons();
         }
     }
 
     _onPaneDisplayChanged(setting, newValue, oldValue) {
         if (setting === this.gps.getSelectedMFDPaneSettings().display) {
-            this._updateMapWeatherButtons();
+            this._updatePaneDisplayButtons();
         }
     }
 
     _onMainPaneModeChanged(setting, newValue, oldValue) {
         if (this.gps && this.gps.getCurrentPage().name === "MFD Home") {
             this._updateNavButtons();
-            this._updateMapWeatherButtons();
+            this._updatePaneDisplayButtons();
         }
     }
 
@@ -996,7 +1293,7 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
 
         this.altitudeKeyboard.element = new AS3000_TSC_AltitudeKeyboard();
 
-        this.scrollController = new WT_TouchScrollController(this.waypointsBody, 2000, 0, 5);
+        this.scrollController = new WT_TSCScrollManager(this.waypointsBody, 2000, 0, 5);
     }
 
     onUpdate(_deltaTime) {
@@ -1298,37 +1595,6 @@ class AS3000_TSC_ApproachSelection extends NavSystemTouch_ApproachSelection {
 }
 
 /*
- * Aircraft Systems Page (via MFD Home)
- */
-class AS3000_TSC_AircraftSystems extends NavSystemElement {
-    init(root) {
-        this.lightingButton = this.gps.getChildById("LightingConfigButton");
-
-        this.gps.makeButton(this.lightingButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Lighting Configuration"));
-    }
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-    onEvent(_event) {
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        return true;
-    }
-}
-
-/*
  * Lighting Configuration Page (via Aircraft Systems Page): controls backlighting of PFD, MFD, and touchscreen, and all G3000 bezel keys/knobs
  */
 class AS3000_TSC_LightingConfig extends NavSystemElement {
@@ -1439,43 +1705,6 @@ class AS3000_TSC_Utilities extends NavSystemElement {
     }
 }
 
-/*
- * Setup Page (via Utilities)
- */
-class AS3000_TSC_UtilitiesSetup extends NavSystemElement {
-    init(root) {
-        this.avionicsSettingsButton = this.gps.getChildById("AvionicsSettingsButton");
-
-        this.gps.makeButton(this.avionicsSettingsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Avionics Settings"));
-    }
-
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-    }
-
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onEvent(_event) {
-    }
-
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        return true;
-    }
-}
-
 class AS3000_TSC_WaypointInfo extends NavSystemElement {
     init(root) {
         this.airportBtn = this.gps.getChildById("WPInfoAirport_Btn");
@@ -1511,731 +1740,6 @@ class AS3000_TSC_WaypointInfo extends NavSystemElement {
         return true;
     }
 }
-class AS3000_TSC_AirportInfo_FreqLine {
-}
-class AS3000_TSC_AirportInfo_RunwayLine {
-}
-class AS3000_TSC_AirportInfo extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.frequencyElements = [];
-        this.runwayElements = [];
-        this.showInMap = false;
-
-        this.tabbedContent = new WT_TSCTabbedContent(this);
-    }
-    init(root) {
-        this.geoCalc = new GeoCalcInfo(this.gps);
-        this.centerDisplay = (root.getElementsByClassName("CenterDisplay")[0]);
-        this.infoTab = this.gps.getChildById("AirportInfo_InfoTab");
-        this.freqsTab = this.gps.getChildById("AirportInfo_FreqsTab");
-        this.runwaysTab = this.gps.getChildById("AirportInfo_RunwaysTab");
-        this.activeTab = this.infoTab;
-        this.airportSelection = this.gps.getChildById("AirportInfo_SelectedWaypoint");
-        this.airportSelection_mainText = this.airportSelection.getElementsByClassName("mainText")[0];
-        this.airportSelection_mainValue = this.airportSelection.getElementsByClassName("mainValue")[0];
-        this.airportSelection_title = this.airportSelection.getElementsByClassName("title")[0];
-        this.airportSelection_symbol = this.airportSelection.getElementsByClassName("waypointSymbol")[0];
-        this.waypointOptions = this.gps.getChildById("AirportInfo_Options");
-        this.city = (root.getElementsByClassName("city")[0]);
-        this.region = (root.getElementsByClassName("region")[0]);
-        this.bearing_value = (root.getElementsByClassName("bearing_value")[0]);
-        this.distance_value = (root.getElementsByClassName("distance_value")[0]);
-        this.latitude = (root.getElementsByClassName("latitude")[0]);
-        this.longitude = (root.getElementsByClassName("longitude")[0]);
-        this.elev_value = (root.getElementsByClassName("elev_value")[0]);
-        this.time_value = (root.getElementsByClassName("time_value")[0]);
-        this.fuel_value = (root.getElementsByClassName("fuel_value")[0]);
-        this.privacy = (root.getElementsByClassName("privacy")[0]);
-        this.frequencyTable = (root.getElementsByClassName("Freqs")[0]);
-        this.frequencyScrollElement = new NavSystemTouch_ScrollElement();
-        this.frequencyScrollElement.elementContainer = this.frequencyTable;
-        this.frequencyScrollElement.elementSize = this.frequencyTable.getBoundingClientRect().height / 4;
-        this.runwayTable = (root.getElementsByClassName("Runways")[0]);
-        this.runwaysScrollElement = new NavSystemTouch_ScrollElement();
-        this.runwaysScrollElement.elementContainer = this.runwayTable;
-        this.runwaysScrollElement.elementSize = this.runwayTable.getBoundingClientRect().height / 3;
-        this.gps.makeButton(this.infoTab, this.switchPage.bind(this, "Info", this.infoTab));
-        this.gps.makeButton(this.freqsTab, this.switchPage.bind(this, "Freqs", this.freqsTab));
-        this.gps.makeButton(this.runwaysTab, this.switchPage.bind(this, "Runways", this.runwaysTab));
-        this.gps.makeButton(this.airportSelection, this.openKeyboard.bind(this));
-        this.gps.makeButton(this.waypointOptions, this.openOptions.bind(this));
-        this.tabbedContent.init(root.getElementsByClassName("tabContainer")[0]);
-    }
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        if (this.currPage == "Freqs") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpFreq.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownFreq.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-        }
-        else if (this.currPage == "Runways") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpRunways.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownRunways.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-        }
-        if (this.airport && this.showInMap) {
-            let infos = this.airport.infos;
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", infos.lat);
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", infos.long);
-            SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 1);
-        }
-        if (this.gps.lastRelevantICAO) {
-            this.endKeyboard(this.gps.lastRelevantICAO);
-            this.gps.lastRelevantICAO = null;
-        }
-    }
-    onUpdate(_deltaTime) {
-        if (this.frequencyScrollElement.elementSize == 0) {
-            this.frequencyScrollElement.elementSize = this.frequencyTable.getBoundingClientRect().height / 4;
-        }
-        this.frequencyScrollElement.update();
-        if (this.runwaysScrollElement.elementSize == 0) {
-            this.runwaysScrollElement.elementSize = this.runwayTable.getBoundingClientRect().height / 3;
-        }
-        this.runwaysScrollElement.update();
-        if (this.airport) {
-            let infos = this.airport.infos;
-            if (infos.lat && infos.long) {
-                this.geoCalc.SetParams(SimVar.GetSimVarValue("PLANE LATITUDE", "degree"), SimVar.GetSimVarValue("PLANE LONGITUDE", "degree"), infos.lat, infos.long, true);
-                this.geoCalc.Compute(this.onEndGeoCalc.bind(this));
-            }
-        }
-    }
-    onEndGeoCalc() {
-        Avionics.Utils.diffAndSet(this.bearing_value, fastToFixed(this.geoCalc.bearing, 0) + "°");
-        Avionics.Utils.diffAndSet(this.distance_value, fastToFixed(this.geoCalc.distance, 0) + "NM");
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-        this.gps.deactivateNavButton(5);
-        this.gps.deactivateNavButton(6);
-        SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", 0);
-        SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", 0);
-        SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 0);
-        if (this.airport) {
-            this.gps.lastRelevantICAOType = "A";
-            this.gps.lastRelevantICAO = this.airport.infos.icao;
-        }
-        this.showInMap = false;
-    }
-    onEvent(_event) {
-    }
-    openKeyboard() {
-        this.gps.deactivateNavButton(5);
-        this.gps.deactivateNavButton(6);
-        this.gps.fullKeyboard.element.setContext(this.endKeyboard.bind(this), "A");
-        this.gps.switchToPopUpPage(this.gps.fullKeyboard);
-    }
-    endKeyboard(_icao) {
-        if (_icao != "") {
-            this.airport = new WayPoint(this.gps);
-            this.airport.type = "A";
-            this.gps.facilityLoader.getFacilityCB(_icao, (wp) => {
-                this.airport = wp;
-                this.onLoadEnd();
-            });
-        }
-        else {
-            this.airport = null;
-            this.onLoadEnd();
-        }
-    }
-    onLoadEnd() {
-        if (this.airport) {
-            let infos = this.airport.infos;
-            this.city.textContent = infos.city ? infos.city : "";
-            this.region.textContent = infos.region ? infos.region : "";
-            this.latitude.textContent = infos.lat ? this.gps.latitudeFormat(infos.lat) : "";
-            this.longitude.textContent = infos.long ? this.gps.longitudeFormat(infos.long) : "";
-            this.elev_value.textContent = infos.coordinates && infos.coordinates.alt ? fastToFixed(infos.coordinates.alt, 0) + "FT" : "";
-            this.fuel_value.textContent = infos.fuel ? infos.fuel : "";
-            switch (infos.privateType) {
-                case 0:
-                    this.privacy.textContent = "UNKNOWN";
-                    break;
-                case 1:
-                    this.privacy.textContent = "PUBLIC";
-                    break;
-                case 2:
-                    this.privacy.textContent = "MILITARY";
-                    break;
-                case 3:
-                    this.privacy.textContent = "PRIVATE";
-                    break;
-            }
-            this.airportSelection_mainText.textContent = "";
-            this.airportSelection_mainValue.textContent = infos.ident;
-            this.airportSelection_title.textContent = infos.name;
-            let symbol = infos.imageFileName();
-            this.airportSelection_symbol.setAttribute("src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            for (let i = 0; i < infos.frequencies.length; i++) {
-                if (i >= this.frequencyElements.length) {
-                    let freqLine = new AS3000_TSC_AirportInfo_FreqLine();
-                    freqLine.frequency = infos.frequencies[i];
-                    freqLine.lineElem = document.createElement("div");
-                    freqLine.lineElem.setAttribute("class", "line");
-                    this.frequencyTable.appendChild(freqLine.lineElem);
-                    freqLine.freqNameElem = document.createElement("div");
-                    freqLine.freqNameElem.setAttribute("class", "frequencyName");
-                    freqLine.lineElem.appendChild(freqLine.freqNameElem);
-                    let buttonContainer = document.createElement("div");
-                    buttonContainer.setAttribute("class", "buttonContainer");
-                    freqLine.lineElem.appendChild(buttonContainer);
-                    freqLine.buttonElem = document.createElement("div");
-                    freqLine.buttonElem.setAttribute("class", "gradientButton");
-                    buttonContainer.appendChild(freqLine.buttonElem);
-                    freqLine.frequencyElem = document.createElement("div");
-                    freqLine.frequencyElem.setAttribute("class", "mainText");
-                    freqLine.buttonElem.appendChild(freqLine.frequencyElem);
-                    this.gps.makeButton(freqLine.buttonElem, this.frequencyButtonCallback.bind(this, freqLine));
-                    this.frequencyElements.push(freqLine);
-                    if (i == 0) {
-                        this.frequencyScrollElement.elementSize = freqLine.lineElem.getBoundingClientRect().height;
-                    }
-                }
-                this.frequencyElements[i].frequency = infos.frequencies[i];
-                this.frequencyElements[i].freqNameElem.textContent = this.frequencyElements[i].frequency.name;
-                this.frequencyElements[i].frequencyElem.textContent = this.frequencyElements[i].frequency.mhValue.toFixed(2);
-                this.frequencyElements[i].lineElem.style.display = "block";
-            }
-            for (let i = infos.frequencies.length; i < this.frequencyElements.length; i++) {
-                this.frequencyElements[i].lineElem.style.display = "none";
-            }
-            for (let i = 0; i < infos.runways.length; i++) {
-                if (i >= this.runwayElements.length) {
-                    let runwayLine = new AS3000_TSC_AirportInfo_RunwayLine();
-                    runwayLine.runway = infos.runways[i];
-                    runwayLine.lineElem = document.createElement("div");
-                    runwayLine.lineElem.setAttribute("class", "line");
-                    this.runwayTable.appendChild(runwayLine.lineElem);
-                    runwayLine.nameElem = document.createElement("div");
-                    runwayLine.nameElem.setAttribute("class", "name");
-                    runwayLine.lineElem.appendChild(runwayLine.nameElem);
-                    runwayLine.sizeElem = document.createElement("div");
-                    runwayLine.sizeElem.setAttribute("class", "size");
-                    runwayLine.lineElem.appendChild(runwayLine.sizeElem);
-                    runwayLine.surfaceElem = document.createElement("div");
-                    runwayLine.surfaceElem.setAttribute("class", "surface");
-                    runwayLine.lineElem.appendChild(runwayLine.surfaceElem);
-                    runwayLine.lightingElem = document.createElement("div");
-                    runwayLine.lightingElem.setAttribute("class", "lighting");
-                    runwayLine.lineElem.appendChild(runwayLine.lightingElem);
-                    this.runwayElements.push(runwayLine);
-                    if (i == 0) {
-                        this.runwaysScrollElement.elementSize = runwayLine.lineElem.getBoundingClientRect().height;
-                    }
-                }
-                this.runwayElements[i].runway = infos.runways[i];
-                this.runwayElements[i].nameElem.textContent = infos.runways[i].designation;
-                this.runwayElements[i].sizeElem.textContent = Math.round(WT_Unit.METER.convert(infos.runways[i].length, WT_Unit.FOOT)) + "FT x " +
-                    Math.round(WT_Unit.METER.convert(infos.runways[i].width, WT_Unit.FOOT)) + "FT";
-                this.runwayElements[i].surfaceElem.textContent = infos.runways[i].getSurfaceString();
-                let lighting = "Unknown";
-                switch (infos.runways[i].lighting) {
-                    case 1:
-                        lighting = "None";
-                        break;
-                    case 2:
-                        lighting = "Part Time";
-                        break;
-                    case 3:
-                        lighting = "Full Time";
-                        break;
-                    case 4:
-                        lighting = "Frequency";
-                        break;
-                }
-                this.runwayElements[i].lightingElem.textContent = lighting;
-                this.runwayElements[i].lineElem.style.display = "block";
-            }
-            for (let i = infos.runways.length; i < this.runwayElements.length; i++) {
-                this.runwayElements[i].lineElem.style.display = "none";
-            }
-            if (this.showInMap) {
-                SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", infos.lat);
-                SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", infos.long);
-                SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 1);
-            }
-        }
-        else {
-        }
-    }
-    switchPage(_page, _button) {
-        this.gps.deactivateNavButton(5);
-        this.gps.deactivateNavButton(6);
-        this.currPage = _page;
-        this.centerDisplay.setAttribute("state", _page);
-        if (this.activeTab) {
-            this.activeTab.setAttribute("state", "");
-        }
-        _button.setAttribute("state", "White");
-        this.activeTab = _button;
-        if (_page == "Freqs") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpFreq.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownFreq.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-        }
-        else if (this.currPage == "Runways") {
-            this.gps.activateNavButton(5, "Up", this.scrollUpRunways.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-            this.gps.activateNavButton(6, "Down", this.scrollDownRunways.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-        }
-    }
-    frequencyButtonCallback(_freqLine) {
-        this.gps.deactivateNavButton(5);
-        this.gps.deactivateNavButton(6);
-        this.gps.loadFrequencyWindow.element.setContext(_freqLine.frequency.mhValue.toFixed(2) + " " + this.airport.ident + " " + _freqLine.frequency.name, _freqLine.frequency.bcd16Value, _freqLine.frequency.mhValue < 118);
-        this.gps.switchToPopUpPage(this.gps.loadFrequencyWindow);
-    }
-    scrollUpFreq() {
-        this.frequencyScrollElement.scrollUp();
-    }
-    scrollDownFreq() {
-        this.frequencyScrollElement.scrollDown();
-    }
-    scrollUpRunways() {
-        this.runwaysScrollElement.scrollUp();
-    }
-    scrollDownRunways() {
-        this.runwaysScrollElement.scrollDown();
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-    showInMapToggle() {
-        this.showInMap = !this.showInMap;
-        if (this.airport && this.showInMap) {
-            let infos = this.airport.GetInfos();
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", infos.lat);
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", infos.long);
-            SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 1);
-        }
-        if (!this.showInMap) {
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", 0);
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", 0);
-            SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 0);
-        }
-    }
-    showInMapStatus() {
-        return this.showInMap;
-    }
-    openOptions() {
-        this.gps.waypointOptions.element.setContext(this.airport.icao, this.showInMapStatus.bind(this), this.showInMapToggle.bind(this));
-        this.gps.switchToPopUpPage(this.gps.waypointOptions);
-    }
-}
-class AS3000_TSC_NRST extends NavSystemElement {
-    init(root) {
-        this.Airport = this.gps.getChildById("NrstAirport_Btn");
-        this.INT = this.gps.getChildById("NrstInt_Btn");
-        this.VOR = this.gps.getChildById("NrstVor_Btn");
-        this.NDB = this.gps.getChildById("NrstNdb_Btn");
-        this.User = this.gps.getChildById("NrstUser_Btn");
-        this.Airspace = this.gps.getChildById("NrstAirspace_Btn");
-        this.ARTCC = this.gps.getChildById("NrstARTCC_Btn");
-        this.FSS = this.gps.getChildById("NrstFSS_Btn");
-        this.Weather = this.gps.getChildById("NrstWeather_Btn");
-        this.gps.makeButton(this.Airport, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Airport"));
-        this.gps.makeButton(this.INT, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Intersection"));
-        this.gps.makeButton(this.VOR, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest VOR"));
-        this.gps.makeButton(this.NDB, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest NDB"));
-    }
-    onEnter() {
-        this.gps.setTopKnobText("");
-        this.gps.setBottomKnobText("-Range+ Push: Pan");
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-    }
-    onEvent(_event) {
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-}
-class AS3000_TSC_NRST_Airport_Line {
-    constructor() {
-        this.base = window.document.createElement("tr");
-        {
-            let td1 = window.document.createElement("td");
-            {
-                this.identButton = window.document.createElement("div");
-                this.identButton.setAttribute("class", "gradientButton Waypoint");
-                {
-                    this.ident = window.document.createElement("div");
-                    this.ident.setAttribute("class", "mainValue");
-                    this.identButton.appendChild(this.ident);
-                    this.name = window.document.createElement("div");
-                    this.name.setAttribute("class", "title");
-                    this.identButton.appendChild(this.name);
-                    this.symbol = window.document.createElement("img");
-                    this.symbol.setAttribute("class", "symbol");
-                    this.identButton.appendChild(this.symbol);
-                }
-                td1.appendChild(this.identButton);
-            }
-            this.base.appendChild(td1);
-            let td2 = window.document.createElement("td");
-            {
-                this.bearingArrow = window.document.createElement("img");
-                this.bearingArrow.setAttribute("src", "/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Misc/BlueArrow.svg");
-                td2.appendChild(this.bearingArrow);
-                this.bearingText = window.document.createElement("div");
-                td2.appendChild(this.bearingText);
-            }
-            this.base.appendChild(td2);
-            let td3 = window.document.createElement("td");
-            {
-                this.distance = window.document.createElement("div");
-                td3.appendChild(this.distance);
-            }
-            this.base.appendChild(td3);
-            let td4 = window.document.createElement("td");
-            {
-                this.appr = window.document.createElement("div");
-                td4.appendChild(this.appr);
-                this.runway = window.document.createElement("div");
-                td4.appendChild(this.runway);
-            }
-            this.base.appendChild(td4);
-        }
-    }
-}
-class AS3000_TSC_NRST_Airport extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.airportLines = [];
-        this.selectedElement = -1;
-        this.showOnMap = false;
-    }
-    init(root) {
-        this.table = root.getElementsByClassName("NearestList")[0];
-        this.body = this.table.getElementsByTagName("tbody")[0];
-        this.menu = root.getElementsByClassName("SelectionMenu")[0];
-        this.drct_button = this.gps.getChildById("NrstAirport_Drct");
-        this.insertFpl_button = this.gps.getChildById("NrstAirport_InsertInFpl");
-        this.airportInfos_button = this.gps.getChildById("NrstAirport_AirportInfo");
-        this.airportChart_button = this.gps.getChildById("NrstAirport_AirportChart");
-        this.showOnMap_button = this.gps.getChildById("NrstAirport_ShowOnMap");
-        this.nearestAirports = new NearestAirportList(this.gps);
-        this.scrollElement = new NavSystemTouch_ScrollElement();
-        this.scrollElement.elementContainer = this.body;
-        this.scrollElement.elementSize = this.airportLines.length > 2 ? this.airportLines[1].base.getBoundingClientRect().height : 0;
-        this.gps.makeButton(this.drct_button, this.directTo.bind(this));
-        this.gps.makeButton(this.insertFpl_button, this.insertInFpl.bind(this));
-        this.gps.makeButton(this.airportInfos_button, this.airportInfo.bind(this));
-        this.gps.makeButton(this.showOnMap_button, this.showOnMapToggle.bind(this));
-    }
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-    }
-    onUpdate(_deltaTime) {
-        if (this.scrollElement.elementSize == 0) {
-            this.scrollElement.elementSize = this.airportLines.length > 2 ? this.airportLines[1].base.getBoundingClientRect().height : 0;
-        }
-        this.scrollElement.update();
-        this.nearestAirports.Update(25, 200);
-        for (let i = 0; i < this.nearestAirports.airports.length; i++) {
-            if (this.airportLines.length < i + 1) {
-                let newLine = new AS3000_TSC_NRST_Airport_Line();
-                this.body.appendChild(newLine.base);
-                this.gps.makeButton(newLine.identButton, this.clickOnElement.bind(this, i));
-                this.airportLines.push(newLine);
-            }
-            let infos = this.nearestAirports.airports[i];
-            Avionics.Utils.diffAndSet(this.airportLines[i].ident, infos.ident);
-            Avionics.Utils.diffAndSet(this.airportLines[i].name, infos.name);
-            let symbol = infos.imageFileName();
-            Avionics.Utils.diffAndSetAttribute(this.airportLines[i].symbol, "src", symbol != "" ? "/Pages/VCockpit/Instruments/Shared/Map/Images/" + symbol : "");
-            Avionics.Utils.diffAndSetAttribute(this.airportLines[i].bearingArrow, "style", "transform: rotate(" + fastToFixed(infos.bearing - SimVar.GetSimVarValue("PLANE HEADING DEGREES MAGNETIC", "degree"), 3) + "deg)");
-            Avionics.Utils.diffAndSet(this.airportLines[i].bearingText, fastToFixed(infos.bearing, 0) + "°");
-            Avionics.Utils.diffAndSet(this.airportLines[i].distance, fastToFixed(infos.distance, 1) + "NM");
-            Avionics.Utils.diffAndSet(this.airportLines[i].runway, fastToFixed(infos.longestRunwayLength, 0) + "FT");
-            Avionics.Utils.diffAndSet(this.airportLines[i].appr, infos.bestApproach);
-        }
-        for (let i = this.nearestAirports.airports.length; i < this.airportLines.length; i++) {
-            Avionics.Utils.diffAndSetAttribute(this.airportLines[i].base, "state", "Inactive");
-        }
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-        this.gps.deactivateNavButton(5, false);
-        this.gps.deactivateNavButton(6, false);
-        if (this.selectedElement != -1) {
-            this.gps.lastRelevantICAOType = "A";
-            this.gps.lastRelevantICAO = this.nearestAirports.airports[this.selectedElement].icao;
-            this.menu.setAttribute("state", "Inactive");
-            this.airportLines[this.selectedElement].identButton.setAttribute("state", "None");
-            this.selectedElement = -1;
-        }
-        SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", 0);
-        SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", 0);
-        SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 0);
-    }
-    onEvent(_event) {
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-    scrollUp() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement > 0) {
-                this.clickOnElement(this.selectedElement - 1);
-                this.scrollElement.scrollUp(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollUp();
-        }
-    }
-    scrollDown() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement < this.nearestAirports.airports.length - 1) {
-                this.clickOnElement(this.selectedElement + 1);
-                this.scrollElement.scrollDown(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollDown();
-        }
-    }
-    clickOnElement(_index) {
-        if (this.selectedElement == _index) {
-            this.selectedElement = -1;
-            this.menu.setAttribute("state", "Inactive");
-            this.airportLines[_index].identButton.setAttribute("state", "None");
-        }
-        else {
-            if (this.selectedElement != -1) {
-                this.airportLines[this.selectedElement].identButton.setAttribute("state", "None");
-            }
-            this.selectedElement = _index;
-            Avionics.Utils.diffAndSetAttribute(this.menu, "state", "Active");
-            this.airportLines[_index].identButton.setAttribute("state", "SelectedWP");
-        }
-        if (this.showOnMap) {
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", this.nearestAirports.airports[_index].coordinates.lat);
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", this.nearestAirports.airports[_index].coordinates.long);
-            SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 1);
-        }
-    }
-    directTo() {
-        this.gps.lastRelevantICAO = this.nearestAirports.airports[this.selectedElement].icao;
-        this.gps.lastRelevantICAOType = this.nearestAirports.airports[this.selectedElement].type;
-        this.gps.SwitchToPageName("MFD", "Direct To");
-    }
-    insertInFpl() {
-        this.gps.insertBeforeWaypoint.getElementOfType(AS3000_TSC_InsertBeforeWaypoint).setContext(this.insertInFplIndexSelectionCallback.bind(this));
-        this.gps.switchToPopUpPage(this.gps.insertBeforeWaypoint);
-    }
-    insertInFplIndexSelectionCallback(_index) {
-        this.gps.currFlightPlanManager.addWaypoint(this.nearestAirports.airports[this.selectedElement].icao, _index, () => {
-            this.gps.currFlightPlanManager.updateFlightPlan();
-            this.gps.SwitchToPageName("MFD", "Active Flight Plan");
-        });
-    }
-    airportInfo() {
-        let page = this.gps.getSelectedMFDPanePages().airportInfo;
-        page.element.icaoSetting.setValue(this.nearestAirports.airports[this.selectedElement].icao);
-        this.gps.SwitchToPageName("MFD", page.name);
-    }
-    showOnMapToggle() {
-        this.showOnMap = !this.showOnMap;
-        this.showOnMap_button.setAttribute("state", this.showOnMap ? "Active" : "");
-        if (this.showOnMap) {
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", this.nearestAirports.airports[this.selectedElement].coordinates.lat);
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", this.nearestAirports.airports[this.selectedElement].coordinates.long);
-            SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 1);
-        }
-        else {
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", 0);
-            SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", 0);
-            SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 0);
-        }
-    }
-}
-class AS3000_TSC_NRST_Intersection extends NavSystemTouch_NRST_Intersection {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-        this.gps.deactivateNavButton(5, false);
-        this.gps.deactivateNavButton(6, false);
-        SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLatitude", "number", 0);
-        SimVar.SetSimVarValue("L:AS3000_MFD_OverrideLongitude", "number", 0);
-        SimVar.SetSimVarValue("L:AS3000_MFD_IsPositionOverride", "number", 0);
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-    scrollUp() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement > 0) {
-                this.clickOnElement(this.selectedElement - 1);
-                this.scrollElement.scrollUp(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollUp();
-        }
-    }
-    scrollDown() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement < this.nearest.intersections.length - 1) {
-                this.clickOnElement(this.selectedElement + 1);
-                this.scrollElement.scrollDown(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollDown();
-        }
-    }
-}
-class AS3000_TSC_NRST_VOR extends NavSystemTouch_NRST_VOR {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-        this.gps.deactivateNavButton(5, false);
-        this.gps.deactivateNavButton(6, false);
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-    scrollUp() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement > 0) {
-                this.clickOnElement(this.selectedElement - 1);
-                this.scrollElement.scrollUp(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollUp();
-        }
-    }
-    scrollDown() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement < this.nearest.vors.length - 1) {
-                this.clickOnElement(this.selectedElement + 1);
-                this.scrollElement.scrollDown(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollDown();
-        }
-    }
-    clickOnFrequency(_index) {
-        let infos = this.nearest.vors[_index];
-        let context = {
-            homePageGroup: "MFD",
-            homePageParent: "MFD Home",
-            frequencyText: infos.frequencyMHz.toFixed(2) + " " + infos.ident,
-            frequency: infos.frequencyBCD16,
-            isNav: true
-        };
-        this.gps.loadFrequencyWindow.element.setContext(context);
-        this.gps.switchToPopUpPage(this.gps.loadFrequencyWindow);
-    }
-}
-class AS3000_TSC_NRST_NDB extends NavSystemTouch_NRST_NDB {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-        this.gps.deactivateNavButton(5, false);
-        this.gps.deactivateNavButton(6, false);
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-    scrollUp() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement > 0) {
-                this.clickOnElement(this.selectedElement - 1);
-                this.scrollElement.scrollUp(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollUp();
-        }
-    }
-    scrollDown() {
-        if (this.selectedElement != -1) {
-            if (this.selectedElement < this.nearest.ndbs.length - 1) {
-                this.clickOnElement(this.selectedElement + 1);
-                this.scrollElement.scrollDown(true);
-            }
-        }
-        else {
-            this.scrollElement.scrollDown();
-        }
-    }
-}
 class AS3000_TSC_NavComHome extends NavSystemElement {
     constructor() {
         super(...arguments);
@@ -2244,8 +1748,15 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.inputIndex = -1;
         this.identTime = 0;
     }
-    init(root) {
+
+    _defineXPDRChildren() {
         this.XPDRIdent = this.gps.getChildById("XPDRIdent");
+        this._xpdrCodeButton = this.gps.getChildById("XPDR");
+        this._xpdrModeDisplay = this._xpdrCodeButton.getElementsByClassName("topText")[0];
+        this._xpdrCodeDisplay = this._xpdrCodeButton.getElementsByClassName("mainNumber")[0];
+    }
+
+    _defineComsChildren() {
         this.Com1Active = this.gps.getChildById("Com1Active");
         this.Com1Active_Freq = this.Com1Active.getElementsByClassName("mainNumber")[0];
         this.Com1Stby = this.gps.getChildById("Com1Stby");
@@ -2254,19 +1765,9 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.Com2Active_Freq = this.Com2Active.getElementsByClassName("mainNumber")[0];
         this.Com2Stby = this.gps.getChildById("Com2Stby");
         this.Com2Stby_Freq = this.Com2Stby.getElementsByClassName("mainNumber")[0];
-        this.XPDR = this.gps.getChildById("XPDR");
-        this.XPDRStatus = this.XPDR.getElementsByClassName("topText")[0];
-        this.XPDRCode = this.XPDR.getElementsByClassName("mainNumber")[0];
-        this.PilotIsolate = this.gps.getChildById("PilotIsolate");
-        this.Mic_Button = this.gps.getChildById("Mic");
-        this.Mon_Button = this.gps.getChildById("Mon");
-        this.Mic_Com1_Status = this.gps.getChildById("Com1_MicActive");
-        this.Mic_Com2_Status = this.gps.getChildById("Com2_MicActive");
-        this.Mon_Com1_Status = this.gps.getChildById("Com1_MonActive");
-        this.Mon_Com2_Status = this.gps.getChildById("Com2_MonActive");
-        this.PilotMusic = this.gps.getChildById("PilotMusic");
-        this.AudioRadio = this.gps.getChildById("AudioRadio");
-        this.Intercom = this.gps.getChildById("Intercom");
+    }
+
+    _defineKeyboardChildren() {
         this.NKFindButton = this.gps.getChildById("NKFindButton");
         this.NKBkspButton = this.gps.getChildById("NKBkspButton");
         this.NK_1 = this.gps.getChildById("NK_1");
@@ -2281,10 +1782,53 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.NKPlayButton = this.gps.getChildById("NKPlayButton");
         this.NK_0 = this.gps.getChildById("NK_0");
         this.NKXferButton = this.gps.getChildById("NKXferButton");
+    }
+
+    _defineMonitorsChildren() {
+        this.PilotIsolate = this.gps.getChildById("PilotIsolate");
+        this.Mic_Button = this.gps.getChildById("Mic");
+        this.Mon_Button = this.gps.getChildById("Mon");
+        this.Mic_Com1_Status = this.gps.getChildById("Com1_MicActive");
+        this.Mic_Com2_Status = this.gps.getChildById("Com2_MicActive");
+        this.Mon_Com1_Status = this.gps.getChildById("Com1_MonActive");
+        this.Mon_Com2_Status = this.gps.getChildById("Com2_MonActive");
+    }
+
+    _defineAudioRadio() {
+        this.AudioRadio = this.gps.getChildById("AudioRadio");
+    }
+
+    _defineIntercom() {
+        this.Intercom = this.gps.getChildById("Intercom");
+    }
+
+    _defineMusic() {
+        this.PilotMusic = this.gps.getChildById("PilotMusic");
+    }
+
+    _defineChildren() {
+        this._defineXPDRChildren();
+        this._defineComsChildren();
+        this._defineKeyboardChildren();
+        this._defineMonitorsChildren();
+        this._defineAudioRadio();
+        this._defineIntercom();
+        this._defineMusic();
+    }
+
+    _initXPDRButtons() {
+        this.gps.makeButton(this._xpdrCodeButton, this.openTransponder.bind(this));
+        this.gps.makeButton(this.XPDRIdent, this.xpdrIdent.bind(this));
+    }
+
+    _initComsButtons() {
         this.gps.makeButton(this.Com1Stby, this.setSelectedCom.bind(this, 1));
         this.gps.makeButton(this.Com2Stby, this.setSelectedCom.bind(this, 2));
         this.gps.makeButton(this.Com1Active, this.swapCom1.bind(this));
         this.gps.makeButton(this.Com2Active, this.swapCom2.bind(this));
+    }
+
+    _initKeyboardButtons() {
         this.gps.makeButton(this.NK_0, this.onDigitPress.bind(this, 0));
         this.gps.makeButton(this.NK_1, this.onDigitPress.bind(this, 1));
         this.gps.makeButton(this.NK_2, this.onDigitPress.bind(this, 2));
@@ -2297,16 +1841,35 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         this.gps.makeButton(this.NK_9, this.onDigitPress.bind(this, 9));
         this.gps.makeButton(this.NKBkspButton, this.backspace.bind(this));
         this.gps.makeButton(this.NKXferButton, this.swapSelectedCom.bind(this));
-        this.gps.makeButton(this.XPDR, this.openTransponder.bind(this));
-        this.gps.makeButton(this.XPDRIdent, this.xpdrIdent.bind(this));
-        this.gps.makeButton(this.AudioRadio, this.openAudioRadios.bind(this));
+    }
+
+    _initMonitorsButtons() {
         this.gps.makeButton(this.Mic_Button, this.MicSwitch.bind(this));
         this.gps.makeButton(this.Mon_Button, this.MonSwitch.bind(this));
     }
+
+    _initAudioRadioButton() {
+        this.gps.makeButton(this.AudioRadio, this.openAudioRadios.bind(this));
+    }
+
+    _initButtons() {
+        this._initXPDRButtons();
+        this._initComsButtons();
+        this._initKeyboardButtons();
+        this._initMonitorsButtons();
+        this._initAudioRadioButton();
+    }
+
+    init(root) {
+        this._defineChildren();
+        this._initButtons();
+    }
+
     onEnter() {
         this.setSoftkeysNames();
     }
-    onUpdate(_deltaTime) {
+
+    _updateComs() {
         let com1Active = this.gps.frequencyFormat(SimVar.GetSimVarValue("COM ACTIVE FREQUENCY:1", "MHz"), SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum") == 0 ? 2 : 3);
         let com1Stby;
         if (this.selectedCom != 1 || this.inputIndex == -1) {
@@ -2349,36 +1912,7 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
             this.Com1Stby.setAttribute("state", "none");
             this.Com2Stby.setAttribute("state", "Selected");
         }
-        let xpdrState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
-        if (this.xpdrState != xpdrState) {
-            this.xpdrState = xpdrState;
-            switch (xpdrState) {
-                case 0:
-                    this.XPDRStatus.innerHTML = "Off";
-                    this.XPDR.setAttribute("state", "");
-                    break;
-                case 1:
-                    this.XPDRStatus.innerHTML = "STBY";
-                    this.XPDR.setAttribute("state", "");
-                    break;
-                case 2:
-                    this.XPDRStatus.innerHTML = "TEST";
-                    this.XPDR.setAttribute("state", "");
-                    break;
-                case 3:
-                    this.XPDRStatus.innerHTML = "ON";
-                    this.XPDR.setAttribute("state", "Green");
-                    break;
-                case 4:
-                    this.XPDRStatus.innerHTML = "ALT";
-                    this.XPDR.setAttribute("state", "Green");
-                    break;
-            }
-        }
-        let transponderCode = ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
-        if (transponderCode != this.XPDRCode.innerHTML) {
-            this.XPDRCode.innerHTML = transponderCode;
-        }
+
         let comSpacingMode = SimVar.GetSimVarValue("COM SPACING MODE:" + this.selectedCom, "Enum");
         if (comSpacingMode == 0 && this.currentInput % 25 != 0) {
             this.currentInput -= this.currentInput % 25;
@@ -2386,6 +1920,45 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         if (comSpacingMode == 0 && this.inputIndex > 5) {
             this.inputIndex = 5;
         }
+    }
+
+    _updateXPDRMode() {
+        let xpdrState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
+        if (this.xpdrState != xpdrState) {
+            this.xpdrState = xpdrState;
+            switch (xpdrState) {
+                case 0:
+                    this._xpdrModeDisplay.innerHTML = "Off";
+                    this._xpdrCodeButton.setAttribute("state", "");
+                    break;
+                case 1:
+                    this._xpdrModeDisplay.innerHTML = "STBY";
+                    this._xpdrCodeButton.setAttribute("state", "");
+                    break;
+                case 2:
+                    this._xpdrModeDisplay.innerHTML = "TEST";
+                    this._xpdrCodeButton.setAttribute("state", "");
+                    break;
+                case 3:
+                    this._xpdrModeDisplay.innerHTML = "ON";
+                    this._xpdrCodeButton.setAttribute("state", "Green");
+                    break;
+                case 4:
+                    this._xpdrModeDisplay.innerHTML = "ALT";
+                    this._xpdrCodeButton.setAttribute("state", "Green");
+                    break;
+            }
+        }
+    }
+
+    _updateXPDRCode() {
+        let transponderCode = ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
+        if (transponderCode != this._xpdrCodeDisplay.innerHTML) {
+            this._xpdrCodeDisplay.innerHTML = transponderCode;
+        }
+    }
+
+    _updateXPDRIdent() {
         if (this.identTime > 0) {
             this.identTime -= this.gps.deltaTime;
             Avionics.Utils.diffAndSetAttribute(this.XPDRIdent, "state", "Active");
@@ -2393,12 +1966,27 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
         else {
             Avionics.Utils.diffAndSetAttribute(this.XPDRIdent, "state", "");
         }
+    }
+
+    _updateXPDR() {
+        this._updateXPDRMode();
+        this._updateXPDRCode();
+        this._updateXPDRIdent();
+    }
+
+    _updateMonitors() {
         Avionics.Utils.diffAndSetAttribute(this.Mic_Com1_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "visible" : "hidden");
         Avionics.Utils.diffAndSetAttribute(this.Com1Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:1", "Bool") ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.Mic_Com2_Status, "visibility", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "visible" : "hidden");
         Avionics.Utils.diffAndSetAttribute(this.Com2Active, "state", SimVar.GetSimVarValue("COM TRANSMIT:2", "Bool") ? "Active" : "");
         Avionics.Utils.diffAndSetAttribute(this.Mon_Com1_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:1", "Bool") ? "visible" : "hidden");
         Avionics.Utils.diffAndSetAttribute(this.Mon_Com2_Status, "visibility", SimVar.GetSimVarValue("COM RECEIVE:2", "Bool") ? "visible" : "hidden");
+    }
+
+    onUpdate(_deltaTime) {
+        this._updateComs();
+        this._updateXPDR();
+        this._updateMonitors();
     }
     onExit() {
         this.gps.deactivateNavButton(1);
@@ -3009,7 +2597,7 @@ class AS3000_TSC_FrequencyKeyboard extends NavSystemTouch_FrequencyKeyboard {
         }
     }
 
-    onBackSpacePress() {
+    onBackSpacePress(_digit) {
         if (this.adf) {
             if (this.inputIndex > 0) {
                 this.inputIndex--;
@@ -3112,10 +2700,9 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
         this.gps.makeButton(this.button_9, this.onDigitPress.bind(this, 9));
         this.gps.makeButton(this.backspaceButton, this.onBackSpacePress.bind(this));
     }
-    setContext(_endCallback, _backPage, _startingValue) {
-        this.endCallback = _endCallback;
-        this.backPage = _backPage;
-        this.currentInput = _startingValue;
+    setContext(context) {
+        this._context = context;
+        this.currentInput = context.initialValue;
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
@@ -3188,12 +2775,13 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
     }
     backHome() {
         this.gps.closePopUpElement();
+        this.gps.SwitchToPageName(this._context.homePageGroup, this._context.homePageName);
     }
     cancelEdit() {
         this.gps.goBack();
     }
     validateEdit() {
-        this.endCallback(this.currentInput);
+        this._context.callback(this.currentInput);
         this.cancelEdit();
     }
 }
@@ -3571,222 +3159,6 @@ class AS3000_TSC_Minimums extends NavSystemElement {
     }
 }
 
-class AS3000_TSC_PFDSettings extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.active = 0;
-        this.aoaMode = 0;
-        this.windMode = 0;
-        this.comSpacingMode = 0;
-    }
-
-    init(root) {
-        this.aoaButton = this.gps.getChildById("AoaButton");
-        this.aoaValue = this.aoaButton.getElementsByClassName("statusText")[0];
-        this.SVTButton = this.gps.getChildById("SVTButton");
-        this.windButton = this.gps.getChildById("WindButton");
-        this.windValue = this.windButton.getElementsByClassName("statusText")[0];
-        this.comSpacingButton = this.gps.getChildById("ComSpacingButton");
-        this.comSpacingValue = this.comSpacingButton.getElementsByClassName("statusText")[0];
-        this.baroUnitButton = this.gps.getChildById("BaroUnitButton");
-        this.baroUnitValue = this.baroUnitButton.getElementsByClassName("statusText")[0];
-        //this.comSpacingSelectionMenu = this.gps.getChildById("ComSpacingSelectionMenu");
-        this.gps.makeButton(this.aoaButton, this.openAoASelectWindow.bind(this));
-        this.gps.makeButton(this.SVTButton, this.toggleSVT.bind(this));
-        this.gps.makeButton(this.windButton, this.openWindSelectWindow.bind(this));
-        this.gps.makeButton(this.baroUnitButton, this.openBaroUnitSelectWindow.bind(this));
-        //this.gps.makeButton(this.comSpacingButton, this.compSpacingPress.bind(this));
-        //this.gps.makeButton(this.channelSpacing25, this.channelSpacingSetMode.bind(this, 0));
-        //this.gps.makeButton(this.channelSpacing833, this.channelSpacingSetMode.bind(this, 1));
-
-        this.baroUnitText = [
-            "Inches (IN)",
-            "Hectopascals (HPA)"
-        ];
-    }
-
-    compSpacingPress() {
-        this.active = (this.active == 3 ? 0 : 3);
-        this.updateDisplayedMenu();
-    }
-
-    channelSpacingSetMode(_mode) {
-        if (_mode != SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum")) {
-            SimVar.SetSimVarValue("K:COM_1_SPACING_MODE_SWITCH", "number", 0);
-        }
-        if (_mode != SimVar.GetSimVarValue("COM SPACING MODE:2", "Enum")) {
-            SimVar.SetSimVarValue("K:COM_2_SPACING_MODE_SWITCH", "number", 0);
-        }
-        this.active = 0;
-        this.updateDisplayedMenu();
-    }
-
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-        let aoa = SimVar.GetSimVarValue("L:Glasscockpit_AOA_Mode", "number");
-        let wind = SimVar.GetSimVarValue("L:Glasscockpit_Wind_Mode", "number");
-        let comSpacing = SimVar.GetSimVarValue("COM SPACING MODE:1", "Enum");
-        if (aoa != this.aoaMode) {
-            this.aoaMode = aoa;
-            switch (aoa) {
-                case 0:
-                    this.aoaValue.textContent = "Off";
-                    break;
-                case 1:
-                    this.aoaValue.textContent = "On";
-                    break;
-                case 2:
-                    this.aoaValue.textContent = "Auto";
-                    break;
-            }
-        }
-
-        Avionics.Utils.diffAndSetAttribute(this.SVTButton, "state", AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW) == 1 ? "Active" : "");
-
-        if (wind != this.windMode) {
-            this.windMode = wind;
-            switch (wind) {
-                case 0:
-                    this.windValue.textContent = "Off";
-                    break;
-                case 1:
-                    this.windValue.textContent = "Option 1";
-                    break;
-                case 2:
-                    this.windValue.textContent = "Option 2";
-                    break;
-                case 3:
-                    this.windValue.textContent = "Option 3";
-                    break;
-            }
-        }
-
-        if (comSpacing != this.comSpacingMode) {
-            this.comSpacingMode = comSpacing;
-            switch (comSpacing) {
-                case 0:
-                    this.comSpacingValue.textContent = "25 kHz";
-                    break;
-                case 1:
-                    this.comSpacingValue.textContent = "8.33 kHz";
-                    break;
-            }
-        }
-
-        Avionics.Utils.diffAndSet(this.baroUnitValue, this.baroUnitText[AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_BARO_UNIT)]);
-    }
-
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onEvent(_event) {
-    }
-
-    openAoASelectWindow() {
-        //this.gps.aoaSelect.element.setContext(this.setAoAMode.bind(this), this.getAoAHighlight.bind(this), "PFD", "PFD Home");
-        //this.gps.switchToPopUpPage(this.gps.aoaSelect);
-    }
-
-    setAoAMode(_val) {
-        let mode = "";
-        switch (_val) {
-            case 0:
-                mode = "On";
-                break;
-            case 1:
-                mode = "Off";
-                break;
-            case 2:
-                mode = "Auto";
-                break;
-        }
-        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_AOA_" + mode);
-    }
-
-    getAoAHighlight(_val) {
-        let mode = SimVar.GetSimVarValue("L:Glasscockpit_AOA_Mode", "number");
-        switch (mode) {
-            case 0:
-                return _val == 1;
-            case 1:
-                return _val == 0;
-            case 2:
-                return _val == 2;
-        }
-    }
-
-    toggleSVT() {
-        AS3000_PFD_MainPage.setSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW, AS3000_PFD_MainPage.getSettingVar(AS3000_PFD_MainPage.VARNAME_SVT_SHOW) ^ 1);
-    }
-
-    openWindSelectWindow() {
-        //this.gps.pfdWindSelect.element.setContext(this.setWindMode.bind(this), this.getWindHighlight.bind(this), "PFD", "PFD Home");
-        //this.gps.switchToPopUpPage(this.gps.pfdWindSelect);
-    }
-
-    setWindMode(_val) {
-        let mode = "";
-        if (_val < 3) {
-            mode = `O${_val + 1}`;
-        } else {
-            mode = "Off";
-        }
-        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_Wind_" + mode);
-    }
-
-    getWindHighlight(_val) {
-        let mode = SimVar.GetSimVarValue("L:Glasscockpit_Wind_Mode", "number");
-        return mode == (_val + 1) % 4;
-    }
-
-    openBaroUnitSelectWindow() {
-        let elementHandler = new WT_TSCStandardSelectionElementHandler(this.baroUnitText);
-        let context = {
-            title: "Select Baro Units",
-            subclass: "standardDynamicSelectionListWindow",
-            closeOnSelect: true,
-            callback: this.setBaroUnit.bind(this),
-            elementConstructor: elementHandler,
-            elementUpdater: elementHandler,
-            currentIndexGetter: new AS3000_TSC_PFDSettingIndexGetter(AS3000_PFD_MainPage.VARNAME_BARO_UNIT),
-            homePageGroup: "PFD",
-            homePageName: "PFD Home"
-        };
-        this.gps.selectionListWindow1.element.setContext(context);
-        this.gps.switchToPopUpPage(this.gps.selectionListWindow1);
-    }
-
-    setBaroUnit(index) {
-        AS3000_PFD_MainPage.setSettingVar(AS3000_PFD_MainPage.VARNAME_BARO_UNIT, index);
-    }
-
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-
-    backHome() {
-        this.gps.SwitchToPageName("PFD", "PFD Home");
-        return true;
-    }
-}
-
-class AS3000_TSC_PFDSettingIndexGetter {
-    constructor(varName) {
-        this.varName = varName;
-    }
-
-    getCurrentIndex() {
-        return AS3000_PFD_MainPage.getSettingVar(this.varName);
-    }
-}
-
 class AS3000_TSC_MinimumSource extends NavSystemElement {
     init(root) {
         this.window = root;
@@ -3827,147 +3199,6 @@ class AS3000_TSC_AirspeedReference {
         this.refSpeed = _refSpeed;
         this.displayedSpeed = _refSpeed;
         this.displayName = _displayName;
-    }
-}
-class AS3000_TSC_SpeedBugs extends NavSystemElement {
-    constructor() {
-        super(...arguments);
-        this.references = [];
-    }
-
-    init(root) {
-        let designSpeeds = Simplane.getDesignSpeeds();
-        this.initAirspeedReference(this.gps.getChildById("SB_VrValue"), this.gps.getChildById("SB_VrStatus"), designSpeeds.Vr, "R");
-        this.initAirspeedReference(this.gps.getChildById("SB_VxValue"), this.gps.getChildById("SB_VxStatus"), designSpeeds.Vx, "X");
-        this.initAirspeedReference(this.gps.getChildById("SB_VyValue"), this.gps.getChildById("SB_VyStatus"), designSpeeds.Vy, "Y");
-        this.initAirspeedReference(this.gps.getChildById("SB_VappValue"), this.gps.getChildById("SB_VappStatus"), designSpeeds.Vapp, "AP");
-        this.allOnButton = this.gps.getChildById("SB_AllOn");
-        this.allOffButton = this.gps.getChildById("SB_AllOff");
-        this.resetButton = this.gps.getChildById("SB_RestoreDefaults");
-        this.gps.makeButton(this.allOnButton, this.allOn.bind(this));
-        this.gps.makeButton(this.allOffButton, this.allOff.bind(this));
-        this.gps.makeButton(this.resetButton, this.restoreAll.bind(this));
-        for (let i = 0; i < this.references.length; i++) {
-            this.gps.makeButton(this.references[i].statusElement, this.statusClick.bind(this, i));
-            this.gps.makeButton(this.references[i].valueButton, this.valueClick.bind(this, i));
-        }
-    }
-
-    initAirspeedReference(_valueButton, _statusButton, _refSpeed, _name) {
-        if (_valueButton && _statusButton) {
-            this.references.push(new AS3000_TSC_AirspeedReference(_valueButton, _statusButton, _refSpeed == null ? -1 : _refSpeed, _name));
-        }
-    }
-
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    onUpdate(_deltaTime) {
-        for (let i = 0; i < this.references.length; i++) {
-            let isSpeedValid = this.references[i].displayedSpeed > 0;
-            let displaySpeedText = isSpeedValid ? Math.round(this.references[i].displayedSpeed) : "---";
-            let displayUnitText = isSpeedValid ? "KT" : "";
-
-            Avionics.Utils.diffAndSet(this.references[i].valueSpan, displaySpeedText);
-            Avionics.Utils.diffAndSet(this.references[i].unitSpan, displayUnitText);
-
-            if (this.references[i].displayedSpeed == this.references[i].refSpeed) {
-                Avionics.Utils.diffAndSetAttribute(this.references[i].valueButton, "state", "");
-            } else {
-                Avionics.Utils.diffAndSetAttribute(this.references[i].valueButton, "state", "Edited");
-            }
-
-            if (!isSpeedValid) {
-                this.references[i].isDisplayed = false;
-                Avionics.Utils.diffAndSetAttribute(this.references[i].statusElement, "state", "Greyed");
-            } else {
-                Avionics.Utils.diffAndSetAttribute(this.references[i].statusElement, "state", this.references[i].isDisplayed ? "Active" : "");
-            }
-        }
-        this.updateAllOnOffButtons();
-    }
-
-    updateAllOnOffButtons() {
-        let onCount = 0;
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].isDisplayed) {
-                onCount++;
-            }
-        }
-        Avionics.Utils.diffAndSetAttribute(this.allOffButton, "state", onCount == 0 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.allOnButton, "state", onCount == this.references.length ? "Greyed" : "");
-    }
-
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onEvent(_event) {
-    }
-
-    sendToPfd() {
-        let bugs = "";
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].isDisplayed) {
-                if (bugs != "") {
-                    bugs += ";";
-                }
-                bugs += this.references[i].displayName + ":" + this.references[i].displayedSpeed;
-            }
-        }
-        LaunchFlowEvent("ON_MOUSERECT_HTMLEVENT", this.gps.pfdPrefix + "_ElementSetAttribute", "Airspeed", "reference-bugs", bugs);
-    }
-
-    statusClick(_index) {
-        if (this.references[_index].displayedSpeed > 0) {
-            this.references[_index].isDisplayed = !this.references[_index].isDisplayed;
-            this.sendToPfd();
-        }
-    }
-
-    valueClick(_index) {
-        this.gps.speedKeyboard.getElementOfType(AS3000_TSC_SpeedKeyboard).setContext(this.valueEndEditing.bind(this, _index), this.container, this.references[_index].displayedSpeed);
-        this.gps.switchToPopUpPage(this.gps.speedKeyboard);
-    }
-
-    valueEndEditing(_index, _value) {
-        this.references[_index].displayedSpeed = _value;
-        this.sendToPfd();
-    }
-
-    allOn() {
-        for (let i = 0; i < this.references.length; i++) {
-            this.references[i].isDisplayed = true;
-        }
-        this.sendToPfd();
-    }
-
-    allOff() {
-        for (let i = 0; i < this.references.length; i++) {
-            this.references[i].isDisplayed = false;
-        }
-        this.sendToPfd();
-    }
-
-    restoreAll() {
-        for (let i = 0; i < this.references.length; i++) {
-            this.references[i].isDisplayed = false;
-            this.references[i].displayedSpeed = this.references[i].refSpeed;
-        }
-        this.sendToPfd();
-    }
-
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-
-    backHome() {
-        this.back();
-        return true;
     }
 }
 class AS3000_TSC_ConfirmationWindow extends NavSystemElement {

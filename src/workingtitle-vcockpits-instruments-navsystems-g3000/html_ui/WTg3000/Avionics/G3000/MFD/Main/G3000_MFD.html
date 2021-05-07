@@ -1,0 +1,86 @@
+﻿<script type="text/html" id="AS3000_MFD">
+    <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
+    <div id="Mainframe">
+        <div id="Electricity" state="off">
+            <div id="Console">Initializing System...</div>
+            <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
+            <img id="Validate" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/MFD_Startup_G3000.png" />
+            <div id="CenterDisplay">
+                <div id="ComFreq">
+                    <div id="COM1">
+                        <div class="Active">
+                            <div class="Title">COM1</div>
+                            <div class="Value" id="Com1_Active"></div>
+                        </div>
+                        <div class="Stby">
+                            <div class="Title">STBY</div>
+                            <div class="Value" id="Com1_Stby"></div>
+                        </div>
+                    </div>
+                    <div id="COM2">
+                        <div class="Active">
+                            <div class="Title">COM2</div>
+                            <div class="Value" id="Com2_Active"></div>
+                        </div>
+                        <div class="Stby">
+                            <div class="Title">STBY</div>
+                            <div class="Value" id="Com2_Stby"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="LeftInfos">
+                    <as3000-engine-display id="ED"></as3000-engine-display>
+                </div>
+                <div id="RightInfos">
+                    <div id="NavDataBar">
+                    </div>
+                    <mfd-mainpane id="MainPane">
+                        <mfd-halfpane slot="left">
+                            <map-view slot="navmap" class="navMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="trafficmap" class="trafficMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/trafficmapconfig.json"></map-view>
+                            <div slot="weatherradar" class="weatherRadar">
+                                <weatherradar-view></weatherradar-view>
+                                <weatherradar-view-scale></weatherradar-view-scale>
+                                <weatherradar-view-settings></weatherradar-view-settings>
+                            </div>
+                            <wt-charts-view slot="charts" class="charts">
+                                <map-view slot="map" class="chartsMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/chartsmapconfig.json"></map-view>
+                            </wt-charts-view>
+                            <map-view slot="waypointinfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="nearestwaypoint" class="nearestWaypoint" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                        </mfd-halfpane>
+                        <mfd-halfpane slot="right">
+                            <map-view slot="navmap" class="navMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="trafficmap" class="trafficMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/trafficmapconfig.json"></map-view>
+                            <div slot="weatherradar" class="weatherRadar">
+                                <weatherradar-view></weatherradar-view>
+                                <weatherradar-view-scale></weatherradar-view-scale>
+                                <weatherradar-view-settings></weatherradar-view-settings>
+                            </div>
+                            <wt-charts-view slot="charts" class="charts">
+                                <map-view slot="map" class="chartsMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/chartsmapconfig.json"></map-view>
+                            </wt-charts-view>
+                            <map-view slot="waypointinfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="nearestwaypoint" class="nearestWaypoint" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                        </mfd-halfpane>
+                    </mfd-mainpane>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<link rel="stylesheet" href="G3000_MFD.css" />
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_TrafficAdvisorySystem.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_MapViewTrafficIntruderLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_MapViewNavMapTrafficStatusLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_TrafficMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/NavMap/G3000_NavMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Charts/G3000_ChartsDisplay.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/MFD/G3000_MFDMainPane.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/MFD/Main/G3000_MFD.js"></script>

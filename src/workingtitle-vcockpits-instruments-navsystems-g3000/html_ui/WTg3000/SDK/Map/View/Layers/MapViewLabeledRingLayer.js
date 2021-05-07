@@ -52,12 +52,10 @@ class WT_MapViewLabeledRingLayer extends WT_MapViewMultiLayer {
         this._ringContainer.style.position = "absolute";
         this._ringContainer.style.width = "100%";
         this._ringContainer.style.height = "100%";
-        this._ringContainer.style.zIndex = 1;
         this._labelContainer = document.createElement("div");
         this._labelContainer.style.position = "absolute";
         this._labelContainer.style.width = "100%";
         this._labelContainer.style.height = "100%";
-        this._labelContainer.style.zIndex = 2;
 
         topLevel.appendChild(this._ringContainer);
         topLevel.appendChild(this._labelContainer);
@@ -345,7 +343,7 @@ class WT_MapViewRing {
     }
 }
 WT_MapViewRing.OPTIONS_DEF = {
-    show: {default: true, auto: true},
+    show: {default: true, auto: true, observed: true},
     center: {},
     radius: {default: 0, auto: true, observed: true},
     strokeWidth: {default: 1, auto: true, observed: true},
@@ -440,7 +438,7 @@ class WT_MapViewRingLabel {
     }
 }
 WT_MapViewRingLabel.OPTIONS_DEF = {
-    show: {default: true, auto: true},
+    show: {default: true, auto: true, observed: true},
     center: {},
     radius: {default: 0, auto: true, observed: true},
     radialAngle: {default: 0, auto: true, observed: true},

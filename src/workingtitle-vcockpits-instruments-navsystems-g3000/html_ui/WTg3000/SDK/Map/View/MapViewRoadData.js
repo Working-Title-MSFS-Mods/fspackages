@@ -76,51 +76,6 @@ class WT_MapViewRoadFeatureCollection {
         this._checkReady();
     }
 
-    async _onZipOpened(region, type, entries) {
-        let fileRoot = `${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}`;
-
-        for (let i = 0; i < WT_MapViewRoadFeatureCollection.LOD_COUNT; i++) {
-            let fileName = `${fileRoot}_lod${i}.json`;
-            let entry = entries.find(e => e.filename === fileName);
-            let data = await entry.getData(new zip.TextWriter());
-            this._loadFeatureData(region, type, i, data);
-        }
-
-        let fileName = `${fileRoot}_bvh.json`;
-        let entry = entries.find(e => e.filename === fileName);
-        let data = await entry.getData(new zip.TextWriter());
-        this._loadBVHData(region, type, data);
-    }
-
-    _openZipForType(dir, region, type) {
-        let path = `${dir}/${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}_${WT_MapViewRoadFeatureCollection.DATA_FILE_TYPE_STRING[type]}.zip`;
-        let request = new XMLHttpRequest();
-        request.responseType = "arraybuffer";
-
-        request.addEventListener("load",
-            (async function() {
-                let zipReader = new zip.ZipReader(new zip.Uint8ArrayReader(new Uint8Array(request.response)));
-                let entries = await zipReader.getEntries();
-                this._onZipOpened(region, type, entries);
-            }).bind(this)
-        );
-        request.open("GET", path);
-        request.send();
-    }
-
-    _openZipsForRegion(region) {
-        let dir = `${WT_MapViewRoadFeatureCollection.DATA_FILE_DIR}/${WT_MapViewRoadFeatureCollection.DATA_FILE_REGION_STRING[region]}`;
-        for (let type of this._types) {
-            this._openZipForType(dir, region, type);
-        }
-    }
-
-    _openZips() {
-        for (let region of this._regions) {
-            this._openZipsForRegion(region);
-        }
-    }
-
     _openFile(path, loadFunc) {
         let request = new XMLHttpRequest();
         request.overrideMimeType("application/json");
@@ -690,6 +645,7 @@ class WT_MapViewRoadLabelCandidatePruneHandler extends WT_GeoKDTreeSearchHandler
  */
 class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     /**
+     * @param {WT_MapViewRoadFeatureCollection.Type} - the type of road associated with the new label.
      * @param {WT_GeoPoint} location - the geogaphical location of the new label.
      * @param {String} name - the name of the road associated with the new label.
      */
@@ -702,8 +658,8 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The type of road associated with this label.
      * @readonly
-     * @property {WT_MapViewRoadFeatureCollection.Type} roadType - the type of the road associated with this label.
      * @type {WT_MapViewRoadFeatureCollection.Type}
      */
     get roadType() {
@@ -711,9 +667,9 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The display priority of this label. Text labels with greater priority values are always drawn above labels with
+     * lower priority values.
      * @readonly
-     * @property {Number} priority - the display priority of this label. Text labels with greater priority values
-     *                               are always drawn above and culled after labels with lower priority values.
      * @type {Number}
      */
     get priority() {
@@ -721,8 +677,8 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The geographical location of this label.
      * @readonly
-     * @property {WT_GeoPointReadOnly} location - the geographical location of this label.
      * @type {WT_GeoPointReadOnly}
      */
     get location() {
@@ -730,8 +686,8 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
     }
 
     /**
+     * The name of the road associated with this label.
      * @readonly
-     * @property {String} name - the name of the road associated with this label.
      * @type {String}
      */
     get name() {
@@ -744,6 +700,7 @@ class WT_MapViewRoadLabel extends WT_MapViewTextLabel {
  */
 class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
     /**
+     * @param {WT_MapViewRoadFeatureCollection.Type} - the type of road associated with the new label.
      * @param {WT_GeoPoint} location - the geogaphical location of the new label.
      * @param {String} name - the name of the road associated with the new label.
      * @param {String} imagePath - the path to the background image file of the new label.
@@ -879,6 +836,7 @@ class WT_MapViewRoadImageLabel extends WT_MapViewRoadLabel {
      * @param {CanvasRenderingContext2D} context
      * @param {WT_GVector2} center
      * @param {{left:Number, top:Number, right:Number, bottom:Number}} bounds
+     * @param {String[]} text
      */
     _drawText(state, context, center, bounds, text) {
         let width = bounds.right - bounds.left;

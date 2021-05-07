@@ -1,9 +1,8 @@
-class WT_G3x5_MFDNavDataBar extends NavSystemElement {
-    constructor(instrumentID, flightPlanManager) {
+class WT_G3x5_MFDNavDataBar extends WT_G3x5_MFDElement {
+    constructor(instrumentID) {
         super();
 
         this._instrumentID = instrumentID;
-        this._flightPlanManager = flightPlanManager;
     }
 
     /**
@@ -27,7 +26,7 @@ class WT_G3x5_MFDNavDataBar extends NavSystemElement {
     /**
      * @readonly
      * @property {WT_NavDataBar} model
-     * @type {WT_NavDataBar}
+     * @type {WT_G3x5_NavDataBarModel}
      */
     get model() {
         return this._model;
@@ -36,7 +35,7 @@ class WT_G3x5_MFDNavDataBar extends NavSystemElement {
     /**
      * @readonly
      * @property {WT_NavDataBarView} view
-     * @type {WT_NavDataBarView}
+     * @type {WT_G3x5_NavDataBarView}
      */
     get view() {
         return this._view;
@@ -45,31 +44,33 @@ class WT_G3x5_MFDNavDataBar extends NavSystemElement {
     /**
      * @readonly
      * @property {WT_NavDataBarController} controller
-     * @type {WT_NavDataBarController}
+     * @type {WT_G3x5_NavDataBarSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingsModel() {
+        return this._settingsModel;
     }
 
     _initModel() {
-        this._model = new WT_NavDataBar(this._flightPlanManager);
+        this._model = new WT_G3x5_NavDataBarModel(this.instrument);
         this.model.setDataFieldCount(WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT);
+
+        this._unitsAdapter = new WT_G3x5_UnitsControllerNavDataBarModelAdapter(this.instrument.unitsSettingModel, this.model);
     }
 
     _initView() {
-        this._view = new WT_NavDataBarView();
+        this._view = new WT_G3x5_NavDataBarView();
         this.view.setModel(this.model);
         this.htmlElement.appendChild(this.view);
     }
 
-    _initController() {
-        this._controller = new WT_NavDataBarController(this._instrumentID, this.model);
+    _initSettingsModel() {
+        this._settingsModel = new WT_G3x5_NavDataBarSettingModel(this._instrumentID, this.model);
         for (let i = 0; i < WT_G3x5_MFDNavDataBar.DATA_FIELD_COUNT; i++) {
-            this.controller.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
+            this.settingsModel.addDataFieldSetting(WT_G3x5_MFDNavDataBar.DEFAULT_DATA_FIELD_INFO_IDS[i]);
         }
 
-        this.controller.init();
-        this.controller.update();
+        this.settingsModel.init();
+        this.settingsModel.update();
     }
 
     /**
@@ -81,7 +82,7 @@ class WT_G3x5_MFDNavDataBar extends NavSystemElement {
 
         this._initModel();
         this._initView();
-        this._initController();
+        this._initSettingsModel();
     }
 
     onUpdate(deltaTime) {

@@ -14,14 +14,13 @@ class WT_MapViewAirwayCanvasRenderer {
         this._eventHandler = eventHandler;
         this._context = context;
         /**
-         * @property {Number} desiredLabelDistance - the desired distance between labels of the same airway, in pixels measured along the path
-         *                                           of the airway. The actual distance between labels may diverge from this value, but is
-         *                                           guaranteed to be at least this value.
+         * The desired distance between labels of the same airway, in pixels measured along the path of the airway.
+         * The actual distance between labels may diverge from this value, but is guaranteed to be at least this value.
          * @type {Number}
          */
         this.desiredLabelDistance = desiredLabelDistance;
         /**
-         * @property {Number} updateTimeBudget - the amount of time this renderer can spend actively rendering per update cycle.
+         * The amount of time this renderer can spend actively rendering per update cycle.
          * @type {Number}
          */
         this.updateTimeBudget = updateTimeBudget;
@@ -35,6 +34,9 @@ class WT_MapViewAirwayCanvasRenderer {
         this._labeledSegments = [];
 
         this._nextRender = null;
+        /**
+         * @type {{airway:WT_Airway, waypoints:WT_ReadOnlyArray<WT_ICAOWaypoint>}[]}
+         */
         this._airwayQueue = [];
         this._airwayQueueHead = 0;
 
@@ -52,8 +54,8 @@ class WT_MapViewAirwayCanvasRenderer {
     }
 
     /**
+     * Whether the last render task given to this renderer has finished.
      * @readonly
-     * @property {Boolean} isRendering - whether the last render task given to this renderer has finished.
      * @type {Boolean}
      */
     get isRendering() {
@@ -61,8 +63,8 @@ class WT_MapViewAirwayCanvasRenderer {
     }
 
     /**
+     * An iterable of all waypoints along airways that were rendered.
      * @readonly
-     * @property {Iterable<WT_ICAOWaypoint>} waypointsRendered - an iterable of all waypoints along airways that were rendered.
      * @type {Iterable<WT_ICAOWaypoint>}
      */
     get waypointsRendered() {
@@ -70,8 +72,8 @@ class WT_MapViewAirwayCanvasRenderer {
     }
 
     /**
+     * An iterable of data on all airway segments that should be labeled.
      * @readonly
-     * @property {Iterable<WT_MapViewAirwayCanvasRendererLabeledSegmentData>} labeledSegments - an iterable of data on all airway segments that should be labeled.
      * @type {Iterable<WT_MapViewAirwayCanvasRendererLabeledSegmentData>}
      */
     get labeledSegments() {
@@ -94,13 +96,18 @@ class WT_MapViewAirwayCanvasRenderer {
     }
 
     /**
-     *
-     * @param {WT_MapProjectionRenderer} projectionRenderer
-     * @param {*} start
-     * @param {*} end
-     * @param {*} distanceSinceLastLabel
-     * @param {*} viewBounds
-     * @param {*} searchDirection
+     * Finds a suitable position to place a label along an airway segment. Starting with the midpoint of the segment,
+     * this method will search forwards or backwards along the segment until a position is found that is within the
+     * specified view window or the start or end of the segment is reached.
+     * @param {WT_MapProjectionRenderer} projectionRenderer - a renderer for the map projection with which to render
+     *                                                        the label.
+     * @param {WT_GeoPoint} start - the location of the start of the airway segment.
+     * @param {WT_GeoPoint} end - the location of the end of the airway segment.
+     * @param {WT_GVector2[]} viewBounds - the bounds of the view window.
+     * @param {Number} searchDirection - either 1 (search forwards along the segment) or -1 (search backwards along
+     *                                   the segment).
+     * @returns {Number} the calculated position of the airway segment label, expressed as a fraction of the total
+     *                   length along the segment.
      */
     _calculateLabelPathPosition(projectionRenderer, start, end, viewBounds, searchDirection) {
         let topLeft = viewBounds[0];
@@ -116,6 +123,7 @@ class WT_MapViewAirwayCanvasRenderer {
                position[1] >= bottomRight.y) {
             delta /= 2;
             if (delta < 0.03125) {
+                // we are within 3.125% of one of the endpoints of the segment -> terminate the search at the endpoint
                 return pathPosition + searchDirection * delta * 2;
             }
             pathPosition += searchDirection * delta;
@@ -129,12 +137,12 @@ class WT_MapViewAirwayCanvasRenderer {
      * Calculates and returns an array of contiguous lines (defined by lat/long coordinates) representing the portions of an airway that are
      * visible within a projection renderer's target viewing area.
      * @param {WT_Airway} airway - the airway to render.
-     * @param {WT_ICAOWaypoint[]} waypoints - an ordered array of waypoints that make up the airway.
+     * @param {WT_ReadOnlyArray<WT_ICAOWaypoint>} waypoints - an ordered array of waypoints that make up the airway.
      * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use when rendering the airway.
      * @param {WT_GVector2[]} viewBounds - the bounds of the view area of the projection renderer. This should be an array of size two,
      *                                     with index 0 containing the top left point, and index 1 containing the bottom right point.
-     * @returns {LatLong[][]} an array of contiguous lines (defined by lat/long coordinates) representing the visible portions of an airway
-     *                        when rendered.
+     * @returns {WT_GeoPoint[][]} an array of contiguous lines (defined by lat/long coordinates) representing the visible portions of an airway
+     *                            when rendered.
      */
     _calculateAirwayLines(airway, waypoints, projectionRenderer, viewBounds) {
         let lines = [];
@@ -145,7 +153,8 @@ class WT_MapViewAirwayCanvasRenderer {
         let currentLine;
         let distanceSinceLastLabel = Infinity;
         for (let i = 0; i < waypoints.length; i++) {
-            let currentViewPosition = projectionRenderer.project(waypoints[i].location, this._tempVector1);
+            let waypoint = waypoints.get(i);
+            let currentViewPosition = projectionRenderer.project(waypoint.location, this._tempVector1);
             let currentInBounds = currentViewPosition.x >= topLeft.x &&
                                     currentViewPosition.x <= bottomRight.x &&
                                     currentViewPosition.y >= topLeft.y &&
@@ -156,34 +165,36 @@ class WT_MapViewAirwayCanvasRenderer {
             }
 
             let createLabel = false;
-            let labelSearchPosition = 0;
+            let labelSearchDirection = 0;
 
             if (currentInBounds) {
+                // current waypoint is within the view window -> start or continue the current contiguous line
                 if (i === 0) {
                     currentLine = [];
                     lines.push(currentLine);
                 } else if (!prevInBounds) {
-                    currentLine = [waypoints[i - 1].location];
+                    currentLine = [waypoints.get(i - 1).location];
                     lines.push(currentLine);
                 }
-                currentLine.push(waypoints[i].location);
-                this._waypointsRendered.set(waypoints[i].uniqueID, waypoints[i]);
+                currentLine.push(waypoint.location);
+                this._waypointsRendered.set(waypoint.uniqueID, waypoint);
 
                 if (currentLine.length > 1) {
                     if (distanceSinceLastLabel >= this.desiredLabelDistance) {
                         createLabel = true;
-                        labelSearchPosition = 1;
+                        labelSearchDirection = 1;
                     }
                 }
             } else if (prevInBounds) {
-                currentLine.push(waypoints[i].location);
+                // current waypoint is not within the viewing window but the last one was -> terminate the current contiguous line
+                currentLine.push(waypoint.location);
                 if (distanceSinceLastLabel >= this.desiredLabelDistance) {
                     createLabel = true;
-                    labelSearchPosition = -1;
+                    labelSearchDirection = -1;
                 }
             }
             if (createLabel) {
-                let labelPathPosition = this._calculateLabelPathPosition(projectionRenderer, waypoints[i - 1].location, waypoints[i].location, viewBounds, 1);
+                let labelPathPosition = this._calculateLabelPathPosition(projectionRenderer, waypoints.get(i - 1).location, waypoint.location, viewBounds, labelSearchDirection);
                 this._labeledSegments.push({
                     airway: airway,
                     segment: waypoints.slice(i - 1, i + 1),
@@ -203,7 +214,7 @@ class WT_MapViewAirwayCanvasRenderer {
      * Renders an array of contiguous lines (defined by lat/long coordinates) representing the portions of an airway that are visible
      * within a projection renderer's target viewing area.
      * @param {WT_Airway} airway - the airway to render.
-     * @param {LatLong[][]} lines - an array of contiguous lines representing the portions of the airway that are visible when rendered.
+     * @param {WT_GeoPoint[][]} lines - an array of contiguous lines representing the portions of the airway that are visible when rendered.
      * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to render the lines.
      */
     _renderLines(airway, lines, projectionRenderer) {
@@ -213,8 +224,8 @@ class WT_MapViewAirwayCanvasRenderer {
 
     /**
      * Renders an airway.
-     * @param {{airway:WT_Airway, waypoints:WT_ICAOWaypoint[]}} data - a data object containing the airway to render and an array of waypoints
-     *                                                                 that make up the airway.
+     * @param {{airway:WT_Airway, waypoints:WT_ReadOnlyArray<WT_ICAOWaypoint>}} data - a data object containing the airway to render and an array of waypoints
+     *                                                                                 that make up the airway.
      * @param {WT_MapProjectionRenderer} projectionRenderer - the projection renderer to use to render the airway.
      */
     _renderAirway(data, projectionRenderer, viewBounds) {
@@ -238,15 +249,20 @@ class WT_MapViewAirwayCanvasRenderer {
      *                               if the current render task is aborted.
      */
     async _enqueueAirwayData(airway, renderID) {
-        let waypoints = await airway.getWaypoints();
+        let waypoints;
+        try {
+            waypoints = await airway.getWaypoints();
+        } catch (e) {
+            console.log(e);
+        }
+
         if (this._shouldAbort || !this._isRendering || renderID !== this._renderID) {
             throw new Error("Render aborted.");
         }
 
-        if (waypoints.length < 2) {
-            return;
+        if (waypoints && waypoints.length >= 2) {
+            this._airwayQueue.push({airway: airway, waypoints: waypoints});
         }
-        this._airwayQueue.push({airway: airway, waypoints: waypoints});
     }
 
     /**
@@ -257,7 +273,7 @@ class WT_MapViewAirwayCanvasRenderer {
      *                                 if the current render task is aborted.
      */
     _prepareAirwayData(airways, renderID) {
-        return Promise.all(airways.map(airway => this._enqueueAirwayData(airway, renderID)));
+        return Promise.all(airways.map(airway => this._enqueueAirwayData(airway, renderID), this));
     }
 
     _setRenderOptions(airways, renderer) {

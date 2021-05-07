@@ -16,19 +16,33 @@ class WT_FlightPlanAsoboInterface {
         return SimVar.GetSimVarValue("C:fs9gps:FlightPlanIsActiveApproach", "Bool");
     }
 
-    async _getWaypointsFromData(data, array) {
-        for (let leg of data) {
+    async _getWaypointEntriesFromData(data, array) {
+        for (let i = 0; i < data.length; i++) {
+            let leg = data[i];
+            let waypoint = null;
             try {
-                array.push(await this._icaoWaypointFactory.getWaypoint(leg.icao));
+                waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
             } catch (e) {
                 if (leg.lla) {
-                    array.push(new WT_CustomWaypoint(leg.ident, leg.lla));
+                    waypoint = new WT_CustomWaypoint(leg.ident, leg.lla);
                 }
+            }
+            if (waypoint) {
+                if (waypoint instanceof WT_ICAOWaypoint && waypoint.location.distance(leg.lla) > 0.0001) {
+                    // sometimes Asobo will rename custom "USR" waypoints to match the ICAO of the previous waypoint
+                    waypoint = new WT_CustomWaypoint("USR", leg.lla);
+                }
+
+                let entry = {waypoint: waypoint};
+                if (leg.transitionLLas && leg.transitionLLas.length > 1) {
+                    entry.steps = leg.transitionLLas.slice(0, leg.transitionLLas.length - 1).map(lla => new WT_GeoPoint(lla.lat, lla.long));
+                }
+                array.push(entry);
             }
         }
     }
 
-    async _syncFlightPlan(flightPlan, data) {
+    async _syncFlightPlan(flightPlan, data, approachData) {
         let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
 
         let origin;
@@ -44,35 +58,40 @@ class WT_FlightPlanAsoboInterface {
             tempFlightPlan.setDestination(destination);
         }
 
-        let waypoints = [];
+        let waypointEntries = [];
         let originEnd = (origin ? 1 : 0);
         let destinationStart = data.waypoints.length - (destination ? 1 : 0);
-        let departureStart = (data.departureWaypointsSize === -1) ? -1 : originEnd;
-        let enrouteStart = (data.departureWaypointsSize === -1) ? originEnd : data.departureWaypointsSize;
-        let enrouteEnd = destinationStart - (data.arrivalWaypointsSize === -1 ? 0 : data.arrivalWaypointsSize);
-        let arrivalStart = (data.arrivalWaypointsSize === -1) ? -1 : enrouteEnd;
+        let departureStart = (data.departureWaypointsSize <= 0) ? -1 : originEnd;
+        let enrouteStart = originEnd + ((data.departureWaypointsSize <= 0) ? 0 : data.departureWaypointsSize);
+        let enrouteEnd = destinationStart - ((data.arrivalWaypointsSize <= 0) ? 0 : data.arrivalWaypointsSize);
+        let arrivalStart = (data.arrivalWaypointsSize <= 0) ? -1 : enrouteEnd;
 
         if (data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
             let removeStart = data.departureRunwayIndex < 0 ? 0 : 1; // don't remove runway fix.
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length() - removeStart);
-            await this._getWaypointsFromData(data.waypoints.slice(departureStart, enrouteStart), waypoints);
-            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypoints);
-            waypoints = [];
+            await this._getWaypointEntriesFromData(data.waypoints.slice(departureStart, enrouteStart), waypointEntries);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypointEntries);
+            waypointEntries = [];
         }
 
-        await this._getWaypointsFromData(data.waypoints.slice(enrouteStart, enrouteEnd), waypoints);
-        await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypoints);
+        await this._getWaypointEntriesFromData(data.waypoints.slice(enrouteStart, enrouteEnd), waypointEntries);
+        await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ENROUTE, waypointEntries);
 
         if (data.arrivalProcIndex >= 0) {
-            waypoints = [];
+            waypointEntries = [];
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length());
-            await this._getWaypointsFromData(data.waypoints.slice(arrivalStart, destinationStart), waypoints);
-            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypoints, 0);
+            await this._getWaypointEntriesFromData(data.waypoints.slice(arrivalStart, destinationStart), waypointEntries);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypointEntries, 0);
         }
         if (data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
+            // replace all waypoints except for the last, which should always be a runway fix.
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, tempFlightPlan.getApproach().length() - 1);
+            waypointEntries = [];
+            await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - 1), waypointEntries);
+            await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.APPROACH, waypointEntries, 0);
         }
 
         flightPlan.copyFrom(tempFlightPlan);
@@ -104,6 +123,7 @@ class WT_FlightPlanAsoboInterface {
      */
     async syncFromGame(flightPlan, directTo) {
         let data = await Coherent.call("GET_FLIGHTPLAN");
+        let approachData = await Coherent.call("GET_APPROACH_FLIGHTPLAN");
 
         if (data.waypoints.length === 0) {
             return;
@@ -115,7 +135,7 @@ class WT_FlightPlanAsoboInterface {
 
         let firstICAO = data.waypoints[0].icao;
         if (!(firstICAO[0] === "U" && data.waypoints.length === 2 && data.approachIndex < 0)) {
-            await this._syncFlightPlan(flightPlan, data);
+            await this._syncFlightPlan(flightPlan, data, approachData);
         } else {
             flightPlan.clear();
             isDRCTActive = true;
@@ -145,7 +165,7 @@ class WT_FlightPlanAsoboInterface {
             await Coherent.call("SET_ORIGIN", flightPlan.getOrigin().waypoint.icao);
             await Coherent.call("SET_DESTINATION", flightPlan.getDestination().waypoint.icao);
             let count = 1;
-            for (let leg of flightPlan.getEnroute().legs()) {
+            for (let leg of flightPlan.getEnroute().legs) {
                 let waypoint = leg.fix;
                 if (waypoint && waypoint.icao) {
                     await Coherent.call("ADD_WAYPOINT", waypoint.icao, count, false);
@@ -193,17 +213,16 @@ class WT_FlightPlanAsoboInterface {
         let legs;
         if (isApproachActive) {
             if (flightPlan.hasApproach()) {
-                legs = flightPlan.getApproach().legs();
+                legs = flightPlan.getApproach().legs;
             } else {
                 return null;
             }
-            index--;
         } else {
-            legs = flightPlan.legs();
+            legs = flightPlan.legs;
         }
 
-        let leg = legs[index];
-        if (!leg || (ident !== "USR" && leg.fix.ident !== ident)) {
+        let leg = legs.get(index);
+        if (!leg) {
             let legsBefore = legs.slice(0, index).reverse();
             let legsAfter = legs.slice(index + 1, legs.length);
             let before = legsBefore.findIndex(leg => leg.fix.ident === ident);
@@ -222,7 +241,7 @@ class WT_FlightPlanAsoboInterface {
                 }
             }
             if (index >= 0) {
-                return legs[index];
+                return legs.get(index);
             }
         }
         return leg ? leg: null;

@@ -11,12 +11,12 @@ class WT_NDB extends WT_ICAOWaypoint {
         super._initFromData(data);
 
         this._ndbType = data.type;
-        this._frequency = {MHz: data.freqMHz, bcd16: undefined};
+        this._frequency = new WT_Frequency(data.freqMHz, WT_Frequency.Prefix.KHz); // despite the property name implying the frequency is in MHz, it is actually reported in KHz
     }
 
     /**
+     * The type of this NDB.
      * @readonly
-     * @property {WT_NDB.Type} vorType - the type of this NDB.
      * @type {WT_NDB.Type}
      */
     get ndbType() {
@@ -24,17 +24,17 @@ class WT_NDB extends WT_ICAOWaypoint {
     }
 
     /**
+     * The frequency of this NDB.
      * @readonly
-     * @property {{MHz:Number, bcd16:Number}} frequency - the frequency of this NDB, in MHz and BCD16 formats.
-     * @type {{MHz:Number, bcd16:Number}}
+     * @type {WT_Frequency}
      */
     get frequency() {
         return this._frequency;
     }
 
     /**
+     * A list of airways passing through this NDB.
      * @readonly
-     * @property {WT_Airway[]} airways - a list of airways passing through this NDB.
      * @type {WT_Airway[]}
      */
     get airways() {

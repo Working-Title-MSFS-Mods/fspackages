@@ -1,0 +1,21 @@
+﻿{
+    "miniCompass": {
+        "iconPath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_MINI_COMPASS.svg"
+    },
+
+    "airplane": {
+        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_LONGITUDE.svg",
+        "iconSize": 40,
+        "iconAnchor": [0.5, 0]
+    },
+
+    "trafficRange": {
+        "innerStrokeColor": "transparent",
+        "innerStrokeDash": [],
+        "innerTickMinorFactor": 3
+    },
+
+    "trafficIntruder": {
+        "fontSize": 20
+    }
+}
