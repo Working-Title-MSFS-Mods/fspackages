@@ -1932,7 +1932,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             let n1_y = this.N1ToPixels(N1Eng1);
             if ((this.N1LeftZoneY1 - n1_y) > 10)
                 this.N1LeftCursor.setAttribute("d", "M" + (this.N1LeftZoneX - 1) + " " + n1_y + " l-10 0 l0 " + (this.N1LeftZoneY1 - n1_y) + " l5 0 l0 " + -(this.N1LeftZoneY1 - n1_y - 8) + " Z");
-             else
+            else
                 this.N1LeftCursor.setAttribute("d", "");
             this.N1LeftValue.textContent = N1Eng1.toFixed(1);
         }
@@ -1957,7 +1957,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             let startValue = 825;
             let endValue = (this.isStartingLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
-            let beacon_y2 = this.ITTToPixels(endValue - (this.isMinimized ? 0 : 52));
+            let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
             this.ITTLeftBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
         }
@@ -1971,7 +1971,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             let startValue = 825;
             let endValue = (this.isStartingRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
-            let beacon_y2 = this.ITTToPixels(endValue - (this.isMinimized ? 0 : 52));
+            let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
             this.ITTRightBeacon.setAttribute("height", (beacon_y1 - beacon_y2).toString());
         }
