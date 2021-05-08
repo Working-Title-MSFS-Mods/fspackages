@@ -210,17 +210,14 @@ class WT_G3x5_TSCProceduresHTMLElement extends HTMLElement {
     }
 
     _updateDepartureButton() {
-        this._departureButton.enabled = this._flightPlan.isOriginAirport();
         this._departureButton.valueText = this._getDepartureDisplayText();
     }
 
     _updateArrivalButton() {
-        this._arrivalButton.enabled = this._flightPlan.isDestinationAirport();
         this._arrivalButton.valueText = this._getArrivalDisplayText();
     }
 
     _updateApproachButton() {
-        this._approachButton.enabled = this._flightPlan.isDestinationAirport();
         this._approachButton.valueText = this._getApproachDisplayText();
     }
 
@@ -706,7 +703,6 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     _updateSequenceList() {
         this._sequenceLegRecycler.recycleAll();
         let legs = this._getProcedureLegs();
-        console.log(legs);
         legs.forEach(leg => {
             if (!leg) {
                 return;
@@ -717,7 +713,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     }
 
     _updateLoadButton() {
-        this._loadButton.enabled = `${!this._isSelectedProcedureLoaded}`;
+        this._loadButton.enabled = `${this._isSelectedProcedureComplete && !this._isSelectedProcedureLoaded}`;
     }
 
     _cleanUpFlightPlan() {
@@ -780,13 +776,13 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     }
 
     _updateFromFlightPlan() {
-        if (!this._flightPlan) {
-            return;
+        if (this._flightPlan) {
+            this._initFlightPlanListener();
         }
 
-        this._initFlightPlanListener();
         this._updateAirport();
         this._updateRemoveButton();
+        this._updateLoadButton();
     }
 
     setFlightPlan(flightPlan) {
@@ -899,18 +895,26 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._removeButton.enabled = `${this._flightPlanHasProcedure()}`;
     }
 
+    _onFlightPlanAirportEvent(event) {
+        this._updateAirport();
+    }
+
+    _onFlightPlanProcedureEvent(event) {
+        this._updateSelectedProcedureStatus();
+        this._updateRemoveButton();
+        this._updateLoadButton();
+    }
+
     /**
      *
      * @param {WT_FlightPlanEvent} event
      */
     _onFlightPlanEvent(event) {
         if (this._filterFlightPlanAirportEvent(event)) {
-            this._updateAirport();
+            this._onFlightPlanAirportEvent(event);
         }
         if (this._filterFlightPlanProcedureEvent(event)) {
-            this._updateSelectedProcedureStatus();
-            this._updateRemoveButton();
-            this._updateLoadButton();
+            this._onFlightPlanProcedureEvent(event);
         }
     }
 
@@ -1503,10 +1507,16 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
      * @returns {Boolean}
      */
     _checkIfSelectedProcedureComplete() {
-        return this._selectedProcedure &&
+        return (this._selectedProcedure !== null) &&
                this._selectedProcedure.airport.equals(this._airport) &&
                ((this._selectedRunway && this._selectedRunway.airport.equals(this._airport)) || (!this._selectedRunway && this._selectedProcedure.runwayTransitions.array.length === 0)) &&
                (this._selectedTransitionIndex >= 0 || this._selectedProcedure.enrouteTransitions.array.length === 0);
+    }
+
+    _updateFromFlightPlan() {
+        super._updateFromFlightPlan();
+
+        this._updateRunwayButton();
     }
 
     _updateSelectedRunwayFromAirport() {
@@ -1553,6 +1563,7 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
     }
 
     _updateRunwayButton() {
+        this._runwayButton.enabled = `${this._airport !== null}`;
         this._runwayButton.valueText = this._selectedRunway ? `RW${this._selectedRunway.designationFull}` : "ALL";
     }
 
@@ -1611,6 +1622,12 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
         if (this._isInit) {
             this._updateFromRunway();
         }
+    }
+
+    _onFlightPlanAirportEvent(event) {
+        super._onFlightPlanAirportEvent(event);
+
+        this._updateRunwayButton();
     }
 
     _onFilterSettingChanged(setting, newValue, oldValue) {
@@ -1987,7 +2004,7 @@ class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArriv
      * @returns {WT_Airport}
      */
     _getAirportFromFlightPlan() {
-        return this._flightPlan ? this._flightPlan.getOrigin().waypoint : null;
+        return (this._flightPlan && this._flightPlan.isOriginAirport()) ? this._flightPlan.getOrigin().waypoint : null;
     }
 
     /**
@@ -2187,7 +2204,7 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
      * @returns {WT_Airport}
      */
     _getAirportFromFlightPlan() {
-        return this._flightPlan ? this._flightPlan.getDestination().waypoint : null;
+        return (this._flightPlan && this._flightPlan.isDestinationAirport()) ? this._flightPlan.getDestination().waypoint : null;
     }
 
     /**
@@ -2427,7 +2444,7 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
      * @returns {Boolean}
      */
     _checkIfSelectedProcedureComplete() {
-        return this._selectedProcedure &&
+        return (this._selectedProcedure !== null) &&
                this._selectedProcedure.airport.equals(this._airport) &&
                (this._selectedTransitionIndex >= 0 || this._selectedProcedure.transitions.array.length === 0);
     }
@@ -2472,7 +2489,7 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
      * @returns {WT_Airport}
      */
     _getAirportFromFlightPlan() {
-        return this._flightPlan ? this._flightPlan.getDestination().waypoint : null;
+        return (this._flightPlan && this._flightPlan.isDestinationAirport()) ? this._flightPlan.getDestination().waypoint : null;
     }
 
     /**
