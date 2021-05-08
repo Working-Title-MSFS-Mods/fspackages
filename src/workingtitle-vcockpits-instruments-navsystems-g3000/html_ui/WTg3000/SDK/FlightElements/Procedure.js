@@ -229,9 +229,6 @@ class WT_Approach extends WT_Procedure {
     }
 
     _initFromData(data) {
-        if (this.airport.ident === "KYIP") {
-            console.log(data);
-        }
         this._initType(data);
         this._initRunway(data);
         this._initLegs(data);
