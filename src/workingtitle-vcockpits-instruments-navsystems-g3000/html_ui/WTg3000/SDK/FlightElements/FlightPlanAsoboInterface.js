@@ -33,6 +33,10 @@ class WT_FlightPlanAsoboInterface {
         return SimVar.GetSimVarValue("GPS WP NEXT ID", "string");
     }
 
+    isApproachLoaded() {
+        return SimVar.GetSimVarValue("C:fs9gps:FlightPlanIsLoadedApproach", "Bool");
+    }
+
     isApproachActive() {
         return SimVar.GetSimVarValue("C:fs9gps:FlightPlanIsActiveApproach", "Bool");
     }
@@ -477,8 +481,61 @@ class WT_FlightPlanAsoboInterface {
      *
      * @returns {Promise<void>}
      */
-     async removeArrival() {
+    async removeArrival() {
         await Coherent.call("REMOVE_ARRIVAL_PROC");
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     * @param {Number} approachIndex
+     * @param {Number} transitionIndex
+     * @returns {Promise<void>}
+     */
+    async loadApproach(approachIndex, transitionIndex) {
+        if (this.isApproachActive()) {
+            await this.deactivateApproach();
+        }
+
+        await Coherent.call("SET_APPROACH_INDEX", approachIndex);
+        await Coherent.call("SET_APPROACH_TRANSITION_INDEX", transitionIndex);
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     * @returns {Promise<void>}
+     */
+    async removeApproach() {
+        await this.deactivateApproach();
+        await this.loadApproach(-1, -1);
+    }
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+    async activateApproach() {
+        if (!this.isApproachLoaded()) {
+            return;
+        }
+
+        let isApproachActive = this.isApproachActive();
+        if (isApproachActive) {
+            SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
+        } else {
+            await Coherent.call("ACTIVATE_APPROACH");
+            SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", true);
+        }
+    }
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+    async deactivateApproach() {
+        await Coherent.call("DEACTIVATE_APPROACH");
+        SimVar.SetSimVarValue("L:FLIGHT_PLAN_MANAGER_APPROACH_ACTIVATED", "boolean", false);
     }
 
     /**
@@ -545,10 +602,10 @@ class WT_FlightPlanAsoboInterface {
 
         let isApproachActive = this.isApproachActive();
         if (leg.segment === WT_FlightPlan.Segment.APPROACH && !isApproachActive) {
-            await Coherent.call("ACTIVATE_APPROACH");
+            await this.activateApproach();
             index++; // need to add 1 to index because once approach is activated, a USR waypoint is added to the beginning of the approach
         } else if (leg.segment !== WT_FlightPlan.Segment.APPROACH && isApproachActive) {
-            await Coherent.call("DEACTIVATE_APPROACH");
+            await this.deactivateApproach();
         }
         await Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index);
     }

@@ -2483,6 +2483,13 @@ class WT_FlightPlanFlyToBearingDistanceFromReferenceMaker extends WT_FlightPlanP
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
     async _calculateFix(procedureLeg) {
+        if (procedureLeg.fixICAO) {
+            try {
+                let fix = await this._icaoWaypointFactory.getWaypoint(procedureLeg.fixICAO);
+                return fix;
+            } catch (e) {}
+        }
+
         let reference = await this._icaoWaypointFactory.getWaypoint(procedureLeg.referenceICAO);
         let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, reference.location);
 

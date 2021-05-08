@@ -180,6 +180,10 @@ class WT_Approach extends WT_Procedure {
         this._initFromData(data);
     }
 
+    _enrouteTransitionMap(data) {
+        return new WT_ApproachTransition(this, data);
+    }
+
     _initType(data) {
         if (this.name.indexOf("ILS") >= 0) {
             this._type = WT_Approach.Type.ILS_LOC;
@@ -225,6 +229,9 @@ class WT_Approach extends WT_Procedure {
     }
 
     _initFromData(data) {
+        if (this.airport.ident === "KYIP") {
+            console.log(data);
+        }
         this._initType(data);
         this._initRunway(data);
         this._initLegs(data);
@@ -261,7 +268,7 @@ class WT_Approach extends WT_Procedure {
     /**
      * The transitions for this approach.
      * @readonly
-     * @type {WT_TransitionList<WT_ProcedureTransition>}
+     * @type {WT_TransitionList<WT_ApproachTransition>}
      */
     get transitions() {
         return this._transitions;
@@ -310,6 +317,7 @@ class WT_ProcedureTransition {
     }
 
     _initFromData(data) {
+        this._name = data.name; // provided only with Navigraph data
         this._legs = data.legs.map(this.procedure._legMap.bind(this.procedure));
         this._legsReadOnly = new WT_ReadOnlyArray(this._legs);
     }
@@ -349,8 +357,10 @@ class WT_DepartureEnrouteTransition extends WT_ProcedureTransition {
     _initFromData(data) {
         super._initFromData(data);
 
-        let lastLeg = this.legs.last();
-        this._name = (lastLeg && lastLeg.fixICAO) ? lastLeg.fixICAO.substr(7, 5).trim() : "";
+        if (!this._name) {
+            let lastLeg = this.legs.last();
+            this._name = (lastLeg && lastLeg.fixICAO) ? lastLeg.fixICAO.substr(7, 5).trim() : "";
+        }
     }
 }
 
@@ -361,8 +371,24 @@ class WT_ArrivalEnrouteTransition extends WT_ProcedureTransition {
     _initFromData(data) {
         super._initFromData(data);
 
-        let firstLeg = this.legs.first();
-        this._name = (firstLeg && firstLeg.fixICAO) ? firstLeg.fixICAO.substr(7, 5).trim() : "";
+        if (!this._name) {
+            let firstLeg = this.legs.first();
+            this._name = (firstLeg && firstLeg.fixICAO) ? firstLeg.fixICAO.substr(7, 5).trim() : "";
+        }
+    }
+}
+
+/**
+ * An approach transition.
+ */
+class WT_ApproachTransition extends WT_ProcedureTransition {
+    _initFromData(data) {
+        super._initFromData(data);
+
+        if (!this._name) {
+            let firstLeg = this.legs.first();
+            this._name = (firstLeg && firstLeg.fixICAO) ? firstLeg.fixICAO.substr(7, 5).trim() : "";
+        }
     }
 }
 
@@ -752,6 +778,23 @@ class WT_ProcedureFlyToBearingDistanceFromReference extends WT_ProcedureLegCours
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_TO_BEARING_DISTANCE_FROM_REFERENCE, data);
     }
+
+    _initFromData(data) {
+        super._initFromData(data);
+
+        if (data.fixIcao.trim()) {
+            this._fixICAO = data.fixIcao;
+        }
+    }
+
+    /**
+     * @readonly
+     * @property {String} fixICAO - the ICAO string of the terminator waypoint fix for this leg, if one exists.
+     * @type {String}
+     */
+    get fixICAO() {
+        return this._fixICAO;
+    }
 }
 
 /**
@@ -834,12 +877,15 @@ class ProcedureLegFactory {
             case 7:
             case 17:
             case 18:
+                if (data.fixIcao && data.fixIcao[0] === "R") { // ignore runway fixes
+                    return;
+                }
                 return new WT_ProcedureFlyToFix(procedure, data);
             case 3:
                 return new WT_ProcedureFlyHeadingUntilDistanceFromReference(procedure, data);
             case 4:
                 if (data.fixIcao && data.fixIcao[0] === "R") { // ignore runway fixes
-                    break;
+                    return;
                 }
                 return new WT_ProcedureFlyReferenceRadialForDistance(procedure, data);
             case 5:
@@ -857,6 +903,11 @@ class ProcedureLegFactory {
             case 11:
             case 22:
                 return new WT_ProcedureFlyVectors(procedure, data);
+            default:
+                if (data.fixIcao) {
+                    // for now we will treat all unknown leg types with a defined fix as a direct leg
+                    return new WT_ProcedureFlyToFix(procedure, data);
+                }
         }
     }
 }
