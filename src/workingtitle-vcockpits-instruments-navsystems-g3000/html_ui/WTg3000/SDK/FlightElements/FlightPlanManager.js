@@ -344,6 +344,68 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * Loads a departure procedure to the active flight plan and syncs the active flight plan after the departure has
+     * been loaded.
+     * @param {Number} departureIndex - the index of the departure to load.
+     * @param {Number} enrouteTransitionIndex - the index of the enroute transition of the departure to load.
+     * @param {Number} runwayTransitionIndex - the index of the runway transition of the departure to load.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the departure has been loaded, or rejected if
+     *                          the departure cannot be loaded.
+     */
+    async loadDepartureToActive(departureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        if (!this.activePlan.isOriginAirport()) {
+            throw new Error("Cannot add departure to a flight plan without an origin airport");
+        }
+        if (departureIndex < 0 || departureIndex >= this.activePlan.getOrigin().waypoint.departures.array.length) {
+            throw new Error("Invalid departure index");
+        }
+
+        await this._asoboInterface.loadDeparture(departureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Removes the departure procedure from the active flight plan and syncs the active flight plan after the departure
+     * has been removed.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the departure has been removed.
+     */
+    async removeDepartureFromActive() {
+        await this._asoboInterface.removeDeparture();
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Loads an arrival procedure to the active flight plan and syncs the active flight plan after the arrival has
+     * been loaded.
+     * @param {Number} arrivalIndex - the index of the arrival to load.
+     * @param {Number} enrouteTransitionIndex - the index of the enroute transition of the arrival to load.
+     * @param {Number} runwayTransitionIndex - the index of the runway transition of the arrival to load.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the arrival has been loaded, or rejected if
+     *                          the arrival cannot be loaded.
+     */
+    async loadArrivalToActive(arrivalIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        if (!this.activePlan.isDestinationAirport()) {
+            throw new Error("Cannot add arrival to a flight plan without a destination airport");
+        }
+        if (arrivalIndex < 0 || arrivalIndex >= this.activePlan.getDestination().waypoint.arrivals.array.length) {
+            throw new Error("Invalid arrival index");
+        }
+
+        await this._asoboInterface.loadArrival(arrivalIndex, enrouteTransitionIndex, runwayTransitionIndex);
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Removes the arrival procedure from the active flight plan and syncs the active flight plan after the arrival
+     * has been removed.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the arrival has been removed.
+     */
+    async removeArrivalFromActive() {
+        await this._asoboInterface.removeArrival();
+        await this.syncActiveFromGame();
+    }
+
+    /**
      * Gets the currently active flight plan leg. If there is no active flight plan leg, null is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
      *                             based on data cached from the last time the active flight plan was synced from the

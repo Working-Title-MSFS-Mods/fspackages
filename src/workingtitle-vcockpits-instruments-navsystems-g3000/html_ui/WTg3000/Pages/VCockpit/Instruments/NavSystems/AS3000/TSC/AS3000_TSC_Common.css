@@ -276,6 +276,8 @@
 #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
 #Electricity #PagesDisplay[state=FlightPlan] #FlightPlan,
 #Electricity #PagesDisplay[state=ProceduresWT] #ProceduresWT,
+#Electricity #PagesDisplay[state=DepartureSelectionWT] #DepartureSelectionWT,
+#Electricity #PagesDisplay[state=ArrivalSelectionWT] #ArrivalSelectionWT,
 #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
 #Electricity #PagesDisplay[state=MFDMapSettingsLeft] #MFDMapSettingsLeft,
 #Electricity #PagesDisplay[state=MFDMapSettingsRight] #MFDMapSettingsRight,
