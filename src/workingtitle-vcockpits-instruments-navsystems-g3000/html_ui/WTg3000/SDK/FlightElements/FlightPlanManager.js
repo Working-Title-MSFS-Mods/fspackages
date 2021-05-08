@@ -406,6 +406,56 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * Loads an approach procedure to the active flight plan and syncs the active flight plan after the approach has
+     * been loaded.
+     * @param {Number} arrivalIndex - the index of the approach to load.
+     * @param {Number} transitionIndex - the index of the transition of the approach to load.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the approach has been loaded, or rejected if
+     *                          the approach cannot be loaded.
+     */
+    async loadApproachToActive(approachIndex, transitionIndex) {
+        if (!this.activePlan.isDestinationAirport()) {
+            throw new Error("Cannot add approach to a flight plan without a destination airport");
+        }
+        if (approachIndex < 0 || approachIndex >= this.activePlan.getDestination().waypoint.approaches.array.length) {
+            throw new Error("Invalid approach index");
+        }
+
+        await this._asoboInterface.loadApproach(approachIndex, transitionIndex);
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Removes the approach procedure from the active flight plan and syncs the active flight plan after the approach
+     * has been removed.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the approach has been removed.
+     */
+    async removeApproachFromActive() {
+        await this._asoboInterface.removeApproach();
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Activates the active flight plan's currently loaded approach procedure and syncs the active flight plan after
+     * the approach has been activated.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the approach has been activated.
+     */
+    async activateApproach() {
+        await this._asoboInterface.activateApproach();
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Deactivates the active flight plan's currently active approach procedure and syncs the active flight plan after
+     * the approach has been deactivated.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the approach has been deactivated.
+     */
+    async deactivateApproach() {
+        await this._asoboInterface.deactivateApproach();
+        await this.syncActiveFromGame();
+    }
+
+    /**
      * Gets the currently active flight plan leg. If there is no active flight plan leg, null is returned instead.
      * @param {Boolean} [cached] - whether to use cached data. If true, this method will immediately return a result
      *                             based on data cached from the last time the active flight plan was synced from the

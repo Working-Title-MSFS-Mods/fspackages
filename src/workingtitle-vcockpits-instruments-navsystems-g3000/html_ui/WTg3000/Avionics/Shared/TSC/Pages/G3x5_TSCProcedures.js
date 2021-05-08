@@ -22,6 +22,7 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
     _initButtonListeners() {
         this.htmlElement.departureButton.addButtonListener(this._onDepartureButtonPressed.bind(this));
         this.htmlElement.arrivalButton.addButtonListener(this._onArrivalButtonPressed.bind(this));
+        this.htmlElement.approachButton.addButtonListener(this._onApproachButtonPressed.bind(this));
     }
 
     async _initHTMLElement() {
@@ -45,6 +46,10 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
 
     _onArrivalButtonPressed(button) {
         this.instrument.SwitchToPageName("MFD", "Arrival Selection WT");
+    }
+
+    _onApproachButtonPressed(button) {
+        this.instrument.SwitchToPageName("MFD", "Approach Selection WT");
     }
 
     onUpdate(deltaTime) {
@@ -317,15 +322,19 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         super(homePageGroup, homePageName);
 
         this._instrumentID = instrumentID;
+
+        this._initState();
+        this._initSettingModel();
+    }
+
+    _initState() {
         this._state = {
             _airplaneHeadingTrue: 0,
 
             get airplaneHeadingTrue() {
                 return this._airplaneHeadingTrue;
             },
-        }
-
-        this._initSettingModel();
+        };
     }
 
     _initSettings() {
@@ -368,7 +377,7 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
      *
      * @param {String} icao
      */
-    _selectAirportICAO(icao) {
+    async _selectAirportICAO(icao) {
     }
 
     _removeProcedure() {
@@ -472,6 +481,8 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
          */
         this._selectedProcedure = null;
         this._selectedTransitionIndex = -1;
+        this._isSelectedProcedureComplete = false;
+        this._isSelectedProcedureLoaded = false;
         this._isInit = false;
         this._isOpen = false;
 
@@ -553,6 +564,8 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
             WT_CustomElementSelector.select(this.shadowRoot, this._getLoadButtonQuery(), WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, this._getSequenceListQuery(), WT_TSCScrollList),
         ]);
+
+        this._optionsTitle = this.shadowRoot.querySelector(this._getOptionsTitleQuery());
     }
 
     _initButtons() {
@@ -579,6 +592,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     }
 
     _initChildren() {
+        this._initTitles();
         this._initButtons();
         this._initSequenceLegRecycler();
         this._initButtonListeners();
@@ -620,14 +634,14 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
      *
      * @returns {Boolean}
      */
-    _isFullProcedureSelected() {
+    _checkIfSelectedProcedureComplete() {
     }
 
     /**
      *
      * @returns {Boolean}
      */
-    _isSelectedProcedureLoaded() {
+    _checkIfSelectedProcedureLoaded() {
     }
 
     /**
@@ -671,6 +685,9 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
             case WT_ProcedureLeg.Type.FLY_HEADING_UNTIL_REFERENCE_RADIAL_CROSSING:
                 return `HDG ${leg.course.toFixed(0).padStart(3, "0")}°`;
             case WT_ProcedureLeg.Type.FLY_TO_BEARING_DISTANCE_FROM_REFERENCE:
+                if (leg.fixICAO) {
+                    return leg.fixICAO.substr(7, 5).trim();
+                }
             case WT_ProcedureLeg.Type.FLY_VECTORS:
                 return "MANSEQ";
             case WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE:
@@ -681,18 +698,26 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    _updateSelectedProcedureStatus() {
+        this._isSelectedProcedureComplete = this._checkIfSelectedProcedureComplete();
+        this._isSelectedProcedureLoaded = this._isSelectedProcedureComplete && this._checkIfSelectedProcedureLoaded();
+    }
+
     _updateSequenceList() {
         this._sequenceLegRecycler.recycleAll();
         let legs = this._getProcedureLegs();
+        console.log(legs);
         legs.forEach(leg => {
+            if (!leg) {
+                return;
+            }
             let sequenceLeg = this._sequenceLegRecycler.request();
             sequenceLeg.innerHTML = this._getSequenceLegName(leg);
         }, this);
     }
 
     _updateLoadButton() {
-        let isFullProcedureSelected = this._isFullProcedureSelected();
-        this._loadButton.enabled = `${isFullProcedureSelected && !this._isSelectedProcedureLoaded()}`;
+        this._loadButton.enabled = `${!this._isSelectedProcedureLoaded}`;
     }
 
     _cleanUpFlightPlan() {
@@ -835,6 +860,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
 
     _updateFromSelectedTransitionIndex() {
         this._updateTransitionButton();
+        this._updateSelectedProcedureStatus();
         this._updateSequenceList();
         this._updateLoadButton();
     }
@@ -882,6 +908,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
             this._updateAirport();
         }
         if (this._filterFlightPlanProcedureEvent(event)) {
+            this._updateSelectedProcedureStatus();
             this._updateRemoveButton();
             this._updateLoadButton();
         }
@@ -1025,7 +1052,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     }
 
     _onLoadButtonPressed(button) {
-        if (!this._isFullProcedureSelected()) {
+        if (!this._checkIfSelectedProcedureComplete()) {
             return;
         }
 
@@ -1092,6 +1119,11 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     }
 
     _selectActiveProcedure() {
+        let lastPageName = this._parentPage.instrument.history[this._parentPage.instrument.history.length - 1].pageName;
+        if (lastPageName === this._parentPage.container.name) {
+            return;
+        }
+
         let procedureSegment = this._getProcedureSegmentFromFlightPlan();
         if (procedureSegment) {
             this._doSelectActiveProcedure(procedureSegment);
@@ -1137,7 +1169,8 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
 WT_G3x5_TSCProcedureSelectionHTMLElement.EventType = {
     AIRPORT_SELECTED: 0,
     PROCEDURE_LOADED: 1,
-    PROCEDURE_REMOVED: 2
+    PROCEDURE_REMOVED: 2,
+    APPROACH_ACTIVATED: 3,
 };
 WT_G3x5_TSCProcedureSelectionHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCProcedureSelectionHTMLElement.UNIT_CLASS = "unit";
@@ -1397,6 +1430,10 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
         return `#sequencelist`;
     }
 
+    _getOptionsTitleQuery() {
+        return `#optionstitle`;
+    }
+
     async _defineChildren() {
         [
             ,
@@ -1407,8 +1444,6 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
             WT_CustomElementSelector.select(this.shadowRoot, this._getRunwayButtonQuery(), WT_TSCValueButton),
             WT_CustomElementSelector.select(this.shadowRoot, this._getFilterButtonQuery(), WT_TSCValueButton)
         ]);
-
-        this._optionsTitle = this.shadowRoot.querySelector(`#optionstitle`);
     }
 
     _initButtons() {
@@ -1452,12 +1487,6 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
         this._runwayButton.addButtonListener(this._onRunwayButtonPressed.bind(this));
     }
 
-    _initChildren() {
-        super._initChildren();
-
-        this._initTitles();
-    }
-
     _initFilterSettingListener() {
         this._parentPage.filterSetting.addListener(this._onFilterSettingChanged.bind(this));
         this._filterByRunway = this._parentPage.filterSetting.getValue();
@@ -1473,7 +1502,7 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
      *
      * @returns {Boolean}
      */
-    _isFullProcedureSelected() {
+    _checkIfSelectedProcedureComplete() {
         return this._selectedProcedure &&
                this._selectedProcedure.airport.equals(this._airport) &&
                ((this._selectedRunway && this._selectedRunway.airport.equals(this._airport)) || (!this._selectedRunway && this._selectedProcedure.runwayTransitions.array.length === 0)) &&
@@ -1563,6 +1592,7 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
         if (this._filterByRunway) {
             this._updateSelectedProcedureFromRunway();
         } else {
+            this._updateSelectedProcedureStatus();
             this._updateSequenceList();
             this._updateLoadButton();
         }
@@ -1848,8 +1878,12 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
      *
      * @param {String} icao
      */
-    _selectAirportICAO(icao) {
-        this._fpm.setActiveOriginICAO(icao);
+    async _selectAirportICAO(icao) {
+        try {
+            await this._fpm.setActiveOriginICAO(icao);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     _removeProcedure() {
@@ -1905,8 +1939,8 @@ class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArriv
      *
      * @returns {Boolean}
      */
-    _isSelectedProcedureLoaded() {
-        let flightPlanDeparture = this._flightPlan ? this._flightPlan.getDeparture() : null;
+    _checkIfSelectedProcedureLoaded() {
+        let flightPlanDeparture = this._getProcedureSegmentFromFlightPlan();
         if (!flightPlanDeparture) {
             return false;
         }
@@ -1921,7 +1955,7 @@ class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArriv
      */
     _getProcedureLegs() {
         let legs = [];
-        if (this._isFullProcedureSelected()) {
+        if (this._checkIfSelectedProcedureComplete()) {
             if (this._selectedRunway) {
                 let transition = this._selectedProcedure.runwayTransitions.array.find(transition => transition.runway.equals(this._selectedRunway), this);
                 if (transition) {
@@ -2044,8 +2078,12 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
      *
      * @param {String} icao
      */
-    _selectAirportICAO(icao) {
-        this._fpm.setActiveDestinationICAO(icao);
+    async _selectAirportICAO(icao) {
+        try {
+            await this._fpm.setActiveDestinationICAO(icao);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     _removeProcedure() {
@@ -2101,8 +2139,8 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
      *
      * @returns {Boolean}
      */
-    _isSelectedProcedureLoaded() {
-        let flightPlanArrival = this._flightPlan ? this._flightPlan.getArrival() : null;
+    _checkIfSelectedProcedureLoaded() {
+        let flightPlanArrival = this._getProcedureSegmentFromFlightPlan();
         if (!flightPlanArrival) {
             return false;
         }
@@ -2117,7 +2155,7 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
      */
     _getProcedureLegs() {
         let legs = [];
-        if (this._isFullProcedureSelected()) {
+        if (this._checkIfSelectedProcedureComplete()) {
             if (this._selectedTransitionIndex >= 0) {
                 let transition = this._selectedProcedure.enrouteTransitions.getByIndex(this._selectedTransitionIndex);
                 if (transition) {
@@ -2215,3 +2253,449 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
 WT_G3x5_TSCArrivalSelectionHTMLElement.NAME = "wt-tsc-arrivalselection";
 
 customElements.define(WT_G3x5_TSCArrivalSelectionHTMLElement.NAME, WT_G3x5_TSCArrivalSelectionHTMLElement);
+
+/**
+ * @extends WT_G3x5_TSCProcedureSelection<WT_Approach>
+ */
+class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
+    _initState() {
+        this._state = {
+            _airplaneHeadingTrue: 0,
+            _isApproachActive: false,
+
+            get airplaneHeadingTrue() {
+                return this._airplaneHeadingTrue;
+            },
+            get isApproachActive() {
+                return this._isApproachActive;
+            }
+        };
+    }
+
+    _getTitle() {
+        return WT_G3x5_TSCApproachSelection.TITLE;
+    }
+
+    _createHTMLElement() {
+        return new WT_G3x5_TSCApproachSelectionHTMLElement();
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     * @returns {WT_ProcedureList<WT_Approach>}
+     */
+    _getProcedureList(airport) {
+        return airport.approaches;
+    }
+
+    /**
+     *
+     * @param {String} icao
+     */
+    async _selectAirportICAO(icao) {
+        try {
+            await this._fpm.setActiveDestinationICAO(icao);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    _removeProcedure() {
+        this._fpm.removeApproachFromActive();
+    }
+
+    async _doLoadProcedure(procedureIndex, transitionIndex) {
+        try {
+            await this._fpm.loadApproachToActive(procedureIndex, transitionIndex);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCProcedureSelectionEvent} event
+     */
+    async _loadProcedure(event) {
+        let airport = event.procedure.airport;
+        let procedureList = this._getProcedureList(airport);
+        let procedureIndex = procedureList.array.indexOf(event.procedure);
+        await this._doLoadProcedure(procedureIndex, event.transitionIndex);
+    }
+
+    async _activateApproach() {
+        await this._fpm.activateApproach();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCProcedureSelectionEvent} event
+     */
+    _onHTMLElementEvent(event) {
+        if (event.type === WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.APPROACH_ACTIVATED) {
+            this._activateApproach();
+        } else {
+            super._onHTMLElementEvent(event);
+        }
+    }
+
+    _updateState() {
+        super._updateState();
+
+        let activeLeg = this._fpm.getActiveLeg(true);
+        this._state._isApproachActive = activeLeg && activeLeg.segment === WT_FlightPlan.Segment.APPROACH;
+    }
+}
+WT_G3x5_TSCApproachSelection.TITLE = "Approach Selection";
+
+/**
+ * @extends WT_G3x5_TSCProcedureSelectionHTMLElement<WT_Approach>
+ */
+class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelectionHTMLElement {
+    _getTemplate() {
+        return WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE;
+    }
+
+    /**
+     *
+     * @returns {String}
+     */
+    _getProcedureSelectWindowTitle() {
+        return "Select Approach";
+    }
+
+    _getAirportButtonQuery() {
+        return `#airport`;
+    }
+
+    _getProcedureButtonQuery() {
+        return `#procedure`;
+    }
+
+    _getTransitionButtonQuery() {
+        return `#transition`;
+    }
+
+    _getPreviewButtonQuery() {
+        return `#preview`;
+    }
+
+    _getRemoveButtonQuery() {
+        return `#remove`;
+    }
+
+    _getLoadButtonQuery() {
+        return `#load`;
+    }
+
+    _getActivateButtonQuery() {
+        return `#activate`;
+    }
+
+    _getSequenceListQuery() {
+        return `#sequencelist`;
+    }
+
+    _getOptionsTitleQuery() {
+        return `#optionstitle`;
+    }
+
+    async _defineChildren() {
+        [
+            ,
+            this._activateButton,
+        ] = await Promise.all([
+            super._defineChildren(),
+            WT_CustomElementSelector.select(this.shadowRoot, this._getActivateButtonQuery(), WT_TSCLabeledButton),
+        ]);
+    }
+
+    _initTitles() {
+        this._procedureButton.labelText = "Approach";
+        this._optionsTitle.textContent = "Approach Options";
+    }
+
+    _initButtonListeners() {
+        super._initButtonListeners();
+
+        this._activateButton.addButtonListener(this._onActivateButtonPressed.bind(this));
+    }
+
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _checkIfSelectedProcedureComplete() {
+        return this._selectedProcedure &&
+               this._selectedProcedure.airport.equals(this._airport) &&
+               (this._selectedTransitionIndex >= 0 || this._selectedProcedure.transitions.array.length === 0);
+    }
+
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _checkIfSelectedProcedureLoaded() {
+        let flightPlanApproach = this._getProcedureSegmentFromFlightPlan();
+        if (!flightPlanApproach) {
+            return false;
+        }
+
+        return flightPlanApproach.procedure.name === this._selectedProcedure.name &&
+               (this._selectedProcedure.transitions.array.length === 0 || flightPlanApproach.transitionIndex === this._selectedTransitionIndex);
+    }
+
+    /**
+     * @returns {WT_ProcedureLeg[]}
+     */
+    _getProcedureLegs() {
+        let legs = [];
+        if (this._checkIfSelectedProcedureComplete()) {
+            if (this._selectedTransitionIndex >= 0) {
+                let transition = this._selectedProcedure.transitions.getByIndex(this._selectedTransitionIndex);
+                if (transition) {
+                    legs.push(...transition.legs);
+                }
+            }
+
+            let finalLegs = this._selectedProcedure.finalLegs.slice();
+            if (this._shouldRemoveInitialFix(legs, finalLegs)) {
+                finalLegs.shift();
+            }
+            legs.push(...finalLegs);
+        }
+        return legs;
+    }
+
+    /**
+     * @returns {WT_Airport}
+     */
+    _getAirportFromFlightPlan() {
+        return this._flightPlan ? this._flightPlan.getDestination().waypoint : null;
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     * @returns {WT_ProcedureList<WT_Approach>}
+     */
+    _getProcedureList(airport) {
+        return airport ? airport.approaches : null;
+    }
+
+    /**
+     *
+     * @param {WT_Approach} procedure
+     * @returns {WT_TransitionList<WT_ApproachTransition>}
+     */
+    _getTransitionList(procedure) {
+        return procedure ? procedure.transitions : null;
+    }
+
+    /**
+     * @returns {WT_FlightPlanApproach}
+     */
+    _getProcedureSegmentFromFlightPlan() {
+        return this._flightPlan ? this._flightPlan.getApproach() : null;
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanApproach} procedureSegment
+     * @returns {Number}
+     */
+    _getTransitionIndexFromProcedureSegment(procedureSegment) {
+        return procedureSegment.transitionIndex;
+    }
+
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _flightPlanHasProcedure() {
+        return this._flightPlan.hasApproach();
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanEvent} event
+     * @returns {Boolean}
+     */
+    _filterFlightPlanAirportEvent(event) {
+        return event.anyType(WT_FlightPlanEvent.Type.DESTINATION_CHANGED);
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanEvent} event
+     * @returns {Boolean}
+     */
+    _filterFlightPlanProcedureEvent(event) {
+        return event.anyType(WT_FlightPlanEvent.Type.APPROACH_CHANGED);
+    }
+
+    /**
+     *
+     * @returns {T[]}
+     */
+    _getSelectableProcedures() {
+        let procedureList = this._getProcedureList(this._airport);
+        return procedureList ? procedureList.array.slice() : [];
+    }
+
+    /**
+     *
+     * @returns {WT_ApproachTransition[]}
+     */
+    _getSelectableTransitions() {
+        return this._selectedProcedure ? this._selectedProcedure.transitions.array.slice() : [];
+    }
+
+    _onActivateButtonPressed(button) {
+        this._notifyListeners({
+            source: this,
+            type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.APPROACH_ACTIVATED
+        });
+    }
+
+    _updateActivateButton(state) {
+        this._activateButton.enabled = `${this._isSelectedProcedureLoaded && !state.isApproachActive}`;
+    }
+
+    _doUpdate(state) {
+        super._doUpdate(state);
+
+        this._updateActivateButton(state);
+    }
+}
+WT_G3x5_TSCApproachSelectionHTMLElement.NAME = "wt-tsc-approachselection";
+WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+        }
+
+        #wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: repeat(2, var(--procedureselection-toprow-height, 25%)) 1fr;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: var(--procedureselection-grid-row-gap, 0.5em) var(--procedureselection-grid-column-gap, 0.2em);
+            color: white;
+        }
+            .selectionButton {
+                --button-value-font-size: var(--procedureselection-selectionbutton-value-font-size, 1.25em);
+            }
+            #middle {
+                grid-area: 2 / 1 / 3 / 3;
+                position: relative;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: center;
+                align-items: stretch;
+            }
+                #runway {
+                    width: 50%;
+                }
+            #sequencepadding {
+                grid-area: 2 / 3 / 4 / 4;
+                position: relative;
+                border-radius: 5px;
+                background: linear-gradient(#1f3445, black 25px);
+                border: 3px solid var(--wt-g3x5-bordergray);
+            }
+                #sequence {
+                    position: absolute;
+                    left: var(--procedureselection-sequence-padding-left, 0.1em);
+                    top: var(--procedureselection-sequence-padding-top, 0.1em);
+                    width: calc(100% - var(--procedureselection-sequence-padding-left, 0.1em) - var(--procedureselection-sequence-padding-right, 0.1em));
+                    height: calc(100% - var(--procedureselection-sequence-padding-top, 0.1em) - var(--procedureselection-sequence-padding-bottom, 0.1em));
+                    display: grid;
+                    grid-template-rows: var(--procedureselection-sequence-title-height, 1.2em) 1fr;
+                    grid-template-columns: 100%;
+                    grid-gap: var(--procedureselection-sequence-title-margin-bottom, 0.2em) 0;
+                }
+                    #sequencetitle {
+                        align-self: center;
+                        text-align: center;
+                    }
+                    #sequencelist {
+                        --scrolllist-align-items: start;
+                    }
+            #optionspadding {
+                grid-area: 3 / 1 / 4 / 3;
+                position: relative;
+                border-radius: 5px;
+                background: linear-gradient(#1f3445, black 25px);
+                border: 3px solid var(--wt-g3x5-bordergray);
+            }
+                #options {
+                    position: absolute;
+                    left: var(--procedureselection-options-padding-left, 0.2em);
+                    top: var(--procedureselection-options-padding-top, 0.2em);
+                    width: calc(100% - var(--procedureselection-options-padding-left, 0.2em) - var(--procedureselection-options-padding-right, 0.2em));
+                    height: calc(100% - var(--procedureselection-options-padding-top, 0.2em) - var(--procedureselection-options-padding-bottom, 0.2em));
+                    display: grid;
+                    grid-template-rows: var(--procedureselection-options-title-height, 1.2em) 1fr;
+                    grid-template-columns: 100%;
+                    grid-gap: var(--procedureselection-options-title-margin-bottom, 0.1em) 0;
+                }
+                    #optionstitle {
+                        align-self: center;
+                        text-align: center;
+                    }
+                    #optionsbuttons {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                        display: grid;
+                        grid-template-rows: 1fr 1fr;
+                        grid-template-columns: repeat(3, 1fr);
+                        grid-gap: var(--procedureselection-options-buttons-row-gap, 0.2em) var(--procedureselection-options-buttons-column-gap, 0.5em);
+                    }
+                        #optionsbuttons wt-tsc-button-label {
+                            font-size: var(--procedureselection-options-labeledbuttons-font-size, 1.25em);
+                        }
+                        #preview {
+                            grid-area: 1 / 1 / 2 / 4;
+                            justify-self: center;
+                            width: 75%;
+                        }
+
+        .${WT_G3x5_TSCProcedureSelectionHTMLElement.UNIT_CLASS} {
+            font-size: var(--procedureselection-unit-font-size, 0.75em);
+        }
+    </style>
+    <div id="wrapper">
+        <wt-tsc-button-procselectairport id="airport" titletext="Airport"></wt-tsc-button-procselectairport>
+        <wt-tsc-button-value id="procedure" class="selectionButton"></wt-tsc-button-value>
+        <wt-tsc-button-value id="transition" class="selectionButton" labeltext="Transition"></wt-tsc-button-value>
+        <div id="middle">
+        </div>
+        <div id="sequencepadding">
+            <div id="sequence">
+                <div id="sequencetitle">Sequence</div>
+                <wt-tsc-scrolllist id="sequencelist"></wt-tsc-scrolllist>
+            </div>
+        </div>
+        <div id="optionspadding">
+            <div id="options">
+                <div id="optionstitle"></div>
+                <div id="optionsbuttons">
+                    <wt-tsc-button-value id="preview" labeltext="Preview"></wt-tsc-button-value>
+                    <wt-tsc-button-label id="remove" labeltext="Remove"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="load" labeltext="Load"></wt-tsc-button-label>
+                    <wt-tsc-button-label id="activate" labeltext="Activate"></wt-tsc-button-label>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCApproachSelectionHTMLElement.NAME, WT_G3x5_TSCApproachSelectionHTMLElement);
