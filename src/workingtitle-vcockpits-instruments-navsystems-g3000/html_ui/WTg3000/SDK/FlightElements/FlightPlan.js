@@ -356,15 +356,15 @@ class WT_FlightPlan {
 
     /**
      *
-     * @param {WT_ProcedureLegList} procedureLegs
+     * @param {WT_ReadOnlyArray<WT_ProcedureLeg>} procedureLegs
      * @param {WT_FlightPlanProcedureLeg[]} legs
      */
     async _buildLegsFromProcedure(procedureLegs, legs) {
-        for (let i = 0; i < procedureLegs.count(); i++) {
+        for (let i = 0; i < procedureLegs.length; i++) {
             let previous = legs[legs.length - 1];
             let previousEndpoint = previous ? previous.endpoint : null;
-            let currentProcLeg = procedureLegs.getByIndex(i);
-            let nextProcLeg = procedureLegs.getByIndex(i + 1);
+            let currentProcLeg = procedureLegs.get(i);
+            let nextProcLeg = procedureLegs.get(i + 1);
             try {
                 let leg = await this._procedureLegFactory.create(currentProcLeg, previousEndpoint, nextProcLeg);
                 if (leg && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && leg.endpoint.equals(previousEndpoint))) {
@@ -386,8 +386,6 @@ class WT_FlightPlan {
 
         let legs = [];
         if (runwayTransition) {
-            let runway = runwayTransition.runway;
-            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway, WT_RunwayWaypoint.Reference.END))); // runway fix
             await this._buildLegsFromProcedure(runwayTransition.legs, legs);
         }
         await this._buildLegsFromProcedure(departure.commonLegs, legs);
@@ -465,6 +463,8 @@ class WT_FlightPlan {
         await this._buildLegsFromProcedure(arrival.commonLegs, legs);
         if (runwayTransition) {
             await this._buildLegsFromProcedure(runwayTransition.legs, legs);
+            // remove runway fix
+            legs.pop();
         }
 
         let eventData = {types: 0};
@@ -535,15 +535,11 @@ class WT_FlightPlan {
         if (transitionIndex >= 0) {
             transition = approach.transitions.getByIndex(transitionIndex);
         }
-        let runway = approach.runway;
         let legs = [];
         if (transition) {
             await this._buildLegsFromProcedure(transition.legs, legs);
         }
         await this._buildLegsFromProcedure(approach.finalLegs, legs);
-        if (runway) {
-            legs.push(new WT_FlightPlanDirectToWaypointLeg(new WT_RunwayWaypoint(runway, WT_RunwayWaypoint.Reference.START))); // runway fix
-        }
         let eventData = {types: 0};
         this._changeApproach(new WT_FlightPlanApproach(approach, transitionIndex, legs), eventData);
         if (this.hasArrival()) {
@@ -2192,6 +2188,8 @@ class WT_FlightPlanProcedureLegFactory {
         this._legMakers[WT_ProcedureLeg.Type.FLY_TO_BEARING_DISTANCE_FROM_REFERENCE] = new WT_FlightPlanFlyToBearingDistanceFromReferenceMaker(this._icaoWaypointFactory);
         this._legMakers[WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE] = new WT_FlightPlanFlyHeadingToAltitudeMaker(this._icaoWaypointFactory);
         this._legMakers[WT_ProcedureLeg.Type.FLY_VECTORS] = new WT_FlightPlanFlyVectorsMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.INITIAL_RUNWAY_FIX] = new WT_FlightPlanRunwayFixMaker(this._icaoWaypointFactory);
+        this._legMakers[WT_ProcedureLeg.Type.RUNWAY_FIX] = new WT_FlightPlanRunwayFixMaker(this._icaoWaypointFactory);
     }
 
     /**
@@ -2229,10 +2227,23 @@ class WT_FlightPlanProcedureLegMaker {
     }
 }
 
+class WT_FlightPlanRunwayFixMaker extends WT_FlightPlanProcedureLegMaker {
+    /**
+     * Parses a procedure leg definition to generate a terminator fix and a flight plan leg step sequence.
+     * @param {WT_ProcedureRunwayFix} procedureLeg - a procedure leg definition.
+     * @returns {Promise<{fix: WT_Waypoint, firstStep: WT_FlightPlanLegStep}>}
+     */
+    async _parse(procedureLeg) {
+        let fix = procedureLeg.fix;
+        let firstStep = procedureLeg.type === WT_ProcedureLeg.Type.INITIAL_RUNWAY_FIX ? new WT_FlightPlanLegInitialStep(fix.location) : new WT_FlightPlanLegDirectStep(fix.location);
+        return {fix: fix, firstStep: firstStep};
+    }
+}
+
 class WT_FlightPlanInitialFixMaker extends WT_FlightPlanProcedureLegMaker {
     /**
      * Parses a procedure leg definition to generate a terminator fix and a flight plan leg step sequence.
-     * @param {WT_InitialFix} procedureLeg - a procedure leg definition.
+     * @param {WT_ProcedureInitialFix} procedureLeg - a procedure leg definition.
      * @returns {Promise<{fix: WT_Waypoint, firstStep: WT_FlightPlanLegStep}>}
      */
     async _parse(procedureLeg) {
@@ -2295,7 +2306,7 @@ class WT_FlightPlanProcedureLegHeadingToFixMaker extends WT_FlightPlanProcedureL
 class WT_FlightPlanFlyToFixMaker extends WT_FlightPlanProcedureLegDirectToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyToFix} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyToFix} procedureLeg - a procedure leg.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
     async _calculateFix(procedureLeg) {
@@ -2306,7 +2317,7 @@ class WT_FlightPlanFlyToFixMaker extends WT_FlightPlanProcedureLegDirectToFixMak
 class WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyHeadingUntilDistanceFromReference} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyHeadingUntilDistanceFromReference} procedureLeg - a procedure leg.
      * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
@@ -2377,7 +2388,7 @@ WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker.FIX_TOLERANCE = WT_Unit.M
 class WT_FlightPlanFlyReferenceRadialForDistanceMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyReferenceRadialForDistance} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyReferenceRadialForDistance} procedureLeg - a procedure leg.
      * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
@@ -2402,7 +2413,7 @@ WT_FlightPlanFlyReferenceRadialForDistanceMaker._tempGeoPoint = new WT_GeoPoint(
 class WT_FlightPlanFlyHeadingToInterceptMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyHeadingToIntercept} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyHeadingToIntercept} procedureLeg - a procedure leg.
      * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
      * @param {WT_ProcedureLeg} nextLeg - the definition of the next procedure leg in the flight plan.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
@@ -2443,7 +2454,7 @@ WT_FlightPlanFlyHeadingToInterceptMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
 class WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyHeadingUntilReferenceRadialCrossing} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyHeadingUntilReferenceRadialCrossing} procedureLeg - a procedure leg.
      * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
@@ -2468,7 +2479,7 @@ WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker._tempGeoPoint = new WT_
 class WT_FlightPlanFlyToBearingDistanceFromReferenceMaker extends WT_FlightPlanProcedureLegDirectToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyToBearingDistanceFromReference} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyToBearingDistanceFromReference} procedureLeg - a procedure leg.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
     async _calculateFix(procedureLeg) {
@@ -2486,7 +2497,7 @@ WT_FlightPlanFlyToBearingDistanceFromReferenceMaker._tempGeoPoint = new WT_GeoPo
 class WT_FlightPlanFlyHeadingToAltitudeMaker extends WT_FlightPlanProcedureLegHeadingToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyHeadingToAltitude} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyHeadingToAltitude} procedureLeg - a procedure leg.
      * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
@@ -2501,7 +2512,7 @@ class WT_FlightPlanFlyHeadingToAltitudeMaker extends WT_FlightPlanProcedureLegHe
 class WT_FlightPlanFlyVectorsMaker extends WT_FlightPlanProcedureLegDirectToFixMaker {
     /**
      * Calculates a terminator fix for a procedure leg.
-     * @param {WT_FlyVectors} procedureLeg - a procedure leg.
+     * @param {WT_ProcedureFlyVectors} procedureLeg - a procedure leg.
      * @param {WT_GeoPoint} previousEndpoint - the endpoint of the previous leg in the flight plan.
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */

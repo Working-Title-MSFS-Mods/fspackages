@@ -1496,8 +1496,8 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                         position: absolute;
                         left: var(--flightplan-table-padding-left, 0.1em);
                         top: var(--flightplan-table-padding-top, 0.1em);
-                        width: calc(100% - var(--flightplan-table-padding-left, 0.1em) - var(--databasestatus-table-padding-right, 0.1em));
-                        height: calc(100% - var(--flightplan-table-padding-top, 0.1em) - var(--databasestatus-table-padding-bottom, 0.1em));
+                        width: calc(100% - var(--flightplan-table-padding-left, 0.1em) - var(--flightplan-table-padding-right, 0.1em));
+                        height: calc(100% - var(--flightplan-table-padding-top, 0.1em) - var(--flightplan-table-padding-bottom, 0.1em));
                         display: grid;
                         grid-template-columns: 100%;
                         grid-template-rows: var(--flightplan-table-head-height, 1em) 1fr;

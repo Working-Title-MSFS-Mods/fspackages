@@ -592,6 +592,16 @@ class WT_Runway {
     }
 
     /**
+     * Checks whether this runway is equal to another value. Returns true if and only if the other value is an object
+     * of type WT_Runway with the same owning airport and designation as this runway.
+     * @param {*} other - the value to compare to this runway.
+     * @returns {Boolean} whether this runway is equal to the specified value.
+     */
+    equals(other) {
+        return other instanceof WT_Runway && other.airport.equals(this.airport) && other.designation === this.designation;
+    }
+
+    /**
      * Creates one or two runways for an airport given the specified runway data. One runway (forward) is guaranteed to be created.
      * If the forward runway also has an associated reverse runway, the reverse runway will be created as well.
      * @param {WT_Airport} airport - the airport to which the new runways belong.

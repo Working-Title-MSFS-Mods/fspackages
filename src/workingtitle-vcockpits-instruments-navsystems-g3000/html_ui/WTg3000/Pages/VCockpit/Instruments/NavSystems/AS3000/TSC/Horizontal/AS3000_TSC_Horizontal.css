@@ -439,6 +439,16 @@ as3000-tsc-horizontal-element #ProceduresWT wt-tsc-procedures {
     font-size: 5vh;
 }
 
+as3000-tsc-horizontal-element #DepartureSelectionWT wt-tsc-departureselection,
+as3000-tsc-horizontal-element #ArrivalSelectionWT wt-tsc-arrivalselection {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 5vh;
+}
+
       as3000-tsc-horizontal-element #Electricity #PagesDisplay #LightingConfig #LightingValueDisplay {
           position: absolute;
           top: 20%;

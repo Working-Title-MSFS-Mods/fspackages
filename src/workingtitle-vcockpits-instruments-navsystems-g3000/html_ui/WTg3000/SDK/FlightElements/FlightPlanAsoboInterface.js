@@ -133,7 +133,12 @@ class WT_FlightPlanAsoboInterface {
 
         if (data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
-            let removeStart = data.departureRunwayIndex < 0 ? 0 : 1; // don't remove runway fix.
+            let removeStart = 0;
+            let firstLeg = tempFlightPlan.getDeparture().legs.first();
+            if (firstLeg && firstLeg.fix instanceof WT_RunwayWaypoint) {
+                // don't remove runway fix if it exists.
+                removeStart++;
+            }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length - removeStart);
             await this._getWaypointEntriesFromData(data.waypoints.slice(departureStart, enrouteStart), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.DEPARTURE, waypointEntries);
@@ -150,7 +155,13 @@ class WT_FlightPlanAsoboInterface {
         if (data.arrivalProcIndex >= 0) {
             waypointEntries = [];
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
-            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, tempFlightPlan.getArrival().length);
+            let removeCount = tempFlightPlan.getArrival().length;
+            let lastLeg = tempFlightPlan.getArrival().legs.last();
+            if (lastLeg && lastLeg.fix instanceof WT_RunwayWaypoint) {
+                // don't remove runway fix if it exists.
+                removeCount--;
+            }
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, removeCount);
             await this._getWaypointEntriesFromData(data.waypoints.slice(arrivalStart, destinationStart), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypointEntries, 0);
         }
@@ -426,6 +437,48 @@ class WT_FlightPlanAsoboInterface {
         for (let i = 0; i < airwaySequence.legs.length; i++) {
             await Coherent.call("REMOVE_WAYPOINT", startIndex, false);
         }
+    }
+
+    /**
+     *
+     * @param {Number} departureIndex
+     * @param {Number} enrouteTransitionIndex
+     * @param {Number} runwayTransitionIndex
+     * @returns {Promise<void>}
+     */
+    async loadDeparture(departureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        await Coherent.call("SET_DEPARTURE_PROC_INDEX", departureIndex);
+        await Coherent.call("SET_DEPARTURE_RUNWAY_INDEX", runwayTransitionIndex);
+        await Coherent.call("SET_DEPARTURE_ENROUTE_TRANSITION_INDEX", enrouteTransitionIndex);
+    }
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+    async removeDeparture() {
+        await Coherent.call("REMOVE_DEPARTURE_PROC");
+    }
+
+    /**
+     *
+     * @param {Number} departureIndex
+     * @param {Number} enrouteTransitionIndex
+     * @param {Number} runwayTransitionIndex
+     * @returns {Promise<void>}
+     */
+    async loadArrival(departureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        await Coherent.call("SET_ARRIVAL_PROC_INDEX", departureIndex);
+        await Coherent.call("SET_ARRIVAL_ENROUTE_TRANSITION_INDEX", enrouteTransitionIndex);
+        await Coherent.call("SET_ARRIVAL_RUNWAY_INDEX", runwayTransitionIndex);
+    }
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
+     async removeArrival() {
+        await Coherent.call("REMOVE_ARRIVAL_PROC");
     }
 
     /**
