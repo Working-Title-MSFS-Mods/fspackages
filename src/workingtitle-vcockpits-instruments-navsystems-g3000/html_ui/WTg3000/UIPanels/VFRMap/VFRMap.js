@@ -305,7 +305,7 @@ class WT_VFRMapWT extends WT_VFRMap {
             int: new WT_ICAOSearcher("VFRMap", WT_ICAOSearcher.Keys.INT)
         };
 
-        this._fpm = new WT_FlightPlanManager(this._airplane, this._icaoWaypointFactory);
+        this._fpm = new WT_FlightPlanManager("VFRMap", this._airplane, this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
@@ -354,6 +354,8 @@ class WT_VFRMapWT extends WT_VFRMap {
         this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelBordersModule());
         this.model.addModule(new WT_MapModelWaypointsModule());
+        this.model.addModule(new WT_MapModelActiveFlightPlanModule());
+
         this.model.addModule(new WT_MapModelCitiesModule());
 
         this.model.terrain.mode = WT_MapModelTerrainModule.TerrainMode.ABSOLUTE;
@@ -364,6 +366,8 @@ class WT_VFRMapWT extends WT_VFRMap {
         this.model.waypoints.airportLargeRange = WT_VFRMapWT.AIRPORT_LARGE_RANGE;
         this.model.waypoints.airportMediumRange = WT_VFRMapWT.AIRPORT_MEDIUM_RANGE;
         this.model.waypoints.airportSmallRange = WT_VFRMapWT.AIRPORT_SMALL_RANGE;
+
+        this.model.activeFlightPlan.flightPlanManager = this._fpm;
 
         this.model.cities.show = true;
         this.model.cities.largeRange = WT_VFRMapWT.CITY_LARGE_RANGE;
@@ -477,7 +481,7 @@ class WT_VFRMapWT extends WT_VFRMap {
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
         this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
+        this.view.addLayer(new WT_MapViewActiveFlightPlanLayer(this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(this._airplaneLayer = new WT_MapViewAirplaneLayer());
     }
