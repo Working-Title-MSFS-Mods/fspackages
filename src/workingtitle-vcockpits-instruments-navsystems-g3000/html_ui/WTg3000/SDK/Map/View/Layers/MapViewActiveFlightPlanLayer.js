@@ -54,24 +54,7 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
      * @param {WT_Waypoint} waypoint - the waypoint for which to get options.
      */
     _getInactiveWaypointStyleOptions(state, waypoint) {
-        if (waypoint instanceof WT_ICAOWaypoint) {
-            switch (waypoint.type) {
-                case WT_ICAOWaypoint.Type.AIRPORT:
-                    return this._inactiveStyles.airport[waypoint.size];
-                case WT_ICAOWaypoint.Type.VOR:
-                    return this._inactiveStyles.vor;
-                case WT_ICAOWaypoint.Type.NDB:
-                    return this._inactiveStyles.ndb;
-                case WT_ICAOWaypoint.Type.INT:
-                    return this._inactiveStyles.int;
-            }
-        }
-
-        if (waypoint instanceof WT_RunwayWaypoint) {
-            return this._inactiveStyles.rwy;
-        }
-
-        return this._inactiveStyles.user;
+        return this._chooseOptionsFromStyles(state, waypoint, this._inactiveStyles);
     }
 
     /**
@@ -80,24 +63,7 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
      * @param {WT_Waypoint} waypoint - the waypoint for which to get options.
      */
     _getActiveWaypointStyleOptions(state, waypoint) {
-        if (waypoint.icao) {
-            switch (waypoint.type) {
-                case WT_ICAOWaypoint.Type.AIRPORT:
-                    return this._activeStyles.airport[waypoint.size];
-                case WT_ICAOWaypoint.Type.VOR:
-                    return this._activeStyles.vor;
-                case WT_ICAOWaypoint.Type.NDB:
-                    return this._activeStyles.ndb;
-                case WT_ICAOWaypoint.Type.INT:
-                    return this._activeStyles.int;
-            }
-        }
-
-        if (waypoint instanceof WT_RunwayWaypoint) {
-            return this._activeStyles.rwy;
-        }
-
-        return this._activeStyles.user;
+        return this._chooseOptionsFromStyles(state, waypoint, this._activeStyles);
     }
 
     _setCommonInactiveLabelStyles(options) {
@@ -195,6 +161,17 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
                     priority: this.rwyLabelPriority,
                     alwaysShow: this.waypointLabelAlwaysShow,
                     offset: this.rwyLabelOffset,
+                }
+            },
+            flightPath: {
+                icon: {
+                    priority: this.flightPathIconPriority,
+                    size: this.flightPathIconSize
+                },
+                label: {
+                    priority: this.flightPathLabelPriority,
+                    alwaysShow: this.waypointLabelAlwaysShow,
+                    offset: this.flightPathLabelOffset,
                 }
             },
             user: {
@@ -315,6 +292,17 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
                     priority: this.rwyLabelPriority + 50,
                     alwaysShow: this.waypointLabelAlwaysShow,
                     offset: this.rwyLabelOffset,
+                }
+            },
+            flightPath: {
+                icon: {
+                    priority: this.flightPathIconPriority + 50,
+                    size: this.flightPathIconSize
+                },
+                label: {
+                    priority: this.flightPathLabelPriority + 50,
+                    alwaysShow: this.waypointLabelAlwaysShow,
+                    offset: this.flightPathLabelOffset,
                 }
             },
             user: {
@@ -468,6 +456,7 @@ WT_MapViewActiveFlightPlanLayer.OPTIONS_DEF = {
     ndbIconSize: {default: 30, auto: true},
     intIconSize: {default: 15, auto: true},
     rwyIconSize: {default: 15, auto: true},
+    flightPathIconSize: {default: 10, auto: true},
 
     waypointLabelFontSize: {default: 15, auto: true},
     waypointLabelFontWeight: {default: "bold", auto: true},
@@ -497,24 +486,27 @@ WT_MapViewActiveFlightPlanLayer.OPTIONS_DEF = {
 
     userIconPriority: {default: 115, auto: true},
     airportIconPriority: {default: 110, auto: true},
-    vorIconPriority: {default: 102, auto: true},
-    ndbIconPriority: {default: 101, auto: true},
-    intIconPriority: {default: 100, auto: true},
-    rwyIconPriority: {default: 100, auto: true},
+    vorIconPriority: {default: 103, auto: true},
+    ndbIconPriority: {default: 102, auto: true},
+    intIconPriority: {default: 101, auto: true},
+    rwyIconPriority: {default: 101, auto: true},
+    flightPathIconPriority: {default: 100, auto: true},
 
     userLabelPriority: {default: 1025, auto: true},
     airportLabelPriority: {default: 1020, auto: true},
-    vorLabelPriority: {default: 1012, auto: true},
-    ndbLabelPriority: {default: 1011, auto: true},
-    intLabelPriority: {default: 1010, auto: true},
-    rwyLabelPriority: {default: 1010, auto: true},
+    vorLabelPriority: {default: 1013, auto: true},
+    ndbLabelPriority: {default: 1012, auto: true},
+    intLabelPriority: {default: 1011, auto: true},
+    rwyLabelPriority: {default: 1011, auto: true},
+    flightPathLabelPriority: {default: 1010, auto: true},
 
     userLabelOffset: {default: {x: 0, y: -20}, auto: true},
     airportLabelOffset: {default: {x: 0, y: -27.5}, auto: true},
     vorLabelOffset: {default: {x: 0, y: -25}, auto: true},
     ndbLabelOffset: {default: {x: 0, y: -27.5}, auto: true},
     intLabelOffset: {default: {x: 0, y: -20}, auto: true},
-    rwyLabelOffset: {default: {x: 0, y: -20}, auto: true}
+    rwyLabelOffset: {default: {x: 0, y: -20}, auto: true},
+    flightPathLabelOffset: {default: {x: 0, y: -17.5}, auto: true}
 };
 WT_MapViewActiveFlightPlanLayer.CONFIG_PROPERTIES = [
     ...WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES,

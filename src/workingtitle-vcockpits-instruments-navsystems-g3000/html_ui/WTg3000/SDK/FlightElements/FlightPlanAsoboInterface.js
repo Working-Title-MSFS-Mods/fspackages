@@ -63,13 +63,13 @@ class WT_FlightPlanAsoboInterface {
                 waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
             } catch (e) {
                 if (leg.lla) {
-                    waypoint = new WT_CustomWaypoint(leg.ident, leg.lla);
+                    waypoint = new WT_FlightPathWaypoint(leg.ident, leg.lla);
                 }
             }
             if (waypoint) {
                 if (waypoint instanceof WT_ICAOWaypoint && waypoint.location.distance(leg.lla) > 0.0001) {
                     // sometimes Asobo will rename custom "USR" waypoints to match the ICAO of the previous waypoint
-                    waypoint = new WT_CustomWaypoint("USR", leg.lla);
+                    waypoint = new WT_FlightPathWaypoint("USR", leg.lla);
                 }
 
                 let entry = {waypoint: waypoint};

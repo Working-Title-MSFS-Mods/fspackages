@@ -211,6 +211,15 @@ class WT_MapViewRunwayWaypointImageIcon extends WT_MapViewWaypointImageIcon {
 }
 
 /**
+ * A map icon for a flight path waypoint.
+ */
+class WT_MapViewFlightPathWaypointImageIcon extends WT_MapViewWaypointImageIcon {
+    get imageFileName() {
+        return "ICON_MAP_FLIGHT_PATH_WAYPOINT.png";
+    }
+}
+
+/**
  * A factory for waypoint icons.
  * @abstract
  */
@@ -277,6 +286,8 @@ class WT_MapViewWaypointImageIconFactory extends WT_MapViewWaypointIconFactory {
         }
         if (waypoint instanceof WT_RunwayWaypoint) {
             return new WT_MapViewRunwayWaypointImageIcon(waypoint, priority, this.imageDirectory);
+        } else if (waypoint instanceof WT_FlightPathWaypoint) {
+            return new WT_MapViewFlightPathWaypointImageIcon(waypoint, priority, this.imageDirectory);
         }
     }
 }

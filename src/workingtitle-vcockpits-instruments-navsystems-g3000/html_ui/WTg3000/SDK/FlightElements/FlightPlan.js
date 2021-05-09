@@ -2169,6 +2169,28 @@ class WT_FlightPlanApproach extends WT_FlightPlanProcedureSegment {
     }
 }
 
+/**
+ * A waypoint whose location is calculated as part of a flight plan.
+ */
+class WT_FlightPathWaypoint extends WT_CustomWaypoint {
+    /**
+     * @param {String} ident - the ident string for the new waypoint.
+     * @param {WT_GeoPoint} location - the lat/long coordinates of the new waypoint.
+     */
+    constructor(ident, location) {
+        super(ident, location);
+    }
+
+    /**
+     * The name of this waypoint.
+     * @readonly
+     * @type {String}
+     */
+    get name() {
+        return "";
+    }
+}
+
 class WT_FlightPlanProcedureLegFactory {
     /**
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
@@ -2379,7 +2401,7 @@ class WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker extends WT_FlightPl
             c = reference.location.distance(solution);
         }
 
-        return new WT_CustomWaypoint(procedureLeg.procedure.name, solution);
+        return new WT_FlightPathWaypoint(`HDG${procedureLeg.course.toFixed(0).padStart(3, "0")}°`, solution);
     }
 }
 WT_FlightPlanFlyHeadingUntilDistanceFromReferenceMaker._tempGeoPoint1 = new WT_GeoPoint(0, 0);
@@ -2406,7 +2428,7 @@ class WT_FlightPlanFlyReferenceRadialForDistanceMaker extends WT_FlightPlanProce
         let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
         let fix = WT_FlightPlanFlyReferenceRadialForDistanceMaker._tempGeoPoint.set(previousEndpoint).offsetRhumb(courseTrue, targetDistance);
 
-        return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
+        return new WT_FlightPathWaypoint(`HDG${procedureLeg.course.toFixed(0).padStart(3, "0")}°`, fix);
     }
 }
 WT_FlightPlanFlyReferenceRadialForDistanceMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
@@ -2447,7 +2469,7 @@ class WT_FlightPlanFlyHeadingToInterceptMaker extends WT_FlightPlanProcedureLegH
             throw new Error("Invalid procedure leg definition.");
         }
 
-        return new WT_CustomWaypoint(procedureLeg.procedure.name, intersection);
+        return new WT_FlightPathWaypoint(`HDG${procedureLeg.course.toFixed(0).padStart(3, "0")}°`, intersection);
     }
 }
 WT_FlightPlanFlyHeadingToInterceptMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
@@ -2472,7 +2494,7 @@ class WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker extends WT_Flight
             throw new Error("Invalid procedure leg definition.");
         }
 
-        return new WT_CustomWaypoint(procedureLeg.procedure.name, intersection);
+        return new WT_FlightPathWaypoint(`HDG${procedureLeg.course.toFixed(0).padStart(3, "0")}°`, intersection);
     }
 }
 WT_FlightPlanFlyHeadingUntilReferenceRadialCrossingMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
@@ -2497,7 +2519,7 @@ class WT_FlightPlanFlyToBearingDistanceFromReferenceMaker extends WT_FlightPlanP
         let targetDistance = procedureLeg.distance.asUnit(WT_Unit.GA_RADIAN);
         let fix = WT_FlightPlanFlyToBearingDistanceFromReferenceMaker._tempGeoPoint.set(reference.location).offset(courseTrue, targetDistance);
 
-        return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
+        return new WT_FlightPathWaypoint(`${reference.ident}-R${procedureLeg.course.toFixed(0).padStart(3, "0")}-D${procedureLeg.distance.asUnit(WT_Unit.NMILE).toFixed(0)}`, fix);
     }
 }
 WT_FlightPlanFlyToBearingDistanceFromReferenceMaker._tempGeoPoint = new WT_GeoPoint(0, 0);
@@ -2513,7 +2535,7 @@ class WT_FlightPlanFlyHeadingToAltitudeMaker extends WT_FlightPlanProcedureLegHe
         let courseTrue = WT_GeoMagnetic.INSTANCE.magneticToTrue(procedureLeg.course, previousEndpoint);
         let targetDistance = procedureLeg.altitudeConstraint.floor.asUnit(WT_Unit.FOOT) / 500;
         let fix = previousEndpoint.offsetRhumb(courseTrue, WT_Unit.NMILE.convert(targetDistance, WT_Unit.GA_RADIAN));
-        return new WT_CustomWaypoint(procedureLeg.procedure.name, fix);
+        return new WT_FlightPathWaypoint(`${procedureLeg.altitudeConstraint.floor.asUnit(WT_Unit.FOOT).toFixed(0)}FT`, fix);
     }
 }
 
@@ -2525,6 +2547,6 @@ class WT_FlightPlanFlyVectorsMaker extends WT_FlightPlanProcedureLegDirectToFixM
      * @returns {Promise<WT_Waypoint>} the terminator fix for the procedure leg.
      */
     async _calculateFix(procedureLeg, previousEndpoint) {
-        return new WT_CustomWaypoint("VECTORS", previousEndpoint);
+        return new WT_FlightPathWaypoint("MANSEQ", previousEndpoint);
     }
 }
