@@ -194,6 +194,7 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
         this._setCommonInactiveLabelStyles(this._inactiveStyles.ndb.label);
         this._setCommonInactiveLabelStyles(this._inactiveStyles.int.label);
         this._setCommonInactiveLabelStyles(this._inactiveStyles.rwy.label);
+        this._setCommonInactiveLabelStyles(this._inactiveStyles.flightPath.label);
         this._setCommonInactiveLabelStyles(this._inactiveStyles.user.label);
     }
 
@@ -325,6 +326,7 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
         this._setCommonActiveLabelStyles(this._activeStyles.ndb.label);
         this._setCommonActiveLabelStyles(this._activeStyles.int.label);
         this._setCommonActiveLabelStyles(this._activeStyles.rwy.label);
+        this._setCommonActiveLabelStyles(this._activeStyles.flightPath.label);
         this._setCommonActiveLabelStyles(this._activeStyles.user.label);
     }
 
