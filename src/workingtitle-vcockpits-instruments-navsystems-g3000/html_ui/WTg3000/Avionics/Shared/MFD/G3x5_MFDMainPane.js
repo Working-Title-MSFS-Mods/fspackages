@@ -672,7 +672,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
             }
     </style>
     <div id="wrapper">
-        <pane-titled id="titledpane" titletext="">
+        <wt-pane-titled id="titledpane" titletext="">
             <slot slot="content" id="navmap" class="content" name="navmap"></slot>
             <slot slot="content" id="trafficmap" class="content" name="trafficmap"></slot>
             <slot slot="content" id="weatherradar" class="content" name="weatherradar"></slot>
@@ -680,7 +680,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
             <slot slot="content" id="charts" class="content" name="charts"></slot>
             <slot slot="content" id="waypointinfo" class="content" name="waypointinfo"></slot>
             <slot slot="content" id="nearestwaypoint" class="content" name="nearestwaypoint"></slot>
-        </pane-titled>
+        </wt-pane-titled>
     </div>
 `;
 
