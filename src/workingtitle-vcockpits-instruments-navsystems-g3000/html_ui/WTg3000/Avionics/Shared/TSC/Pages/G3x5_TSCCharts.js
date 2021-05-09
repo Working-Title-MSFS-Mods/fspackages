@@ -493,8 +493,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _activateChartsDisplayPane() {
-        let settings = this.instrument.getSelectedMFDPaneSettings();
-        settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS);
+        let settings = this.instrument.getSelectedPaneSettings();
+        settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS);
     }
 
     onEnter() {
