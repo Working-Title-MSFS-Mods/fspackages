@@ -370,7 +370,9 @@ class WT_FlightPlan {
                 if (leg && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && leg.endpoint.equals(previousEndpoint))) {
                     legs.push(leg);
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.log(e);
+            }
         }
     }
 
