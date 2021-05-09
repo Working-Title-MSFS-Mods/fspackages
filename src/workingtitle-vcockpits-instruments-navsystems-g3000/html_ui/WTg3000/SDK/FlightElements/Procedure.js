@@ -801,6 +801,15 @@ class WT_ProcedureFlyHeadingToAltitude extends WT_ProcedureLegCourse {
     constructor(procedure, data) {
         super(procedure, WT_ProcedureLeg.Type.FLY_HEADING_TO_ALTITUDE, data);
     }
+
+    /**
+     * @readonly
+     * @property {Boolean} discontinuity - whether this leg ends in a discontinuity.
+     * @type {Boolean}
+     */
+    get discontinuity() {
+        return true;
+    }
 }
 
 /**
