@@ -293,6 +293,7 @@ class WT_G3x5_MFDHalfPane {
         this._navMapPane = new WT_G3x5_NavMapDisplayPane(this._createNavMap(id, data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem, data.unitsSettingModel));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(id, data.airplane));
+        this._procedurePane = new WT_G3x5_ProcedureDisplayPane(this._createProcedure(id, data.airplane, data.icaoWaypointFactory, data.unitsSettingModel));
         this._chartsPane = new WT_G3x5_ChartsDisplayPane(this._createCharts(id, data.airplane, data.navigraphAPI, data.unitsSettingModel));
         this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
         this._nearestWaypointPane = new WT_G3x5_NearestWaypointDisplayPane(this._createNearestWaypoint(id, data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
@@ -332,6 +333,13 @@ class WT_G3x5_MFDHalfPane {
     }
 
     /**
+     * @returns {WT_G3x5_ProcedureDisplay}
+     */
+    _createProcedure(id, airplane, icaoWaypointFactory, unitsSettingModel) {
+        return new WT_G3x5_ProcedureDisplay(id, airplane, icaoWaypointFactory, unitsSettingModel);
+    }
+
+    /**
      * @returns {WT_G3x5_ChartsDisplay}
      */
     _createCharts(id, airplane, navigraphAPI, unitsSettingModel) {
@@ -355,12 +363,14 @@ class WT_G3x5_MFDHalfPane {
         let [
             navMapElement,
             trafficMapElement,
+            procedureElement,
             chartsElement,
             waypointInfoElement,
             nearestWaypointElement,
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.htmlElement, `.navMap`),
             WT_CustomElementSelector.select(this.htmlElement, `.trafficMap`),
+            WT_CustomElementSelector.select(this.htmlElement, `.procedureMap`),
             WT_CustomElementSelector.select(this.htmlElement, `.charts`),
             WT_CustomElementSelector.select(this.htmlElement, `.waypointInfo`),
             WT_CustomElementSelector.select(this.htmlElement, `.nearestWaypoint`)
@@ -369,13 +379,14 @@ class WT_G3x5_MFDHalfPane {
         this._navMapPane.init(navMapElement);
         this._trafficMapPane.init(trafficMapElement);
         this._weatherRadarPane.init(this.htmlElement.querySelector(`.weatherRadar`));
+        this._procedurePane.init(procedureElement);
         this._chartsPane.init(chartsElement);
         this._waypointInfoPane.init(waypointInfoElement);
         this._nearestWaypointPane.init(nearestWaypointElement);
     }
 
     _initDisplay() {
-        this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        this._setDisplayMode(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP);
         this._setControl(this._defaultControl);
     }
 
@@ -463,17 +474,19 @@ class WT_G3x5_MFDHalfPane {
 
     _getDisplayPaneFromMode(mode) {
         switch (mode) {
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP:
                 return this._navMapPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC:
                 return this._trafficMapPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER:
                 return this._weatherRadarPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE:
+                return this._procedurePane;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS:
                 return this._chartsPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WAYPOINT_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WAYPOINT_INFO:
                 return this._waypointInfoPane;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NRST_WAYPOINT:
                 return this._nearestWaypointPane;
             default:
                 return null;
@@ -572,22 +585,25 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
 
     _updateView(display) {
         switch (display) {
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP:
                 this._setActiveView("navmap");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC:
                 this._setActiveView("trafficmap");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER:
                 this._setActiveView("weatherradar");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE:
+                this._setActiveView("procedure");
+                break;
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS:
                 this._setActiveView("charts");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WAYPOINT_INFO:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WAYPOINT_INFO:
                 this._setActiveView("waypointinfo");
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NRST_WAYPOINT:
                 this._setActiveView("nearestwaypoint");
                 break;
         }
@@ -627,21 +643,12 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                     width: 100%;
                     height: 100%;
                 }
-                    #wrapper[active-view="navmap"] #navmap {
-                        display: block;
-                    }
-                    #wrapper[active-view="trafficmap"] #trafficmap {
-                        display: block;
-                    }
-                    #wrapper[active-view="weatherradar"] #weatherradar {
-                        display: block;
-                    }
-                    #wrapper[active-view="charts"] #charts {
-                        display: block;
-                    }
-                    #wrapper[active-view="waypointinfo"] #waypointinfo {
-                        display: block;
-                    }
+                    #wrapper[active-view="navmap"] #navmap,
+                    #wrapper[active-view="trafficmap"] #trafficmap,
+                    #wrapper[active-view="weatherradar"] #weatherradar,
+                    #wrapper[active-view="procedure"] #procedure,
+                    #wrapper[active-view="charts"] #charts,
+                    #wrapper[active-view="waypointinfo"] #waypointinfo,
                     #wrapper[active-view="nearestwaypoint"] #nearestwaypoint {
                         display: block;
                     }
@@ -669,6 +676,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
             <slot slot="content" id="navmap" class="content" name="navmap"></slot>
             <slot slot="content" id="trafficmap" class="content" name="trafficmap"></slot>
             <slot slot="content" id="weatherradar" class="content" name="weatherradar"></slot>
+            <slot slot="content" id="procedure" class="content" name="procedure"></slot>
             <slot slot="content" id="charts" class="content" name="charts"></slot>
             <slot slot="content" id="waypointinfo" class="content" name="waypointinfo"></slot>
             <slot slot="content" id="nearestwaypoint" class="content" name="nearestwaypoint"></slot>
@@ -724,19 +732,32 @@ WT_G3x5_MFDHalfPaneControlSetting.Touchscreen = {
 }
 
 class WT_G3x5_MFDHalfPaneDisplaySetting extends WT_DataStoreSetting {
-    constructor(model, defaultValue = WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP, autoUpdate = false, isPersistent = false, key = WT_G3x5_MFDHalfPaneDisplaySetting.KEY) {
-        super(model, key, defaultValue, autoUpdate, isPersistent);
+    constructor(model, defaultValue = WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP, isPersistent = false, key = WT_G3x5_MFDHalfPaneDisplaySetting.KEY) {
+        super(model, key, defaultValue, true, isPersistent);
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_MFDHalfPaneDisplaySetting.Mode}
+     */
+    get mode() {
+        return this._mode;
+    }
+
+    update() {
+        this._mode = this.getValue();
     }
 }
 WT_G3x5_MFDHalfPaneDisplaySetting.KEY = "WT_MFDHalfPane_Display"
 /**
  * @enum {Number}
  */
-WT_G3x5_MFDHalfPaneDisplaySetting.Display = {
+WT_G3x5_MFDHalfPaneDisplaySetting.Mode = {
     NAVMAP: 0,
     TRAFFIC: 1,
     WEATHER: 2,
-    CHARTS: 3,
-    WAYPOINT_INFO: 4,
-    NRST_WAYPOINT: 5
+    PROCEDURE: 3,
+    CHARTS: 4,
+    WAYPOINT_INFO: 5,
+    NRST_WAYPOINT: 6
 }

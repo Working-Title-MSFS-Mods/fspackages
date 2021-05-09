@@ -8,5 +8,5 @@ class WT_MapModelFlightPlanModule extends WT_MapModelModule {
 WT_MapModelFlightPlanModule.NAME_DEFAULT = "flightPlan";
 WT_MapModelFlightPlanModule.OPTIONS_DEF = {
     show: {default: true, auto: true},
-    flightPlan: {default: null, auto: true}
+    plan: {default: null, auto: true}
 };

@@ -294,7 +294,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve an airport waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return an airport waypoint.
+     * @returns {Promise<WT_Airport>} a Promise to return an airport waypoint.
      */
     async getAirport(icao) {
         let array = await this.getAirports([icao]);
@@ -317,7 +317,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve a VOR waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return a VOR waypoint.
+     * @returns {Promise<WT_VOR>} a Promise to return a VOR waypoint.
      */
     async getVOR(icao) {
         let array = await this.getVORs([icao]);
@@ -340,7 +340,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve an NDB waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return an NDB waypoint.
+     * @returns {Promise<WT_NDB>} a Promise to return an NDB waypoint.
      */
     async getNDB(icao) {
         let array = await this.getNDBs([icao]);
@@ -363,7 +363,7 @@ class WT_ICAOWaypointFactory {
     /**
      * Attempts to retrieve an intersection waypoint corresponding to an ICAO string.
      * @param {String} icao - an ICAO string.
-     * @returns {Promise<WT_ICAOWaypoint>} a Promise to return an intersection waypoint.
+     * @returns {Promise<WT_Intersection>} a Promise to return an intersection waypoint.
      */
     async getINT(icao) {
         let array = await this.getINTs([icao]);

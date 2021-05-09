@@ -384,7 +384,21 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCProcedureSelectionEvent} event
      */
-    _loadProcedure(event) {
+    async _loadProcedure(event) {
+    }
+
+    _deactivatePreview() {
+        let paneSettings = this.instrument.getSelectedPaneSettings();
+        if (paneSettings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE) {
+            paneSettings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCProcedureSelectionEvent} event
+     */
+    _activateMapPreview(event) {
     }
 
     /**
@@ -401,6 +415,12 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PROCEDURE_LOADED:
                 this._loadProcedure(event);
+                break;
+            case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_OFF_SELECTED:
+                this._deactivatePreview();
+                break;
+            case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_MAP_SELECTED:
+                this._activateMapPreview(event);
                 break;
         }
     }
@@ -419,9 +439,14 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         this.instrument.deactivateNavButton(6);
     }
 
+    _updateFromPaneSettings() {
+        this.htmlElement.setPaneSettings(this.instrument.getSelectedPaneSettings());
+    }
+
     onEnter() {
         super.onEnter();
 
+        this._updateFromPaneSettings();
         this.htmlElement.open();
     }
 
@@ -434,10 +459,15 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         this.htmlElement.update(this._state);
     }
 
+    _cleanUpFromPaneSettings() {
+        this.htmlElement.setPaneSettings(null);
+    }
+
     onExit() {
-        super.onEnter();
+        super.onExit();
 
         this.htmlElement.close();
+        this._cleanUpFromPaneSettings();
     }
 
     _onUpPressed() {
@@ -470,6 +500,10 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
          */
         this._flightPlan = null;
         /**
+         * @type {WT_G3x5_TSCPaneSettings}
+         */
+        this._paneSettings = null;
+        /**
          * @type {WT_Airport}
          */
         this._airport = null;
@@ -480,6 +514,8 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._selectedTransitionIndex = -1;
         this._isSelectedProcedureComplete = false;
         this._isSelectedProcedureLoaded = false;
+        this._isSelectedProcedureDisplayedOnMap = false;
+        this._procedureDisplayType = this._getProcedureDisplayType();
         this._isInit = false;
         this._isOpen = false;
 
@@ -490,6 +526,13 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
 
         this._initWindowContexts();
         this._initAltitudeFormatter();
+    }
+
+    /**
+     *
+     * @returns {WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType}
+     */
+    _getProcedureDisplayType() {
     }
 
     /**
@@ -517,9 +560,23 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         };
     }
 
+    _initPreviewSelectWindowContext() {
+        let elementHandler = new WT_TSCStandardSelectionElementHandler(WT_G3x5_TSCProcedureSelectionHTMLElement.PREVIEW_MODE_TEXT);
+        this._previewSelectWindowContext = {
+            title: "Preview Setting",
+            subclass: "standardDynamicSelectionListWindow",
+            closeOnSelect: true,
+            callback: this._onPreviewSelected.bind(this),
+            elementConstructor: elementHandler,
+            elementUpdater: elementHandler,
+            currentIndexGetter: {getCurrentIndex: this._getCurrentPreviewSelectionIndex.bind(this)}
+        };
+    }
+
     _initWindowContexts() {
         this._initProcedureSelectWindowContext();
         this._initTransitionSelectWindowContext();
+        this._initPreviewSelectWindowContext();
     }
 
     _initAltitudeFormatter() {
@@ -584,6 +641,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._airportButton.addButtonListener(this._onAirportButtonPressed.bind(this));
         this._procedureButton.addButtonListener(this._onProcedureButtonPressed.bind(this));
         this._transitionButton.addButtonListener(this._onTransitionButtonPressed.bind(this));
+        this._previewButton.addButtonListener(this._onPreviewButtonPressed.bind(this));
         this._removeButton.addButtonListener(this._onRemoveButtonPressed.bind(this));
         this._loadButton.addButtonListener(this._onLoadButtonPressed.bind(this));
     }
@@ -603,6 +661,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
             this._initButtonManagers();
         }
         this._updateFromFlightPlan();
+        this._updateFromPaneSettings();
         if (this._isOpen) {
             this._doOpen();
         }
@@ -695,9 +754,15 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    _updatePreviewButtonEnabled() {
+        this._previewButton.enabled = `${this._isSelectedProcedureComplete}`;
+    }
+
     _updateSelectedProcedureStatus() {
         this._isSelectedProcedureComplete = this._checkIfSelectedProcedureComplete();
         this._isSelectedProcedureLoaded = this._isSelectedProcedureComplete && this._checkIfSelectedProcedureLoaded();
+
+        this._updatePreviewButtonEnabled();
     }
 
     _updateSequenceList() {
@@ -781,6 +846,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
 
         this._updateAirport();
+        this._updatePreviewButtonEnabled();
         this._updateRemoveButton();
         this._updateLoadButton();
     }
@@ -797,6 +863,31 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    _cleanUpFromPaneSettings() {
+    }
+
+    _updateFromPaneSettings() {
+        if (!this._paneSettings) {
+            return;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCPaneSettings} settings
+     */
+    setPaneSettings(settings) {
+        if (settings === this._paneSettings) {
+            return;
+        }
+
+        this._cleanUpFromPaneSettings();
+        this._paneSettings = settings;
+        if (this._isInit) {
+            this._updateFromPaneSettings();
+        }
+    }
+
     _updateProcedureButton() {
         this._procedureButton.valueText = this._selectedProcedure ? this._selectedProcedure.name : "____";
     }
@@ -804,7 +895,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     /**
      *
      * @param {T} procedure
-     * @returns {WT_ProcedureTransition}
+     * @returns {WT_TransitionList}
      */
     _getTransitionList(procedure) {
     }
@@ -1039,6 +1130,64 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._openTransitionSelectWindow();
     }
 
+    _updateProcedureDisplaySetting() {
+        if (!this._paneSettings || !this._isSelectedProcedureComplete) {
+            return;
+        }
+
+        let transition = this._selectedTransitionIndex >= 0 ? this._getTransitionList(this._selectedProcedure).getByIndex(this._selectedTransitionIndex) : null;
+        this._paneSettings.procedure.setProcedure(this._selectedProcedure, transition, this._selectedRunway);
+    }
+
+    _getCurrentPreviewSelectionIndex() {
+        if (this._isSelectedProcedureDisplayedOnMap) {
+            return WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.MAP;
+        } else {
+            return WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.OFF;
+        }
+    }
+
+    _onPreviewSelected(value) {
+        switch (value) {
+            case WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.OFF:
+                this._notifyListeners({
+                    source: this,
+                    type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_OFF_SELECTED
+                });
+                break;
+            case WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.MAP:
+                if (this._isSelectedProcedureComplete) {
+                    let event = {
+                        source: this,
+                        type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_MAP_SELECTED,
+                    };
+                    this._fillSelectedProcedureDetails(event);
+                    this._notifyListeners(event);
+                }
+                break;
+        }
+    }
+
+    _updatePreviewSelectWindowContext() {
+        this._previewSelectWindowContext.homePageGroup = this._parentPage.homePageGroup;
+        this._previewSelectWindowContext.homePageName = this._parentPage.homePageName;
+    }
+
+    _openPreviewSelectWindow() {
+        if (!this._parentPage || !this._isSelectedProcedureComplete) {
+            return;
+        }
+
+        this._updatePreviewSelectWindowContext();
+        let instrument = this._parentPage.instrument;
+        instrument.selectionListWindow1.element.setContext(this._previewSelectWindowContext);
+        instrument.switchToPopUpPage(instrument.selectionListWindow1);
+    }
+
+    _onPreviewButtonPressed(button) {
+        this._openPreviewSelectWindow();
+    }
+
     _onRemoveButtonPressed(button) {
         this._notifyListeners({
             source: this,
@@ -1146,12 +1295,39 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    /**
+     *
+     * @param {WT_G3x5_ProcedureDisplayProcedureSetting} procedureDisplaySetting
+     * @returns {Boolean}
+     */
+    _checkIfProcedureDisplayHasSelectedProcedure(procedureDisplaySetting) {
+    }
+
+    _updateSelectedProcedureDisplayedOnMap() {
+        if (this._isSelectedProcedureComplete && this._paneSettings) {
+            let procedureDisplaySetting = this._paneSettings.procedure;
+            this._isSelectedProcedureDisplayedOnMap = this._paneSettings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE && this._checkIfProcedureDisplayHasSelectedProcedure(procedureDisplaySetting);
+        } else {
+            this._isSelectedProcedureDisplayedOnMap = false;
+        }
+    }
+
     _updateAirportButton(state) {
         this._airportButton.update(state.airplaneHeadingTrue);
     }
 
+    _updatePreviewButtonValue() {
+        let valueText = WT_G3x5_TSCProcedureSelectionHTMLElement.PREVIEW_MODE_TEXT[this._getCurrentPreviewSelectionIndex()];
+        if (valueText !== this._previewButtonValueText) {
+            this._previewButton.valueText = valueText;
+            this._previewButtonValueText = valueText;
+        }
+    }
+
     _doUpdate(state) {
+        this._updateSelectedProcedureDisplayedOnMap();
         this._updateAirportButton(state);
+        this._updatePreviewButtonValue();
         this._sequenceList.scrollManager.update();
     }
 
@@ -1170,11 +1346,24 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
 /**
  * @enum {Number}
  */
+WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode = {
+    OFF: 0,
+    MAP: 1
+}
+WT_G3x5_TSCProcedureSelectionHTMLElement.PREVIEW_MODE_TEXT = [
+    "Off",
+    "Show On Map"
+];
+/**
+ * @enum {Number}
+ */
 WT_G3x5_TSCProcedureSelectionHTMLElement.EventType = {
     AIRPORT_SELECTED: 0,
     PROCEDURE_LOADED: 1,
     PROCEDURE_REMOVED: 2,
     APPROACH_ACTIVATED: 3,
+    PREVIEW_OFF_SELECTED: 4,
+    PREVIEW_MAP_SELECTED: 5
 };
 WT_G3x5_TSCProcedureSelectionHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCProcedureSelectionHTMLElement.UNIT_CLASS = "unit";
@@ -1361,6 +1550,18 @@ class WT_G3x5_TSCDepartureArrivalSelection extends WT_G3x5_TSCProcedureSelection
         let procedureIndex = procedureList.array.indexOf(event.procedure);
         let runwayTransitionIndex = event.runway ? event.procedure.runwayTransitions.array.findIndex(transition => transition.runway.equals(event.runway)) : -1;
         await this._doLoadProcedure(procedureIndex, event.transitionIndex, runwayTransitionIndex);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCProcedureSelectionEvent} event
+     */
+    _activateMapPreview(event) {
+        let paneSettings = this.instrument.getSelectedPaneSettings();
+
+        let transition = event.procedure.enrouteTransitions.getByIndex(event.transitionIndex);
+        paneSettings.procedure.setProcedure(event.procedure, transition, event.runway);
+        paneSettings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE);
     }
 }
 
@@ -1746,6 +1947,19 @@ class WT_G3x5_TSCDepartureArrivalSelectionHTMLElement extends WT_G3x5_TSCProcedu
         let runwayTransition = procedureSegment.procedure.runwayTransitions.getByIndex(procedureSegment.runwayTransitionIndex);
         this.selectRunway(runwayTransition ? runwayTransition.runway : null);
     }
+
+    /**
+     *
+     * @param {WT_G3x5_ProcedureDisplayProcedureSetting} procedureDisplaySetting
+     * @returns {Boolean}
+     */
+    _checkIfProcedureDisplayHasSelectedProcedure(procedureDisplaySetting) {
+        return this._selectedProcedure.airport.icao === procedureDisplaySetting.airportICAO &&
+               this._procedureDisplayType === procedureDisplaySetting.procedureType &&
+               this._selectedProcedure.index === procedureDisplaySetting.procedureIndex &&
+               this._selectedTransitionIndex === procedureDisplaySetting.transitionIndex &&
+               ((!this._selectedRunway && !procedureDisplaySetting.runwayDesignation) || (this._selectedRunway.designation === procedureDisplaySetting.runwayDesignation))
+    }
 }
 WT_G3x5_TSCDepartureArrivalSelectionHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3x5_TSCDepartureArrivalSelectionHTMLElement.TEMPLATE.innerHTML = `
@@ -1931,6 +2145,14 @@ WT_G3x5_TSCDepartureSelection.TITLE = "Departure Selection";
  * @extends WT_G3x5_TSCDepartureArrivalSelectionHTMLElement<WT_Departure>
  */
 class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArrivalSelectionHTMLElement {
+    /**
+     *
+     * @returns {WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType}
+     */
+    _getProcedureDisplayType() {
+        return WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.DEPARTURE;
+    }
+
     /**
      *
      * @returns {String}
@@ -2131,6 +2353,14 @@ WT_G3x5_TSCArrivalSelection.TITLE = "Arrival Selection";
  * @extends WT_G3x5_TSCDepartureArrivalSelectionHTMLElement<WT_Arrival>
  */
 class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrivalSelectionHTMLElement {
+    /**
+     *
+     * @returns {WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType}
+     */
+    _getProcedureDisplayType() {
+        return WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.ARRIVAL;
+    }
+
     /**
      *
      * @returns {String}
@@ -2341,6 +2571,18 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
         await this._doLoadProcedure(procedureIndex, event.transitionIndex);
     }
 
+    /**
+     *
+     * @param {WT_G3x5_TSCProcedureSelectionEvent} event
+     */
+    _activateMapPreview(event) {
+        let paneSettings = this.instrument.getSelectedPaneSettings();
+
+        let transition = event.procedure.transitions.getByIndex(event.transitionIndex);
+        paneSettings.procedure.setProcedure(event.procedure, transition);
+        paneSettings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE);
+    }
+
     async _activateApproach() {
         await this._fpm.activateApproach();
     }
@@ -2372,6 +2614,14 @@ WT_G3x5_TSCApproachSelection.TITLE = "Approach Selection";
 class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelectionHTMLElement {
     _getTemplate() {
         return WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE;
+    }
+
+    /**
+     *
+     * @returns {WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType}
+     */
+    _getProcedureDisplayType() {
+        return WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH;
     }
 
     /**
@@ -2574,6 +2824,18 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
             source: this,
             type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.APPROACH_ACTIVATED
         });
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_ProcedureDisplayProcedureSetting} procedureDisplaySetting
+     * @returns {Boolean}
+     */
+    _checkIfProcedureDisplayHasSelectedProcedure(procedureDisplaySetting) {
+        return this._selectedProcedure.airport.icao === procedureDisplaySetting.airportICAO &&
+               this._procedureDisplayType === procedureDisplaySetting.procedureType &&
+               this._selectedProcedure.index === procedureDisplaySetting.procedureIndex &&
+               this._selectedTransitionIndex === procedureDisplaySetting.transitionIndex
     }
 
     _updateActivateButton(state) {

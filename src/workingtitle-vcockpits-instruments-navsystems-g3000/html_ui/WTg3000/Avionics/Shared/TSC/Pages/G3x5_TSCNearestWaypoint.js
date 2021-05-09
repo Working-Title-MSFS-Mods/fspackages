@@ -242,11 +242,11 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _toggleNearestWaypointDisplayPane() {
-        if (this.mfdPaneDisplaySetting.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT && this._displayPaneICAOSetting.getValue() === this.selectedWaypoint.icao) {
-            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+        if (this.mfdPaneDisplaySetting.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NRST_WAYPOINT && this._displayPaneICAOSetting.getValue() === this.selectedWaypoint.icao) {
+            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP);
         } else {
             this._displayPaneICAOSetting.setValue(this.selectedWaypoint.icao);
-            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT);
+            this.mfdPaneDisplaySetting.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NRST_WAYPOINT);
         }
     }
 
@@ -632,7 +632,7 @@ class WT_G3x5_TSCNearestWaypointHTMLElement extends HTMLElement {
         let selectedWaypoint = this._context.parentPage.selectedWaypoint;
         let selectedWaypointICAO = selectedWaypoint ? selectedWaypoint.icao : "";
         this._showMapButton.enabled = selectedWaypoint === null ? "false" : "true";
-        this._showMapButton.toggle = (paneDisplayMode === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NRST_WAYPOINT && selectedWaypoint && selectedWaypointICAO === this._context.displayPaneICAOSetting.getValue()) ? "on" : "off";
+        this._showMapButton.toggle = (paneDisplayMode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NRST_WAYPOINT && selectedWaypoint && selectedWaypointICAO === this._context.displayPaneICAOSetting.getValue()) ? "on" : "off";
     }
 
     _updateOptions() {
