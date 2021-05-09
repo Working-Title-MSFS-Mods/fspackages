@@ -317,12 +317,11 @@ class WT_FlightPlanAsoboInterface {
      * @returns {Promise<void>}
      */
     async setOrigin(icao) {
-        let hasOrigin = this._asoboHasOrigin();
-        if (hasOrigin) {
+        if (this._asoboHasOrigin()) {
             // need to remove origin if one exists, otherwise the old origin gets shifted to the next waypoint in the flight plan
             await Coherent.call("REMOVE_ORIGIN", 0, true);
         }
-        await Coherent.call("SET_ORIGIN", icao, !hasOrigin);
+        await Coherent.call("SET_ORIGIN", icao, true);
         await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean", 1);
     }
 
