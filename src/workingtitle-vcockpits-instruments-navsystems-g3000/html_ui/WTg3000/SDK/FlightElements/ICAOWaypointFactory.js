@@ -99,7 +99,7 @@ class WT_ICAOWaypointFactory {
      * @param {WT_ICAOWaypointFactoryCacheEntry} entry - the cache entry associated with the waypoint.
      */
     _addWaypointToCache(data, entry) {
-        switch(data.icao[0]) {
+        switch(WT_ICAOWaypoint.getICAOType(data.icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 entry.waypoint = new WT_Airport(data, WT_ICAOWaypoint.Type.AIRPORT);
                 entry.isReady = true;
@@ -253,7 +253,7 @@ class WT_ICAOWaypointFactory {
      */
     async _getWaypointEntry(icao) {
         let coherentCallName;
-        switch (icao[0]) {
+        switch (WT_ICAOWaypoint.getICAOType(icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 coherentCallName = WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS;
                 break;
@@ -311,6 +311,13 @@ class WT_ICAOWaypointFactory {
      * @returns {Promise<WT_ICAOWaypoint[]>} a Promise to return an array of airport waypoints.
      */
     async getAirports(icaos) {
+        icaos.forEach((icao, index, array) => {
+            if (icao[0] === "A" && icao[1] !== " ") {
+                // sometimes nav data contains airport ICAOs with region codes, which will cause Coherent lookup to fail,
+                // so we have to remove the region code
+                array[index] = "A  " + icao.substring(3);
+            }
+        });
         return this._retrieveWaypoints(icaos, WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS);
     }
 
@@ -389,7 +396,7 @@ class WT_ICAOWaypointFactory {
      * @returns {Promise<WT_ICAOWaypoint>} a Promise to return a waypoint.
      */
     async getWaypoint(icao) {
-        switch (icao[0]) {
+        switch (WT_ICAOWaypoint.getICAOType(icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 return this.getAirport(icao);
             case WT_ICAOWaypoint.Type.VOR:
@@ -456,7 +463,7 @@ class WT_ICAOWaypointFactory {
         if (data.routes) {
             this._addAirwayDataToCache(data, entry);
         }
-        if (data.icao[0] === data.sentType) {
+        if (WT_ICAOWaypoint.getICAOType(data.icao) === data.sentType) {
             this._addWaypointToCache(data, entry);
         }
     }

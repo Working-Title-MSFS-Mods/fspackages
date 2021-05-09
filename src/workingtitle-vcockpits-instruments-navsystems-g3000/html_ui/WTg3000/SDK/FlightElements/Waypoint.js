@@ -138,7 +138,7 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     }
 
     /**
-     * The type of this waypoint.
+     * The ICAO type of this waypoint.
      * @readonly
      * @type {WT_ICAOWaypoint.Type}
      */
@@ -199,18 +199,50 @@ class WT_ICAOWaypoint extends WT_Waypoint {
     get region() {
         return this._region;
     }
+
+    /**
+     * Gets the ICAO type of the waypoint with the specified ICAO string.
+     * @param {String} icao - an ICAO string.
+     * @returns {WT_ICAOWaypoint.Type} the ICAO type of the waypoint with the specified ICAO string.
+     */
+    static getICAOType(icao) {
+        if (!icao) {
+            return undefined;
+        }
+
+        switch (icao[0]) {
+            case "A":
+                return WT_ICAOWaypoint.Type.AIRPORT;
+            case "V":
+                return WT_ICAOWaypoint.Type.VOR;
+            case "N":
+                return WT_ICAOWaypoint.Type.NDB;
+            case "W":
+                return WT_ICAOWaypoint.Type.INT;
+        }
+    }
+
+    /**
+     * Gets the ICAO string prefix (the first character of the full ICAO string) associated with the specified ICAO
+     * type.
+     * @param {WT_ICAOWaypoint.Type} type - an ICAO type.
+     * @returns {String} the ICAO string prefix associated with the specified ICAO type.
+     */
+    static getICAOPrefixFromType(type) {
+        return WT_ICAOWaypoint.PREFIXES[type];
+    }
 }
 /**
  * Type of ICAO waypoint.
- * @readonly
- * @enum {String}
+ * @enum {Number}
  */
 WT_ICAOWaypoint.Type = {
-    AIRPORT: "A",
-    VOR: "V",
-    NDB: "N",
-    INT: "W"
+    AIRPORT: 0,
+    VOR: 1,
+    NDB: 2,
+    INT: 3
 };
+WT_ICAOWaypoint.PREFIXES = ["A", "V", "N", "W"];
 
 class WT_ICAOWaypointCity {
     constructor(city, state) {
