@@ -126,7 +126,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
 
         this._settingModelID = this._getSettingModelID(instrumentID, halfPaneID);
         this._mfdPaneDisplaySetting = mfdPaneDisplaySetting;
-        this._icaoWaypointType = icaoWaypointType;
+        this._icaoWaypointTypePrefix = WT_ICAOWaypoint.getICAOPrefixFromType(icaoWaypointType);
 
         /**
          * @type {T}
@@ -223,7 +223,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     _openKeyboard() {
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), this._icaoWaypointType);
+        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), this._icaoWaypointTypePrefix);
         this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
     }
 
