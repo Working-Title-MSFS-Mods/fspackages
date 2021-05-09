@@ -45,6 +45,67 @@ class AS3000_TSC_NavButton {
     }
 }
 
+class WT_G3x5_TSCPaneSettings {
+    constructor(paneID) {
+        this._paneID = paneID;
+
+        this._initSettings();
+    }
+
+    _initDisplaySetting() {
+        this._settingModel.addSetting(this._display = new WT_G3x5_MFDHalfPaneDisplaySetting(this._settingModel));
+    }
+
+    _initControlSetting() {
+        this._settingModel.addSetting(this._control = new WT_G3x5_MFDHalfPaneControlSetting(this._settingModel));
+    }
+
+    _initProcedureSetting() {
+        this._settingModel.addSetting(this._procedure = new WT_G3x5_ProcedureDisplayProcedureSetting(this._settingModel));
+    }
+
+    _initSettings() {
+        this._settingModel = new WT_DataStoreSettingModel(this.paneID);
+
+        this._initDisplaySetting();
+        this._initControlSetting();
+
+        this._initProcedureSetting();
+    }
+
+    /**
+     * @readonly
+     * @type {String}
+     */
+    get paneID() {
+        return this._paneID;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_MFDHalfPaneDisplaySetting}
+     */
+    get display() {
+        return this._display;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_MFDHalfPaneControlSetting}
+     */
+    get control() {
+        return this._control;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ProcedureDisplayProcedureSetting}
+     */
+    get procedure() {
+        return this._procedure;
+    }
+}
+
 class AS3000_TSC extends NavSystemTouch {
     constructor() {
         super();
@@ -57,7 +118,7 @@ class AS3000_TSC extends NavSystemTouch {
         this._initUnitsSettingModel();
         this._initLightingControl();
         this._initNavigraphAPI();
-        this._initMFDPaneSettings();
+        this._initPaneSettings();
 
         this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
         this._mfdPaneControlID;
@@ -67,24 +128,21 @@ class AS3000_TSC extends NavSystemTouch {
         this.unitsSettingModel.init();
     }
 
-    _initHalfPaneController(paneSettings) {
-        paneSettings.settingModel.addSetting(paneSettings.control = new WT_G3x5_MFDHalfPaneControlSetting(paneSettings.settingModel));
-        paneSettings.settingModel.addSetting(paneSettings.display = new WT_G3x5_MFDHalfPaneDisplaySetting(paneSettings.settingModel));
-        paneSettings.settingModel.update();
+    _initPaneDisplaySettingListeners() {
+        this.allPaneSettings.forEach(paneSettings => paneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this)), this);
     }
 
-    _initMFDPaneSettings() {
+    _initPaneSettings() {
         this._mfdMainPaneSettings = {settingModel: new WT_DataStoreSettingModel("MFD", null)};
         this._mfdMainPaneSettings.settingModel.addSetting(this._mfdMainPaneSettings.mode = new WT_G3x5_MFDMainPaneModeSetting(this._mfdMainPaneSettings.settingModel));
         this._mfdMainPaneSettings.mode.addListener(this._onMFDMainPaneModeChanged.bind(this));
 
-        this._mfdLeftPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`, null)};
-        this._mfdRightPaneSettings = {settingModel: new WT_DataStoreSettingModel(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`, null)};
-        this._initHalfPaneController(this._mfdLeftPaneSettings);
-        this._initHalfPaneController(this._mfdRightPaneSettings);
+        this._paneSettings = {};
+        this._paneSettings[`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`] = new WT_G3x5_TSCPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
+        this._paneSettings[`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`] = new WT_G3x5_TSCPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
+        this._paneSettingsAll = new WT_ReadOnlyArray(Object.values(this._paneSettings));
 
-        this._mfdLeftPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
-        this._mfdRightPaneSettings.display.addListener(this._onMFDHalfPaneDisplayChanged.bind(this));
+        this._initPaneDisplaySettingListeners();
 
         this._mfdMainPaneSettings.settingModel.update();
     }
@@ -150,6 +208,23 @@ class AS3000_TSC extends NavSystemTouch {
         return this._nearestINTList;
     }
 
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_G3x5_TSCPaneSettings>}
+     */
+    get allPaneSettings() {
+        return this._paneSettingsAll;
+    }
+
+    /**
+     *
+     * @param {String} paneID
+     * @returns {WT_G3x5_TSCPaneSettings}
+     */
+    getPaneSettings(paneID) {
+        return this._paneSettings[paneID];
+    }
+
     getSelectedMFDPane() {
         if (this.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
             return WT_G3x5_MFDHalfPane.ID.LEFT;
@@ -158,8 +233,12 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    getSelectedMFDPaneSettings() {
-        return this.getSelectedMFDPane() === WT_G3x5_MFDHalfPane.ID.LEFT ? this._mfdLeftPaneSettings : this._mfdRightPaneSettings;
+    /**
+     *
+     * @returns {WT_G3x5_TSCPaneSettings}
+     */
+    getSelectedPaneSettings() {
+        return this.getPaneSettings(`MFD-${this.getSelectedMFDPane()}`);
     }
 
     isLightingControlAllowed() {
@@ -190,6 +269,9 @@ class AS3000_TSC extends NavSystemTouch {
 
     _initPages() {
         this.pagesContainer = this.getChildById("PagesDisplay");
+
+        let mfdLeftPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
+        let mfdRightPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
 
         this._mfdPagesLeft = {};
         this._mfdPagesRight = {};
@@ -232,23 +314,23 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
                 new NavSystemPage("Approach Selection", "ApproachSelection", new AS3000_TSC_ApproachSelection()),
                 new NavSystemPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
-                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
-                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
-                this._mfdPagesLeft.intInfo = new NavSystemPage("INT Info Left", "INTInfoLeft", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
-                this._mfdPagesRight.intInfo = new NavSystemPage("INT Info Right", "INTInfoRight", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
-                this._mfdPagesLeft.vorInfo = new NavSystemPage("VOR Info Left", "VORInfoLeft", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
-                this._mfdPagesRight.vorInfo = new NavSystemPage("VOR Info Right", "VORInfoRight", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
-                this._mfdPagesLeft.ndbInfo = new NavSystemPage("NDB Info Left", "NDBInfoLeft", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this.mfdLeftPaneSettings.display)),
-                this._mfdPagesRight.ndbInfo = new NavSystemPage("NDB Info Right", "NDBInfoRight", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this.mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.intInfo = new NavSystemPage("INT Info Left", "INTInfoLeft", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.intInfo = new NavSystemPage("INT Info Right", "INTInfoRight", new WT_G3x5_TSCINTInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.vorInfo = new NavSystemPage("VOR Info Left", "VORInfoLeft", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.vorInfo = new NavSystemPage("VOR Info Right", "VORInfoRight", new WT_G3x5_TSCVORInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
+                this._mfdPagesLeft.ndbInfo = new NavSystemPage("NDB Info Left", "NDBInfoLeft", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
+                this._mfdPagesRight.ndbInfo = new NavSystemPage("NDB Info Right", "NDBInfoRight", new WT_G3x5_TSCNDBInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
                 new NavSystemPage("Nearest Waypoint Selection", "NearestWaypointSelection", new WT_G3x5_TSCNearestWaypointSelection("MFD", "MFD Home")),
-                this._mfdPagesLeft.nearestAirport = new NavSystemPage("Nearest Airport Left", "NearestAirportLeft", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
-                this._mfdPagesRight.nearestAirport = new NavSystemPage("Nearest Airport Right", "NearestAirportRight", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
-                this._mfdPagesLeft.nearestINT = new NavSystemPage("Nearest INT Left", "NearestINTLeft", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
-                this._mfdPagesRight.nearestINT = new NavSystemPage("Nearest INT Right", "NearestINTRight", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
-                this._mfdPagesLeft.nearestVOR = new NavSystemPage("Nearest VOR Left", "NearestVORLeft", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
-                this._mfdPagesRight.nearestVOR = new NavSystemPage("Nearest VOR Right", "NearestVORRight", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
-                this._mfdPagesLeft.nearestNDB = new NavSystemPage("Nearest NDB Left", "NearestNDBLeft", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, this.mfdLeftPaneSettings)),
-                this._mfdPagesRight.nearestNDB = new NavSystemPage("Nearest NDB Right", "NearestNDBRight", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, this.mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestAirport = new NavSystemPage("Nearest Airport Left", "NearestAirportLeft", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestAirport = new NavSystemPage("Nearest Airport Right", "NearestAirportRight", new WT_G3x5_TSCNearestAirport("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestINT = new NavSystemPage("Nearest INT Left", "NearestINTLeft", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestINT = new NavSystemPage("Nearest INT Right", "NearestINTRight", new WT_G3x5_TSCNearestINT("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestVOR = new NavSystemPage("Nearest VOR Left", "NearestVORLeft", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestVOR = new NavSystemPage("Nearest VOR Right", "NearestVORRight", new WT_G3x5_TSCNearestVOR("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, mfdRightPaneSettings)),
+                this._mfdPagesLeft.nearestNDB = new NavSystemPage("Nearest NDB Left", "NearestNDBLeft", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, mfdLeftPaneSettings)),
+                this._mfdPagesRight.nearestNDB = new NavSystemPage("Nearest NDB Right", "NearestNDBRight", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, mfdRightPaneSettings)),
                 new NavSystemPage("Speed Bugs", "SpeedBugs", this._speedBugs),
                 this._mfdPagesLeft.charts = new NavSystemPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.LEFT, this.icaoWaypointFactory)),
                 this._mfdPagesRight.charts = new NavSystemPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", this._navigraphAPI, WT_G3x5_MFDHalfPane.ID.RIGHT, this.icaoWaypointFactory)),
@@ -533,20 +615,20 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _onMFDHalfPaneDisplayChanged(setting, newValue, oldValue) {
-        if (!this._isChangingPages && setting === this.getSelectedMFDPaneSettings().display) {
+        if (!this._isChangingPages && setting === this.getSelectedPaneSettings().display) {
             let currentPageGroup = this.getCurrentPageGroup();
             let currentPage = this.getCurrentPage();
             switch (oldValue) {
-                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP:
                     this._onMFDPaneNavMapDisplaySwitch(currentPageGroup, currentPage);
                     break;
-                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC:
                     this._onMFDPaneTrafficDisplaySwitch(currentPageGroup, currentPage);
                     break;
-                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER:
                     this._onMFDPaneWeatherDisplaySwitch(currentPageGroup, currentPage);
                     break;
-                case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+                case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS:
                     this._onMFDPaneChartsDisplaySwitch(currentPageGroup, currentPage);
                     break;
             }
@@ -604,8 +686,8 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _handleZoomEventMFD(event) {
-        switch (this.getSelectedMFDPaneSettings().display.getValue()) {
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+        switch (this.getSelectedPaneSettings().display.mode) {
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP:
                 switch (event) {
                     case "BottomKnob_Small_INC":
                         this.getSelectedMFDPanePages().mapSettings.element.mapSettings.rangeSetting.changeRange(1);
@@ -615,7 +697,7 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                 }
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC:
                 switch (event) {
                     case "BottomKnob_Small_INC":
                         this.getSelectedMFDPanePages().trafficMap.element.changeRange(1);
@@ -625,7 +707,7 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                 }
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER:
                 switch (event) {
                     case "BottomKnob_Small_INC":
                         this.getSelectedMFDPanePages().weatherRadar.element.changeRange(1);
@@ -635,7 +717,7 @@ class AS3000_TSC extends NavSystemTouch {
                         break;
                 }
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS:
                 switch (event) {
                     case "BottomKnob_Small_INC":
                         this.getSelectedMFDPanePages().charts.element.changeZoom(-1);
@@ -662,16 +744,20 @@ class AS3000_TSC extends NavSystemTouch {
         }
 
         this._selectedMfdPane = value;
+        let oldPaneSettings;
+        let newPaneSettings;
         switch (this._selectedMfdPane) {
             case WT_G3x5_MFDHalfPane.ID.LEFT:
-                this.mfdRightPaneSettings.control.removeControl(this._mfdPaneControlID);
-                this.mfdLeftPaneSettings.control.addControl(this._mfdPaneControlID);
+                oldPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
+                newPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
                 break;
             case WT_G3x5_MFDHalfPane.ID.RIGHT:
-                this.mfdLeftPaneSettings.control.removeControl(this._mfdPaneControlID);
-                this.mfdRightPaneSettings.control.addControl(this._mfdPaneControlID);
+                oldPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
+                newPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
                 break;
         }
+        oldPaneSettings.control.removeControl(this._mfdPaneControlID);
+        newPaneSettings.control.addControl(this._mfdPaneControlID);
         if (this.getCurrentPageGroup().name === "MFD") {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", "MFD Home");
@@ -703,7 +789,7 @@ class AS3000_TSC extends NavSystemTouch {
     _handleMapPointerControlNavigationEvent(event) {
         if (this.getCurrentPage().title === "Map Pointer Control") {
             this.goBack();
-        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedPaneSettings().display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().mapPointerControl.name);
         }
@@ -712,7 +798,7 @@ class AS3000_TSC extends NavSystemTouch {
     _handleChartsTouchControlNavigationEvent(event) {
         if (this.getCurrentPage().title === WT_G3x5_TSCChartsTouchControl.TITLE) {
             this.goBack();
-        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedMFDPaneSettings().display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.CHARTS) {
+        } else if (this.getCurrentPageGroup().name === "MFD" && this.getSelectedPaneSettings().display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS) {
             this.closePopUpElement();
             this.SwitchToPageName("MFD", this.getSelectedMFDPanePages().chartsTouchControl.name);
         }
@@ -953,6 +1039,20 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.lastMode = 0;
     }
 
+    /**
+     * @readonly
+     * @type {AS3000_TSC}
+     */
+    get instrument() {
+        return this.gps;
+    }
+
+    _initPaneSettingListeners() {
+        this.instrument.mfdMainPaneSettings.mode.addListener(this._onMainPaneModeChanged.bind(this));
+        this.instrument.allPaneSettings.forEach(paneSettings => paneSettings.control.addListener(this._onPaneControlChanged.bind(this)), this);
+        this.instrument.allPaneSettings.forEach(paneSettings => paneSettings.display.addListener(this._onPaneDisplayChanged.bind(this)), this);
+    }
+
     init(root) {
         this._mapButton = this.gps.getChildById("MapButton");
         this._mapButtonTitle = this._mapButton.getElementsByClassName("label")[0];
@@ -990,62 +1090,58 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         this.gps.makeButton(this.aircraftSystemsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Aircraft Systems"));
         this.gps.makeButton(this.utilitiesButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Utilities"));
 
-        this.gps.mfdMainPaneSettings.mode.addListener(this._onMainPaneModeChanged.bind(this));
-        this.gps.mfdLeftPaneSettings.control.addListener(this._onPaneControlChanged.bind(this));
-        this.gps.mfdRightPaneSettings.control.addListener(this._onPaneControlChanged.bind(this));
-        this.gps.mfdLeftPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
-        this.gps.mfdRightPaneSettings.display.addListener(this._onPaneDisplayChanged.bind(this));
+        this._initPaneSettingListeners();
 
         this._updatePaneDisplayButtons();
     }
 
     _openMapSettingsPage() {
-        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().mapSettings.name);
+        this.instrument.SwitchToPageName("MFD", this.instrument.getSelectedMFDPanePages().mapSettings.name);
     }
 
     _openWeatherSelectPage() {
-        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().weatherSelection.name);
+        this.instrument.SwitchToPageName("MFD", this.instrument.getSelectedMFDPanePages().weatherSelection.name);
     }
 
     _openTrafficSettingsPage() {
-        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().trafficMap.name);
+        this.instrument.SwitchToPageName("MFD", this.instrument.getSelectedMFDPanePages().trafficMap.name);
     }
 
     _onMapButtonPressed() {
-        let settings = this.gps.getSelectedMFDPaneSettings();
-        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP) {
+        let settings = this.instrument.getSelectedPaneSettings();
+        if (settings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP) {
             this._openMapSettingsPage();
         } else {
-            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP);
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP);
         }
     }
 
     _onTrafficButtonPressed() {
-        let settings = this.gps.getSelectedMFDPaneSettings();
-        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC) {
+        let settings = this.instrument.getSelectedPaneSettings();
+        if (settings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC) {
             this._openTrafficSettingsPage();
         } else {
-            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC);
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC);
         }
     }
 
     _onWeatherButtonPressed() {
-        let settings = this.gps.getSelectedMFDPaneSettings();
-        if (settings.display.getValue() === WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER) {
+        let settings = this.instrument.getSelectedPaneSettings();
+        if (settings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER) {
             this._openWeatherSelectPage();
         } else {
-            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER);
+            settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER);
         }
     }
 
     _onChartsButtonPressed() {
-        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().charts.name);
+        this.instrument.SwitchToPageName("MFD", this.instrument.getSelectedMFDPanePages().charts.name);
     }
 
     _updatePaneDisplayButtons() {
-        let display = this.gps.getSelectedMFDPaneSettings().display.getValue();
+        let display = this.instrument.getSelectedPaneSettings().display.mode;
         switch (display) {
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.NAVMAP:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP:
                 this._mapButton.setAttribute("state", "Active");
                 this._mapButtonTitle.textContent = "Map Settings";
                 this._trafficButton.setAttribute("state", "");
@@ -1053,7 +1149,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
                 this._weatherButton.setAttribute("state", "");
                 this._weatherButtonTitle.textContent = "Weather";
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.TRAFFIC:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.TRAFFIC:
                 this._mapButton.setAttribute("state", "");
                 this._mapButtonTitle.textContent = "Map";
                 this._trafficButton.setAttribute("state", "Active");
@@ -1061,7 +1157,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
                 this._weatherButton.setAttribute("state", "");
                 this._weatherButtonTitle.textContent = "Weather";
                 break;
-            case WT_G3x5_MFDHalfPaneDisplaySetting.Display.WEATHER:
+            case WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WEATHER:
                 this._mapButton.setAttribute("state", "");
                 this._mapButtonTitle.textContent = "Map";
                 this._trafficButton.setAttribute("state", "");
@@ -1080,39 +1176,39 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     _onPaneControlChanged(setting, newValue, oldValue) {
-        if (this.gps.mfdPaneControlID !== undefined && ((newValue & this.gps.mfdPaneControlID) !== (oldValue & this.gps.mfdPaneControlID))) {
+        if (this.instrument.mfdPaneControlID !== undefined && ((newValue & this.instrument.mfdPaneControlID) !== (oldValue & this.instrument.mfdPaneControlID))) {
             this._updatePaneDisplayButtons();
         }
     }
 
     _onPaneDisplayChanged(setting, newValue, oldValue) {
-        if (setting === this.gps.getSelectedMFDPaneSettings().display) {
+        if (setting === this.instrument.getSelectedPaneSettings().display) {
             this._updatePaneDisplayButtons();
         }
     }
 
     _onMainPaneModeChanged(setting, newValue, oldValue) {
-        if (this.gps && this.gps.getCurrentPage().name === "MFD Home") {
+        if (this.instrument && this.instrument.getCurrentPage().name === "MFD Home") {
             this._updateNavButtons();
             this._updatePaneDisplayButtons();
         }
     }
 
     _setMainPaneMode(mode) {
-        this.gps.mfdMainPaneSettings.mode.setValue(mode);
+        this.instrument.mfdMainPaneSettings.mode.setValue(mode);
     }
 
     _updateNavButtons() {
-        if (this.gps.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
-            this.gps.activateNavButton(4, "Half", this._setMainPaneMode.bind(this, WT_G3x5_MFDMainPaneModeSetting.Mode.HALF), false, "ICON_TSC_BUTTONBAR_HALF_SMALL.png");
+        if (this.instrument.mfdMainPaneSettings.mode.getValue() === WT_G3x5_MFDMainPaneModeSetting.Mode.FULL) {
+            this.instrument.activateNavButton(4, "Half", this._setMainPaneMode.bind(this, WT_G3x5_MFDMainPaneModeSetting.Mode.HALF), false, "ICON_TSC_BUTTONBAR_HALF_SMALL.png");
         } else {
-            this.gps.activateNavButton(4, "Full", this._setMainPaneMode.bind(this, WT_G3x5_MFDMainPaneModeSetting.Mode.FULL), false, "ICON_TSC_BUTTONBAR_FULL_SMALL.png");
+            this.instrument.activateNavButton(4, "Full", this._setMainPaneMode.bind(this, WT_G3x5_MFDMainPaneModeSetting.Mode.FULL), false, "ICON_TSC_BUTTONBAR_FULL_SMALL.png");
         }
     }
 
     onEnter() {
-        this.gps.setTopKnobText("");
-        this.gps.setBottomKnobText("-Range+ Push: Pan");
+        this.instrument.setTopKnobText("");
+        this.instrument.setBottomKnobText("-Range+ Push: Pan");
 
         this._updateNavButtons();
     }
@@ -1126,7 +1222,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
     }
 
     onExit() {
-        this.gps.deactivateNavButton(4);
+        this.instrument.deactivateNavButton(4);
     }
 
     onEvent(_event) {

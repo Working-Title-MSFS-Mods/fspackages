@@ -115,6 +115,42 @@ class WT_G3x5_WeatherRadarDisplayPane extends WT_G3x5_DisplayPane {
     }
 }
 
+class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
+    constructor(procedureDisplay) {
+        super();
+
+        this._procedureDisplay = procedureDisplay;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ProcedureDisplay}
+     */
+    get procedureDisplay() {
+        return this._procedureDisplay;
+    }
+
+    getTitle() {
+        return this.procedureDisplay.getProcedureName();
+    }
+
+    init(root) {
+        this.procedureDisplay.init(root);
+    }
+
+    wake() {
+        this.procedureDisplay.wake();
+    }
+
+    sleep() {
+        this.procedureDisplay.sleep();
+    }
+
+    update() {
+        this.procedureDisplay.update();
+    }
+}
+
 class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
     constructor(charts) {
         super();

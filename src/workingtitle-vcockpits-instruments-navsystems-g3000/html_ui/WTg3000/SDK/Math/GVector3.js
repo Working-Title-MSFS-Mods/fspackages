@@ -179,7 +179,7 @@ class WT_GVector3 {
     minus(arg1, arg2, arg3) {
         let value = WT_GVector3._parseArgs(arg1, arg2, arg3);
         if (value) {
-            return new WT_GVector3(this.x - value.x, this.y - value.y, this.z = value.z);
+            return new WT_GVector3(this.x - value.x, this.y - value.y, this.z - value.z);
         }
         return undefined;
     }

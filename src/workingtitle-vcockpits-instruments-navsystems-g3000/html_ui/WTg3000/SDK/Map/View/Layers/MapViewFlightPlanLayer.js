@@ -235,7 +235,7 @@ class WT_MapViewFlightPlanLayer extends WT_MapViewMultiLayer {
 
     _updateFlightPlan(state) {
         if (this._fpRenderer.flightPlan !== state.model.flightPlan.plan) {
-            this._fpRenderer.setFlightPlan(state.model.flightPlan);
+            this._fpRenderer.setFlightPlan(state.model.flightPlan.plan);
         }
     }
 

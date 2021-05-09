@@ -848,6 +848,7 @@ class WT_FlightPlan {
     clear() {
         let eventData = {types: 0};
         this._changeOrigin(null, eventData);
+        this._changeDestination(null, eventData);
         this._changeDeparture(null, eventData);
         this._clearSegment(this._enroute, eventData);
         this._changeArrival(null, eventData);
