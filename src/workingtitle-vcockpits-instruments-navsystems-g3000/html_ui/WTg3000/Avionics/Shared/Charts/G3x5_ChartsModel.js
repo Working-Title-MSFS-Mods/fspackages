@@ -1,7 +1,7 @@
 class WT_G3x5_ChartsModel {
     constructor(navigraphAPI) {
         this._navigraphAPI = navigraphAPI;
-        this._navigraphStatus = WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
+        this._navigraphStatus = navigraphAPI.isAccountLinked ? WT_G3x5_ChartsModel.NavigraphStatus.ACCESS_AVAILABLE : WT_G3x5_ChartsModel.NavigraphStatus.UNLINKED;
 
         this._chartID = "";
         this._airportIdent = "";
@@ -16,7 +16,6 @@ class WT_G3x5_ChartsModel {
         this._taskID = 0;
 
         this._optsManager = new WT_OptionsManager(this, WT_G3x5_ChartsModel.OPTION_DEFS);
-        this.updateNavigraphStatus();
     }
 
     /**
