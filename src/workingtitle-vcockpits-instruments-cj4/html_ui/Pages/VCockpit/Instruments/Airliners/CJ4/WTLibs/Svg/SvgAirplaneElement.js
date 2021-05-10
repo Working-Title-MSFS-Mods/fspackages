@@ -301,20 +301,18 @@ class SvgNPCAirplaneElement extends SvgMapElement {
 
             } else if (deltaAltitudeTraffic < 0) {
                 // below
-                this._altText.data = "-" + deltaAltText;
                 this._alt.setAttribute("y", "51");
+                this._altText.data = "-" + deltaAltText;
             }
 
             // arrow 
             if (this.vs > 500) {
-                // this._arrImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_ARROW_UP.svg");
                 this._arrImage.style.display = '';
                 this._arrImage.setAttribute("transform", "translate(35,20) rotate(180)");
             } else if (this.vs < -500) {
                 this._arrImage.style.display = '';
                 this._arrImage.setAttribute("transform", "translate(35,20) rotate(0)");
             } else {
-                // this._arrImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", "");
                 this._arrImage.style.display = 'none';
             }
 

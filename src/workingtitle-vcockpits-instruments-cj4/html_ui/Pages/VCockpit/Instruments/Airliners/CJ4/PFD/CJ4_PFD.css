@@ -752,20 +752,20 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #VORDMENavaids #Arrow {
     stroke-width: 1px;
 }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols {
-    top: 72%;
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TFC {
+    top: 40%;
     left: 87%;
     width: 11%;
     height: 5%;
     position: absolute;
-}
+  }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols svg {
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TFC svg {
     width: 100%;
     height: 100%;
 }
 
-cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols text {
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TFC text {
     width: 100%;
     height: 100%;
     font-family: 'Collins ProLine';
@@ -774,6 +774,13 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols text {
     text-anchor: end;
 }
 
+cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #Symbols {
+    top: 72%;
+    left: 87%;
+    width: 11%;
+    height: 5%;
+    position: absolute;
+}
 
 cj4-pfd-element #Mainframe #NDMapOverlay[extended=on] {
     top: 35%;
@@ -1158,6 +1165,22 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 }
 
 .preset-tuning {
+    color: cyan;
+}
+
+#TFC ul {
+    font-size: 22px;
+    list-style: none;
+    padding: 0;
+    text-align: right;
+}
+
+#TFC li {
+    padding: 0;
+}
+
+#TFC .active {
+    font-size: 24px;
     color: cyan;
 }
 
