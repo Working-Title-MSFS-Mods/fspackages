@@ -59,7 +59,7 @@ class AS3000_TSC extends NavSystemTouch {
         this._initNavigraphAPI();
         this._initPaneSettings();
 
-        this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
+        this._selectedMfdPane = null;
         this._mfdPaneControlID;
     }
 
@@ -401,6 +401,12 @@ class AS3000_TSC extends NavSystemTouch {
             this.terrainAlerts.reset();
     }
 
+    _initPaneControlSettings() {
+    }
+
+    _initPaneControl() {
+    }
+
     _initNearestAirportList() {
         this._nearestAirportList = new WT_G3x5_NearestAirportList(this.airplane, this.icaoWaypointFactory, this.icaoSearchers.airport);
         this._nearestAirportListUpdated = false;
@@ -435,6 +441,8 @@ class AS3000_TSC extends NavSystemTouch {
     Init() {
         super.Init();
 
+        this._initPaneControlSettings();
+        this._initPaneControl();
         this._initNearestWaypoints();
     }
 
@@ -678,25 +686,18 @@ class AS3000_TSC extends NavSystemTouch {
         }
     }
 
-    _setSelectedMFDHalfPane(value) {
-        if (this._selectedMfdPane === value || this._mfdPaneControlID === undefined) {
+    _setSelectedMFDHalfPane(pane) {
+        if (this._selectedMfdPane === pane || this._mfdPaneControlID === undefined) {
             return;
         }
 
-        this._selectedMfdPane = value;
-        let oldPaneSettings;
-        let newPaneSettings;
-        switch (this._selectedMfdPane) {
-            case WT_G3x5_MFDHalfPane.ID.LEFT:
-                oldPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
-                newPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
-                break;
-            case WT_G3x5_MFDHalfPane.ID.RIGHT:
-                oldPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
-                newPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
-                break;
+        let oldPane = this._selectedMfdPane;
+        this._selectedMfdPane = pane;
+        let oldPaneSettings = oldPane ? this.getPaneSettings(`MFD-${oldPane}`) : null;
+        let newPaneSettings = this.getPaneSettings(`MFD-${pane}`);
+        if (oldPaneSettings) {
+            oldPaneSettings.control.removeControl(this._mfdPaneControlID);
         }
-        oldPaneSettings.control.removeControl(this._mfdPaneControlID);
         newPaneSettings.control.addControl(this._mfdPaneControlID);
         if (this.getCurrentPageGroup().name === "MFD") {
             this.closePopUpElement();
