@@ -95,7 +95,8 @@ class WT_FlightPlanAsoboInterface {
 
         let origin;
         let firstICAO = data.waypoints[0].icao;
-        if (this._asoboHasOrigin()) {
+        let hasOrigin = this._asoboHasOrigin();
+        if (hasOrigin) {
             origin = await this._icaoWaypointFactory.getWaypoint(firstICAO);
             tempFlightPlan.setOrigin(origin);
             this._asoboFlightPlanInfo.hasOrigin = true;
@@ -107,7 +108,7 @@ class WT_FlightPlanAsoboInterface {
 
         let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
         let destination;
-        if (forceDRCTDestination || this._asoboHasDestination()) {
+        if (forceDRCTDestination || (this._asoboHasDestination() && (!hasOrigin || data.waypoints.length > 1))) {
             destination = await this._icaoWaypointFactory.getWaypoint(lastICAO);
             tempFlightPlan.setDestination(destination);
             this._asoboFlightPlanInfo.hasDestination = true;
