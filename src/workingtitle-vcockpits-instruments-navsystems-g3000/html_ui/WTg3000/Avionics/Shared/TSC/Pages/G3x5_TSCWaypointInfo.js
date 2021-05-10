@@ -238,8 +238,8 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
             waypoint: this.selectedWaypoint,
             icaoSetting: this._displayPaneICAOSetting,
             mfdPaneDisplaySetting: this._mfdPaneDisplaySetting,
-            showOnMapOnDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Mode.WAYPOINT_INFO,
-            showOnMapOffDisplayMode: WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP
+            showOnMapOnDisplayMode: WT_G3x5_PaneDisplaySetting.Mode.WAYPOINT_INFO,
+            showOnMapOffDisplayMode: WT_G3x5_PaneDisplaySetting.Mode.NAVMAP
         }
         this.instrument.waypointOptions.element.setContext(context);
         this.instrument.switchToPopUpPage(this.instrument.waypointOptions);

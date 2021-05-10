@@ -158,3 +158,55 @@ class WT_G3x5_WaypointInfoRangeTargetController {
         this._updateRange();
     }
 }
+
+class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_DisplayPane {
+    constructor(waypointInfo) {
+        super();
+
+        this._waypointInfo = waypointInfo;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_WaypointInfoDisplay}
+     */
+    get waypointInfo() {
+        return this._waypointInfo;
+    }
+
+    getTitle() {
+        let waypoint = this.waypointInfo.mapModel.waypointDisplay.waypoint;
+        if (waypoint) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return "Airport Info";
+                case WT_ICAOWaypoint.Type.VOR:
+                    return "VOR Info";
+                case WT_ICAOWaypoint.Type.NDB:
+                    return "NDB Info";
+                case WT_ICAOWaypoint.Type.INT:
+                    return "Intersection Info";
+                default:
+                    return "Waypoint Info";
+            }
+        } else {
+            return "Waypoint Info";
+        }
+    }
+
+    init(root) {
+        this.waypointInfo.init(root);
+    }
+
+    wake() {
+        this.waypointInfo.wake();
+    }
+
+    sleep() {
+        this.waypointInfo.sleep();
+    }
+
+    update() {
+        this.waypointInfo.update();
+    }
+}
