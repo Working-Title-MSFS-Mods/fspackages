@@ -455,6 +455,8 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         let chart = this._findChart(charts.charts, procedure)
         if (chart) {
             let paneSettings = this.instrument.getSelectedPaneSettings();
+            let chartsPage = this.instrument.getSelectedMFDPanePages().charts;
+            chartsPage.element.resetChartSettings();
             paneSettings.chartID.setValue(chart.id);
             paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.CHARTS);
         }
