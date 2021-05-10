@@ -722,11 +722,11 @@ class MapInstrument extends ISvgMapRootElement {
                      */
                     //this.navMap.mapElements.push(this.roadNetwork);
 
-                    // if (this.showTraffic) {
-                    // if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
-                    // this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
-                    // }
-                    // }
+                    if (this.showTraffic) {
+                        // if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
+                            this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
+                        // }
+                    }
                     if (this.bShowAirplane) {
                         this.navMap.mapElements.push(this.airplaneIconElement);
                     }
@@ -994,20 +994,20 @@ class MapInstrument extends ISvgMapRootElement {
                     const waypoint = new WayPoint(this._instrument);
                     waypoint.type = 'W';
                     waypoint.isInFlightPlan = false;
-    
+
                     waypoint.infos = new WayPointInfo(this._instrument);
                     waypoint.getSvgElement(this.navMap.index);
                     this._todWaypoint = waypoint;
                     this._todWaypoint.ident = "TOD";
                     this._todWaypoint.infos.ident = "TOD";
                 }
-    
+
                 const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
                 const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
                 this._todWaypoint.infos.coordinates = todLLA;
             } else {
                 this._todWaypoint = undefined;
-            }            
+            }
         } catch (error) {
             this._todWaypoint = undefined;
         }
