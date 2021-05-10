@@ -97,6 +97,17 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
     _initMFDPaneSelectDisplay() {
     }
 
+    _initPaneControlSettings() {
+        this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`).control.setValue(WT_G3x5_PaneControlSetting.Touchscreen.LEFT);
+        this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`).control.setValue(0);
+    }
+
+    _initPaneControl() {
+        if (this.urlConfig.index === 2) {
+            this._setSelectedMFDHalfPane(WT_G3x5_MFDHalfPane.ID.LEFT);
+        }
+    }
+
     _updateMFDPaneSelectDisplay() {
     }
 

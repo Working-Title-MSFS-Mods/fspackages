@@ -277,13 +277,6 @@ class WT_G3x5_MFDHalfPane {
 
         this._paneID = `${instrumentID}-${halfPaneID}`;
 
-        // TODO: find a more elegant way to do this
-        if (halfPaneID === WT_G3x5_MFDHalfPane.ID.LEFT) {
-            this._defaultControl = data.airplane.type === WT_PlayerAirplane.Type.TBM930 ? WT_G3x5_PaneControlSetting.Touchscreen.LEFT | WT_G3x5_PaneControlSetting.Touchscreen.RIGHT : WT_G3x5_PaneControlSetting.Touchscreen.LEFT;
-        } else {
-            this._defaultControl = 0;
-        }
-
         this._createSettings();
         this._createPanes(data);
 
@@ -304,6 +297,8 @@ class WT_G3x5_MFDHalfPane {
 
     _createSettings() {
         this._settings = new WT_G3x5_PaneSettings(this.paneID);
+
+        this._settings.display.init();
 
         this._settings.control.addListener(this._onControlSettingChanged.bind(this));
         this._settings.display.addListener(this._onDisplaySettingChanged.bind(this));
@@ -408,20 +403,16 @@ class WT_G3x5_MFDHalfPane {
     }
 
     _initDisplay() {
-        this._setDisplayMode(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
-        this._setControl(this._defaultControl);
-    }
-
-    _initSettings() {
-        this.settings.control.init();
-        this.settings.display.init();
+        this.settings.display.update();
+        this.settings.control.update();
+        this._setDisplayMode(this.settings.display.mode);
+        this._setControl(this.settings.control.getValue());
     }
 
     async _init() {
         await this._initDisplayPanes();
-        this._initDisplay();
-        this._initSettings();
         this._isInit = true;
+        this._initDisplay();
     }
 
     /**
