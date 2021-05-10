@@ -235,6 +235,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
     }
 
+    _openPage(pageGroup, pageName) {
+        this.instrument.SwitchToPageName(pageGroup, pageName);
+    }
+
     _openDRCTPage(waypoint) {
         this._drctWaypoint = waypoint;
         this.instrument.SwitchToPageName("MFD", "Direct To");
@@ -303,6 +307,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._openDRCTPage(waypoint);
     }
 
+    _onProcButtonPressed(event) {
+        this._openPage("MFD", "ProceduresWT");
+    }
+
     /**
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
@@ -368,6 +376,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._openWaypointKeyboard(this._selectOrigin.bind(this));
     }
 
+    _onDepartureSelectButtonPressed(event) {
+        this._openPage("MFD", "Departure Selection WT");
+    }
+
     _onOriginRemoveButtonPressed(event) {
         this._removeOrigin();
     }
@@ -379,6 +391,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _onDestinationSelectButtonPressed(event) {
         this._openWaypointKeyboard(this._selectDestination.bind(this));
+    }
+
+    _onArrivalSelectButtonPressed(event) {
+        this._openPage("MFD", "Arrival Selection WT");
+    }
+
+    _onApproachSelectButtonPressed(event) {
+        this._openPage("MFD", "Approach Selection WT");
     }
 
     _onDestinationRemoveButtonPressed(event) {
@@ -495,6 +515,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DRCT:
                 this._onDRCTButtonPressed(event);
                 break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.PROC:
+                this._onProcButtonPressed(event);
+                break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.HEADER:
                 this._onHeaderButtonPressed(event);
                 break;
@@ -507,6 +530,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_SELECT:
                 this._onOriginSelectButtonPressed(event);
                 break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DEPARTURE_SELECT:
+                this._onDepartureSelectButtonPressed(event);
+                break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_REMOVE:
                 this._onOriginRemoveButtonPressed(event);
                 break;
@@ -515,6 +541,12 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_SELECT:
                 this._onDestinationSelectButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ARRIVAL_SELECT:
+                this._onArrivalSelectButtonPressed(event);
+                break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.APPROACH_SELECT:
+                this._onApproachSelectButtonPressed(event);
                 break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_REMOVE:
                 this._onDestinationRemoveButtonPressed(event);
@@ -832,6 +864,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             button: this._originSelectButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_SELECT
         }));
+        this._departureSelectButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._departureSelectButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DEPARTURE_SELECT
+        }));
         this._originRemoveButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._originRemoveButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_REMOVE
@@ -846,6 +882,14 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._destinationSelectButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._destinationSelectButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DESTINATION_SELECT
+        }));
+        this._arrivalSelectButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._arrivalSelectButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ARRIVAL_SELECT
+        }));
+        this._approachSelectButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._approachSelectButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.APPROACH_SELECT
         }));
         this._destinationRemoveButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._destinationRemoveButton,
