@@ -245,14 +245,10 @@ class AS3000_TSC extends NavSystemTouch {
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new NavSystemPage("Flight Plan", "FlightPlan", new WT_G3x5_TSCFlightPlan("MFD", "MFD Home")),
-                new NavSystemPage("ProceduresWT", "ProceduresWT", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
-                new NavSystemPage("Departure Selection WT", "DepartureSelectionWT", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                new NavSystemPage("Arrival Selection WT", "ArrivalSelectionWT", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                new NavSystemPage("Approach Selection WT", "ApproachSelectionWT", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                new NavSystemPage("Procedures", "Procedures", new AS3000_TSC_Procedures()),
-                new NavSystemPage("Departure Selection", "DepartureSelection", new AS3000_TSC_DepartureSelection()),
-                new NavSystemPage("Arrival Selection", "ArrivalSelection", new AS3000_TSC_ArrivalSelection()),
-                new NavSystemPage("Approach Selection", "ApproachSelection", new AS3000_TSC_ApproachSelection()),
+                new NavSystemPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
+                new NavSystemPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
+                new NavSystemPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
+                new NavSystemPage("Approach Selection", "ApproachSelection", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
                 new NavSystemPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.airportInfo = new NavSystemPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
                 this._mfdPagesRight.airportInfo = new NavSystemPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
@@ -1019,11 +1015,7 @@ class AS3000_TSC_MFDHome extends NavSystemElement {
         } else {
             this.gps.makeButton(this.FlightPlanButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Active Flight Plan"));
         }
-        if (this.gps.urlConfig.index === 1) {
-            this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "ProceduresWT"));
-        } else {
-            this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
-        }
+        this.gps.makeButton(this.procButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Procedures"));
         this.gps.makeButton(this._chartsButton, this._onChartsButtonPressed.bind(this));
         this.gps.makeButton(this.NearestButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Nearest Waypoint Selection"));
         this.gps.makeButton(this.speedBugsButton, this.gps.SwitchToPageName.bind(this.gps, "MFD", "Speed Bugs"));
@@ -1563,87 +1555,6 @@ class AS3000_TSC_ActiveFPL extends NavSystemTouch_ActiveFPL {
         } else {
             this.scrollController.scrollDown();
         }
-    }
-}
-class AS3000_TSC_Procedures extends NavSystemTouch_Procedures {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-    }
-    back() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-}
-class AS3000_TSC_DepartureSelection extends NavSystemTouch_DepartureSelection {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-    }
-    back() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-    close() {
-        this.gps.SwitchToPageName("MFD", "Procedures");
-    }
-}
-class AS3000_TSC_ArrivalSelection extends NavSystemTouch_ArrivalSelection {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-    }
-    back() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-    close() {
-        this.gps.SwitchToPageName("MFD", "Procedures");
-    }
-}
-class AS3000_TSC_ApproachSelection extends NavSystemTouch_ApproachSelection {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, false);
-        this.gps.deactivateNavButton(2, false);
-    }
-    back() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-    close() {
-        this.gps.SwitchToPageName("MFD", "Procedures");
     }
 }
 

@@ -295,10 +295,10 @@
                 </div>
 
                 <div class="tscPage" id="FlightPlan"></div>
-                <div class="tscPage" id="ProceduresWT"></div>
-                <div class="tscPage" id="DepartureSelectionWT"></div>
-                <div class="tscPage" id="ArrivalSelectionWT"></div>
-                <div class="tscPage" id="ApproachSelectionWT"></div>
+                <div class="tscPage" id="Procedures"></div>
+                <div class="tscPage" id="DepartureSelection"></div>
+                <div class="tscPage" id="ArrivalSelection"></div>
+                <div class="tscPage" id="ApproachSelection"></div>
 
                 <div class="tscPage" id="ActiveFlightPlan">
                     <div id="leftBar">
@@ -563,156 +563,6 @@
                                 <td></td>
                             </tr>
                         </table>
-                    </div>
-                </div>
-                <div class="tscPage" id="Procedures">
-                    <div class="gradientButton" id="Procedures_Departure">
-                        <div class="upperTitle">Departure</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_Arrival">
-                        <div class="upperTitle">Arrival</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_Approach">
-                        <div class="upperTitle">Approach</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_ActivateApproach">
-                        <div class="mainText">Activate Approach</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_ActivateVectorsToFinal" state="Hidden">
-                        <div class="title">Activate Vectors To Final</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_ActivateMissedApproach" state="Hidden">
-                        <div class="title">Activate Missed Approach</div>
-                    </div>
-                </div>
-                <div class="tscPage ProcSelection" id="DepartureSelection">
-                    <div class="gradientButton ProcAirport" id="Departure_Airport">
-                        <div class="upperTitle">Airport</div>
-                        <div class="ident">____</div>
-                        <div class="name">____</div>
-                        <img class="logo" />
-                    </div>
-                    <div class="gradientButton ProcIdentifier" id="Departure_Departure">
-                        <div class="upperTitle">Departure</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcTransition" id="Departure_Transition">
-                        <div class="upperTitle">Transition</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcRunway" id="Departure_Runway">
-                        <div class="upperTitle">Runway</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="backgroundBox ProcOptions" id="Departure_Options">
-                        <div class="title">Departure Options</div>
-                        <div class="gradientButton" id="Departure_Preview" state="Hidden">
-                            <div class="title">Preview</div>
-                            <div class="value">Off</div>
-                        </div>
-                        <div class="gradientButton" id="Departure_FilterBy" state="Hidden">
-                            <div class="title">Filter by</div>
-                            <div class="value">Runway</div>
-                        </div>
-                        <div class="gradientButton" id="Departure_Remove">
-                            <div class="mainText">Remove</div>
-                        </div>
-                        <div class="gradientButton" id="Departure_Load">
-                            <div class="mainText">Load</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox ProcSequence" id="Departure_Sequence">
-                        <div class="title">Sequence</div>
-                        <div class="content"></div>
-                    </div>
-                </div>
-                <div class="tscPage ProcSelection" id="ArrivalSelection">
-                    <div class="gradientButton ProcAirport" id="Arrival_Airport">
-                        <div class="upperTitle">Airport</div>
-                        <div class="ident">____</div>
-                        <div class="name">____</div>
-                        <img class="logo" />
-                    </div>
-                    <div class="gradientButton ProcIdentifier" id="Arrival_Arrival">
-                        <div class="upperTitle">Arrival</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcTransition" id="Arrival_Transition">
-                        <div class="upperTitle">Transition</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcRunway" id="Arrival_Runway">
-                        <div class="upperTitle">Runway</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="backgroundBox ProcOptions" id="Arrival_Options">
-                        <div class="title">Arrival Options</div>
-                        <div class="gradientButton" id="Arrival_Preview" state="Hidden">
-                            <div class="title">Preview</div>
-                            <div class="value">Off</div>
-                        </div>
-                        <div class="gradientButton" id="Arrival_FilterBy" state="Hidden">
-                            <div class="title">Filter by</div>
-                            <div class="value">Runway</div>
-                        </div>
-                        <div class="gradientButton" id="Arrival_Remove">
-                            <div class="mainText">Remove</div>
-                        </div>
-                        <div class="gradientButton" id="Arrival_Load">
-                            <div class="mainText">Load</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox ProcSequence" id="Arrival_Sequence">
-                        <div class="title">Sequence</div>
-                        <div class="content"></div>
-                    </div>
-                </div>
-                <div class="tscPage ProcSelection" id="ApproachSelection">
-                    <div class="gradientButton ProcAirport" id="Approach_Airport">
-                        <div class="upperTitle">Airport</div>
-                        <div class="ident">____</div>
-                        <div class="name">____</div>
-                        <img class="logo" />
-                    </div>
-                    <div class="gradientButton ProcIdentifier" id="Approach_Approach">
-                        <div class="upperTitle">Approach</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcTransition" id="Approach_Transition">
-                        <div class="upperTitle">Transition</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Approach_Minimums" state="Hidden">
-                        <div class="upperTitle">Minimums</div>
-                        <div class="state">Off</div>
-                        <div class="value">_____M</div>
-                    </div>
-                    <div class="gradientButton" id="Approach_PrimaryFrequency" state="Hidden">
-                        <div class="upperTitle">Primary Frequency</div>
-                        <div class="value">BD 110.30</div>
-                    </div>
-                    <div class="backgroundBox ProcOptions" id="Approach_Options">
-                        <div class="title">Approach Options</div>
-                        <div class="gradientButton" id="Approach_Preview" state="Hidden">
-                            <div class="title">Preview</div>
-                            <div class="value">Off</div>
-                        </div>
-                        <div class="gradientButton" id="Approach_Remove">
-                            <div class="mainText">Remove</div>
-                        </div>
-                        <div class="gradientButton" id="Approach_Load">
-                            <div class="mainText">Load</div>
-                        </div>
-                        <div class="gradientButton" id="Approach_LoadAndActivate">
-                            <div class="mainText">Load &amp; Activate</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox ProcSequence" id="Approach_Sequence">
-                        <div class="title">Sequence</div>
-                        <div class="content"></div>
                     </div>
                 </div>
 

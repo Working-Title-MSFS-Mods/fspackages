@@ -42,15 +42,15 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
     }
 
     _onDepartureButtonPressed(button) {
-        this.instrument.SwitchToPageName("MFD", "Departure Selection WT");
+        this.instrument.SwitchToPageName("MFD", "Departure Selection");
     }
 
     _onArrivalButtonPressed(button) {
-        this.instrument.SwitchToPageName("MFD", "Arrival Selection WT");
+        this.instrument.SwitchToPageName("MFD", "Arrival Selection");
     }
 
     _onApproachButtonPressed(button) {
-        this.instrument.SwitchToPageName("MFD", "Approach Selection WT");
+        this.instrument.SwitchToPageName("MFD", "Approach Selection");
     }
 
     _onActivateApproachButtonPressed(button) {
