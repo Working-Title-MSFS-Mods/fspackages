@@ -23,6 +23,7 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
         this.htmlElement.departureButton.addButtonListener(this._onDepartureButtonPressed.bind(this));
         this.htmlElement.arrivalButton.addButtonListener(this._onArrivalButtonPressed.bind(this));
         this.htmlElement.approachButton.addButtonListener(this._onApproachButtonPressed.bind(this));
+        this.htmlElement.activateApproachButton.addButtonListener(this._onActivateApproachButtonPressed.bind(this));
     }
 
     async _initHTMLElement() {
@@ -50,6 +51,10 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
 
     _onApproachButtonPressed(button) {
         this.instrument.SwitchToPageName("MFD", "Approach Selection WT");
+    }
+
+    _onActivateApproachButtonPressed(button) {
+        this._fpm.activateApproach();
     }
 
     onUpdate(deltaTime) {
@@ -111,6 +116,14 @@ class WT_G3x5_TSCProceduresHTMLElement extends HTMLElement {
      */
     get approachButton() {
         return this._approachButton;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get activateApproachButton() {
+        return this._activateApproachButton;
     }
 
     async _defineChildren() {
