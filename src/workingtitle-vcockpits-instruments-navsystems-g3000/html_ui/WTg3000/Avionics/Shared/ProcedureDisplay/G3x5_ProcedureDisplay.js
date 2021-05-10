@@ -1,14 +1,14 @@
 class WT_G3x5_ProcedureDisplay {
     /**
      * @param {String} paneID
+     * @param {WT_G3x5_PaneSettings} paneSettings
      * @param {WT_PlayerAirplane} airplane
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(paneID, airplane, icaoWaypointFactory, unitsSettingModel) {
+    constructor(paneID, paneSettings, airplane, icaoWaypointFactory, unitsSettingModel) {
         this._paneID = paneID;
-        this._settingModelID = paneID;
-        this._mapSettingModelID = `${paneID}_${WT_G3x5_ProcedureDisplay.SETTING_MODEL_ID}`;
+        this._procedureSetting = paneSettings.procedure;
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
@@ -96,15 +96,13 @@ class WT_G3x5_ProcedureDisplay {
     }
 
     _initSettingListeners() {
+        this._procedureSetting.init();
+
         this._procedureSetting.addListener(this._onProcedureSettingChanged.bind(this));
         this._updateProcedure();
     }
 
-    _initSettingModel() {
-        this.settingModel.addSetting(this._procedureSetting = new WT_G3x5_ProcedureDisplayProcedureSetting(this.settingModel));
-
-        this.settingModel.init();
-
+    _initSettings() {
         this._initSettingListeners();
     }
 
@@ -112,12 +110,11 @@ class WT_G3x5_ProcedureDisplay {
         this._mapModel = new WT_MapModel(this._airplane);
         this._mapView = viewElement;
         this.mapView.setModel(this.mapModel);
-        this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
 
         this._initMapModel();
         this._initMapView();
         this._initRangeTargetController();
-        this._initSettingModel();
+        this._initSettings();
     }
 
     _updateProcedureName() {
@@ -236,7 +233,6 @@ class WT_G3x5_ProcedureDisplay {
         this._waypointRenderer.update(this.mapView.state);
     }
 }
-WT_G3x5_ProcedureDisplay.SETTING_MODEL_ID = "Procedure";
 
 WT_G3x5_ProcedureDisplay.MAP_RANGE_LEVELS =
     [250, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
@@ -406,3 +402,39 @@ class WT_G3x5_ProcedureRangeTargetController {
 }
 WT_G3x5_ProcedureRangeTargetController.BOUNDING_CIRCLE_TOLERANCE = 1e-6; // ~6 meters
 WT_G3x5_ProcedureRangeTargetController.RANGE_BUFFER_FACTOR = 0.1;
+
+class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
+    constructor(procedureDisplay) {
+        super();
+
+        this._procedureDisplay = procedureDisplay;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_ProcedureDisplay}
+     */
+    get procedureDisplay() {
+        return this._procedureDisplay;
+    }
+
+    getTitle() {
+        return this.procedureDisplay.getProcedureName();
+    }
+
+    init(root) {
+        this.procedureDisplay.init(root);
+    }
+
+    wake() {
+        this.procedureDisplay.wake();
+    }
+
+    sleep() {
+        this.procedureDisplay.sleep();
+    }
+
+    update() {
+        this.procedureDisplay.update();
+    }
+}

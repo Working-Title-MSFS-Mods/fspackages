@@ -402,8 +402,8 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
 
     _deactivatePreview() {
         let paneSettings = this.instrument.getSelectedPaneSettings();
-        if (paneSettings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE) {
-            paneSettings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.NAVMAP);
+        if (paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE) {
+            paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
         }
     }
 
@@ -513,7 +513,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
          */
         this._flightPlan = null;
         /**
-         * @type {WT_G3x5_TSCPaneSettings}
+         * @type {WT_G3x5_PaneSettings}
          */
         this._paneSettings = null;
         /**
@@ -887,7 +887,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
 
     /**
      *
-     * @param {WT_G3x5_TSCPaneSettings} settings
+     * @param {WT_G3x5_PaneSettings} settings
      */
     setPaneSettings(settings) {
         if (settings === this._paneSettings) {
@@ -1319,7 +1319,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     _updateSelectedProcedureDisplayedOnMap() {
         if (this._isSelectedProcedureComplete && this._paneSettings) {
             let procedureDisplaySetting = this._paneSettings.procedure;
-            this._isSelectedProcedureDisplayedOnMap = this._paneSettings.display.mode === WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE && this._checkIfProcedureDisplayHasSelectedProcedure(procedureDisplaySetting);
+            this._isSelectedProcedureDisplayedOnMap = this._paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE && this._checkIfProcedureDisplayHasSelectedProcedure(procedureDisplaySetting);
         } else {
             this._isSelectedProcedureDisplayedOnMap = false;
         }
@@ -1574,7 +1574,7 @@ class WT_G3x5_TSCDepartureArrivalSelection extends WT_G3x5_TSCProcedureSelection
 
         let transition = event.procedure.enrouteTransitions.getByIndex(event.transitionIndex);
         paneSettings.procedure.setProcedure(event.procedure, transition, event.runway);
-        paneSettings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE);
+        paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE);
     }
 }
 
@@ -2593,7 +2593,7 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
 
         let transition = event.procedure.transitions.getByIndex(event.transitionIndex);
         paneSettings.procedure.setProcedure(event.procedure, transition);
-        paneSettings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.PROCEDURE);
+        paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE);
     }
 
     async _activateApproach() {

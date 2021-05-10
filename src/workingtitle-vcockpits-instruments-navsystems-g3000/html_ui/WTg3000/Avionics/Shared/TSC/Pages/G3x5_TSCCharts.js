@@ -2,13 +2,16 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     /**
      * @param {String} homePageGroup
      * @param {String} homePageName
-     * @param {WT_NavigraphAPI} navigraphAPI
      * @param {WT_G3x5_MFDHalfPane.ID} halfPaneID
+     * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     * @param {WT_G3x5_PaneSettings} paneSettings
      */
-    constructor(homePageGroup, homePageName, navigraphAPI, halfPaneID, icaoWaypointFactory) {
+    constructor(homePageGroup, homePageName, halfPaneID, navigraphAPI, icaoWaypointFactory, paneSettings) {
         super(homePageGroup, homePageName);
 
         this._icaoWaypointFactory = icaoWaypointFactory;
+        this._chartIDSetting = paneSettings.chartID;
 
         this._icao = "";
         /**
@@ -27,8 +30,8 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._dataFail = false;
 
         this._navigraphAPI = navigraphAPI;
-        this._settingModelID = `MFD-${halfPaneID}_${WT_G3x5_ChartsDisplay.SETTING_MODEL_ID}`;
-        this._initSettingModel();
+        this._settingModelID = `MFD-${halfPaneID}`;
+        this._initSettings();
 
         this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
 
@@ -52,10 +55,9 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._initChartIDSettingListener();
     }
 
-    _initSettingModel() {
+    _initSettings() {
         this._settingModel = new WT_DataStoreSettingModel(this._settingModelID);
         this._settingModel.addSetting(this._icaoSetting = new WT_G3x5_ChartsICAOSetting(this._settingModel));
-        this._settingModel.addSetting(this._chartIDSetting = new WT_G3x5_ChartsChartIDSetting(this._settingModel));
         this._settingModel.addSetting(this._lightModeSetting = new WT_G3x5_ChartsLightModeSetting(this._settingModel));
         this._settingModel.addSetting(this._lightThresholdSetting = new WT_G3x5_ChartsLightThresholdSetting(this._settingModel));
         this._settingModel.addSetting(this._sectionSetting = new WT_G3x5_ChartsSectionSetting(this._settingModel));
@@ -494,7 +496,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
 
     _activateChartsDisplayPane() {
         let settings = this.instrument.getSelectedPaneSettings();
-        settings.display.setValue(WT_G3x5_MFDHalfPaneDisplaySetting.Mode.CHARTS);
+        settings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.CHARTS);
     }
 
     onEnter() {
