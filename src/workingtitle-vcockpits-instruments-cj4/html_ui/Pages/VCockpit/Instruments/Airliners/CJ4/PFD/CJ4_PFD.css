@@ -113,6 +113,7 @@ cj4-pfd-element {
 cj4-pfd-element #Electricity {
     width: 100%;
     height: 100%;
+    font-size: calc(2 * 1vh * var(--bodyHeightScale));
 }
 
 cj4-pfd-element #Electricity[state=off] {
@@ -132,7 +133,7 @@ cj4-pfd-element #Mainframe #PFD {
     left: 0%;
     width: 100%;
     height: 45%;
-}
+y}
 
 cj4-pfd-element #Mainframe #PFD #HorizonContainer {
     transform: rotateX(0);
