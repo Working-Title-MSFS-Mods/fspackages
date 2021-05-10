@@ -142,6 +142,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.readDictionary(dict);
                 dict.changed = false;
             }
+
             if (this.showGwx)
                 this.showWeather = false;
             if (this.showGwx) {
@@ -152,6 +153,7 @@ class CJ4_MFD extends BaseAirliners {
 
                 this.map.setMode(this.mapDisplayMode);
                 this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
+                this.mapOverlay.showTfc(this.map.map.instrument.showTraffic);
 
                 //Hack to correct the map compass size until we separate it out
                 //fully from the default shared code

@@ -14,11 +14,11 @@ class SvgAirplaneElement extends SvgMapElement {
     id(map) {
         return "airplane-icon-map-" + map.index;
     }
-    
+
     appendToMap(map) {
         map.appendChild(this.svgElement, map.planeLayer);
     }
-    
+
     createDraw(map) {
         let container = document.createElementNS(Avionics.SVG.NS, "svg");
         container.id = this.id(map);
@@ -125,12 +125,12 @@ class NPCAirplaneManager {
     constructor() {
         this.npcAirplanes = [];
         this.useTCAS = true;
-        this._timer = Infinity;
+        this._lastGetTraffic = Date.now();
+        this._lastPosUpdate = Date.now();
     }
-    update() {
-        this._timer++;
-        if (this._timer >= 120) {
-            this._timer = 0;
+    update(force) {
+        if (force || Date.now() - this._lastGetTraffic > 5000) {
+            this._lastGetTraffic = Date.now();
             Coherent.call("GET_AIR_TRAFFIC").then((obj) => {
                 for (let i = 0; i < this.npcAirplanes.length; i++) {
                     let npcAirplane = this.npcAirplanes[i];
@@ -144,48 +144,51 @@ class NPCAirplaneManager {
                         npcAirplane.useTCAS = this.useTCAS;
                         this.npcAirplanes.push(npcAirplane);
                     }
-                    npcAirplane.alive = 3;
+                    npcAirplane.alive = 6;
                     npcAirplane.targetLat = obj[i].lat;
                     npcAirplane.targetLon = obj[i].lon;
                     npcAirplane.targetAlt = obj[i].alt;
                     npcAirplane.targetHeading = obj[i].heading;
                     if (isFinite(npcAirplane.lat) && isFinite(npcAirplane.lon) && isFinite(npcAirplane.alt)) {
-                        npcAirplane.deltaLat = (npcAirplane.targetLat - npcAirplane.lat) / 60;
-                        npcAirplane.deltaLon = (npcAirplane.targetLon - npcAirplane.lon) / 60;
-                        npcAirplane.deltaAlt = (npcAirplane.targetAlt - npcAirplane.alt) / 60;
-                        npcAirplane.targetHeading = Math.atan(npcAirplane.deltaLon / npcAirplane.deltaLat / Math.cos(npcAirplane.targetLat * Avionics.Utils.DEG2RAD)) * Avionics.Utils.RAD2DEG;
-                        if (npcAirplane.deltaLat < 0) {
-                            npcAirplane.targetHeading += 180;
-                        }
+                        npcAirplane.deltaLat = (npcAirplane.targetLat - npcAirplane.lat) / 5;
+                        npcAirplane.deltaLon = (npcAirplane.targetLon - npcAirplane.lon) / 5;
+                        npcAirplane.deltaAlt = (npcAirplane.targetAlt - npcAirplane.alt) / 5;
+                        // npcAirplane.targetHeading = Math.atan(npcAirplane.deltaLon / npcAirplane.deltaLat / Math.cos(npcAirplane.targetLat * Avionics.Utils.DEG2RAD)) * Avionics.Utils.RAD2DEG;
+                        // if (npcAirplane.deltaLat < 0) {
+                        //     npcAirplane.targetHeading += 180;
+                        // }
                     }
                 }
             });
         }
-        for (let i = 0; i < this.npcAirplanes.length; i++) {
-            let npcAirplane = this.npcAirplanes[i];
-            npcAirplane.alive -= 1 / 60;
-            if (npcAirplane.alive < 0) {
-                this.npcAirplanes.splice(i, 1);
-                i--;
-            }
-            else {
-                if (isFinite(npcAirplane.lat) && isFinite(npcAirplane.lon) && isFinite(npcAirplane.heading)) {
-                    npcAirplane.lat += npcAirplane.deltaLat;
-                    npcAirplane.lon += npcAirplane.deltaLon;
-                    npcAirplane.alt += npcAirplane.deltaAlt;
-                    let deltaHeading = Avionics.Utils.diffAngle(npcAirplane.heading, npcAirplane.targetHeading);
-                    if (deltaHeading > 60) {
-                        npcAirplane.heading = npcAirplane.targetHeading;
-                    }
-                    else {
-                        npcAirplane.heading = Avionics.Utils.lerpAngle(npcAirplane.heading, npcAirplane.targetHeading, 1 / 60);
-                    }
+        if (Date.now() - this._lastPosUpdate > 1000) {
+            this._lastPosUpdate = Date.now();
+            for (let i = 0; i < this.npcAirplanes.length; i++) {
+                let npcAirplane = this.npcAirplanes[i];
+                npcAirplane.alive -= 1;
+                if (npcAirplane.alive < 0) {
+                    this.npcAirplanes.splice(i, 1);
+                    i--;
                 }
                 else {
-                    npcAirplane.lat = npcAirplane.targetLat;
-                    npcAirplane.lon = npcAirplane.targetLon;
-                    npcAirplane.alt = npcAirplane.targetAlt;
-                    npcAirplane.heading = npcAirplane.targetHeading;
+                    if (isFinite(npcAirplane.lat) && isFinite(npcAirplane.lon) && isFinite(npcAirplane.heading)) {
+                        npcAirplane.lat += npcAirplane.deltaLat;
+                        npcAirplane.lon += npcAirplane.deltaLon;
+                        npcAirplane.alt += npcAirplane.deltaAlt;
+                        // let deltaHeading = Avionics.Utils.diffAngle(npcAirplane.heading, npcAirplane.targetHeading);
+                        // if (deltaHeading > 60) {
+                        //     npcAirplane.heading = npcAirplane.targetHeading;
+                        // }
+                        // else {
+                        //     npcAirplane.heading = Avionics.Utils.lerpAngle(npcAirplane.heading, npcAirplane.targetHeading, 1 / 60);
+                        // }
+                    }
+                    else {
+                        npcAirplane.lat = npcAirplane.targetLat;
+                        npcAirplane.lon = npcAirplane.targetLon;
+                        npcAirplane.alt = npcAirplane.targetAlt;
+                        npcAirplane.heading = npcAirplane.targetHeading;
+                    }
                 }
             }
         }
@@ -195,7 +198,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
     constructor(name = "") {
         super();
         this.name = name;
-        this._delay = 120;
+        this._delay = 40;
         this.alive = 5;
         this.useTCAS = false;
         this.lat = NaN;
@@ -247,27 +250,35 @@ class SvgNPCAirplaneElement extends SvgMapElement {
             this.svgElement.setAttribute("y", "-1000");
             return;
         }
-        if (!this.useTCAS) {
-            if (this._lastHeading !== this.heading && isFinite(this.heading)) {
-                if (this.svgElement.children[0]) {
-                    this._lastHeading = this.heading;
-                    let angle = this.heading;
-                    angle += map.rotation;
-                    //let rotation = "rotate(" + fastToFixed(angle, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + ")";
-                    //this.svgElement.children[0].setAttribute("transform", rotation);
-                }
-            }
-        }
+        // if (!this.useTCAS) {
+        //     if (this._lastHeading !== this.heading && isFinite(this.heading)) {
+        //         if (this.svgElement.children[0]) {
+        //             this._lastHeading = this.heading;
+        //             let angle = this.heading;
+        //             angle += map.rotation;
+        //             //let rotation = "rotate(" + fastToFixed(angle, 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + " " + fastToFixed((map.config.airplaneIconSize * 0.7 * 0.5), 1) + ")";
+        //             //this.svgElement.children[0].setAttribute("transform", rotation);
+        //         }
+        //     }
+        // }
         map.coordinatesToXYToRef(new LatLong(this.lat, this.lon), this._pos);
         if (isFinite(this._pos.x) && isFinite(this._pos.y)) {
             this.svgElement.setAttribute("x", fastToFixed((this._pos.x - this._size * 0.5), 1));
             this.svgElement.setAttribute("y", fastToFixed((this._pos.y - this._size * 0.5), 1));
         }
         if (this.useTCAS) {
+            // own ship alt is in feet
+            // other aircraft alt is in meter
+            let altitude = Simplane.getAltitude(); //map.planeAltitude;
             let altitudeAGL = map.planeAltitude;
-            let deltaAltitude = Math.abs(altitudeAGL - this.alt);
-            let distanceHorizontal = Avionics.Utils.computeDistance(new LatLong(this.lat, this.lon), map.planeCoordinates);
-            if (distanceHorizontal < 2 && altitudeAGL > 1000 && deltaAltitude < 800) {
+            let groundAlt = altitude - altitudeAGL;
+            let trafficAltFeet = this.alt * 3.281;
+            let deltaAltitudeTraffic = Math.abs(altitude - trafficAltFeet);
+            let distanceHorizontalTraffic = Avionics.Utils.computeDistance(new LatLong(this.lat, this.lon), map.planeCoordinates);
+
+            let trafficIsGround = (altitudeAGL < 1750) && (trafficAltFeet - groundAlt < 360) // ; ()
+            // TA/RA distance at fantasy values because we have no forward prediction right now
+            if (!trafficIsGround && distanceHorizontalTraffic < 1 && altitudeAGL > 500 && deltaAltitudeTraffic < 600) {
                 if (this._lastCase !== 0) {
                     // this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_RA_A320.svg");
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_RA.svg");
@@ -275,7 +286,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 0;
                 }
             }
-            else if (distanceHorizontal < 4 && altitudeAGL > 500 && deltaAltitude < 1000) {
+            else if (!trafficIsGround && distanceHorizontalTraffic < 3 && altitudeAGL > 500 && deltaAltitudeTraffic < 850) {
                 if (this._lastCase !== 1) {
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_TA.svg");
                     // this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_TA_A320.svg");
@@ -283,7 +294,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 1;
                 }
             }
-            else if (distanceHorizontal <= 6 && deltaAltitude <= 1200) {
+            else if (!trafficIsGround && distanceHorizontalTraffic < 6 && deltaAltitudeTraffic < 1200) {
                 if (this._lastCase !== 2) {
                     // this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_PROX_A320.svg");
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_PT.svg");
@@ -291,7 +302,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 2;
                 }
             }
-            else if (distanceHorizontal < 40) { //  && deltaAltitude < 2700?
+            else if (distanceHorizontalTraffic < 40) { //  && deltaAltitude < 2700?
                 if (this._lastCase !== 3) {
                     // this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_OTHER_A320.svg");
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_OT.svg");
@@ -308,4 +319,3 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         }
     }
 }
-//# sourceMappingURL=SvgAirplaneElement.js.map

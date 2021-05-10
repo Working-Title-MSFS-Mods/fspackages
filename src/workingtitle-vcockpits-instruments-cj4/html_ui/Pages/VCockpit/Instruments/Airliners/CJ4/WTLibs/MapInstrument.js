@@ -341,6 +341,7 @@ class MapInstrument extends ISvgMapRootElement {
             this.showTraffic = false;
             if (newValue === "true") {
                 this.showTraffic = true;
+                this.npcAirplaneManager.update(true);
             }
         } else if (lowercaseName === "show-constraints") {
             this.showConstraints = false;
@@ -531,7 +532,9 @@ class MapInstrument extends ISvgMapRootElement {
             this.rotation = this.rotationHandler.getRotation();
             this.drawCounter++;
             this.drawCounter %= 100;
-            this.npcAirplaneManager.update();
+            if (this.showTraffic) {
+                this.npcAirplaneManager.update();
+            }
             // if (this.showRoads && (this.getDisplayRange() <= Math.max(this.roadHighwayMaxRange, this.roadTrunkMaxRange, this.roadPrimaryMaxRange))) {
             //     let t0 = performance.now();
             //     while (this.roadsBuffer.length > 0 && (performance.now() - t0 < 1)) {
@@ -724,7 +727,7 @@ class MapInstrument extends ISvgMapRootElement {
 
                     if (this.showTraffic) {
                         // if (this.getDeclutteredRange() < this.npcAirplaneMaxRange) {
-                            this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
+                        this.navMap.mapElements.push(...this.npcAirplaneManager.npcAirplanes);
                         // }
                     }
                     if (this.bShowAirplane) {
