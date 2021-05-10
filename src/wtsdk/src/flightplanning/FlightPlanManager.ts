@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { FlightPlanSegment } from './FlightPlanSegment';
+import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { HoldDetails } from './HoldDetails';
 import { ManagedFlightPlan } from './ManagedFlightPlan';
@@ -897,13 +897,13 @@ export class FlightPlanManager {
    * @param index The index of the runway in the origin airport runway information.
    * @param callback A callback to call when the operation completes.
    */
-   public async setDepartureRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
+  public async setDepartureRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
-    if(currentFlightPlan.procedureDetails.departureIndex > -1 && index > -1){
-      const apt = currentFlightPlan.originAirfield.infos as AirportInfo;      
-      const rwyTrans = apt.departures[currentFlightPlan.procedureDetails.departureIndex].runwayTransitions 
-      if(rwyTrans !== undefined && rwyTrans.length-1 < index){
+    if (currentFlightPlan.procedureDetails.departureIndex > -1 && index > -1) {
+      const apt = currentFlightPlan.originAirfield.infos as AirportInfo;
+      const rwyTrans = apt.departures[currentFlightPlan.procedureDetails.departureIndex].runwayTransitions
+      if (rwyTrans !== undefined && rwyTrans.length - 1 < index) {
         callback();
         return;
       }
@@ -1184,6 +1184,15 @@ export class FlightPlanManager {
    * Attemptes to auto-activate the approach in the current flight plan.
    */
   public tryAutoActivateApproach() {
+  }
+
+  /**
+   * Returns a value indicating if we are in a approach/arrival segment. 
+   */
+  public isApproachActivated(): boolean {
+    const fpln = this.getCurrentFlightPlan();
+    const segment = fpln.findSegmentByWaypointIndex(fpln.activeWaypointIndex);
+    return segment.type === SegmentType.Approach || segment.type === SegmentType.Arrival;
   }
 
   /**
