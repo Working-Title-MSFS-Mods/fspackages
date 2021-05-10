@@ -430,7 +430,7 @@ as3000-tsc-horizontal-element #FlightPlan wt-tsc-flightplan {
     font-size: 5vh;
 }
 
-as3000-tsc-horizontal-element #ProceduresWT wt-tsc-procedures {
+as3000-tsc-horizontal-element #Procedures wt-tsc-procedures {
     position: absolute;
     left: 5%;
     top: 5%;
@@ -439,9 +439,9 @@ as3000-tsc-horizontal-element #ProceduresWT wt-tsc-procedures {
     font-size: 5vh;
 }
 
-as3000-tsc-horizontal-element #DepartureSelectionWT wt-tsc-departureselection,
-as3000-tsc-horizontal-element #ArrivalSelectionWT wt-tsc-arrivalselection,
-as3000-tsc-horizontal-element #ApproachSelectionWT wt-tsc-approachselection {
+as3000-tsc-horizontal-element #DepartureSelection wt-tsc-departureselection,
+as3000-tsc-horizontal-element #ArrivalSelection wt-tsc-arrivalselection,
+as3000-tsc-horizontal-element #ApproachSelection wt-tsc-approachselection {
     position: absolute;
     left: 1%;
     top: 0%;

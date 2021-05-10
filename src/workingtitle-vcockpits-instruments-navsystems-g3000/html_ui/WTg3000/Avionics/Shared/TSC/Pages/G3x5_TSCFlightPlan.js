@@ -308,7 +308,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _onProcButtonPressed(event) {
-        this._openPage("MFD", "ProceduresWT");
+        this._openPage("MFD", "Procedures");
     }
 
     /**
@@ -377,7 +377,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _onDepartureSelectButtonPressed(event) {
-        this._openPage("MFD", "Departure Selection WT");
+        this._openPage("MFD", "Departure Selection");
     }
 
     _onOriginRemoveButtonPressed(event) {
@@ -394,11 +394,11 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _onArrivalSelectButtonPressed(event) {
-        this._openPage("MFD", "Arrival Selection WT");
+        this._openPage("MFD", "Arrival Selection");
     }
 
     _onApproachSelectButtonPressed(event) {
-        this._openPage("MFD", "Approach Selection WT");
+        this._openPage("MFD", "Approach Selection");
     }
 
     _onDestinationRemoveButtonPressed(event) {
