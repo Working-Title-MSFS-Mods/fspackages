@@ -179,18 +179,10 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     rotateCCW() {
-        if (!this.selectedChart) {
-            return;
-        }
-
         this.rotationSetting.rotateCCW();
     }
 
     rotateCW() {
-        if (!this.selectedChart) {
-            return;
-        }
-
         this.rotationSetting.rotateCW();
     }
 
@@ -199,10 +191,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     changeZoom(delta) {
-        if (!this.selectedChart) {
-            return;
-        }
-
         this.zoomSetting.changeZoom(delta);
     }
 
@@ -215,15 +203,18 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {WT_GVector2} delta
      */
     scroll(delta) {
-        if (!this.selectedChart) {
-            return;
-        }
-
         WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, `${delta.x},${delta.y}`);
     }
 
     resetScroll() {
         WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET);
+    }
+
+    resetChartSettings() {
+        this.sectionSetting.setValue(WT_G3x5_ChartsModel.SectionMode.ALL);
+        this.resetRotation();
+        this.resetZoom();
+        this.resetScroll();
     }
 
     _findChart(id) {
@@ -287,7 +278,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
                     chartID = chart.id;
                 }
                 this._chartIDSetting.setValue(chartID);
-                this._resetChartSettings();
+                this.resetChartSettings();
             } else {
                 this._updateChartFromID(this._chartID);
             }
@@ -407,20 +398,13 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._hasMadeManualAirportSelection = true;
     }
 
-    _resetChartSettings() {
-        this.sectionSetting.setValue(WT_G3x5_ChartsModel.SectionMode.ALL);
-        this.resetRotation();
-        this.resetZoom();
-        this.resetScroll();
-    }
-
     /**
      *
      * @param {WT_NavigraphChartDefinition} chart
      */
     _onChartSelected(chart) {
         this._chartIDSetting.setValue(chart.id);
-        this._resetChartSettings();
+        this.resetChartSettings();
     }
 
     /**

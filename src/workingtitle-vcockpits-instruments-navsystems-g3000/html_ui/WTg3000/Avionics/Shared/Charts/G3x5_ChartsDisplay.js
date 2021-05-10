@@ -143,11 +143,15 @@ class WT_G3x5_ChartsDisplay {
     }
 
     _updateChartRotation() {
-        this.model.rotation = this._rotationSetting.getRotation();
+        if (this.model.chart) {
+            this.model.rotation = this._rotationSetting.getRotation();
+        }
     }
 
     _updateChartZoom() {
-        this.model.scaleFactor = this._zoomSetting.getScaleFactor();
+        if (this.model.chart) {
+            this.model.scaleFactor = this._zoomSetting.getScaleFactor();
+        }
     }
 
     _onChartIDSettingChanged(setting, newValue, oldValue) {
