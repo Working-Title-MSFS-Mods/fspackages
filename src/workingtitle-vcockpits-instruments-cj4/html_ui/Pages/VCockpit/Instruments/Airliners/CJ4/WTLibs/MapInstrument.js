@@ -987,24 +987,28 @@ class MapInstrument extends ISvgMapRootElement {
         const apprActive = SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "number") === 1;
         const todDistanceRemaining = SimVar.GetSimVarValue("L:WT_CJ4_TOD_REMAINING", "number");
         const advDesActive = SimVar.GetSimVarValue("L:WT_CJ4_ADV_DES_ACTIVE", "number") === 1;
-        if (!pathActive && !advDesActive && !apprActive && todDistanceRemaining > 0.1) {
-            if (this._todWaypoint === undefined) {
-                // create it
-                const waypoint = new WayPoint(this._instrument);
-                waypoint.type = 'W';
-                waypoint.isInFlightPlan = false;
-
-                waypoint.infos = new WayPointInfo(this._instrument);
-                waypoint.getSvgElement(this.navMap.index);
-                this._todWaypoint = waypoint;
-                this._todWaypoint.ident = "TOD";
-                this._todWaypoint.infos.ident = "TOD";
-            }
-
-            const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
-            const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
-            this._todWaypoint.infos.coordinates = todLLA;
-        } else {
+        try {
+            if (!pathActive && !advDesActive && !apprActive && todDistanceRemaining > 0.1) {
+                if (this._todWaypoint === undefined) {
+                    // create it
+                    const waypoint = new WayPoint(this._instrument);
+                    waypoint.type = 'W';
+                    waypoint.isInFlightPlan = false;
+    
+                    waypoint.infos = new WayPointInfo(this._instrument);
+                    waypoint.getSvgElement(this.navMap.index);
+                    this._todWaypoint = waypoint;
+                    this._todWaypoint.ident = "TOD";
+                    this._todWaypoint.infos.ident = "TOD";
+                }
+    
+                const todDist = SimVar.GetSimVarValue("L:WT_CJ4_TOD_DISTANCE", "number");
+                const todLLA = this.flightPlanManager.getCoordinatesAtNMFromDestinationAlongFlightPlan(todDist);
+                this._todWaypoint.infos.coordinates = todLLA;
+            } else {
+                this._todWaypoint = undefined;
+            }            
+        } catch (error) {
             this._todWaypoint = undefined;
         }
     }
