@@ -391,11 +391,15 @@ class WT_ICAOWaypointFactory {
     }
 
     /**
-     * Attempts to retrieve a waypoint for an ICAO string.
+     * Attempts to retrieve a waypoint for an ICAO string. Returns null if the provided ICAO string is invalid.
      * @param {String} icao - the ICAO string for which to retrieve a waypoint.
      * @returns {Promise<WT_ICAOWaypoint>} a Promise to return a waypoint.
      */
     async getWaypoint(icao) {
+        if (icao.length !== 12) {
+            return null;
+        }
+
         switch (WT_ICAOWaypoint.getICAOType(icao)) {
             case WT_ICAOWaypoint.Type.AIRPORT:
                 return this.getAirport(icao);
@@ -406,7 +410,7 @@ class WT_ICAOWaypointFactory {
             case WT_ICAOWaypoint.Type.INT:
                 return this.getINT(icao);
             default:
-                throw new Error(`Invalid ICAO string: ${icao}`);
+                return null;
         }
     }
 

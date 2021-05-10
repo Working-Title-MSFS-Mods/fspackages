@@ -58,13 +58,10 @@ class WT_FlightPlanAsoboInterface {
     async _getWaypointEntriesFromData(data, array) {
         for (let i = 0; i < data.length; i++) {
             let leg = data[i];
-            let waypoint = null;
-            try {
-                waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
-            } catch (e) {
-                if (leg.lla) {
-                    waypoint = new WT_FlightPathWaypoint(leg.ident, leg.lla);
-                }
+            let waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
+            if (!waypoint && leg.lla) {
+                // leg has an invalid ICAO string but valid lat/long coordinates, so we will create a flight path waypoint
+                waypoint = new WT_FlightPathWaypoint(leg.ident, leg.lla);
             }
             if (waypoint) {
                 if (waypoint instanceof WT_ICAOWaypoint && waypoint.location.distance(leg.lla) > 0.0001) {

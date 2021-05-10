@@ -135,6 +135,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     async _loadATCFlightPlan() {
+        // this pulls the flight plan that was set in the world map (if one exists) into the sim's built-in flight plan
         await Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
         await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
         await WT_Wait.awaitCallback(() => this.gameState === GameState.ingame, this);
@@ -174,14 +175,20 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this.icaoWaypointFactory.update();
     }
 
+    async _syncFlightPlanManagerFromAsobo() {
+        try {
+            // we need to sync the enroute segment from the sim's built-in flight plan once so that the system correctly
+            // loads in flight plans imported from the world map
+            await this.flightPlanManagerWT.syncActiveFromGame(this._needSyncEnrouteFromAsobo);
+            this._needSyncEnrouteFromAsobo = false;
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     _updateFlightPlanManager(currentTime) {
         if (currentTime - this.flightPlanManagerWT.lastActiveSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
-            try {
-                this.flightPlanManagerWT.syncActiveFromGame(this._needSyncEnrouteFromAsobo);
-                this._needSyncEnrouteFromAsobo = false;
-            } catch (e) {
-                console.log(e);
-            }
+            this._syncFlightPlanManagerFromAsobo();
         }
     }
 
