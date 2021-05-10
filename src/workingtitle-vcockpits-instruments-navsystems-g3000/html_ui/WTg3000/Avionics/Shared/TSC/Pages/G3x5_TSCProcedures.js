@@ -328,13 +328,16 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
      * @param {String} homePageGroup
      * @param {String} homePageName
      */
-    constructor(homePageGroup, homePageName, instrumentID) {
+    constructor(homePageGroup, homePageName, instrumentID, navigraphAPI) {
         super(homePageGroup, homePageName);
 
         this._instrumentID = instrumentID;
+        this._navigraphAPI = navigraphAPI;
 
         this._initState();
         this._initSettingModel();
+
+        this._chartRequestID = 0;
     }
 
     _initState() {
@@ -362,6 +365,14 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
      */
     get htmlElement() {
         return this._htmlElement;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_NavigraphAPI}
+     */
+    get navigraphAPI() {
+        return this._navigraphAPI;
     }
 
     _initHTMLElement() {
@@ -402,7 +413,9 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
 
     _deactivatePreview() {
         let paneSettings = this.instrument.getSelectedPaneSettings();
-        if (paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE) {
+        if ((paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE && this.htmlElement.isSelectedProcedureDisplayedOnMap) ||
+            (paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.CHARTS && this.htmlElement.isSelectedProcedureDisplayedOnChart)) {
+
             paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
         }
     }
@@ -412,6 +425,47 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCProcedureSelectionEvent} event
      */
     _activateMapPreview(event) {
+    }
+
+    /**
+     *
+     * @param {WT_NavigraphChartDefinition[]} charts
+     * @param {T} procedure
+     * @returns {WT_NavigraphChartDefinition}
+     */
+    _findChart(charts, procedure) {
+    }
+
+    /**
+     *
+     * @param {T} procedure
+     */
+    async _showChart(procedure) {
+        if (!procedure || !this.navigraphAPI.isAccountLinked) {
+            return;
+        }
+
+        let requestID = ++this._chartRequestID;
+
+        let charts = await this.navigraphAPI.getChartsList(procedure.airport.ident);
+        if (requestID !== this._chartRequestID || !charts) {
+            return;
+        }
+
+        let chart = this._findChart(charts.charts, procedure)
+        if (chart) {
+            let paneSettings = this.instrument.getSelectedPaneSettings();
+            paneSettings.chartID.setValue(chart.id);
+            paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.CHARTS);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCProcedureSelectionEvent} event
+     */
+    _activateChartPreview(event) {
+        this._showChart(event.procedure);
     }
 
     /**
@@ -434,6 +488,9 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
                 break;
             case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_MAP_SELECTED:
                 this._activateMapPreview(event);
+                break;
+            case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_CHART_SELECTED:
+                this._activateChartPreview(event);
                 break;
         }
     }
@@ -528,9 +585,15 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._isSelectedProcedureComplete = false;
         this._isSelectedProcedureLoaded = false;
         this._isSelectedProcedureDisplayedOnMap = false;
+        this._isSelectedProcedureDisplayedOnChart = false;
+        this._displayedChartID = "";
+        this._chartRequestID = 0;
+        this._displayedChart = null;
         this._procedureDisplayType = this._getProcedureDisplayType();
         this._isInit = false;
         this._isOpen = false;
+
+        this._chartIDSettingListener = this._onChartIDSettingChanged.bind(this);
 
         /**
          * @type {((event:WT_G3x5_TSCProcedureSelectionEvent) => void)[]}
@@ -611,6 +674,22 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
             }
         };
         this._altitudeFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isSelectedProcedureDisplayedOnMap() {
+        return this._isSelectedProcedureDisplayedOnMap;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isSelectedProcedureDisplayedOnChart() {
+        return this._isSelectedProcedureDisplayedOnChart;
     }
 
     async _defineChildren() {
@@ -877,12 +956,20 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     }
 
     _cleanUpFromPaneSettings() {
+        if (!this._paneSettings) {
+            return;
+        }
+
+        this._paneSettings.chartID.removeListener(this._chartIDSettingListener);
     }
 
     _updateFromPaneSettings() {
         if (!this._paneSettings) {
             return;
         }
+
+        this._paneSettings.chartID.addListener(this._chartIDSettingListener);
+        this._updateFromChartID();
     }
 
     /**
@@ -1022,6 +1109,32 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    async _updateChartFromID(id) {
+        let requestID = ++this._chartRequestID;
+        if (id === "") {
+            this._displayedChart = null;
+        } else {
+            let airportIdent = id.substr(0, 4);
+            let charts = await this._parentPage.navigraphAPI.getChartsList(airportIdent);
+            if (requestID !== this._chartRequestID) {
+                // superseded by a more recent update
+                return;
+            }
+
+            let chart = charts ? charts.charts.find(chart => chart.id === id) : null;
+            this._displayedChart = chart ? chart : null;
+        }
+    }
+
+    _updateFromChartID() {
+        this._displayedChartID = this._paneSettings.chartID.chartID;
+        this._updateChartFromID(this._displayedChartID);
+    }
+
+    _onChartIDSettingChanged(setting, newValue, oldValue) {
+        this._updateFromChartID();
+    }
+
     /**
      *
      * @param {WT_G3x5_TSCProcedureSelectionEvent} event
@@ -1155,6 +1268,8 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
     _getCurrentPreviewSelectionIndex() {
         if (this._isSelectedProcedureDisplayedOnMap) {
             return WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.MAP;
+        } else if (this._isSelectedProcedureDisplayedOnChart) {
+            return WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.CHART;
         } else {
             return WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.OFF;
         }
@@ -1172,7 +1287,17 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
                 if (this._isSelectedProcedureComplete) {
                     let event = {
                         source: this,
-                        type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_MAP_SELECTED,
+                        type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_MAP_SELECTED
+                    };
+                    this._fillSelectedProcedureDetails(event);
+                    this._notifyListeners(event);
+                }
+                break;
+            case WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode.CHART:
+                if (this._isSelectedProcedureComplete) {
+                    let event = {
+                        source: this,
+                        type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_CHART_SELECTED
                     };
                     this._fillSelectedProcedureDetails(event);
                     this._notifyListeners(event);
@@ -1325,6 +1450,21 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _checkIfChartsDisplayHasSelectedProcedure() {
+    }
+
+    _updateSelectedProcedureDisplayedOnChart() {
+        if (this._isSelectedProcedureComplete) {
+            this._isSelectedProcedureDisplayedOnChart = this._paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.CHARTS && this._checkIfChartsDisplayHasSelectedProcedure();
+        } else {
+            this._isSelectedProcedureDisplayedOnChart = false;
+        }
+    }
+
     _updateAirportButton(state) {
         this._airportButton.update(state.airplaneHeadingTrue);
     }
@@ -1339,6 +1479,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
 
     _doUpdate(state) {
         this._updateSelectedProcedureDisplayedOnMap();
+        this._updateSelectedProcedureDisplayedOnChart();
         this._updateAirportButton(state);
         this._updatePreviewButtonValue();
         this._sequenceList.scrollManager.update();
@@ -1361,11 +1502,13 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
  */
 WT_G3x5_TSCProcedureSelectionHTMLElement.PreviewMode = {
     OFF: 0,
-    MAP: 1
+    MAP: 1,
+    CHART: 2
 }
 WT_G3x5_TSCProcedureSelectionHTMLElement.PREVIEW_MODE_TEXT = [
     "Off",
-    "Show On Map"
+    "Show On Map",
+    "Show Chart"
 ];
 /**
  * @enum {Number}
@@ -1376,7 +1519,8 @@ WT_G3x5_TSCProcedureSelectionHTMLElement.EventType = {
     PROCEDURE_REMOVED: 2,
     APPROACH_ACTIVATED: 3,
     PREVIEW_OFF_SELECTED: 4,
-    PREVIEW_MAP_SELECTED: 5
+    PREVIEW_MAP_SELECTED: 5,
+    PREVIEW_CHART_SELECTED: 6
 };
 WT_G3x5_TSCProcedureSelectionHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCProcedureSelectionHTMLElement.UNIT_CLASS = "unit";
@@ -2150,6 +2294,16 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
             console.log(e);
         }
     }
+
+    /**
+     *
+     * @param {WT_NavigraphChartDefinition[]} charts
+     * @param {T} procedure
+     * @returns {WT_NavigraphChartDefinition}
+     */
+    _findChart(charts, procedure) {
+        return charts.find(chart => chart.type.section === "DEP" && chart.procedure_code[0] === procedure.name);
+    }
 }
 WT_G3x5_TSCDepartureSelection.FILTER_SETTING_KEY = "WT_DepartureSelection_Filter";
 WT_G3x5_TSCDepartureSelection.TITLE = "Departure Selection";
@@ -2301,6 +2455,17 @@ class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArriv
     _filterFlightPlanProcedureEvent(event) {
         return event.anyType(WT_FlightPlanEvent.Type.DEPARTURE_CHANGED);
     }
+
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _checkIfChartsDisplayHasSelectedProcedure() {
+        return this._displayedChart &&
+               this._selectedProcedure.airport.ident === this._displayedChart.icao_airport_identifier &&
+               this._displayedChart.type.section === "DEP" &&
+               this._displayedChart.procedure_code[0] === this._selectedProcedure.name;
+    }
 }
 WT_G3x5_TSCDepartureSelectionHTMLElement.NAME = "wt-tsc-departureselection";
 
@@ -2357,6 +2522,16 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
         } catch (e) {
             console.log(e);
         }
+    }
+
+    /**
+     *
+     * @param {WT_NavigraphChartDefinition[]} charts
+     * @param {T} procedure
+     * @returns {WT_NavigraphChartDefinition}
+     */
+    _findChart(charts, procedure) {
+        return charts.find(chart => chart.type.section === "ARR" && chart.procedure_code[0] === procedure.name);
     }
 }
 WT_G3x5_TSCArrivalSelection.FILTER_SETTING_KEY = "WT_ArrivalSelection_Filter";
@@ -2509,6 +2684,17 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
     _filterFlightPlanProcedureEvent(event) {
         return event.anyType(WT_FlightPlanEvent.Type.ARRIVAL_CHANGED);
     }
+
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _checkIfChartsDisplayHasSelectedProcedure() {
+        return this._displayedChart &&
+               this._selectedProcedure.airport.ident === this._displayedChart.icao_airport_identifier &&
+               this._displayedChart.type.section === "ARR" &&
+               this._displayedChart.procedure_code[0] === this._selectedProcedure.name;
+    }
 }
 WT_G3x5_TSCArrivalSelectionHTMLElement.NAME = "wt-tsc-arrivalselection";
 
@@ -2596,6 +2782,68 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
         paneSettings.display.setValue(WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE);
     }
 
+    /**
+     *
+     * @param {WT_Approach} procedure
+     * @returns {String}
+     */
+    _getProcedureChartCodePrefix(procedure) {
+        if (procedure) {
+            switch (procedure.type) {
+                case WT_Approach.Type.ILS_LOC:
+                case WT_Approach.Type.ILS:
+                    return "I";
+                case WT_Approach.Type.LOC:
+                    return "L";
+                case WT_Approach.Type.RNAV:
+                    return "R";
+                case WT_Approach.Type.VOR:
+                    return "VOR";
+            }
+        }
+        return "";
+    }
+
+    /**
+     *
+     * @param {WT_Approach} procedure
+     * @returns {String}
+     */
+    _getProcedureChartCodeSuffix(procedure) {
+        if (procedure) {
+            if (procedure.type === WT_Approach.Type.VOR) {
+                if (procedure.name.search(/ (A )|(A$)/) >= 0) {
+                    return "A";
+                } else if (procedure.name.search(/ (B )|(B$)/) >= 0) {
+                    return "B";
+                } else if (procedure.name.search(/ (C )|(C$)/) >= 0) {
+                    return "C";
+                }
+            } else {
+                if (procedure.name.search(/ (X )|(X$)/) >= 0) {
+                    return "X";
+                } else if (procedure.name.search(/ (Y )|(Y$)/) >= 0) {
+                    return "Y";
+                } else if (procedure.name.search(/ (Z )|(Z$)/) >= 0) {
+                    return "Z";
+                }
+            }
+        }
+        return "";
+    }
+
+    /**
+     *
+     * @param {WT_NavigraphChartDefinition[]} charts
+     * @param {WT_Approach} procedure
+     * @returns {WT_NavigraphChartDefinition}
+     */
+    _findChart(charts, procedure) {
+        let prefix = this._getProcedureChartCodePrefix(procedure);
+        let suffix = this._getProcedureChartCodeSuffix(procedure);
+        return charts.find(chart => chart.type.section === "APP" && chart.procedure_code.indexOf(`${prefix}${procedure.runway ? procedure.runway.designationFull : ""}${suffix}`) >= 0);
+    }
+
     async _activateApproach() {
         await this._fpm.activateApproach();
     }
@@ -2625,6 +2873,13 @@ WT_G3x5_TSCApproachSelection.TITLE = "Approach Selection";
  * @extends WT_G3x5_TSCProcedureSelectionHTMLElement<WT_Approach>
  */
 class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelectionHTMLElement {
+    constructor() {
+        super();
+
+        this._selectedProcedureChartCodePrefix = "";
+        this._selectedProcedureChartCodeSuffix = "";
+    }
+
     _getTemplate() {
         return WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE;
     }
@@ -2789,6 +3044,65 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
         return procedureSegment.transitionIndex;
     }
 
+    _updateProcedureChartCodePrefix() {
+        if (this._selectedProcedure) {
+            switch (this._selectedProcedure.type) {
+                case WT_Approach.Type.ILS_LOC:
+                case WT_Approach.Type.ILS:
+                    this._selectedProcedureChartCodePrefix = "I";
+                    break;
+                case WT_Approach.Type.LOC:
+                    this._selectedProcedureChartCodePrefix = "L";
+                    break;
+                case WT_Approach.Type.RNAV:
+                    this._selectedProcedureChartCodePrefix = "R";
+                    break;
+                case WT_Approach.Type.VOR:
+                    this._selectedProcedureChartCodePrefix = "VOR";
+                    break;
+                default:
+                    this._selectedProcedureChartCodePrefix = "";
+            }
+        } else {
+            this._selectedProcedureChartCodePrefix = "";
+        }
+    }
+
+    _updateProcedureChartCodeSuffix() {
+        if (this._selectedProcedure) {
+            if (this._selectedProcedure.type === WT_Approach.Type.VOR) {
+                if (this._selectedProcedure.name.search(/ (A )|(A$)/) >= 0) {
+                    this._selectedProcedureChartCodeSuffix = "A";
+                } else if (this._selectedProcedure.name.search(/ (B )|(B$)/) >= 0) {
+                    this._selectedProcedureChartCodeSuffix = "B";
+                } else if (this._selectedProcedure.name.search(/ (C )|(C$)/) >= 0) {
+                    this._selectedProcedureChartCodeSuffix = "C";
+                } else {
+                    this._selectedProcedureChartCodeSuffix = "";
+                }
+            } else {
+                if (this._selectedProcedure.name.search(/ (X )|(X$)/) >= 0) {
+                    this._selectedProcedureChartCodeSuffix = "X";
+                } else if (this._selectedProcedure.name.search(/ (Y )|(Y$)/) >= 0) {
+                    this._selectedProcedureChartCodeSuffix = "Y";
+                } else if (this._selectedProcedure.name.search(/ (Z )|(Z$)/) >= 0) {
+                    this._selectedProcedureChartCodeSuffix = "Z";
+                } else {
+                    this._selectedProcedureChartCodeSuffix = "";
+                }
+            }
+        } else {
+            this._selectedProcedureChartCodeSuffix = "";
+        }
+    }
+
+    _updateFromSelectedProcedure() {
+        super._updateFromSelectedProcedure();
+
+        this._updateProcedureChartCodePrefix();
+        this._updateProcedureChartCodeSuffix();
+    }
+
     /**
      *
      * @returns {Boolean}
@@ -2849,6 +3163,17 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
                this._procedureDisplayType === procedureDisplaySetting.procedureType &&
                this._selectedProcedure.index === procedureDisplaySetting.procedureIndex &&
                this._selectedTransitionIndex === procedureDisplaySetting.transitionIndex
+    }
+
+    /**
+     *
+     * @returns {Boolean}
+     */
+    _checkIfChartsDisplayHasSelectedProcedure() {
+        return this._displayedChart &&
+               this._selectedProcedure.airport.ident === this._displayedChart.icao_airport_identifier &&
+               this._displayedChart.type.section === "APP" &&
+               this._displayedChart.procedure_code.indexOf(`${this._selectedProcedureChartCodePrefix}${this._selectedProcedure.runway ? this._selectedProcedure.runway.designationFull : ""}${this._selectedProcedureChartCodeSuffix}`) >= 0;
     }
 
     _updateActivateButton(state) {

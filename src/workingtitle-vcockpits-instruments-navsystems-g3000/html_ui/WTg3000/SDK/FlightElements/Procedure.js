@@ -185,12 +185,22 @@ class WT_Approach extends WT_Procedure {
     }
 
     _initType(data) {
-        if (this.name.indexOf("ILS") >= 0) {
-            this._type = WT_Approach.Type.ILS_LOC;
-        } else if (this.name.indexOf("RNAV") >= 0) {
+        if (this.name.indexOf("RNAV") >= 0) {
             this._type = WT_Approach.Type.RNAV;
+        } else if (this.name.indexOf("VOR") >= 0) {
+            this._type = WT_Approach.Type.VOR;
         } else {
-            this._type = WT_Approach.Type.UNKNOWN;
+            let hasILS = this.name.indexOf("ILS") >= 0;
+            let hasLOC = this.name.indexOf("LOC") >= 0;
+            if (hasILS && hasLOC) {
+                this._type = WT_Approach.Type.ILS_LOC;
+            } else if (hasILS) {
+                this._type = WT_Approach.Type.ILS;
+            } else if (hasLOC) {
+                this._type = WT_Approach.Type.LOC;
+            } else {
+                this._type = WT_Approach.Type.UNKNOWN;
+            }
         }
     }
 
@@ -217,7 +227,7 @@ class WT_Approach extends WT_Procedure {
     }
 
     _initFrequency() {
-        if (this.type !== WT_Approach.Type.ILS_LOC || !this.runway) {
+        if (!(this.type === WT_Approach.Type.ILS_LOC || this.type === WT_Approach.Type.ILS || this.type === WT_Approach.Type.LOC) || !this.runway) {
             return;
         }
 
@@ -295,8 +305,11 @@ class WT_Approach extends WT_Procedure {
  */
 WT_Approach.Type = {
     UNKNOWN: 0,
-    ILS_LOC: 1,
-    RNAV: 2
+    ILS: 1,
+    LOC: 2,
+    ILS_LOC: 3,
+    RNAV: 4,
+    VOR: 5
 }
 
 /**

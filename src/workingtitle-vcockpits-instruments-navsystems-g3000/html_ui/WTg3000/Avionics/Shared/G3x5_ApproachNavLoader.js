@@ -25,14 +25,7 @@ class WT_G3x5_ApproachNavLoader {
      * @returns {Boolean}
      */
     _areApproachesEqual(appr1, appr2) {
-        if (!appr1 && !appr2) {
-            return true;
-        }
-        if (!appr1 !== !appr2) {
-            return false;
-        }
-
-        return appr1.airport.equals(appr2.airport) && appr1.name === appr2.name;
+        return (!appr1 && !appr2) || (appr1 && appr1.equals(appr2));
     }
 
     /**
@@ -68,7 +61,7 @@ class WT_G3x5_ApproachNavLoader {
             return false;
         }
 
-        return this._currentApproach.type === WT_Approach.Type.ILS_LOC;
+        return this._currentApproach.frequency !== undefined;
     }
 
     _updateApproachActivated() {
@@ -120,7 +113,7 @@ class WT_G3x5_ApproachNavLoader {
 
         if (isOnFinal !== this._isApproachOnFinal) {
             this._isApproachOnFinal = isOnFinal;
-            if (this._isApproachOnFinal && this._currentApproach.type === WT_Approach.Type.ILS_LOC) {
+            if (this._isApproachOnFinal && this._currentApproach.frequency) {
                 this._switchAutopilotToNav();
             }
         }
