@@ -376,7 +376,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     _openKeyboard() {
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), WT_ICAOWaypoint.Type.AIRPORT);
+        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), WT_ICAOWaypoint.getICAOPrefixFromType(WT_ICAOWaypoint.Type.AIRPORT));
         this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
     }
 
