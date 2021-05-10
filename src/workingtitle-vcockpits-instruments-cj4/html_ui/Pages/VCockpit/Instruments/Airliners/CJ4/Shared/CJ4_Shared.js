@@ -3339,7 +3339,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.symbolsToSimvar = true;
     }
     syncSymbols() {
-        this.map.instrument.showTraffic = (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? true : false;
+        this.map.instrument.setAttribute("show-traffic", (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? true : false);
         this.map.instrument.showConstraints = (this.symbols & (1 << CJ4_MapSymbol.CONSTRAINTS)) ? true : false;
         this.map.instrument.showAirspaces = (this.symbols & (1 << CJ4_MapSymbol.AIRSPACES)) ? true : false;
         this.map.instrument.showAirways = (this.symbols & (1 << CJ4_MapSymbol.AIRWAYS)) ? true : false;
@@ -3702,7 +3702,7 @@ class CJ4_MapInfo extends NavSystemElement {
     showSymbol(_symbol, _show) {
         switch (_symbol) {
             case CJ4_MapOverlaySymbol.TFC:
-                if(this.tfcIndicator){
+                if (this.tfcIndicator) {
                     this.tfcIndicator.style.display = _show ? '' : 'none';
                 }
                 break;
