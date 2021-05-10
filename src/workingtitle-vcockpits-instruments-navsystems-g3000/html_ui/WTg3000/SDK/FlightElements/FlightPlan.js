@@ -364,14 +364,16 @@ class WT_FlightPlan {
             let previous = legs[legs.length - 1];
             let previousEndpoint = previous ? previous.endpoint : null;
             let currentProcLeg = procedureLegs.get(i);
-            let nextProcLeg = procedureLegs.get(i + 1);
-            try {
-                let leg = await this._procedureLegFactory.create(currentProcLeg, previousEndpoint, nextProcLeg);
-                if (leg && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && leg.endpoint.equals(previousEndpoint))) {
-                    legs.push(leg);
+            if (currentProcLeg) {
+                let nextProcLeg = procedureLegs.get(i + 1);
+                try {
+                    let leg = await this._procedureLegFactory.create(currentProcLeg, previousEndpoint, nextProcLeg);
+                    if (leg && !(currentProcLeg.type === WT_ProcedureLeg.Type.INITIAL_FIX && leg.endpoint.equals(previousEndpoint))) {
+                        legs.push(leg);
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
-            } catch (e) {
-                console.log(e);
             }
         }
     }
