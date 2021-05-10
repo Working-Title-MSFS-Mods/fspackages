@@ -2134,7 +2134,7 @@ WT_G3x5_TSCDepartureArrivalSelectionHTMLElement.TEMPLATE.innerHTML = `
             display: grid;
             grid-template-rows: repeat(2, var(--procedureselection-toprow-height, 25%)) 1fr;
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: var(--procedureselection-grid-row-gap, 0.5em) var(--procedureselection-grid-column-gap, 0.2em);
+            grid-gap: var(--procedureselection-grid-row-gap, 0.25em) var(--procedureselection-grid-column-gap, 0.2em);
             color: white;
         }
             .selectionButton {
@@ -3203,7 +3203,7 @@ WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE.innerHTML = `
             display: grid;
             grid-template-rows: repeat(2, var(--procedureselection-toprow-height, 25%)) 1fr;
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: var(--procedureselection-grid-row-gap, 0.5em) var(--procedureselection-grid-column-gap, 0.2em);
+            grid-gap: var(--procedureselection-grid-row-gap, 0.25em) var(--procedureselection-grid-column-gap, 0.2em);
             color: white;
         }
             .selectionButton {
