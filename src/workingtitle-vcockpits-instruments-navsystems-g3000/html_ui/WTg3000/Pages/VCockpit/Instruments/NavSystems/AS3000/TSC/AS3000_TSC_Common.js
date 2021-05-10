@@ -71,6 +71,8 @@ class WT_G3x5_TSCPaneSettings {
         this._initControlSetting();
 
         this._initProcedureSetting();
+
+        this._settingModel.update();
     }
 
     /**
