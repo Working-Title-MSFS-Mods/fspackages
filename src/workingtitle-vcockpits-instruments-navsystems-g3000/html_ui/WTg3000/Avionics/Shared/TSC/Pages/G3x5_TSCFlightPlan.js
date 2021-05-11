@@ -2602,6 +2602,7 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     _updateFromActive() {
+        this._wrapper.setAttribute("active", `${this._isActive}`);
         this._waypointButton.active = `${this._isActive}`;
     }
 
@@ -2835,6 +2836,9 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
                     wt-navdatainfo-view {
                         height: auto;
                         --navdatainfo-justify-content: flex-end;
+                    }
+                    #wrapper[active="true"] wt-navdatainfo-view {
+                        --navdatainfo-value-color: var(--wt-g3x5-purple);
                     }
 
         .${WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS} {
