@@ -4,6 +4,8 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
         this._isModConfigLoaded = false;
 
+        this._currentTimeStamp = 0;
+
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._unitsSettingModel = new WT_G3x5_UnitsSettingModel();
         this._avionicsSystemSettingModel = new WT_G3x5_AvionicsSystemSettingModel();
@@ -22,6 +24,14 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
      */
     get modConfig() {
         return this._modConfig;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get currentTimeStamp() {
+        return this._currentTimeStamp;
     }
 
     /**
@@ -161,6 +171,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     Init() {
         super.Init();
 
+        this._currentTimeStamp = Date.now();
         this._initTime();
         this._initAirplane();
         this._initFlightPlanManager();
@@ -199,8 +210,8 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     onUpdate(deltaTime) {
-        let currentTime = Date.now();
-        this._doUpdates(currentTime);
+        this._currentTimeStamp = Date.now();
+        this._doUpdates(this._currentTimeStamp);
     }
 }
 WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL = 2000; // ms

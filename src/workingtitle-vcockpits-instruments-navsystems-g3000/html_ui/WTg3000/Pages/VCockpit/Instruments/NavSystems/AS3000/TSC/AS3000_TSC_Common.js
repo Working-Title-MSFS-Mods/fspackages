@@ -244,7 +244,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesRight.weatherRadar = new NavSystemPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 new NavSystemPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new NavSystemPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
-                new NavSystemPage("Flight Plan", "FlightPlan", new WT_G3x5_TSCFlightPlan("MFD", "MFD Home")),
+                new NavSystemPage("Flight Plan", "FlightPlan", new WT_G3x5_TSCFlightPlan("MFD", "MFD Home", this.instrumentIdentifier)),
                 new NavSystemPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
                 new NavSystemPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
                 new NavSystemPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
@@ -337,6 +337,9 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.waypointOptions = new NavSystemElementContainer("Waypoint Options", "WaypointOptions", new WT_G3x5_TSCWaypointOptions());
         this.waypointOptions.setGPS(this);
+
+        this.flightPlanOptions = new NavSystemElementContainer("Flight Plan Options", "FlightPlanOptions", new WT_G3x5_TSCFlightPlanOptions());
+        this.flightPlanOptions.setGPS(this);
 
         this.airwaySelection = new NavSystemElementContainer("Airway Selection", "AirwaySelection", new WT_G3x5_TSCAirwaySelection());
         this.airwaySelection.setGPS(this);
