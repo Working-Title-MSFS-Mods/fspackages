@@ -24,6 +24,15 @@ class WT_VFRMapPanel extends HTMLElement {
         this._lastTime = 0;
     }
 
+    /**
+     * The real-world time stamp of the current update cycle.
+     * @readonly
+     * @type {Number}
+     */
+    get currentTimeStamp() {
+        return this._currentTimeStamp;
+    }
+
     async _loadModConfig() {
         await WT_g3000_ModConfig.initialize();
         this._modConfigLoaded = true;
@@ -35,11 +44,11 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initAsoboMap() {
-        this._map = new WT_VFRMapAsobo(this.querySelector(`map-instrument`));
+        this._map = new WT_VFRMapAsobo(this, this.querySelector(`map-instrument`));
     }
 
     _initWTMap() {
-        this._map = new WT_VFRMapWT(this.querySelector(`map-view`));
+        this._map = new WT_VFRMapWT(this, this.querySelector(`map-view`));
     }
 
     _initMap() {
@@ -154,6 +163,7 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     onUpdate(deltaTime) {
+        this._currentTimeStamp = Date.now();
         try {
             this._updateMap(deltaTime);
             this._updateFollowPlane();
@@ -180,14 +190,22 @@ class WT_VFRMapPanel extends HTMLElement {
 WT_VFRMapPanel.FRAME_ID = "VFRMap_Frame";
 
 class WT_VFRMap {
-    constructor(htmlElement) {
+    constructor(vfrMapPanel, htmlElement) {
+        this._vfrMapPanel = vfrMapPanel;
         this._htmlElement = htmlElement;
         this._isReady = false;
     }
 
     /**
      * @readonly
-     * @property {HTMLElement} htmlElement
+     * @type {WT_VFRMapPanel}
+     */
+    get vfrMapPanel() {
+        return this._vfrMapPanel;
+    }
+
+    /**
+     * @readonly
      * @type {HTMLElement}
      */
     get htmlElement() {
@@ -196,7 +214,6 @@ class WT_VFRMap {
 
     /**
      * @readonly
-     * @property {Boolean} isReady
      * @type {Boolean}
      */
     get isReady() {
@@ -230,8 +247,8 @@ class WT_VFRMap {
 }
 
 class WT_VFRMapAsobo extends WT_VFRMap {
-    constructor(htmlElement) {
-        super(htmlElement);
+    constructor(vfrMapPanel, htmlElement) {
+        super(vfrMapPanel, htmlElement);
 
         TemplateElement.call(this.htmlElement, this._init.bind(this));
         this.htmlElement.minimizedIntersectionMaxRange = 45;
@@ -292,10 +309,10 @@ class WT_VFRMapAsobo extends WT_VFRMap {
 }
 
 class WT_VFRMapWT extends WT_VFRMap {
-    constructor(htmlElement) {
-        super(htmlElement);
+    constructor(vfrMapPanel, htmlElement) {
+        super(vfrMapPanel, htmlElement);
 
-        this._airplane = new WT_PlayerAirplane();
+        this._airplane = new WT_PlayerAirplane((() => this.vfrMapPanel.currentTimeStamp).bind(this));
 
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._icaoSearchers = {
