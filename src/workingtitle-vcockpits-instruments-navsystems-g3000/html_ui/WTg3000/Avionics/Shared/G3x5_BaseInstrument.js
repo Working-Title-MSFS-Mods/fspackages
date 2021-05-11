@@ -19,6 +19,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The g3000 mod's config settings.
      * @readonly
      * @type {WT_g3000_ModConfig}
      */
@@ -27,6 +28,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The real-world time stamp of the current update cycle.
      * @readonly
      * @type {Number}
      */
@@ -35,6 +37,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The in-sim time at the beginning of the current update cycle.
      * @readonly
      * @type {WT_TimeReadOnly}
      */
@@ -43,6 +46,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     /**
+     * The player airplane.
      * @readonly
      * @type {WT_PlayerAirplane}
      */
@@ -134,9 +138,9 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     _createAirplane() {
         switch (WT_PlayerAirplane.getAircraftType()) {
             case WT_PlayerAirplane.Type.TBM930:
-                return new WT_TBM930Airplane();
+                return new WT_TBM930Airplane((() => this.currentTimeStamp).bind(this));
             case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                return new WT_CitationLongitudeAirplane();
+                return new WT_CitationLongitudeAirplane((() => this.currentTimeStamp).bind(this));
         }
     }
 
