@@ -3244,6 +3244,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
         this.setWxRadarBug();
+        this.setTFCSpecificMapOverlays();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -3362,6 +3363,13 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
         }
     }
+    setTFCSpecificMapOverlays() {
+        let tfcTicks = document.querySelector("#tfcClockTicks");
+        if (tfcTicks) {
+            console.log("TFC" + this.isTfcVisible)
+            tfcTicks.style.display = (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? "" : "none";
+        }
+    }
 
     /**
      * Sets whether or not the map is visible.
@@ -3388,6 +3396,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     refreshLayout() {
 
         this.setWxRadarBug();
+        this.setTFCSpecificMapOverlays();
         if (this.isMapVisible) {
             this.map.instrument.setAttribute('style', '');
 
