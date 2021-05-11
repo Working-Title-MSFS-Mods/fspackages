@@ -1711,8 +1711,8 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
       font-size: 5vh; }
 
     as3000-tsc-horizontal-element #Electricity .dynamicSelectionListWindow wt-tsc-selectionlist {
-        width: 50%;
-        left: 25%;
+        width: 70%;
+        left: 15%;
         height: 80%;
         bottom: 5%;
     }
@@ -1959,6 +1959,23 @@ as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-map
     top: 20%;
     width: 70%;
     height: 50%;
+    font-size: 5vh;
+}
+
+as3000-tsc-horizontal-element #FlightPlanOptions wt-tsc-flightplanoptions {
+    position: absolute;
+    left: 2%;
+    top: 10%;
+    width: 96%;
+    height: 90%;
+    font-size: 5vh;
+}
+as3000-tsc-horizontal-element #FlightPlanDataFields wt-tsc-flightplandatafields {
+    position: absolute;
+    left: 20%;
+    top: 25%;
+    width: 60%;
+    height: 60%;
     font-size: 5vh;
 }
 

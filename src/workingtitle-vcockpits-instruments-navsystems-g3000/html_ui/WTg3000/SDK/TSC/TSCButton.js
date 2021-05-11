@@ -353,8 +353,8 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
             #labelbox {
                 position: absolute;
                 width: 100%;
-                top: 5%;
-                height: 40%;
+                top: var(--button-value-label-top, 5%);
+                height: var(--button-value-label-height, 40%);
             }
         `;
     }
@@ -364,8 +364,8 @@ class WT_TSCValueButton extends WT_TSCLabeledButton {
             #valuebox {
                 position: absolute;
                 width: 100%;
-                top: 55%;
-                height: 40%;
+                top: var(--button-value-value-top, 55%);
+                height: var(--button-value-value-height, 40%);
             }
         `;
     }

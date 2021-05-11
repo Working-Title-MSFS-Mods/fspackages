@@ -3,19 +3,26 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {String} homePageGroup
      * @param {String} homePageName
      */
-    constructor(homePageGroup, homePageName) {
+    constructor(homePageGroup, homePageName, instrumentID) {
         super(homePageGroup, homePageName);
+
+        this._instrumentID = instrumentID;
 
         /**
          * @type {WT_G3x5_TSCFlightPlanState}
          */
         this._state = {
             _unitsModel: null,
+            _settings: null,
             _airplaneHeadingTrue: 0,
             _activeLeg: null,
 
             get unitsModel() {
                 return this._unitsModel;
+            },
+
+            get settings() {
+                return this._settings;
             },
 
             get airplaneHeadingTrue() {
@@ -29,15 +36,22 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
         this._drctWaypoint = null;
 
-        this._initSettingModel();
+        this._initSettings();
     }
 
-    _initSettingModel() {
-        this._settingModel = new WT_DataStoreSettingModel(WT_G3x5_TSCFlightPlan.SETTING_MODEL_ID);
+    _initSettings() {
+        this._settings = new WT_G3x5_TSCFlightPlanSettings(this._instrumentID);
+        this._settings.init();
 
-        this._settingModel.addSetting(this._newAirwayCollapseSetting = new WT_DataStoreSetting(this._settingModel, WT_G3x5_TSCFlightPlan.NEW_AIRWAY_COLLAPSE_SETTING_KEY, true, false, true));
+        this._state._settings = this._settings;
+    }
 
-        this._settingModel.init();
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCFlightPlanSettings}
+     */
+    get settings() {
+        return this._settings;
     }
 
     /**
@@ -46,14 +60,6 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     get htmlElement() {
         return this._htmlElement;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_DataStoreSetting}
-     */
-    get newAirwayCollapseSetting() {
-        return this._newAirwayCollapseSetting;
     }
 
     _createHTMLElement() {
@@ -271,6 +277,15 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
+    _openFlightPlanOptionsPopUp() {
+        this.instrument.flightPlanOptions.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            settings: this.settings
+        });
+        this.instrument.switchToPopUpPage(this.instrument.flightPlanOptions);
+    }
+
     /**
      *
      * @param {WT_FlightPlanLeg} leg
@@ -309,6 +324,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _onProcButtonPressed(event) {
         this._openPage("MFD", "Procedures");
+    }
+
+    _onFlightPlanOptionsButtonPressed(event) {
+        this._openFlightPlanOptionsPopUp();
     }
 
     /**
@@ -518,6 +537,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.PROC:
                 this._onProcButtonPressed(event);
                 break;
+            case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.FLIGHT_PLAN_OPTIONS:
+                this._onFlightPlanOptionsButtonPressed(event);
+                break;
             case WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.HEADER:
                 this._onHeaderButtonPressed(event);
                 break;
@@ -644,12 +666,12 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 }
 WT_G3x5_TSCFlightPlan.SETTING_MODEL_ID = "GTC";
-WT_G3x5_TSCFlightPlan.NEW_AIRWAY_COLLAPSE_SETTING_KEY = "WT_FlightPlan_NewAirway_Collapse"
 WT_G3x5_TSCFlightPlan.TITLE = "Active Flight Plan";
 
 /**
  * @typedef WT_G3x5_TSCFlightPlanState
  * @property {readonly WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+ * @property {readonly WT_G3x5_TSCFlightPlanSettings} settings
  * @property {readonly Number} airplaneHeadingTrue
  * @property {readonly WT_FlightPlanLeg} activeLeg
  */
@@ -701,6 +723,92 @@ class WT_G3x5_TSCFlightPlanUnitsModel extends WT_G3x5_UnitsSettingModelAdapter {
         this._altitudeUnit = this.unitsSettingModel.altitudeSetting.getAltitudeUnit();
     }
 }
+
+class WT_G3x5_TSCFlightPlanDataFieldSetting extends WT_DataStoreSetting {
+    /**
+     * @param {WT_DataStoreSettingModel} model
+     * @param {Number} index
+     * @param {WT_G3x5_TSCFlightPlanDataFieldSetting.Mode} defaultValue
+     */
+    constructor(model, index, defaultValue) {
+        super(model, `${WT_G3x5_TSCFlightPlanDataFieldSetting.KEY}_${index}`, defaultValue, true, true);
+
+        this._mode = this.getValue();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCFlightPlanDataFieldSetting.Mode}
+     */
+    get mode() {
+        return this._mode;
+    }
+
+    update() {
+        this._mode = this.getValue();
+    }
+}
+WT_G3x5_TSCFlightPlanDataFieldSetting.KEY = "WT_FlightPlan_DataField";
+/**
+ * @enum {Number}
+ */
+WT_G3x5_TSCFlightPlanDataFieldSetting.Mode = {
+    CUM: 0,
+    DIS: 1,
+    DTK: 2,
+    ETA: 3,
+    ETE: 4,
+    FUEL: 5
+};
+
+class WT_G3x5_TSCFlightPlanSettings {
+    constructor(instrumentID) {
+        this._instrumentID = instrumentID;
+
+        this._initSettings();
+    }
+
+    _initDataFieldSettings() {
+        this._dataFieldSettings = new WT_ReadOnlyArray([...Array(2)].map((value, index) => new WT_G3x5_TSCFlightPlanDataFieldSetting(this._settingModel, index, WT_G3x5_TSCFlightPlanSettings.DATA_FIELD_DEFAULT_VALUES[index]), this));
+    }
+
+    _initNewAirwayCollapseSetting() {
+        this._newAirwayCollapseSetting = new WT_DataStoreSetting(this._settingModel, WT_G3x5_TSCFlightPlanSettings.NEW_AIRWAY_COLLAPSE_KEY, true, false, true)
+    }
+
+    _initSettings() {
+        this._settingModel = new WT_DataStoreSettingModel(this._instrumentID);
+
+        this._initDataFieldSettings();
+        this._initNewAirwayCollapseSetting();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_ReadOnlyArray<WT_G3x5_TSCFlightPlanDataFieldSetting>}
+     */
+    get dataFieldSettings() {
+        return this._dataFieldSettings;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_DataStoreSetting}
+     */
+    get newAirwayCollapseSetting() {
+        return this._newAirwayCollapseSetting;
+    }
+
+    init() {
+        this.dataFieldSettings.forEach(setting => setting.init());
+        this.newAirwayCollapseSetting.init();
+    }
+}
+WT_G3x5_TSCFlightPlanSettings.DATA_FIELD_DEFAULT_VALUES = [
+    WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.DTK,
+    WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.DIS
+];
+WT_G3x5_TSCFlightPlanSettings.NEW_AIRWAY_COLLAPSE_KEY = "WT_FlightPlan_NewAirway_Collapse";
 
 class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     constructor() {
@@ -826,15 +934,18 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
         this._nameTitle = this.shadowRoot.querySelector(`#nametitle`);
+        this._dataFieldTitle = this.shadowRoot.querySelector(`#datafieldtitle`);
 
         [
             this._drctButton,
             this._procButton,
+            this._flightPlanOptionsButton,
             this._rows,
             this._banner
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#drct`, WT_TSCImageButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#proc`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#fplnoptions`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#rows`, WT_TSCScrollList),
             WT_CustomElementSelector.select(this.shadowRoot, `#banner`, WT_TSCSlidingBanner),
             this._defineOriginBannerButtons(),
@@ -856,6 +967,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._procButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._procButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.PROC
+        }));
+        this._flightPlanOptionsButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._flightPlanOptionsButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.FLIGHT_PLAN_OPTIONS
         }));
     }
 
@@ -928,7 +1043,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     }
 
     _initRowRecycler() {
-        this._rowRecycler = new WT_CustomHTMLElementRecycler(this._rowsContainer, WT_G3x5_TSCFlightPlanRowHTMLElement);
+        this._rowRecycler = new WT_CustomHTMLElementRecycler(this._rowsContainer, WT_G3x5_TSCFlightPlanRowHTMLElement, (element => element.setParentPage(this.parentPage)).bind(this));
     }
 
     async _connectedCallbackHelper() {
@@ -961,12 +1076,18 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             homePageGroup: this.parentPage.homePageGroup,
             homePageName: this.parentPage.homePageName
         };
-        this._airwayLoadNewButtonManager = new WT_TSCSettingValueButtonManager(this.parentPage.instrument, this._airwayLoadNewButton, this.parentPage.newAirwayCollapseSetting, this.parentPage.instrument.selectionListWindow1, context, value => value ? "Collapsed" : "Expanded", [false, true]);
+        this._airwayLoadNewButtonManager = new WT_TSCSettingValueButtonManager(this.parentPage.instrument, this._airwayLoadNewButton, this.parentPage.settings.newAirwayCollapseSetting, this.parentPage.instrument.selectionListWindow1, context, value => value ? "Collapsed" : "Expanded", [false, true]);
         this._airwayLoadNewButtonManager.init();
+    }
+
+    _initSettingListeners() {
+        this._parentPage.settings.dataFieldSettings.forEach((setting, index) => setting.addListener(this._onDataFieldSettingChanged.bind(this, index)));
+        this._updateDataFieldTitle();
     }
 
     _updateFromParentPage() {
         this._initAirwayLoadNewButtonManager();
+        this._initSettingListeners();
     }
 
     /**
@@ -982,6 +1103,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         if (this._isInit) {
             this._updateFromParentPage();
         }
+    }
+
+    _cleanUpFlightPlanRenderer() {
+        this._flightPlanRenderer = null;
     }
 
     _cleanUpFlightPlanListener() {
@@ -1004,6 +1129,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             return;
         }
 
+        this._cleanUpFlightPlanRenderer();
         this._cleanUpFlightPlanListener();
         this._cleanUpHeader();
         this._cleanUpRows();
@@ -1240,7 +1366,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     getAirwaySequenceCollapse(airwaySequence) {
         let value = this._airwayCollapseMap.get(airwaySequence);
         if (value === undefined) {
-            value = this._parentPage.newAirwayCollapseSetting.getValue();
+            value = this._parentPage.settings.newAirwayCollapseSetting.getValue();
             this._airwayCollapseMap.set(airwaySequence, value);
         }
         return value;
@@ -1315,6 +1441,15 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         } else {
             this._flightPlanRenderer.updateAltitudeConstraint(event.changedConstraint.leg);
         }
+    }
+
+    _updateDataFieldTitle() {
+        let dataFieldSettings = this.parentPage.settings.dataFieldSettings;
+        this._dataFieldTitle.textContent = `${WT_G3x5_TSCFlightPlanHTMLElement.DATA_FIELD_MODE_TEXTS[dataFieldSettings.get(0).mode]}/${WT_G3x5_TSCFlightPlanHTMLElement.DATA_FIELD_MODE_TEXTS[dataFieldSettings.get(1).mode]}`;
+    }
+
+    _onDataFieldSettingChanged(index, setting, newValue, oldValue) {
+        this._updateDataFieldTitle();
     }
 
     _notifyButtonListeners(event) {
@@ -1489,6 +1624,14 @@ WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType = {
     AIRWAY_REMOVE: 30,
     AIRWAY_EDIT: 31
 };
+WT_G3x5_TSCFlightPlanHTMLElement.DATA_FIELD_MODE_TEXTS = [
+    "CUM",
+    "DIS",
+    "DTK",
+    "ETA",
+    "ETE",
+    "FUEL"
+];
 WT_G3x5_TSCFlightPlanHTMLElement.NAME = "wt-tsc-flightplan";
 WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE = document.createElement("template");
 WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
@@ -1703,14 +1846,14 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                 <wt-tsc-button-label id="proc" labeltext="PROC"></wt-tsc-button-label>
                 <wt-tsc-button-label id="stdbyfpln" labeltext="Standby Flight Plan" enabled="false"></wt-tsc-button-label>
                 <wt-tsc-button-label id="vnav" labeltext="VNAV" enabled="false"></wt-tsc-button-label>
-                <wt-tsc-button-label id="fplnoptions" labeltext="Flight Plan Options" enabled="false"></wt-tsc-button-label>
+                <wt-tsc-button-label id="fplnoptions" labeltext="Flight Plan Options"></wt-tsc-button-label>
             </div>
             <div id="tablecontainer">
                 <div id="table">
                     <div id="header">
                         <div id="nametitle">______/______</div>
                         <div id="alttitle">ALT</div>
-                        <div id="dtkdistitle">DTK/DIS</div>
+                        <div id="datafieldtitle"></div>
                     </div>
                     <wt-tsc-scrolllist id="rows">
                         <div id="scrollcontainer" slot="content">
@@ -1805,31 +1948,31 @@ class WT_G3x5_TSCFlightPlanRowHTMLElement extends HTMLElement {
     }
 
     _initLeg() {
-        let leg = new WT_G3x5_TSCFlightPlanRowLegHTMLElement();
-        leg.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG];
-        leg.classList.add("mode");
-        this._modeHTMLElements.push(leg);
+        this._leg = new WT_G3x5_TSCFlightPlanRowLegHTMLElement();
+        this._leg.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG];
+        this._leg.classList.add("mode");
+        this._modeHTMLElements.push(this._leg);
     }
 
     _initHeader() {
-        let header = new WT_G3x5_TSCFlightPlanRowHeaderHTMLElement();
-        header.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.HEADER];
-        header.classList.add("mode");
-        this._modeHTMLElements.push(header);
+        this._header = new WT_G3x5_TSCFlightPlanRowHeaderHTMLElement();
+        this._header.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.HEADER];
+        this._header.classList.add("mode");
+        this._modeHTMLElements.push(this._header);
     }
 
     _initEnrouteFooter() {
-        let enrouteFooter = new WT_G3x5_TSCFlightPlanRowEnrouteFooterHTMLElement();
-        enrouteFooter.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.ENROUTE_FOOTER];
-        enrouteFooter.classList.add("mode");
-        this._modeHTMLElements.push(enrouteFooter);
+        this._enrouteFooter = new WT_G3x5_TSCFlightPlanRowEnrouteFooterHTMLElement();
+        this._enrouteFooter.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.ENROUTE_FOOTER];
+        this._enrouteFooter.classList.add("mode");
+        this._modeHTMLElements.push(this._enrouteFooter);
     }
 
     _initAirwayFooter() {
-        let airwayFooter = new WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement();
-        airwayFooter.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.AIRWAY_FOOTER];
-        airwayFooter.classList.add("mode");
-        this._modeHTMLElements.push(airwayFooter);
+        this._airwayFooter = new WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement();
+        this._airwayFooter.id = WT_G3x5_TSCFlightPlanRowHTMLElement.MODE_IDS[WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.AIRWAY_FOOTER];
+        this._airwayFooter.classList.add("mode");
+        this._modeHTMLElements.push(this._airwayFooter);
     }
 
     _initChildren() {
@@ -1887,6 +2030,24 @@ class WT_G3x5_TSCFlightPlanRowHTMLElement extends HTMLElement {
 
     connectedCallback() {
         this._connectedCallbackHelper();
+    }
+
+    _initFromParentPage() {
+        this._leg.setInstrument(this._parentPage.instrument);
+        this._airwayFooter.setInstrument(this._parentPage.instrument);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlan} parentPage
+     */
+    setParentPage(parentPage) {
+        if (!parentPage || this._parentPage) {
+            return;
+        }
+
+        this._parentPage = parentPage;
+        this._initFromParentPage();
     }
 
     /**
@@ -2149,8 +2310,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
-        this._initFormatters();
-
+        /**
+         * @type {AS3000_TSC}
+         */
+        this._instrument = null;
         /**
          * @type {WT_FlightPlanLeg}
          */
@@ -2158,46 +2321,20 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._bearingUnit = null;
         this._distanceUnit = null;
         this._altitudeUnit = null;
+        this._dataFieldModes = WT_G3x5_TSCFlightPlanSettings.DATA_FIELD_DEFAULT_VALUES.slice();
+        this._dataFieldIsDynamic = this._dataFieldModes.map(this._isDataFieldModeDynamic.bind(this));
+        this._dataFieldLastUpdateTimes = this._dataFieldModes.map(() => 0);
+
         this._isActive = false;
         this._isInit = false;
+
+        this._tempNM = WT_Unit.NMILE.createNumber(0);
+        this._tempKnots = WT_Unit.KNOT.createNumber(0);
+        this._tempGPH = WT_Unit.GPH.createNumber(0);
     }
 
     _getTemplate() {
         return WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE;
-    }
-
-    _initDTKFormatter() {
-        this._dtkFormatter = new WT_NumberFormatter({
-            precision: 1,
-            unitSpaceBefore: false
-        });
-    }
-
-    _initDistanceFormatter() {
-        let formatterOpts = {
-            precision: 0.1,
-            maxDigits: 3,
-            unitCaps: true
-        };
-        let htmlFormatterOpts = {
-            numberUnitDelim: "",
-            classGetter: {
-                _numberClassList: [],
-                _unitClassList: [WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS],
-                getNumberClassList() {
-                    return this._numberClassList;
-                },
-                getUnitClassList() {
-                    return this._unitClassList;
-                }
-            }
-        };
-        this._distanceFormatter = new WT_NumberHTMLFormatter(new WT_NumberFormatter(formatterOpts), htmlFormatterOpts);
-    }
-
-    _initFormatters() {
-        this._initDistanceFormatter();
-        this._initDTKFormatter();
     }
 
     /**
@@ -2219,16 +2356,19 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     async _defineChildren() {
         this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
 
-        this._dtkDisplay = this.shadowRoot.querySelector(`#dtk`);
-        this._distanceDisplay = this.shadowRoot.querySelector(`#dis`);
         [
             this._waypointButton,
             this._altitudeConstraintButton,
-            this._altitudeConstraint
+            this._altitudeConstraint,
+            this._dataFieldViews
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#waypoint`, WT_G3x5_TSCFlightPlanWaypointButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#altconstraintbutton`, WT_TSCContentButton),
-            WT_CustomElementSelector.select(this.shadowRoot, `#altconstraint`, WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement)
+            WT_CustomElementSelector.select(this.shadowRoot, `#altconstraint`, WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement),
+            Promise.all([
+                WT_CustomElementSelector.select(this.shadowRoot, `#datafield1`, WT_G3x5_NavDataInfoView),
+                WT_CustomElementSelector.select(this.shadowRoot, `#datafield2`, WT_G3x5_NavDataInfoView)
+            ])
         ]);
     }
 
@@ -2248,20 +2388,160 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._connectedCallbackHelper();
     }
 
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateCumulativeDistance(value) {
+        value.set(this.leg ? this.leg.cumulativeDistance : NaN);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateLegDistance(value) {
+        value.set(this.leg ? this.leg.distance : NaN);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateDTK(value) {
+        if (this.leg) {
+            value.unit.setLocation(this.leg.desiredTrack.unit.location);
+            value.set(this.leg.desiredTrack);
+        } else {
+            value.set(NaN);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_Time} time
+     */
+    _updateETA(time) {
+        if (this.leg) {
+            let fpm = this._instrument.flightPlanManagerWT;
+            let activeLeg = fpm.getActiveLeg(true);
+            if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
+                let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
+                if (speedKnots > 0) {
+                    let ete = distanceNM / speedKnots;
+                    time.set(this._instrument.time);
+                    time.add(ete, WT_Unit.HOUR);
+                    return;
+                }
+            }
+        }
+        time.set(NaN);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateETE(value) {
+        if (this.leg) {
+            let distanceNM = this.leg.distance.asUnit(WT_Unit.NMILE);
+            let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
+            value.set(speedKnots > 0 ? (distanceNM / speedKnots) : NaN, WT_Unit.HOUR);
+        } else {
+            value.set(NaN);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateFuelToDestination(value) {
+        if (this.leg) {
+            let distanceToDestinationNM = this.leg.flightPlan.legs.last().cumulativeDistance.asUnit(WT_Unit.NMILE) - this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE);
+            let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
+            let fuelFlowGPH = this._instrument.airplane.engineering.fuelFlowTotal(this._tempGPH).number;
+            value.set((speedKnots > 0 && fuelFlowGPH > 0) ? (distanceToDestinationNM / speedKnots * fuelFlowGPH) : NaN, WT_Unit.GALLON);
+        } else {
+            value.set(NaN);
+        }
+    }
+
+    _initNavDataInfos() {
+        this._navDataInfos = [
+            new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "CUM"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {updateValue: this._updateCumulativeDistance.bind(this)})),
+            new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "DIS"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {updateValue: this._updateLegDistance.bind(this)})),
+            new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "DTK"}, new WT_NumberUnitModelAutoUpdated(new WT_NavAngleUnit(true), {updateValue: this._updateDTK.bind(this)})),
+            new WT_G3x5_NavDataInfoTime({shortName: "", longName: "ETA"}, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {updateTime: this._updateETA.bind(this)}), this._instrument.avionicsSystemSettingModel.timeFormatSetting, this._instrument.avionicsSystemSettingModel.timeLocalOffsetSetting)),
+            new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "ETE"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {updateValue: this._updateETE.bind(this)})),
+            new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "FUEL"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON, {updateValue: this._updateFuelToDestination.bind(this)}))
+        ];
+    }
+
+    _initNavDataFormatters() {
+        let bearingOpts = {
+            precision: 1,
+            unitSpaceBefore: false
+        };
+        let bearingFormatter = new WT_NumberFormatter(bearingOpts);
+
+        let distanceOpts = {
+            precision: 0.1,
+            maxDigits: 3,
+            unitSpaceBefore: false,
+            unitCaps: true
+        }
+        let distanceFormatter = new WT_NumberFormatter(distanceOpts);
+
+        let volumeOpts = {
+            precision: 0.1,
+            maxDigits: 3,
+            unitSpaceBefore: false,
+            unitCaps: true
+        }
+        let volumeFormatter = new WT_NumberFormatter(volumeOpts);
+
+        let durationOpts = {
+            timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
+            delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
+        }
+        let durationFormatter = new WT_TimeFormatter(durationOpts);
+
+        this._navDataFormatters = [
+            new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
+            new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter),
+            new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter),
+            new WT_G3x5_NavDataInfoViewTimeFormatter(),
+            new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__"),
+            new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter)
+        ];
+    }
+
+    _initFromInstrument() {
+        this._initNavDataInfos();
+        this._initNavDataFormatters();
+    }
+
+    /**
+     *
+     * @param {AS3000_TSC} instrument
+     */
+    setInstrument(instrument) {
+        if (!instrument || this._instrument) {
+            return;
+        }
+
+        this._instrument = instrument;
+        this._initFromInstrument();
+    }
+
     _clearWaypointButton() {
         this._waypointButton.setWaypoint(null);
     }
 
     _clearAltitudeConstraint() {
         this._altitudeConstraint.update(null, this._altitudeUnit);
-    }
-
-    _clearDTK() {
-        this._dtkDisplay.textContent = "";
-    }
-
-    _clearDistance() {
-        this._distanceDisplay.innerHTML = "";
     }
 
     _clearAirway() {
@@ -2276,13 +2556,21 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._altitudeConstraint.update(this._leg.altitudeConstraint, this._altitudeUnit);
     }
 
-    _updateDTKFromLeg() {
-        let dtk = this._leg.desiredTrack;
-        this._dtkDisplay.textContent = `${dtk.isNaN() ? "___" : this._dtkFormatter.getFormattedNumber(dtk, this._bearingUnit)}${this._dtkFormatter.getFormattedUnit(dtk, this._bearingUnit)}`;
+    /**
+     *
+     * @param {Number} index
+     */
+    _updateDataFieldFromLeg(index) {
+        let view = this._dataFieldViews[index];
+        let mode = this._dataFieldModes[index];
+        view.update(this._navDataInfos[mode], this._navDataFormatters[mode]);
+        this._dataFieldLastUpdateTimes[index] = this._instrument.currentTimeStamp;
     }
 
-    _updateDistanceFromLeg() {
-        this._distanceDisplay.innerHTML = this._distanceFormatter.getFormattedHTML(this._leg.distance, this._distanceUnit);
+    _updateDataFieldsFromLeg() {
+        for (let i = 0; i < this._dataFieldViews.length; i++) {
+            this._updateDataFieldFromLeg(i);
+        }
     }
 
     _updateAirwayFromLeg() {
@@ -2293,16 +2581,13 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         if (this._leg) {
             this._updateWaypointFromLeg();
             this._updateAltitudeConstraintFromLeg();
-            this._updateDTKFromLeg();
-            this._updateDistanceFromLeg();
             this._updateAirwayFromLeg();
         } else {
             this._clearWaypointButton();
             this._clearAltitudeConstraint();
-            this._clearDTK();
-            this._clearDistance();
             this._clearAirway();
         }
+        this._updateDataFieldsFromLeg();
     }
 
     /**
@@ -2386,16 +2671,81 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     /**
      *
      * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+     * @returns {Boolean}
      */
-    _updateUnits(unitsModel) {
+    _updateDataFieldUnits(unitsModel) {
+        let updated = false;
         if (!unitsModel.bearingUnit.equals(this._bearingUnit)) {
             this._bearingUnit = unitsModel.bearingUnit;
-            this._updateDTKFromLeg();
+            this._navDataInfos[WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.DTK].setDisplayUnit(this._bearingUnit);
+            updated = true;
         }
         if (!unitsModel.distanceUnit.equals(this._distanceUnit)) {
             this._distanceUnit = unitsModel.distanceUnit;
-            this._updateDistanceFromLeg();
+            this._navDataInfos[WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.CUM].setDisplayUnit(this._distanceUnit);
+            this._navDataInfos[WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.DIS].setDisplayUnit(this._distanceUnit);
+            updated = true;
         }
+        return updated;
+    }
+
+    _isDataFieldModeDynamic(mode) {
+        switch (mode) {
+            case WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.ETA:
+            case WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.ETE:
+            case WT_G3x5_TSCFlightPlanDataFieldSetting.Mode.FUEL:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_ReadOnlyArray<WT_G3x5_TSCFlightPlanDataFieldSetting>} dataFieldSettings
+     * @returns {Boolean}
+     */
+    _updateDataFieldModes(dataFieldSettings) {
+        let updated = false;
+        for (let i = 0; i < this._dataFieldModes.length; i++) {
+            let mode = dataFieldSettings.get(i).mode;
+            if (this._dataFieldModes[i] !== mode) {
+                this._dataFieldModes[i] = mode;
+                this._dataFieldIsDynamic[i] = this._isDataFieldModeDynamic(mode);
+                updated = true;
+            }
+        }
+        return updated;
+    }
+
+    _updateDynamicDataFields() {
+        this._dataFieldModes.forEach((value, index) => {
+            if (this._dataFieldIsDynamic[index] && this._instrument.currentTimeStamp - this._dataFieldLastUpdateTimes[index] > WT_G3x5_TSCFlightPlanRowLegHTMLElement.DYNAMIC_DATA_FIELD_UPDATE_INTERVAL) {
+                this._updateDataFieldFromLeg(index);
+            }
+        });
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+     * @param {WT_ReadOnlyArray<WT_G3x5_TSCFlightPlanDataFieldSetting>} dataFieldSettings
+     */
+    _updateDataFields(unitsModel, dataFieldSettings) {
+        let unitsUpdated = this._updateDataFieldUnits(unitsModel);
+        let dataFieldModeUpdated = this._updateDataFieldModes(dataFieldSettings);
+        if (unitsUpdated || dataFieldModeUpdated) {
+            this._updateDataFieldsFromLeg();
+        } else {
+            this._updateDynamicDataFields();
+        }
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+     */
+    _updateAltitudeConstraint(unitsModel) {
         if (!unitsModel.altitudeUnit.equals(this._altitudeUnit)) {
             this._altitudeUnit = unitsModel.altitudeUnit;
             this._updateAltitudeConstraintFromLeg();
@@ -2406,16 +2756,19 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
      *
      * @param {Number} airplaneHeadingTrue
      * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
+     * @param {WT_ReadOnlyArray<WT_G3x5_TSCFlightPlanDataFieldSetting>} dataFieldSettings
      */
-    update(airplaneHeadingTrue, unitsModel) {
+    update(airplaneHeadingTrue, unitsModel, dataFieldSettings) {
         if (!this._isInit || !this._leg) {
             return;
         }
 
         this._updateWaypointButton(airplaneHeadingTrue);
-        this._updateUnits(unitsModel);
+        this._updateDataFields(unitsModel, dataFieldSettings);
+        this._updateAltitudeConstraint(unitsModel);
     }
 }
+WT_G3x5_TSCFlightPlanRowLegHTMLElement.DYNAMIC_DATA_FIELD_UPDATE_INTERVAL = 2000; // milliseconds
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS = "unit";
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.NAME = "wt-tsc-flightplan-row-leg";
@@ -2468,7 +2821,7 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
                     width: calc(var(--flightplan-table-row-airwaylink-right, calc(100% - 1em)) - var(--flightplan-table-row-airwaylink-left, 0.25em));
                     --button-padding-left: var(--flightplan-table-row-leg-waypointbutton-airway-padding-left, 0.5em);
                 }
-                #dtkdis {
+                #datafields {
                     position: relative;
                     width: 100%;
                     height: 100%;
@@ -2477,7 +2830,12 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
                     grid-template-rows: 50% 50%;
                     justify-items: end;
                     align-items: center;
+                    transform: rotateX(0deg);
                 }
+                    wt-navdatainfo-view {
+                        height: auto;
+                        --navdatainfo-justify-content: flex-end;
+                    }
 
         .${WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS} {
             font-size: var(--flightplan-unit-font-size, 0.75em);
@@ -2498,9 +2856,9 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
             <wt-tsc-button-content id="altconstraintbutton">
                 <wt-tsc-flightplan-row-altitudeconstraint id="altconstraint" slot="content"></wt-tsc-flightplan-row-altitudeconstraint>
             </wt-tsc-button-content>
-            <div id="dtkdis">
-                <div id="dtk"></div>
-                <div id="dis"></div>
+            <div id="datafields">
+                <wt-navdatainfo-view id="datafield1"></wt-navdatainfo-view>
+                <wt-navdatainfo-view id="datafield2"></wt-navdatainfo-view>
             </div>
         </div>
     </div>
@@ -2509,13 +2867,34 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
 customElements.define(WT_G3x5_TSCFlightPlanRowLegHTMLElement.NAME, WT_G3x5_TSCFlightPlanRowLegHTMLElement);
 
 class WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement extends WT_G3x5_TSCFlightPlanRowLegHTMLElement {
-    _updateDTKFromLeg() {
-        let dtk = this._leg.desiredTrack;
-        this._dtkDisplay.textContent = `___${this._dtkFormatter.getFormattedUnit(dtk, this._bearingUnit)}`;
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateLegDistance(value) {
+        value.set(this.leg ? this.leg.parent.distance : NaN);
     }
 
-    _updateDistanceFromLeg() {
-        this._distanceDisplay.innerHTML = this._distanceFormatter.getFormattedHTML(this._leg.parent.distance, this._distanceUnit);
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateDTK(value) {
+        value.set(NaN);
+    }
+
+    /**
+     *
+     * @param {WT_NumberUnit} value
+     */
+    _updateETE(value) {
+        if (this.leg) {
+            let distanceNM = this.leg.parent.distance.asUnit(WT_Unit.NMILE);
+            let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
+            value.set(distanceNM / speedKnots, WT_Unit.HOUR);
+        } else {
+            value.set(NaN);
+        }
     }
 }
 WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement.NAME = "wt-tsc-flightplan-row-airwayfooter";
@@ -3530,7 +3909,7 @@ class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRende
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
     _updateModeHTMLElement(htmlElement, state) {
-        this._modeHTMLElement.update(state.airplaneHeadingTrue, state.unitsModel);
+        this._modeHTMLElement.update(state.airplaneHeadingTrue, state.unitsModel, state.settings.dataFieldSettings);
     }
 
     /**
