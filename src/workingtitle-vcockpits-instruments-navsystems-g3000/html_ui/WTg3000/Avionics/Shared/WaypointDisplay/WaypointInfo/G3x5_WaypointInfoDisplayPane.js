@@ -1,6 +1,26 @@
-class WT_G3x5_WaypointInfoDisplay extends WT_G3x5_WaypointDisplay {
+class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_WaypointDisplayPane {
     _getSettingModelID(instrumentID) {
-        return `${instrumentID}_${WT_G3x5_WaypointInfoDisplay.SETTING_MODEL_ID}`;
+        return `${instrumentID}_${WT_G3x5_WaypointInfoDisplayPane.SETTING_MODEL_ID}`;
+    }
+
+    getTitle() {
+        let waypoint = this.mapModel.waypointDisplay.waypoint;
+        if (waypoint) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return "Airport Info";
+                case WT_ICAOWaypoint.Type.VOR:
+                    return "VOR Info";
+                case WT_ICAOWaypoint.Type.NDB:
+                    return "NDB Info";
+                case WT_ICAOWaypoint.Type.INT:
+                    return "Intersection Info";
+                default:
+                    return "Waypoint Info";
+            }
+        } else {
+            return "Waypoint Info";
+        }
     }
 
     _initMapView() {
@@ -16,12 +36,12 @@ class WT_G3x5_WaypointInfoDisplay extends WT_G3x5_WaypointDisplay {
         this.mapView.addLayer(new WT_MapViewRangeRingLayer());
         this.mapView.addLayer(new WT_MapViewCrosshairLayer());
         this.mapView.addLayer(new WT_MapViewAirplaneLayer());
-        this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_WaypointInfoDisplay.ORIENTATION_DISPLAY_TEXT));
+        this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_WaypointInfoDisplayPane.ORIENTATION_DISPLAY_TEXT));
         this.mapView.addLayer(new WT_MapViewMiniCompassLayer());
     }
 
     _initRangeTargetController() {
-        this._rangeTargetController = new WT_G3x5_WaypointInfoRangeTargetController(this.mapModel, this.mapView, WT_G3x5_WaypointDisplay.MAP_RANGE_LEVELS, WT_G3x5_WaypointInfoDisplay.MAP_RANGE_DEFAULT);
+        this._rangeTargetController = new WT_G3x5_WaypointInfoRangeTargetController(this.mapModel, this.mapView, WT_G3x5_WaypointDisplayPane.MAP_RANGE_LEVELS, WT_G3x5_WaypointInfoDisplayPane.MAP_RANGE_DEFAULT);
     }
 
     init(viewElement) {
@@ -34,17 +54,14 @@ class WT_G3x5_WaypointInfoDisplay extends WT_G3x5_WaypointDisplay {
         this._bingLayer.sleep();
     }
 
-    wake() {
-    }
-
     update() {
         this._rangeTargetController.update();
         this.mapView.update();
         this._waypointRenderer.update(this.mapView.state);
     }
 }
-WT_G3x5_WaypointInfoDisplay.SETTING_MODEL_ID = "WaypointInfo";
-WT_G3x5_WaypointInfoDisplay.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1);
+WT_G3x5_WaypointInfoDisplayPane.SETTING_MODEL_ID = "WaypointInfo";
+WT_G3x5_WaypointInfoDisplayPane.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1);
 
 class WT_G3x5_WaypointInfoRangeTargetController {
     /**
@@ -156,57 +173,5 @@ class WT_G3x5_WaypointInfoRangeTargetController {
         this._updateWaypoint();
         this._updateTarget();
         this._updateRange();
-    }
-}
-
-class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(waypointInfo) {
-        super();
-
-        this._waypointInfo = waypointInfo;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_G3x5_WaypointInfoDisplay}
-     */
-    get waypointInfo() {
-        return this._waypointInfo;
-    }
-
-    getTitle() {
-        let waypoint = this.waypointInfo.mapModel.waypointDisplay.waypoint;
-        if (waypoint) {
-            switch (waypoint.type) {
-                case WT_ICAOWaypoint.Type.AIRPORT:
-                    return "Airport Info";
-                case WT_ICAOWaypoint.Type.VOR:
-                    return "VOR Info";
-                case WT_ICAOWaypoint.Type.NDB:
-                    return "NDB Info";
-                case WT_ICAOWaypoint.Type.INT:
-                    return "Intersection Info";
-                default:
-                    return "Waypoint Info";
-            }
-        } else {
-            return "Waypoint Info";
-        }
-    }
-
-    init(root) {
-        this.waypointInfo.init(root);
-    }
-
-    wake() {
-        this.waypointInfo.wake();
-    }
-
-    sleep() {
-        this.waypointInfo.sleep();
-    }
-
-    update() {
-        this.waypointInfo.update();
     }
 }

@@ -145,7 +145,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _getSettingModelID(instrumentID, halfPaneID) {
-        return `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID}`;
+        return `${instrumentID}-${halfPaneID}_${WT_G3x5_NearestWaypointDisplayPane.SETTING_MODEL_ID}`;
     }
 
     _initSettingModel() {

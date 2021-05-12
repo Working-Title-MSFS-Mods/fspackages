@@ -324,40 +324,40 @@ class WT_G3x5_MFDHalfPane {
     }
 
     /**
-     * @returns {WT_G3x5_ProcedureDisplay}
+     * @returns {WT_G3x5_ProcedureDisplayPane}
      */
-    _createProcedure(airplane, icaoWaypointFactory, unitsSettingModel) {
-        return new WT_G3x5_ProcedureDisplay(this.paneID, this.settings, airplane, icaoWaypointFactory, unitsSettingModel);
+    _createProcedureDisplayPane(airplane, icaoWaypointFactory, unitsSettingModel) {
+        return new WT_G3x5_ProcedureDisplayPane(this.paneID, this.settings, airplane, icaoWaypointFactory, unitsSettingModel);
     }
 
     /**
-     * @returns {WT_G3x5_ChartsDisplay}
+     * @returns {WT_G3x5_ChartsDisplayPane}
      */
-    _createCharts(airplane, navigraphAPI, unitsSettingModel) {
+    _createChartsDisplayPane(airplane, navigraphAPI, unitsSettingModel) {
     }
 
     /**
-     * @returns {WT_G3x5_WaypointInfoDisplay}
+     * @returns {WT_G3x5_WaypointInfoDisplayPane}
      */
-    _createWaypointInfo(airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
-        return new WT_G3x5_WaypointInfoDisplay(this.paneID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel);
+    _createWaypointInfoDisplayPane(airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
+        return new WT_G3x5_WaypointInfoDisplayPane(this.paneID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel);
     }
 
     /**
-     * @returns {WT_G3x5_NearestWaypointDisplay}
+     * @returns {WT_G3x5_NearestWaypointDisplayPane}
      */
-    _createNearestWaypoint(airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
-        return new WT_G3x5_NearestWaypointDisplay(this.paneID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel);
+    _createNearestWaypointDisplayPane(airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
+        return new WT_G3x5_NearestWaypointDisplayPane(this.paneID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel);
     }
 
     _createPanes(data) {
         this._navMapPane = new WT_G3x5_NavMapDisplayPane(this._createNavMap(data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this._createTrafficMap(data.airplane, data.trafficSystem, data.unitsSettingModel));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this._createWeatherRadar(data.airplane));
-        this._procedurePane = new WT_G3x5_ProcedureDisplayPane(this._createProcedure(data.airplane, data.icaoWaypointFactory, data.unitsSettingModel));
-        this._chartsPane = new WT_G3x5_ChartsDisplayPane(this._createCharts(data.airplane, data.navigraphAPI, data.unitsSettingModel));
-        this._waypointInfoPane = new WT_G3x5_WaypointInfoDisplayPane(this._createWaypointInfo(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
-        this._nearestWaypointPane = new WT_G3x5_NearestWaypointDisplayPane(this._createNearestWaypoint(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel));
+        this._procedurePane = this._createProcedureDisplayPane(data.airplane, data.icaoWaypointFactory, data.unitsSettingModel);
+        this._chartsPane = this._createChartsDisplayPane(data.airplane, data.navigraphAPI, data.unitsSettingModel);
+        this._waypointInfoPane = this._createWaypointInfoDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);
+        this._nearestWaypointPane = this._createNearestWaypointDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);
     }
 
     /**

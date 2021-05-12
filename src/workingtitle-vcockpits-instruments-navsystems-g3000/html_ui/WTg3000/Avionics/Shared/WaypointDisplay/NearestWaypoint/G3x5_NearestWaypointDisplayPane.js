@@ -1,6 +1,26 @@
-class WT_G3x5_NearestWaypointDisplay extends WT_G3x5_WaypointDisplay {
+class WT_G3x5_NearestWaypointDisplayPane extends WT_G3x5_WaypointDisplayPane {
     _getSettingModelID(instrumentID) {
-        return `${instrumentID}_${WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID}`;
+        return `${instrumentID}_${WT_G3x5_NearestWaypointDisplayPane.SETTING_MODEL_ID}`;
+    }
+
+    getTitle() {
+        let waypoint = this.mapModel.waypointDisplay.waypoint;
+        if (waypoint) {
+            switch (waypoint.type) {
+                case WT_ICAOWaypoint.Type.AIRPORT:
+                    return "Nearest Airport";
+                case WT_ICAOWaypoint.Type.VOR:
+                    return "Nearest VOR";
+                case WT_ICAOWaypoint.Type.NDB:
+                    return "Nearest NDB";
+                case WT_ICAOWaypoint.Type.INT:
+                    return "Nearest Intersection";
+                default:
+                    return "Nearest Waypoint";
+            }
+        } else {
+            return "Nearest Waypoint";
+        }
     }
 
     _initMapView() {
@@ -14,12 +34,12 @@ class WT_G3x5_NearestWaypointDisplay extends WT_G3x5_WaypointDisplay {
         this.mapView.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.mapView.addLayer(new WT_MapViewRangeRingLayer());
         this.mapView.addLayer(new WT_MapViewAirplaneLayer());
-        this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_WaypointDisplay.ORIENTATION_DISPLAY_TEXT));
+        this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_WaypointDisplayPane.ORIENTATION_DISPLAY_TEXT));
         this.mapView.addLayer(new WT_MapViewMiniCompassLayer());
     }
 
     _initRangeTargetController() {
-        this._rangeTargetController = new WT_G3x5_NearestWaypointRangeTargetController(this.mapModel, this.mapView, WT_G3x5_WaypointDisplay.MAP_RANGE_LEVELS, WT_G3x5_NearestWaypointDisplay.MAP_RANGE_DEFAULT);
+        this._rangeTargetController = new WT_G3x5_NearestWaypointRangeTargetController(this.mapModel, this.mapView, WT_G3x5_WaypointDisplayPane.MAP_RANGE_LEVELS, WT_G3x5_NearestWaypointDisplayPane.MAP_RANGE_DEFAULT);
     }
 
     init(viewElement) {
@@ -32,17 +52,14 @@ class WT_G3x5_NearestWaypointDisplay extends WT_G3x5_WaypointDisplay {
         this._bingLayer.sleep();
     }
 
-    wake() {
-    }
-
     update() {
         this._rangeTargetController.update();
         this.mapView.update();
         this._waypointRenderer.update(this.mapView.state);
     }
 }
-WT_G3x5_NearestWaypointDisplay.SETTING_MODEL_ID = "NearestWaypoint";
-WT_G3x5_NearestWaypointDisplay.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
+WT_G3x5_NearestWaypointDisplayPane.SETTING_MODEL_ID = "NearestWaypoint";
+WT_G3x5_NearestWaypointDisplayPane.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(25);
 
 class WT_G3x5_NearestWaypointRangeTargetController {
     /**
@@ -147,55 +164,3 @@ class WT_G3x5_NearestWaypointRangeTargetController {
 }
 WT_G3x5_NearestWaypointRangeTargetController.DISTANCE_NORM_MIN = 0.2;
 WT_G3x5_NearestWaypointRangeTargetController.DISTANCE_NORM_MAX = 0.8;
-
-class WT_G3x5_NearestWaypointDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(nearestWaypoint) {
-        super();
-
-        this._nearestWaypoint = nearestWaypoint;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_G3x5_NearestWaypointDisplay}
-     */
-    get nearestWaypoint() {
-        return this._nearestWaypoint;
-    }
-
-    getTitle() {
-        let waypoint = this.nearestWaypoint.mapModel.waypointDisplay.waypoint;
-        if (waypoint) {
-            switch (waypoint.type) {
-                case WT_ICAOWaypoint.Type.AIRPORT:
-                    return "Nearest Airport";
-                case WT_ICAOWaypoint.Type.VOR:
-                    return "Nearest VOR";
-                case WT_ICAOWaypoint.Type.NDB:
-                    return "Nearest NDB";
-                case WT_ICAOWaypoint.Type.INT:
-                    return "Nearest Intersection";
-                default:
-                    return "Nearest Waypoint";
-            }
-        } else {
-            return "Nearest Waypoint";
-        }
-    }
-
-    init(root) {
-        this.nearestWaypoint.init(root);
-    }
-
-    wake() {
-        this.nearestWaypoint.wake();
-    }
-
-    sleep() {
-        this.nearestWaypoint.sleep();
-    }
-
-    update() {
-        this.nearestWaypoint.update();
-    }
-}
