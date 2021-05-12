@@ -372,7 +372,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         let flightPlan = this._fpm.activePlan;
         if (event.sequence === flightPlan.getOrigin() || event.sequence === flightPlan.getDeparture()) {
             this._onOriginHeaderButtonPressed(event);
-        } else if (event.sequence === flightPlan.getDestination() || event.sequence === flightPlan.getArrival()) {
+        } else if (event.sequence === flightPlan.getDestination() || event.sequence === flightPlan.getArrival() || event.sequence === flightPlan.getApproach()) {
             this._onDestinationHeaderButtonPressed(event);
         } else if (event.sequence instanceof WT_FlightPlanAirwaySequence) {
             this._onAirwaySequenceHeaderButtonPressed(event);
@@ -1216,7 +1216,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
                 let sequence = row.getActiveModeHTMLElement().sequence;
                 if ((sequence === this._flightPlan.getOrigin() && this._flightPlan.hasOrigin()) || sequence === this._flightPlan.getDeparture()) {
                     return WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.ORIGIN;
-                } else if ((sequence === this._flightPlan.getDestination() && this._flightPlan.hasDestination()) || sequence === this._flightPlan.getArrival()) {
+                } else if ((sequence === this._flightPlan.getDestination() && this._flightPlan.hasDestination()) || sequence === this._flightPlan.getArrival() || sequence === this._flightPlan.getApproach()) {
                     return WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.DESTINATION;
                 } else if (sequence instanceof WT_FlightPlanAirwaySequence) {
                     return WT_G3x5_TSCFlightPlanHTMLElement.BannerMode.AIRWAY;
