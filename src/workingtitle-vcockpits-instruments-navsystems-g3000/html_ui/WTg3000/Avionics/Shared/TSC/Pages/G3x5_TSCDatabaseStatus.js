@@ -62,14 +62,10 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this.htmlElement.open();
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
     }
 }

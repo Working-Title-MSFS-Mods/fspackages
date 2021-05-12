@@ -51,8 +51,15 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
         this.instrument.deactivateNavButton(2);
     }
 
-    onEnter() {
+    onFocusGained() {
         this._activateNavButtons();
+    }
+
+    onFocusLost() {
+        this._deactivateNavButtons();
+    }
+
+    onEnter() {
     }
 
     onUpdate(deltaTime) {
@@ -62,6 +69,5 @@ class WT_G3x5_TSCPageElement extends NavSystemElement {
     }
 
     onExit() {
-        this._deactivateNavButtons();
     }
 }

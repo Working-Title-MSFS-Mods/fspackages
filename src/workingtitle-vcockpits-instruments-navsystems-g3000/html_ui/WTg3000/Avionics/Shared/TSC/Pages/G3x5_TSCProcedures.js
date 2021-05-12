@@ -516,8 +516,6 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this._updateFromPaneSettings();
         this.htmlElement.open();
     }
@@ -536,8 +534,6 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
         this._cleanUpFromPaneSettings();
     }

@@ -462,11 +462,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     _autoSelectAirport() {
-        let lastPageName = this.instrument.history[this.instrument.history.length - 1].pageName;
-        if (lastPageName !== "MFD Home") {
-            return;
-        }
-
         let airportToSelect = this._chooseAutoSelectAirport();
         if (airportToSelect && airportToSelect.icao !== this._icao) {
             this._setAirportICAO(airportToSelect.icao, false);
@@ -484,8 +479,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this._autoSelectAirport();
         this._activateChartsDisplayPane();
         this.htmlElement.open();
@@ -496,8 +489,6 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
     }
 }

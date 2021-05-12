@@ -33,9 +33,19 @@ class WT_G3x5_TSCAvionicsSettings extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
     }
 
-    onEnter() {
-        super.onEnter();
+    onFocusGained() {
+        super.onFocusGained();
 
+        this.htmlElement.gainFocus();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this.htmlElement.loseFocus();
+    }
+
+    onEnter() {
         this.htmlElement.open();
     }
 
@@ -44,8 +54,6 @@ class WT_G3x5_TSCAvionicsSettings extends WT_G3x5_TSCPageElement {
     }
 
     onExit() {
-        super.onExit();
-
         this.htmlElement.close();
     }
 }
@@ -97,6 +105,20 @@ class WT_G3x5_TSCAvionicsSettingsHTMLElement extends HTMLElement {
         let activeTab = this._tabbedContent.getActiveTab();
         if (activeTab) {
             activeTab.update();
+        }
+    }
+
+    gainFocus() {
+        let activeTab = this._tabbedContent.getActiveTab();
+        if (activeTab) {
+            activeTab.gainFocus();
+        }
+    }
+
+    loseFocus() {
+        let activeTab = this._tabbedContent.getActiveTab();
+        if (activeTab) {
+            activeTab.loseFocus();
         }
     }
 
@@ -158,6 +180,20 @@ class WT_G3x5_TSCAvionicsSettingsTab extends WT_G3x5_TSCTabContent {
         return this._htmlElement;
     }
 
+    gainFocus() {
+    }
+
+    loseFocus() {
+    }
+
+    onActivated() {
+        this.gainFocus();
+    }
+
+    onDeactivated() {
+        this.loseFocus();
+    }
+
     update() {
     }
 }
@@ -173,11 +209,11 @@ class WT_G3x5_TSCAvionicsSettingsScrollTab extends WT_G3x5_TSCAvionicsSettingsTa
         this.parentPage.instrument.deactivateNavButton(6, false);
     }
 
-    onActivated() {
+    gainFocus() {
         this._activateNavButtons();
     }
 
-    onDeactivated() {
+    loseFocus() {
         this._deactivateNavButtons();
     }
 

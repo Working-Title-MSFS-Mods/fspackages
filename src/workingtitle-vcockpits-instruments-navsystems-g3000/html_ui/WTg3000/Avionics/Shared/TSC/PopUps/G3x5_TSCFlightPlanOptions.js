@@ -14,7 +14,7 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _createPopUps() {
-        this._dataFieldsPopUp = new NavSystemElementContainer("Flight Plan Data Fields", "FlightPlanDataFields", new WT_G3x5_TSCFlightPlanDataFields());
+        this._dataFieldsPopUp = new WT_G3x5_TSCElementContainer("Flight Plan Data Fields", "FlightPlanDataFields", new WT_G3x5_TSCFlightPlanDataFields());
         this._dataFieldsPopUp.setGPS(this.instrument);
     }
 
@@ -50,17 +50,6 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
 
     _onDataFieldsButtonPressed(button) {
         this._openDataFieldsPopUp();
-    }
-
-    _deactivateScrollButtons() {
-        this.instrument.deactivateNavButton(5, false);
-        this.instrument.deactivateNavButton(6, false);
-    }
-
-    _activateNavButtons() {
-        super._activateNavButtons();
-
-        this._deactivateScrollButtons();
     }
 }
 
