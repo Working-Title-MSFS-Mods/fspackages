@@ -82,11 +82,13 @@ class WT_TSCSettingEnumStatusBarButtonManager extends WT_TSCSettingButtonManager
      * @param {WT_TSCStatusBarButton} button
      * @param {WT_DataStoreSetting} setting
      * @param {Number} value
+     * @param {Number} [offValue]
      */
-    constructor(button, setting, value) {
+    constructor(button, setting, value, offValue) {
         super(button, setting);
 
         this._value = value;
+        this._offValue = offValue;
     }
 
     /**
@@ -95,6 +97,14 @@ class WT_TSCSettingEnumStatusBarButtonManager extends WT_TSCSettingButtonManager
      */
     get value() {
         return this._value;
+    }
+
+    /**
+     * @readonly
+     * @type {Number}
+     */
+    get offValue() {
+        return this._offValue;
     }
 
     _updateButton(value) {
@@ -106,7 +116,11 @@ class WT_TSCSettingEnumStatusBarButtonManager extends WT_TSCSettingButtonManager
     }
 
     _onButtonPressed(button) {
-        this.setting.setValue(this.value);
+        if (this.setting.getValue() !== this.value) {
+            this.setting.setValue(this.value);
+        } else if (this.offValue !== undefined) {
+            this.setting.setValue(this.offValue);
+        }
     }
 }
 
