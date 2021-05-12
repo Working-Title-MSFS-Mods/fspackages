@@ -72,17 +72,23 @@ class WT_G3x5_TSCChartsTouchControl extends WT_G3x5_TSCPageElement {
         this.instrument.setBottomKnobText("-Range+ Push: Pan");
     }
 
-    onEnter() {
-        super.onEnter();
+    onFocusGained() {
+        super.onFocusGained();
 
         this._activateLabelBar();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this._deactivateLabelBar();
+    }
+
+    onEnter() {
         this.htmlElement.open();
     }
 
     onExit() {
-        super.onExit();
-
-        this._deactivateLabelBar();
         this.htmlElement.close();
     }
 

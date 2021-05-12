@@ -125,8 +125,20 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
         this.instrument.activateNavButton(2, "Home", this._onHomePressed.bind(this), true, "ICON_TSC_BUTTONBAR_HOME.png");
     }
 
-    onEnter() {
+    _deactivateNavButtons() {
+        this.instrument.deactivateNavButton(1);
+        this.instrument.deactivateNavButton(2);
+    }
+
+    onFocusGained() {
         this._activateNavButtons();
+    }
+
+    onFocusLost() {
+        this._deactivateNavButtons();
+    }
+
+    onEnter() {
         this._setVisible(true);
         this._isActive = true;
     }
@@ -137,14 +149,8 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     onEvent(event) {
     }
 
-    _deactivateNavButtons() {
-        this.instrument.deactivateNavButton(1);
-        this.instrument.deactivateNavButton(2);
-    }
-
     onExit() {
         this._setVisible(false);
-        this._deactivateNavButtons();
         this._isActive = false;
     }
 }

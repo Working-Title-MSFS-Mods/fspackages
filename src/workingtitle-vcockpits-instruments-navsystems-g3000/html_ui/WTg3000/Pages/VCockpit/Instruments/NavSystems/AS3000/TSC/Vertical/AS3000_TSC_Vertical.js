@@ -43,12 +43,12 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
     _initPopUpWindows() {
         super._initPopUpWindows();
 
-        this.transponderMode = new NavSystemElementContainer("Transponder Mode", "TransponderMode", new WT_G5000_TSCTransponderMode());
+        this.transponderMode = new WT_G3x5_TSCElementContainer("Transponder Mode", "TransponderMode", new WT_G5000_TSCTransponderMode());
         this.transponderMode.setGPS(this);
     }
 
     _initNavCom() {
-        this.addIndependentElementContainer(new NavSystemElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
+        this.addIndependentElementContainer(new WT_G3x5_TSCElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
     }
 
     connectedCallback() {
@@ -266,6 +266,10 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         let homePageName = homePageGroup + " Home";
         this.gps.audioRadioWindow.element.setContext(homePageGroup, homePageName);
         this.gps.switchToPopUpPage(this.gps.audioRadioWindow);
+    }
+
+    onEnter() {
+        this.setSoftkeysNames();
     }
 }
 

@@ -35,6 +35,18 @@ class WT_G3x5_TSCAirportInfo extends WT_G3x5_TSCWaypointInfo {
     setTitle(title) {
         this.container.title = title;
     }
+
+    onFocusGained() {
+        super.onFocusGained();
+
+        this.htmlElement.gainFocus();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this.htmlElement.loseFocus();
+    }
 }
 
 /**
@@ -148,6 +160,20 @@ class WT_G3x5_TSCAirportInfoHTMLElement extends WT_G3x5_TSCWaypointInfoHTMLEleme
         this._updateTabs();
     }
 
+    gainFocus() {
+        let activeTab = this._main.getActiveTab();
+        if (activeTab) {
+            activeTab.gainFocus();
+        }
+    }
+
+    loseFocus() {
+        let activeTab = this._main.getActiveTab();
+        if (activeTab) {
+            activeTab.loseFocus();
+        }
+    }
+
     open() {
         this._main.setActiveTabIndex(this._lastActiveTabIndex);
     }
@@ -238,6 +264,20 @@ class WT_G3x5_TSCAirportInfoTab extends WT_G3x5_TSCTabContent {
         return this._htmlElement;
     }
 
+    gainFocus() {
+    }
+
+    loseFocus() {
+    }
+
+    onActivated() {
+        this.gainFocus();
+    }
+
+    onDeactivated() {
+        this.loseFocus();
+    }
+
     update() {
     }
 }
@@ -253,11 +293,11 @@ class WT_G3x5_TSCAirportInfoScrollTab extends WT_G3x5_TSCAirportInfoTab {
         this.parentPage.instrument.deactivateNavButton(6, false);
     }
 
-    onActivated() {
+    gainFocus() {
         this._activateNavButtons();
     }
 
-    onDeactivated() {
+    loseFocus() {
         this._deactivateNavButtons();
     }
 

@@ -250,8 +250,6 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     }
 
     onEnter() {
-        super.onEnter();
-
         this.htmlElement.open();
     }
 
@@ -267,8 +265,6 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     onExit() {
         this._updateDirectTo();
         this.htmlElement.close();
-
-        super.onExit();
     }
 }
 
