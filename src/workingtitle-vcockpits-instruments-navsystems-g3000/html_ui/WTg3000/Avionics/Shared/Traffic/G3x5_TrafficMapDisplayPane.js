@@ -1,6 +1,6 @@
 class WT_G3x5_TrafficMapDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(trafficMap) {
-        super();
+    constructor(paneID, paneSettings, trafficMap) {
+        super(paneID, paneSettings);
 
         this._trafficMap = trafficMap;
     }

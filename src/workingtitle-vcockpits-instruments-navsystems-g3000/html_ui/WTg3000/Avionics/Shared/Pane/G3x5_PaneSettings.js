@@ -13,6 +13,10 @@ class WT_G3x5_PaneSettings {
         this._settingModel.addSetting(this._control = new WT_G3x5_PaneControlSetting(this._settingModel));
     }
 
+    _initNavMapInsetSetting() {
+        this._settingModel.addSetting(this._navMapInset = new WT_G3x5_NavMapDisplayInsetSetting(this._settingModel));
+    }
+
     _initProcedureSetting() {
         this._settingModel.addSetting(this._procedure = new WT_G3x5_ProcedureDisplayProcedureSetting(this._settingModel));
     }
@@ -27,6 +31,7 @@ class WT_G3x5_PaneSettings {
         this._initDisplaySetting();
         this._initControlSetting();
 
+        this._initNavMapInsetSetting();
         this._initProcedureSetting();
         this._initChartIDSetting();
     }
@@ -53,6 +58,14 @@ class WT_G3x5_PaneSettings {
      */
     get control() {
         return this._control;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NavMapDisplayInsetSetting}
+     */
+    get navMapInset() {
+        return this._navMapInset;
     }
 
     /**

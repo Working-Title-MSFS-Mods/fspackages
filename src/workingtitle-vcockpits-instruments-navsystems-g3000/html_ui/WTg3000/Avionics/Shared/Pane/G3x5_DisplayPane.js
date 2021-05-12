@@ -1,4 +1,25 @@
 class WT_G3x5_DisplayPane {
+    constructor(paneID, paneSettings) {
+        this._paneID = paneID;
+        this._paneSettings = paneSettings;
+    }
+
+    /**
+     * @readonly
+     * @type {String}
+     */
+    get paneID() {
+        return this._paneID;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_PaneSettings}
+     */
+    get paneSettings() {
+        return this._paneSettings;
+    }
+
     getTitle() {
     }
 
@@ -16,8 +37,8 @@ class WT_G3x5_DisplayPane {
 }
 
 class WT_G3x5_WeatherRadarDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(weatherRadar) {
-        super();
+    constructor(paneID, paneSettings, weatherRadar) {
+        super(paneID, paneSettings);
 
         this._weatherRadar = weatherRadar;
     }

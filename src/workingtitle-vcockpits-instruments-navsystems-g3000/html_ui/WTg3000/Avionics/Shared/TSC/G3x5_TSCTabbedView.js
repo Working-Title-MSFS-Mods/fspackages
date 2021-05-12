@@ -8,7 +8,7 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
         /**
          * @type {WT_G3x5_TSCTabEntry[]}
          */
-        this._tabs = [];
+        this._tabEntries = [];
         this._activeTabEntry = null;
         this._oldActiveTabEntry = null;
         this._isInit = false;
@@ -25,7 +25,7 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
     }
 
     _initTabs() {
-        for (let entry of this._tabs) {
+        for (let entry of this._tabEntries) {
             this._attachTab(entry);
         }
     }
@@ -100,6 +100,18 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
 
     /**
      *
+     * @param {Number} index
+     * @returns {WT_G3x5_TSCTabContent}
+     */
+    getTab(index) {
+        if (index < 0 || index >= this._tabEntries.length) {
+            return undefined;
+        }
+        return this._tabEntries[index].tab;
+    }
+
+    /**
+     *
      * @param {WT_G3x5_TSCTabContent} tab
      * @param {WT_G3x5_TSCTabbedView.TabButtonPosition} [buttonPosition]
      * @param {Boolean} [enabled]
@@ -111,15 +123,36 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
         let entry = {
             tab: tab,
             buttonPosition: buttonPosition,
-            button: button
+            button: button,
+            enabled: enabled
         };
 
-        this._tabs.push(entry);
+        this._tabEntries.push(entry);
 
         if (this._isInit) {
             this._attachTab(entry);
         }
-        return this._tabs.length - 1;
+        return this._tabEntries.length - 1;
+    }
+
+    enableTab(tab) {
+        let entry = this._tabEntries.find(entry => entry.tab === tab);
+        if (entry) {
+            entry.enabled = true;
+            entry.button.enabled = "true";
+        }
+    }
+
+    disableTab(tab) {
+        let entry = this._tabEntries.find(entry => entry.tab === tab);
+        if (entry) {
+            entry.enabled = false;
+            entry.button.enabled = "false";
+        }
+        if (this.getActiveTab() === tab) {
+            let index = this._tabEntries.findIndex(entry => entry.enabled);
+            this.setActiveTabIndex(index);
+        }
     }
 
     /**
@@ -131,19 +164,23 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
     }
 
     getActiveTabIndex() {
-        return this._activeTabEntry ? this._tabs.indexOf(this._activeTabEntry) : -1;
+        return this._activeTabEntry ? this._tabEntries.indexOf(this._activeTabEntry) : -1;
     }
 
     setActiveTab(tab) {
-        let index = this._tabs.findIndex(entry => entry.tab === tab);
+        let index = this._tabEntries.findIndex(entry => entry.tab === tab);
         if (index >= 0) {
             this.setActiveTabIndex(index);
         }
     }
 
     setActiveTabIndex(index) {
+        if (index >= 0 && index < this._tabEntries.length && !this._tabEntries[index].enabled) {
+            return;
+        }
+
         this._oldActiveTabEntry = this._activeTabEntry;
-        this._activeTabEntry = this._tabs[index];
+        this._activeTabEntry = this._tabEntries[index];
         if (this._isInit) {
             this._updateActiveTab();
         }
