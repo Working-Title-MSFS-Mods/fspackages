@@ -312,36 +312,37 @@ class WT_G3x5_ProcedureRangeTargetController {
 
         // Ritter's algorithm
         let first = legs.first().fix.location.cartesian();
-        let maxDistance = 0;
+        let maxDelta = new WT_GVector3(0, 0, 0);
         let compare = this._tempVector3;
         let second = legs.reduce((prev, curr) => {
-            let distance = curr.fix.location.cartesian(compare).subtract(first).length;
-            if (distance > maxDistance) {
-                maxDistance = distance;
+            let delta = curr.fix.location.cartesian(compare).subtract(first);
+            if (delta.length > maxDelta.length) {
+                maxDelta.set(delta);
                 return curr;
             } else {
                 return prev;
             }
         }).fix.location.cartesian();
-        let third = legs.reduce((prev, curr) => {
-            let distance = curr.fix.location.cartesian(compare).subtract(second).length;
-            if (distance > maxDistance) {
-                maxDistance = distance;
+        maxDelta.scale(-1, true); // reverse maxDelta so it is pointing from 'second' rather than to it.
+        legs.reduce((prev, curr) => {
+            let delta = curr.fix.location.cartesian(compare).subtract(second);
+            if (delta.length > maxDelta.length) {
+                maxDelta.set(delta);
                 return curr;
             } else {
                 return prev;
             }
-        }).fix.location.cartesian();
+        });
 
-        let delta = third.minus(second).scale(0.5, true);
-        let radius = delta.length;
-        let center = delta.add(second);
+        maxDelta.scale(0.5, true);
+        let radius = maxDelta.length;
+        let center = maxDelta.add(second);
 
         let outside;
         while (outside = legs.find(leg => leg.fix.location.cartesian(this._tempVector3).subtract(center).length > radius + WT_G3x5_ProcedureRangeTargetController.BOUNDING_CIRCLE_TOLERANCE, this)) {
-            delta = outside.fix.location.cartesian(this._tempVector3).subtract(center);
+            let delta = outside.fix.location.cartesian(this._tempVector3).subtract(center);
             radius = (delta.length + radius) / 2;
-            center.add(delta.scale(1 - radius / delta.length));
+            center.add(delta.scale(1 - radius / delta.length, true));
         }
 
         boundingCircle.center.setFromCartesian(center);
@@ -401,7 +402,7 @@ class WT_G3x5_ProcedureRangeTargetController {
     }
 }
 WT_G3x5_ProcedureRangeTargetController.BOUNDING_CIRCLE_TOLERANCE = 1e-6; // ~6 meters
-WT_G3x5_ProcedureRangeTargetController.RANGE_BUFFER_FACTOR = 0.1;
+WT_G3x5_ProcedureRangeTargetController.RANGE_BUFFER_FACTOR = 0.2;
 
 class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
     constructor(procedureDisplay) {
