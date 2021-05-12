@@ -1,6 +1,6 @@
 class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_WaypointDisplayPane {
-    _getSettingModelID(instrumentID) {
-        return `${instrumentID}_${WT_G3x5_WaypointInfoDisplayPane.SETTING_MODEL_ID}`;
+    _getSettingModelID(paneID) {
+        return `${paneID}_${WT_G3x5_WaypointInfoDisplayPane.SETTING_MODEL_ID}`;
     }
 
     getTitle() {
@@ -28,7 +28,7 @@ class WT_G3x5_WaypointInfoDisplayPane extends WT_G3x5_WaypointDisplayPane {
         this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let runwayRenderer = new WT_G3x5_MapViewRunwayCanvasRenderer(labelManager);
 
-        this.mapView.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.instrumentID));
+        this.mapView.addLayer(this._bingLayer = new WT_MapViewBingLayer(this.paneID));
         this.mapView.addLayer(new WT_G3x5_MapViewAirportRunwayLayer(runwayRenderer));
         this.mapView.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
         this.mapView.addLayer(new WT_MapViewWaypointHighlightLayer(this._waypointRenderer));

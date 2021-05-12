@@ -1,9 +1,8 @@
 class WT_G3x5_WaypointDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(instrumentID, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
-        super();
+    constructor(paneID, settings, airplane, icaoWaypointFactory, icaoSearchers, unitsSettingModel) {
+        super(paneID, settings);
 
-        this._instrumentID = instrumentID;
-        this._settingModelID = this._getSettingModelID(instrumentID);
+        this._settingModelID = this._getSettingModelID(paneID);
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
@@ -11,14 +10,6 @@ class WT_G3x5_WaypointDisplayPane extends WT_G3x5_DisplayPane {
         this._unitsSettingModel = unitsSettingModel;
 
         this._waypointRequestID = 0;
-    }
-
-    /**
-     * @readonly
-     * @type {String}
-     */
-    get instrumentID() {
-        return this._instrumentID;
     }
 
     /**

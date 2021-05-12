@@ -281,8 +281,8 @@ class AS3000_TSC extends NavSystemTouch {
             ]),
             new WT_G3x5_TSCPageGroup("MFD", this, [
                 this._mfdHome = new WT_G3x5_TSCPage("MFD Home", "MFDHome", new AS3000_TSC_MFDHome()),
-                this._mfdPagesLeft.mapSettings = new WT_G3x5_TSCPage("Map Settings Left", "MFDMapSettingsLeft", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
-                this._mfdPagesRight.mapSettings = new WT_G3x5_TSCPage("Map Settings Right", "MFDMapSettingsRight", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
+                this._mfdPagesLeft.mapSettings = new WT_G3x5_TSCPage("Map Settings Left", "MFDMapSettingsLeft", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings)),
+                this._mfdPagesRight.mapSettings = new WT_G3x5_TSCPage("Map Settings Right", "MFDMapSettingsRight", new WT_G3x5_TSCMFDMapSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings)),
                 this._mfdPagesLeft.mapPointerControl = new WT_G3x5_TSCPage("Map Pointer Control Left", "MapPointerControlLeft", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.mapPointerControl = new WT_G3x5_TSCPage("Map Pointer Control Right", "MapPointerControlRight", new WT_G3x5_TSCMapPointerControl("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 this._mfdPagesLeft.trafficMap = new WT_G3x5_TSCPage("Traffic Map Settings Left", "TrafficMapSettingsLeft", this._createTrafficMapSettingsPage("MFD", "MFD Home")),

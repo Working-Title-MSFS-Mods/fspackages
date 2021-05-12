@@ -7,10 +7,7 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
     constructor(paneID, paneSettings, airplane, icaoWaypointFactory, unitsSettingModel) {
-        super();
-
-        this._paneID = paneID;
-        this._procedureSetting = paneSettings.procedure;
+        super(paneID, paneSettings);
 
         this._airplane = airplane;
         this._icaoWaypointFactory = icaoWaypointFactory;
@@ -98,9 +95,9 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     _initSettingListeners() {
-        this._procedureSetting.init();
+        this.paneSettings.procedure.init();
 
-        this._procedureSetting.addListener(this._onProcedureSettingChanged.bind(this));
+        this.paneSettings.procedure.addListener(this._onProcedureSettingChanged.bind(this));
         this._updateProcedure();
     }
 
@@ -160,47 +157,48 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     async _updateProcedure() {
+        let procedureSetting = this.paneSettings.procedure;
         let requestID = ++this._airportRequestID;
-        if (this._procedureSetting.airportICAO && this._procedureSetting.procedureType !== WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.NONE && this._procedureSetting.procedureIndex >= 0) {
+        if (procedureSetting.airportICAO && procedureSetting.procedureType !== WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.NONE && procedureSetting.procedureIndex >= 0) {
             try {
-                let airport = await this._icaoWaypointFactory.getAirport(this._procedureSetting.airportICAO);
+                let airport = await this._icaoWaypointFactory.getAirport(procedureSetting.airportICAO);
                 if (requestID !== this._airportRequestID) {
                     // superseded by a more recent update
                     return;
                 }
 
                 let procedure;
-                switch (this._procedureSetting.procedureType) {
+                switch (procedureSetting.procedureType) {
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.DEPARTURE:
-                        procedure = airport.departures.getByIndex(this._procedureSetting.procedureIndex);
+                        procedure = airport.departures.getByIndex(procedureSetting.procedureIndex);
                         break;
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.ARRIVAL:
-                        procedure = airport.arrivals.getByIndex(this._procedureSetting.procedureIndex);
+                        procedure = airport.arrivals.getByIndex(procedureSetting.procedureIndex);
                         break;
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH:
-                        procedure = airport.approaches.getByIndex(this._procedureSetting.procedureIndex);
+                        procedure = airport.approaches.getByIndex(procedureSetting.procedureIndex);
                         break;
                 }
 
                 let runwayTransitionIndex = -1;
-                if (this._procedureSetting.procedureType !== WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH && this._procedureSetting.runwayDesignation) {
-                    runwayTransitionIndex = procedure.runwayTransitions.array.findIndex(transition => transition.runway.designation === this._procedureSetting.runwayDesignation, this);
+                if (procedureSetting.procedureType !== WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH && procedureSetting.runwayDesignation) {
+                    runwayTransitionIndex = procedure.runwayTransitions.array.findIndex(transition => transition.runway.designation === procedureSetting.runwayDesignation, this);
                 }
                 this._flightPlan.clear();
-                switch (this._procedureSetting.procedureType) {
+                switch (procedureSetting.procedureType) {
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.DEPARTURE:
                         this._flightPlan.setOrigin(airport);
-                        await this._flightPlan.setDeparture(procedure.name, runwayTransitionIndex, this._procedureSetting.transitionIndex);
+                        await this._flightPlan.setDeparture(procedure.name, runwayTransitionIndex, procedureSetting.transitionIndex);
                         this._procedureSegment = this._flightPlan.getDeparture();
                         break;
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.ARRIVAL:
                         this._flightPlan.setDestination(airport);
-                        await this._flightPlan.setArrival(procedure.name, this._procedureSetting.transitionIndex, runwayTransitionIndex);
+                        await this._flightPlan.setArrival(procedure.name, procedureSetting.transitionIndex, runwayTransitionIndex);
                         this._procedureSegment = this._flightPlan.getArrival();
                         break;
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH:
                         this._flightPlan.setDestination(airport);
-                        await this._flightPlan.setApproach(procedure.name, this._procedureSetting.transitionIndex);
+                        await this._flightPlan.setApproach(procedure.name, procedureSetting.transitionIndex);
                         this._procedureSegment = this._flightPlan.getApproach();
                         break;
                 }

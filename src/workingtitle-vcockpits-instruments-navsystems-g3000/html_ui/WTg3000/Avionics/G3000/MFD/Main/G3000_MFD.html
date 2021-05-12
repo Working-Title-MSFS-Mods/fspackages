@@ -36,34 +36,38 @@
                     </div>
                     <mfd-mainpane id="MainPane">
                         <mfd-halfpane slot="left">
-                            <map-view slot="navmap" class="navMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
-                            <map-view slot="trafficmap" class="trafficMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/trafficmapconfig.json"></map-view>
-                            <div slot="weatherradar" class="weatherRadar">
+                            <wt-navmapdisplaypane slot="navmap" class="displayPane navMapDisplayPane">
+                                <map-view slot="map" class="navMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            </wt-navmapdisplaypane>
+                            <map-view slot="trafficmap" class="displayPane trafficMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/trafficmapconfig.json"></map-view>
+                            <div slot="weatherradar" class="displayPane weatherRadar">
                                 <weatherradar-view></weatherradar-view>
                                 <weatherradar-view-scale></weatherradar-view-scale>
                                 <weatherradar-view-settings></weatherradar-view-settings>
                             </div>
-                            <map-view slot="procedure" class="procedureMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/proceduremapconfig.json"></map-view>
-                            <wt-charts-view slot="charts" class="charts">
+                            <map-view slot="procedure" class="displayPane procedureMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/proceduremapconfig.json"></map-view>
+                            <wt-charts-view slot="charts" class="displayPane charts">
                                 <map-view slot="map" class="chartsMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/chartsmapconfig.json"></map-view>
                             </wt-charts-view>
-                            <map-view slot="waypointinfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
-                            <map-view slot="nearestwaypoint" class="nearestWaypoint" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="waypointinfo" class="displayPane waypointInfo" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="nearestwaypoint" class="displayPane nearestWaypoint" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
                         </mfd-halfpane>
                         <mfd-halfpane slot="right">
-                            <map-view slot="navmap" class="navMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
-                            <map-view slot="trafficmap" class="trafficMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/trafficmapconfig.json"></map-view>
-                            <div slot="weatherradar" class="weatherRadar">
+                            <wt-navmapdisplaypane slot="navmap" class="displayPane navMapDisplayPane">
+                                <map-view slot="map" class="navMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            </wt-navmapdisplaypane>
+                            <map-view slot="trafficmap" class="displayPane trafficMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/trafficmapconfig.json"></map-view>
+                            <div slot="weatherradar" class="displayPane weatherRadar">
                                 <weatherradar-view></weatherradar-view>
                                 <weatherradar-view-scale></weatherradar-view-scale>
                                 <weatherradar-view-settings></weatherradar-view-settings>
                             </div>
-                            <map-view slot="procedure" class="procedureMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/proceduremapconfig.json"></map-view>
-                            <wt-charts-view slot="charts" class="charts">
+                            <map-view slot="procedure" class="displayPane procedureMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/proceduremapconfig.json"></map-view>
+                            <wt-charts-view slot="charts" class="displayPane charts">
                                 <map-view slot="map" class="chartsMap" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/chartsmapconfig.json"></map-view>
                             </wt-charts-view>
-                            <map-view slot="waypointinfo" class="waypointInfo" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
-                            <map-view slot="nearestwaypoint" class="nearestWaypoint" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="waypointinfo" class="displayPane waypointInfo" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
+                            <map-view slot="nearestwaypoint" class="displayPane nearestWaypoint" dpi-scale="1" config-path="/WTg3000/Avionics/G3000/MFD/MapConfig/navmapconfig.json"></map-view>
                         </mfd-halfpane>
                     </mfd-mainpane>
                 </div>
