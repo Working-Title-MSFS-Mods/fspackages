@@ -857,6 +857,15 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._isSelectedProcedureLoaded = this._isSelectedProcedureComplete && this._checkIfSelectedProcedureLoaded();
 
         this._updatePreviewButtonEnabled();
+        if (this._isSelectedProcedureComplete && this._paneSettings && this._paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE) {
+            // if procedure preview pane is active, automatically switch preview to the newly selected procedure
+            let event = {
+                source: this,
+                type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PREVIEW_MAP_SELECTED
+            };
+            this._fillSelectedProcedureDetails(event);
+            this._notifyListeners(event);
+        }
     }
 
     _updateSequenceList() {
