@@ -349,6 +349,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
 
     onExit() {
         this.htmlElement.close();
+        this._setSelectedWaypoint(null);
         this._updateDirectTo();
     }
 }
