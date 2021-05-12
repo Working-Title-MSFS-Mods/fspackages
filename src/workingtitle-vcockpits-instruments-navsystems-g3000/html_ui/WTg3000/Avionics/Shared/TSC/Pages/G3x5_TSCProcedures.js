@@ -533,9 +533,17 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         this.htmlElement.setPaneSettings(null);
     }
 
+    _deactivateProcedurePreview() {
+        let displaySetting = this.instrument.getSelectedPaneSettings().display;
+        if (displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE && this.htmlElement.isSelectedProcedureDisplayedOnMap) {
+            displaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
+        }
+    }
+
     onExit() {
         this.htmlElement.close();
         this._cleanUpFromPaneSettings();
+        this._deactivateProcedurePreview();
     }
 
     _onUpPressed() {
