@@ -1,4 +1,4 @@
-class WT_G3x5_ProcedureDisplay {
+class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
     /**
      * @param {String} paneID
      * @param {WT_G3x5_PaneSettings} paneSettings
@@ -7,6 +7,8 @@ class WT_G3x5_ProcedureDisplay {
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
     constructor(paneID, paneSettings, airplane, icaoWaypointFactory, unitsSettingModel) {
+        super();
+
         this._paneID = paneID;
         this._procedureSetting = paneSettings.procedure;
 
@@ -48,6 +50,10 @@ class WT_G3x5_ProcedureDisplay {
         return this._mapView;
     }
 
+    getTitle() {
+        return this._procedureName;
+    }
+
     /**
      * Gets the currently displayed procedure segment.
      * @returns {WT_FlightPlanProcedureSegment} the currently displayed procedure segment, or null if no procedure
@@ -55,10 +61,6 @@ class WT_G3x5_ProcedureDisplay {
      */
     getProcedureSegment() {
         return this._procedureSegment;
-    }
-
-    getProcedureName() {
-        return this._procedureName;
     }
 
     _initMapModel() {
@@ -87,12 +89,12 @@ class WT_G3x5_ProcedureDisplay {
         this.mapView.addLayer(new WT_MapViewRangeRingLayer());
         this.mapView.addLayer(new WT_MapViewCrosshairLayer());
         this.mapView.addLayer(new WT_MapViewAirplaneLayer());
-        this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_ProcedureDisplay.ORIENTATION_DISPLAY_TEXT));
+        this.mapView.addLayer(new WT_MapViewOrientationDisplayLayer(WT_G3x5_ProcedureDisplayPane.ORIENTATION_DISPLAY_TEXT));
         this.mapView.addLayer(new WT_MapViewMiniCompassLayer());
     }
 
     _initRangeTargetController() {
-        this._rangeTargetController = new WT_G3x5_ProcedureRangeTargetController(this._flightPlan, this.mapModel, this.mapView, WT_G3x5_ProcedureDisplay.MAP_RANGE_LEVELS, WT_G3x5_ProcedureDisplay.MAP_RANGE_DEFAULT);
+        this._rangeTargetController = new WT_G3x5_ProcedureRangeTargetController(this._flightPlan, this.mapModel, this.mapView, WT_G3x5_ProcedureDisplayPane.MAP_RANGE_LEVELS, WT_G3x5_ProcedureDisplayPane.MAP_RANGE_DEFAULT);
     }
 
     _initSettingListeners() {
@@ -234,13 +236,13 @@ class WT_G3x5_ProcedureDisplay {
     }
 }
 
-WT_G3x5_ProcedureDisplay.MAP_RANGE_LEVELS =
+WT_G3x5_ProcedureDisplayPane.MAP_RANGE_LEVELS =
     [250, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.FOOT)).concat(
         [0.25, 0.5, 0.75, 1, 1.5, 2.5, 4, 5, 7.5, 10, 15, 25, 40, 50, 75, 100, 150, 250, 400, 500, 750, 1000].map(range => new WT_NumberUnit(range, WT_Unit.NMILE))
     );
-WT_G3x5_ProcedureDisplay.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1);
+WT_G3x5_ProcedureDisplayPane.MAP_RANGE_DEFAULT = WT_Unit.NMILE.createNumber(1);
 
-WT_G3x5_ProcedureDisplay.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
+WT_G3x5_ProcedureDisplayPane.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
 
 class WT_G3x5_ProcedureRangeTargetController {
     /**
@@ -403,39 +405,3 @@ class WT_G3x5_ProcedureRangeTargetController {
 }
 WT_G3x5_ProcedureRangeTargetController.BOUNDING_CIRCLE_TOLERANCE = 1e-6; // ~6 meters
 WT_G3x5_ProcedureRangeTargetController.RANGE_BUFFER_FACTOR = 0.2;
-
-class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(procedureDisplay) {
-        super();
-
-        this._procedureDisplay = procedureDisplay;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_G3x5_ProcedureDisplay}
-     */
-    get procedureDisplay() {
-        return this._procedureDisplay;
-    }
-
-    getTitle() {
-        return this.procedureDisplay.getProcedureName();
-    }
-
-    init(root) {
-        this.procedureDisplay.init(root);
-    }
-
-    wake() {
-        this.procedureDisplay.wake();
-    }
-
-    sleep() {
-        this.procedureDisplay.sleep();
-    }
-
-    update() {
-        this.procedureDisplay.update();
-    }
-}

@@ -33,7 +33,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         this._settingModelID = `MFD-${halfPaneID}`;
         this._initSettings();
 
-        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
+        this._scrollEventKey = `${WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
 
         this._hasMadeManualAirportSelection = false;
         this._manualAirportSelectKey = `${WT_G3x5_TSCCharts.AIRPORT_SELECT_EVENT_KEY_PREFIX}_MFD-${halfPaneID}`;
@@ -207,7 +207,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     }
 
     resetScroll() {
-        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET);
+        WT_CrossInstrumentEvent.fireEvent(this._scrollEventKey, WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_RESET);
     }
 
     resetChartSettings() {

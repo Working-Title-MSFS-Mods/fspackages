@@ -137,7 +137,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     }
 
     _getSettingModelID(instrumentID, halfPaneID) {
-        return `${instrumentID}-${halfPaneID}_${WT_G3x5_WaypointInfoDisplay.SETTING_MODEL_ID}`;
+        return `${instrumentID}-${halfPaneID}_${WT_G3x5_WaypointInfoDisplayPane.SETTING_MODEL_ID}`;
     }
 
     _initSettingModel() {

@@ -1,4 +1,4 @@
-class WT_G3x5_ChartsDisplay {
+class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
     /**
      * @param {String} paneID
      * @param {WT_G3x5_PaneSettings} settings
@@ -7,6 +7,8 @@ class WT_G3x5_ChartsDisplay {
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
     constructor(paneID, settings, airplane, navigraphAPI, unitsSettingModel) {
+        super();
+
         this._paneID = paneID;
         this._chartIDSetting = settings.chartID;
         this._airplane = airplane;
@@ -14,7 +16,7 @@ class WT_G3x5_ChartsDisplay {
         this._unitsSettingModel = unitsSettingModel;
 
         this._settingModelID = paneID;
-        this._scrollEventKey = `${WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX}_${paneID}`;
+        this._scrollEventKey = `${WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_KEY_PREFIX}_${paneID}`;
 
         this._tempVector2 = new WT_GVector2(0, 0);
         this._tempTransform = new WT_GTransform2();
@@ -53,6 +55,11 @@ class WT_G3x5_ChartsDisplay {
      */
     get settingModel() {
         return this._settingModel;
+    }
+
+    getTitle() {
+        let chart = this.model.chart;
+        return chart ? `${this.model.airportIdent}–${chart.procedure_identifier}` : "Charts";
     }
 
     _initView() {
@@ -194,7 +201,7 @@ class WT_G3x5_ChartsDisplay {
     }
 
     _onScrollEvent(key, data) {
-        if (data === WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET) {
+        if (data === WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_RESET) {
             this.model.offset = this._tempVector2.set(0, 0);
         } else {
             let split = data.split(",");
@@ -237,9 +244,9 @@ class WT_G3x5_ChartsDisplay {
         this._mapView.update();
     }
 }
-WT_G3x5_ChartsDisplay.SETTING_MODEL_ID = "Charts";
-WT_G3x5_ChartsDisplay.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
-WT_G3x5_ChartsDisplay.SCROLL_EVENT_RESET = "RESET";
+WT_G3x5_ChartsDisplayPane.SETTING_MODEL_ID = "Charts";
+WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_KEY_PREFIX = "WT_Charts_Scroll";
+WT_G3x5_ChartsDisplayPane.SCROLL_EVENT_RESET = "RESET";
 
 class WT_G3x5_ChartsMapController {
     /**
@@ -434,42 +441,5 @@ class WT_G3x5_ChartsMapController {
             this._updateRange();
         }
         this._updateShowAirplane();
-    }
-}
-
-class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
-    constructor(charts) {
-        super();
-
-        this._charts = charts;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_G3x5_ChartsDisplay}
-     */
-    get charts() {
-        return this._charts;
-    }
-
-    getTitle() {
-        let chart = this.charts.model.chart;
-        return chart ? `${this.charts.model.airportIdent}–${chart.procedure_identifier}` : "Charts";
-    }
-
-    init(root) {
-        this.charts.init(root);
-    }
-
-    wake() {
-        this.charts.wake();
-    }
-
-    sleep() {
-        this.charts.sleep();
-    }
-
-    update() {
-        this.charts.update();
     }
 }
