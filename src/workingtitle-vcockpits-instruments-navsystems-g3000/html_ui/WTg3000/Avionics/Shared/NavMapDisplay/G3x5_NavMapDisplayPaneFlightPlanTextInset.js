@@ -2,13 +2,16 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInset {
     /**
      * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement} htmlElement
      * @param {WT_G3x5_BaseInstrument} instrument
+     * @param {WT_G3x5_NavMapDisplayFlightPlanTextDistanceSetting} distanceSetting
      */
-    constructor(htmlElement, instrument) {
+    constructor(htmlElement, instrument, distanceSetting) {
         this._htmlElement = htmlElement;
         this._instrument = instrument;
+        this._distanceSetting = distanceSetting;
 
         this._initHTMLElement();
         this._initState();
+        this._initSettings();
     }
 
     _initHTMLElement() {
@@ -33,6 +36,12 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInset {
         };
     }
 
+    _initSettings() {
+        this._distanceSetting.init();
+        this._distanceSetting.addListener(this._onDistanceSettingChanged.bind(this));
+        this.htmlElement.setDistanceCumulative(this._distanceSetting.isCumulative);
+    }
+
     /**
      * @readonly
      * @type {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement}
@@ -47,6 +56,10 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInset {
      */
     setSize(size) {
         this.htmlElement.setSize(size);
+    }
+
+    _onDistanceSettingChanged(setting, newValue, oldValue) {
+        this.htmlElement.setDistanceCumulative(newValue);
     }
 
     wake() {
@@ -140,6 +153,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
          */
         this._flightPlan = null;
         this._size = WT_G3x5_DisplayPane.Size.OFF;
+        this._isDistanceCumulative = false;
         /**
          * @type {WT_G3x5_TSCFlightPlanRowHTMLElement[]}
          */
@@ -158,6 +172,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
     async _defineChildren() {
         this._wrapper = new WT_CachedElement(this.shadowRoot.querySelector(`#wrapper`));
 
+        this._disTitle = this.shadowRoot.querySelector(`#distitle`);
         this._rowsContainer = this.shadowRoot.querySelector(`#rowscontainer`);
         this._activeArrowStemRect = this.shadowRoot.querySelector(`#activearrowstem rect`);
         this._activeArrowHead = this.shadowRoot.querySelector(`#activearrowhead`);
@@ -175,6 +190,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
             this._updateFromFlightPlan();
         }
         this._updateFromSize();
+        this._updateFromDistanceCumulative();
         this._updateFromActiveArrowShow();
         this._updateFromActiveArrowPosition();
     }
@@ -254,7 +270,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
 
     _updateFromSize() {
         this._wrapper.setAttribute("size", `${WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement.SIZE_ATTRIBUTES[this._size]}`);
-        this._visibleRows.forEach(row => row.setSize(this._size));
+        this._visibleRows.forEach(row => row.setSize(this._size), this);
     }
 
     /**
@@ -272,8 +288,29 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
         }
     }
 
+    _updateFromDistanceCumulative() {
+        this._disTitle.innerHTML = this._isDistanceCumulative ? "Cum<br>DIS" : "Leg<br>DIS";
+        this._visibleRows.forEach(row => row.setDistanceCumulative(this._isDistanceCumulative), this);
+    }
+
+    /**
+     *
+     * @param {Boolean} isCumulative
+     */
+    setDistanceCumulative(isCumulative) {
+        if (this._isDistanceCumulative === isCumulative) {
+            return;
+        }
+
+        this._isDistanceCumulative = isCumulative;
+        if (this._isInit) {
+            this._updateFromDistanceCumulative();
+        }
+    }
+
     _initRow(row) {
         row.setSize(this._size);
+        row.setDistanceCumulative(this._isDistanceCumulative);
         this._visibleRows.push(row);
     }
 
@@ -597,6 +634,18 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHTMLElement extends HTMLEle
 
     /**
      *
+     * @param {Boolean} isCumulative
+     */
+    setDistanceCumulative(isCumulative) {
+        this._modeHTMLElements.forEach(element => {
+            if (element) {
+                element.setDistanceCumulative(isCumulative);
+            }
+        });
+    }
+
+    /**
+     *
      * @returns {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHTMLElement.Mode}
      */
     getMode() {
@@ -708,6 +757,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
          */
         this._instrument = null;
         this._size = WT_G3x5_DisplayPane.Size.OFF;
+        this._isDistanceCumulative = false;
         /**
          * @type {WT_FlightPlanLeg}
          */
@@ -716,6 +766,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         this._bearingUnit = null;
         this._distanceUnit = null;
         this._altitudeUnit = null;
+        this._needUpdateDataFields = false;
         this._dynamicDataFieldUpdateTime = 0;
 
         this._isActive = false;
@@ -773,6 +824,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         await this._defineChildren();
         this._isInit = true;
         this._updateFromSize();
+        this._updateFromDistanceCumulative();
         this._updateFromLeg();
         this._updateFromIndent();
         this._updateFromActive();
@@ -932,7 +984,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
 
     _updateFromSize() {
         this._wrapper.setAttribute("size", `${WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement.SIZE_ATTRIBUTES[this._size]}`);
-        this._updateAllDataFields();
+        this._needUpdateDataFields = true;
     }
 
     /**
@@ -947,6 +999,25 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         this._size = size;
         if (this._isInit) {
             this._updateFromSize();
+        }
+    }
+
+    _updateFromDistanceCumulative() {
+        this._needUpdateDataFields = true;
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_DisplayPane.Size} isCumulative
+     */
+    setDistanceCumulative(isCumulative) {
+        if (this._isDistanceCumulative === isCumulative) {
+            return;
+        }
+
+        this._isDistanceCumulative = isCumulative;
+        if (this._isInit) {
+            this._updateFromDistanceCumulative();
         }
     }
 
@@ -968,8 +1039,9 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
 
     _updateAllDataFields() {
         this._dtkField.update(this._dtkInfo, this._bearingInfoFormatter);
-        this._disField.update(this._legDisInfo, this._distanceInfoFormatter);
+        this._disField.update(this._isDistanceCumulative ? this._cumDisInfo : this._legDisInfo, this._distanceInfoFormatter);
         this._updateDynamicDataFields();
+        this._needUpdateDataFields = false;
     }
 
     _updateFromLeg() {
@@ -1034,19 +1106,17 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
      * @returns {Boolean}
      */
     _updateDataFieldUnits(unitsModel) {
-        let updated = false;
         if (!unitsModel.bearingUnit.equals(this._bearingUnit)) {
             this._bearingUnit = unitsModel.bearingUnit;
             this._dtkInfo.setDisplayUnit(this._bearingUnit);
-            updated = true;
+            this._needUpdateDataFields = true;
         }
         if (!unitsModel.distanceUnit.equals(this._distanceUnit)) {
             this._distanceUnit = unitsModel.distanceUnit;
             this._legDisInfo.setDisplayUnit(this._distanceUnit);
             this._cumDisInfo.setDisplayUnit(this._distanceUnit);
-            updated = true;
+            this._needUpdateDataFields = true;
         }
-        return updated;
     }
 
     _updateDynamicDataFields() {
@@ -1066,8 +1136,8 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
      * @param {WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
      */
     _updateDataFields(unitsModel) {
-        let unitsUpdated = this._updateDataFieldUnits(unitsModel);
-        if (unitsUpdated) {
+        this._updateDataFieldUnits(unitsModel);
+        if (this._needUpdateDataFields) {
             this._updateAllDataFields();
         } else if (this._instrument.currentTimeStamp - this._dynamicDataFieldUpdateTime >= WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.DYNAMIC_DATA_FIELD_UPDATE_INTERVAL) {
             this._updateDynamicDataFields();
@@ -1399,6 +1469,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHeaderHTMLElement extends H
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
         this._size = WT_G3x5_DisplayPane.Size.OFF;
+        this._isDistanceCumulative = false;
         this._sequence = null;
         this._indent = 0;
         this._headerText = "";
@@ -1451,6 +1522,18 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHeaderHTMLElement extends H
         }
 
         this._size = size;
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_DisplayPane.Size} isCumulative
+     */
+    setDistanceCumulative(isCumulative) {
+        if (this._isDistanceCumulative === isCumulative) {
+            return;
+        }
+
+        this._isDistanceCumulative = isCumulative;
     }
 
     /**

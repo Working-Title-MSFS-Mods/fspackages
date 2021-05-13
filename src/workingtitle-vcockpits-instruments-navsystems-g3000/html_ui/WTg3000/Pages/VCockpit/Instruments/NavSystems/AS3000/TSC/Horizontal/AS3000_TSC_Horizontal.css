@@ -273,9 +273,9 @@ as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-mfd
             as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings wt-tsc-mapsettings-tabrow {
                 height: 17vh;
             }
-            as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings .mapSettingsTabRowRight {
-                font-size: 5vh;
-            }
+                as3000-tsc-horizontal-element #Electricity #PagesDisplay .mapSettings .mapSettingsTabRowRight {
+                    font-size: 5vh;
+                }
 
 as3000-tsc-horizontal-element #Electricity .mapPointerControl wt-tsc-mappointercontrol {
     position: absolute;
