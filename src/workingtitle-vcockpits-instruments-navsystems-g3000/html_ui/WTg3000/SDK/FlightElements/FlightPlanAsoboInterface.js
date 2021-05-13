@@ -327,6 +327,10 @@ class WT_FlightPlanAsoboInterface {
      * @returns {Promise<void>}
      */
     async setDestination(icao) {
+        if (this._asoboHasDestination() && !this._asoboHasOrigin()) {
+            // need to remove destination if one exists and there is no origin, otherwise the old destination gets shifted to the previous waypoint in the flight plan
+            await Coherent.call("REMOVE_DESTINATION", this._asoboFlightPlanInfo.destinationIndex, true);
+        }
         await Coherent.call("SET_DESTINATION", icao, !this._asoboHasDestination());
         await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean", 1);
     }
