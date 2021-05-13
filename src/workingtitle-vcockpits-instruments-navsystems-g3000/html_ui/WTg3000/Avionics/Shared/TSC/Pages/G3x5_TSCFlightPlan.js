@@ -281,6 +281,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.flightPlanOptions.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
+            flightPlanManager: this._fpm,
             settings: this.settings
         });
         this.instrument.switchToPopUpPage(this.instrument.flightPlanOptions);

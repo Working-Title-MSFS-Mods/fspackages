@@ -235,6 +235,11 @@ class WT_FlightPlanManager {
         }
     }
 
+    async _doClearFlightPlan() {
+        // only clear the enroute segment; the rest will be synced from the sim's built-in flight plan manager
+        this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, 0, this.activePlan.getEnroute().length);
+    }
+
     /**
      * Adds a waypoint to the active flight plan.
      * @param {WT_FlightPlan.Segment} segment - the flight plan segment to which to add the new waypoint.
@@ -432,6 +437,21 @@ class WT_FlightPlanManager {
      */
     async removeApproachFromActive() {
         await this._asoboInterface.removeApproach();
+        await this.syncActiveFromGame();
+    }
+
+    /**
+     * Clears the active flight plan and syncs the active flight plan after it has been cleared.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the active flight plan has been cleared.
+     */
+    async clearActivePlan() {
+        await this._doClearFlightPlan();
+        await this._asoboInterface.clearFlightPlan();
+        let syncEvent = {
+            sourceID: this._instrumentID,
+            type: WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN
+        };
+        this._syncHandler.fireEvent(syncEvent);
         await this.syncActiveFromGame();
     }
 
@@ -817,6 +837,9 @@ class WT_FlightPlanManager {
             case WT_FlightPlanSyncHandler.EventType.ENROUTE_REMOVE_INDEX:
                 this._doRemoveEnrouteElement(event.index);
                 break;
+            case WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN:
+                this._doClearFlightPlan();
+                break;
         }
     }
 }
@@ -881,7 +904,8 @@ WT_FlightPlanSyncHandler.EVENT_KEY = "WT_FlightPlanSync";
 WT_FlightPlanSyncHandler.EventType = {
     ENROUTE_INSERT_WAYPOINT: 0,
     ENROUTE_INSERT_AIRWAY: 1,
-    ENROUTE_REMOVE_INDEX: 2
+    ENROUTE_REMOVE_INDEX: 2,
+    CLEAR_FLIGHT_PLAN: 3
 }
 
 /**
