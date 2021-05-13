@@ -992,7 +992,7 @@ class WT_FlightPlan {
             return;
         }
 
-        let event = new WT_FlightPlanEvent(eventData);
+        let event = new WT_FlightPlanEvent(this, eventData);
         this._listeners.forEach(listener => listener(event));
     }
 
@@ -1031,8 +1031,17 @@ WT_FlightPlan.Segment = {
  */
 
 class WT_FlightPlanEvent {
-    constructor(data) {
+    constructor(source, data) {
+        this._source = source;
         this._data = data;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_FlightPlan}
+     */
+    get source() {
+        return this._source;
     }
 
     /**
@@ -1965,6 +1974,10 @@ class WT_FlightPlanOriginDest extends WT_FlightPlanSegment {
         return this._elements.length > 0 ? this._elements[0].fix : null;
     }
 
+    /**
+     *
+     * @returns {WT_FlightPlanLeg}
+     */
     leg() {
         return this._elements.length > 0 ? this._elements[0] : null;
     }

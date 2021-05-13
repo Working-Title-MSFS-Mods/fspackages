@@ -34,6 +34,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             }
         };
 
+        this._selectedRow = null;
+
         this._drctWaypoint = null;
 
         this._initSettings();
@@ -84,6 +86,35 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
         this._initHTMLElement();
         this._initButtonListener();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanRowHTMLElement} selectedRow
+     * @returns {WT_FlightPlanElement}
+     */
+    _getSelectedElement(selectedRow) {
+        if (!selectedRow) {
+            return null;
+        }
+
+        switch (selectedRow.getMode()) {
+            case WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG:
+            case WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.AIRWAY_FOOTER:
+                return selectedRow.getActiveModeHTMLElement().leg;
+            case WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.HEADER:
+                return selectedRow.getActiveModeHTMLElement().sequence;
+        }
+
+        return null;
+    }
+
+    updateFlightPlanPreview() {
+        let paneSettings = this.instrument.getSelectedPaneSettings();
+        if (paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN) {
+            let selectedElement = this._getSelectedElement(this.htmlElement.getSelectedRow());
+            paneSettings.flightPlan.setFlightPlan(WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.ACTIVE, -1, selectedElement);
+        }
     }
 
     _setDisplayedFlightPlan(flightPlan) {
@@ -281,8 +312,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.flightPlanOptions.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
+            flightPlanPage: this,
             flightPlanManager: this._fpm,
-            settings: this.settings
+            settings: this.settings,
+            paneSettings: this.instrument.getSelectedPaneSettings()
         });
         this.instrument.switchToPopUpPage(this.instrument.flightPlanOptions);
     }
@@ -632,6 +665,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     onEnter() {
         this.htmlElement.open();
+        this.updateFlightPlanPreview();
     }
 
     _updateState() {
@@ -639,9 +673,25 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
     }
 
+    _updateSelectedRow() {
+        let selectedRow = this.htmlElement.getSelectedRow();
+        if (selectedRow !== this._selectedRow) {
+            this._selectedRow = selectedRow;
+            this.updateFlightPlanPreview();
+        }
+    }
+
     onUpdate(deltaTime) {
         this._updateState();
         this.htmlElement.update(this._state);
+        this._updateSelectedRow();
+    }
+
+    _deactivateFlightPlanPreview() {
+        let displaySetting = this.instrument.getSelectedPaneSettings().display;
+        if (displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN) {
+            displaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
+        }
     }
 
     _updateDirectTo() {
@@ -651,6 +701,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     onExit() {
         this.htmlElement.close();
+        this._deactivateFlightPlanPreview();
         this._updateDirectTo();
     }
 
@@ -1726,6 +1777,7 @@ WT_G3x5_TSCFlightPlanHTMLElement.TEMPLATE.innerHTML = `
                                 wt-tsc-flightplan-row {
                                     height: var(--flightplan-table-row-height, 3em);
                                     margin-bottom: var(--flightplan-table-row-margin-vertical, 0.1em);
+                                    transform: rotateX(0deg);
                                 }
                             .activeArrow {
                                 display: none;
@@ -2828,7 +2880,6 @@ WT_G3x5_TSCFlightPlanRowLegHTMLElement.TEMPLATE.innerHTML = `
                     grid-template-rows: 50% 50%;
                     justify-items: end;
                     align-items: center;
-                    transform: rotateX(0deg);
                 }
                     wt-navdatainfo-view {
                         height: auto;
