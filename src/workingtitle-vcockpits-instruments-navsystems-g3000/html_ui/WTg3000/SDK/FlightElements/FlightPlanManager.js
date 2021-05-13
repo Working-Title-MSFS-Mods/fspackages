@@ -169,401 +169,6 @@ class WT_FlightPlanManager {
         }
     }
 
-    async _doSetOriginAndSync(icao) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        try {
-            if (icao === "") {
-                await this._asoboInterface.removeOrigin();
-            } else {
-                await this._asoboInterface.setOrigin(icao);
-            }
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_ORIGIN, {
-                icao: icao
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-        }
-        this._isLocked = false;
-
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetOriginWithoutSync(icao) {
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetOrigin(icao) {
-        if (this.isMaster) {
-            await this._doSetOriginAndSync(icao);
-        } else {
-            await this._doSetOriginWithoutSync(icao);
-        }
-    }
-
-    async _doSetDestinationAndSync(icao) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        try {
-            if (icao === "") {
-                await this._asoboInterface.removeDestination();
-            } else {
-                await this._asoboInterface.setDestination(icao);
-            }
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_DESTINATION, {
-                icao: icao
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-        }
-        this._isLocked = false;
-
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetDestinationWithoutSync(icao) {
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetDestination(icao) {
-        if (this.isMaster) {
-            await this._doSetDestinationAndSync(icao);
-        } else {
-            await this._doSetDestinationWithoutSync(icao);
-        }
-    }
-
-    async _doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        try {
-            if (procedureIndex < 0) {
-                await this._asoboInterface.removeDeparture();
-            } else {
-                await this._asoboInterface.loadDeparture(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
-            }
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_DEPARTURE, {
-                procedureIndex: procedureIndex,
-                enrouteTransitionIndex: enrouteTransitionIndex,
-                runwayTransitionIndex: runwayTransitionIndex
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-        }
-        this._isLocked = false;
-
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetDepartureWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetDeparture(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        if (this.isMaster) {
-            await this._doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
-        } else {
-            await this._doSetDepartureWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
-        }
-    }
-
-    async _doInsertEnrouteWaypointAndSync(icao, index) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        let leg;
-        try {
-            let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
-            leg = await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint}, index);
-            await this._asoboInterface.syncEnrouteLeg(leg);
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_WAYPOINT, {
-                icao: icao,
-                index: index
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-            if (leg) {
-                // sync to the sim's built-in flight plan manager failed, so we need to remove the leg from the flight plan
-                this.activePlan.removeElement(leg);
-            }
-        }
-        this._isLocked = false;
-    }
-
-    async _doInsertEnrouteWaypointWithoutSync(icao, index) {
-        try {
-            let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
-            await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint}, index);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doInsertEnrouteWaypoint(icao, index) {
-        if (this.isMaster) {
-            await this._doInsertEnrouteWaypointAndSync(icao, index);
-        } else {
-            await this._doInsertEnrouteWaypointWithoutSync(icao, index);
-        }
-    }
-
-    async _doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        let sequence;
-        try {
-            let enter = await this._icaoWaypointFactory.getWaypoint(enterICAO);
-            let airway = enter.airways.find(airway => airway.name === airwayName);
-            let exit = await this._icaoWaypointFactory.getWaypoint(exitICAO);
-            sequence = await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airway, enter, exit, index);
-            await this._asoboInterface.syncEnrouteAirwaySequence(sequence);
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_AIRWAY, {
-                airwayName: airwayName,
-                enterICAO: enterICAO,
-                exitICAO: exitICAO,
-                index: index
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-            if (sequence) {
-                // sync to the sim's built-in flight plan manager failed, so we need to remove the airway from the flight plan
-                this.activePlan.removeElement(WT_FlightPlan.Segment.ENROUTE. sequence);
-            }
-        }
-        this._isLocked = false;
-    }
-
-    async _doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index) {
-        try {
-            let enter = await this._icaoWaypointFactory.getWaypoint(enterICAO);
-            let airway = enter.airways.find(airway => airway.name === airwayName);
-            let exit = await this._icaoWaypointFactory.getWaypoint(exitICAO);
-            await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airway, enter, exit, index);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doInsertEnrouteAirway(airwayName, enterICAO, exitICAO, index) {
-        if (this.isMaster) {
-            await this._doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index);
-        } else {
-            await this._doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index);
-        }
-    }
-
-    async _doRemoveEnrouteElementAndSync(index) {
-        if (this._isLocked) {
-            return;
-        }
-
-        let element = this.activePlan.getEnroute().elements.get(index);
-
-        if (element) {
-            this._isLocked = true;
-            try {
-                if (element instanceof WT_FlightPlanLeg) {
-                    await this._asoboInterface.removeLeg(element);
-                } else if (element instanceof WT_FlightPlanAirwaySequence) {
-                    await this._asoboInterface.removeAirwaySequence(element);
-                }
-                this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, index);
-
-                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_REMOVE_INDEX, {
-                    index: index
-                });
-                this._syncHandler.fireEvent(syncEvent);
-            } catch (e) {
-                console.log(e);
-            }
-            this._isLocked = false;
-        }
-    }
-
-    async _doRemoveEnrouteElementWithoutSync(index) {
-        this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, index);
-    }
-
-    async _doRemoveEnrouteElement(index) {
-        if (this.isMaster) {
-            await this._doRemoveEnrouteElementAndSync(index);
-        } else {
-            await this._doRemoveEnrouteElementWithoutSync(index);
-        }
-    }
-
-    async _doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        try {
-            if (procedureIndex < 0) {
-                await this._asoboInterface.removeArrival();
-            } else {
-                await this._asoboInterface.loadArrival(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
-            }
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_ARRIVAL, {
-                procedureIndex: procedureIndex,
-                enrouteTransitionIndex: enrouteTransitionIndex,
-                runwayTransitionIndex: runwayTransitionIndex
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-        }
-        this._isLocked = false;
-
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetArrivalWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetArrival(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        if (this.isMaster) {
-            await this._doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
-        } else {
-            await this._doSetArrivalWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
-        }
-    }
-
-    async _doSetApproachAndSync(procedureIndex, transitionIndex) {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        try {
-            if (procedureIndex < 0) {
-                await this._asoboInterface.removeApproach();
-            } else {
-                await this._asoboInterface.loadApproach(procedureIndex, transitionIndex);
-            }
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_APPROACH, {
-                procedureIndex: procedureIndex,
-                transitionIndex: transitionIndex
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-        }
-        this._isLocked = false;
-
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetApproachWithoutSync(procedureIndex, transitionIndex) {
-        try {
-            await this.syncActiveFromGame();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async _doSetApproach(procedureIndex, transitionIndex) {
-        if (this.isMaster) {
-            await this._doSetApproachAndSync(procedureIndex, transitionIndex);
-        } else {
-            await this._doSetApproachWithoutSync(procedureIndex, transitionIndex);
-        }
-    }
-
-    async _doClearFlightPlanAndSync() {
-        if (this._isLocked) {
-            return;
-        }
-
-        this._isLocked = true;
-        try {
-            await this._asoboInterface.clearFlightPlan();
-            // only clear the enroute segment; the rest will be synced from the sim's built-in flight plan manager
-            this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, 0, this.activePlan.getEnroute().length);
-
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN);
-            this._syncHandler.fireEvent(syncEvent);
-        } catch (e) {
-            console.log(e);
-        }
-        this._isLocked = false;
-    }
-
-    async _doClearFlightPlanWithoutSync() {
-        this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, 0, this.activePlan.getEnroute().length);
-    }
-
-    async _doClearFlightPlan() {
-        if (this.isMaster) {
-            await this._doClearFlightPlanAndSync();
-        } else {
-            await this._doClearFlightPlanWithoutSync();
-        }
-    }
-
     /**
      * Sets the active flight plan's origin waypoint.
      * @param {WT_ICAOWaypoint} waypoint - the waypoint to set as the origin.
@@ -1180,12 +785,409 @@ class WT_FlightPlanManager {
         }
     }
 
+    async _doSetOriginAndSync(icao) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        try {
+            if (icao === "") {
+                await this._asoboInterface.removeOrigin();
+            } else {
+                await this._asoboInterface.setOrigin(icao);
+            }
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_ORIGIN, {
+                icao: icao
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this._isLocked = false;
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetOriginWithoutSync(icao) {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetOrigin(icao) {
+        if (this.isMaster) {
+            await this._doSetOriginAndSync(icao);
+        } else {
+            await this._doSetOriginWithoutSync(icao);
+        }
+    }
+
+    async _doSetDestinationAndSync(icao) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        try {
+            if (icao === "") {
+                await this._asoboInterface.removeDestination();
+            } else {
+                await this._asoboInterface.setDestination(icao);
+            }
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_DESTINATION, {
+                icao: icao
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this._isLocked = false;
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetDestinationWithoutSync(icao) {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetDestination(icao) {
+        if (this.isMaster) {
+            await this._doSetDestinationAndSync(icao);
+        } else {
+            await this._doSetDestinationWithoutSync(icao);
+        }
+    }
+
+    async _doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        try {
+            if (procedureIndex < 0) {
+                await this._asoboInterface.removeDeparture();
+            } else {
+                await this._asoboInterface.loadDeparture(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            }
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_DEPARTURE, {
+                procedureIndex: procedureIndex,
+                enrouteTransitionIndex: enrouteTransitionIndex,
+                runwayTransitionIndex: runwayTransitionIndex
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this._isLocked = false;
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetDepartureWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetDeparture(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        if (this.isMaster) {
+            await this._doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+        } else {
+            await this._doSetDepartureWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+        }
+    }
+
+    async _doInsertEnrouteWaypointAndSync(icao, index) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        let leg;
+        try {
+            let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
+            leg = await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint}, index);
+            await this._asoboInterface.syncEnrouteLeg(leg);
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_WAYPOINT, {
+                icao: icao,
+                index: index
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+            if (leg) {
+                // sync to the sim's built-in flight plan manager failed, so we need to remove the leg from the flight plan
+                this.activePlan.removeElement(leg);
+            }
+        }
+        this._isLocked = false;
+    }
+
+    async _doInsertEnrouteWaypointWithoutSync(icao, index) {
+        try {
+            let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
+            await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint}, index);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doInsertEnrouteWaypoint(icao, index) {
+        if (this.isMaster) {
+            await this._doInsertEnrouteWaypointAndSync(icao, index);
+        } else {
+            await this._doInsertEnrouteWaypointWithoutSync(icao, index);
+        }
+    }
+
+    async _doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        let sequence;
+        try {
+            let enter = await this._icaoWaypointFactory.getWaypoint(enterICAO);
+            let airway = enter.airways.find(airway => airway.name === airwayName);
+            let exit = await this._icaoWaypointFactory.getWaypoint(exitICAO);
+            sequence = await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airway, enter, exit, index);
+            await this._asoboInterface.syncEnrouteAirwaySequence(sequence);
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_AIRWAY, {
+                airwayName: airwayName,
+                enterICAO: enterICAO,
+                exitICAO: exitICAO,
+                index: index
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+            if (sequence) {
+                // sync to the sim's built-in flight plan manager failed, so we need to remove the airway from the flight plan
+                this.activePlan.removeElement(WT_FlightPlan.Segment.ENROUTE. sequence);
+            }
+        }
+        this._isLocked = false;
+    }
+
+    async _doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index) {
+        try {
+            let enter = await this._icaoWaypointFactory.getWaypoint(enterICAO);
+            let airway = enter.airways.find(airway => airway.name === airwayName);
+            let exit = await this._icaoWaypointFactory.getWaypoint(exitICAO);
+            await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airway, enter, exit, index);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doInsertEnrouteAirway(airwayName, enterICAO, exitICAO, index) {
+        if (this.isMaster) {
+            await this._doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index);
+        } else {
+            await this._doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index);
+        }
+    }
+
+    async _doRemoveEnrouteElementAndSync(index) {
+        if (this._isLocked) {
+            return;
+        }
+
+        let element = this.activePlan.getEnroute().elements.get(index);
+
+        if (element) {
+            this._isLocked = true;
+            try {
+                if (element instanceof WT_FlightPlanLeg) {
+                    await this._asoboInterface.removeLeg(element);
+                } else if (element instanceof WT_FlightPlanAirwaySequence) {
+                    await this._asoboInterface.removeAirwaySequence(element);
+                }
+                this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, index);
+
+                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_REMOVE_INDEX, {
+                    index: index
+                });
+                this._syncHandler.fireEvent(syncEvent);
+            } catch (e) {
+                console.log(e);
+            }
+            this._isLocked = false;
+        }
+    }
+
+    async _doRemoveEnrouteElementWithoutSync(index) {
+        this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, index);
+    }
+
+    async _doRemoveEnrouteElement(index) {
+        if (this.isMaster) {
+            await this._doRemoveEnrouteElementAndSync(index);
+        } else {
+            await this._doRemoveEnrouteElementWithoutSync(index);
+        }
+    }
+
+    async _doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        try {
+            if (procedureIndex < 0) {
+                await this._asoboInterface.removeArrival();
+            } else {
+                await this._asoboInterface.loadArrival(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            }
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_ARRIVAL, {
+                procedureIndex: procedureIndex,
+                enrouteTransitionIndex: enrouteTransitionIndex,
+                runwayTransitionIndex: runwayTransitionIndex
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this._isLocked = false;
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetArrivalWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetArrival(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+        if (this.isMaster) {
+            await this._doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+        } else {
+            await this._doSetArrivalWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+        }
+    }
+
+    async _doSetApproachAndSync(procedureIndex, transitionIndex) {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        try {
+            if (procedureIndex < 0) {
+                await this._asoboInterface.removeApproach();
+            } else {
+                await this._asoboInterface.loadApproach(procedureIndex, transitionIndex);
+            }
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_APPROACH, {
+                procedureIndex: procedureIndex,
+                transitionIndex: transitionIndex
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this._isLocked = false;
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetApproachWithoutSync(procedureIndex, transitionIndex) {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doSetApproach(procedureIndex, transitionIndex) {
+        if (this.isMaster) {
+            await this._doSetApproachAndSync(procedureIndex, transitionIndex);
+        } else {
+            await this._doSetApproachWithoutSync(procedureIndex, transitionIndex);
+        }
+    }
+
+    async _doClearFlightPlanAndSync() {
+        if (this._isLocked) {
+            return;
+        }
+
+        this._isLocked = true;
+        try {
+            await this._asoboInterface.clearFlightPlan();
+            // only clear the enroute segment; the rest will be synced from the sim's built-in flight plan manager
+            this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, 0, this.activePlan.getEnroute().length);
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN);
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this._isLocked = false;
+    }
+
+    async _doClearFlightPlanWithoutSync() {
+        this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, 0, this.activePlan.getEnroute().length);
+    }
+
+    async _doClearFlightPlan() {
+        if (this.isMaster) {
+            await this._doClearFlightPlanAndSync();
+        } else {
+            await this._doClearFlightPlanWithoutSync();
+        }
+    }
+
     /**
      *
      * @param {WT_FlightPlanSyncEvent} event
      */
     _onSyncEvent(event) {
         if ((event.command === WT_FlightPlanSyncHandler.Command.REQUEST) !== this.isMaster) {
+            // master FPM should only respond to sync requests
+            // all other FPMs should only respond to sync confirmations
             return;
         }
 
