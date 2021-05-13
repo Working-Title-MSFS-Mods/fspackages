@@ -120,6 +120,8 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
 
         this._settingModel.init();
         this._settingModel.update();
+
+        this._setMode(this._modeSetting.getValue());
     }
 
     /**
@@ -175,8 +177,12 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
             this._right.setHalfRefresh(isHalf);
 
             if (isHalf) {
+                this._left.setSize(WT_G3x5_DisplayPane.Size.HALF);
+                this._right.setSize(WT_G3x5_DisplayPane.Size.HALF);
                 this._right.wake();
             } else {
+                this._left.setSize(WT_G3x5_DisplayPane.Size.FULL);
+                this._right.setSize(WT_G3x5_DisplayPane.Size.OFF);
                 this._right.sleep();
             }
         }
@@ -272,8 +278,9 @@ WT_G3x5_MFDMainPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
 customElements.define("mfd-mainpane", WT_G3x5_MFDMainPaneHTMLElement);
 
 class WT_G3x5_MFDHalfPane {
-    constructor(htmlElement, instrumentID, halfPaneID, data) {
+    constructor(htmlElement, instrumentID, halfPaneID, instrument, data) {
         this._htmlElement = htmlElement;
+        this._instrument = instrument;
 
         this._paneID = `${instrumentID}-${halfPaneID}`;
 
@@ -287,6 +294,7 @@ class WT_G3x5_MFDHalfPane {
         this._activeDisplayPane = null;
         this._waypointICAO = "";
         this._halfRefresh = false;
+        this._size = WT_G3x5_DisplayPane.Size.OFF;
         this._isAsleep = false;
         this._isInit = false;
 
@@ -351,7 +359,7 @@ class WT_G3x5_MFDHalfPane {
     }
 
     _createPanes(data) {
-        this._navMapPane = new WT_G3x5_NavMapDisplayPane(this.paneID, this.settings, this._createNavMap(data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
+        this._navMapPane = new WT_G3x5_NavMapDisplayPane(this.paneID, this.settings, this._instrument, this._createNavMap(data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this.paneID, this.settings, this._createTrafficMap(data.airplane, data.trafficSystem, data.unitsSettingModel));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this.paneID, this.settings, this._createWeatherRadar(data.airplane));
         this._procedurePane = this._createProcedureDisplayPane(data.airplane, data.icaoWaypointFactory, data.unitsSettingModel);
@@ -465,6 +473,17 @@ class WT_G3x5_MFDHalfPane {
         this._halfRefresh = value;
     }
 
+    /**
+     *
+     * @param {WT_G3x5_DisplayPane.Size} size
+     */
+    setSize(size) {
+        this._size = size;
+        if (this._activeDisplayPane) {
+            this._activeDisplayPane.setSize(size);
+        }
+    }
+
     sleep() {
         if (!this._activeDisplayPane) {
             return;
@@ -479,6 +498,7 @@ class WT_G3x5_MFDHalfPane {
         }
 
         this._activeDisplayPane.wake();
+        this._activeDisplayPane.setSize(this._size);
     }
 
     _setControl(value) {
@@ -512,6 +532,7 @@ class WT_G3x5_MFDHalfPane {
         }
         if (newDisplayPane) {
             newDisplayPane.wake();
+            newDisplayPane.setSize(this._size);
         }
     }
 

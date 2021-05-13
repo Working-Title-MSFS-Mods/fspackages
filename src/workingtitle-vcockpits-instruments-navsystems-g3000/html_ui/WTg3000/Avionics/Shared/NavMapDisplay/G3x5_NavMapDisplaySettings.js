@@ -22,7 +22,7 @@ class WT_G3x5_NavMapDisplayInsetSetting extends WT_DataStoreSetting {
  */
 WT_G3x5_NavMapDisplayInsetSetting.Mode = {
     NONE: 0,
-    FLIGHT_PLAN: 1
+    FLIGHT_PLAN_TEXT: 1
 };
 WT_G3x5_NavMapDisplayInsetSetting.KEY = "WT_NavMapDisplay_Inset";
 WT_G3x5_NavMapDisplayInsetSetting.DEFAULT_VALUE = WT_G3x5_NavMapDisplayInsetSetting.Mode.NONE;

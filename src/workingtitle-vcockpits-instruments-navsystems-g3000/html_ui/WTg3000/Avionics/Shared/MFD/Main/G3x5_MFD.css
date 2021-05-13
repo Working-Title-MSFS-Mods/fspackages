@@ -298,6 +298,10 @@ as3000-mfd-element #Electricity #MainPane {
             font-weight: bold;
         }
 
+        as3000-mfd-element #Electricity .navMapDisplayPane {
+            --navmapdisplaypane-flightplantextinset-font-size: 3vh;
+        }
+
         as3000-mfd-element #Electricity weatherradar-view {
             position: absolute;
             left: 0%;

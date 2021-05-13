@@ -1343,7 +1343,7 @@ class WT_G3x5_TSCMapSettingsTerrainTabRow extends WT_G3x5_TSCMapSettingsTabRow {
 
 class WT_G3x5_TSCMapSettingsFlightPlanTextTabRow extends WT_G3x5_TSCMapSettingsToggleEnumTabRow {
     constructor(setting) {
-        super(WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.TOGGLE_BUTTON_LABEL, setting, WT_G3x5_NavMapDisplayInsetSetting.Mode.FLIGHT_PLAN, WT_G3x5_NavMapDisplayInsetSetting.Mode.NONE);
+        super(WT_G3x5_TSCMapSettingsFlightPlanTextTabRow.TOGGLE_BUTTON_LABEL, setting, WT_G3x5_NavMapDisplayInsetSetting.Mode.FLIGHT_PLAN_TEXT, WT_G3x5_NavMapDisplayInsetSetting.Mode.NONE);
     }
 
     _initRight() {

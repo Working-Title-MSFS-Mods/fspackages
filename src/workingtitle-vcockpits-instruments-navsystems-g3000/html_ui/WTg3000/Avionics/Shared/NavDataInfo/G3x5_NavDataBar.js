@@ -453,3 +453,45 @@ class WT_G3x5_NavDataBarFieldSetting extends WT_G3x5_NavDataBarSetting {
     }
 }
 WT_G3x5_NavDataBarFieldSetting.KEY_ROOT = "WT_NavDataBar_FieldAssignment";
+
+class WT_G3x5_UnitsControllerNavDataBarModelAdapter extends WT_G3x5_UnitsSettingModelAdapter {
+    /**
+     * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
+     * @param {WT_G3x5_NavDataBarModel} navDataBarModel
+     */
+    constructor(unitsSettingModel, navDataBarModel) {
+        super(unitsSettingModel);
+
+        this._navDataBarModel = navDataBarModel;
+        this._initListeners();
+        this._initModel();
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NavDataBarModel}
+     */
+    get navDataBarModel() {
+        return this._navDataBarModel;
+    }
+
+    _updateBearing() {
+        let unit = this.unitsSettingModel.navAngleSetting.getNavAngleUnit();
+        this.navDataBarModel.getNavDataInfo("BRG").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("DTK").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("TRK").setDisplayUnit(unit);
+    }
+
+    _updateDistance() {
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getDistanceUnit();
+        this.navDataBarModel.getNavDataInfo("DIS").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("DTG").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("XTK").setDisplayUnit(unit);
+    }
+
+    _updateSpeed() {
+        let unit = this.unitsSettingModel.distanceSpeedSetting.getSpeedUnit();
+        this.navDataBarModel.getNavDataInfo("GS").setDisplayUnit(unit);
+        this.navDataBarModel.getNavDataInfo("TAS").setDisplayUnit(unit);
+    }
+}
