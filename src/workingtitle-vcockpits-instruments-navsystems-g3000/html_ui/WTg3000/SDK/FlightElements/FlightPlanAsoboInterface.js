@@ -608,8 +608,7 @@ class WT_FlightPlanAsoboInterface {
     async setActiveLeg(leg) {
         let index = this._findAsoboIndex(leg);
         if (index < 0) {
-            reject("Could not find leg in Asobo flight plan");
-            return;
+            throw "Could not find leg in Asobo flight plan";
         }
 
         let isApproachActive = this.isApproachActive();
