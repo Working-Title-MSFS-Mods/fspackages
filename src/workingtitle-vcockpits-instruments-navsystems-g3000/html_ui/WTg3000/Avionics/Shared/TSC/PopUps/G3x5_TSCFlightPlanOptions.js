@@ -19,10 +19,13 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _createHTMLElement() {
-        return new WT_G3x5_TSCFlightPlanOptionsHTMLElement();
+        let htmlElement = new WT_G3x5_TSCFlightPlanOptionsHTMLElement();
+        htmlElement.setParentPopUp(this);
+        return htmlElement;
     }
 
     _initButtonListeners() {
+        this.htmlElement.showOnMapButton.addButtonListener(this._onShowOnMapButtonPressed.bind(this));
         this.htmlElement.dataFieldsButton.addButtonListener(this._onDataFieldsButtonPressed.bind(this));
         this.htmlElement.deleteButton.addButtonListener(this._onDeleteButtonPressed.bind(this));
     }
@@ -38,6 +41,20 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
         this._htmlElement = this._createHTMLElement();
         this.popUpWindow.appendChild(this.htmlElement);
         this._initFromHTMLElement();
+    }
+
+    _toggleFlightPlanPreview() {
+        let displaySetting = this.context.paneSettings.display;
+        if (displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN) {
+            displaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
+        } else {
+            displaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN);
+            this.context.flightPlanPage.updateFlightPlanPreview();
+        }
+    }
+
+    _onShowOnMapButtonPressed(button) {
+        this._toggleFlightPlanPreview();
     }
 
     _openDataFieldsPopUp() {
@@ -60,6 +77,18 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
     _onDeleteButtonPressed(button) {
         this._deleteFlightPlan();
     }
+
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.open();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
+    }
 }
 
 class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
@@ -69,6 +98,13 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
+        this._displaySettingListener = this._onDisplaySettingChanged.bind(this);
+
+        /**
+         * @type {WT_G3x5_TSCFlightPlanOptions}
+         */
+        this._parentPopUp = null;
+        this._isOpen = false;
         this._isInit = false;
     }
 
@@ -135,10 +171,61 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
     async _connectedCallbackHelper() {
         await this._defineChildren();
         this._isInit = true;
+        if (this._isOpen) {
+            this._initFromOpen();
+        }
     }
 
     connectedCallback() {
         this._connectedCallbackHelper();
+    }
+
+    setParentPopUp(parentPopUp) {
+        if (!parentPopUp || this._parentPopUp) {
+            return;
+        }
+
+        this._parentPopUp = parentPopUp;
+    }
+
+    _updateShowOnMapButton() {
+        let displaySetting = this._parentPopUp.context.paneSettings.display;
+        this._showOnMapButton.toggle = displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN ? "on" : "off";
+    }
+
+    _onDisplaySettingChanged(setting, newValue, oldValue) {
+        this._updateShowOnMapButton();
+    }
+
+    _initSettingListeners() {
+        this._parentPopUp.context.paneSettings.display.addListener(this._displaySettingListener);
+    }
+
+    _initFromOpen() {
+        this._initSettingListeners();
+        this._updateShowOnMapButton();
+    }
+
+    open() {
+        this._isOpen = true;
+        if (this._isInit) {
+            this._initFromOpen();
+        }
+    }
+
+    _cleanUpSettingListeners() {
+        this._parentPopUp.context.paneSettings.display.removeListener(this._displaySettingListener);
+    }
+
+    _cleanUpFromClose() {
+        this._cleanUpSettingListeners();
+    }
+
+    close() {
+        this._isOpen = false;
+        if (this._isInit) {
+            this._cleanUpFromClose();
+        }
     }
 }
 WT_G3x5_TSCFlightPlanOptionsHTMLElement.NAME = "wt-tsc-flightplanoptions";
@@ -169,7 +256,7 @@ WT_G3x5_TSCFlightPlanOptionsHTMLElement.TEMPLATE.innerHTML = `
             }
     </style>
     <div id="wrapper">
-        <wt-tsc-button-statusbar id="showonmap" labeltext="Show On Map" enabled="false"></wt-tsc-button-statusbar>
+        <wt-tsc-button-statusbar id="showonmap" labeltext="Show On Map"></wt-tsc-button-statusbar>
         <wt-tsc-button-label id="mapsettings" labeltext="Map Settings" enabled="false"></wt-tsc-button-label>
         <wt-tsc-button-label id="copy" labeltext="Copy to Standby" enabled="false"></wt-tsc-button-label>
         <wt-tsc-button-label id="catalog" labeltext="Flight Plan Catalog" enabled="false"></wt-tsc-button-label>

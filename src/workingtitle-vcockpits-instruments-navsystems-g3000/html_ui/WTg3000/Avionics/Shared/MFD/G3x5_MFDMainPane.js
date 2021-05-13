@@ -332,6 +332,13 @@ class WT_G3x5_MFDHalfPane {
     }
 
     /**
+     * @returns {WT_G3x5_FlightPlanDisplayPane}
+     */
+    _createFlightPlanDisplayPane(airplane, icaoWaypointFactory, flightPlanManager, unitsSettingModel) {
+        return new WT_G3x5_FlightPlanDisplayPane(this.paneID, this.settings, airplane, icaoWaypointFactory, flightPlanManager, unitsSettingModel);
+    }
+
+    /**
      * @returns {WT_G3x5_ProcedureDisplayPane}
      */
     _createProcedureDisplayPane(airplane, icaoWaypointFactory, unitsSettingModel) {
@@ -362,6 +369,7 @@ class WT_G3x5_MFDHalfPane {
         this._navMapPane = new WT_G3x5_NavMapDisplayPane(this.paneID, this.settings, this._instrument, this._createNavMap(data.airplane, data.airspeedSensorIndex, data.altimeterIndex, data.icaoWaypointFactory, data.icaoSearchers, data.flightPlanManager, data.unitsSettingModel, data.citySearcher, data.borderData, data.roadFeatureData, data.roadLabelData, data.trafficSystem));
         this._trafficMapPane = new WT_G3x5_TrafficMapDisplayPane(this.paneID, this.settings, this._createTrafficMap(data.airplane, data.trafficSystem, data.unitsSettingModel));
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this.paneID, this.settings, this._createWeatherRadar(data.airplane));
+        this._flightPlanPane = this._createFlightPlanDisplayPane(data.airplane, data.icaoWaypointFactory, data.flightPlanManager, data.unitsSettingModel);
         this._procedurePane = this._createProcedureDisplayPane(data.airplane, data.icaoWaypointFactory, data.unitsSettingModel);
         this._chartsPane = this._createChartsDisplayPane(data.airplane, data.navigraphAPI, data.unitsSettingModel);
         this._waypointInfoPane = this._createWaypointInfoDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);
@@ -388,6 +396,7 @@ class WT_G3x5_MFDHalfPane {
         let [
             navMapElement,
             trafficMapElement,
+            flightPlanElement,
             procedureElement,
             chartsElement,
             waypointInfoElement,
@@ -395,6 +404,7 @@ class WT_G3x5_MFDHalfPane {
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.htmlElement, `.navMapDisplayPane`),
             WT_CustomElementSelector.select(this.htmlElement, `.trafficMap`),
+            WT_CustomElementSelector.select(this.htmlElement, `.flightPlanMap`),
             WT_CustomElementSelector.select(this.htmlElement, `.procedureMap`),
             WT_CustomElementSelector.select(this.htmlElement, `.charts`),
             WT_CustomElementSelector.select(this.htmlElement, `.waypointInfo`),
@@ -404,6 +414,7 @@ class WT_G3x5_MFDHalfPane {
         this._navMapPane.init(navMapElement);
         this._trafficMapPane.init(trafficMapElement);
         this._weatherRadarPane.init(this.htmlElement.querySelector(`.weatherRadar`));
+        this._flightPlanPane.init(flightPlanElement);
         this._procedurePane.init(procedureElement);
         this._chartsPane.init(chartsElement);
         this._waypointInfoPane.init(waypointInfoElement);
@@ -513,6 +524,8 @@ class WT_G3x5_MFDHalfPane {
                 return this._trafficMapPane;
             case WT_G3x5_PaneDisplaySetting.Mode.WEATHER:
                 return this._weatherRadarPane;
+            case WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN:
+                return this._flightPlanPane;
             case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
                 return this._procedurePane;
             case WT_G3x5_PaneDisplaySetting.Mode.CHARTS:
@@ -613,40 +626,24 @@ class WT_G3x5_MFDHalfPaneHTMLElement extends HTMLElement {
         }
     }
 
-    _setActiveView(view) {
-        this._wrapper.setAttribute("active-view", view);
-    }
-
     _updateView(display) {
-        switch (display) {
-            case WT_G3x5_PaneDisplaySetting.Mode.NAVMAP:
-                this._setActiveView("navmap");
-                break;
-            case WT_G3x5_PaneDisplaySetting.Mode.TRAFFIC:
-                this._setActiveView("trafficmap");
-                break;
-            case WT_G3x5_PaneDisplaySetting.Mode.WEATHER:
-                this._setActiveView("weatherradar");
-                break;
-            case WT_G3x5_PaneDisplaySetting.Mode.PROCEDURE:
-                this._setActiveView("procedure");
-                break;
-            case WT_G3x5_PaneDisplaySetting.Mode.CHARTS:
-                this._setActiveView("charts");
-                break;
-            case WT_G3x5_PaneDisplaySetting.Mode.WAYPOINT_INFO:
-                this._setActiveView("waypointinfo");
-                break;
-            case WT_G3x5_PaneDisplaySetting.Mode.NRST_WAYPOINT:
-                this._setActiveView("nearestwaypoint");
-                break;
-        }
+        this._wrapper.setAttribute("active-view", WT_G3x5_MFDHalfPaneHTMLElement.DISPLAY_MODE_ATTRIBUTES[display]);
     }
 
     setDisplay(display) {
         this._updateView(display);
     }
 }
+WT_G3x5_MFDHalfPaneHTMLElement.DISPLAY_MODE_ATTRIBUTES = [
+    "navmap",
+    "trafficmap",
+    "weatherradar",
+    "flightplan",
+    "procedure",
+    "charts",
+    "waypointinfo",
+    "nearestwaypoint"
+];
 WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW = document.createElement("template");
 WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
     <style>
@@ -680,6 +677,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
                     #wrapper[active-view="navmap"] #navmap,
                     #wrapper[active-view="trafficmap"] #trafficmap,
                     #wrapper[active-view="weatherradar"] #weatherradar,
+                    #wrapper[active-view="flightplan"] #flightplan,
                     #wrapper[active-view="procedure"] #procedure,
                     #wrapper[active-view="charts"] #charts,
                     #wrapper[active-view="waypointinfo"] #waypointinfo,
@@ -710,6 +708,7 @@ WT_G3x5_MFDHalfPaneHTMLElement.TEMPLATE_SHADOW.innerHTML = `
             <slot slot="content" id="navmap" class="content" name="navmap"></slot>
             <slot slot="content" id="trafficmap" class="content" name="trafficmap"></slot>
             <slot slot="content" id="weatherradar" class="content" name="weatherradar"></slot>
+            <slot slot="content" id="flightplan" class="content" name="flightplan"></slot>
             <slot slot="content" id="procedure" class="content" name="procedure"></slot>
             <slot slot="content" id="charts" class="content" name="charts"></slot>
             <slot slot="content" id="waypointinfo" class="content" name="waypointinfo"></slot>

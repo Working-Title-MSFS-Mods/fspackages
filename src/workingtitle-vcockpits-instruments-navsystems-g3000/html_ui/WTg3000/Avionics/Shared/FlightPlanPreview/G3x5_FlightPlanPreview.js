@@ -15,6 +15,11 @@ class WT_G3x5_FlightPlanPreview {
         this._bingMapID = bingMapID;
 
         this._flightPlan = new WT_FlightPlan(icaoWaypointFactory);
+        /**
+         * @type {WT_FlightPlanLeg[]}
+         */
+        this._focus = [];
+        this._focusReadOnly = new WT_ReadOnlyArray(this._focus);
 
         this._isInit = false;
     }
@@ -77,7 +82,7 @@ class WT_G3x5_FlightPlanPreview {
     }
 
     _initRangeTargetController() {
-        this._rangeTargetController = new WT_G3x5_FlightPlanPreviewRangeTargetController(this._flightPlan, this.mapModel, this.mapView, WT_G3x5_FlightPlanPreview.MAP_RANGE_LEVELS, WT_G3x5_FlightPlanPreview.MAP_RANGE_DEFAULT);
+        this._rangeTargetController = new WT_G3x5_FlightPlanPreviewRangeTargetController(this._flightPlan, this._focusReadOnly, this.mapModel, this.mapView, WT_G3x5_FlightPlanPreview.MAP_RANGE_LEVELS, WT_G3x5_FlightPlanPreview.MAP_RANGE_DEFAULT);
     }
 
     /**
@@ -90,6 +95,24 @@ class WT_G3x5_FlightPlanPreview {
         this._initMapView();
         this._initRangeTargetController();
         this._isInit = true;
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg[]} legs
+     */
+    setFocus(legs) {
+        if (this._focus.length === legs.length && this._focus.every((leg, index) => leg === legs[index])) {
+            return;
+        }
+
+        this._focus.splice(0, this._focus.length);
+        if (legs) {
+            this._focus.push(...legs);
+        }
+        if (this._isInit) {
+            this._rangeTargetController.onFocusChanged();
+        }
     }
 
     sleep() {
@@ -121,12 +144,13 @@ WT_G3x5_FlightPlanPreview.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
 class WT_G3x5_FlightPlanPreviewRangeTargetController {
     /**
      * @param {WT_FlightPlan} flightPlan
+     * @param {WT_ReadOnlyArray<WT_FlightPlanLeg>} focus
      * @param {WT_MapModel} mapModel
      * @param {WT_MapView} mapView
      * @param {WT_NumberUnit[]} rangeLevels
      * @param {WT_NumberUnit} defaultRange
      */
-     constructor(flightPlan, mapModel, mapView, rangeLevels, defaultRange) {
+     constructor(flightPlan, focus, mapModel, mapView, rangeLevels, defaultRange) {
         this._flightPlan = flightPlan;
         this._mapModel = mapModel;
         this._mapView = mapView;
@@ -137,6 +161,7 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         this._rangeLevels = rangeLevels;
         this._rangeIndexDefault = this._findRangeIndex(defaultRange);
 
+        this._focus = focus;
         this._aspectRatio = 0;
         this._needUpdate = false;
 
@@ -169,6 +194,10 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         range.set(model.range).scale(4, true);
     }
 
+    onFocusChanged() {
+        this._needUpdate = true;
+    }
+
     _findRangeIndex(minRange) {
         let index = this._rangeLevels.findIndex(range => range.compare(minRange) >= 0);
         return index >= 0 ? index : (this._rangeLevels.length - 1);
@@ -184,12 +213,12 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
             radius: WT_Unit.NMILE.createNumber(0)
         };
 
-        let legs = this._flightPlan.legs;
+        let legs = this._focus.length === 0 ? this._flightPlan.legs : this._focus;
         if (legs.length === 0) {
             return boundingCircle;
         }
         if (legs.length === 1) {
-            boundingCircle.center.set(legs.get(0).fix.location);
+            boundingCircle.center.set(legs.first().fix.location);
             return boundingCircle;
         }
 

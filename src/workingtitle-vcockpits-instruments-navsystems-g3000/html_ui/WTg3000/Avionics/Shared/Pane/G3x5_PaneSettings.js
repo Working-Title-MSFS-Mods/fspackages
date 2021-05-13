@@ -17,6 +17,10 @@ class WT_G3x5_PaneSettings {
         this._settingModel.addSetting(this._navMapInset = new WT_G3x5_NavMapDisplayInsetSetting(this._settingModel));
     }
 
+    _initFlightPlanSetting() {
+        this._settingModel.addSetting(this._flightPlan = new WT_G3x5_FlightPlanDisplayFlightPlanSetting(this._settingModel));
+    }
+
     _initProcedureSetting() {
         this._settingModel.addSetting(this._procedure = new WT_G3x5_ProcedureDisplayProcedureSetting(this._settingModel));
     }
@@ -32,6 +36,7 @@ class WT_G3x5_PaneSettings {
         this._initControlSetting();
 
         this._initNavMapInsetSetting();
+        this._initFlightPlanSetting();
         this._initProcedureSetting();
         this._initChartIDSetting();
     }
@@ -66,6 +71,14 @@ class WT_G3x5_PaneSettings {
      */
     get navMapInset() {
         return this._navMapInset;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_FlightPlanDisplayFlightPlanSetting}
+     */
+    get flightPlan() {
+        return this._flightPlan;
     }
 
     /**
@@ -147,8 +160,9 @@ WT_G3x5_PaneDisplaySetting.Mode = {
     NAVMAP: 0,
     TRAFFIC: 1,
     WEATHER: 2,
-    PROCEDURE: 3,
-    CHARTS: 4,
-    WAYPOINT_INFO: 5,
-    NRST_WAYPOINT: 6
+    FLIGHT_PLAN: 3,
+    PROCEDURE: 4,
+    CHARTS: 5,
+    WAYPOINT_INFO: 6,
+    NRST_WAYPOINT: 7
 }
