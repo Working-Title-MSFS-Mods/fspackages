@@ -394,6 +394,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
+    _onEnrouteHeaderButtonPressed(event) {
+        this.htmlElement.toggleRowSelection(event.row);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
     _onAirwaySequenceHeaderButtonPressed(event) {
         this.htmlElement.toggleRowSelection(event.row);
     }
@@ -408,6 +416,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             this._onOriginHeaderButtonPressed(event);
         } else if (event.sequence === flightPlan.getDestination() || event.sequence === flightPlan.getArrival() || event.sequence === flightPlan.getApproach()) {
             this._onDestinationHeaderButtonPressed(event);
+        } else if (event.sequence === flightPlan.getEnroute()) {
+            this._onEnrouteHeaderButtonPressed(event);
         } else if (event.sequence instanceof WT_FlightPlanAirwaySequence) {
             this._onAirwaySequenceHeaderButtonPressed(event);
         }
