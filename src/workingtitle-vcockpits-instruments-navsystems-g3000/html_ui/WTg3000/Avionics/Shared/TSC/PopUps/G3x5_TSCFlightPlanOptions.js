@@ -24,6 +24,7 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
 
     _initButtonListeners() {
         this.htmlElement.dataFieldsButton.addButtonListener(this._onDataFieldsButtonPressed.bind(this));
+        this.htmlElement.deleteButton.addButtonListener(this._onDeleteButtonPressed.bind(this));
     }
 
     async _initFromHTMLElement() {
@@ -50,6 +51,14 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
 
     _onDataFieldsButtonPressed(button) {
         this._openDataFieldsPopUp();
+    }
+
+    _deleteFlightPlan() {
+        this.context.flightPlanManager.clearActivePlan();
+    }
+
+    _onDeleteButtonPressed(button) {
+        this._deleteFlightPlan();
     }
 }
 
@@ -99,6 +108,14 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
         return this._dataFieldsButton;
     }
 
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get deleteButton() {
+        return this._deleteButton;
+    }
+
     async _defineChildren() {
         this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
 
@@ -106,10 +123,12 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
             this._showOnMapButton,
             this._mapSettingsButton,
             this._dataFieldsButton,
+            this._deleteButton,
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#showonmap`, WT_TSCStatusBarButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#mapsettings`, WT_TSCLabeledButton),
-            WT_CustomElementSelector.select(this.shadowRoot, `#datafields`, WT_TSCLabeledButton)
+            WT_CustomElementSelector.select(this.shadowRoot, `#datafields`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#delete`, WT_TSCLabeledButton)
         ]);
     }
 
@@ -156,7 +175,7 @@ WT_G3x5_TSCFlightPlanOptionsHTMLElement.TEMPLATE.innerHTML = `
         <wt-tsc-button-label id="catalog" labeltext="Flight Plan Catalog" enabled="false"></wt-tsc-button-label>
         <wt-tsc-button-label id="store" labeltext="Store" enabled="false"></wt-tsc-button-label>
         <wt-tsc-button-label id="rename" labeltext="Rename" enabled="false"></wt-tsc-button-label>
-        <wt-tsc-button-label id="delete" labeltext="Delete Flight Plan" enabled="false"></wt-tsc-button-label>
+        <wt-tsc-button-label id="delete" labeltext="Delete Flight Plan"></wt-tsc-button-label>
         <wt-tsc-button-label id="invert" labeltext="Invert" enabled="false"></wt-tsc-button-label>
         <wt-tsc-button-label id="closest" labeltext="Closest Point of Flight Plan" enabled="false"></wt-tsc-button-label>
         <wt-tsc-button-label id="tempcomp" labeltext="APPR WPT TEMP COMP" enabled="false"></wt-tsc-button-label>

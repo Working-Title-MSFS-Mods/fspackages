@@ -515,6 +515,18 @@ class WT_FlightPlanAsoboInterface {
      *
      * @returns {Promise<void>}
      */
+    async clearFlightPlan() {
+        await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
+        await Promise.all([
+            SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean", 0),
+            SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean", 0)
+        ]);
+    }
+
+    /**
+     *
+     * @returns {Promise<void>}
+     */
     async activateApproach() {
         if (!this.isApproachLoaded()) {
             return;
