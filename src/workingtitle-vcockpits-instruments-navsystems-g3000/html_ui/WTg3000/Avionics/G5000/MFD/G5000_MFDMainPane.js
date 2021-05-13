@@ -7,7 +7,7 @@ class WT_G5000_MFDMainPane extends WT_G3x5_MFDMainPane {
      */
     _createHalfPane(paneID, data) {
          let slot = (paneID === WT_G3x5_MFDHalfPane.ID.LEFT) ? "left" : "right";
-         return new WT_G5000_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="${slot}"]`), this.instrumentID, paneID, data);
+         return new WT_G5000_MFDHalfPane(this.htmlElement.querySelector(`mfd-halfpane[slot="${slot}"]`), this.instrumentID, paneID, this.instrument, data);
     }
 }
 

@@ -2,6 +2,7 @@ class WT_G3x5_DisplayPane {
     constructor(paneID, paneSettings) {
         this._paneID = paneID;
         this._paneSettings = paneSettings;
+        this._size = WT_G3x5_DisplayPane.Size.OFF;
     }
 
     /**
@@ -20,6 +21,30 @@ class WT_G3x5_DisplayPane {
         return this._paneSettings;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_DisplayPane.Size}
+     */
+    get size() {
+        return this._size;
+    }
+
+    _updateFromSize() {
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_DisplayPane.Size} size
+     */
+    setSize(size) {
+        if (this._size === size) {
+            return;
+        }
+
+        this._size = size;
+        this._updateFromSize();
+    }
+
     getTitle() {
     }
 
@@ -35,6 +60,14 @@ class WT_G3x5_DisplayPane {
     update() {
     }
 }
+/**
+ * @enum {Number}
+ */
+WT_G3x5_DisplayPane.Size = {
+    OFF: 0,
+    FULL: 1,
+    HALF: 2,
+};
 
 class WT_G3x5_WeatherRadarDisplayPane extends WT_G3x5_DisplayPane {
     constructor(paneID, paneSettings, weatherRadar) {
