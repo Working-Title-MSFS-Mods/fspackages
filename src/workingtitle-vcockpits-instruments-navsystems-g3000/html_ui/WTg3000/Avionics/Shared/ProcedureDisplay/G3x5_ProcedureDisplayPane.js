@@ -69,7 +69,6 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
         this.mapModel.addModule(new WT_MapModelOrientationModule());
         this.mapModel.addModule(new WT_MapModelRangeRingModule());
         this.mapModel.addModule(new WT_MapModelFlightPlanModule());
-        this.mapModel.addModule(new WT_G3x5_MapModelWaypointDisplayModule());
 
         this.mapModel.crosshair.show = true;
         this.mapModel.terrain.mode = WT_MapModelTerrainModule.TerrainMode.OFF;
