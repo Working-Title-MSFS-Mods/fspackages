@@ -91,6 +91,10 @@ class WT_G3x5_MFD extends NavSystem {
     disconnectedCallback() {
     }
 
+    _isFlightPlanManagerMaster() {
+        return true;
+    }
+
     _getReferenceAirspeedSensor() {
         return this.airplane.sensors.getAirspeedSensor(1);
     }

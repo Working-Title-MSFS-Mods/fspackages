@@ -408,7 +408,7 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_G3x5_TSCProcedureSelectionEvent} event
      */
-    async _loadProcedure(event) {
+    _loadProcedure(event) {
     }
 
     _deactivatePreview() {
@@ -1709,19 +1709,19 @@ class WT_G3x5_TSCDepartureArrivalSelection extends WT_G3x5_TSCProcedureSelection
     _getProcedureList(airport) {
     }
 
-    async _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
     }
 
     /**
      *
      * @param {WT_G3x5_TSCProcedureSelectionEvent} event
      */
-    async _loadProcedure(event) {
+    _loadProcedure(event) {
         let airport = event.procedure.airport;
         let procedureList = this._getProcedureList(airport);
         let procedureIndex = procedureList.array.indexOf(event.procedure);
         let runwayTransitionIndex = event.runway ? event.procedure.runwayTransitions.array.findIndex(transition => transition.runway.equals(event.runway)) : -1;
-        await this._doLoadProcedure(procedureIndex, event.transitionIndex, runwayTransitionIndex);
+        this._doLoadProcedure(procedureIndex, event.transitionIndex, runwayTransitionIndex);
     }
 
     /**
@@ -2302,9 +2302,9 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
         return airport.departures;
     }
 
-    async _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         try {
-            await this._fpm.loadDepartureToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            this._fpm.loadDepartureToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
         } catch (e) {
             console.log(e);
         }
@@ -2531,9 +2531,9 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
         return airport.arrivals;
     }
 
-    async _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         try {
-            await this._fpm.loadArrivalToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            this._fpm.loadArrivalToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
         } catch (e) {
             console.log(e);
         }
@@ -2766,9 +2766,9 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
         this._fpm.removeApproachFromActive();
     }
 
-    async _doLoadProcedure(procedureIndex, transitionIndex) {
+    _doLoadProcedure(procedureIndex, transitionIndex) {
         try {
-            await this._fpm.loadApproachToActive(procedureIndex, transitionIndex);
+            this._fpm.loadApproachToActive(procedureIndex, transitionIndex);
         } catch (e) {
             console.log(e);
         }
@@ -2778,11 +2778,11 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
      *
      * @param {WT_G3x5_TSCProcedureSelectionEvent} event
      */
-    async _loadProcedure(event) {
+    _loadProcedure(event) {
         let airport = event.procedure.airport;
         let procedureList = this._getProcedureList(airport);
         let procedureIndex = procedureList.array.indexOf(event.procedure);
-        await this._doLoadProcedure(procedureIndex, event.transitionIndex);
+        this._doLoadProcedure(procedureIndex, event.transitionIndex);
     }
 
     /**
