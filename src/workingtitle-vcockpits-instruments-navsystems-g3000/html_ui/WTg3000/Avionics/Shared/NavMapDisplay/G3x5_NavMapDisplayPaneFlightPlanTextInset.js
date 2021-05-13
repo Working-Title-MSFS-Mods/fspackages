@@ -1050,7 +1050,6 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
     }
 
     _updateDynamicDataFields() {
-        console.log(`leg row size ${this._size}`);
         if (this._size !== WT_G3x5_DisplayPane.Size.FULL) {
             return;
         }
