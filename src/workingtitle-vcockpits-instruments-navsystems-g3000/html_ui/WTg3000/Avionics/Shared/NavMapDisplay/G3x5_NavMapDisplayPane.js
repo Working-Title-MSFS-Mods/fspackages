@@ -42,7 +42,7 @@ class WT_G3x5_NavMapDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     _initInsets() {
-        this._flightPlanTextInset = new WT_G3x5_NavMapDisplayPaneFlightPlanTextInset(this._htmlElement.flightPlanTextInsetHTMLElement, this._instrument);
+        this._flightPlanTextInset = new WT_G3x5_NavMapDisplayPaneFlightPlanTextInset(this._htmlElement.flightPlanTextInsetHTMLElement, this._instrument, this.paneSettings.navMapFlightPlanTextInsetDistance);
     }
 
     _initSettingListeners() {

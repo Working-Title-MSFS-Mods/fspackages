@@ -379,9 +379,9 @@ wt-tsc-mapsettings-tabrow {
 wt-tsc-mapsettings-tabrow > * {
     margin: 0.25vh;
 }
-wt-tsc-mapsettings-tabrow .mapSettingsTabRowRight {
-    color: var(--wt-g3x5-lightblue);
-}
+    wt-tsc-mapsettings-tabrow .mapSettingsTabRowRight {
+        color: var(--wt-g3x5-lightblue);
+    }
 
 .MapDetailSelect .Container {
   position: absolute;

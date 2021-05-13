@@ -13,8 +13,9 @@ class WT_G3x5_PaneSettings {
         this._settingModel.addSetting(this._control = new WT_G3x5_PaneControlSetting(this._settingModel));
     }
 
-    _initNavMapInsetSetting() {
+    _initNavMapInsetSettings() {
         this._settingModel.addSetting(this._navMapInset = new WT_G3x5_NavMapDisplayInsetSetting(this._settingModel));
+        this._settingModel.addSetting(this._navMapFlightPlanTextInsetDistance = new WT_G3x5_NavMapDisplayFlightPlanTextDistanceSetting(this._settingModel));
     }
 
     _initFlightPlanSetting() {
@@ -35,7 +36,7 @@ class WT_G3x5_PaneSettings {
         this._initDisplaySetting();
         this._initControlSetting();
 
-        this._initNavMapInsetSetting();
+        this._initNavMapInsetSettings();
         this._initFlightPlanSetting();
         this._initProcedureSetting();
         this._initChartIDSetting();
@@ -71,6 +72,14 @@ class WT_G3x5_PaneSettings {
      */
     get navMapInset() {
         return this._navMapInset;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NavMapDisplayFlightPlanTextDistanceSetting}
+     */
+    get navMapFlightPlanTextInsetDistance() {
+        return this._navMapFlightPlanTextInsetDistance;
     }
 
     /**
