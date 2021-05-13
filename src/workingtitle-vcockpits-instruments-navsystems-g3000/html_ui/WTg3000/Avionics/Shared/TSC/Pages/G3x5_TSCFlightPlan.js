@@ -90,36 +90,36 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.htmlElement.setFlightPlan(flightPlan);
     }
 
-    async _selectOrigin(icao) {
+    _selectOrigin(icao) {
         if (icao === "") {
             return;
         }
 
         try {
-            await this._fpm.setActiveOriginICAO(icao);
+            this._fpm.setActiveOriginICAO(icao);
         } catch (e) {
             console.log(e);
         }
     }
 
-    async _selectDestination(icao) {
+    _selectDestination(icao) {
         if (icao === "") {
             return;
         }
 
         try {
-            await this._fpm.setActiveDestinationICAO(icao);
+            this._fpm.setActiveDestinationICAO(icao);
         } catch (e) {
             console.log(e);
         }
     }
 
-    async _removeOrigin() {
-        await this._fpm.removeActiveOrigin();
+    _removeOrigin() {
+        this._fpm.removeActiveOrigin();
     }
 
-    async _removeDestination() {
-        await this._fpm.removeActiveDestination();
+    _removeDestination() {
+        this._fpm.removeActiveDestination();
     }
 
     /**
@@ -128,26 +128,26 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {Number} deltaIndex
      * @param {String} icao
      */
-    async _insertWaypoint(leg, deltaIndex, icao) {
+    _insertWaypoint(leg, deltaIndex, icao) {
         if (icao === "" || leg.flightPlan !== this._fpm.activePlan) {
             return;
         }
 
         try {
             let legSegmentIndex = leg.index - leg.flightPlan.getSegment(leg.segment).legs.first().index;
-            await this._fpm.addWaypointICAOToActive(leg.segment, icao, legSegmentIndex + deltaIndex);
+            this._fpm.addWaypointICAOToActive(leg.segment, icao, legSegmentIndex + deltaIndex);
         } catch (e) {
             console.log(e);
         }
     }
 
-    async _appendToEnroute(icao) {
+    _appendToEnroute(icao) {
         if (icao === "") {
             return;
         }
 
         try {
-            await this._fpm.addWaypointICAOToActive(WT_FlightPlan.Segment.ENROUTE, icao);
+            this._fpm.addWaypointICAOToActive(WT_FlightPlan.Segment.ENROUTE, icao);
         } catch (e) {
             console.log(e);
         }
@@ -159,7 +159,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_Airway} airway
      * @param {WT_ICAOWaypoint[]} waypointSequence
      */
-    async _insertAirway(leg, airway, waypointSequence) {
+    _insertAirway(leg, airway, waypointSequence) {
         if (leg.flightPlan !== this._fpm.activePlan) {
             return;
         }
@@ -179,7 +179,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                 index = segmentElement.elements.indexOf(leg);
             }
             if (index >= 0) {
-                await this._fpm.addAirwaySequenceToActive(leg.segment, airway, enter, exit, index + 1);
+                this._fpm.addAirwaySequenceToActive(leg.segment, airway, enter, exit, index + 1);
             }
         } catch (e) {
             console.log(e);
@@ -190,17 +190,17 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_FlightPlanLeg} leg
      */
-    async _removeLeg(leg) {
+    _removeLeg(leg) {
         try {
             switch (leg.segment) {
                 case WT_FlightPlan.Segment.ORIGIN:
-                    await this._fpm.removeActiveOrigin();
+                    this._fpm.removeActiveOrigin();
                     break;
                 case WT_FlightPlan.Segment.ENROUTE:
-                    await this._fpm.removeFromActive(leg);
+                    this._fpm.removeFromActive(leg);
                     break;
                 case WT_FlightPlan.Segment.DESTINATION:
-                    await this._fpm.removeActiveDestination();
+                    this._fpm.removeActiveDestination();
                     break;
             }
         } catch (e) {
@@ -212,10 +212,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_FlightPlanAirwaySequence} sequence
      */
-    async _removeAirwaySequence(sequence) {
+    _removeAirwaySequence(sequence) {
         try {
             if (sequence.segment === WT_FlightPlan.Segment.ENROUTE) {
-                await this._fpm.removeFromActive(sequence);
+                this._fpm.removeFromActive(sequence);
             }
         } catch (e) {
             console.log(e);

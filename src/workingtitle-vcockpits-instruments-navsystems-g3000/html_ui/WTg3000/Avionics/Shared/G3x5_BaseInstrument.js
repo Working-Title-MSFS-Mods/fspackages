@@ -156,8 +156,12 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         this._needSyncEnrouteFromAsobo = true;
     }
 
+    _isFlightPlanManagerMaster() {
+        return false;
+    }
+
     _initFlightPlanManager() {
-        this._fpm = new WT_FlightPlanManager(this.instrumentIdentifier, this.airplane, this.icaoWaypointFactory);
+        this._fpm = new WT_FlightPlanManager(this._isFlightPlanManagerMaster(), this.instrumentIdentifier, this.airplane, this.icaoWaypointFactory);
         this.airplane.fms.setFlightPlanManager(this._fpm);
         this._needSyncEnrouteFromAsobo = false;
         this._loadATCFlightPlan();
