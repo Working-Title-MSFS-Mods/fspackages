@@ -286,14 +286,31 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         return this._rangeLevels[this._findRangeIndex(range)];
     }
 
+    /**
+     * Adjusts the specified map view target to ensure the area displayed by the map view remains below a certain
+     * maximum latitude defined by WT_G3x5_FlightPlanPreviewRangeTargetController.MAX_LATITUDE.
+     * @param {WT_GeoPoint} target - the map view target.
+     * @param {WT_NumberUnit} range - the nominal map range.
+     */
+    _handleLatitudeCompensation(target, range) {
+        let latDelta = range.asUnit(WT_Unit.GA_RADIAN) * Avionics.Utils.RAD2DEG * 2; // scale by 2 to adjust for the fact that nominal map range is half the distance from center to the top/bottom map edge
+        let edgeLat = target.lat + (target.lat >= 0 ? 1 : -1) * latDelta;
+        if (Math.abs(edgeLat) > WT_G3x5_FlightPlanPreviewRangeTargetController.MAX_LATITUDE) {
+            let compensatedLat = Math.max(0, WT_G3x5_FlightPlanPreviewRangeTargetController.MAX_LATITUDE - latDelta) * (target.lat >= 0 ? 1 : -1);
+            target.set(compensatedLat, target.long);
+        }
+    }
+
     _updateTargetRange() {
         if (this._aspectRatio === 0) {
             return;
         }
 
         let boundingCircle = this._findBoundingCircle();
+        let mapTarget = this._tempGeoPoint.set(boundingCircle.center);
         let mapRange = this._calculateMapRange(boundingCircle.radius, this._aspectRatio);
-        this._mapModel.target = boundingCircle.center;
+        this._handleLatitudeCompensation(mapTarget, mapRange);
+        this._mapModel.target = mapTarget;
         this._mapModel.range = mapRange;
     }
 
@@ -332,3 +349,4 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
 }
 WT_G3x5_FlightPlanPreviewRangeTargetController.BOUNDING_CIRCLE_TOLERANCE = 1e-6; // ~6 meters
 WT_G3x5_FlightPlanPreviewRangeTargetController.RANGE_BUFFER_FACTOR = 0.2;
+WT_G3x5_FlightPlanPreviewRangeTargetController.MAX_LATITUDE = 85;
