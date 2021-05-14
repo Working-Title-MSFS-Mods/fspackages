@@ -474,17 +474,17 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitude.setAttribute("visibility", "hidden");
         this.targetAltitudeBgSVG = document.createElementNS(Avionics.SVG.NS, "rect");
         this.targetAltitudeBgSVG.setAttribute("fill", "black");
-        this.targetAltitudeBgSVG.setAttribute("x", "5");
+        this.targetAltitudeBgSVG.setAttribute("x", "3");
         this.targetAltitudeBgSVG.setAttribute("y", (posY - 45).toString());
-        this.targetAltitudeBgSVG.setAttribute("width", "104");
-        this.targetAltitudeBgSVG.setAttribute("height", "40");
+        this.targetAltitudeBgSVG.setAttribute("width", "110");
+        this.targetAltitudeBgSVG.setAttribute("height", "43");
         this.targetAltitudeBgSVG.setAttribute("fill-opacity", "0.5");
         this.targetAltitude.appendChild(this.targetAltitudeBgSVG);
         this.targetAltitudeTextSVG1 = document.createElementNS(Avionics.SVG.NS, "text");
-        this.targetAltitudeTextSVG1.setAttribute("x", "72");
-        this.targetAltitudeTextSVG1.setAttribute("y", (posY - 10).toString());
+        this.targetAltitudeTextSVG1.setAttribute("x", "78");
+        this.targetAltitudeTextSVG1.setAttribute("y", (posY - 5).toString());
         this.targetAltitudeTextSVG1.setAttribute("fill", "cyan");
-        this.targetAltitudeTextSVG1.setAttribute("font-size", (this.fontSize * 1.4).toString());
+        this.targetAltitudeTextSVG1.setAttribute("font-size", (this.fontSize * 1.7).toString());
         this.targetAltitudeTextSVG1.setAttribute("font-family", "Roboto-Light");
         this.targetAltitudeTextSVG1.setAttribute("letter-spacing", "2");
         this.targetAltitudeTextSVG1.setAttribute("text-anchor", "end");
@@ -493,7 +493,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.targetAltitudeTextSVG2 = document.createElementNS(Avionics.SVG.NS, "text");
         this.targetAltitudeTextSVG2.textContent = "-----";
         this.targetAltitudeTextSVG2.setAttribute("x", "30");
-        this.targetAltitudeTextSVG2.setAttribute("y", (posY - 10).toString());
+        this.targetAltitudeTextSVG2.setAttribute("y", (posY - 5).toString());
         this.targetAltitudeTextSVG2.setAttribute("width", _width.toString());
         this.targetAltitudeTextSVG2.setAttribute("fill", "cyan");
         this.targetAltitudeTextSVG2.setAttribute("font-size", (this.fontSize * 1.0).toString());
@@ -1770,7 +1770,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 }
                 if (!this.targetAltitudeChanged && targetAltitude != this.originalTargetAltitude) {
                     this.targetAltitudeChanged = true;
-                    this.targetAltitudeTextSVG2.setAttribute("x", "73");
+                    this.targetAltitudeTextSVG2.setAttribute("x", "78");
                 }
 
                 if (this.targetAltitudeChanged) {
