@@ -97,7 +97,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             var _height = centerHeight;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
+            bg.setAttribute("y", (_top + 9).toString());
             bg.setAttribute("width", _width.toString());
             bg.setAttribute("height", _height.toString());
             bg.setAttribute("fill", "black");
@@ -105,10 +105,10 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.centerGroup.appendChild(bg);
             this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.topSpeedText.textContent = "";
-            this.topSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
-            this.topSpeedText.setAttribute("y", (_top + 18).toString());
+            this.topSpeedText.setAttribute("x", (_left + _width * 0.89).toString());
+            this.topSpeedText.setAttribute("y", (_top + 27).toString());
             this.topSpeedText.setAttribute("fill", "green");
-            this.topSpeedText.setAttribute("font-size", (this.fontSize * 0.85).toString());
+            this.topSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.topSpeedText.setAttribute("font-family", "Roboto-Bold");
             this.topSpeedText.setAttribute("text-anchor", "end");
             this.topSpeedText.setAttribute("alignment-baseline", "central");
@@ -241,7 +241,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.bottomSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
             this.bottomSpeedText.setAttribute("y", (_top + _height * 0.95).toString());
             this.bottomSpeedText.setAttribute("fill", "green");
-            this.bottomSpeedText.setAttribute("font-size", (this.fontSize * 0.85).toString());
+            this.bottomSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.bottomSpeedText.setAttribute("font-family", "Roboto-Bold");
             this.bottomSpeedText.setAttribute("text-anchor", "end");
             this.bottomSpeedText.setAttribute("alignment-baseline", "central");
@@ -795,7 +795,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             {
                 let threshold = 400;
                 var displaySpeed = Math.abs(Math.floor(_speed));
-                displaySpeed = Math.round(displaySpeed / 5) * 5;
+                displaySpeed = Math.round(displaySpeed / 100) * 100;
                 if (this.topSpeedText) {
                     if (_speed >= threshold)
                         this.topSpeedText.textContent = displaySpeed.toString();
