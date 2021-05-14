@@ -19,7 +19,7 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
     }
 
     _initNavigraphLinkPopUp() {
-        this._navigraphLinkWindow = new NavSystemElementContainer("Navigraph Link", "NavigraphLink", new WT_G3x5_TSCNavigraphLink(this._navigraphAPI));
+        this._navigraphLinkWindow = new WT_G3x5_TSCElementContainer("Navigraph Link", "NavigraphLink", new WT_G3x5_TSCNavigraphLink(this._navigraphAPI));
         this._navigraphLinkWindow.setGPS(this.instrument);
         this._navigraphLinkWindow.element.setContext({homePageGroup: this.homePageGroup, homePageName: this.homePageName});
     }
