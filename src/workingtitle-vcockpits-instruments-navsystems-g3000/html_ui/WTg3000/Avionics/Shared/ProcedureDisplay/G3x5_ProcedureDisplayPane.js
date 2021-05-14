@@ -13,6 +13,7 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._unitsSettingModel = unitsSettingModel;
 
+        this._flightPlan = new WT_FlightPlan(icaoWaypointFactory);
         this._procedureSegment = null;
         this._procedureName = "Procedure";
 
@@ -43,6 +44,7 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
 
     _initFlightPlanPreview() {
         this._flightPlanPreview = new WT_G3x5_FlightPlanPreview(this._mapModel, this._mapView, this._icaoWaypointFactory, this._unitsSettingModel, this.paneID);
+        this._flightPlanPreview.setFlightPlan(this._flightPlan);
         this._flightPlanPreview.init();
     }
 
@@ -134,31 +136,31 @@ class WT_G3x5_ProcedureDisplayPane extends WT_G3x5_DisplayPane {
                 if (procedureSetting.procedureType !== WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH && procedureSetting.runwayDesignation) {
                     runwayTransitionIndex = procedure.runwayTransitions.array.findIndex(transition => transition.runway.designation === procedureSetting.runwayDesignation, this);
                 }
-                this._flightPlanPreview.flightPlan.clear();
+                this._flightPlan.clear();
                 switch (procedureSetting.procedureType) {
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.DEPARTURE:
-                        this._flightPlanPreview.flightPlan.setOrigin(airport);
-                        await this._flightPlanPreview.flightPlan.setDeparture(procedure.name, runwayTransitionIndex, procedureSetting.transitionIndex);
-                        this._procedureSegment = this._flightPlanPreview.flightPlan.getDeparture();
+                        this._flightPlan.setOrigin(airport);
+                        await this._flightPlan.setDeparture(procedure.name, runwayTransitionIndex, procedureSetting.transitionIndex);
+                        this._procedureSegment = this._flightPlan.getDeparture();
                         break;
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.ARRIVAL:
-                        this._flightPlanPreview.flightPlan.setDestination(airport);
-                        await this._flightPlanPreview.flightPlan.setArrival(procedure.name, procedureSetting.transitionIndex, runwayTransitionIndex);
-                        this._procedureSegment = this._flightPlanPreview.flightPlan.getArrival();
+                        this._flightPlan.setDestination(airport);
+                        await this._flightPlan.setArrival(procedure.name, procedureSetting.transitionIndex, runwayTransitionIndex);
+                        this._procedureSegment = this._flightPlan.getArrival();
                         break;
                     case WT_G3x5_ProcedureDisplayProcedureSetting.ProcedureType.APPROACH:
-                        this._flightPlanPreview.flightPlan.setDestination(airport);
-                        await this._flightPlanPreview.flightPlan.setApproach(procedure.name, procedureSetting.transitionIndex);
-                        this._procedureSegment = this._flightPlanPreview.flightPlan.getApproach();
+                        this._flightPlan.setDestination(airport);
+                        await this._flightPlan.setApproach(procedure.name, procedureSetting.transitionIndex);
+                        this._procedureSegment = this._flightPlan.getApproach();
                         break;
                 }
             } catch (e) {
                 console.log(e);
-                this._flightPlanPreview.flightPlan.clear();
+                this.__flightPlan.clear();
                 this._procedureSegment = null;
             }
         } else {
-            this._flightPlanPreview.flightPlan.clear();
+            this._flightPlan.clear();
             this._procedureSegment = null;
         }
 
