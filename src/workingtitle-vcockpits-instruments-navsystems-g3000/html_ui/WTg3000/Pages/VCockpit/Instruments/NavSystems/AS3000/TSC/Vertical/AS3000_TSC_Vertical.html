@@ -375,421 +375,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="tscPage" id="ActiveFlightPlan">
-                    <div id="leftBar">
-                        <div class="gradientButton" id="AFPL_Drct">
-                            <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                        </div>
-                        <div class="gradientButton" id="AFPL_Proc" state="Hidden">
-                            <div class="mainText">PROC</div>
-                        </div>
-                        <div class="gradientButton" id="AFPL_StbyFpl" state="Hidden">
-                            <div class="mainText">Standby Flight Plan</div>
-                        </div>
-                        <div class="gradientButton" id="AFPL_Vnav" state="Hidden">
-                            <div class="mainText">VNAV</div>
-                        </div>
-                        <div class="gradientButton" id="AFPL_FplOptions" state="Hidden">
-                            <div class="mainText">Flight Plan Options</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox" id="flightPlan" displayedMenu="None">
-                        <table id="AFPL_WayPointsTable">
-                            <thead>
-                                <tr>
-                                    <th id="AFPL_Name">______/______</th>
-                                    <th id="AFPL_HAlt">ALT</th>
-                                    <th id="AFPL_HDtkDis">DTK/DIS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="AFPL_WaypointsBody">
-                                <tr id="SizeSetter">
-                                    <td>
-                                        <svg id="CurrentLegArrowSVG" xmlns="http://www.w3.org/2000/svg">
-                                            <path id="CurrentLegArrow" d="M0, 0 Z" fill="magenta" />
-                                        </svg>
-                                    </td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr class="phaseHeader" id="AFPL_Origin">
-                                    <td colspan="3">
-                                        <div class="gradientButton">
-                                            <div class="mainValue"></div>
-                                            <div class="mainText">Add Origin</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="AFPL_OriginWaypoint">
-                                    <td>
-                                        <div class="gradientButton Waypoint">
-                                            <div class="mainValue"></div>
-                                            <div class="title"></div>
-                                            <img class="symbol">
-                                        </div>
-                                    </td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr class="phaseHeader" id="AFPL_EnRoute">
-                                    <td colspan="3">
-                                        <div class="gradientButton">
-                                            <div class="mainValue">Enroute</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="AFPL_EnRouteAdd">
-                                    <td colspan="2" class="LeftButton">
-                                        <div class="gradientButton" id="AddEnrouteButton">
-                                            <div class="mainText">Add Enroute Waypoint</div>
-                                            <div class="mainValue"></div>
-                                        </div>
-                                    </td>
-                                    <td class="DoneButton">
-                                        <div class="gradientButton" id="AddEnrouteDone">
-                                            <div class="mainText">Done</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="phaseHeader" id="AFPL_Destination">
-                                    <td colspan="3">
-                                        <div class="gradientButton">
-                                            <div class="mainValue"></div>
-                                            <div class="mainText">Add Destination</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="AFPL_DestinationWaypoint">
-                                    <td>
-                                        <div class="gradientButton Waypoint">
-                                            <div class="mainValue"></div>
-                                            <div class="title"></div>
-                                            <img class="symbol">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="gradientButton">
-                                            <div class="mainValue">_____FT</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="DTK"></div>
-                                        <div class="DIS"></div>
-                                    </td>
-                                </tr>
-                                <tr id="AFPL_Approach">
-                                    <td colspan="3">
-                                        <div class="gradientButton">
-                                            <div class="mainValue"></div>
-                                            <div class="mainText"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table id="AFPL_WaypointButtonsTable" class="backgroundBox HalfMenu" state="Active">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_InsertBefore_Button">
-                                        <div class="mainText">Insert Before</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_InsertAfter_Button">
-                                        <div class="mainText">Insert After</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_Drct_Button">
-                                        <div class="mainText">Direct To</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_ActivateLegTo_Button">
-                                        <div class="mainText">Activate Leg to Waypoint</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_LoadAirway_Button" state="Hidden">
-                                        <div class="mainText">Load Airway</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_AlongTrackWaypoint_Button" state="Hidden">
-                                        <div class="mainText">Along Track Waypoint</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_HoldAtWaypoint_Button" state="Hidden">
-                                        <div class="mainText">Hold at Waypoint</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_WaypointInfo_Button" state="Hidden">
-                                        <div class="mainText">Waypoint Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_RemoveWaypoint_Button">
-                                        <div class="mainText">Remove Waypoint</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_FlyOverWaypoint_Button" state="Hidden">
-                                        <div class="mainText">Fly Over Waypoint</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <table id="AFPL_DestinationButtonsTable" class="backgroundBox HalfMenu" state="Active">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectDest_Button">
-                                        <div class="mainText">Select Destination Airport</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_DestWaypointInfo_Button" state="Hidden">
-                                        <div class="mainText">Waypoint Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectArrivalRunway_Button" state="Hidden">
-                                        <div class="mainText">Select Arrival Runway</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectArrival_Button" state="Hidden">
-                                        <div class="mainText">Select Arrival</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectApproach_Button" state="Hidden">
-                                        <div class="mainText">Select Approach</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_RemoveDestAirport_Button" state="Hidden">
-                                        <div class="mainText">Remove Destination Airport</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                        </table>
-                        <table id="AFPL_OriginButtonsTable" class="backgroundBox HalfMenu" state="Active">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectOrigin_Button">
-                                        <div class="mainText">Select Origin Airport</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_OriginWaypointInfo_Button" state="Hidden">
-                                        <div class="mainText">Waypoint Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectDepartureRunway_Button" state="Hidden">
-                                        <div class="mainText">Select Departure Runway</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_SelectDeparture_Button" state="Hidden">
-                                        <div class="mainText">Select Departure</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="AFPL_RemoveOriginAirport_Button" state="Hidden">
-                                        <div class="mainText">Remove Origin Airport</div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div class="tscPage" id="Procedures">
-                    <div class="gradientButton" id="Procedures_Departure">
-                        <div class="title">Departure</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_Arrival">
-                        <div class="title">Arrival</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_Approach">
-                        <div class="title">Approach</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_ActivateApproach">
-                        <div class="title">Activate Approach</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_ActivateVectorsToFinal" state="Hidden">
-                        <div class="title">Activate Vectors To Final</div>
-                    </div>
-                    <div class="gradientButton" id="Procedures_ActivateMissedApproach" state="Hidden">
-                        <div class="title">Activate Missed Approach</div>
-                    </div>
-                </div>
-                <div class="tscPage ProcSelection" id="DepartureSelection">
-                    <div class="gradientButton ProcAirport" id="Departure_Airport">
-                        <div class="upperTitle">Airport</div>
-                        <div class="ident">____</div>
-                        <div class="name">____</div>
-                        <img class="logo" />
-                    </div>
-                    <div class="gradientButton ProcIdentifier" id="Departure_Departure">
-                        <div class="upperTitle">Departure</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcTransition" id="Departure_Transition">
-                        <div class="upperTitle">Transition</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcRunway" id="Departure_Runway">
-                        <div class="upperTitle">Runway</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="backgroundBox ProcOptions" id="Departure_Options">
-                        <div class="title">Departure Options</div>
-                        <div class="gradientButton" id="Departure_Preview" state="Hidden">
-                            <div class="title">Preview</div>
-                            <div class="value">Off</div>
-                        </div>
-                        <div class="gradientButton" id="Departure_FilterBy" state="Hidden">
-                            <div class="title">Filter by</div>
-                            <div class="value">Runway</div>
-                        </div>
-                        <div class="gradientButton" id="Departure_Remove">
-                            <div class="mainText">Remove</div>
-                        </div>
-                        <div class="gradientButton" id="Departure_Load">
-                            <div class="mainText">Load</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox ProcSequence" id="Departure_Sequence">
-                        <div class="title">Sequence</div>
-                        <div class="content"></div>
-                    </div>
-                </div>
-                <div class="tscPage ProcSelection" id="ArrivalSelection">
-                    <div class="gradientButton ProcAirport" id="Arrival_Airport">
-                        <div class="upperTitle">Airport</div>
-                        <div class="ident">____</div>
-                        <div class="name">____</div>
-                        <img class="logo" />
-                    </div>
-                    <div class="gradientButton ProcIdentifier" id="Arrival_Arrival">
-                        <div class="upperTitle">Arrival</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcTransition" id="Arrival_Transition">
-                        <div class="upperTitle">Transition</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcRunway" id="Arrival_Runway">
-                        <div class="upperTitle">Runway</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="backgroundBox ProcOptions" id="Arrival_Options">
-                        <div class="title">Arrival Options</div>
-                        <div class="gradientButton" id="Arrival_Preview" state="Hidden">
-                            <div class="title">Preview</div>
-                            <div class="value">Off</div>
-                        </div>
-                        <div class="gradientButton" id="Arrival_FilterBy" state="Hidden">
-                            <div class="title">Filter by</div>
-                            <div class="value">Runway</div>
-                        </div>
-                        <div class="gradientButton" id="Arrival_Remove">
-                            <div class="mainText">Remove</div>
-                        </div>
-                        <div class="gradientButton" id="Arrival_Load">
-                            <div class="mainText">Load</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox ProcSequence" id="Arrival_Sequence">
-                        <div class="title">Sequence</div>
-                        <div class="content"></div>
-                    </div>
-                </div>
-                <div class="tscPage ProcSelection" id="ApproachSelection">
-                    <div class="gradientButton ProcAirport" id="Approach_Airport">
-                        <div class="upperTitle">Airport</div>
-                        <div class="ident">____</div>
-                        <div class="name">____</div>
-                        <img class="logo" />
-                    </div>
-                    <div class="gradientButton ProcIdentifier" id="Approach_Approach">
-                        <div class="upperTitle">Approach</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton ProcTransition" id="Approach_Transition">
-                        <div class="upperTitle">Transition</div>
-                        <div class="value">____</div>
-                    </div>
-                    <div class="gradientButton" id="Approach_Minimums" state="Hidden">
-                        <div class="upperTitle">Minimums</div>
-                        <div class="state">Off</div>
-                        <div class="value">_____M</div>
-                    </div>
-                    <div class="gradientButton" id="Approach_PrimaryFrequency" state="Hidden">
-                        <div class="upperTitle">Primary Frequency</div>
-                        <div class="value">BD 110.30</div>
-                    </div>
-                    <div class="backgroundBox ProcOptions" id="Approach_Options">
-                        <div class="title">Approach Options</div>
-                        <div class="gradientButton" id="Approach_Preview" state="Hidden">
-                            <div class="title">Preview</div>
-                            <div class="value">Off</div>
-                        </div>
-                        <div class="gradientButton" id="Approach_Remove">
-                            <div class="mainText">Remove</div>
-                        </div>
-                        <div class="gradientButton" id="Approach_Load">
-                            <div class="mainText">Load</div>
-                        </div>
-                        <div class="gradientButton" id="Approach_LoadAndActivate">
-                            <div class="mainText">Load &amp; Activate</div>
-                        </div>
-                    </div>
-                    <div class="backgroundBox ProcSequence" id="Approach_Sequence">
-                        <div class="title">Sequence</div>
-                        <div class="content"></div>
-                    </div>
-                </div>
+
+                <div class="tscPage" id="FlightPlan"></div>
+                <div class="tscPage" id="Procedures"></div>
+                <div class="tscPage" id="DepartureSelection"></div>
+                <div class="tscPage" id="ArrivalSelection"></div>
+                <div class="tscPage" id="ApproachSelection"></div>
 
                 <div class="tscPage charts" id="ChartsLeft">
                 </div>
@@ -802,32 +393,6 @@
                 </div>
 
                 <div class="tscPage" id="AircraftSystems">
-                </div>
-                <div class="tscPage" id="LightingConfig">
-                    <div class="backgroundBox">
-                        <div id="LightingValueDisplay">
-                            <div class="title">Master</div>
-                            <div class="value"></div>
-                        </div>
-                        <div id="LightingControls">
-                            <div class="gradientButton" id="LightingDecreaseButton">
-                                <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_LEFT_MINUS.png" />
-                                <div class="label">Dec</div>
-                            </div>
-                            <div id="LightingConfigSliderWrapper">
-                                <div class="sliderWindow">
-                                    <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/GRADIENT_TRIANGLE_HORIZ_BLUE.png" id="LightingConfigSliderBackground" />
-                                    <div class="LightingConfigSliderContainer">
-                                        <input type="range" min="1" max="100" class="slider" id="LightingConfigSlider">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="gradientButton" id="LightingIncreaseButton">
-                                <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_RIGHT_PLUS.png" />
-                                <div class="label">Inc</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="tscPage" id="Utilities">
@@ -1580,6 +1145,15 @@
             <div class="PopUpWindow Transparent" id="NavMapTrafficMapSettings" state="Inactive">
                 <div class="WindowTitle">Traffic Settings</div>
             </div>
+            <div class="PopUpWindow Transparent" id="FlightPlanOptions" state="Inactive">
+                <div class="WindowTitle">Flight Plan Options</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="FlightPlanDataFields" state="Inactive">
+                <div class="WindowTitle">Flight Plan Data Fields</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="AirwaySelection" state="Inactive">
+                <div class="WindowTitle">Airway Selection</div>
+            </div>
             <div class="PopUpWindow Transparent" id="NavigraphLink" state="Inactive">
                 <div class="WindowTitle">Navigraph Account Link</div>
             </div>
@@ -1609,6 +1183,8 @@
 <script type="text/html" import-script="/WTg3000/SDK/Libraries/LzUtf8.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Libraries/spacetime.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Libraries/tz.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/d3-array.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/d3-geo.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Libraries/WorldMagneticModel.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Utils/Wait.js"></script>
@@ -1628,11 +1204,13 @@
 
 <script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Math/GVector2.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Math/GVector3.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Time/Time.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Time/TimeModel.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Geo/GeoPoint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Geo/SphericalMath.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Geo/GeoMagnetic.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Geo/NavAngleUnit.js"></script>
 
@@ -1734,6 +1312,10 @@
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/NavMapDisplay/G3x5_NavMapDisplaySettings.js"></script>
 
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/FlightPlanDisplay/G3x5_FlightPlanDisplaySettings.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/ProcedureDisplay/G3x5_ProcedureDisplaySettings.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsModel.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsDisplayPane.js"></script>
@@ -1766,6 +1348,8 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCLoadFrequency.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCWaypointOptions.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCNavMapTrafficMapSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCFlightPlanOptions.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCAirwaySelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCNavigraphLink.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCChartsOptions.js"></script>
 
@@ -1777,6 +1361,8 @@
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTrafficSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCFlightPlan.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCProcedures.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCCharts.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCChartsTouchControl.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
