@@ -19,7 +19,6 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
          * @type {WT_FlightPlan}
          */
         this._flightPlan = null;
-        this._flightPlanListener = this._onFlightPlanChanged.bind(this);
 
         this._title = "";
     }
@@ -34,13 +33,11 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     _initSettingListeners() {
-        this.paneSettings.flightPlan.init();
-
         this.paneSettings.flightPlan.addListener(this._onFlightPlanSettingChanged.bind(this));
-        this._updateFlightPlan();
     }
 
     _initSettings() {
+        this.paneSettings.flightPlan.init();
         this._initSettingListeners();
     }
 
@@ -51,16 +48,7 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
 
         this._initFlightPlanPreview();
         this._initSettings();
-    }
-
-    /**
-     *
-     * @param {WT_FlightPlanEvent} event
-     */
-    _onFlightPlanChanged(event) {
-        if (event.types !== WT_FlightPlanEvent.Type.LEG_ALTITUDE_CHANGED) {
-            this._flightPlanPreview.flightPlan.copyFrom(event.source);
-        }
+        this._updateFlightPlan();
     }
 
     _updateTitle() {
@@ -81,13 +69,8 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
             return;
         }
 
-        if (this._flightPlan) {
-            this._flightPlan.removeListener(this._flightPlanListener);
-        }
         this._flightPlan = flightPlan;
-        if (flightPlan) {
-            this._flightPlan.addListener(this._flightPlanListener);
-        }
+        this._flightPlanPreview.setFlightPlan(flightPlan);
     }
 
     _updateFlightPlan() {
@@ -97,6 +80,8 @@ class WT_G3x5_FlightPlanDisplayPane extends WT_G3x5_DisplayPane {
         let flightPlan = null;
         if (flightPlanSetting.source === WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.ACTIVE) {
             flightPlan = this._fpm.activePlan;
+        } else if (flightPlanSetting.source === WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.STANDBY) {
+            flightPlan = this._fpm.standbyPlan;
         }
         this._setFlightPlan(flightPlan);
 

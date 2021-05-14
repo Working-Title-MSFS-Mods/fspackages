@@ -14,7 +14,10 @@ class WT_G3x5_FlightPlanPreview {
         this._unitsSettingModel = unitsSettingModel;
         this._bingMapID = bingMapID;
 
-        this._flightPlan = new WT_FlightPlan(icaoWaypointFactory);
+        /**
+         * @type {WT_FlightPlan}
+         */
+        this._flightPlan = null;
         /**
          * @type {WT_FlightPlanLeg[]}
          */
@@ -64,7 +67,6 @@ class WT_G3x5_FlightPlanPreview {
 
         this.mapModel.crosshair.show = true;
         this.mapModel.terrain.mode = WT_MapModelTerrainModule.TerrainMode.OFF;
-        this.mapModel.flightPlan.plan = this._flightPlan;
     }
 
     _initMapView() {
@@ -82,7 +84,7 @@ class WT_G3x5_FlightPlanPreview {
     }
 
     _initRangeTargetController() {
-        this._rangeTargetController = new WT_G3x5_FlightPlanPreviewRangeTargetController(this._flightPlan, this._focusReadOnly, this.mapModel, this.mapView, WT_G3x5_FlightPlanPreview.MAP_RANGE_LEVELS, WT_G3x5_FlightPlanPreview.MAP_RANGE_DEFAULT);
+        this._rangeTargetController = new WT_G3x5_FlightPlanPreviewRangeTargetController(this._focusReadOnly, this.mapModel, this.mapView, WT_G3x5_FlightPlanPreview.MAP_RANGE_LEVELS, WT_G3x5_FlightPlanPreview.MAP_RANGE_DEFAULT);
     }
 
     /**
@@ -95,6 +97,23 @@ class WT_G3x5_FlightPlanPreview {
         this._initMapView();
         this._initRangeTargetController();
         this._isInit = true;
+        this._updateFromFlightPlan();
+    }
+
+    _updateFromFlightPlan() {
+        this.mapModel.flightPlan.plan = this._flightPlan;
+        this._rangeTargetController.setFlightPlan(this._flightPlan);
+    }
+
+    setFlightPlan(flightPlan) {
+        if (this._flightPlan === flightPlan) {
+            return;
+        }
+
+        this._flightPlan = flightPlan;
+        if (this._isInit) {
+            this._updateFromFlightPlan();
+        }
     }
 
     /**
@@ -143,15 +162,13 @@ WT_G3x5_FlightPlanPreview.ORIENTATION_DISPLAY_TEXT = ["NORTH UP"];
 
 class WT_G3x5_FlightPlanPreviewRangeTargetController {
     /**
-     * @param {WT_FlightPlan} flightPlan
      * @param {WT_ReadOnlyArray<WT_FlightPlanLeg>} focus
      * @param {WT_MapModel} mapModel
      * @param {WT_MapView} mapView
      * @param {WT_NumberUnit[]} rangeLevels
      * @param {WT_NumberUnit} defaultRange
      */
-     constructor(flightPlan, focus, mapModel, mapView, rangeLevels, defaultRange) {
-        this._flightPlan = flightPlan;
+     constructor(focus, mapModel, mapView, rangeLevels, defaultRange) {
         this._mapModel = mapModel;
         this._mapView = mapView;
 
@@ -161,19 +178,46 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
         this._rangeLevels = rangeLevels;
         this._rangeIndexDefault = this._findRangeIndex(defaultRange);
 
+        /**
+         * @type {WT_FlightPlan}
+         */
+        this._flightPlan = null;
         this._focus = focus;
         this._aspectRatio = 0;
         this._needUpdate = false;
 
-        this._initFlightPlanListener();
+        this._flightPlanListener = this._onFlightPlanChanged.bind(this);
 
         this._tempVector3 = new WT_GVector3(0, 0, 0);
         this._tempNM = WT_Unit.NMILE.createNumber(0);
         this._tempGeoPoint = new WT_GeoPoint(0, 0);
     }
 
-    _initFlightPlanListener() {
-        this._flightPlan.addListener(this._onFlightPlanChanged.bind(this));
+    _cleanUpFromFlightPlan() {
+        if (!this._flightPlan) {
+            return;
+        }
+
+        this._flightPlan.removeListener(this._flightPlanListener);
+    }
+
+    _initFromFlightPlan() {
+        if (!this._flightPlan) {
+            return;
+        }
+
+        this._flightPlan.addListener(this._flightPlanListener);
+    }
+
+    setFlightPlan(flightPlan) {
+        if (this._flightPlan === flightPlan) {
+            return;
+        }
+
+        this._cleanUpFromFlightPlan();
+        this._flightPlan = flightPlan;
+        this._initFromFlightPlan();
+        this._needUpdate = true;
     }
 
     /**
@@ -213,7 +257,7 @@ class WT_G3x5_FlightPlanPreviewRangeTargetController {
             radius: WT_Unit.NMILE.createNumber(0)
         };
 
-        let legs = this._focus.length === 0 ? this._flightPlan.legs : this._focus;
+        let legs = this._flightPlan ? (this._focus.length === 0 ? this._flightPlan.legs : this._focus) : [];
         if (legs.length === 0) {
             return boundingCircle;
         }
