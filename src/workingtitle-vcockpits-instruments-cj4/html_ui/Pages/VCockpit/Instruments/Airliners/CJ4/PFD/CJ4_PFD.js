@@ -953,6 +953,9 @@ class CJ4_APDisplay extends NavSystemElement {
         this.AP_VerticalActive = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalActiveField"), true);
         this.AP_ModeReference_Icon = this.gps.getChildById("verticalCaptureDataField_Icon");
         this.AP_ModeReference_Value = this.gps.getChildById("verticalCaptureDataField_Value");
+        this.AP_VerticalSpeedbug_Icon = this.gps.getChildById("verticalSpeedBugField_Icon");
+        this.AP_VerticalDirectionArrowUp_Icon = this.gps.getChildById("verticalDirectionArrowUp_Icon");
+        this.AP_VerticalDirectionArrowDown_Icon = this.gps.getChildById("verticalDirectionArrowDown_Icon");
         this.AP_VerticalArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("verticalArmField"));
         this.AP_VNAVArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("vnavArmField"));
         this.AP_ApprVerticalArmed = new CJ4_FGSDisplaySlot(this.gps.getChildById("approachVerticalArmField"));
@@ -1022,16 +1025,36 @@ class CJ4_APDisplay extends NavSystemElement {
                 if (verticalMode == "VS" || verticalMode == "VVS") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
-                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute"), 0));
+                    this.AP_VerticalSpeedbug_Icon.style.display = "inline";
+                    let targetVerticalSpeed = fastToFixed(SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD VAR", "feet per minute") , 0);
+                    Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, Math.abs(targetVerticalSpeed));
+                    if (targetVerticalSpeed == 0) {
+                        this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
+                        this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
+                    } 
+                    else if (targetVerticalSpeed < 0) {
+                        this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
+                        this.AP_VerticalDirectionArrowDown_Icon.style.display = "inline";
+                    }
+                    else {
+                        this.AP_VerticalDirectionArrowUp_Icon.style.display = "inline";
+                        this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";                        
+                    }
                 } else if (verticalMode == "PTCH" || verticalMode == "VPTCH") {
                     let pitchRef = SimVar.GetSimVarValue("AUTOPILOT PITCH HOLD REF", "degrees");
                     pitchRef = pitchRef > 0 ? Math.min(pitchRef, 20) : Math.max(pitchRef, -20);
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
+                    this.AP_VerticalSpeedbug_Icon.style.display = "none";
+                    this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
+                    this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, (pitchRef < 0 ? "&emsp; &emsp; +" : "&emsp; &emsp;") + (-1 * pitchRef).toFixed(1));
                 } else if (verticalMode == "FLC" || verticalMode == "VFLC") {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "inline";
+                    this.AP_VerticalSpeedbug_Icon.style.display = "none";
+                    this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
+                    this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
                     if (Simplane.getAutoPilotMachModeActive()) {
                         const machValue = SimVar.GetSimVarValue("AUTOPILOT MACH HOLD VAR", "mach");
                         Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "M" + machValue.toFixed(2).slice(1));
@@ -1041,6 +1064,9 @@ class CJ4_APDisplay extends NavSystemElement {
                 } else {
                     this.AP_VerticalActive.setDisplayValue(verticalMode);
                     this.AP_ModeReference_Icon.style.display = "none";
+                    this.AP_VerticalSpeedbug_Icon.style.display = "none";
+                    this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
+                    this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
                     Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, "");
                 }
 
