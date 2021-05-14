@@ -103,6 +103,10 @@ class AS3000_TSC extends NavSystemTouch {
         this.pfdPrefix = "AS3000_PFD_1";
         this._isChangingPages = false;
         this.history = [];
+        this._lastFocus = {
+            popUp: null,
+            page: null
+        };
         this.initDuration = 4000;
 
         this._initUnitsSettingModel();
@@ -151,20 +155,35 @@ class AS3000_TSC extends NavSystemTouch {
 
     get templateID() { return "AS3000_TSC"; }
 
+    /**
+     * @readonly
+     * @type {{popUp:WT_G3x5_TSCElementContainer, page:WT_G3x5_TSCPage}}
+     */
+    get lastFocus() {
+        return this._lastFocus;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_PaneControlSetting.Touchscreen}
+     */
     get mfdPaneControlID() {
         return this._mfdPaneControlID;
     }
 
+    /**
+     * @readonly
+     */
+    get commonPages() {
+        return this._commonPages;
+    }
+
+    /**
+     * @readonly
+     * @type {{settingModel:WT_DataStoreSettingModel, mode:WT_G3x5_MFDMainPaneModeSetting}}
+     */
     get mfdMainPaneSettings() {
         return this._mfdMainPaneSettings;
-    }
-
-    get mfdLeftPaneSettings() {
-        return this._mfdLeftPaneSettings;
-    }
-
-    get mfdRightPaneSettings() {
-        return this._mfdRightPaneSettings;
     }
 
     /**
@@ -264,6 +283,7 @@ class AS3000_TSC extends NavSystemTouch {
         let mfdLeftPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.LEFT}`);
         let mfdRightPaneSettings = this.getPaneSettings(`MFD-${WT_G3x5_MFDHalfPane.ID.RIGHT}`);
 
+        this._commonPages = {};
         this._mfdPagesLeft = {};
         this._mfdPagesRight = {};
 
@@ -296,10 +316,10 @@ class AS3000_TSC extends NavSystemTouch {
                 new WT_G3x5_TSCPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 new WT_G3x5_TSCPage("Active Flight Plan", "ActiveFlightPlan", new AS3000_TSC_ActiveFPL()),
                 new WT_G3x5_TSCPage("Flight Plan", "FlightPlan", new WT_G3x5_TSCFlightPlan("MFD", "MFD Home", this.instrumentIdentifier)),
-                new WT_G3x5_TSCPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
-                new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                new WT_G3x5_TSCPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                new WT_G3x5_TSCPage("Approach Selection", "ApproachSelection", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
+                this._commonPages.procedures = new WT_G3x5_TSCPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
+                this._commonPages.departureSelection = new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
+                this._commonPages.arrivalSelection = new WT_G3x5_TSCPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
+                this._commonPages.approachSelection = new WT_G3x5_TSCPage("Approach Selection", "ApproachSelection", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
                 new WT_G3x5_TSCPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.airportInfo = new WT_G3x5_TSCPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
                 this._mfdPagesRight.airportInfo = new WT_G3x5_TSCPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
@@ -873,6 +893,9 @@ class AS3000_TSC extends NavSystemTouch {
             return;
         }
 
+        this._lastFocus.popUp = this.popUpElement;
+        this._lastFocus.page = this.getCurrentPage();
+
         if (!skipHistory) {
             let historyPoint = new AS3000_TSC_PageInfos();
             historyPoint.popUpPage = this.popUpElement;
@@ -890,6 +913,10 @@ class AS3000_TSC extends NavSystemTouch {
 
     SwitchToPageName(menu, page, skipHistory = false) {
         this._isChangingPages = true;
+
+        this._lastFocus.popUp = this.popUpElement;
+        this._lastFocus.page = this.getCurrentPage();
+
         if (!skipHistory) {
             let historyPoint = new AS3000_TSC_PageInfos();
             if (!this.popUpElement) {
@@ -903,11 +930,16 @@ class AS3000_TSC extends NavSystemTouch {
         if (newPage) {
             newPage.onEnter();
         }
+
         this._isChangingPages = false;
     }
 
     switchToPopUpPage(pageContainer, skipHistory = false) {
         this._isChangingPages = true;
+
+        this._lastFocus.popUp = this.popUpElement;
+        this._lastFocus.page = this.getCurrentPage();
+
         let historyPoint;
         if (!skipHistory) {
             historyPoint = new AS3000_TSC_PageInfos();
@@ -925,6 +957,7 @@ class AS3000_TSC extends NavSystemTouch {
             this.history.push(historyPoint);
         }
         super.switchToPopUpPage(pageContainer);
+
         this._isChangingPages = false;
     }
 

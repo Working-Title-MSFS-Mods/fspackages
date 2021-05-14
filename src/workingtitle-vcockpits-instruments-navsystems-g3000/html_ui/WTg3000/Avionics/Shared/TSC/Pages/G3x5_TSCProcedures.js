@@ -5,6 +5,9 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
      */
     constructor(homePageGroup, homePageName) {
         super(homePageGroup, homePageName);
+
+        this._source = WT_G3x5_TSCFlightPlan.Source.ACTIVE;
+        this._isInit = false;
     }
 
     /**
@@ -39,22 +42,63 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
         this._initHTMLElement();
+        this._isInit = true;
+    }
+
+    _updateFromSource() {
+        let flightPlan;
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            flightPlan = this._fpm.activePlan;
+        } else {
+            flightPlan = this._fpm.standbyPlan;
+        }
+        this.htmlElement.setFlightPlan(flightPlan);
+        this.htmlElement.setSource(this._source);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlan.Source} source
+     */
+    setSource(source) {
+        if (this._source === source) {
+            return;
+        }
+
+        this._source = source;
+        if (this._isInit) {
+            this._updateFromSource();
+        }
     }
 
     _onDepartureButtonPressed(button) {
+        this.instrument.commonPages.departureSelection.element.setSource(this._source);
         this.instrument.SwitchToPageName("MFD", "Departure Selection");
     }
 
     _onArrivalButtonPressed(button) {
+        this.instrument.commonPages.arrivalSelection.element.setSource(this._source);
         this.instrument.SwitchToPageName("MFD", "Arrival Selection");
     }
 
     _onApproachButtonPressed(button) {
+        this.instrument.commonPages.approachSelection.element.setSource(this._source);
         this.instrument.SwitchToPageName("MFD", "Approach Selection");
     }
 
     _onActivateApproachButtonPressed(button) {
         this._fpm.activateApproach();
+    }
+
+    _autoSetActiveSource() {
+        let lastPage = this.instrument.lastFocus.page;
+        if (lastPage && lastPage.name === "MFD Home") {
+            this.setSource(WT_G3x5_TSCFlightPlan.Source.ACTIVE);
+        }
+    }
+
+    onEnter() {
+        this._autoSetActiveSource();
     }
 
     onUpdate(deltaTime) {
@@ -78,6 +122,7 @@ class WT_G3x5_TSCProceduresHTMLElement extends HTMLElement {
          * @type {WT_FlightPlan}
          */
         this._flightPlan = null;
+        this._source = WT_G3x5_TSCFlightPlan.Source.ACTIVE;
         this._isApproachActive = false;
         this._isInit = false;
     }
@@ -144,6 +189,7 @@ class WT_G3x5_TSCProceduresHTMLElement extends HTMLElement {
         await this._defineChildren();
         this._isInit = true;
         this._updateFromFlightPlan();
+        this._updateFromSource();
     }
 
     connectedCallback() {
@@ -181,6 +227,25 @@ class WT_G3x5_TSCProceduresHTMLElement extends HTMLElement {
         this._flightPlan = flightPlan;
         if (this._isInit) {
             this._updateFromFlightPlan();
+        }
+    }
+
+    _updateFromSource() {
+        this._updateActivateApproachButton();
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlan.Source} source
+     */
+    setSource(source) {
+        if (this._source === source) {
+            return;
+        }
+
+        this._source = source;
+        if (this._isInit) {
+            this._updateFromSource();
         }
     }
 
@@ -235,7 +300,7 @@ class WT_G3x5_TSCProceduresHTMLElement extends HTMLElement {
     }
 
     _updateActivateApproachButton() {
-        this._activateApproachButton.enabled = this._flightPlan.hasApproach() && !this._isApproachActive;
+        this._activateApproachButton.enabled = this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE && this._flightPlan.hasApproach() && !this._isApproachActive;
     }
 
     /**
@@ -334,10 +399,16 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         this._instrumentID = instrumentID;
         this._navigraphAPI = navigraphAPI;
 
+        /**
+         * @type {WT_FlightPlan}
+         */
+        this._displayedFlightPlan = null;
+        this._source = WT_G3x5_TSCFlightPlan.Source.ACTIVE;
+        this._chartRequestID = 0;
+        this._isInit = false;
+
         this._initState();
         this._initSettingModel();
-
-        this._chartRequestID = 0;
     }
 
     _initState() {
@@ -375,9 +446,16 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         return this._navigraphAPI;
     }
 
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCFlightPlan.Source}
+     */
+    get flightPlanSource() {
+        return this._source;
+    }
+
     _initHTMLElement() {
         this.htmlElement.setParentPage(this);
-        this.htmlElement.setFlightPlan(this._fpm.activePlan);
     }
 
     _initListener() {
@@ -392,6 +470,34 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
         this._initHTMLElement();
         this._initListener();
+        this._isInit = true;
+        this._updateFromSource();
+    }
+
+    _updateFromSource() {
+        let flightPlan;
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            flightPlan = this._fpm.activePlan;
+        } else {
+            flightPlan = this._fpm.standbyPlan;
+        }
+        this._displayedFlightPlan = flightPlan;
+        this.htmlElement.setFlightPlan(flightPlan);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlan.Source} source
+     */
+    setSource(source) {
+        if (this._source === source) {
+            return;
+        }
+
+        this._source = source;
+        if (this._isInit) {
+            this._updateFromSource();
+        }
     }
 
     /**
@@ -1709,7 +1815,7 @@ class WT_G3x5_TSCDepartureArrivalSelection extends WT_G3x5_TSCProcedureSelection
     _getProcedureList(airport) {
     }
 
-    _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    async _doLoadProcedure(procedure, procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
     }
 
     /**
@@ -1721,7 +1827,7 @@ class WT_G3x5_TSCDepartureArrivalSelection extends WT_G3x5_TSCProcedureSelection
         let procedureList = this._getProcedureList(airport);
         let procedureIndex = procedureList.array.indexOf(event.procedure);
         let runwayTransitionIndex = event.runway ? event.procedure.runwayTransitions.array.findIndex(transition => transition.runway.equals(event.runway)) : -1;
-        this._doLoadProcedure(procedureIndex, event.transitionIndex, runwayTransitionIndex);
+        this._doLoadProcedure(event.procedure, procedureIndex, event.transitionIndex, runwayTransitionIndex);
     }
 
     /**
@@ -2283,14 +2389,23 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
      */
     async _selectAirportICAO(icao) {
         try {
-            await this._fpm.setActiveOriginICAO(icao);
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.setActiveOriginICAO(icao);
+            } else {
+                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
+                this._displayedFlightPlan.setOrigin(airport);
+            }
         } catch (e) {
             console.log(e);
         }
     }
 
     _removeProcedure() {
-        this._fpm.removeDepartureFromActive();
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            this._fpm.removeDepartureFromActive();
+        } else {
+            this._displayedFlightPlan.removeDeparture();
+        }
     }
 
     /**
@@ -2302,9 +2417,13 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
         return airport.departures;
     }
 
-    _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    async _doLoadProcedure(procedure, procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         try {
-            this._fpm.loadDepartureToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.loadDepartureToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            } else {
+                await this._displayedFlightPlan.setDeparture(procedure.name, runwayTransitionIndex, enrouteTransitionIndex);
+            }
         } catch (e) {
             console.log(e);
         }
@@ -2512,14 +2631,23 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
      */
     async _selectAirportICAO(icao) {
         try {
-            await this._fpm.setActiveDestinationICAO(icao);
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.setActiveDestinationICAO(icao);
+            } else {
+                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
+                this._displayedFlightPlan.setDestination(airport);
+            }
         } catch (e) {
             console.log(e);
         }
     }
 
     _removeProcedure() {
-        this._fpm.removeArrivalFromActive();
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            this._fpm.removeArrivalFromActive();
+        } else {
+            this._displayedFlightPlan.removeArrival();
+        }
     }
 
     /**
@@ -2531,9 +2659,13 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
         return airport.arrivals;
     }
 
-    _doLoadProcedure(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    async _doLoadProcedure(procedure, procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         try {
-            this._fpm.loadArrivalToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.loadArrivalToActive(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            } else {
+                await this._displayedFlightPlan.setArrival(procedure.name, enrouteTransitionIndex, runwayTransitionIndex);
+            }
         } catch (e) {
             console.log(e);
         }
@@ -2722,10 +2854,14 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
     _initState() {
         this._state = {
             _airplaneHeadingTrue: 0,
+            _flightPlanSource: this._source,
             _isApproachActive: false,
 
             get airplaneHeadingTrue() {
                 return this._airplaneHeadingTrue;
+            },
+            get flightPlanSource() {
+                return this._flightPlanSource;
             },
             get isApproachActive() {
                 return this._isApproachActive;
@@ -2756,19 +2892,32 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
      */
     async _selectAirportICAO(icao) {
         try {
-            await this._fpm.setActiveDestinationICAO(icao);
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.setActiveDestinationICAO(icao);
+            } else {
+                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
+                this._displayedFlightPlan.setDestination(airport);
+            }
         } catch (e) {
             console.log(e);
         }
     }
 
     _removeProcedure() {
-        this._fpm.removeApproachFromActive();
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            this._fpm.removeApproachFromActive();
+        } else {
+            this._displayedFlightPlan.removeApproach();
+        }
     }
 
-    _doLoadProcedure(procedureIndex, transitionIndex) {
+    async _doLoadProcedure(procedure, procedureIndex, transitionIndex) {
         try {
-            this._fpm.loadApproachToActive(procedureIndex, transitionIndex);
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.loadApproachToActive(procedureIndex, transitionIndex);
+            } else {
+                await this._displayedFlightPlan.setApproach(procedure.name, transitionIndex);
+            }
         } catch (e) {
             console.log(e);
         }
@@ -2782,7 +2931,7 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
         let airport = event.procedure.airport;
         let procedureList = this._getProcedureList(airport);
         let procedureIndex = procedureList.array.indexOf(event.procedure);
-        this._doLoadProcedure(procedureIndex, event.transitionIndex);
+        this._doLoadProcedure(event.procedure, procedureIndex, event.transitionIndex);
     }
 
     /**
@@ -2879,7 +3028,8 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
         super._updateState();
 
         let activeLeg = this._fpm.getActiveLeg(true);
-        this._state._isApproachActive = activeLeg && activeLeg.segment === WT_FlightPlan.Segment.APPROACH;
+        this._state._flightPlanSource = this._source;
+        this._state._isApproachActive = activeLeg && activeLeg.flightPlan === this._displayedFlightPlan && activeLeg.segment === WT_FlightPlan.Segment.APPROACH;
     }
 }
 WT_G3x5_TSCApproachSelection.TITLE = "Approach Selection";
@@ -2893,6 +3043,8 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
 
         this._selectedProcedureChartCodePrefix = "";
         this._selectedProcedureChartCodeSuffix = "";
+
+        this._isActivateButtonEnabled = true;
     }
 
     _getTemplate() {
@@ -3192,7 +3344,11 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
     }
 
     _updateActivateButton(state) {
-        this._activateButton.enabled = `${this._isSelectedProcedureLoaded && !state.isApproachActive}`;
+        let isEnabled = state.flightPlanSource === WT_G3x5_TSCFlightPlan.Source.ACTIVE && this._isSelectedProcedureLoaded && !state.isApproachActive;
+        if (this._isActivateButtonEnabled !== isEnabled) {
+            this._activateButton.enabled = `${isEnabled}`;
+            this._isActivateButtonEnabled = isEnabled;
+        }
     }
 
     _doUpdate(state) {
