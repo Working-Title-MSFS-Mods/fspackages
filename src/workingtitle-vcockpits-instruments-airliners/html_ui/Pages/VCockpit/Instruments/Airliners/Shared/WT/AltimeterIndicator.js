@@ -126,7 +126,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
         this.pressureArrow = document.createElementNS(Avionics.SVG.NS, "path");
         this.pressureArrow.setAttribute("fill", "white");
-        this.pressureArrow.setAttribute("d", "M 123 505 l 0 -5.76 l -4.32 0 l 5.76 -7.2 l 5.76 7.2 l -4.32 0 l 0 11.52 l 4.32 0 l -5.76 7.2 l -5.76 -7.2 l 4.32 0 l 0 -5.76 z");
+        this.pressureArrow.setAttribute("d", "M 126 505 l 0 -6 l -3 0 l 4.44 -6.96 l 4.56 6.96 l -3 0 l 0 12 l 3 0 l -4.56 6.96 l -4.44 -6.96 l 3 0 l 0 -6 z");
         this.pressureArrow.setAttribute("stroke", "white");
         this.pressureArrow.setAttribute("stroke-width", "1.5");
         this.pressureBoxGroup.appendChild(this.pressureArrow);
@@ -137,7 +137,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressurePreset.setAttribute("x", (posX - 65).toString());
         this.pressurePreset.setAttribute("y", (posY + 65).toString());
         this.pressurePreset.setAttribute("fill", "white");
-        this.pressurePreset.setAttribute("font-size", (this.fontSize * 1.0).toString());
+        this.pressurePreset.setAttribute("font-size", (this.fontSize * 1.2).toString());
         this.pressurePreset.setAttribute("font-family", "Roboto-Light");
         this.pressurePreset.setAttribute("text-anchor", "center");
         this.pressureBoxGroup.appendChild(this.pressurePreset);
@@ -145,7 +145,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressurePresetUnits = document.createElementNS(Avionics.SVG.NS, "text");
         this.pressurePresetUnits.textContent = "";
         this.pressurePresetUnits.setAttribute("id", "PressurePreset");
-        this.pressurePresetUnits.setAttribute("x", (posX + 11).toString());
+        this.pressurePresetUnits.setAttribute("x", (posX + 16).toString());
         this.pressurePresetUnits.setAttribute("y", (posY + 65).toString());
         this.pressurePresetUnits.setAttribute("fill", "white");
         this.pressurePresetUnits.setAttribute("stroke", "white");
@@ -156,14 +156,15 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
         this.rootGroup.appendChild(this.pressureBoxGroup);
         
+        this.pressureSVG = document.createElementNS(Avionics.SVG.NS, "text");//Added this line of code. See issue #1160 in the github repository
         this.pressureSVG.textContent = "";
         this.pressureSVG.setAttribute("id", "Pressure");
-        this.pressureSVG.setAttribute("x", (posX - 62).toString());
-        this.pressureSVG.setAttribute("y", (posY + 25).toString());
+        this.pressureSVG.setAttribute("x", (posX - 59).toString());
+        this.pressureSVG.setAttribute("y", (posY + 30).toString());
         this.pressureSVG.setAttribute("fill", "cyan");
         this.pressureSVG.setAttribute("stroke", "black");
-        this.pressureSVG.setAttribute("stroke-width", "7px");
-        this.pressureSVG.setAttribute("font-size", (this.fontSize * 1.0).toString());
+        this.pressureSVG.setAttribute("stroke-width", "5px");
+        this.pressureSVG.setAttribute("font-size", (this.fontSize * 1.2).toString());
         this.pressureSVG.setAttribute("font-family", "Roboto-Light");
         this.pressureSVG.setAttribute("text-anchor", "center");
         this.pressureSVG.setAttribute("letter-spacing", "0.0");
@@ -172,11 +173,11 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         this.pressureSVGUnits = document.createElementNS(Avionics.SVG.NS, "text");
         this.pressureSVGUnits.textContent = "";
         this.pressureSVGUnits.setAttribute("id", "PressureSVGUnits");
-        this.pressureSVGUnits.setAttribute("x", (posX + 11).toString());
+        this.pressureSVGUnits.setAttribute("x", (posX + 24).toString());
         this.pressureSVGUnits.setAttribute("y", (posY + 30).toString());
         this.pressureSVGUnits.setAttribute("fill", "cyan");
         this.pressureSVGUnits.setAttribute("stroke", "black");
-        this.pressureSVGUnits.setAttribute("stroke-width", "7px");
+        this.pressureSVGUnits.setAttribute("stroke-width", "5px");
         this.pressureSVGUnits.setAttribute("font-size", (this.fontSize * 0.9).toString());
         this.pressureSVGUnits.setAttribute("font-family", "Roboto-Light");
         this.pressureSVGUnits.setAttribute("text-anchor", "center");
@@ -1559,9 +1560,9 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 if (this._baroPresetChanged !== baroPreset && this._baroPresetChanged !== 0) {
                     this.pressureBoxGroup.setAttribute("visibility", "visible");
                     this.pressureSVG.removeAttribute("stroke", "black");
-                    this.pressureSVG.removeAttribute("stroke-width", "7px");
+                    this.pressureSVG.removeAttribute("stroke-width", "5px");
                     this.pressureSVGUnits.removeAttribute("stroke", "black");
-                    this.pressureSVGUnits.removeAttribute("stroke-width", "7px");
+                    this.pressureSVGUnits.removeAttribute("stroke-width", "5px");
                     this._baroPresetChanged = baroPreset;
                 }
                 if (units == "millibar") {
@@ -1581,9 +1582,9 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
             else {
                 this.pressureBoxGroup.setAttribute("visibility", "hidden");
                 this.pressureSVG.setAttribute("stroke", "black");
-                this.pressureSVG.setAttribute("stroke-width", "7px");
+                this.pressureSVG.setAttribute("stroke-width", "5px");
                 this.pressureSVGUnits.setAttribute("stroke", "black");
-                this.pressureSVGUnits.setAttribute("stroke-width", "7px");
+                this.pressureSVGUnits.setAttribute("stroke-width", "5px");
                 if (this.aircraft == Aircraft.A320_NEO) {
                     if (_mode == "QFE") {
                         this.pressureSVG.textContent = "QFE ";
