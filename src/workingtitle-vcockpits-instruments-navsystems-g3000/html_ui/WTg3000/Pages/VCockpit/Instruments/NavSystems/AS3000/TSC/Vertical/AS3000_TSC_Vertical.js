@@ -55,7 +55,6 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         super.connectedCallback();
 
         this._initNavCom();
-        this.getElementOfType(AS3000_TSC_ActiveFPL).setArrowSizes(5, 20, 10, 4, 8);
     }
 
     setMiddleKnobText(_text, _fromPopUp = false) {
