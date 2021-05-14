@@ -50,6 +50,14 @@ class WT_FlightPlanAsoboInterface {
     }
 
     async _updateAsoboFlightPlanInfo(data, forceDRCTDestination) {
+        if (forceDRCTDestination && SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean") === 0) {
+            await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveDestination", "boolean", 1);
+        }
+        if (data.waypoints.length > 0 && data.waypoints[0].icao[0] === "U" && SimVar.GetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean") !== 0) {
+            // do not count USER waypoints as origin
+            await SimVar.SetSimVarValue("L:Glasscockpits_FPLHaveOrigin", "boolean", 0);
+        }
+
         this._asoboFlightPlanInfo.hasOrigin = false;
         this._asoboFlightPlanInfo.originIndex = -1;
         this._asoboFlightPlanInfo.hasDestination = false;
@@ -62,7 +70,7 @@ class WT_FlightPlanAsoboInterface {
                 this._asoboFlightPlanInfo.originIndex = 0;
             }
 
-            if (forceDRCTDestination || (this._asoboHasDestination() && (!hasOrigin || data.waypoints.length > 1))) {
+            if (this._asoboHasDestination() && (!hasOrigin || data.waypoints.length > 1)) {
                 this._asoboFlightPlanInfo.hasDestination = true;
                 this._asoboFlightPlanInfo.destinationIndex = data.waypoints.length - 1;
             }
@@ -118,8 +126,8 @@ class WT_FlightPlanAsoboInterface {
             }
             if (waypoint) {
                 if (waypoint instanceof WT_ICAOWaypoint && waypoint.location.distance(leg.lla) > 0.0001) {
-                    // sometimes Asobo will rename custom "USR" waypoints to match the ICAO of the previous waypoint
-                    waypoint = new WT_FlightPathWaypoint("USR", leg.lla);
+                    // sometimes Asobo will rename custom "USER" waypoints to match the ICAO of the previous waypoint
+                    waypoint = new WT_FlightPathWaypoint("USER", leg.lla);
                 }
 
                 let entry = {waypoint: waypoint};
@@ -148,15 +156,11 @@ class WT_FlightPlanAsoboInterface {
 
         this._updateAsoboFlightPlanInfo(data, forceDRCTDestination);
 
-        let origin;
-        let destination;
         if (this._asoboFlightPlanInfo.hasOrigin) {
-            origin = await this._icaoWaypointFactory.getWaypoint(data.waypoints[0].icao);
-            tempFlightPlan.setOrigin(origin);
+            await tempFlightPlan.setOriginICAO(data.waypoints[0].icao);
         }
         if (this._asoboFlightPlanInfo.hasDestination) {
-            destination = await this._icaoWaypointFactory.getWaypoint(data.waypoints[data.waypoints.length - 1].icao);
-            tempFlightPlan.setDestination(destination);
+            await tempFlightPlan.setDestinationICAO(data.waypoints[this._asoboFlightPlanInfo.destinationIndex].icao);
         }
 
         let waypointEntries = [];
@@ -214,7 +218,7 @@ class WT_FlightPlanAsoboInterface {
             if (destination.icao) {
                 targetWaypoint = await this._icaoWaypointFactory.getWaypoint(destination.icao);
             } else {
-                targetWaypoint = new WT_CustomWaypoint("DRCT-DEST", destination.lla);
+                targetWaypoint = new WT_FlightPathWaypoint("DRCT-DEST", destination.lla);
             }
             directTo.setDestination(targetWaypoint);
             if (!directTo.isActive() || !directTo.getOrigin().location.equals(origin)) {
@@ -245,13 +249,15 @@ class WT_FlightPlanAsoboInterface {
             let firstICAO = data.waypoints[0].icao;
             let lastICAO = data.waypoints[data.waypoints.length - 1].icao;
             if ((firstICAO[0] === "U" && data.waypoints.length === 2 && lastICAO[0] === "A" && data.approachIndex < 0)) {
+                // when activating a direct-to to an airport, the game will replace the entire active flight plan with two waypoints:
+                // a USER waypoint at P.POS, and the destination airport waypoint
                 isDRCTActive = true;
                 drctOrigin = data.waypoints[0].lla;
                 drctDestination = data.waypoints[1];
                 forceDRCTDestination = true;
             }
         }
-        await this._syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination, forceEnrouteSync);
+        await this._syncFlightPlan(flightPlan, data, approachData, forceDRCTDestination, forceEnrouteSync || isDRCTActive);
 
         if (data.isDirectTo) {
             isDRCTActive = true;
@@ -262,49 +268,6 @@ class WT_FlightPlanAsoboInterface {
         if (directTo) {
             await this._syncDirectTo(directTo, isDRCTActive, drctOrigin, drctDestination);
         }
-    }
-
-    /**
-     *
-     * @param {WT_FlightPlan} flightPlan
-     * @param {Number} [index]
-     */
-    async syncToGame(flightPlan, index = 0) {
-        await Coherent.call("SET_CURRENT_FLIGHTPLAN_INDEX", index);
-        await Coherent.call("CLEAR_CURRENT_FLIGHT_PLAN");
-        if (flightPlan.hasOrigin() && flightPlan.hasDestination()) {
-            await Coherent.call("SET_ORIGIN", flightPlan.getOrigin().waypoint.icao);
-            await Coherent.call("SET_DESTINATION", flightPlan.getDestination().waypoint.icao);
-            let count = 1;
-            for (let leg of flightPlan.getEnroute().legs) {
-                let waypoint = leg.fix;
-                if (waypoint && waypoint.icao) {
-                    await Coherent.call("ADD_WAYPOINT", waypoint.icao, count, false);
-                    count++;
-                }
-            }
-            //await Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", fpln.getActiveWaypointIndex());
-            if (flightPlan.hasDeparture()) {
-                let departure = flightPlan.getDeparture();
-                //await Coherent.call("SET_ORIGIN_RUNWAY_INDEX", plan.procedureDetails.originRunwayIndex);
-                await Coherent.call("SET_DEPARTURE_PROC_INDEX", departure.procedure.index);
-                await Coherent.call("SET_DEPARTURE_RUNWAY_INDEX", departure.runwayTransitionIndex);
-                await Coherent.call("SET_DEPARTURE_ENROUTE_TRANSITION_INDEX", departure.enrouteTransitionIndex);
-            }
-            if (flightPlan.hasArrival()) {
-                let arrival = flightPlan.getArrival();
-                await Coherent.call("SET_ARRIVAL_PROC_INDEX", arrival.procedure.index);
-                await Coherent.call("SET_ARRIVAL_RUNWAY_INDEX", arrival.runwayTransitionIndex);
-                await Coherent.call("SET_ARRIVAL_ENROUTE_TRANSITION_INDEX", arrival.enrouteTransitionIndex);
-            }
-            if (flightPlan.hasApproach()) {
-                let approach = flightPlan.getApproach();
-                await Coherent.call("SET_APPROACH_INDEX", approach.procedure.index);
-                await Coherent.call("SET_APPROACH_TRANSITION_INDEX", approach.transitionIndex);
-            }
-        }
-        //Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", fpln.getActiveWaypointIndex() + 1);
-        await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
     }
 
     /**
