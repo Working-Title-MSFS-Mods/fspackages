@@ -438,7 +438,7 @@ class WT_FlightPlan {
         await this._setDeparture(departure, runwayTransitionIndex, enrouteTransitionIndex);
     }
 
-    async removeDeparture() {
+    removeDeparture() {
         if (!this.hasDeparture()) {
             return;
         }
@@ -514,7 +514,7 @@ class WT_FlightPlan {
         await this._setArrival(arrival, enrouteTransitionIndex, runwayTransitionIndex);
     }
 
-    async removeArrival() {
+    removeArrival() {
         if (!this.hasArrival()) {
             return;
         }
@@ -587,7 +587,7 @@ class WT_FlightPlan {
         await this._setApproach(approach, transitionIndex);
     }
 
-    async removeApproach() {
+    removeApproach() {
         if (!this.hasApproach()) {
             return;
         }

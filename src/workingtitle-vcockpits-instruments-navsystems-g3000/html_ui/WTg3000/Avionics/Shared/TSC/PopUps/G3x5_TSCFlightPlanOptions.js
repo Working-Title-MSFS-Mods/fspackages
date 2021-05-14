@@ -71,7 +71,11 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _deleteFlightPlan() {
-        this.context.flightPlanManager.clearActivePlan();
+        if (this.context.flightPlanPage.source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            this.context.flightPlanManager.clearActivePlan();
+        } else {
+            this.context.flightPlan.clear();
+        }
     }
 
     _onDeleteButtonPressed(button) {
