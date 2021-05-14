@@ -183,10 +183,10 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #VnavAlt {
     font-size: 26px;
     color: magenta;
     font: "Robot-Bold";
-    -webkit-text-stroke: 7px black;
-    text-align: right;
-    top: 2.75%;
-    left: 80%;
+    -webkit-text-stroke: 5px black;
+    text-align: center;
+    top: 4.6%;
+    left: 84.7%;
     width: 150px;
     height: 100px;
 }
@@ -385,6 +385,24 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
     top: 8%;
     right: 0;
     text-align: left;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon #verticalSpeedbug {
+    width: 20%;
+    margin-left: -15%;
+    margin-right: -7%;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon #verticalSpeedbug path {
+    fill: cyan;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalDirectionArrowUp_Icon #verticalDirectionArrowUp {
+    fill: cyan;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalDirectionArrowDown_Icon #verticalDirectionArrowDown {
+    fill: cyan;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalCaptureDataField_Icon {
@@ -1009,7 +1027,7 @@ cj4-pfd-element #Mainframe #NDMapOverlay #NDInfo #TopBox text.Wind {
 
 #VerticalSpeed #CenterGroup>text {
     fill: #11d011;
-    font-size: 22px;
+    font-size: 26px;
 }
 
 #Airspeed #CenterGroup #CursorGroup text,
