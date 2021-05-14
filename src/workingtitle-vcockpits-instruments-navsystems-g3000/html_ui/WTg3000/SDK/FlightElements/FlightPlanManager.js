@@ -22,7 +22,7 @@ class WT_FlightPlanManager {
         this._standby.addListener(this._onStandbyFlightPlanChanged.bind(this));
         this._directTo = new WT_DirectTo();
 
-        this._isLocked = false;
+        this._isActiveLocked = false;
 
         this._syncHandler = new WT_FlightPlanSyncHandler(icaoWaypointFactory);
         this._syncHandler.addListener(this._onSyncEvent.bind(this));
@@ -76,15 +76,6 @@ class WT_FlightPlanManager {
      */
     get lastActiveSyncTime() {
         return this._lastActiveSyncTime;
-    }
-
-    async copyToActive(flightPlan) {
-        this._active.copyFrom(flightPlan);
-        await this.syncActiveToGame();
-    }
-
-    async activateStandby() {
-        await this.copyToActive(this._standby);
     }
 
     /**
@@ -788,6 +779,15 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * Activates the standby flight plan. The currently active flight plan will be replaced by the standby flight plan.
+     * The standby flight plan will remain unchanged.
+     */
+    activateStandby() {
+        let event = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY);
+        this._syncHandler.fireEvent(event);
+    }
+
+    /**
      *
      * @param {WT_FlightPlanEvent} event
      */
@@ -804,11 +804,11 @@ class WT_FlightPlanManager {
     }
 
     async _doSetOriginAndSync(icao) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         try {
             if (icao === "") {
                 await this._asoboInterface.removeOrigin();
@@ -823,7 +823,7 @@ class WT_FlightPlanManager {
         } catch (e) {
             console.log(e);
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
 
         try {
             await this.syncActiveFromGame();
@@ -849,11 +849,11 @@ class WT_FlightPlanManager {
     }
 
     async _doSetDestinationAndSync(icao) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         try {
             if (icao === "") {
                 await this._asoboInterface.removeDestination();
@@ -868,7 +868,7 @@ class WT_FlightPlanManager {
         } catch (e) {
             console.log(e);
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
 
         try {
             await this.syncActiveFromGame();
@@ -894,11 +894,11 @@ class WT_FlightPlanManager {
     }
 
     async _doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         try {
             if (procedureIndex < 0) {
                 await this._asoboInterface.removeDeparture();
@@ -915,7 +915,7 @@ class WT_FlightPlanManager {
         } catch (e) {
             console.log(e);
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
 
         try {
             await this.syncActiveFromGame();
@@ -941,11 +941,11 @@ class WT_FlightPlanManager {
     }
 
     async _doInsertEnrouteWaypointAndSync(icao, index) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         let leg;
         try {
             leg = await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {icao: icao}, index);
@@ -963,7 +963,7 @@ class WT_FlightPlanManager {
                 this.activePlan.removeElement(leg);
             }
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
     }
 
     async _doInsertEnrouteWaypointWithoutSync(icao, index) {
@@ -983,11 +983,11 @@ class WT_FlightPlanManager {
     }
 
     async _doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         let sequence;
         try {
             sequence = await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airwayName, enterICAO, exitICAO, index);
@@ -1007,7 +1007,7 @@ class WT_FlightPlanManager {
                 this.activePlan.removeElement(WT_FlightPlan.Segment.ENROUTE. sequence);
             }
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
     }
 
     async _doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index) {
@@ -1027,14 +1027,14 @@ class WT_FlightPlanManager {
     }
 
     async _doRemoveEnrouteElementAndSync(index) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
         let element = this.activePlan.getEnroute().elements.get(index);
 
         if (element) {
-            this._isLocked = true;
+            this._isActiveLocked = true;
             try {
                 if (element instanceof WT_FlightPlanLeg) {
                     await this._asoboInterface.removeLeg(element);
@@ -1050,7 +1050,7 @@ class WT_FlightPlanManager {
             } catch (e) {
                 console.log(e);
             }
-            this._isLocked = false;
+            this._isActiveLocked = false;
         }
     }
 
@@ -1067,11 +1067,11 @@ class WT_FlightPlanManager {
     }
 
     async _doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         try {
             if (procedureIndex < 0) {
                 await this._asoboInterface.removeArrival();
@@ -1088,7 +1088,7 @@ class WT_FlightPlanManager {
         } catch (e) {
             console.log(e);
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
 
         try {
             await this.syncActiveFromGame();
@@ -1114,11 +1114,11 @@ class WT_FlightPlanManager {
     }
 
     async _doSetApproachAndSync(procedureIndex, transitionIndex) {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         try {
             if (procedureIndex < 0) {
                 await this._asoboInterface.removeApproach();
@@ -1134,7 +1134,7 @@ class WT_FlightPlanManager {
         } catch (e) {
             console.log(e);
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
 
         try {
             await this.syncActiveFromGame();
@@ -1160,11 +1160,11 @@ class WT_FlightPlanManager {
     }
 
     async _doClearFlightPlanAndSync() {
-        if (this._isLocked) {
+        if (this._isActiveLocked) {
             return;
         }
 
-        this._isLocked = true;
+        this._isActiveLocked = true;
         try {
             await this._asoboInterface.clearFlightPlan();
             // only clear the enroute segment; the rest will be synced from the sim's built-in flight plan manager
@@ -1175,7 +1175,7 @@ class WT_FlightPlanManager {
         } catch (e) {
             console.log(e);
         }
-        this._isLocked = false;
+        this._isActiveLocked = false;
     }
 
     async _doClearFlightPlanWithoutSync() {
@@ -1190,12 +1190,96 @@ class WT_FlightPlanManager {
         }
     }
 
+    async _doActivateStandbyAndSync() {
+        if (this._isActiveLocked) {
+            return;
+        }
+
+        this._isActiveLocked = true;
+        try {
+            let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
+            await this._asoboInterface.clearFlightPlan();
+            if (this.standbyPlan.hasOrigin()) {
+                await this._asoboInterface.setOrigin(this.standbyPlan.getOrigin().waypoint.icao);
+            }
+            if (this.standbyPlan.hasDestination()) {
+                await this._asoboInterface.setDestination(this.standbyPlan.getDestination().waypoint.icao);
+            }
+
+            tempFlightPlan.copySegmentFrom(this.standbyPlan, WT_FlightPlan.Segment.ENROUTE);
+            let enrouteElements = tempFlightPlan.getEnroute().elements;
+            for (let i = 0; i < enrouteElements.length; i++) {
+                let element = enrouteElements.get(i);
+                if (element instanceof WT_FlightPlanLeg) {
+                    await this._asoboInterface.syncEnrouteLeg(element);
+                } else {
+                    await this._asoboInterface.syncEnrouteAirwaySequence(element);
+                }
+            }
+            this.activePlan.copyFrom(tempFlightPlan);
+
+            if (this.standbyPlan.hasDeparture()) {
+                let departureSegment = this.standbyPlan.getDeparture();
+                await this._asoboInterface.loadDeparture(departureSegment.procedure.index, departureSegment.enrouteTransitionIndex, departureSegment.runwayTransitionIndex);
+            }
+
+            if (this.standbyPlan.hasArrival()) {
+                let arrivalSegment = this.standbyPlan.getArrival();
+                await this._asoboInterface.loadArrival(arrivalSegment.procedure.index, arrivalSegment.enrouteTransitionIndex, arrivalSegment.runwayTransitionIndex);
+            }
+
+            if (this.standbyPlan.hasApproach()) {
+                let approachSegment = this.standbyPlan.getApproach();
+                await this._asoboInterface.loadApproach(approachSegment.procedure.index, approachSegment.transitionIndex);
+            }
+
+            let event = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY);
+            this._syncHandler.fireEvent(event);
+        } catch (e) {
+            console.log(e);
+
+            // if activation fails, we need to clear the active flight plan so we don't leave it in an invalid state
+            this.activePlan.clear();
+            await this._asoboInterface.clearFlightPlan();
+            let event = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN);
+            this._syncHandler.fireEvent(event);
+        }
+        this._isActiveLocked = false;
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doActivateStandbyWithoutSync() {
+        // only need to copy over the enroute segment; the rest will be synced through the sim's built-in flight plan manager
+        let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
+        tempFlightPlan.copySegmentFrom(this.standbyPlan, WT_FlightPlan.Segment.ENROUTE);
+
+        this.activePlan.copyFrom(tempFlightPlan);
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doActivateStandby() {
+        if (this.isMaster) {
+            await this._doActivateStandbyAndSync();
+        } else {
+            await this._doActivateStandbyWithoutSync();
+        }
+    }
+
     /**
      *
      * @param {WT_FlightPlan} flightPlan
      */
     async _doStandbySync(flightPlan) {
-        console.log(flightPlan);
         this._isSyncingStandby = true;
         this.standbyPlan.copyFrom(flightPlan);
         this._isSyncingStandby = false;
@@ -1244,6 +1328,9 @@ class WT_FlightPlanManager {
                 break;
             case WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN:
                 this._doClearFlightPlan();
+                break;
+            case WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY:
+                this._doActivateStandby();
                 break;
             case WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC:
                 this._doStandbySync(event.flightPlan);
@@ -1294,7 +1381,6 @@ class WT_FlightPlanSyncHandler {
                 type: event.type,
                 flightPlanString: this._serializeFlightPlan(event.flightPlan)
             };
-            console.log(`sending ${object.flightPlanString}`);
         } else {
             object = event;
         }
@@ -1322,7 +1408,6 @@ class WT_FlightPlanSyncHandler {
     async _parseEventFromData(data) {
         let object = JSON.parse(data);
         if (object.command === WT_FlightPlanSyncHandler.Command.SYNC) {
-            console.log(`receiving ${object.flightPlanString}`);
             return {
                 sourceID: object.sourceID,
                 command: object.command,
@@ -1391,7 +1476,8 @@ WT_FlightPlanSyncHandler.EventType = {
     ACTIVE_SET_ARRIVAL: 6,
     ACTIVE_SET_APPROACH: 7,
     ACTIVE_CLEAR_FLIGHT_PLAN: 8,
-    STANDBY_SYNC: 9
+    ACTIVATE_STANDBY: 9,
+    STANDBY_SYNC: 10
 }
 
 /**
