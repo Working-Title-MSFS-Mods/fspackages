@@ -30,7 +30,7 @@ class WT_DirectTo {
             return;
         }
 
-        this._origin = new WT_CustomWaypoint("DRCT-ORIGIN", point);
+        this._origin = new WT_FlightPathWaypoint("DRCT-ORIG", point);
         this._isActive = true;
         eventData.types = eventData.types | WT_DirectToEvent.Type.ACTIVATED;
         eventData.origin = this._origin;
