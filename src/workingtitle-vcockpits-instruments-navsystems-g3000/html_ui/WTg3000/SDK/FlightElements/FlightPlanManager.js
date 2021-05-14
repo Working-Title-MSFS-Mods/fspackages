@@ -18,11 +18,13 @@ class WT_FlightPlanManager {
 
         this._active = new WT_FlightPlan(icaoWaypointFactory);
         this._standby = new WT_FlightPlan(icaoWaypointFactory);
+        this._isSyncingStandby = false;
+        this._standby.addListener(this._onStandbyFlightPlanChanged.bind(this));
         this._directTo = new WT_DirectTo();
 
         this._isLocked = false;
 
-        this._syncHandler = new WT_FlightPlanSyncHandler();
+        this._syncHandler = new WT_FlightPlanSyncHandler(icaoWaypointFactory);
         this._syncHandler.addListener(this._onSyncEvent.bind(this));
 
         this._asoboInterface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
@@ -186,7 +188,7 @@ class WT_FlightPlanManager {
             throw new Error("Invalid waypoint ICAO to set as origin");
         }
 
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_ORIGIN, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ORIGIN, {
             icao: icao
         });
         this._syncHandler.fireEvent(syncEvent);
@@ -209,7 +211,7 @@ class WT_FlightPlanManager {
             throw new Error("Invalid waypoint ICAO to set as destination");
         }
 
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_DESTINATION, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DESTINATION, {
             icao: icao
         });
         this._syncHandler.fireEvent(syncEvent);
@@ -219,7 +221,7 @@ class WT_FlightPlanManager {
      * Removes the active flight plan's origin waypoint.
      */
     removeActiveOrigin() {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_ORIGIN, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ORIGIN, {
             icao: ""
         });
         this._syncHandler.fireEvent(syncEvent);
@@ -229,7 +231,7 @@ class WT_FlightPlanManager {
      * Removes the active flight plan's destination waypoint.
      */
     removeActiveDestination() {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_DESTINATION, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DESTINATION, {
             icao: ""
         });
         this._syncHandler.fireEvent(syncEvent);
@@ -261,7 +263,7 @@ class WT_FlightPlanManager {
         }
 
         if (segment === WT_FlightPlan.Segment.ENROUTE) {
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_WAYPOINT, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT, {
                 icao: icao,
                 index: index
             });
@@ -283,7 +285,7 @@ class WT_FlightPlanManager {
      */
     addAirwaySequenceToActive(segment, airway, enter, exit, index) {
         if (segment === WT_FlightPlan.Segment.ENROUTE) {
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_AIRWAY, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY, {
                 airwayName: airway.name,
                 enterICAO: enter.icao,
                 exitICAO: exit.icao,
@@ -306,7 +308,7 @@ class WT_FlightPlanManager {
 
         if (element.segment === WT_FlightPlan.Segment.ENROUTE) {
             let index = element.flightPlan.getEnroute().elements.indexOf(element);
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ENROUTE_REMOVE_INDEX, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX, {
                 index: index
             });
             this._syncHandler.fireEvent(syncEvent);
@@ -329,7 +331,7 @@ class WT_FlightPlanManager {
             throw new Error("Invalid departure index");
         }
 
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_DEPARTURE, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DEPARTURE, {
             procedureIndex: departureIndex,
             enrouteTransitionIndex: enrouteTransitionIndex,
             runwayTransitionIndex: runwayTransitionIndex
@@ -341,7 +343,7 @@ class WT_FlightPlanManager {
      * Removes the departure procedure from the active flight plan.
      */
     removeDepartureFromActive() {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_DEPARTURE, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DEPARTURE, {
             procedureIndex: -1,
             enrouteTransitionIndex: -1,
             runwayTransitionIndex: -1
@@ -363,7 +365,7 @@ class WT_FlightPlanManager {
             throw new Error("Invalid arrival index");
         }
 
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_ARRIVAL, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ARRIVAL, {
             procedureIndex: arrivalIndex,
             enrouteTransitionIndex: enrouteTransitionIndex,
             runwayTransitionIndex: runwayTransitionIndex
@@ -375,7 +377,7 @@ class WT_FlightPlanManager {
      * Removes the arrival procedure from the active flight plan.
      */
     removeArrivalFromActive() {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_ARRIVAL, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ARRIVAL, {
             procedureIndex: -1,
             enrouteTransitionIndex: -1,
             runwayTransitionIndex: -1
@@ -396,7 +398,7 @@ class WT_FlightPlanManager {
             throw new Error("Invalid approach index");
         }
 
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_APPROACH, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH, {
             procedureIndex: approachIndex,
             transitionIndex: transitionIndex
         });
@@ -407,7 +409,7 @@ class WT_FlightPlanManager {
      * Removes the approach procedure from the active flight plan.
      */
     removeApproachFromActive() {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.SET_APPROACH, {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH, {
             procedureIndex: -1,
             transitionIndex: -1
         });
@@ -418,7 +420,7 @@ class WT_FlightPlanManager {
      * Clears the active flight plan.
      */
     clearActivePlan() {
-        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN);
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN);
         this._syncHandler.fireEvent(syncEvent);
     }
 
@@ -785,6 +787,22 @@ class WT_FlightPlanManager {
         }
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanEvent} event
+     */
+    _onStandbyFlightPlanChanged(event) {
+        if (this._isSyncingStandby) {
+            // ignore changes made while syncing from another source to avoid sending unnecessary reflexive sync events
+            return;
+        }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.SYNC, WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC, {
+            flightPlan: this.standbyPlan
+        });
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
     async _doSetOriginAndSync(icao) {
         if (this._isLocked) {
             return;
@@ -798,7 +816,7 @@ class WT_FlightPlanManager {
                 await this._asoboInterface.setOrigin(icao);
             }
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_ORIGIN, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ORIGIN, {
                 icao: icao
             });
             this._syncHandler.fireEvent(syncEvent);
@@ -843,7 +861,7 @@ class WT_FlightPlanManager {
                 await this._asoboInterface.setDestination(icao);
             }
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_DESTINATION, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DESTINATION, {
                 icao: icao
             });
             this._syncHandler.fireEvent(syncEvent);
@@ -888,7 +906,7 @@ class WT_FlightPlanManager {
                 await this._asoboInterface.loadDeparture(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
             }
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_DEPARTURE, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DEPARTURE, {
                 procedureIndex: procedureIndex,
                 enrouteTransitionIndex: enrouteTransitionIndex,
                 runwayTransitionIndex: runwayTransitionIndex
@@ -930,11 +948,10 @@ class WT_FlightPlanManager {
         this._isLocked = true;
         let leg;
         try {
-            let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
-            leg = await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint}, index);
+            leg = await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {icao: icao}, index);
             await this._asoboInterface.syncEnrouteLeg(leg);
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_WAYPOINT, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT, {
                 icao: icao,
                 index: index
             });
@@ -951,8 +968,7 @@ class WT_FlightPlanManager {
 
     async _doInsertEnrouteWaypointWithoutSync(icao, index) {
         try {
-            let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
-            await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint}, index);
+            await this.activePlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {icao: icao}, index);
         } catch (e) {
             console.log(e);
         }
@@ -974,13 +990,10 @@ class WT_FlightPlanManager {
         this._isLocked = true;
         let sequence;
         try {
-            let enter = await this._icaoWaypointFactory.getWaypoint(enterICAO);
-            let airway = enter.airways.find(airway => airway.name === airwayName);
-            let exit = await this._icaoWaypointFactory.getWaypoint(exitICAO);
-            sequence = await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airway, enter, exit, index);
+            sequence = await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airwayName, enterICAO, exitICAO, index);
             await this._asoboInterface.syncEnrouteAirwaySequence(sequence);
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_AIRWAY, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY, {
                 airwayName: airwayName,
                 enterICAO: enterICAO,
                 exitICAO: exitICAO,
@@ -999,10 +1012,7 @@ class WT_FlightPlanManager {
 
     async _doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index) {
         try {
-            let enter = await this._icaoWaypointFactory.getWaypoint(enterICAO);
-            let airway = enter.airways.find(airway => airway.name === airwayName);
-            let exit = await this._icaoWaypointFactory.getWaypoint(exitICAO);
-            await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airway, enter, exit, index);
+            await this.activePlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, airwayName, enterICAO, exitICAO, index);
         } catch (e) {
             console.log(e);
         }
@@ -1033,7 +1043,7 @@ class WT_FlightPlanManager {
                 }
                 this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, index);
 
-                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.ENROUTE_REMOVE_INDEX, {
+                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX, {
                     index: index
                 });
                 this._syncHandler.fireEvent(syncEvent);
@@ -1069,7 +1079,7 @@ class WT_FlightPlanManager {
                 await this._asoboInterface.loadArrival(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
             }
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_ARRIVAL, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ARRIVAL, {
                 procedureIndex: procedureIndex,
                 enrouteTransitionIndex: enrouteTransitionIndex,
                 runwayTransitionIndex: runwayTransitionIndex
@@ -1116,7 +1126,7 @@ class WT_FlightPlanManager {
                 await this._asoboInterface.loadApproach(procedureIndex, transitionIndex);
             }
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.SET_APPROACH, {
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH, {
                 procedureIndex: procedureIndex,
                 transitionIndex: transitionIndex
             });
@@ -1160,7 +1170,7 @@ class WT_FlightPlanManager {
             // only clear the enroute segment; the rest will be synced from the sim's built-in flight plan manager
             this.activePlan.removeByIndex(WT_FlightPlan.Segment.ENROUTE, 0, this.activePlan.getEnroute().length);
 
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRMATION, WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN);
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN);
             this._syncHandler.fireEvent(syncEvent);
         } catch (e) {
             console.log(e);
@@ -1182,42 +1192,61 @@ class WT_FlightPlanManager {
 
     /**
      *
+     * @param {WT_FlightPlan} flightPlan
+     */
+    async _doStandbySync(flightPlan) {
+        console.log(flightPlan);
+        this._isSyncingStandby = true;
+        this.standbyPlan.copyFrom(flightPlan);
+        this._isSyncingStandby = false;
+    }
+
+    /**
+     *
      * @param {WT_FlightPlanSyncEvent} event
      */
     _onSyncEvent(event) {
-        if ((event.command === WT_FlightPlanSyncHandler.Command.REQUEST) !== this.isMaster) {
-            // master FPM should only respond to sync requests
-            // all other FPMs should only respond to sync confirmations
+        if ((event.command === WT_FlightPlanSyncHandler.Command.REQUEST && !this.isMaster) ||
+            (event.command === WT_FlightPlanSyncHandler.Command.CONFIRM && this.isMaster)) {
+            // only master FPM should respond to request commands
+            // master FPM should not respond to confirm commands
+            return;
+        }
+        if (event.command === WT_FlightPlanSyncHandler.Command.SYNC && event.sourceID === this._instrumentID) {
+            // ignore sync commands from self
             return;
         }
 
         switch (event.type) {
-            case WT_FlightPlanSyncHandler.EventType.SET_ORIGIN:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ORIGIN:
                 this._doSetOrigin(event.icao);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.SET_DESTINATION:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DESTINATION:
                 this._doSetDestination(event.icao);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.SET_DEPARTURE:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_DEPARTURE:
                 this._doSetDeparture(event.procedureIndex, event.enrouteTransitionIndex, event.runwayTransitionIndex);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_WAYPOINT:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT:
                 this._doInsertEnrouteWaypoint(event.icao, event.index);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.ENROUTE_INSERT_AIRWAY:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY:
                 this._doInsertEnrouteAirway(event.airwayName, event.enterICAO, event.exitICAO, event.index);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.ENROUTE_REMOVE_INDEX:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX:
                 this._doRemoveEnrouteElement(event.index);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.SET_ARRIVAL:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ARRIVAL:
                 this._doSetArrival(event.procedureIndex, event.enrouteTransitionIndex, event.runwayTransitionIndex);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.SET_APPROACH:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH:
                 this._doSetApproach(event.procedureIndex, event.transitionIndex);
                 break;
-            case WT_FlightPlanSyncHandler.EventType.CLEAR_FLIGHT_PLAN:
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN:
                 this._doClearFlightPlan();
+                break;
+            case WT_FlightPlanSyncHandler.EventType.STANDBY_SYNC:
+                this._doStandbySync(event.flightPlan);
                 break;
         }
     }
@@ -1227,7 +1256,13 @@ WT_FlightPlanManager._tempKnot = WT_Unit.KNOT.createNumber(0);
 WT_FlightPlanManager._tempGeoPoint = new WT_GeoPoint(0, 0);
 
 class WT_FlightPlanSyncHandler {
-    constructor() {
+    /**
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     */
+    constructor(icaoWaypointFactory) {
+        this._icaoWaypointFactory = icaoWaypointFactory;
+        this._flightPlanSerializer = new WT_FlightPlanSerializer(icaoWaypointFactory);
+
         /**
          * @type {((event:WT_FlightPlanSyncEvent) => void)[]}
          */
@@ -1236,25 +1271,83 @@ class WT_FlightPlanSyncHandler {
         WT_CrossInstrumentEvent.addListener(WT_FlightPlanSyncHandler.EVENT_KEY, this._onCrossInstrumentEvent.bind(this));
     }
 
+    /**
+     *
+     * @param {WT_FlightPlan} flightPlan
+     * @returns {String}
+     */
+    _serializeFlightPlan(flightPlan) {
+        return this._flightPlanSerializer.serialize(flightPlan);
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanSyncEvent} event
+     * @returns {String}
+     */
+    _serialize(event) {
+        let object;
+        if (event.command === WT_FlightPlanSyncHandler.Command.SYNC) {
+            object = {
+                sourceID: event.sourceID,
+                command: event.command,
+                type: event.type,
+                flightPlanString: this._serializeFlightPlan(event.flightPlan)
+            };
+            console.log(`sending ${object.flightPlanString}`);
+        } else {
+            object = event;
+        }
+        return JSON.stringify(object);
+    }
+
     fireEvent(event) {
-        WT_CrossInstrumentEvent.fireEvent(WT_FlightPlanSyncHandler.EVENT_KEY, JSON.stringify(event))
+        let data = this._serialize(event);
+        WT_CrossInstrumentEvent.fireEvent(WT_FlightPlanSyncHandler.EVENT_KEY, data);
+    }
+
+    /**
+     *
+     * @param {String} string
+     * @returns {Promise<WT_FlightPlan>}
+     */
+    async _deserializeFlightPlan(string) {
+        return this._flightPlanSerializer.deserialize(string, new WT_FlightPlan(this._icaoWaypointFactory));
     }
 
     /**
      *
      * @param {String} data
      */
-    _parseEventFromData(data) {
-        return JSON.parse(data);
+    async _parseEventFromData(data) {
+        let object = JSON.parse(data);
+        if (object.command === WT_FlightPlanSyncHandler.Command.SYNC) {
+            console.log(`receiving ${object.flightPlanString}`);
+            return {
+                sourceID: object.sourceID,
+                command: object.command,
+                type: object.type,
+                flightPlan: await this._deserializeFlightPlan(object.flightPlanString)
+            };
+        } else {
+            return object;
+        }
     }
 
     _notifyListeners(event) {
         this._listeners.forEach(listener => listener(event));
     }
 
-    _onCrossInstrumentEvent(key, data) {
-        let event = this._parseEventFromData(data);
-        this._notifyListeners(event);
+    async _onCrossInstrumentEvent(key, data) {
+        let event;
+        try {
+            event = await this._parseEventFromData(data);
+        } catch (e) {
+            console.log(e);
+        }
+        if (event) {
+            this._notifyListeners(event);
+        }
     }
 
     /**
@@ -1282,21 +1375,23 @@ WT_FlightPlanSyncHandler.EVENT_KEY = "WT_FlightPlanSync";
  */
 WT_FlightPlanSyncHandler.Command = {
     REQUEST: 0,
-    CONFIRMATION: 1
+    CONFIRM: 1,
+    SYNC: 2
 }
 /**
  * @enum {Number}
  */
 WT_FlightPlanSyncHandler.EventType = {
-    SET_ORIGIN: 0,
-    SET_DESTINATION: 1,
-    SET_DEPARTURE: 2,
-    ENROUTE_INSERT_WAYPOINT: 3,
-    ENROUTE_INSERT_AIRWAY: 4,
-    ENROUTE_REMOVE_INDEX: 5,
-    SET_ARRIVAL: 6,
-    SET_APPROACH: 7,
-    CLEAR_FLIGHT_PLAN: 8
+    ACTIVE_SET_ORIGIN: 0,
+    ACTIVE_SET_DESTINATION: 1,
+    ACTIVE_SET_DEPARTURE: 2,
+    ACTIVE_ENROUTE_INSERT_WAYPOINT: 3,
+    ACTIVE_ENROUTE_INSERT_AIRWAY: 4,
+    ACTIVE_ENROUTE_REMOVE_INDEX: 5,
+    ACTIVE_SET_ARRIVAL: 6,
+    ACTIVE_SET_APPROACH: 7,
+    ACTIVE_CLEAR_FLIGHT_PLAN: 8,
+    STANDBY_SYNC: 9
 }
 
 /**
@@ -1309,4 +1404,5 @@ WT_FlightPlanSyncHandler.EventType = {
  * @property {String} [enterICAO]
  * @property {String} [exitICAO]
  * @property {Number} [index]
+ * @property {WT_FlightPlan} [flightPlan]
  */

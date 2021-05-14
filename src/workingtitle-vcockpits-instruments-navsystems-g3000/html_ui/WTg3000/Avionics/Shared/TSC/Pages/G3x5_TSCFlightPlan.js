@@ -198,6 +198,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._setDisplayedFlightPlan(flightPlan);
         this.htmlElement.setSource(this._source);
         this._updateTitle();
+        this.updateFlightPlanPreview();
     }
 
     /**
@@ -219,7 +220,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         let paneSettings = this.instrument.getSelectedPaneSettings();
         if (paneSettings.display.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN) {
             let selectedElement = this._getSelectedElement(this.htmlElement.getSelectedRow());
-            paneSettings.flightPlan.setFlightPlan(WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.ACTIVE, -1, selectedElement);
+            let source = this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE ? WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.ACTIVE : WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.STANDBY;
+            paneSettings.flightPlan.setFlightPlan(source, -1, selectedElement);
         }
     }
 
@@ -237,8 +239,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
                 this._fpm.setActiveOriginICAO(icao);
             } else {
-                let waypoint = await this.instrument.icaoWaypointFactory.getWaypoint(icao);
-                this._displayedFlightPlan.setOrigin(waypoint);
+                await this._displayedFlightPlan.setOriginICAO(icao);
             }
         } catch (e) {
             console.log(e);
@@ -254,8 +255,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
                 this._fpm.setActiveDestinationICAO(icao);
             } else {
-                let waypoint = await this.instrument.icaoWaypointFactory.getWaypoint(icao);
-                this._displayedFlightPlan.setDestination(waypoint);
+                await this._displayedFlightPlan.setDestinationICAO(icao);
             }
         } catch (e) {
             console.log(e);
@@ -326,7 +326,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_ICAOWaypoint[]} waypointSequence
      */
     async _insertAirway(leg, airway, waypointSequence) {
-        if (leg.flightPlan !== this._fpm.activePlan) {
+        if (leg.flightPlan !== this._displayedFlightPlan) {
             return;
         }
 

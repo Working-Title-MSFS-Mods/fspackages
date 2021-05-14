@@ -45,7 +45,17 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
 
     _toggleFlightPlanPreview() {
         let displaySetting = this.context.paneSettings.display;
-        if (displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN) {
+        let isDisplayOn = displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN;
+        let doesSourceMatch;
+        switch (this.context.paneSettings.flightPlan.source) {
+            case WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.ACTIVE:
+                doesSourceMatch = this.context.flightPlanPage.source === WT_G3x5_TSCFlightPlan.Source.ACTIVE;
+                break;
+            case WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.STANDBY:
+                doesSourceMatch = this.context.flightPlanPage.source === WT_G3x5_TSCFlightPlan.Source.STANDBY;
+                break;
+        }
+        if (isDisplayOn && doesSourceMatch) {
             displaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.NAVMAP);
         } else {
             displaySetting.setValue(WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN);
@@ -102,7 +112,7 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
-        this._displaySettingListener = this._onDisplaySettingChanged.bind(this);
+        this._flightPlanDisplaySettingsListener = this._onFlightPlanDisplaySettingsChanged.bind(this);
 
         /**
          * @type {WT_G3x5_TSCFlightPlanOptions}
@@ -194,15 +204,26 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
 
     _updateShowOnMapButton() {
         let displaySetting = this._parentPopUp.context.paneSettings.display;
-        this._showOnMapButton.toggle = displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN ? "on" : "off";
+        let isDisplayOn = displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN;
+        let doesSourceMatch;
+        switch (this._parentPopUp.context.paneSettings.flightPlan.source) {
+            case WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.ACTIVE:
+                doesSourceMatch = this._parentPopUp.context.flightPlanPage.source === WT_G3x5_TSCFlightPlan.Source.ACTIVE;
+                break;
+            case WT_G3x5_FlightPlanDisplayFlightPlanSetting.Source.STANDBY:
+                doesSourceMatch = this._parentPopUp.context.flightPlanPage.source === WT_G3x5_TSCFlightPlan.Source.STANDBY;
+                break;
+        }
+        this._showOnMapButton.toggle = (isDisplayOn && doesSourceMatch) ? "on" : "off";
     }
 
-    _onDisplaySettingChanged(setting, newValue, oldValue) {
+    _onFlightPlanDisplaySettingsChanged(setting, newValue, oldValue) {
         this._updateShowOnMapButton();
     }
 
     _initSettingListeners() {
-        this._parentPopUp.context.paneSettings.display.addListener(this._displaySettingListener);
+        this._parentPopUp.context.paneSettings.display.addListener(this._flightPlanDisplaySettingsListener);
+        this._parentPopUp.context.paneSettings.flightPlan.addListener(this._flightPlanDisplaySettingsListener);
     }
 
     _initFromOpen() {
@@ -218,7 +239,8 @@ class WT_G3x5_TSCFlightPlanOptionsHTMLElement extends HTMLElement {
     }
 
     _cleanUpSettingListeners() {
-        this._parentPopUp.context.paneSettings.display.removeListener(this._displaySettingListener);
+        this._parentPopUp.context.paneSettings.display.removeListener(this._flightPlanDisplaySettingsListener);
+        this._parentPopUp.context.paneSettings.flightPlan.removeListener(this._flightPlanDisplaySettingsListener);
     }
 
     _cleanUpFromClose() {

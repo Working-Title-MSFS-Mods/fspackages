@@ -1,4 +1,7 @@
 class WT_FlightPlan {
+    /**
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     */
     constructor(icaoWaypointFactory) {
         this._icaoWaypointFactory = icaoWaypointFactory;
         this._procedureLegFactory = new WT_FlightPlanProcedureLegFactory(icaoWaypointFactory);
@@ -292,10 +295,19 @@ class WT_FlightPlan {
 
     /**
      *
+     * @param {String} icao
+     */
+    async setOriginICAO(icao) {
+        let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
+        this.setOrigin(waypoint);
+    }
+
+    /**
+     *
      * @param {WT_Waypoint} waypoint
      */
     setOrigin(waypoint) {
-        if (!waypoint || (this.hasOrigin() && (waypoint.uniqueID === this._origin.waypoint.uniqueID))) {
+        if ((!waypoint && !this.hasOrigin()) || (waypoint && waypoint.equals(this.getOrigin().waypoint))) {
             return;
         }
 
@@ -324,10 +336,19 @@ class WT_FlightPlan {
 
     /**
      *
+     * @param {String} icao
+     */
+    async setDestinationICAO(icao) {
+        let waypoint = await this._icaoWaypointFactory.getWaypoint(icao);
+        this.setDestination(waypoint);
+    }
+
+    /**
+     *
      * @param {WT_Waypoint} waypoint
      */
     setDestination(waypoint) {
-        if (!waypoint || (this.hasDestination() && (waypoint.uniqueID === this._destination.waypoint.uniqueID))) {
+        if ((!waypoint && !this.hasDestination()) || (waypoint && waypoint.equals(this.getDestination().waypoint))) {
             return;
         }
 
@@ -751,13 +772,17 @@ class WT_FlightPlan {
                 if (index === undefined) {
                     index = segmentElement.length;
                 }
-                elements = waypointEntries.map(entry => {
-                    if (entry.steps && entry.steps.length > 0) {
-                        return new WT_FlightPlanWaypointFixLeg(entry.waypoint, this._createLegSteps(entry.waypoint, entry.steps), entry.publishedConstraint, entry.advisoryAltitude);
-                    } else {
-                        return new WT_FlightPlanDirectToWaypointLeg(entry.waypoint, entry.publishedConstraint, entry.advisoryAltitude);
+                elements = await Promise.all(waypointEntries.map(async entry => {
+                    let waypoint = entry.waypoint;
+                    if (!waypoint) {
+                        waypoint = await this._icaoWaypointFactory.getWaypoint(entry.icao);
                     }
-                });
+                    if (entry.steps && entry.steps.length > 0) {
+                        return new WT_FlightPlanWaypointFixLeg(waypoint, this._createLegSteps(waypoint, entry.steps), entry.publishedConstraint, entry.advisoryAltitude);
+                    } else {
+                        return new WT_FlightPlanDirectToWaypointLeg(waypoint, entry.publishedConstraint, entry.advisoryAltitude);
+                    }
+                }, this));
                 let eventData = {types: 0};
                 this._insertToSegment(segmentElement, elements, index, eventData);
                 this._updateFromSegment(segment);
@@ -770,9 +795,9 @@ class WT_FlightPlan {
     /**
      *
      * @param {WT_FlightPlan.Segment} segment
-     * @param {WT_Airway} airway
-     * @param {WT_Waypoint} enter
-     * @param {WT_Waypoint} exit
+     * @param {WT_Airway|String} airway
+     * @param {WT_Waypoint|String} enter
+     * @param {WT_Waypoint|String} exit
      * @param {Number} [index]
      * @returns {Promise<WT_FlightPlanAirwaySequence>}
      */
@@ -788,9 +813,18 @@ class WT_FlightPlan {
                     index = segmentElement.length;
                 }
 
+                if (typeof airway === "string" && typeof enter === "string") {
+                    enter = await this._icaoWaypointFactory.getWaypoint(enter);
+                    let name = airway;
+                    airway = enter.airways.find(airway => airway.name === name);
+                    if (!airway) {
+                        throw new Error(`Could not find entry waypoint ${enter.ident} in airway ${name}.`);
+                    }
+                }
+
                 let waypoints = await airway.getWaypoints();
-                let enterIndex = waypoints.findIndex(waypoint => waypoint.equals(enter));
-                let exitIndex = waypoints.findIndex(waypoint => waypoint.equals(exit));
+                let enterIndex = waypoints.findIndex(typeof enter === "string" ? (waypoint => waypoint.icao === enter) : (waypoint => waypoint.equals(enter)));
+                let exitIndex = waypoints.findIndex(typeof exit === "string" ? (waypoint => waypoint.icao === exit) : (waypoint => waypoint.equals(exit)));
                 if (enterIndex < 0 || exitIndex < 0) {
                     throw new Error("Invalid enter and/or exit points.");
                 }
@@ -1025,9 +1059,12 @@ WT_FlightPlan.Segment = {
 
 /**
  * @typedef {Object} WT_FlightPlanWaypointEntry
- * @property {WT_Waypoint} waypoint
- * @property {WT_GeoPoint[]} steps
- * @property {Boolean} flyOver
+ * @property {String} [icao]
+ * @property {WT_Waypoint} [waypoint]
+ * @property {WT_GeoPoint[]} [steps]
+ * @property {WT_NumberUnit} [advisoryAltitude]
+ * @property {WT_AltitudeConstraint} [publishedConstraint]
+ * @property {Boolean} [flyOver]
  */
 
 class WT_FlightPlanEvent {
