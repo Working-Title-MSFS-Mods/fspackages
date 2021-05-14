@@ -95,6 +95,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
          */
         this._buttonEventHandlers = [];
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DRCT] = this._onDRCTButtonPressed.bind(this);
+        this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_STANDBY] = this._onActivateStandbyButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.PROC] = this._onProcButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.STANDBY_FLIGHT_PLAN] = this._onStandbyFlightPlanButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVE_FLIGHT_PLAN] = this._onActiveFlightPlanButtonPressed.bind(this);
@@ -513,6 +514,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             waypoint = selectedRowModeHTMLElement.leg.fix;
         }
         this._openDRCTPage(waypoint);
+    }
+
+    _onActivateStandbyButtonPressed(event) {
+        this._fpm.activateStandby();
     }
 
     _onProcButtonPressed(event) {
@@ -1109,6 +1114,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
         [
             this._drctButton,
+            this._activateStandbyButton,
             this._procButton,
             this._standbyFlightPlanButton,
             this._activeFlightPlanButton,
@@ -1117,6 +1123,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             this._banner
         ] = await Promise.all([
             WT_CustomElementSelector.select(this.shadowRoot, `#drct`, WT_TSCImageButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#activatestdby`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#proc`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#stdbyfpln`, WT_TSCLabeledButton),
             WT_CustomElementSelector.select(this.shadowRoot, `#activefpln`, WT_TSCLabeledButton),
@@ -1138,6 +1145,10 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._drctButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._drctButton,
             type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DRCT
+        }));
+        this._activateStandbyButton.addButtonListener(this._notifyButtonListeners.bind(this, {
+            button: this._activateStandbyButton,
+            type: WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ACTIVATE_STANDBY
         }));
         this._procButton.addButtonListener(this._notifyButtonListeners.bind(this, {
             button: this._procButton,
@@ -1830,8 +1841,8 @@ WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType = {
     AIRWAY_EXPAND: 29,
     AIRWAY_COLLAPSE_ALL: 30,
     AIRWAY_EXPAND_ALL: 31,
-    AIRWAY_REMOVE: 31,
-    AIRWAY_EDIT: 32
+    AIRWAY_REMOVE: 32,
+    AIRWAY_EDIT: 33
 };
 WT_G3x5_TSCFlightPlanHTMLElement.DATA_FIELD_MODE_TEXTS = [
     "CUM",
