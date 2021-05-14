@@ -30,7 +30,6 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
     }
 
     async _initHTMLElement() {
-        this.htmlElement.setFlightPlan(this._fpm.activePlan);
         await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
         this._initButtonListeners();
     }
@@ -43,6 +42,7 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
         root.appendChild(this.htmlElement);
         this._initHTMLElement();
         this._isInit = true;
+        this._updateFromSource();
     }
 
     _updateFromSource() {
