@@ -59,7 +59,7 @@ class CJ4_PFD extends BaseAirliners {
     Init() {
         super.Init();
         this.radioNav.setRADIONAVSource(NavSource.GPS);
-        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 0);
+        SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", WTDataStore.get("CJ4_PFD1_AOA"));
         SimVar.SetSimVarValue("L:WT_CJ4_V1_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_VR_ON", "Bool", false);
         SimVar.SetSimVarValue("L:WT_CJ4_V2_ON", "Bool", false);
@@ -536,6 +536,8 @@ class CJ4_PFD extends BaseAirliners {
                 SimVar.SetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number", 2);
             }
         }
+        WTDataStore.set("CJ4_PFD1_AOA", SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number"));
+
         const v1 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V1);
         const vR = _dict.get(CJ4_PopupMenu_Key.VSPEED_VR);
         const v2 = _dict.get(CJ4_PopupMenu_Key.VSPEED_V2);
@@ -690,6 +692,7 @@ class CJ4_PFD extends BaseAirliners {
         _dict.set(CJ4_PopupMenu_Key.UNITS_PRESS, (baroHPA) ? "HPA" : "IN");
         _dict.set(CJ4_PopupMenu_Key.UNITS_MTR_ALT, (this.horizon.isMTRSVisible()) ? "ON" : "OFF");
         _dict.set(CJ4_PopupMenu_Key.FLT_DIR, (this.fdMode == 1) ? "X-PTR" : "V-BAR");
+        
         const aoaSettingFill = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number").toFixed(0);
         if (aoaSettingFill) {
             if (aoaSettingFill == 0) {
@@ -786,9 +789,12 @@ class CJ4_AOA extends NavSystemElement {
     onEnter() {
     }
     onUpdate(_deltaTime) {
-        var angle = fastToFixed(Simplane.getAngleOfAttack(), 1);
+        var angle = Simplane.getAngleOfAttack();
+        this.aoaStyle = WTDataStore.get('WT_CJ4_aoaStyle');
+        let seconds = _deltaTime / 10;
+        this._angle = Utils.SmoothSin(0.0, angle, 0.5, seconds);
         //AoA only visible when flaps 35
-        this.aoa.setAttribute("angle", angle);
+        this.aoa.setAttribute("angle", this._angle);
         const flap35Active = SimVar.GetSimVarValue("TRAILING EDGE FLAPS LEFT PERCENT", "Percent");
         const aoaActive = SimVar.GetSimVarValue("L:WT_CJ4_PFD1_AOA", "Number");
         if ((flap35Active == 100 && aoaActive !== 2) || aoaActive == 1) {
@@ -796,6 +802,7 @@ class CJ4_AOA extends NavSystemElement {
         } else {
             this.aoa.style = "display: none";
         }
+        this.aoa.setAttribute("aoa-style", this.aoaStyle);
     }
     onExit() {
     }

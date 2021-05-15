@@ -312,7 +312,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -320,11 +320,42 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
             }
+            // ITT RED LINES
+            this.redLineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineLeft.setAttribute("x1", (startPosX - halfWidth));
+            this.redLineLeft.setAttribute("y1", 81);
+            this.redLineLeft.setAttribute("x2", (startPosX - halfWidth + 20));
+            this.redLineLeft.setAttribute("y2", 81);
+            this.redLineLeft.setAttribute("stroke", "red");
+            this.redLineLeft.setAttribute("stroke-width", "3");
+            ittGroup.appendChild(this.redLineLeft);
+
+            this.redLineRight = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineRight.setAttribute("x1", (startPosX + halfWidth));
+            this.redLineRight.setAttribute("y1", 81);
+            this.redLineRight.setAttribute("x2", (startPosX + halfWidth - 20));
+            this.redLineRight.setAttribute("y2", 81);
+            this.redLineRight.setAttribute("stroke", "red");
+            this.redLineRight.setAttribute("stroke-width", "3");
+            ittGroup.appendChild(this.redLineRight);
+
+            this.redLineLeftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineLeftTriangle.setAttribute("visibility", "hidden");
+            this.redLineLeftTriangle.setAttribute("fill", "red");
+            this.redLineLeftTriangle.setAttribute("d", "M 289 35 l18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineLeftTriangle);
+
+            this.redLineRightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineRightTriangle.setAttribute("visibility", "hidden");
+            this.redLineRightTriangle.setAttribute("fill", "red");
+            this.redLineRightTriangle.setAttribute("d", "M 411 35 l-18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineRightTriangle);
+
             var line = document.createElementNS(Avionics.SVG.NS, "line");
             line.setAttribute("x1", (startPosX - halfWidth - 12).toString());
             line.setAttribute("y1", posY.toString());
@@ -372,6 +403,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTLeftBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTLeftBeacon.setAttribute("fill", "darkorange");
             ittGroup.appendChild(this.ITTLeftBeacon);
+            ittGroup.appendChild(this.redLineLeftTriangle);
             this.ITTRightBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
             this.ITTRightBeacon.setAttribute("x", (this.ITTRightZoneX - cursorWidth).toString());
             this.ITTRightBeacon.setAttribute("y", this.ITTRightZoneY1.toString());
@@ -379,6 +411,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTRightBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTRightBeacon.setAttribute("fill", "darkorange");
             ittGroup.appendChild(this.ITTRightBeacon);
+            ittGroup.appendChild(this.redLineRightTriangle);
             this.ITTLeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ITTLeftCursor.setAttribute("fill", "white");
             ittGroup.appendChild(this.ITTLeftCursor);
@@ -1059,7 +1092,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1067,11 +1100,40 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
             }
+            // ITT RED LINES
+            this.redLineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineLeft.setAttribute("x1", (startPosX - halfWidth));
+            this.redLineLeft.setAttribute("y1", 112);
+            this.redLineLeft.setAttribute("x2", (startPosX - halfWidth + 20));
+            this.redLineLeft.setAttribute("y2", 112);
+            this.redLineLeft.setAttribute("stroke", "red");
+            this.redLineLeft.setAttribute("stroke-width", "3");
+            
+            this.redLineRight = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineRight.setAttribute("x1", (startPosX + halfWidth));
+            this.redLineRight.setAttribute("y1", 112);
+            this.redLineRight.setAttribute("x2", (startPosX + halfWidth - 20));
+            this.redLineRight.setAttribute("y2", 112);
+            this.redLineRight.setAttribute("stroke", "red");
+            this.redLineRight.setAttribute("stroke-width", "3");
+
+            this.redLineLeftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineLeftTriangle.setAttribute("visibility", "hidden");
+            this.redLineLeftTriangle.setAttribute("fill", "red");
+            this.redLineLeftTriangle.setAttribute("d", "M " + (startPosX - halfWidth) + " " + "52 l18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineLeftTriangle);
+
+            this.redLineRightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineRightTriangle.setAttribute("visibility", "hidden");
+            this.redLineRightTriangle.setAttribute("fill", "red");
+            this.redLineRightTriangle.setAttribute("d", "M " + (startPosX + halfWidth) + " " + "52 l-18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineRightTriangle);
+
             var line = document.createElementNS(Avionics.SVG.NS, "line");
             line.setAttribute("x1", (startPosX - halfWidth - 12).toString());
             line.setAttribute("y1", posY.toString());
@@ -1118,14 +1180,18 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTLeftBeacon.setAttribute("width", cursorWidth.toString());
             this.ITTLeftBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTLeftBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.redLineLeft);
             ittGroup.appendChild(this.ITTLeftBeacon);
+            ittGroup.appendChild(this.redLineLeftTriangle);
             this.ITTRightBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
             this.ITTRightBeacon.setAttribute("x", (this.ITTRightZoneX - cursorWidth).toString());
             this.ITTRightBeacon.setAttribute("y", this.ITTRightZoneY1.toString());
             this.ITTRightBeacon.setAttribute("width", cursorWidth.toString());
             this.ITTRightBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTRightBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.redLineRight);
             ittGroup.appendChild(this.ITTRightBeacon);
+            ittGroup.appendChild(this.redLineRightTriangle);
             this.ITTLeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ITTLeftCursor.setAttribute("fill", "white");
             ittGroup.appendChild(this.ITTLeftCursor);
@@ -1889,7 +1955,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTLeftCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (ITTEng1 > 200) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let endValue = (this.isStartingLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
@@ -1903,7 +1969,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTRightCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (ITTEng2 > 200) ? (this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1] : 850;
+            let endValue = (this.isStartingRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
@@ -1911,20 +1977,26 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
     }
     updateIGN() {
-        let ignLeft = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:1", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:1", "number") == 1));
-        let ignRight = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:2", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:2", "number") == 1));
+        this.isStartingLeft = ((this.ignLeft && this.N2Eng1 > 11.0 && this.N2Eng1 < 51.5) == 1);
+        this.isStartingRight = ((this.ignRight && this.N2Eng2 > 11.0 && this.N2Eng2 < 51.5) == 1);
+        this.ignLeft = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:1", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:1", "number") == 1));
+        this.ignRight = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:2", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:2", "number") == 1));
 
-        this.IgnLeft.setAttribute("visibility", ignLeft ? "visible" : "hidden");
-        this.IgnRight.setAttribute("visibility", ignRight ? "visible" : "hidden");
+        this.IgnLeft.setAttribute("visibility", this.ignLeft ? "visible" : "hidden");
+        this.IgnRight.setAttribute("visibility", this.ignRight ? "visible" : "hidden");
+        this.redLineLeftTriangle.setAttribute("visibility", this.isStartingLeft ? "visible" : "hidden");
+        this.redLineRightTriangle.setAttribute("visibility", this.isStartingRight ? "visible" : "hidden");
+        this.redLineLeft.setAttribute("visibility", this.isStartingLeft ? "hidden" : "visible");
+        this.redLineRight.setAttribute("visibility", this.isStartingRight ? "hidden" : "visible");
     }
     updateN2() {
         {
-            let N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
-            this.N2LeftValue.textContent = N2Eng1.toFixed(1);
+            this.N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
+            this.N2LeftValue.textContent = this.N2Eng1.toFixed(1);
         }
         {
-            let N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
-            this.N2RightValue.textContent = N2Eng2.toFixed(1);
+            this.N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
+            this.N2RightValue.textContent = this.N2Eng2.toFixed(1);
         }
     }
     updateOil() {
