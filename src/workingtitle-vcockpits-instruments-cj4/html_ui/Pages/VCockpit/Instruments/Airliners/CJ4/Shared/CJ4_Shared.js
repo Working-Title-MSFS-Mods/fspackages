@@ -3113,6 +3113,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
+        this.isTrafficVisible = undefined;
         this.isExtended = undefined;
         this.zoomRanges = [5, 10, 25, 50, 100, 200, 300, 600];
         this.zoomFactor = 1.0;
@@ -3244,6 +3245,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
         this.setWxRadarBug();
+        this.setTFCSpecificMapOverlays();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -3279,6 +3281,12 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 this.setMode(Jet_NDCompass_Display.NONE);
             }
             this.refreshLayout();
+        }
+    }
+    showTraffic(_value) {
+        if(this.isTrafficVisible !== _value){
+            this.isTrafficVisible = _value;
+            this.map.instrument.setAttribute("show-traffic", this.isTrafficVisible);
         }
     }
     setExtended(_value) {
@@ -3339,7 +3347,6 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.symbolsToSimvar = true;
     }
     syncSymbols() {
-        this.map.instrument.showTraffic = (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? true : false;
         this.map.instrument.showConstraints = (this.symbols & (1 << CJ4_MapSymbol.CONSTRAINTS)) ? true : false;
         this.map.instrument.showAirspaces = (this.symbols & (1 << CJ4_MapSymbol.AIRSPACES)) ? true : false;
         this.map.instrument.showAirways = (this.symbols & (1 << CJ4_MapSymbol.AIRWAYS)) ? true : false;
@@ -3360,6 +3367,12 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         let radarbug = document.querySelector("#weather_radar_bug");
         if (radarbug) {
             radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+        }
+    }
+    setTFCSpecificMapOverlays() {
+        let tfcTicks = document.querySelector("#tfcClockTicks");
+        if (tfcTicks) {
+            tfcTicks.style.display = this.isTrafficVisible ? "" : "none";
         }
     }
 
@@ -3388,6 +3401,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     refreshLayout() {
 
         this.setWxRadarBug();
+        this.setTFCSpecificMapOverlays();
         if (this.isMapVisible) {
             this.map.instrument.setAttribute('style', '');
 
@@ -3498,6 +3512,7 @@ var CJ4_MapOverlaySymbol;
 (function (CJ4_MapOverlaySymbol) {
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TERR"] = 0] = "TERR";
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["WX"] = 1] = "WX";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC"] = 2] = "TFC";
 })(CJ4_MapOverlaySymbol || (CJ4_MapOverlaySymbol = {}));
 class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -3505,6 +3520,7 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         this.compass = new CJ4_MapCompass();
         this.infos = new CJ4_MapInfo();
         this.isExtended = undefined;
+        this.isTfcVisible = undefined;
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
@@ -3527,6 +3543,7 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     }
     onUpdate(_dTime) {
         super.onUpdate(_dTime);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC, this.isTfcVisible);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.WX, this.isWeatherVisible);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.TERR, this.isTerrainVisible);
         this.updateElapsedTime();
@@ -3555,6 +3572,12 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     showGwx(_value) {
         if (this.isGwxVisible != _value) {
             this.isGwxVisible = _value;
+            this.refreshLayout();
+        }
+    }
+    showTfc(_value) {
+        if (this.isTfcVisible != _value) {
+            this.isTfcVisible = _value;
             this.refreshLayout();
         }
     }
@@ -3669,6 +3692,8 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.aircraft = Aircraft.CJ4;
         this.root.gps = this.gps;
 
+        this.tfcIndicator = this.root.querySelector('#TFC .overlay-tfc');
+
         this.terrIndicator = this.root.querySelector('#Symbols .overlay-terr');
         this.wxIndicator = this.root.querySelector('#Symbols .overlay-wx');
 
@@ -3689,28 +3714,34 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.setMode(_navigation, _navigationSource);
     }
     showSymbol(_symbol, _show) {
-        if (_symbol === CJ4_MapOverlaySymbol.TERR) {
-            if (_show) {
-                this.terrIndicator.classList.add('active');
-            }
-            else {
-                this.terrIndicator.classList.remove('active');
-            }
-        }
+        switch (_symbol) {
+            case CJ4_MapOverlaySymbol.TFC:
+                if (this.tfcIndicator) {
+                    this.tfcIndicator.style.display = _show ? '' : 'none';
+                }
+                break;
+            case CJ4_MapOverlaySymbol.TERR:
+                if (_show) {
+                    this.terrIndicator.classList.add('active');
+                }
+                else {
+                    this.terrIndicator.classList.remove('active');
+                }
+                break;
+            case CJ4_MapOverlaySymbol.WX:
+                if (_show) {
+                    this.wxIndicator.classList.add('active');
 
-        if (_symbol === CJ4_MapOverlaySymbol.WX) {
-            if (_show) {
-                this.wxIndicator.classList.add('active');
+                    this.wxLine1.style.display = 'block';
+                    this.wxLine2.style.display = 'block';
+                }
+                else {
+                    this.wxIndicator.classList.remove('active');
 
-                this.wxLine1.style.display = 'block';
-                this.wxLine2.style.display = 'block';
-            }
-            else {
-                this.wxIndicator.classList.remove('active');
-
-                this.wxLine1.style.display = 'none';
-                this.wxLine2.style.display = 'none';
-            }
+                    this.wxLine1.style.display = 'none';
+                    this.wxLine2.style.display = 'none';
+                }
+                break;
         }
     }
 }
