@@ -392,7 +392,6 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.crossPointersGroup.appendChild(crossPointersRight);
 
                 let triangleInnerLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                //triangleInnerLeft.setAttribute("d", "M-90 30 l30 0 L0 0 Z");
                 triangleInnerLeft.setAttribute("d", "M -108 27 l 50 0 L 0 0 Z");
                 triangleInnerLeft.setAttribute("fill", "#black");
                 triangleInnerLeft.setAttribute("stroke", "white");
