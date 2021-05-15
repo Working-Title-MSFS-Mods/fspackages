@@ -88,7 +88,7 @@ class WT_FlightPlanAsoboInterface {
         this._asoboFlightPlanInfo.enrouteStartIndex = enrouteStart;
         this._asoboFlightPlanInfo.enrouteLength = enrouteEnd - enrouteStart;
         this._asoboFlightPlanInfo.arrivalStartIndex = arrivalStart;
-        this._asoboFlightPlanInfo.arrivalLength = Math.max(0, data.departureWaypointsSize);
+        this._asoboFlightPlanInfo.arrivalLength = Math.max(0, data.arrivalWaypointsSize);
     }
 
     async _syncAsoboFlightPlanInfo() {
