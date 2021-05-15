@@ -387,6 +387,10 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
     text-align: left;
 }
 
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon {
+    display: none;
+}
+
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon #verticalSpeedbug {
     width: 20%;
     margin-left: -15%;
@@ -397,11 +401,19 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
     fill: cyan;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalDirectionArrowUp_Icon #verticalDirectionArrowUp {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowUp_Icon {
+    display: none;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowUp_Icon #verticalDirectionArrowUp {
     fill: cyan;
 }
 
-cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalDirectionArrowDown_Icon #verticalDirectionArrowDown {
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowDown_Icon {
+    display: none;
+}
+
+cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalArrowField #verticalDirectionArrowDown_Icon #verticalDirectionArrowDown {
     fill: cyan;
 }
 
