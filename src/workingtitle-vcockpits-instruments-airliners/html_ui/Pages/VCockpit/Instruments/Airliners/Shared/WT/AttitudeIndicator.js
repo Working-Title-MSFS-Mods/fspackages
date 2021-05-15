@@ -260,7 +260,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     this.cj4_FlightDirector = document.createElementNS(Avionics.SVG.NS, "g");
                     attitudePitchContainer.appendChild(this.cj4_FlightDirector);
                     let triangleOuterLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    triangleOuterLeft.setAttribute("d", "M -128 20 l 20 7 L 0 0 Z");
+                    triangleOuterLeft.setAttribute("d", "M -128 20 l 20 7 L 0 -2 Z");
                     triangleOuterLeft.setAttribute("fill", "magenta");
                     triangleOuterLeft.setAttribute("stroke", "black");
                     triangleOuterLeft.setAttribute("stroke-width", "1.5");
@@ -272,7 +272,7 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     triangleBottomLeft.setAttribute("stroke-width", "1.5");
                     this.cj4_FlightDirector.appendChild(triangleBottomLeft);
                     let triangleOuterRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    triangleOuterRight.setAttribute("d", "M128 20 l-20 7 L0 0 Z");
+                    triangleOuterRight.setAttribute("d", "M128 20 l-20 7 L0 -2 Z");
                     triangleOuterRight.setAttribute("fill", "magenta");
                     triangleOuterRight.setAttribute("stroke", "black");
                     triangleOuterRight.setAttribute("stroke-width", "1.5");
@@ -390,14 +390,14 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.crossPointersGroup.appendChild(crossPointersRight);
 
                 let triangleInnerLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                triangleInnerLeft.setAttribute("d", "M -108 27 l 50 0 L 0 2 Z");
+                triangleInnerLeft.setAttribute("d", "M -108 27 l 50 0 L 0 0 Z");
                 triangleInnerLeft.setAttribute("fill", "#black");
                 triangleInnerLeft.setAttribute("stroke", "white");
                 triangleInnerLeft.setAttribute("stroke-width", "2");
                 this.vBarAircraftSymbol.appendChild(triangleInnerLeft);
 
                 let triangleInnerRight = document.createElementNS(Avionics.SVG.NS, "path");
-                triangleInnerRight.setAttribute("d", "M 108 27 l -50 0 L 0 2 Z");
+                triangleInnerRight.setAttribute("d", "M 108 27 l -50 0 L 0 0 Z");
                 triangleInnerRight.setAttribute("fill", "#black");
                 triangleInnerRight.setAttribute("stroke", "white");
                 triangleInnerRight.setAttribute("stroke-width", "2");
