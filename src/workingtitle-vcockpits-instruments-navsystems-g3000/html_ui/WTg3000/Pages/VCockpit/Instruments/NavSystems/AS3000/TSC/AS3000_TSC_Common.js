@@ -114,7 +114,7 @@ class AS3000_TSC extends NavSystemTouch {
         this._initNavigraphAPI();
         this._initPaneSettings();
 
-        this._selectedMfdPane = null;
+        this._selectedMfdPane = WT_G3x5_MFDHalfPane.ID.LEFT;
         this._mfdPaneControlID;
     }
 
