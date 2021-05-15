@@ -33,6 +33,27 @@ class WT_VFRMapPanel extends HTMLElement {
         return this._currentTimeStamp;
     }
 
+    async _defineChildren() {
+        this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
+
+        // wait until templates are loaded
+        await WT_Wait.awaitCallback(() => typeof ToggleButtonElement === "function" && typeof NewPushButtonElement === "function" && typeof MapInstrument === "function");
+
+        [
+            this._toggleIsolinesButton,
+            this._followPlaneButton,
+            this._backOnTrackButton,
+            this._mapAsoboHTMLElement,
+            this._mapWTHTMLElement,
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this, `#ToggleIsolines`, ToggleButtonElement),
+            WT_CustomElementSelector.select(this, `#FollowPlane`, ToggleButtonElement),
+            WT_CustomElementSelector.select(this, `#BackOnTrack`, NewPushButtonElement),
+            WT_CustomElementSelector.select(this, `map-instrument`, MapInstrument),
+            WT_CustomElementSelector.select(this, `map-view`, WT_MapView)
+        ]);
+    }
+
     async _loadModConfig() {
         await WT_g3000_ModConfig.initialize();
         this._modConfigLoaded = true;
@@ -44,11 +65,11 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initAsoboMap() {
-        this._map = new WT_VFRMapAsobo(this, this.querySelector(`map-instrument`));
+        this._map = new WT_VFRMapAsobo(this, this._mapAsoboHTMLElement);
     }
 
     _initWTMap() {
-        this._map = new WT_VFRMapWT(this, this.querySelector(`map-view`));
+        this._map = new WT_VFRMapWT(this, this._mapWTHTMLElement);
     }
 
     _initMap() {
@@ -69,25 +90,13 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initFooter() {
-        this._toggleIsolines = this.querySelector("#ToggleIsolines");
-        if (this._toggleIsolines) {
-            this._toggleIsolines.addEventListener("OnValidate", this._onShowIsolines.bind(this));
-        }
-        this._followPlane = this.querySelector("#FollowPlane");
-        if (this._followPlane) {
-            this._followPlane.addEventListener("OnValidate", this._onFollowPlane.bind(this));
-        }
-        this._backOnTrack = this.querySelector("#BackOnTrack");
-        if (this._backOnTrack) {
-            this._backOnTrack.addEventListener("OnValidate", this._onBackOnTrack.bind(this));
-        }
+        this._toggleIsolinesButton.addEventListener("OnValidate", this._onShowIsolines.bind(this));
+        this._followPlaneButton.addEventListener("OnValidate", this._onFollowPlane.bind(this));
+        this._backOnTrackButton.addEventListener("OnValidate", this._onBackOnTrack.bind(this));
     }
 
     _initResizeListener() {
-        let ingameUI = this.querySelector("#VFRMap_Frame");
-        if (ingameUI) {
-            ingameUI.addEventListener("onResizeElement", this._onPanelResized.bind(this));
-        }
+        this._panel.addEventListener("onResizeElement", this._onPanelResized.bind(this));
     }
 
     _initUpdateLoop() {
@@ -103,10 +112,17 @@ class WT_VFRMapPanel extends HTMLElement {
         this._initUpdateLoop();
     }
 
+    async _connectedCallbackHelper() {
+        await Promise.all([
+            this._defineChildren(),
+            this._loadModConfig()
+        ]);
+        await WT_Wait.awaitCallback(() => window["simvar"] && this._modConfigLoaded, this);
+        this._doInit();
+    }
+
     connectedCallback() {
-        this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
-        this._loadModConfig();
-        WT_Wait.awaitCallback(() => window["simvar"] && this._modConfigLoaded, this).then(this._doInit.bind(this));
+        this._connectedCallbackHelper();
     }
 
     _onVFRMapRegistered() {
@@ -119,8 +135,8 @@ class WT_VFRMapPanel extends HTMLElement {
     _onVFRMapDataSent(data) {
         this._map.setShowAirplane(data.showPlane);
 
-        this._followPlane.setVisible(data.showPlane);
-        this._followPlane.setValue(data.showPlane);
+        this._followPlaneButton.setVisible(data.showPlane);
+        this._followPlaneButton.setValue(data.showPlane);
         this._map.setFollowAirplane(data.showPlane);
 
         if (data.latLongStr != "") {
@@ -134,15 +150,15 @@ class WT_VFRMapPanel extends HTMLElement {
             }
         }
 
-        this._backOnTrack.setVisible(data.backOnTrackEnabled);
+        this._backOnTrackButton.setVisible(data.backOnTrackEnabled);
     }
 
     _onFollowPlane() {
-        this._map.setFollowAirplane(this._followPlane.toggled);
+        this._map.setFollowAirplane(this._followPlaneButton.toggled);
     }
 
     _onShowIsolines() {
-        this._map.setShowIsolines(this._toggleIsolines.toggled);
+        this._map.setShowIsolines(this._toggleIsolinesButton.toggled);
     }
 
     _onBackOnTrack() {
@@ -157,8 +173,8 @@ class WT_VFRMapPanel extends HTMLElement {
 
     _updateFollowPlane() {
         let isFollowing = this._map.isFollowingAirplane();
-        if (this._followPlane.toggled !== isFollowing) {
-            this._followPlane.setValue(isFollowing);
+        if (this._followPlaneButton.toggled !== isFollowing) {
+            this._followPlaneButton.setValue(isFollowing);
         }
     }
 
@@ -322,7 +338,7 @@ class WT_VFRMapWT extends WT_VFRMap {
             int: new WT_ICAOSearcher("VFRMap", WT_ICAOSearcher.Keys.INT)
         };
 
-        this._fpm = new WT_FlightPlanManager("VFRMap", this._airplane, this._icaoWaypointFactory);
+        this._fpm = new WT_FlightPlanManager(false, "VFRMap", this._airplane, this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
