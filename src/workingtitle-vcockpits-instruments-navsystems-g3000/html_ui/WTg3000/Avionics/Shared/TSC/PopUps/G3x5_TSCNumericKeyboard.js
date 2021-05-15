@@ -70,6 +70,7 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
 
         this._digitDisplays = [];
         this._replace = false;
+        this._placesEntered = 0;
 
         /**
          * @type {WT_NumberUnit}
@@ -119,7 +120,7 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
     }
 
     _initDigitsRecycler() {
-        this._digitsRecycler = new WT_SimpleHTMLElementRecycler(this._display, "div");
+        this._digitsRecycler = new WT_SimpleHTMLElementRecycler(this._display, "div", element => element.classList.add("digit"));
     }
 
     _initChildren() {
@@ -154,8 +155,21 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
         this._wrapper.setAttribute("replace", `${value}`);
     }
 
+    _setPlacesEntered(count) {
+        count = Math.max(0, Math.min(this._digitDisplays.length, count));
+        for (let i = 0; i < this._digitDisplays.length; i++) {
+            if (i < count) {
+                this._digitDisplays[i].setAttribute("entered", "true");
+            } else {
+                this._digitDisplays[i].setAttribute("entered", "false");
+            }
+        }
+        this._placesEntered = count;
+    }
+
     _resetDigits() {
-        this._digitDisplays.forEach(digit => digit.textContent = "");
+        this._digitDisplays.forEach(digit => digit.textContent = "0");
+        this._setPlacesEntered(0);
     }
 
     _shiftDigits(places) {
@@ -171,7 +185,7 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
             let from = this._digitDisplays[i];
             let to = this._digitDisplays[i + places];
             to.textContent = from.textContent;
-            from.textContent = "";
+            from.textContent = "0";
         }
     }
 
@@ -204,6 +218,7 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
         }
         this._setDigitText(0, digit);
         this._updateValueFromDigits();
+        this._setPlacesEntered(this._placesEntered + 1);
     }
 
     _onBackspaceButtonPressed(button) {
@@ -212,6 +227,7 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
             this._setReplace(false);
         } else {
             this._shiftDigits(-1);
+            this._setPlacesEntered(this._placesEntered - 1);
         }
     }
 
@@ -220,6 +236,7 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
             let digit = this._digitsRecycler.request();
             digit.style.order = -i;
             digit.setAttribute("place", `${i}`);
+            digit.setAttribute("entered", "false");
             this._digitDisplays[i] = digit;
         }
     }
@@ -227,9 +244,10 @@ class WT_G3x5_TSCNumericKeyboardHTMLElement extends HTMLElement {
     _updateDigitsFromValue() {
         let valueText = this._value.number.toFixed(0);
         for (let i = 0; i < this._digitDisplays.length; i++) {
-            let digitText = i < valueText.length ? valueText[valueText.length - 1 - i] : "";
+            let digitText = i < valueText.length ? valueText[valueText.length - 1 - i] : "0";
             this._setDigitText(i, digitText);
         }
+        this._setPlacesEntered(valueText.length);
     }
 
     _initValue() {
@@ -305,11 +323,17 @@ WT_G3x5_TSCNumericKeyboardHTMLElement.TEMPLATE.innerHTML = `
                 justify-content: center;
                 align-items: center;
                 color: var(--wt-g3x5-lightblue);
-                background: gray;
+                background: #222222;
             }
                 #wrapper[replace="true"] #display div {
                     color: black;
                     background: var(--wt-g3x5-lightblue);
+                }
+                .digit[entered="false"] {
+                    color: #083f42;
+                }
+                #wrapper[replace="true"] #display .digit[entered="false"] {
+                    color: #bebebe;
                 }
                 #cursor {
                     width: var(--numkeyboard-cursor-width, 0.1em);
