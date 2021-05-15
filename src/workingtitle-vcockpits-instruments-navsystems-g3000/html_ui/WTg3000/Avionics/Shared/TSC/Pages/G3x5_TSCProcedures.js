@@ -1000,6 +1000,7 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
 
         this._flightPlan.removeListener(this._flightPlanListener);
+        this._setAirport(null);
     }
 
     _initFlightPlanListener() {
@@ -1032,19 +1033,22 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
     }
 
-    _updateFromAirport() {
-        this._updateAirportButtonFromAirport();
-        this._updateSelectedProcedureFromAirport();
-    }
-
     /**
      * @returns {WT_Airport}
      */
     _getAirportFromFlightPlan() {
     }
 
-    _updateAirport() {
-        let airport = this._getAirportFromFlightPlan();
+    _updateFromAirport() {
+        this._updateAirportButtonFromAirport();
+        this._updateSelectedProcedureFromAirport();
+    }
+
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    _setAirport(airport) {
         if (!airport && !this._airport || (airport && airport.equals(this._airport))) {
             return;
         }
@@ -1053,13 +1057,18 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._updateFromAirport();
     }
 
+    _updateAirport() {
+        let airport = this._getAirportFromFlightPlan();
+        this._setAirport(airport);
+    }
+
     _updateFromFlightPlan() {
         if (this._flightPlan) {
             this._initFlightPlanListener();
         }
 
         this._updateAirport();
-        this._updatePreviewButtonEnabled();
+        this._updateSelectedProcedureStatus();
         this._updateRemoveButton();
         this._updateLoadButton();
     }
@@ -2485,9 +2494,10 @@ class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArriv
             return false;
         }
 
+        let loadedRunwayTransition = flightPlanDeparture.procedure.runwayTransitions.getByIndex(flightPlanDeparture.runwayTransitionIndex);
         return flightPlanDeparture.procedure.name === this._selectedProcedure.name &&
                (this._selectedProcedure.enrouteTransitions.array.length === 0 || flightPlanDeparture.enrouteTransitionIndex === this._selectedTransitionIndex) &&
-               (this._selectedProcedure.runwayTransitions.array.length === 0 || (flightPlanDeparture.runwayTransitionIndex < 0 && !this._selectedRunway) || this._selectedProcedure.runwayTransitions.getByIndex(flightPlanDeparture.runwayTransitionIndex).runway.equals(this._selectedRunway));
+               (this._selectedProcedure.runwayTransitions.array.length === 0 || (flightPlanDeparture.runwayTransitionIndex < 0 && !this._selectedRunway) || (loadedRunwayTransition && loadedRunwayTransition.runway.equals(this._selectedRunway)));
     }
 
     /**
@@ -2727,9 +2737,10 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
             return false;
         }
 
+        let loadedRunwayTransition = flightPlanArrival.procedure.runwayTransitions.getByIndex(flightPlanArrival.runwayTransitionIndex);
         return flightPlanArrival.procedure.name === this._selectedProcedure.name &&
                (this._selectedProcedure.enrouteTransitions.array.length === 0 || flightPlanArrival.enrouteTransitionIndex === this._selectedTransitionIndex) &&
-               (this._selectedProcedure.runwayTransitions.array.length === 0 || (flightPlanArrival.runwayTransitionIndex < 0 && !this._selectedRunway) || this._selectedProcedure.runwayTransitions.getByIndex(flightPlanArrival.runwayTransitionIndex).runway.equals(this._selectedRunway));
+               (this._selectedProcedure.runwayTransitions.array.length === 0 || (flightPlanArrival.runwayTransitionIndex < 0 && !this._selectedRunway) || (loadedRunwayTransition && loadedRunwayTransition.runway.equals(this._selectedRunway)));
     }
 
     /**

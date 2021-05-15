@@ -135,7 +135,12 @@ class WT_FlightPlanAsoboInterface {
                     entry.steps = leg.transitionLLas.slice(0, leg.transitionLLas.length - 1).map(lla => new WT_GeoPoint(lla.lat, lla.long));
                 }
                 if (leg.lla.alt > 0) {
-                    entry.advisoryAltitude = WT_Unit.METER.createNumber(leg.lla.alt);
+                    let altitude = WT_Unit.METER.createNumber(leg.lla.alt);
+                    if (leg.altitudeMode === "Manual") {
+                        entry.customAltitude = altitude;
+                    } else {
+                        entry.advisoryAltitude = altitude;
+                    }
                 }
                 array.push(entry);
             }
@@ -512,6 +517,35 @@ class WT_FlightPlanAsoboInterface {
     async removeApproach() {
         await this.deactivateApproach();
         await this.loadApproach(-1, -1);
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @param {WT_NumberUnit} altitude
+     */
+    async setLegAltitude(leg, altitude) {
+        if (leg.segment === WT_FlightPlan.Segment.APPROACH) {
+            return;
+        }
+
+        await this._syncAsoboFlightPlanInfo();
+        let index = this._findAsoboIndex(leg);
+        if (index < 0) {
+            throw "Could not find leg in Asobo flight plan";
+        }
+
+        let altitudeValue;
+        let modeValue;
+        if (altitude) {
+            altitudeValue = altitude.asUnit(WT_Unit.METER);
+            modeValue = "Manual";
+        } else {
+            altitudeValue = 0;
+            modeValue = "None";
+        }
+        await Coherent.call("SET_WAYPOINT_ALTITUDE", altitudeValue, index);
+        await Coherent.call("SET_WAYPOINT_ADDITIONAL_DATA", index, "ALTITUDE_MODE", modeValue);
     }
 
     /**

@@ -1629,6 +1629,16 @@ as3000-tsc-vertical-element #AirwaySelection wt-tsc-airwayselection {
     font-size: 3.5vh;
 }
 
+as3000-tsc-vertical-element #VNAVAltitudeKeyboard wt-tsc-vnavaltkeyboard {
+    position: absolute;
+    left: 1%;
+    top: 10%;
+    width: 98%;
+    height: 85%;
+    font-size: 4.5vh;
+    --numkeyboard-button-size: 10vh;
+}
+
 as3000-tsc-vertical-element #NavigraphLink wt-tsc-navigraphlink {
     position: absolute;
     left: 5%;

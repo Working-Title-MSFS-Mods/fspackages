@@ -271,7 +271,6 @@ WT_G3x5_TSCNumericKeyboardHTMLElement.TEMPLATE.innerHTML = `
             display: block;
             border-radius: 5px;
             background: linear-gradient(#1f3445, black 25px);
-            background-color: black;
             border: 3px solid var(--wt-g3x5-bordergray);
         }
 

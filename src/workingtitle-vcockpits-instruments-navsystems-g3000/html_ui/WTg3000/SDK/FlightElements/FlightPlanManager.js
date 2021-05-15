@@ -31,6 +31,8 @@ class WT_FlightPlanManager {
         this._lastActiveSyncTime = 0;
 
         this._activeLegCached = null;
+
+        this._tempFeet = WT_Unit.FOOT.createNumber(0);
     }
 
     /**
@@ -294,7 +296,7 @@ class WT_FlightPlanManager {
      */
     removeFromActive(element) {
         if (element.flightPlan !== this.activePlan) {
-            throw new Error("Attempted to remove an element that was not in the active flight plan.");
+            throw new Error("The provided element is not in the active flight plan.");
         }
 
         if (element.segment === WT_FlightPlan.Segment.ENROUTE) {
@@ -403,6 +405,41 @@ class WT_FlightPlanManager {
         let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH, {
             procedureIndex: -1,
             transitionIndex: -1
+        });
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Sets a custom altitude restriction for a leg in the active flight plan.
+     * @param {WT_FlightPlanLeg} leg - the leg for which to set the new altitude restriction.
+     * @param {WT_NumberUnit} altitude - the new altitude restriction.
+     */
+    setCustomLegAltitudeInActive(leg, altitude) {
+        if (leg.flightPlan !== this.activePlan) {
+            throw new Error("The provided leg is not in the active flight plan.");
+        }
+
+        if (!altitude) {
+            return;
+        }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE, {
+            index: leg.index,
+            altitude: altitude.asUnit(WT_Unit.FOOT)
+        });
+        this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Removes the custom altitude restriction for a leg in the active flight plan.
+     */
+    removeCustomLegAltitudeInActive(leg) {
+        if (leg.flightPlan !== this.activePlan) {
+            throw new Error("The provided leg is not in the active flight plan.");
+        }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE, {
+            index: leg.index
         });
         this._syncHandler.fireEvent(syncEvent);
     }
@@ -803,7 +840,7 @@ class WT_FlightPlanManager {
         this._syncHandler.fireEvent(syncEvent);
     }
 
-    async _doSetOriginAndSync(icao) {
+    async _doSetOriginWithSync(icao) {
         if (this._isActiveLocked) {
             return;
         }
@@ -842,13 +879,13 @@ class WT_FlightPlanManager {
 
     async _doSetOrigin(icao) {
         if (this.isMaster) {
-            await this._doSetOriginAndSync(icao);
+            await this._doSetOriginWithSync(icao);
         } else {
             await this._doSetOriginWithoutSync(icao);
         }
     }
 
-    async _doSetDestinationAndSync(icao) {
+    async _doSetDestinationWithSync(icao) {
         if (this._isActiveLocked) {
             return;
         }
@@ -887,13 +924,13 @@ class WT_FlightPlanManager {
 
     async _doSetDestination(icao) {
         if (this.isMaster) {
-            await this._doSetDestinationAndSync(icao);
+            await this._doSetDestinationWithSync(icao);
         } else {
             await this._doSetDestinationWithoutSync(icao);
         }
     }
 
-    async _doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    async _doSetDepartureWithSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         if (this._isActiveLocked) {
             return;
         }
@@ -934,13 +971,13 @@ class WT_FlightPlanManager {
 
     async _doSetDeparture(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         if (this.isMaster) {
-            await this._doSetDepartureAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            await this._doSetDepartureWithSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
         } else {
             await this._doSetDepartureWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
         }
     }
 
-    async _doInsertEnrouteWaypointAndSync(icao, index) {
+    async _doInsertEnrouteWaypointWithSync(icao, index) {
         if (this._isActiveLocked) {
             return;
         }
@@ -976,13 +1013,13 @@ class WT_FlightPlanManager {
 
     async _doInsertEnrouteWaypoint(icao, index) {
         if (this.isMaster) {
-            await this._doInsertEnrouteWaypointAndSync(icao, index);
+            await this._doInsertEnrouteWaypointWithSync(icao, index);
         } else {
             await this._doInsertEnrouteWaypointWithoutSync(icao, index);
         }
     }
 
-    async _doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index) {
+    async _doInsertEnrouteAirwayWithSync(airwayName, enterICAO, exitICAO, index) {
         if (this._isActiveLocked) {
             return;
         }
@@ -1020,13 +1057,13 @@ class WT_FlightPlanManager {
 
     async _doInsertEnrouteAirway(airwayName, enterICAO, exitICAO, index) {
         if (this.isMaster) {
-            await this._doInsertEnrouteAirwayAndSync(airwayName, enterICAO, exitICAO, index);
+            await this._doInsertEnrouteAirwayWithSync(airwayName, enterICAO, exitICAO, index);
         } else {
             await this._doInsertEnrouteAirwayWithoutSync(airwayName, enterICAO, exitICAO, index);
         }
     }
 
-    async _doRemoveEnrouteElementAndSync(index) {
+    async _doRemoveEnrouteElementWithSync(index) {
         if (this._isActiveLocked) {
             return;
         }
@@ -1060,13 +1097,13 @@ class WT_FlightPlanManager {
 
     async _doRemoveEnrouteElement(index) {
         if (this.isMaster) {
-            await this._doRemoveEnrouteElementAndSync(index);
+            await this._doRemoveEnrouteElementWithSync(index);
         } else {
             await this._doRemoveEnrouteElementWithoutSync(index);
         }
     }
 
-    async _doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
+    async _doSetArrivalWithSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         if (this._isActiveLocked) {
             return;
         }
@@ -1107,13 +1144,13 @@ class WT_FlightPlanManager {
 
     async _doSetArrival(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex) {
         if (this.isMaster) {
-            await this._doSetArrivalAndSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
+            await this._doSetArrivalWithSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
         } else {
             await this._doSetArrivalWithoutSync(procedureIndex, enrouteTransitionIndex, runwayTransitionIndex);
         }
     }
 
-    async _doSetApproachAndSync(procedureIndex, transitionIndex) {
+    async _doSetApproachWithSync(procedureIndex, transitionIndex) {
         if (this._isActiveLocked) {
             return;
         }
@@ -1153,13 +1190,145 @@ class WT_FlightPlanManager {
 
     async _doSetApproach(procedureIndex, transitionIndex) {
         if (this.isMaster) {
-            await this._doSetApproachAndSync(procedureIndex, transitionIndex);
+            await this._doSetApproachWithSync(procedureIndex, transitionIndex);
         } else {
             await this._doSetApproachWithoutSync(procedureIndex, transitionIndex);
         }
     }
 
-    async _doClearFlightPlanAndSync() {
+    async _doSetAltitudeWithSync(index, altitude) {
+        if (this._isActiveLocked) {
+            return;
+        }
+
+        let leg = this.activePlan.legs.get(index);
+        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+            return;
+        }
+
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
+            // no need to sync with the sim if modifying an enroute leg
+            leg.altitudeConstraint.setCustomAltitude(this._tempFeet.set(altitude));
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE, {
+                index: index,
+                altitude: altitude
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } else {
+            this._isActiveLocked = true;
+            try {
+                await this._asoboInterface.setLegAltitude(leg, this._tempFeet.set(altitude));
+
+                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE, {
+                    index: index,
+                    altitude: altitude
+                });
+                this._syncHandler.fireEvent(syncEvent);
+            } catch (e) {
+                console.log(e);
+            }
+            this._isActiveLocked = false;
+
+            try {
+                await this.syncActiveFromGame();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+
+    async _doSetAltitudeWithoutSync(index, altitude) {
+        let leg = this.activePlan.legs.get(index);
+        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+            return;
+        }
+
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
+            // no need to sync with the sim if modifying an enroute leg
+            leg.altitudeConstraint.setCustomAltitude(this._tempFeet.set(altitude));
+        } else {
+            try {
+                await this.syncActiveFromGame();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+
+    async _doSetAltitude(index, altitude) {
+        if (this.isMaster) {
+            await this._doSetAltitudeWithSync(index, altitude);
+        } else {
+            await this._doSetAltitudeWithoutSync(index, altitude);
+        }
+    }
+
+    async _doRemoveAltitudeWithSync(index) {
+        if (this._isActiveLocked) {
+            return;
+        }
+
+        let leg = this.activePlan.legs.get(index);
+        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+            return;
+        }
+
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
+            // no need to sync with the sim if modifying an enroute leg
+            leg.altitudeConstraint.removeCustomAltitude();
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE, {
+                index: index
+            });
+            this._syncHandler.fireEvent(syncEvent);
+        } else {
+            this._isActiveLocked = true;
+            try {
+                await this._asoboInterface.setLegAltitude(leg, null);
+
+                let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE, {
+                    index: index
+                });
+                this._syncHandler.fireEvent(syncEvent);
+            } catch (e) {
+                console.log(e);
+            }
+            this._isActiveLocked = false;
+
+            try {
+                await this.syncActiveFromGame();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+
+    async _doRemoveAltitudeWithoutSync(index) {
+        let leg = this.activePlan.legs.get(index);
+        if (!leg || leg.segment === WT_FlightPlan.Segment.APPROACH) { // sim does not let you set altitudes for approach legs
+            return;
+        }
+
+        if (leg.segment === WT_FlightPlan.Segment.ENROUTE) {
+            // no need to sync with the sim if modifying an enroute leg
+            leg.altitudeConstraint.removeCustomAltitude();
+        } else {
+            try {
+                await this.syncActiveFromGame();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+
+    async _doRemoveAltitude(index) {
+        if (this.isMaster) {
+            await this._doRemoveAltitudeWithSync(index);
+        } else {
+            await this._doRemoveAltitudeWithoutSync(index);
+        }
+    }
+
+    async _doClearFlightPlanWithSync() {
         if (this._isActiveLocked) {
             return;
         }
@@ -1184,13 +1353,13 @@ class WT_FlightPlanManager {
 
     async _doClearFlightPlan() {
         if (this.isMaster) {
-            await this._doClearFlightPlanAndSync();
+            await this._doClearFlightPlanWithSync();
         } else {
             await this._doClearFlightPlanWithoutSync();
         }
     }
 
-    async _doActivateStandbyAndSync() {
+    async _doActivateStandbyWithSync() {
         if (this._isActiveLocked) {
             return;
         }
@@ -1269,7 +1438,7 @@ class WT_FlightPlanManager {
 
     async _doActivateStandby() {
         if (this.isMaster) {
-            await this._doActivateStandbyAndSync();
+            await this._doActivateStandbyWithSync();
         } else {
             await this._doActivateStandbyWithoutSync();
         }
@@ -1325,6 +1494,12 @@ class WT_FlightPlanManager {
                 break;
             case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_APPROACH:
                 this._doSetApproach(event.procedureIndex, event.transitionIndex);
+                break;
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_SET_ALTITUDE:
+                this._doSetAltitude(event.index, event.altitude);
+                break;
+            case WT_FlightPlanSyncHandler.EventType.ACTIVE_REMOVE_ALTITUDE:
+                this._doRemoveAltitude(event.index);
                 break;
             case WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN:
                 this._doClearFlightPlan();
@@ -1475,9 +1650,11 @@ WT_FlightPlanSyncHandler.EventType = {
     ACTIVE_ENROUTE_REMOVE_INDEX: 5,
     ACTIVE_SET_ARRIVAL: 6,
     ACTIVE_SET_APPROACH: 7,
-    ACTIVE_CLEAR_FLIGHT_PLAN: 8,
-    ACTIVATE_STANDBY: 9,
-    STANDBY_SYNC: 10
+    ACTIVE_SET_ALTITUDE: 8,
+    ACTIVE_REMOVE_ALTITUDE: 9,
+    ACTIVE_CLEAR_FLIGHT_PLAN: 10,
+    ACTIVATE_STANDBY: 11,
+    STANDBY_SYNC: 12
 }
 
 /**
