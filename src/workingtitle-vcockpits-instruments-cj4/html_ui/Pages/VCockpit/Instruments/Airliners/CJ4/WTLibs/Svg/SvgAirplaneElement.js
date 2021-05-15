@@ -298,18 +298,27 @@ class SvgNPCAirplaneElement extends SvgMapElement {
             let deltaAltitudeTraffic = trafficAltFeet - altitude;
             let distanceHorizontalTraffic = Avionics.Utils.computeDistance(new LatLong(this.lat, this.lon), map.planeCoordinates);
 
-            // text
-            const deltaAltText = Math.abs(deltaAltitudeTraffic / 100).toFixed(0).padStart(2, "0");
-            if (deltaAltitudeTraffic > 0) {
-                // above
+            // alt text
+            if(SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number")=== 0){
+                const deltaAltText = Math.abs(deltaAltitudeTraffic / 100).toFixed(0).padStart(2, "0");
+                this._alt.setAttribute("x", "4");
+                if (deltaAltitudeTraffic > 0) {
+                    // above
+                    this._alt.setAttribute("y", "3");
+                    this._altText.data = "+" + deltaAltText;
+    
+                } else if (deltaAltitudeTraffic < 0) {
+                    // below
+                    this._alt.setAttribute("y", "51");
+                    this._altText.data = "-" + deltaAltText;
+                }
+            } else {
+                this._alt.setAttribute("x", "14");
                 this._alt.setAttribute("y", "3");
-                this._altText.data = "+" + deltaAltText;
-
-            } else if (deltaAltitudeTraffic < 0) {
-                // below
-                this._alt.setAttribute("y", "51");
-                this._altText.data = "-" + deltaAltText;
+                const altText = Math.abs(trafficAltFeet / 100).toFixed(0).padStart(3, "0");
+                this._altText.data = altText;                
             }
+
 
             // arrow 
             if (this.vs > 500) {
