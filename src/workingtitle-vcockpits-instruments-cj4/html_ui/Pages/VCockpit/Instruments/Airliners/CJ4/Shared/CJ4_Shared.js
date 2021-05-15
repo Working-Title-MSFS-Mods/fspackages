@@ -3372,8 +3372,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     setTFCSpecificMapOverlays() {
         let tfcTicks = document.querySelector("#tfcClockTicks");
         if (tfcTicks) {
-            console.log("TFC" + this.isTfcVisible)
-            tfcTicks.style.display = (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? "" : "none";
+            tfcTicks.style.display = this.isTrafficVisible ? "" : "none";
         }
     }
 
