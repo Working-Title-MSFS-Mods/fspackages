@@ -338,11 +338,10 @@ class MapInstrument extends ISvgMapRootElement {
                 this.showObstacles = true;
             }
         } else if (lowercaseName === "show-traffic") {
-            if(this.showTraffic !== newValue){
-                this.showTraffic = newValue;
-                if (newValue === "true") {
-                    this.npcAirplaneManager.update(true);
-                }
+            this.showTraffic = false;
+            if (newValue === "true") {
+                this.npcAirplaneManager.update(true);
+                this.showTraffic = true;
             }
         } else if (lowercaseName === "show-constraints") {
             this.showConstraints = false;

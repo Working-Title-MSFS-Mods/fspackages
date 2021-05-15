@@ -4,6 +4,7 @@ class CJ4_PFD extends BaseAirliners {
         this.isExtended = false;
         this.showTerrain = false;
         this.showWeather = false;
+        this.showTfc = false;
         this.mapDisplayMode = Jet_NDCompass_Display.ARC;
         this.previousMapDisplayMode = undefined;
         this.mapNavigationMode = Jet_NDCompass_Navigation.NAV;
@@ -145,7 +146,7 @@ class CJ4_PFD extends BaseAirliners {
 
             this.map.setMode(this.mapDisplayMode);
             this.mapOverlay.setMode(this.mapDisplayMode, this.mapNavigationMode, this.mapNavigationSource);
-            this.mapOverlay.showTfc(this.map.map.instrument.showTraffic);
+            this.mapOverlay.showTfc(this.showTfc);
 
             //Hack to correct the map compass size until we separate it out
             //fully from the default shared code
@@ -224,6 +225,7 @@ class CJ4_PFD extends BaseAirliners {
                 this.horizon.show(true);
             }
             this.mapOverlay.setRange(this.map.range);
+            this.map.showTraffic(this.showTfc);
         }
 
         const rangeSelectDisabled = WTDataStore.get('WT_CJ4_RANGE_SEL_DISABLED', 0);
@@ -332,7 +334,7 @@ class CJ4_PFD extends BaseAirliners {
                 this.onModeChanged();
                 break;
             case "Upr_Push_TFC":
-                this.map.toggleSymbol(CJ4_MapSymbol.TRAFFIC);
+                this.showTfc = !this.showTfc;
                 break;
             case "Upr_RANGE_INC":
                 this.map.rangeInc();
