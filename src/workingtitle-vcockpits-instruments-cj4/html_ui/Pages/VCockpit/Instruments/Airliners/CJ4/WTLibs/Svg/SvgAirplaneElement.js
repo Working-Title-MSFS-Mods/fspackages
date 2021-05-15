@@ -161,7 +161,7 @@ class NPCAirplaneManager {
                         npcAirplane.deltaLat = (npcAirplane.targetLat - npcAirplane.lat) / 1.5;
                         npcAirplane.deltaLon = (npcAirplane.targetLon - npcAirplane.lon) / 1.5;
                         npcAirplane.deltaAlt = (npcAirplane.targetAlt - npcAirplane.alt) / 1.5;
-                        npcAirplane.vs = ((npcAirplane.targetAlt - npcAirplane.alt) * 20) * 3.281; // times 20 because rate is 3 seconds and convert to feet
+                        npcAirplane.vs = ((npcAirplane.targetAlt - npcAirplane.alt) * 40) * 3.281; // times 20 because rate is 3 seconds and convert to feet
                         // npcAirplane.targetHeading = Math.atan(npcAirplane.deltaLon / npcAirplane.deltaLat / Math.cos(npcAirplane.targetLat * Avionics.Utils.DEG2RAD)) * Avionics.Utils.RAD2DEG;
                         // if (npcAirplane.deltaLat < 0) {
                         //     npcAirplane.targetHeading += 180;
