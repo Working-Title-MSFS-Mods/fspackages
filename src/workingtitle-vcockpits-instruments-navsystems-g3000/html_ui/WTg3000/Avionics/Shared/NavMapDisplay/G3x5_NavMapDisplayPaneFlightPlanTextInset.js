@@ -1337,6 +1337,11 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement e
         this._wrapper.setAttribute("mode", "none");
     }
 
+    _displayCustomAltitude(altitude) {
+        this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(altitude, this._altitudeUnit);
+        this._wrapper.setAttribute("mode", "custom");
+    }
+
     _displayAdvisoryAltitude(altitude) {
         this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(altitude, this._altitudeUnit);
         this._wrapper.setAttribute("mode", "advisory");
@@ -1365,12 +1370,16 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement e
                 this._floorText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.floor, this._altitudeUnit);
                 this._wrapper.setAttribute("mode", "between");
                 break;
+            default:
+                this._displayNone();
         }
     }
 
     _doUpdate() {
         if (this._constraint) {
-            if (this._constraint.advisoryAltitude) {
+            if (this._constraint.customAltitude) {
+                this._displayCustomAltitude(this._constraint.customAltitude);
+            } else if (this._constraint.advisoryAltitude) {
                 this._displayAdvisoryAltitude(this._constraint.advisoryAltitude);
             } else if (this._constraint.publishedConstraint) {
                 this._displayPublishedConstraint(this._constraint.publishedConstraint);
@@ -1413,12 +1422,12 @@ WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement.TEMPLAT
             width: calc(100% - var(--flightplanaltitudeconstraint-padding-left, 0.2em) - var(--flightplanaltitudeconstraint-padding-right, 0.2em));
             height: calc(100% - var(--flightplanaltitudeconstraint-padding-top, 0.2em) - var(--flightplanaltitudeconstraint-padding-bottom, 0.2em));
             color: white;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
         }
             #altitude {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
                 display: flex;
                 flex-flow: column nowrap;
                 align-items: center;
@@ -1427,6 +1436,7 @@ WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement.TEMPLAT
                     display: none;
                 }
                 #wrapper[mode="none"] .none,
+                #wrapper[mode="custom"] .custom,
                 #wrapper[mode="advisory"] .advisory,
                 #wrapper[mode="above"] .above,
                 #wrapper[mode="below"] .below,
@@ -1444,6 +1454,15 @@ WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement.TEMPLAT
                     height: 0;
                     border-top: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) white;
                 }
+            #editicon {
+                display: none;
+                width: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
+                height: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
+                fill: white;
+            }
+            #wrapper[mode="custom"] #editicon {
+                display: block;
+            }
 
         .${WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement.UNIT_CLASS} {
             font-size: var(--flightplanaltitudeconstraint-unit-font-size, 0.75em)
@@ -1452,10 +1471,14 @@ WT_G3x5_NavMapDisplayPaneFlightPlanInsetLegAltitudeConstraintHTMLElement.TEMPLAT
     <div id="wrapper">
         <div id="altitude">
             <div id="ceilbar" class="altitudeComponent between at below"></div>
-            <div id="ceiltext" class="altitudeComponent between at below advisory none"></div>
+            <div id="ceiltext" class="altitudeComponent between at below advisory custom none"></div>
             <div id="floortext" class="altitudeComponent between above"></div>
             <div id="floorbar" class="altitudeComponent between at above"></div>
         </div>
+        <svg id="editicon" viewBox="0 0 64 64">
+            <path d="M48.4,6.28l3.1-3.11S55.39-.71,60.05,4s.78,8.55.78,8.55l-3.11,3.1Z" />
+            <path d="M46.84,7.84,4.11,50.56S1,61.44,1.78,62.22s11.66-2.33,11.66-2.33L56.16,17.16Z" />
+        </svg>
     </div>
 `;
 

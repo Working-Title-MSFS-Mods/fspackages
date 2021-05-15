@@ -80,6 +80,17 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         return this._source;
     }
 
+    _initPopUps() {
+        this._flightPlanOptionsPopUp = new WT_G3x5_TSCElementContainer("Flight Plan Options", "FlightPlanOptions", new WT_G3x5_TSCFlightPlanOptions());
+        this._flightPlanOptionsPopUp.setGPS(this.instrument);
+
+        this._airwaySelectionPopUp = new WT_G3x5_TSCElementContainer("Airway Selection", "AirwaySelection", new WT_G3x5_TSCAirwaySelection());
+        this._airwaySelectionPopUp.setGPS(this.instrument);
+
+        this._vnavAltitudeKeyboardPopUp = new WT_G3x5_TSCElementContainer("VNAV Altitude Keyboard", "VNAVAltitudeKeyboard", new WT_G3x5_TSCVNAVAltitudeKeyboard());
+        this._vnavAltitudeKeyboardPopUp.setGPS(this.instrument);
+    }
+
     _createHTMLElement() {
         return new WT_G3x5_TSCFlightPlanHTMLElement();
     }
@@ -102,6 +113,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.FLIGHT_PLAN_OPTIONS] = this._onFlightPlanOptionsButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.HEADER] = this._onHeaderButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.LEG_WAYPOINT] = this._onLegWaypointButtonPressed.bind(this);
+        this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.LEG_ALTITUDE] = this._onLegAltitudeButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ENROUTE_ADD] = this._onEnrouteAddButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.ORIGIN_SELECT] = this._onOriginSelectButtonPressed.bind(this);
         this._buttonEventHandlers[WT_G3x5_TSCFlightPlanHTMLElement.ButtonEventType.DEPARTURE_SELECT] = this._onDepartureSelectButtonPressed.bind(this);
@@ -135,6 +147,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this._fpm = this.instrument.flightPlanManagerWT;
         this._state._unitsModel = new WT_G3x5_TSCFlightPlanUnitsModel(this.instrument.unitsSettingModel);
 
+        this._initPopUps();
         this._htmlElement = this._createHTMLElement();
         root.appendChild(this.htmlElement);
         this._initHTMLElement();
@@ -415,6 +428,31 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     /**
      *
      * @param {WT_FlightPlanLeg} leg
+     * @param {WT_NumberUnit} altitude
+     */
+    async _setVNAVAltitude(leg, altitude) {
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            this._fpm.setCustomLegAltitudeInActive(leg, altitude);
+        } else {
+            leg.altitudeConstraint.setCustomAltitude(altitude);
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    async _removeVNAVAltitude(leg) {
+        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+            this._fpm.removeCustomLegAltitudeInActive(leg);
+        } else {
+            leg.altitudeConstraint.removeCustomAltitude();
+        }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
      */
     async _activateLeg(leg) {
         try {
@@ -468,7 +506,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _openFlightPlanOptionsPopUp() {
-        this.instrument.flightPlanOptions.element.setContext({
+        this._flightPlanOptionsPopUp.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
             flightPlanPage: this,
@@ -477,7 +515,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             settings: this.settings,
             paneSettings: this.instrument.getSelectedPaneSettings()
         });
-        this.instrument.switchToPopUpPage(this.instrument.flightPlanOptions);
+        this.instrument.switchToPopUpPage(this._flightPlanOptionsPopUp);
     }
 
     /**
@@ -485,13 +523,57 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_FlightPlanLeg} leg
      */
     _openAirwaySelectPopUp(leg) {
-        this.instrument.airwaySelection.element.setContext({
+        this._airwaySelectionPopUp.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
             entryWaypoint: leg.fix,
             callback: this._insertAirway.bind(this, leg)
         });
-        this.instrument.switchToPopUpPage(this.instrument.airwaySelection);
+        this.instrument.switchToPopUpPage(this._airwaySelectionPopUp);
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    _getVNAVAltitudeKeyboardInitialValue(leg) {
+        let initialValue = WT_Unit.FOOT.createNumber(0);
+        if (leg.altitudeConstraint.customAltitude) {
+            initialValue.set(leg.altitudeConstraint.customAltitude);
+        } else if (leg.altitudeConstraint.advisoryAltitude) {
+            initialValue.set(leg.altitudeConstraint.advisoryAltitude);
+        } else if (leg.altitudeConstraint.publishedConstraint) {
+            switch (leg.altitudeConstraint.publishedConstraint.type) {
+                case WT_AltitudeConstraint.Type.AT:
+                case WT_AltitudeConstraint.Type.AT_OR_BELOW:
+                case WT_AltitudeConstraint.Type.BETWEEN:
+                    initialValue.set(leg.altitudeConstraint.publishedConstraint.ceiling);
+                    break;
+                case WT_AltitudeConstraint.Type.AT_OR_ABOVE:
+                    initialValue.set(leg.altitudeConstraint.publishedConstraint.floor);
+                    break;
+            }
+        }
+        return initialValue.readonly();
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    _openVNAVAltitudeKeyboardPopUp(leg) {
+        let initialValue = this._getVNAVAltitudeKeyboardInitialValue(leg);
+
+        this._vnavAltitudeKeyboardPopUp.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            leg: leg,
+            initialValue: initialValue,
+            valueEnteredCallback: this._setVNAVAltitude.bind(this, leg),
+            removeCallback: this._removeVNAVAltitude.bind(this, leg)
+        });
+        this.instrument.switchToPopUpPage(this._vnavAltitudeKeyboardPopUp);
     }
 
     _setAirwaySequenceCollapse(airwaySequence, value) {
@@ -608,6 +690,14 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     _onLegWaypointButtonPressed(event) {
         this.htmlElement.toggleRowSelection(event.row);
+    }
+
+    /**
+     *
+     * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
+     */
+    _onLegAltitudeButtonPressed(event) {
+        this._openVNAVAltitudeKeyboardPopUp(event.leg);
     }
 
     _onEnrouteAddButtonPressed(event) {
@@ -3202,6 +3292,11 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
         this._wrapper.setAttribute("mode", "none");
     }
 
+    _displayCustomAltitude(altitude) {
+        this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(altitude, this._altitudeUnit);
+        this._wrapper.setAttribute("mode", "custom");
+    }
+
     _displayAdvisoryAltitude(altitude) {
         this._ceilText.innerHTML = this._altitudeFormatter.getFormattedHTML(altitude, this._altitudeUnit);
         this._wrapper.setAttribute("mode", "advisory");
@@ -3230,12 +3325,16 @@ class WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement extends HTMLElement 
                 this._floorText.innerHTML = this._altitudeFormatter.getFormattedHTML(constraint.floor, this._altitudeUnit);
                 this._wrapper.setAttribute("mode", "between");
                 break;
+            default:
+                this._displayNone();
         }
     }
 
     _doUpdate() {
         if (this._constraint) {
-            if (this._constraint.advisoryAltitude) {
+            if (this._constraint.customAltitude) {
+                this._displayCustomAltitude(this._constraint.customAltitude);
+            } else if (this._constraint.advisoryAltitude) {
                 this._displayAdvisoryAltitude(this._constraint.advisoryAltitude);
             } else if (this._constraint.publishedConstraint) {
                 this._displayPublishedConstraint(this._constraint.publishedConstraint);
@@ -3278,12 +3377,12 @@ WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
             width: calc(100% - var(--flightplanaltitudeconstraint-padding-left, 0.2em) - var(--flightplanaltitudeconstraint-padding-right, 0.2em));
             height: calc(100% - var(--flightplanaltitudeconstraint-padding-top, 0.2em) - var(--flightplanaltitudeconstraint-padding-bottom, 0.2em));
             color: white;
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
         }
             #altitude {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
                 display: flex;
                 flex-flow: column nowrap;
                 align-items: center;
@@ -3292,6 +3391,7 @@ WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
                     display: none;
                 }
                 #wrapper[mode="none"] .none,
+                #wrapper[mode="custom"] .custom,
                 #wrapper[mode="advisory"] .advisory,
                 #wrapper[mode="above"] .above,
                 #wrapper[mode="below"] .below,
@@ -3309,6 +3409,15 @@ WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
                     height: 0;
                     border-top: solid var(--flightplanaltitudeconstraint-bar-stroke-width, 2px) white;
                 }
+            #editicon {
+                display: none;
+                width: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
+                height: var(--flightplanaltitudeconstraint-editicon-size, 0.8em);
+                fill: white;
+            }
+            #wrapper[mode="custom"] #editicon {
+                display: block;
+            }
 
         .${WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.UNIT_CLASS} {
             font-size: var(--flightplanaltitudeconstraint-unit-font-size, 0.75em)
@@ -3317,10 +3426,14 @@ WT_G3x5_TSCFlightPlanLegAltitudeConstraintHTMLElement.TEMPLATE.innerHTML = `
     <div id="wrapper">
         <div id="altitude">
             <div id="ceilbar" class="altitudeComponent between at below"></div>
-            <div id="ceiltext" class="altitudeComponent between at below advisory none"></div>
+            <div id="ceiltext" class="altitudeComponent between at below advisory custom none"></div>
             <div id="floortext" class="altitudeComponent between above"></div>
             <div id="floorbar" class="altitudeComponent between at above"></div>
         </div>
+        <svg id="editicon" viewBox="0 0 64 64">
+            <path d="M48.4,6.28l3.1-3.11S55.39-.71,60.05,4s.78,8.55.78,8.55l-3.11,3.1Z" />
+            <path d="M46.84,7.84,4.11,50.56S1,61.44,1.78,62.22s11.66-2.33,11.66-2.33L56.16,17.16Z" />
+        </svg>
     </div>
 `;
 
@@ -4200,3 +4313,240 @@ class WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer extends WT_G3x5_TSCFligh
         this._updateModeHTMLElement(htmlElement, state);
     }
 }
+
+class WT_G3x5_TSCVNAVAltitudeKeyboard extends WT_G3x5_TSCPopUpElement {
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    _createHTMLElement() {
+        return new WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement();
+    }
+
+    async _initFromHTMLElement() {
+        await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
+        this.htmlElement.removeButton.addButtonListener(this._onRemoveButtonPressed.bind(this));
+    }
+
+    onInit() {
+        this._htmlElement = this._createHTMLElement();
+        this.popUpWindow.appendChild(this.htmlElement);
+        this._initFromHTMLElement();
+    }
+
+    _activateEnterButton() {
+        this.instrument.activateNavButton(6, "Enter", this._onEnterPressed.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
+    }
+
+    _deactivateEnterButton() {
+        this.instrument.deactivateNavButton(6, true);
+    }
+
+    _activateNavButtons() {
+        super._activateNavButtons();
+
+        this._activateEnterButton();
+    }
+
+    _deactivateNavButtons() {
+        super._activateNavButtons();
+
+        this._deactivateEnterButton();
+    }
+
+    _onEnterPressed() {
+        let value = this.htmlElement.getValue();
+        this.context.valueEnteredCallback(value);
+        this._onBackPressed();
+    }
+
+    _onRemoveButtonPressed() {
+        this.context.removeCallback();
+        this._onBackPressed();
+    }
+
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.setContext({
+            digitCount: 5,
+            unit: WT_Unit.FOOT,
+            initialValue: this.context.initialValue,
+            leg: this.context.leg
+        });
+        this.htmlElement.open();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
+    }
+}
+
+class WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        this._context = null;
+        this._isOpen = false;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isInitialized() {
+        return this._isInit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get removeButton() {
+        return this._removeButton;
+    }
+
+    /**
+     *
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    getValue() {
+        return this._isInit ? this._keyboard.getValue() : null;
+    }
+
+    async _defineChildren() {
+        this._wrapper = this.shadowRoot.querySelector(`#wrapper`);
+
+        [
+            this._keyboard,
+            this._removeButton
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#keyboard`, WT_G3x5_TSCNumericKeyboardHTMLElement),
+            WT_CustomElementSelector.select(this.shadowRoot, `#remove`, WT_TSCLabeledButton)
+        ]);
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._isInit = true;
+        this._updateFromContext();
+        if (this._isOpen) {
+            this._initFromOpen();
+        }
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _updateFromContext() {
+        this._keyboard.setContext(this._context);
+    }
+
+    setContext(context) {
+        this._context = context;
+        if (this._isInit) {
+            this._updateFromContext();
+        }
+    }
+
+    _initFromOpen() {
+        this._keyboard.open();
+    }
+
+    open() {
+        this._isOpen = true;
+        if (!this._isInit || !this._context) {
+            return;
+        }
+
+        if (this._isInit) {
+            this._initFromOpen();
+        }
+    }
+
+    _cleanUpFromClose() {
+        this._keyboard.close();
+    }
+
+    close() {
+        this._isOpen = false;
+
+        if (this._isInit) {
+            this._cleanUpFromClose();
+        }
+    }
+}
+WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.NAME = "wt-tsc-vnavaltkeyboard";
+WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            border-radius: 5px;
+            background: linear-gradient(#1f3445, black 25px);
+            border: 3px solid var(--wt-g3x5-bordergray);
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--vnavaltkeyboard-padding-left, 0.2em);
+            top: var(--vnavaltkeyboard-padding-top, 0.2em);
+            width: calc(100% - var(--vnavaltkeyboard-padding-left, 0.2em) - var(--vnavaltkeyboard-padding-right, 0.2em));
+            height: calc(100% - var(--vnavaltkeyboard-padding-top, 0.2em) - var(--vnavaltkeyboard-padding-bottom, 0.2em));
+        }
+            #keyboard {
+                position: absolute;
+                left: 0%;
+                top: 0%;
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                background: transparent;
+                border: none;
+                --numkeyboard-padding-left: 0%;
+                --numkeyboard-padding-top: 0%;
+                --numkeyboard-padding-right: 0%;
+                --numkeyboard-padding-bottom: 0%;
+                --numkeyboard-display-horizontal-offset: -15%;
+                --numkeyboard-keyboard-horizontal-offset: -15%;
+            }
+            #removecontainer {
+                position: absolute;
+                left: 0%;
+                bottom: 0%;
+                width: var(--vnavaltkeyboard-bottom-button-width, calc(var(--numkeyboard-button-size, 1.5em) * 1.5));
+                height: var(--vnavaltkeyboard-bottom-button-height, var(--numkeyboard-button-size, 1.5em));
+            }
+                #remove {
+                    position: absolute;
+                    left: 0%;
+                    top: 0%;
+                    width: 100%;
+                    height: 100%;
+                    font-size: var(--vnavaltkeyboard-bottom-button-font-size, 0.5em);
+                }
+    </style>
+    <div id="wrapper">
+        <wt-tsc-numkeyboard id="keyboard"></wt-tsc-numkeyboard>
+        <div id="removecontainer">
+            <wt-tsc-button-label id="remove" labeltext="Remove VNAV ALT"></wt-tsc-button-label>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.NAME, WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement);

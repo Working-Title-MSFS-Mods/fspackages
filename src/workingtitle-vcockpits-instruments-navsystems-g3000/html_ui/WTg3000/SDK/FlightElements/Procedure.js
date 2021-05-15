@@ -506,9 +506,6 @@ class WT_ProcedureLeg {
     _initFromData(data) {
         this._altitudeDescription = data.altDesc;
         switch (data.altDesc) {
-            case WT_ProcedureLeg.AltitudeDescription.NONE:
-                this._altitudeConstraint = WT_AltitudeConstraint.NO_CONSTRAINT;
-                break;
             case WT_ProcedureLeg.AltitudeDescription.AT:
                 this._altitudeConstraint = new WT_AtAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
@@ -519,8 +516,10 @@ class WT_ProcedureLeg {
                 this._altitudeConstraint = new WT_AtOrBelowAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude1));
                 break;
             case WT_ProcedureLeg.AltitudeDescription.BETWEEN:
-                this._altitudeConstraint = new WT_AtAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude2), WT_ProcedureLeg._tempMeter2.set(data.altitude1));
+                this._altitudeConstraint = new WT_BetweenAltitude(WT_ProcedureLeg._tempMeter1.set(data.altitude2), WT_ProcedureLeg._tempMeter2.set(data.altitude1));
                 break;
+            default:
+                this._altitudeConstraint = WT_AltitudeConstraint.NO_CONSTRAINT;
         }
     }
 
