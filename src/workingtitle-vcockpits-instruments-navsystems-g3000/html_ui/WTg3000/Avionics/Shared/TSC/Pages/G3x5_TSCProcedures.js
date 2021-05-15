@@ -1720,17 +1720,6 @@ class WT_G3x5_TSCProcedureSelectionAirportButton extends WT_G3x5_TSCWaypointButt
         `;
     }
 
-    _createEmptyStyle() {
-        return `
-            #empty {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-            }
-        `;
-    }
-
     _createTitleStyle() {
         return `
             #title {
@@ -1783,6 +1772,22 @@ class WT_G3x5_TSCProcedureSelectionAirportButton extends WT_G3x5_TSCWaypointButt
         } else {
             super.attributeChangedCallback(name, oldValue, newValue);
         }
+    }
+
+    /**
+     *
+     * @param {WT_Waypoint} waypoint
+     */
+    _showWaypointInfo(waypoint) {
+        super._showWaypointInfo(waypoint);
+
+        this._title.style.display = "block";
+    }
+
+    _showEmptyText() {
+        super._showEmptyText();
+
+        this._title.style.display = "none";
     }
 }
 WT_G3x5_TSCProcedureSelectionAirportButton.NAME = "wt-tsc-button-procselectairport";
@@ -2346,7 +2351,7 @@ WT_G3x5_TSCDepartureArrivalSelectionHTMLElement.TEMPLATE.innerHTML = `
         }
     </style>
     <div id="wrapper">
-        <wt-tsc-button-procselectairport id="airport" titletext="Airport"></wt-tsc-button-procselectairport>
+        <wt-tsc-button-procselectairport id="airport" titletext="Airport" emptytext="Select Airport"></wt-tsc-button-procselectairport>
         <wt-tsc-button-value id="procedure" class="selectionButton"></wt-tsc-button-value>
         <wt-tsc-button-value id="transition" class="selectionButton" labeltext="Transition"></wt-tsc-button-value>
         <div id="middle">
@@ -3472,7 +3477,7 @@ WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE.innerHTML = `
         }
     </style>
     <div id="wrapper">
-        <wt-tsc-button-procselectairport id="airport" titletext="Airport"></wt-tsc-button-procselectairport>
+        <wt-tsc-button-procselectairport id="airport" titletext="Airport" emptytext="Select Airport"></wt-tsc-button-procselectairport>
         <wt-tsc-button-value id="procedure" class="selectionButton"></wt-tsc-button-value>
         <wt-tsc-button-value id="transition" class="selectionButton" labeltext="Transition"></wt-tsc-button-value>
         <div id="middle">
