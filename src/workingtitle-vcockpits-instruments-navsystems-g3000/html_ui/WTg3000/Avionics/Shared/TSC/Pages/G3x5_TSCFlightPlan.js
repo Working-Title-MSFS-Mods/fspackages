@@ -523,11 +523,18 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_FlightPlanLeg} leg
      */
     _openAirwaySelectPopUp(leg) {
+        let insertLeg;
+        // if the selected leg is inside an airway, we need to set the insertion point to after the last leg of the airway
+        if (leg.parent instanceof WT_FlightPlanAirwaySequence) {
+            insertLeg = leg.parent.legs.last();
+        } else {
+            insertLeg = leg;
+        }
         this._airwaySelectionPopUp.element.setContext({
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
             entryWaypoint: leg.fix,
-            callback: this._insertAirway.bind(this, leg)
+            callback: this._insertAirway.bind(this, insertLeg)
         });
         this.instrument.switchToPopUpPage(this._airwaySelectionPopUp);
     }
