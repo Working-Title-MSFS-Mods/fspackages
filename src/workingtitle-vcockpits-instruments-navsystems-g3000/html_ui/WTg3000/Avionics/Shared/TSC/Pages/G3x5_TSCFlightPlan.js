@@ -697,7 +697,12 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onLegAltitudeButtonPressed(event) {
-        this._openVNAVAltitudeKeyboardPopUp(event.leg);
+        if (event.leg.segment !== WT_FlightPlan.Segment.ORIGIN &&
+            event.leg.segment !== WT_FlightPlan.Segment.DESTINATION &&
+            event.leg.segment !== WT_FlightPlan.Segment.APPROACH) {
+
+            this._openVNAVAltitudeKeyboardPopUp(event.leg);
+        }
     }
 
     _onEnrouteAddButtonPressed(event) {
