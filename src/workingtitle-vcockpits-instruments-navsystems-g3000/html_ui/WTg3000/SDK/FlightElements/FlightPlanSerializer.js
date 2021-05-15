@@ -1,6 +1,9 @@
+/**
+ * Serializer for WT_FlightPlan objects.
+ */
 class WT_FlightPlanSerializer {
     /**
-     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
+     * @param {WT_ICAOWaypointFactory} icaoWaypointFactory - a factory with which to create ICAO waypoints.
      */
     constructor(icaoWaypointFactory) {
         this._tempFlightPlan = new WT_FlightPlan(icaoWaypointFactory);
@@ -29,8 +32,38 @@ class WT_FlightPlanSerializer {
 
     /**
      *
+     * @param {WT_FlightPlanLegAltitudeConstraint} altitudeConstraint
+     * @returns {WT_FlightPlanAltitudeConstraintSerializableObject}
+     */
+    _getAltitudeConstraintObject(altitudeConstraint) {
+        let obj = {};
+        if (altitudeConstraint.customAltitude) {
+            obj.customAlt = altitudeConstraint.customAltitude.asUnit(WT_Unit.FOOT);
+        }
+        if (altitudeConstraint.advisoryAltitude) {
+            obj.advAlt = altitudeConstraint.advisoryAltitude.asUnit(WT_Unit.FOOT);
+        }
+        if (altitudeConstraint.publishedConstraint) {
+            obj.pubAltType = altitudeConstraint.publishedConstraint.type;
+            switch (altitudeConstraint.publishedConstraint.type) {
+                case WT_AltitudeConstraint.Type.BETWEEN:
+                    obj.pubAltFloor = altitudeConstraint.publishedConstraint.floor.asUnit(WT_Unit.FOOT);
+                case WT_AltitudeConstraint.Type.AT:
+                case WT_AltitudeConstraint.Type.AT_OR_BELOW:
+                    obj.pubAltCeil = altitudeConstraint.publishedConstraint.ceiling.asUnit(WT_Unit.FOOT);
+                    break;
+                case WT_AltitudeConstraint.Type.AT_OR_ABOVE:
+                    obj.pubAltFloor = altitudeConstraint.publishedConstraint.floor.asUnit(WT_Unit.FOOT);
+                    break;
+            }
+        }
+        return obj;
+    }
+
+    /**
+     *
      * @param {WT_FlightPlanLeg} leg
-     * @returns {WT_FlightPlanAirwaySerializedObject}
+     * @returns {WT_FlightPlanAirwaySerializableObject}
      */
     _getLegObject(leg) {
         let obj = {
@@ -61,14 +94,7 @@ class WT_FlightPlanSerializer {
             obj.steps = steps.map(step => [step.endpoint.long, step.endpoint.lat]);
         }
 
-        if (leg.altitudeConstraint.advisoryAltitude) {
-            obj.advAlt = leg.altitudeConstraint.advisoryAltitude.asUnit(WT_Unit.FOOT);
-        }
-        if (leg.altitudeConstraint.publishedConstraint) {
-            obj.pubAltType = leg.altitudeConstraint.publishedConstraint.type;
-            obj.pubAltCeil = leg.altitudeConstraint.publishedConstraint.ceiling.asUnit(WT_Unit.FOOT);
-            obj.pubAltFloor = leg.altitudeConstraint.publishedConstraint.floor.asUnit(WT_Unit.FOOT);
-        }
+        obj.alt = this._getAltitudeConstraintObject(leg.altitudeConstraint);
 
         return obj;
     }
@@ -76,21 +102,22 @@ class WT_FlightPlanSerializer {
     /**
      *
      * @param {WT_FlightPlanAirwaySequence} airwaySequence
-     * @returns {WT_FlightPlanAirwaySerializedObject}
+     * @returns {WT_FlightPlanAirwaySerializableObject}
      */
     _getAirwayObject(airwaySequence) {
         return {
             airway: 1,
             name: airwaySequence.airway.name,
             entry: airwaySequence.legs.first().fix.icao,
-            exit: airwaySequence.legs.last().fix.icao
+            exit: airwaySequence.legs.last().fix.icao,
+            alts: airwaySequence.legs.map(leg => this._getAltitudeConstraintObject(leg.altitudeConstraint), this)
         };
     }
 
     /**
      *
      * @param {WT_FlightPlan} flightPlan
-     * @returns {(WT_FlightPlanLegSerializedObject|WT_FlightPlanAirwaySerializedObject)[]}
+     * @returns {(WT_FlightPlanLegSerializableObject|WT_FlightPlanAirwaySerializableObject)[]}
      */
     _getEnroute(flightPlan) {
         let enr = [];
@@ -107,33 +134,35 @@ class WT_FlightPlanSerializer {
     /**
      *
      * @param {WT_FlightPlanDeparture} departureSegment
-     * @returns {WT_FlightPlanDepartureArrivalSerializedObject}
+     * @returns {WT_FlightPlanDepartureArrivalSerializableObject}
      */
     _getDeparture(departureSegment) {
         return {
             name: departureSegment.procedure.name,
             enrIndex: departureSegment.enrouteTransitionIndex,
-            rwyIndex: departureSegment.runwayTransitionIndex
+            rwyIndex: departureSegment.runwayTransitionIndex,
+            alts: departureSegment.legs.map(leg => this._getAltitudeConstraintObject(leg.altitudeConstraint), this)
         };
     }
 
     /**
      *
      * @param {WT_FlightPlanArrival} arrivalSegment
-     * @returns {WT_FlightPlanDepartureArrivalSerializedObject}
+     * @returns {WT_FlightPlanDepartureArrivalSerializableObject}
      */
     _getArrival(arrivalSegment) {
         return {
             name: arrivalSegment.procedure.name,
             enrIndex: arrivalSegment.enrouteTransitionIndex,
-            rwyIndex: arrivalSegment.runwayTransitionIndex
+            rwyIndex: arrivalSegment.runwayTransitionIndex,
+            alts: arrivalSegment.legs.map(leg => this._getAltitudeConstraintObject(leg.altitudeConstraint), this)
         };
     }
 
     /**
      *
      * @param {WT_FlightPlanApproach} approachSegment
-     * @returns {WT_FlightPlanApproachSerializedObject}
+     * @returns {WT_FlightPlanApproachSerializableObject}
      */
     _getApproach(approachSegment) {
         return {
@@ -145,7 +174,7 @@ class WT_FlightPlanSerializer {
     /**
      *
      * @param {WT_FlightPlan} flightPlan
-     * @returns {WT_FlightPlanSerializedObject}
+     * @returns {WT_FlightPlanSerializableObject}
      */
     _buildJSON(flightPlan) {
         let json = {
@@ -166,9 +195,9 @@ class WT_FlightPlanSerializer {
     }
 
     /**
-     *
-     * @param {WT_FlightPlan} flightPlan
-     * @returns {String}
+     * Serializes a flight plan to a string.
+     * @param {WT_FlightPlan} flightPlan - the flight plan to serialize.
+     * @returns {String} a string representation of the provided flight plan.
      */
     serialize(flightPlan) {
         if (!flightPlan) {
@@ -203,8 +232,41 @@ class WT_FlightPlanSerializer {
 
     /**
      *
+     * @param {WT_FlightPlanAltitudeConstraintSerializableObject} obj
+     * @param {WT_FlightPlanLeg} leg
+     */
+    _parseAltitudeConstraint(obj, leg) {
+        if (obj.customAlt !== undefined) {
+            leg.altitudeConstraint.setCustomAltitude(this._tempFoot1.set(obj.customAlt));
+        }
+        if (obj.advAlt !== undefined) {
+            leg.altitudeConstraint.setAdvisoryAltitude(this._tempFoot1.set(obj.advAlt));
+        }
+        if (obj.pubAltType !== undefined) {
+            switch (obj.pubAltType) {
+                case WT_AltitudeConstraint.Type.NONE:
+                    leg.altitudeConstraint.setPublishedConstraint(WT_AltitudeConstraint.NONE);
+                    break;
+                case WT_AltitudeConstraint.Type.AT:
+                    leg.altitudeConstraint.setPublishedConstraint(new WT_AtAltitude(this._tempFoot1.set(obj.pubAltCeil)));
+                    break;
+                case WT_AltitudeConstraint.Type.AT_OR_ABOVE:
+                    leg.altitudeConstraint.setPublishedConstraint(new WT_AtOrAboveAltitude(this._tempFoot1.set(obj.pubAltFloor)));
+                    break;
+                case WT_AltitudeConstraint.Type.AT_OR_BELOW:
+                    leg.altitudeConstraint.setPublishedConstraint(new WT_AtOrAboveAltitude(this._tempFoot1.set(obj.pubAltCeil)));
+                    break;
+                case WT_AltitudeConstraint.Type.BETWEEN:
+                    leg.altitudeConstraint.setPublishedConstraint(new WT_BetweenAltitude(this._tempFoot1.set(obj.pubAltFloor), this._tempFoot2.set(obj.pubAltCeil)));
+                    break;
+            }
+        }
+    }
+
+    /**
+     *
      * @param {WT_FlightPlan.Segment} segment
-     * @param {WT_FlightPlanLegSerializedObject} obj
+     * @param {WT_FlightPlanLegSerializableObject} obj
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseLeg(segment, obj, flightPlan) {
@@ -217,44 +279,25 @@ class WT_FlightPlanSerializer {
         if (obj.steps) {
             entry.steps = obj.steps.map(step => new WT_GeoPoint(step[1], step[0]));
         }
-        if (obj.advAlt !== undefined) {
-            entry.advisoryAltitude = new WT_Unit.FOOT.createNumber(obj.advAlt);
-        }
-        if (obj.pubAltType !== undefined) {
-            switch (obj.pubAltType) {
-                case WT_AltitudeConstraint.Type.NONE:
-                    entry.publishedConstraint = WT_AltitudeConstraint.NONE;
-                    break;
-                case WT_AltitudeConstraint.Type.AT:
-                    entry.publishedConstraint = new WT_AtAltitude(this._tempFoot1.set(obj.pubAltCeil));
-                    break;
-                case WT_AltitudeConstraint.Type.AT_OR_ABOVE:
-                    entry.publishedConstraint = new WT_AtOrAboveAltitude(this._tempFoot1.set(obj.pubAltFloor));
-                    break;
-                case WT_AltitudeConstraint.Type.AT_OR_BELOW:
-                    entry.publishedConstraint = new WT_AtOrAboveAltitude(this._tempFoot1.set(obj.pubAltCeil));
-                    break;
-                case WT_AltitudeConstraint.Type.BETWEEN:
-                    entry.publishedConstraint = new WT_BetweenAltitude(this._tempFoot1.set(obj.pubAltFloor), this._tempFoot2.set(obj.pubAltCeil));
-                    break;
-            }
-        }
-        await flightPlan.insertWaypoint(segment, entry);
+
+        let leg = await flightPlan.insertWaypoint(segment, entry);
+        this._parseAltitudeConstraint(obj.alt, leg);
     }
 
     /**
      *
      * @param {WT_FlightPlan.Segment} segment
-     * @param {WT_FlightPlanAirwaySerializedObject} obj
+     * @param {WT_FlightPlanAirwaySerializableObject} obj
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseAirway(segment, obj, flightPlan) {
-        await flightPlan.insertAirway(segment, obj.name, obj.entry, obj.exit);
+        let airwaySequence = await flightPlan.insertAirway(segment, obj.name, obj.entry, obj.exit);
+        airwaySequence.legs.forEach((leg, index) => this._parseAltitudeConstraint(obj.alts[index], leg), this);
     }
 
     /**
      *
-     * @param {(WT_FlightPlanLegSerializedObject|WT_FlightPlanAirwaySerializedObject)[]} enr
+     * @param {(WT_FlightPlanLegSerializableObject|WT_FlightPlanAirwaySerializableObject)[]} enr
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseEnroute(enr, flightPlan) {
@@ -270,25 +313,27 @@ class WT_FlightPlanSerializer {
 
     /**
      *
-     * @param {WT_FlightPlanDepartureArrivalSerializedObject} dep
+     * @param {WT_FlightPlanDepartureArrivalSerializableObject} dep
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseDeparture(dep, flightPlan) {
         await flightPlan.setDeparture(dep.name, dep.rwyIndex, dep.enrIndex);
+        flightPlan.getDeparture().legs.forEach((leg, index) => this._parseAltitudeConstraint(dep.alts[index], leg), this);
     }
 
     /**
      *
-     * @param {WT_FlightPlanDepartureArrivalSerializedObject} arr
+     * @param {WT_FlightPlanDepartureArrivalSerializableObject} arr
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseArrival(arr, flightPlan) {
         await flightPlan.setArrival(arr.name, arr.enrIndex, arr.rwyIndex);
+        flightPlan.getArrival().legs.forEach((leg, index) => this._parseAltitudeConstraint(arr.alts[index], leg), this);
     }
 
     /**
      *
-     * @param {WT_FlightPlanApproachSerializedObject} app
+     * @param {WT_FlightPlanApproachSerializableObject} app
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseApproach(app, flightPlan) {
@@ -297,7 +342,7 @@ class WT_FlightPlanSerializer {
 
     /**
      *
-     * @param {WT_FlightPlanSerializedObject} json
+     * @param {WT_FlightPlanSerializableObject} json
      * @param {WT_FlightPlan} flightPlan
      */
     async _parseJSON(json, flightPlan) {
@@ -317,10 +362,11 @@ class WT_FlightPlanSerializer {
     }
 
     /**
-     *
-     * @param {String} string
-     * @param {WT_FlightPlan} flightPlan
-     * @returns {Promise<WT_FlightPlan>}
+     * Deserializes a flight plan and copies it to a specified flight plan.
+     * @param {String} string - the string representation of the flight plan to deserialize.
+     * @param {WT_FlightPlan} flightPlan - the flight plan into which to copy the deserialized flight plan.
+     * @returns {Promise<WT_FlightPlan>} a Promise which is fulfilled with the supplied flight plan once it has been
+     *                                   copied from the deserialized flight plan.
      */
     async deserialize(string, flightPlan) {
         if (string === "") {
@@ -335,47 +381,58 @@ class WT_FlightPlanSerializer {
 }
 
 /**
- * @typedef WT_FlightPlanSerializedObject
- * @property {String} orig
- * @property {String} dest
- * @property {(WT_FlightPlanLegSerializedObject|WT_FlightPlanAirwaySerializedObject)[]} enr
- * @property {WT_FlightPlanDepartureArrivalSerializedObject} [dep]
- * @property {WT_FlightPlanDepartureArrivalSerializedObject} [arr]
- * @property {WT_FlightPlanApproachSerializedObject} [app]
+ * @typedef WT_FlightPlanSerializableObject
+ * @property {String} orig - the ICAO string of the origin, or the empty string if no origin exists.
+ * @property {String} dest - the ICAO string of the destination, or the empty string if no destination exists.
+ * @property {(WT_FlightPlanLegSerializableObject|WT_FlightPlanAirwaySerializableObject)[]} enr - an array of serializable object representations of the elements in the enroute segment.
+ * @property {WT_FlightPlanDepartureArrivalSerializableObject} [dep] - a serializable object representation of the departure segment.
+ * @property {WT_FlightPlanDepartureArrivalSerializableObject} [arr] - a serializable object representation of the arrival segment.
+ * @property {WT_FlightPlanApproachSerializableObject} [app] - a serializable object representation of the approach segment.
  */
 
 /**
- * @typedef WT_FlightPlanDepartureArrivalSerializedObject
- * @property {String} name
- * @property {Number} enrIndex
- * @property {Number} rwyIndex
- * @property {WT_FlightPlanLegSerializedObject[]} [legs]
+ * @typedef WT_FlightPlanDepartureArrivalSerializableObject
+ * @property {String} name - the name of the procedure.
+ * @property {Number} enrIndex - the enroute transition index of the procedure.
+ * @property {Number} rwyIndex - the runway transition index of the procedure.
+ * @property {WT_FlightPlanAltitudeConstraintSerializableObject[]} alts -
  */
 
 /**
- * @typedef WT_FlightPlanApproachSerializedObject
- * @property {String} name
- * @property {Number} trnIndex
- * @property {WT_FlightPlanLegSerializedObject[]} [legs]
+ * @typedef WT_FlightPlanApproachSerializableObject
+ * @property {String} name - the name of the procedure.
+ * @property {Number} trnIndex - the transition index of the procedure.
  */
 
 /**
- * @typedef WT_FlightPlanAirwaySerializedObject
- * @property {Number} airway
- * @property {String} name
- * @property {String} entry
- * @property {String} exit
+ * @typedef WT_FlightPlanAirwaySerializableObject
+ * @property {Number} airway - equal to 1 to signify this object represents an airway sequence.
+ * @property {String} name - the name of the airway.
+ * @property {String} entry - the ICAO string of the entry waypoint.
+ * @property {String} exit - the ICAO string of the exit waypoint.
+ * @property {WT_FlightPlanAltitudeConstraintSerializableObject[]} alts
  */
 
 /**
- * @typedef WT_FlightPlanLegSerializedObject
- * @property {Number} leg
- * @property {String} [icao]
- * @property {Number[]} [latlon]
- * @property {String} [ident]
- * @property {Number[][]} [steps]
- * @property {Number} [advAlt]
- * @property {Number} [pubAltType]
- * @property {Number} [pubAltCeil]
- * @property {Number} [pubAltFloor]
+ * @typedef WT_FlightPlanLegSerializableObject
+ * @property {Number} leg - equal to 1 to signify this object represents a flight plan leg.
+ * @property {String} [icao] - the ICAO string of the leg terminator fix.
+ * @property {Number[]} [latlon] - the lat/long coordinates ([long, lat]) of the leg terminator fix. Only defined if
+ *                                 the fix is not an ICAO waypoint.
+ * @property {String} [ident] - the ident string of the leg terminator fix. Only defined if the fix is not an ICAO
+ *                              waypoint.
+ * @property {Number[][]} [steps] - an array of lat/long coordinates ([long, lat]) of the endpoints of the individual
+ *                                  steps which comprise the leg. Only defined if the leg has more than one component
+ *                                  step.
+ * @property {WT_FlightPlanAltitudeConstraintSerializableObject} [alt] - a serializable object representation of the
+ *                                                                        leg's altitude constraint.
+ */
+
+/**
+ * @typedef WT_FlightPlanAltitudeConstraintSerializableObject
+ * @property {Number} [customAlt] - the value (in feet) of the custom altitude constraint, if one exists.
+ * @property {Number} [advAlt] - the value (in feet) of the advisory altitude constraint, if one exists.
+ * @property {Number} [pubAltType] - the type of the published altitude constraint, if one exists.
+ * @property {Number} [pubAltCeil] - the published altitude ceiling, if one exists.
+ * @property {Number} [pubAltFloor] - the published altitude floor, if one exists.
  */
