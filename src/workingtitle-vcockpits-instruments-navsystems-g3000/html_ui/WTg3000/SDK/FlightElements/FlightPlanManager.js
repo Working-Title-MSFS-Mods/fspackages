@@ -82,7 +82,7 @@ class WT_FlightPlanManager {
 
     /**
      * Syncs this manager's active flight plan from the sim's default flight plan manager.
-     * @param {Boolean} [forceEnrouteSyn] - whether to force syncing of the enroute segment from the sim's flight plan
+     * @param {Boolean} [forceEnrouteSync] - whether to force syncing of the enroute segment from the sim's flight plan
      *                                      manager. False by default.
      * @returns {Promise<void>} a Promise which is fulfilled when the sync completes.
      */
