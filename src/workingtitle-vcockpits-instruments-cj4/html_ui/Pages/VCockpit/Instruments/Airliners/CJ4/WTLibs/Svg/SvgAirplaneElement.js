@@ -141,11 +141,11 @@ class NPCAirplaneManager {
                     npcAirplane.alive = 0;
                 }
                 for (let i = 0; i < obj.length; i++) {
+                    let data = obj[i];
                     // ignore faulty traffic
-                    if (obj.lat === 0) {
+                    if (data.lat === 0) {
                         continue;
                     }
-                    let data = obj[i];
                     let npcAirplane = this.npcAirplanes.find(p => { return p.name === data.uId.toFixed(0); });
                     if (!npcAirplane) {
                         npcAirplane = new SvgNPCAirplaneElement(data.uId.toFixed(0));
@@ -210,7 +210,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
     constructor(name = "") {
         super();
         this.name = name;
-        this._delay = 20;
+        this._delay = 40;
         this.alive = 5;
         this.useTCAS = false;
         this.lat = NaN;
@@ -232,6 +232,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         }
         this._id = "npc-airplaine-" + this.name;
         this._pos = new Vec2();
+        this._isCreated = false;
     }
     id(map) {
         return this._id + "-map-" + map.index;
@@ -267,9 +268,14 @@ class SvgNPCAirplaneElement extends SvgMapElement {
 
         container.setAttribute("x", fastToFixed(((1000 - this._size) * 0.5), 0));
         container.setAttribute("y", fastToFixed(((1000 - this._size) * 0.5), 0));
+        this._isCreated = true;
         return container;
     }
     updateDraw(map) {
+        if(!this._isCreated){
+            return;
+        }
+
         if (this._delay > 0) {
             this._delay--;
             this.svgElement.setAttribute("x", "-1000");

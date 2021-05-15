@@ -241,6 +241,8 @@ class CJ4_MFD extends BaseAirliners {
                     this.map.showGwx(false);
                     this.mapOverlay.showGwx(false);
                 }
+
+                this.map.showTraffic(this.showTfc);
             }
 
             const rangeSelectDisabled = WTDataStore.get('WT_CJ4_RANGE_SEL_DISABLED', 0);
@@ -371,7 +373,7 @@ class CJ4_MFD extends BaseAirliners {
                 this.onModeChanged();
                 break;
             case "Lwr_Push_TFC":
-                CJ4_MapSymbols.toggleSymbol(CJ4_MapSymbol.TRAFFIC);
+                this.showTfc = !this.showTfc;
                 break;
             case "Lwr_Push_SYS":
                 this.showSystemOverlay++;

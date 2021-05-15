@@ -3113,6 +3113,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
+        this.isTrafficVisible = undefined;
         this.isExtended = undefined;
         this.zoomRanges = [5, 10, 25, 50, 100, 200, 300, 600];
         this.zoomFactor = 1.0;
@@ -3282,6 +3283,12 @@ class CJ4_MapContainer extends NavSystemElementContainer {
             this.refreshLayout();
         }
     }
+    showTraffic(_value) {
+        if(this.isTrafficVisible !== _value){
+            this.isTrafficVisible = _value;
+            this.map.instrument.setAttribute("show-traffic", this.isTrafficVisible);
+        }
+    }
     setExtended(_value) {
         if (this.map.compassDisplayMode == Jet_NDCompass_Display.ARC) {
             _value = false;
@@ -3340,7 +3347,6 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.symbolsToSimvar = true;
     }
     syncSymbols() {
-        this.map.instrument.setAttribute("show-traffic", (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? true : false);
         this.map.instrument.showConstraints = (this.symbols & (1 << CJ4_MapSymbol.CONSTRAINTS)) ? true : false;
         this.map.instrument.showAirspaces = (this.symbols & (1 << CJ4_MapSymbol.AIRSPACES)) ? true : false;
         this.map.instrument.showAirways = (this.symbols & (1 << CJ4_MapSymbol.AIRWAYS)) ? true : false;
