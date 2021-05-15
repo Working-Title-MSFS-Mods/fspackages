@@ -390,7 +390,7 @@ cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #ve
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon #verticalSpeedbug {
     width: 20%;
     margin-left: -15%;
-    margin-right: -7%;
+    margin-right: -5%;
 }
 
 cj4-pfd-element #Mainframe #PFD #InstrumentsContainer #AutopilotInfos .Right #verticalSpeedBugField_Icon #verticalSpeedbug path {
