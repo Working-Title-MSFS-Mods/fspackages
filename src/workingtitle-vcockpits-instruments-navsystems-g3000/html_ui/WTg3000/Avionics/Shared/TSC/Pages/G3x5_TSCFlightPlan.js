@@ -569,6 +569,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
             leg: leg,
+            unit: this._state.unitsModel.altitudeUnit,
             initialValue: initialValue,
             valueEnteredCallback: this._setVNAVAltitude.bind(this, leg),
             removeCallback: this._removeVNAVAltitude.bind(this, leg)
@@ -4379,7 +4380,7 @@ class WT_G3x5_TSCVNAVAltitudeKeyboard extends WT_G3x5_TSCPopUpElement {
 
         this.htmlElement.setContext({
             digitCount: 5,
-            unit: WT_Unit.FOOT,
+            unit: this.context.unit,
             initialValue: this.context.initialValue,
             leg: this.context.leg
         });
