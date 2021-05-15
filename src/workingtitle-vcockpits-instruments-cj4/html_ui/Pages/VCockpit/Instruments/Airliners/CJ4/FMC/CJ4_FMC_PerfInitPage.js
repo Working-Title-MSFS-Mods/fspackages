@@ -30,7 +30,7 @@ class CJ4_FMC_PerfInitPage {
 		
         let crzAltCell = "□□□□□";
 		let zFW = 0;
-        const paxWeight = new Number(WT_ConvertUnit.getWeight(WTDataStore.get("WT_CJ4_PaxWeight", 170)).Value);
+        const paxWeight = new Number(WTDataStore.get("WT_CJ4_PaxWeight", 170));
 		let bow = 10280;
         if (fmc.cruiseFlightLevel) {
             crzAltCell = fmc.cruiseFlightLevel;
@@ -68,7 +68,7 @@ class CJ4_FMC_PerfInitPage {
         const gwtValueUnit = WT_ConvertUnit.getWeight(fmc.grossWeight);
         const grossWeightText = gwtValueUnit.Value.toFixed(0) + " " + gwtValueUnit.Unit + "[s-text]";
         const bowText = fmc.zFWActive == 1 || fmc.gWTActive == 1 ? " -----": " (" + WT_ConvertUnit.getWeight(bow).Value.toFixed(0) + ")[d-text]" + unitText + "[s-text]";
-        const paxText = fmc.zFWActive == 1 || fmc.gWTActive == 1 ? "--/--" : fmc.paxNumber + "/" + paxWeight.toFixed(0) + unitText;
+        const paxText = fmc.zFWActive == 1 || fmc.gWTActive == 1 ? "--/--" : fmc.paxNumber + "/" + WT_ConvertUnit.getWeight(paxWeight).Value.toFixed(0) + unitText;
         const transitionFL = 180;
         const cruiseAltText = crzAltCell == "□□□□□" ? "□□□□□" : crzAltCell < transitionFL ? crzAltCell * 100 : "FL" + crzAltCell;
 
@@ -103,9 +103,10 @@ class CJ4_FMC_PerfInitPage {
 
             if (paxMatch) {
                 fmc.paxNumber = parseInt(paxMatch[1]) >= 0 ? parseInt(paxMatch[1]) : fmc.paxNumber;
-                const newPaxWeight = parseInt(paxMatch[2]) > 0 ? parseInt(paxMatch[2]) : undefined;
-                if (newPaxWeight && newPaxWeight != paxWeight) {
-                    WTDataStore.set("WT_CJ4_PaxWeight", WT_ConvertUnit.setWeight(newPaxWeight));
+                const rawNewPaxWeight = parseInt(paxMatch[2]) > 0 ? parseInt(paxMatch[2]) : undefined;
+                const newPaxWeight = WT_ConvertUnit.setWeight(rawNewPaxWeight);
+                if (rawNewPaxWeight && newPaxWeight.Value != paxWeight) {
+                    WTDataStore.set("WT_CJ4_PaxWeight", newPaxWeight);
                 }
             } else {
                 fmc.showErrorMessage("INVALID");
