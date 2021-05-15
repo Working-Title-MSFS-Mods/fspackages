@@ -331,7 +331,7 @@ class WT_G3x5_TSCWaypointButtonIconSrcFactory {
         } else if (waypoint instanceof WT_RunwayWaypoint) {
             return `${this._imageDir}/ICON_TSC_WAYPOINT_INTERSECTION.svg`;
         } else {
-            return `${this._imageDir}/ICON_TSC_WAYPOINT_USER.svg`;
+            return "";
         }
     }
 }
