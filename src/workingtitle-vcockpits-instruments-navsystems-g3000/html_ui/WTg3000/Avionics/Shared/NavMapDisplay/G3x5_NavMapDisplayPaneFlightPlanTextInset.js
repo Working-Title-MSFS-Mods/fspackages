@@ -1997,6 +1997,16 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanSequenceRenderer extends WT_G3x5_NavMap
  */
  class WT_G3x5_NavMapDisplayPaneFlightPlanAirwaySequenceHeaderRowRenderer extends WT_G3x5_NavMapDisplayPaneFlightPlanSequenceHeaderRowRenderer {
     /**
+     * @param {WT_FlightPlanAirwaySequence} sequence
+     * @param {Boolean} isCollapsed
+     */
+    constructor(sequence, isCollapsed) {
+        super(sequence);
+
+        this._isCollapsed = isCollapsed;
+    }
+
+    /**
      *
      * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHTMLElement} row
      * @param {WT_FlightPlanLeg} activeLeg
@@ -2006,7 +2016,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanSequenceRenderer extends WT_G3x5_NavMap
 
         let modeHTMLElement = row.getActiveModeHTMLElement();
         modeHTMLElement.setIndent(2);
-        modeHTMLElement.setHeaderText(`Airway – ${this.sequence.airway.name}.${this.sequence.legs.last().fix.ident}`);
+        modeHTMLElement.setHeaderText(`Airway – ${this.sequence.airway.name}.${this.sequence.legs.last().fix.ident}${this._isCollapsed ? " (collapsed)" : ""}`);
     }
 }
 
@@ -2015,16 +2025,25 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanSequenceRenderer extends WT_G3x5_NavMap
  */
 class WT_G3x5_NavMapDisplayPaneFlightPlanAirwayRenderer extends WT_G3x5_NavMapDisplayPaneFlightPlanSequenceRenderer {
     /**
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer} parent
+     * @param {WT_FlightPlanAirwaySequence} sequence
+     */
+    constructor(parent, sequence) {
+        super(parent, sequence);
+
+        this._shouldCollapse = !(this._parent.activeLeg && this.element === this._parent.activeLeg.parent);
+    }
+
+    /**
      *
      * @returns {WT_G3x5_NavMapDisplayPaneFlightPlanAirwaySequenceHeaderRowRenderer}
      */
     _createHeaderRowRenderer() {
-        return new WT_G3x5_NavMapDisplayPaneFlightPlanAirwaySequenceHeaderRowRenderer(this.element);
+        return new WT_G3x5_NavMapDisplayPaneFlightPlanAirwaySequenceHeaderRowRenderer(this.element, this._shouldCollapse);
     }
 
     _createChildRenderers() {
-        let shouldCollapse = !(this._parent.activeLeg && this.element === this._parent.activeLeg.parent);
-        if (shouldCollapse) {
+        if (this._shouldCollapse) {
             return [new WT_G3x5_NavMapDisplayPaneFlightPlanAirwaySequenceFooterRenderer(this._parent, this.element.legs.last())];
         } else {
             return super._createChildRenderers();
