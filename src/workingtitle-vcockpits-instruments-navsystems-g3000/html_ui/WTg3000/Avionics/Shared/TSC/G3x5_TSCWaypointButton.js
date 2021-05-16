@@ -14,9 +14,9 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 position: absolute;
                 left: 2%;
                 top: 5%;
-                font-size: var(--waypoint-ident-font-size, 1.67em);
+                font-size: var(--button-waypoint-ident-font-size, 1.67em);
                 text-align: left;
-                color: var(--waypoint-ident-color, var(--wt-g3x5-lightblue));
+                color: var(--button-waypoint-ident-color, var(--wt-g3x5-lightblue));
             }
             :host([highlight=true][primed=false]) #ident {
                 color: black;
@@ -31,11 +31,11 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 left: 2%;
                 width: 90%;
                 bottom: 5%;
-                font-size: var(--waypoint-name-font-size, 1em);
+                font-size: var(--button-waypoint-name-font-size, 1em);
                 text-align: left;
                 white-space: nowrap;
                 overflow: hidden;
-                color: var(--waypoint-name-color, white);
+                color: var(--button-waypoint-name-color, white);
             }
             :host([highlight=true][primed=false]) #name {
                 color: black;
@@ -45,27 +45,36 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
 
     _createIconStyle() {
         return `
-            #icon {
+            #iconcontainer {
                 position: absolute;
-                right: 5%;
-                top: 10%;
-                height: 40%;
-                max-width: 15%;
+                right: var(--button-waypoint-icon-right, 5%);
+                top: var(--button-waypoint-icon-top, 10%);
+                width: var(--button-waypoint-icon-size, 1.5em);
+                height: var(--button-waypoint-icon-size, 1.5em);
             }
-        `;
-    }
-
-    _createAirportRwyStyle() {
-        return `
-            #airportrwy {
-                position: absolute;
-                right: 5%;
-                top: 10%;
-                height: 40%;
-                max-width: 15%;
-                fill: white;
-                transform: rotateX(0deg);
-            }
+                #icon {
+                    position: absolute;
+                    left: 0%;
+                    top: 0%;
+                    width: 100%;
+                    height: 100%;
+                }
+                #airportrwycontainer {
+                    position: absolute;
+                    left: 0%;
+                    top: 0%;
+                    width: 100%;
+                    height: 100%;
+                    transform: rotateX(0deg);
+                }
+                    #airportrwy {
+                        position: absolute;
+                        left: 0%;
+                        top: 0%;
+                        width: 100%;
+                        height: 100%;
+                        fill: white;
+                    }
         `;
     }
 
@@ -86,7 +95,6 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         let identStyle = this._createIdentStyle();
         let nameStyle = this._createNameStyle();
         let iconStyle = this._createIconStyle();
-        let airportRwyStyle = this._createAirportRwyStyle();
         let emptyStyle = this._createEmptyStyle();
 
         return`
@@ -94,37 +102,59 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
             ${identStyle}
             ${nameStyle}
             ${iconStyle}
-            ${airportRwyStyle}
             ${emptyStyle}
         `;
     }
 
-    _appendChildren() {
+    _appendIdent() {
         this._ident = document.createElement("div");
         this._ident.id = "ident";
+        this._wrapper.appendChild(this._ident);
+    }
+
+    _appendName() {
         this._name = document.createElement("div");
         this._name.id = "name";
+        this._wrapper.appendChild(this._name);
+    }
+
+    _appendIcon() {
+        this._iconContainer = document.createElement("div");
+        this._iconContainer.id = "iconcontainer";
         this._icon = document.createElement("img")
         this._icon.id = "icon";
-        this._airportRunwaySVG = document.createElementNS(Avionics.SVG.NS, "svg");
-        this._airportRunwaySVG.id = "airportrwy";
-        this._airportRunwaySVG.setAttribute("viewBox", "-50 -50 100 100");
-        this._airportRunwaySymbol = document.createElementNS(Avionics.SVG.NS, "rect");
-        this._airportRunwaySymbol.setAttribute("x", "-5");
-        this._airportRunwaySymbol.setAttribute("y", "-25");
-        this._airportRunwaySymbol.setAttribute("width", "10");
-        this._airportRunwaySymbol.setAttribute("height", "50");
-        this._airportRunwaySymbolCached = new WT_CachedElement(this._airportRunwaySymbol);
-        this._airportRunwaySVG.appendChild(this._airportRunwaySymbol);
 
+        let airportRunwayContainer = document.createElement("div");
+        airportRunwayContainer.id = "airportrwycontainer";
+        this._airportRunwaySymbol = document.createElementNS(Avionics.SVG.NS, "svg");
+        this._airportRunwaySymbol.id = "airportrwy";
+        this._airportRunwaySymbol.setAttribute("viewBox", "-50 -50 100 100");
+        let airportRunwayRect = document.createElementNS(Avionics.SVG.NS, "rect");
+        airportRunwayRect.setAttribute("x", "-5");
+        airportRunwayRect.setAttribute("y", "-25");
+        airportRunwayRect.setAttribute("width", "10");
+        airportRunwayRect.setAttribute("height", "50");
+        this._airportRunwaySymbol.appendChild(airportRunwayRect);
+        this._airportRunwaySymbolCached = new WT_CachedElement(this._airportRunwaySymbol);
+        airportRunwayContainer.appendChild(this._airportRunwaySymbol);
+
+        this._iconContainer.appendChild(this._icon);
+        this._iconContainer.appendChild(airportRunwayContainer);
+
+        this._wrapper.appendChild(this._iconContainer);
+    }
+
+    _appendEmpty() {
         this._empty = document.createElement("div");
         this._empty.id = "empty";
-
-        this._wrapper.appendChild(this._ident);
-        this._wrapper.appendChild(this._name);
-        this._wrapper.appendChild(this._icon);
-        this._wrapper.appendChild(this._airportRunwaySVG);
         this._wrapper.appendChild(this._empty);
+    }
+
+    _appendChildren() {
+        this._appendIdent();
+        this._appendName();
+        this._appendIcon();
+        this._appendEmpty();
     }
 
     static get observedAttributes() {
@@ -183,7 +213,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
 
         this._ident.style.display = "block";
         this._name.style.display = "block";
-        this._icon.style.display = "block";
+        this._iconContainer.style.display = "block";
 
         this._airportLongestRunwayHeading = NaN;
         if (waypoint instanceof WT_Airport && waypoint.class === WT_Airport.Class.PAVED_SURFACE) {
@@ -193,13 +223,13 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
             }
         }
 
-        this._airportRunwaySymbol.style.display = isNaN(this._airportLongestRunwayHeading) ? "none" : "inherit";
+        this._airportRunwaySymbol.style.display = isNaN(this._airportLongestRunwayHeading) ? "none" : "block";
     }
 
     _showEmptyText() {
         this._ident.style.display = "none";
         this._name.style.display = "none";
-        this._icon.style.display = "none";
+        this._iconContainer.style.display = "none";
         this._empty.style.display = "block";
         this._airportLongestRunwayHeading = NaN;
     }
@@ -233,7 +263,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
      */
     _updateAirportRunwaySymbol(airplaneHeadingTrue) {
         let rotation = this._airportLongestRunwayHeading - airplaneHeadingTrue;
-        this._airportRunwaySymbolCached.setAttribute("transform", `rotate(${rotation.toFixed(1)})`);
+        this._airportRunwaySymbolCached.setAttribute("style", `transform: rotate(${rotation.toFixed(1)}deg)`);
     }
 
     /**

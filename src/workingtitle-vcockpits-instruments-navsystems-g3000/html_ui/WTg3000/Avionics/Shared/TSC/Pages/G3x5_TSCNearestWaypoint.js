@@ -1386,7 +1386,7 @@ WT_G3x5_TSCNearestAirportRowHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypointbutton {
                 font-size: var(--nearestwaypoint-row-waypointbutton-font-size, 0.75em);
-                --waypoint-ident-color: white;
+                --button-waypoint-ident-color: white;
             }
             #bearing {
                 position: relative;
@@ -1735,7 +1735,7 @@ WT_G3x5_TSCNearestNavAidRowHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypointbutton {
                 font-size: var(--nearestwaypoint-row-waypointbutton-font-size, 0.75em);
-                --waypoint-ident-color: white;
+                --button-waypoint-ident-color: white;
             }
             #bearing {
                 position: relative;
@@ -2154,7 +2154,7 @@ WT_G3x5_TSCNearestINTRowHTMLElement.TEMPLATE.innerHTML = `
         }
             #waypointbutton {
                 font-size: var(--nearestwaypoint-row-waypointbutton-font-size, 0.75em);
-                --waypoint-ident-color: white;
+                --button-waypoint-ident-color: white;
             }
             #bearing {
                 position: relative;
