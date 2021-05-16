@@ -238,7 +238,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
 
             this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.bottomSpeedText.textContent = "";
-            this.bottomSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
+            this.bottomSpeedText.setAttribute("x", (_left + _width * 0.89).toString());
             this.bottomSpeedText.setAttribute("y", (_top + _height * 0.95).toString());
             this.bottomSpeedText.setAttribute("fill", "green");
             this.bottomSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
