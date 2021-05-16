@@ -3869,7 +3869,7 @@ class WT_G3x5_TSCFlightPlanRenderer {
             this._approach = null;
         }
 
-        this._activeLeg = activeLeg;
+        this._activeLeg = activeLeg ? activeLeg : null;
         this._redrawActiveLeg(htmlElement);
     }
 
