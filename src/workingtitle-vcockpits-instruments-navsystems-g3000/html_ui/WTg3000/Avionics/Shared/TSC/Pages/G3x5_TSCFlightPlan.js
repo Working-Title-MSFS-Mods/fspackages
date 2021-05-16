@@ -4098,8 +4098,8 @@ class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRend
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
     _initChildren(htmlElement) {
-        let shouldCollapse = !(this._parent.activeLeg && this.element === this._parent.activeLeg.parent) && htmlElement.getAirwaySequenceCollapse(this.element);
-        if (shouldCollapse) {
+        this._shouldCollapse = !(this._parent.activeLeg && this.element === this._parent.activeLeg.parent) && htmlElement.getAirwaySequenceCollapse(this.element);
+        if (this._shouldCollapse) {
             this._children.push(new WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer(this._parent, this.element.legs.last()));
         } else {
             this._children = this.element.elements.map(this._mapElementToRenderer.bind(this));
@@ -4113,7 +4113,7 @@ class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRend
     _drawHeader(htmlElement) {
         super._drawHeader(htmlElement);
 
-        this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.last().fix.ident}`);
+        this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.last().fix.ident}${this._shouldCollapse ? " (collapsed)": ""}`);
         this._headerModeHTMLElement.setSubtitleText("");
     }
 }
