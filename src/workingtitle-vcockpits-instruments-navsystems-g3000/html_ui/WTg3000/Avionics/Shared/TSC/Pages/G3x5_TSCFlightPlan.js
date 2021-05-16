@@ -2849,14 +2849,14 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
      * @param {WT_Time} time
      */
     _updateETA(time) {
-        if (this.leg) {
+        if (this.leg && !this._parentPage.instrument.airplane.sensors.isOnGround()) {
             let fpm = this._parentPage.instrument.flightPlanManagerWT;
             let activeLeg = fpm.getActiveLeg(true);
             if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
                 let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
-                let speedKnots = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
-                if (speedKnots > 0) {
-                    let ete = distanceNM / speedKnots;
+                let speed = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots);
+                if (speed.compare(WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0) {
+                    let ete = distanceNM / speed.number;
                     time.set(this._parentPage.instrument.time);
                     time.add(ete, WT_Unit.HOUR);
                     return;
@@ -2871,10 +2871,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} value
      */
     _updateETE(value) {
-        if (this.leg) {
+        if (this.leg && !this._parentPage.instrument.airplane.sensors.isOnGround()) {
             let distanceNM = this.leg.distance.asUnit(WT_Unit.NMILE);
-            let speedKnots = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
-            value.set(speedKnots > 0 ? (distanceNM / speedKnots) : NaN, WT_Unit.HOUR);
+            let speed = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots);
+            value.set(speed.compare(WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 ? (distanceNM / speed.number) : NaN, WT_Unit.HOUR);
         } else {
             value.set(NaN);
         }
@@ -2885,11 +2885,11 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
      * @param {WT_NumberUnit} value
      */
     _updateFuelToDestination(value) {
-        if (this.leg) {
+        if (this.leg && !this._parentPage.instrument.airplane.sensors.isOnGround()) {
             let distanceToDestinationNM = this.leg.flightPlan.legs.last().cumulativeDistance.asUnit(WT_Unit.NMILE) - this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE);
-            let speedKnots = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
-            let fuelFlowGPH = this._parentPage.instrument.airplane.engineering.fuelFlowTotal(this._tempGPH).number;
-            value.set((speedKnots > 0 && fuelFlowGPH > 0) ? (distanceToDestinationNM / speedKnots * fuelFlowGPH) : NaN, WT_Unit.GALLON);
+            let speed = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots);
+            let fuelFlow = this._parentPage.instrument.airplane.engineering.fuelFlowTotal(this._tempGPH);
+            value.set((speed.compare(WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 && fuelFlow.compare(WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW) >= 0) ? (distanceToDestinationNM / speed.number * fuelFlow.number) : NaN, WT_Unit.GALLON);
         } else {
             value.set(NaN);
         }
@@ -3134,6 +3134,8 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
         this._updateWaypointButton(airplaneHeadingTrue);
     }
 }
+WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_SPEED = WT_Unit.KNOT.createNumber(30);
+WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW = WT_Unit.GPH.createNumber(1);
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY = "/WTg3000/SDK/Assets/Images/Garmin/TSC/Waypoints";
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.UNIT_CLASS = "unit";
 WT_G3x5_TSCFlightPlanRowLegHTMLElement.NAME = "wt-tsc-flightplan-row-leg";

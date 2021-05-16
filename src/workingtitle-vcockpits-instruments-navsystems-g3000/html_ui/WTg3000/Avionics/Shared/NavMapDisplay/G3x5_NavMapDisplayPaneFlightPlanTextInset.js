@@ -868,14 +868,14 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
      * @param {WT_Time} time
      */
     _updateETA(time) {
-        if (this.leg) {
+        if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let fpm = this._instrument.flightPlanManagerWT;
             let activeLeg = fpm.getActiveLeg(true);
             if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
                 let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
-                let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
-                if (speedKnots > 0) {
-                    let ete = distanceNM / speedKnots;
+                let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
+                if (speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0) {
+                    let ete = distanceNM / speed.number;
                     time.set(this._instrument.time);
                     time.add(ete, WT_Unit.HOUR);
                     return;
@@ -890,10 +890,10 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
      * @param {WT_NumberUnit} value
      */
     _updateETE(value) {
-        if (this.leg) {
+        if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let distanceNM = this.leg.distance.asUnit(WT_Unit.NMILE);
-            let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
-            value.set(speedKnots > 0 ? (distanceNM / speedKnots) : NaN, WT_Unit.HOUR);
+            let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
+            value.set(speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 ? (distanceNM / speed.number) : NaN, WT_Unit.HOUR);
         } else {
             value.set(NaN);
         }
@@ -904,15 +904,15 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
      * @param {WT_NumberUnit} value
      */
     _updateFuelRemaining(value) {
-        if (this.leg) {
+        if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let fpm = this._instrument.flightPlanManagerWT;
             let activeLeg = fpm.getActiveLeg(true);
             if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
                 let distanceToLeg = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
-                let speedKnots = this._instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
+                let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
                 let currentFuelGal = this._instrument.airplane.engineering.fuelOnboard(this._tempGallons).number;
-                let fuelFlowGPH = this._instrument.airplane.engineering.fuelFlowTotal(this._tempGPH).number;
-                value.set((speedKnots > 0 && fuelFlowGPH > 0) ? (currentFuelGal - distanceToLeg / speedKnots * fuelFlowGPH) : NaN, WT_Unit.GALLON);
+                let fuelFlow = this._instrument.airplane.engineering.fuelFlowTotal(this._tempGPH);
+                value.set((speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 && fuelFlow.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW) >= 0) ? (currentFuelGal - distanceToLeg / speed.number * fuelFlow.number) : NaN, WT_Unit.GALLON);
                 return;
             }
         }
@@ -1168,6 +1168,8 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         this._updateAltitudeConstraint(state.unitsModel);
     }
 }
+WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED = WT_Unit.KNOT.createNumber(30);
+WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW = WT_Unit.GPH.createNumber(1);
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.DYNAMIC_DATA_FIELD_UPDATE_INTERVAL = 2000; // ms
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.NAME = "wt-navmapdisplaypane-flightplantextinset-row-leg";
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.TEMPLATE = document.createElement("template");
