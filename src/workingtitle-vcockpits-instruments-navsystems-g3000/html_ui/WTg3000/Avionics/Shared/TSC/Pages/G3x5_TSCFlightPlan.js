@@ -1452,7 +1452,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     }
 
     _initFlightPlanRenderer() {
-        this._flightPlanRenderer = new WT_G3x5_TSCFlightPlanRenderer(this._flightPlan);
+        this._flightPlanRenderer = new WT_G3x5_TSCFlightPlanRenderer(this, this._flightPlan);
     }
 
     _initFlightPlanListener() {
@@ -1746,7 +1746,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
     }
 
     _drawRows(activeLeg) {
-        this._flightPlanRenderer.draw(this, activeLeg);
+        this._flightPlanRenderer.draw(activeLeg);
     }
 
     _drawFlightPlan(activeLeg) {
@@ -1916,7 +1916,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
             this._redrawFlightPlan(state.activeLeg);
             this._needRedrawFlightPlan = false;
         }
-        this._flightPlanRenderer.update(this, state);
+        this._flightPlanRenderer.update(state);
     }
 
     _updateDataFieldUnits() {
@@ -3799,9 +3799,11 @@ customElements.define(WT_G3x5_TSCFlightPlanRowEnrouteFooterHTMLElement.NAME, WT_
 
 class WT_G3x5_TSCFlightPlanRenderer {
     /**
+     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_FlightPlan} flightPlan
      */
-    constructor(flightPlan) {
+    constructor(htmlElement, flightPlan) {
+        this._htmlElement = htmlElement;
         this._flightPlan = flightPlan;
 
         this._origin = new WT_G3x5_TSCFlightPlanOriginRenderer(this, flightPlan.getOrigin());
@@ -3820,6 +3822,14 @@ class WT_G3x5_TSCFlightPlanRenderer {
          * @type {WT_FlightPlanLeg}
          */
         this._activeLeg = null;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCFlightPlanHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
     }
 
     /**
@@ -3853,36 +3863,35 @@ class WT_G3x5_TSCFlightPlanRenderer {
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_FlightPlanLeg} [activeLeg]
      */
-    draw(htmlElement, activeLeg) {
+    draw(activeLeg) {
         this.clearLegRows();
 
         if (this.flightPlan.hasDeparture()) {
             this._departure = new WT_G3x5_TSCFlightPlanDepartureRenderer(this, this.flightPlan.getDeparture());
-            this._departure.draw(htmlElement);
+            this._departure.draw();
         } else {
-            this._origin.draw(htmlElement);
+            this._origin.draw();
             this._departure = null;
         }
-        this._enroute.draw(htmlElement);
+        this._enroute.draw();
         if (this.flightPlan.hasArrival()) {
             this._arrival = new WT_G3x5_TSCFlightPlanArrivalRenderer(this, this.flightPlan.getArrival());
-            this._arrival.draw(htmlElement);
+            this._arrival.draw();
         } else {
-            this._destination.draw(htmlElement);
+            this._destination.draw();
             this._arrival = null;
         }
         if (this.flightPlan.hasApproach()) {
             this._approach = new WT_G3x5_TSCFlightPlanApproachRenderer(this, this.flightPlan.getApproach());
-            this._approach.draw(htmlElement);
+            this._approach.draw();
         } else {
             this._approach = null;
         }
 
         this._activeLeg = activeLeg ? activeLeg : null;
-        this._redrawActiveLeg(htmlElement);
+        this._redrawActiveLeg();
     }
 
     refreshAltitudeConstraint(leg) {
@@ -3908,7 +3917,7 @@ class WT_G3x5_TSCFlightPlanRenderer {
         this._legRows.forEach(row => row.getActiveModeHTMLElement().refreshDataField(index));
     }
 
-    _redrawActiveLeg(htmlElement) {
+    _redrawActiveLeg() {
         let showArrow = false;
         if (this._activeLeg) {
             let previousLeg = this._activeLeg.previousLeg();
@@ -3918,20 +3927,19 @@ class WT_G3x5_TSCFlightPlanRenderer {
                 if (activeLegRow && previousLegRow) {
                     let previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
                     let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
-                    htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
+                    this.htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
                     showArrow = true;
                 }
             }
         }
-        htmlElement.setActiveArrowVisible(showArrow);
+        this.htmlElement.setActiveArrowVisible(showArrow);
     }
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_FlightPlanLeg} activeLeg
      */
-    _updateActiveLeg(htmlElement, activeLeg) {
+    _updateActiveLeg(activeLeg) {
         if (this._activeLeg === activeLeg) {
             return;
         }
@@ -3940,10 +3948,10 @@ class WT_G3x5_TSCFlightPlanRenderer {
         let oldCollapsed = false;
         let newCollapsed = false;
         if (this._activeLeg && this._activeLeg.parent instanceof WT_FlightPlanAirwaySequence) {
-            oldCollapsed = htmlElement.getAirwaySequenceCollapse(this._activeLeg.parent);
+            oldCollapsed = this.htmlElement.getAirwaySequenceCollapse(this._activeLeg.parent);
         }
         if (activeLeg && activeLeg.parent instanceof WT_FlightPlanAirwaySequence) {
-            newCollapsed = htmlElement.getAirwaySequenceCollapse(activeLeg.parent);
+            newCollapsed = this.htmlElement.getAirwaySequenceCollapse(activeLeg.parent);
         }
 
         // figure out if we need to redraw the flight plan in order to uncollapse or recollapse an airway sequence
@@ -3951,38 +3959,37 @@ class WT_G3x5_TSCFlightPlanRenderer {
 
         this._activeLeg = activeLeg;
         if (needRedraw) {
-            htmlElement.clearRows();
-            this.draw(htmlElement, activeLeg);
+            this.htmlElement.clearRows();
+            this.draw(activeLeg);
         } else {
-            this._redrawActiveLeg(htmlElement);
+            this._redrawActiveLeg();
         }
     }
 
-    _updateChildren(htmlElement, state) {
+    _updateChildren(state) {
         if (this._departure) {
-            this._departure.update(htmlElement, state);
+            this._departure.update(state);
         } else {
-            this._origin.update(htmlElement, state);
+            this._origin.update(state);
         }
-        this._enroute.update(htmlElement, state);
+        this._enroute.update(state);
         if (this._arrival) {
-            this._arrival.update(htmlElement, state);
+            this._arrival.update(state);
         } else {
-            this._destination.update(htmlElement, state);
+            this._destination.update(state);
         }
         if (this._approach) {
-            this._approach.update(htmlElement, state);
+            this._approach.update(state);
         }
     }
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    update(htmlElement, state) {
-        this._updateActiveLeg(htmlElement, state.activeLeg);
-        this._updateChildren(htmlElement, state);
+    update(state) {
+        this._updateActiveLeg(state.activeLeg);
+        this._updateChildren(state);
     }
 }
 
@@ -4009,17 +4016,15 @@ class WT_G3x5_TSCFlightPlanElementRenderer {
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
-    draw(htmlElement) {
+    draw() {
     }
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    update(htmlElement, state) {
+    update(state) {
     }
 }
 
@@ -4050,20 +4055,12 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
         return null;
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _initChildren(htmlElement) {
+    _initChildren() {
         this._children = this.element.elements.map(this._mapElementToRenderer.bind(this));
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        this._header = htmlElement.requestRow();
+    _drawHeader() {
+        this._header = this._parent.htmlElement.requestRow();
         this._header.setMode(WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.HEADER);
         this._headerModeHTMLElement = this._header.getActiveModeHTMLElement();
         this._headerModeHTMLElement.setSequence(this.element);
@@ -4077,27 +4074,22 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
         this._children.forEach(child => child.draw(htmlElement));
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    draw(htmlElement) {
-        this._initChildren(htmlElement);
-        this._drawHeader(htmlElement);
-        this._drawChildren(htmlElement);
+    draw() {
+        this._initChildren();
+        this._drawHeader();
+        this._drawChildren();
     }
 
-    _updateChildren(htmlElement, state) {
-        this._children.forEach(child => child.update(htmlElement, state));
+    _updateChildren(state) {
+        this._children.forEach(child => child.update(state));
     }
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    update(htmlElement, state) {
-        this._updateChildren(htmlElement, state);
+    update(state) {
+        this._updateChildren(state);
     }
 }
 
@@ -4105,12 +4097,8 @@ class WT_G3x5_TSCFlightPlanSequenceRenderer extends WT_G3x5_TSCFlightPlanElement
  * @extends WT_G3x5_TSCFlightPlanSequenceRenderer<WT_FlightPlanAirwaySequence>
  */
 class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _initChildren(htmlElement) {
-        this._shouldCollapse = !(this._parent.activeLeg && this.element === this._parent.activeLeg.parent) && htmlElement.getAirwaySequenceCollapse(this.element);
+    _initChildren() {
+        this._shouldCollapse = !(this._parent.activeLeg && this.element === this._parent.activeLeg.parent) && this._parent.htmlElement.getAirwaySequenceCollapse(this.element);
         if (this._shouldCollapse) {
             this._children.push(new WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer(this._parent, this.element.legs.last()));
         } else {
@@ -4118,12 +4106,8 @@ class WT_G3x5_FlightPlanAirwayRenderer extends WT_G3x5_TSCFlightPlanSequenceRend
         }
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        super._drawHeader(htmlElement);
+    _drawHeader() {
+        super._drawHeader();
 
         this._headerModeHTMLElement.setTitleText(`Airway – ${this.element.airway.name}.${this.element.legs.last().fix.ident}${this._shouldCollapse ? " (collapsed)": ""}`);
         this._headerModeHTMLElement.setSubtitleText("");
@@ -4141,12 +4125,8 @@ class WT_G3x5_TSCFlightPlanSegmentRenderer extends WT_G3x5_TSCFlightPlanSequence
  * @extends WT_G3x5_TSCFlightPlanSegmentRenderer<WT_FlightPlanOrigin>
  */
 class WT_G3x5_TSCFlightPlanOriginRenderer extends WT_G3x5_TSCFlightPlanSegmentRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        super._drawHeader(htmlElement);
+    _drawHeader() {
+        super._drawHeader();
 
         if (this.element.waypoint) {
             this._headerModeHTMLElement.setTitleText(`Origin – ${this.element.waypoint.ident}`);
@@ -4162,12 +4142,8 @@ class WT_G3x5_TSCFlightPlanOriginRenderer extends WT_G3x5_TSCFlightPlanSegmentRe
  * @extends WT_G3x5_TSCFlightPlanSegmentRenderer<WT_FlightPlanDestination>
  */
 class WT_G3x5_TSCFlightPlanDestinationRenderer extends WT_G3x5_TSCFlightPlanSegmentRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        super._drawHeader(htmlElement);
+    _drawHeader() {
+        super._drawHeader();
 
         if (this.element.waypoint) {
             this._headerModeHTMLElement.setTitleText(`Destination – ${this.element.waypoint.ident}`);
@@ -4183,12 +4159,8 @@ class WT_G3x5_TSCFlightPlanDestinationRenderer extends WT_G3x5_TSCFlightPlanSegm
  * @extends WT_G3x5_TSCFlightPlanSegmentRenderer<WT_FlightPlanDeparture>
  */
 class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmentRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _initChildren(htmlElement) {
-        super._initChildren(htmlElement);
+    _initChildren() {
+        super._initChildren();
 
         if (!this.element.procedure.runwayTransitions.getByIndex(this.element.runwayTransitionIndex)) {
             // if the departure does not have a runway selected, add the origin as the first "leg"
@@ -4196,12 +4168,8 @@ class WT_G3x5_TSCFlightPlanDepartureRenderer extends WT_G3x5_TSCFlightPlanSegmen
         }
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        super._drawHeader(htmlElement);
+    _drawHeader() {
+        super._drawHeader();
 
         let departure = this.element.procedure;
         let rwyTransition = departure.runwayTransitions.getByIndex(this.element.runwayTransitionIndex);
@@ -4221,31 +4189,23 @@ class WT_G3x5_TSCFlightPlanEnrouteRenderer extends WT_G3x5_TSCFlightPlanSegmentR
      *
      * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      */
-    _drawHeader(htmlElement) {
+    _drawHeader() {
         if (this.element.length > 0) {
-            super._drawHeader(htmlElement);
+            super._drawHeader();
             this._headerModeHTMLElement.setTitleText("Enroute");
             this._headerModeHTMLElement.setSubtitleText("");
         }
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawFooter(htmlElement) {
-        this._footer = htmlElement.requestRow();
+    _drawFooter() {
+        this._footer = this._parent.htmlElement.requestRow();
         this._footer.setMode(WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.ENROUTE_FOOTER);
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    draw(htmlElement) {
-        super.draw(htmlElement);
+    draw() {
+        super.draw();
 
-        this._drawFooter(htmlElement);
+        this._drawFooter();
     }
 }
 
@@ -4253,23 +4213,15 @@ class WT_G3x5_TSCFlightPlanEnrouteRenderer extends WT_G3x5_TSCFlightPlanSegmentR
  * @extends WT_G3x5_TSCFlightPlanSegmentRenderer<WT_FlightPlanArrival>
  */
 class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _initChildren(htmlElement) {
-        super._initChildren(htmlElement);
+    _initChildren() {
+        super._initChildren();
 
         // we need to manually add the destination "leg" to the end of the arrival since the sim doesn't give it to us automatically
         this._children.push(new WT_G3x5_TSCFlightPlanLegRenderer(this._parent, this.element.flightPlan.getDestination().leg()));
     }
 
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        super._drawHeader(htmlElement);
+    _drawHeader() {
+        super._drawHeader();
 
         let arrival = this.element.procedure;
         let enrouteTransition = arrival.enrouteTransitions.getByIndex(this.element.enrouteTransitionIndex);
@@ -4285,12 +4237,8 @@ class WT_G3x5_TSCFlightPlanArrivalRenderer extends WT_G3x5_TSCFlightPlanSegmentR
  * @extends WT_G3x5_TSCFlightPlanSegmentRenderer<WT_FlightPlanApproach>
  */
 class WT_G3x5_TSCFlightPlanApproachRenderer extends WT_G3x5_TSCFlightPlanSegmentRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    _drawHeader(htmlElement) {
-        super._drawHeader(htmlElement);
+    _drawHeader() {
+        super._drawHeader();
 
         let approach = this.element.procedure;
         this._headerModeHTMLElement.setTitleText(`Approach –<br>${approach.airport.ident}–${approach.name}`);
@@ -4302,12 +4250,8 @@ class WT_G3x5_TSCFlightPlanApproachRenderer extends WT_G3x5_TSCFlightPlanSegment
  * @extends WT_G3x5_TSCFlightPlanElementRenderer<WT_FlightPlanLeg>
  */
 class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    draw(htmlElement) {
-        this._row = htmlElement.requestRow();
+    draw() {
+        this._row = this._parent.htmlElement.requestRow();
         this._row.setMode(WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.LEG);
 
         this._modeHTMLElement = this._row.getActiveModeHTMLElement();
@@ -4318,40 +4262,33 @@ class WT_G3x5_TSCFlightPlanLegRenderer extends WT_G3x5_TSCFlightPlanElementRende
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    _updateModeHTMLElement(htmlElement, state) {
+    _updateModeHTMLElement(state) {
         this._modeHTMLElement.update(state.airplaneHeadingTrue);
     }
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    _updateActive(htmlElement, state) {
+    _updateActive(state) {
         this._modeHTMLElement.setActive(state.activeLeg === this.element);
     }
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    update(htmlElement, state) {
-        this._updateModeHTMLElement(htmlElement, state);
-        this._updateActive(htmlElement, state);
+    update(state) {
+        this._updateModeHTMLElement(state);
+        this._updateActive(state);
     }
 }
 
 class WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer extends WT_G3x5_TSCFlightPlanLegRenderer {
-    /**
-     *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
-     */
-    draw(htmlElement) {
-        this._row = htmlElement.requestRow();
+    draw() {
+        this._row = this._parent.htmlElement.requestRow();
         this._row.setMode(WT_G3x5_TSCFlightPlanRowHTMLElement.Mode.AIRWAY_FOOTER);
 
         this._modeHTMLElement = this._row.getActiveModeHTMLElement();
@@ -4362,11 +4299,10 @@ class WT_G3x5_TSCFlightPlanAirwaySequenceFooterRenderer extends WT_G3x5_TSCFligh
 
     /**
      *
-     * @param {WT_G3x5_TSCFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    update(htmlElement, state) {
-        this._updateModeHTMLElement(htmlElement, state);
+    update(state) {
+        this._updateModeHTMLElement(state);
     }
 }
 
