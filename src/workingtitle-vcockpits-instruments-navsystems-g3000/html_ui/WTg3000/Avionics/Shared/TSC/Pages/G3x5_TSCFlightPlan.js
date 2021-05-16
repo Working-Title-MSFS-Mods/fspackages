@@ -3084,6 +3084,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     refreshAltitudeConstraint() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._updateAltitudeConstraintFromLeg();
     }
 
@@ -3095,10 +3099,18 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     }
 
     refreshAllDataFields() {
+        if (!this._isInit) {
+            return;
+        }
+
         this._updateDataFieldsFromLeg();
     }
 
     refreshDataField(index) {
+        if (!this._isInit) {
+            return;
+        }
+
         this._updateDataFieldFromLeg(index);
     }
 
