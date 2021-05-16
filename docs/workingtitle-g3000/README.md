@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.6.2
+### Latest version: v0.7.0
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.6.2.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -36,18 +36,22 @@ The base sim only provides information on Live AI Traffic to JS/HTML instruments
 
 Once you have completed these steps, the mod will display and issue traffic alerts for the additional types of traffic supported by the MSFS Traffic Service app. If the mod encounters any errors retrieving traffic data from the traffic service app during a flight, it will fall back to using the default sim's traffic data until it detects that the traffic service app is sending good data again. Lastly, it is recommended to set the `useTrafficService` mod configuration setting to `false` when you are not planning to use the traffic service app; while leaving the setting at `true` will not result in any errors, it does incur a small and otherwise unnecessary performance cost.
 
-### Release Highlights for v0.6.2
+### Release Highlights for v0.7.0
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Enabled support for laurinius's MSFS Traffic Service app (available on Github), which adds Offline AI traffic and SimConnect-injected traffic to the mod's traffic systems. *This feature requires that you download and install laurinius's app separately and must be manually enabled via the mod config file*.
+- Added the ability to insert airways into flight plans.
+- Added support for standby flight plans.
+- Added the Flight Plan and Procedure preview panes.
+- Added the Flight Plan Text Inset window for the Navigation Map.
 
 **Fixes**
-- \[General\] Fixed a bug with initializing airport data with no listed runways.
-- \[NavMap\] While in TRACK UP mode on the ground, the compass arc's reference tick mark now correctly indicates the aircraft's current heading instead of ground track (which cannot always be reliably calculated on the ground).
-- \[Traffic\] Fixed an error with ground track computation for traffic contacts.
-- \[PFD\] Airspeed altimeter speed bugs are no longer mispositioned when airspeed is below the minimum indicated airspeed.
-- \[GTC\] Fixed a bug where the Charts page would sometimes automatically change the selected airport after closing a popup or navigating back to it from the pan/zoom control page.
+- \[FPLN\] Fixed a bug where the GTC Flight Plan page would display a different active leg from the navigation map and PFD navigation status bar.
+- \[GTC\] The Flight Plan page should now report accurate leg-leg distances for all flight plan legs.
+- \[GTC\] The Back button now works properly in the Procedure Selection pages.
+- \[Charts\] The mod should now be better at "remembering" Navigraph account access and should not require account re-linking as frequently.
+- \[VFR Map\] Fixed a bug preventing the VFR Map from being moved when it was not detached to a separate window.
 
 ### Known Issues
+- \[FPLN\] There is currently a bug with the sim's built-in flight plan management system which prevents waypoints from being properly added to the flight plan while an approach is loaded. As a result, inserting waypoints or airways into the Enroute segment of the active flight plan with an approach loaded will desynchronize the FMS flight plan from the sim's flight plan and lead to unexpected behavior. As a workaround, enter waypoints _before_ loading an approach. If you need to enter waypoints after an approach has been loaded, remove the approach, make the necessary edits, then reload the approach. Lastly, if the FMS active flight plan becomes desynchronized, you can fix it by deleting the active flight plan via the Flight Plan Options menu.
 - \[PFD\] Citation Longitude: the PFD altimeter baro setting may be a bit slow to update when turning the PFD baro knobs. As a side effect of syncing the PFD altimeter baro settings to that of the standby altimeter, the sync is paused as long as the baro knobs are being turned in order to prevent inputs from being eaten.
 - \[PFD\] TBM 930: Co-pilot PFD softkeys are nonfunctional.
 - \[NavMap\] Airspaces are currently not available to display. The way the game loads data for these features is unreliable at best, and more time is needed to come up with a satisfactory solution to rendering them. Expect them to be added back at a later date.
@@ -67,7 +71,7 @@ Once you have completed these steps, the mod will display and issue traffic aler
   - **A**: This is a Windows issue. By default, Windows limits file paths to 260 characters. You can disable this limit by modifying the system registry (not as scary as it sounds). Tutorials for how to do so can easily be found with a Google (or Bing) search.
 - **Q**: Why do I sometimes get low performance/FPS with the mod?
   - **A**: The single largest performance sink (when it comes to avionics) is the navigational map. The mod actually uses a completely new code base for the navmap that is _more_ performant than the default. However, the mod also allows many more features to be drawn on the map than is possible with the unmodded map (as well as allowing for two independent navmaps to be displayed on the MFD), which is where performance can start to suffer. Generally, the more _waypoints_ and _text labels_ drawn on the map, the greater the impact on performance.
-- **Q**: Does the mod support VNAV or inputting airways into the flight plan?
+- **Q**: Does the mod support VNAV?
   - **A**: Not yet. Support will be coming with a future update.
 - **Q**: Why can't I see multiplayer/VATSIM/IVAO traffic on the traffic displays?
   - **A**: By default, only Live AI traffic is supported due to limitations in the traffic data the sim makes available to JS/HTML instruments. As of v0.6.2, there is an option to enable support for laurinius's MSFS Traffic Service app, which will add Offline AI traffic and SimConnect-injected traffic to the types of traffic the mod is able to "see". To use this feature, you must separately install the MSFS Traffic Service app (it can be found on Github), the `useTrafficService` setting in the mod config file must be set to true (it is false by default), and the `trafficServicePort` setting must match the port configured through the traffic service app.
