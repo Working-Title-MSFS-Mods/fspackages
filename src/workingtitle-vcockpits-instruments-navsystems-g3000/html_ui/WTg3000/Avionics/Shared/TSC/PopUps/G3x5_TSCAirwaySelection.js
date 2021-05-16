@@ -686,8 +686,9 @@ WT_G3x5_TSCAirwaySelectionHTMLElement.TEMPLATE.innerHTML = `
                         #waypointlist wt-tsc-button-waypoint {
                             height: var(--airwayselection-list-waypoint-button-height, 3em);
                             margin-bottom: var(--airwayselection-list-waypoint-button-margin-vertical, 0em);
-                            --waypoint-ident-color: white;
-                            --waypoint-ident-font-size: 1.5em;
+                            --button-waypoint-ident-color: white;
+                            --button-waypoint-ident-font-size: 1.5em;
+                            --button-waypoint-icon-size: 1em;
                         }
                         #airwaylist wt-tsc-button-airway {
                             height: var(--airwayselection-list-airway-button-height, 3em);
