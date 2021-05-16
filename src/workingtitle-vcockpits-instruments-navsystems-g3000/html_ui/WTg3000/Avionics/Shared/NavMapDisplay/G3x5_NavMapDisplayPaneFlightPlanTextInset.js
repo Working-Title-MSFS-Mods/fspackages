@@ -24,10 +24,15 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInset {
          */
          this._state = {
             _unitsModel: new WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetUnitsModel(this._instrument.unitsSettingModel),
+            _isDirectToActive: false,
             _activeLeg: null,
 
             get unitsModel() {
                 return this._unitsModel;
+            },
+
+            get isDirectToActive() {
+                return this._isDirectToActive;
             },
 
             get activeLeg() {
@@ -71,7 +76,8 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInset {
     }
 
     _updateState() {
-        this._state._activeLeg = this._instrument.flightPlanManagerWT.getActiveLeg(true);
+        this._state._isDirectToActive = this._instrument.flightPlanManagerWT.directTo.isActive();
+        this._state._activeLeg = this._state.isDirectToActive ? this._instrument.flightPlanManagerWT.getDirectToLeg(true) : this._instrument.flightPlanManagerWT.getActiveLeg(true);
     }
 
     update() {
@@ -83,6 +89,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInset {
 /**
  * @typedef WT_G3x5_NavMapDisplayPaneFlightPlanInsetState
  * @property {readonly WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetUnitsModel} unitsModel
+ * @property {readonly Boolean} isDirectToActive
  * @property {readonly WT_FlightPlanLeg} activeLeg
  */
 
@@ -235,7 +242,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
     }
 
     _initFlightPlanRenderer() {
-        this._flightPlanRenderer = new WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer(this._flightPlan);
+        this._flightPlanRenderer = new WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer(this, this._flightPlan);
     }
 
     _initFlightPlanListener() {
@@ -343,7 +350,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
 
     _updateFromActiveArrowPosition() {
         let top = Math.min(this._activeArrowFrom, this._activeArrowTo);
-        let height = Math.abs(this._activeArrowTo - this._activeArrowFrom);
+        let height = Math.max(0.01, Math.abs(this._activeArrowTo - this._activeArrowFrom)); // enforce minimum height b/c otherwise rendering will not be updated if height = 0
 
         this._activeArrowStemRect.setAttribute("y", `${top}`);
         this._activeArrowStemRect.setAttribute("height", `${height}`);
@@ -358,12 +365,12 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
         }
     }
 
-    _drawRows(activeLeg) {
-        this._flightPlanRenderer.draw(this, activeLeg);
+    _drawRows(isDirectToActive, activeLeg) {
+        this._flightPlanRenderer.draw(isDirectToActive, activeLeg);
     }
 
-    _drawFlightPlan(activeLeg) {
-        this._drawRows(activeLeg);
+    _drawFlightPlan(isDirectToActive, activeLeg) {
+        this._drawRows(isDirectToActive, activeLeg);
     }
 
     _onFlightPlanChanged(event) {
@@ -375,7 +382,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement extends HTMLElemen
     }
 
     _updateFlightPlanRenderer(state) {
-        this._flightPlanRenderer.update(this, state);
+        this._flightPlanRenderer.update(state);
     }
 
     _doUpdate(state) {
@@ -870,9 +877,10 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
     _updateETA(time) {
         if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let fpm = this._instrument.flightPlanManagerWT;
-            let activeLeg = fpm.getActiveLeg(true);
+            let activeLeg = fpm.directTo.isActive() ? fpm.getDirectToLeg(true) : fpm.getActiveLeg(true);
             if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
-                let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let distanceToActiveLegFixNM = fpm.directTo.isActive() ? fpm.distanceToDirectTo(true, this._tempNM).number : fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + distanceToActiveLegFixNM;
                 let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
                 if (speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0) {
                     let ete = distanceNM / speed.number;
@@ -906,9 +914,10 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
     _updateFuelRemaining(value) {
         if (this.leg && !this._instrument.airplane.sensors.isOnGround()) {
             let fpm = this._instrument.flightPlanManagerWT;
-            let activeLeg = fpm.getActiveLeg(true);
+            let activeLeg = fpm.directTo.isActive() ? fpm.getDirectToLeg(true) : fpm.getActiveLeg(true);
             if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
-                let distanceToLeg = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let distanceToActiveLegFixNM = fpm.directTo.isActive() ? fpm.distanceToDirectTo(true, this._tempNM).number : fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let distanceToLeg = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + distanceToActiveLegFixNM;
                 let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
                 let currentFuelGal = this._instrument.airplane.engineering.fuelOnboard(this._tempGallons).number;
                 let fuelFlow = this._instrument.airplane.engineering.fuelFlowTotal(this._tempGPH);
@@ -1642,9 +1651,11 @@ customElements.define(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHeaderHTMLE
 
 class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
     /**
+     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement} htmlElement
      * @param {WT_FlightPlan} flightPlan
      */
-    constructor(flightPlan) {
+    constructor(htmlElement, flightPlan) {
+        this._htmlElement = htmlElement;
         this._flightPlan = flightPlan;
 
         this._origin = new WT_G3x5_NavMapDisplayPaneFlightPlanOriginRenderer(this, flightPlan.getOrigin());
@@ -1663,10 +1674,19 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
          * @type {Map<WT_FlightPlanLeg,WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowHTMLElement>}
          */
         this._legRows = new Map();
+        this._isDirectToActive = false;
         /**
          * @type {WT_FlightPlanLeg}
          */
         this._activeLeg = null;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
     }
 
     /**
@@ -1679,20 +1699,24 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
 
     /**
      * @readonly
+     * @type {Boolean}
+     */
+    get isDirectToActive() {
+        return this._isDirectToActive;
+    }
+
+    /**
+     * @readonly
      * @type {WT_FlightPlanLeg}
      */
     get activeLeg() {
         return this._activeLeg;
     }
 
-    /**
-     *
-     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanHTMLElement} htmlElement
-     */
-    clearRenderedRows(htmlElement) {
+    clearRenderedRows() {
         this._renderedRows = [];
         this._legRows.clear();
-        htmlElement.clearRows();
+        this.htmlElement.clearRows();
     }
 
     /**
@@ -1758,35 +1782,43 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
         return Math.min(previousLegRowIndex, rowRenderers.length - 5);
     }
 
-    _updateActiveLegArrow(htmlElement, activeLeg) {
+    _updateActiveLegArrow() {
         let showArrow = false;
-        if (activeLeg) {
-            let previousLeg = activeLeg.previousLeg();
-            if (previousLeg) {
-                let activeLegRow = this._legRows.get(activeLeg);
-                let previousLegRow = this._legRows.get(previousLeg);
-                if (activeLegRow && previousLegRow) {
-                    let previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
-                    let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
-                    htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
-                    showArrow = true;
+        if (this._activeLeg) {
+            let activeLegRow = this._legRows.get(this._activeLeg);
+            if (activeLegRow) {
+                let previousLeg;
+                if (!this._isDirectToActive) {
+                    previousLeg = this._activeLeg.previousLeg();
                 }
+
+                let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
+                let previousLegCenterY = activeLegCenterY;
+
+                if (previousLeg) {
+                    let previousLegRow = this._legRows.get(previousLeg);
+                    if (previousLegRow) {
+                        previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
+                    }
+                }
+
+                this.htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
+                showArrow = true;
             }
         }
-        htmlElement.setActiveArrowVisible(showArrow);
+        this.htmlElement.setActiveArrowVisible(showArrow);
     }
 
     /**
      *
-     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanHTMLElement} htmlElement
      * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowRenderer[]} rowRenderers
      * @param {Number} startIndex
      */
-    _drawRows(htmlElement, rowRenderers, startIndex) {
+    _drawRows(rowRenderers, startIndex) {
         let endIndex = Math.min(startIndex + 5, rowRenderers.length);
         for (let i = startIndex; i < endIndex; i++) {
             let renderer = rowRenderers[i];
-            let row = renderer.draw(htmlElement, this.activeLeg);
+            let row = renderer.draw(this.htmlElement, this.activeLeg);
             this._renderedRows.push(row);
             if (renderer instanceof WT_G3x5_NavMapDisplayPaneFlightPlanLegRowRenderer) {
                 this._registerLegRow(renderer.leg, row);
@@ -1796,18 +1828,19 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
 
     /**
      *
-     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanHTMLElement} htmlElement
+     * @param {Boolean} [isDirectToActive]
      * @param {WT_FlightPlanLeg} [activeLeg]
      */
-    draw(htmlElement, activeLeg) {
-        this.clearRenderedRows(htmlElement);
+    draw(isDirectToActive, activeLeg) {
+        this.clearRenderedRows();
+        this._isDirectToActive = isDirectToActive === undefined ? false : isDirectToActive;
         this._activeLeg = activeLeg ? activeLeg : null;
 
         let rowRenderers = this._createRowRenderers();
         let rowStartIndex = this._findRowStartIndex(rowRenderers, activeLeg);
-        this._drawRows(htmlElement, rowRenderers, rowStartIndex);
+        this._drawRows(rowRenderers, rowStartIndex);
 
-        this._updateActiveLegArrow(htmlElement, this.activeLeg);
+        this._updateActiveLegArrow();
     }
 
     /**
@@ -1823,17 +1856,18 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
 
     /**
      *
-     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement} htmlElement
+     * @param {Boolean} isDirectToActive
      * @param {WT_FlightPlanLeg} activeLeg
      * @param {Boolean}
      */
-    _updateActiveLeg(htmlElement, activeLeg) {
-        if (this._activeLeg === activeLeg) {
+    _updateActiveLeg(isDirectToActive, activeLeg) {
+        if (this._activeLeg === activeLeg && this._isDirectToActive === isDirectToActive) {
             return false;
         }
 
+        this._isDirectToActive = isDirectToActive;
         this._activeLeg = activeLeg;
-        this.draw(htmlElement, activeLeg);
+        this.draw(isDirectToActive, activeLeg);
         return true;
     }
 
@@ -1847,11 +1881,10 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRenderer {
 
     /**
      *
-     * @param {WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetHTMLElement} htmlElement
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
-    update(htmlElement, state) {
-        let updated = this._updateActiveLeg(htmlElement, state.activeLeg);
+    update(state) {
+        let updated = this._updateActiveLeg(state.isDirectToActive, state.activeLeg);
         if (!updated) {
             this._updateRows(state);
         }

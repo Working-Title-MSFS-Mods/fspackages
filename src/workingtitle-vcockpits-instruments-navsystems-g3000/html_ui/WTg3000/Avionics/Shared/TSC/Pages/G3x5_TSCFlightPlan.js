@@ -29,6 +29,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             _unitsModel: null,
             _settings: null,
             _airplaneHeadingTrue: 0,
+            _isDirectToActive: false,
             _activeLeg: null,
 
             get unitsModel() {
@@ -41,6 +42,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
             get airplaneHeadingTrue() {
                 return this._airplaneHeadingTrue;
+            },
+
+            get isDirectToActive() {
+                return this._isDirectToActive;
             },
 
             get activeLeg() {
@@ -902,7 +907,8 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     _updateState() {
         this._state._airplaneHeadingTrue = this.instrument.airplane.navigation.headingTrue();
-        this._state._activeLeg = this.instrument.flightPlanManagerWT.getActiveLeg(true);
+        this._state._isDirectToActive = this.instrument.flightPlanManagerWT.directTo.isActive();
+        this._state._activeLeg = this._state.isDirectToActive ? this.instrument.flightPlanManagerWT.getDirectToLeg(true) : this.instrument.flightPlanManagerWT.getActiveLeg(true);
     }
 
     _updateSelectedRow() {
@@ -959,6 +965,7 @@ WT_G3x5_TSCFlightPlan.Source = {
  * @property {readonly WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
  * @property {readonly WT_G3x5_TSCFlightPlanSettings} settings
  * @property {readonly Number} airplaneHeadingTrue
+ * @property {readonly Boolean} isDirectToActive
  * @property {readonly WT_FlightPlanLeg} activeLeg
  */
 
@@ -1654,7 +1661,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
 
     _updateFromActiveArrowPosition() {
         let top = Math.min(this._activeArrowFrom, this._activeArrowTo);
-        let height = Math.abs(this._activeArrowTo - this._activeArrowFrom);
+        let height = Math.max(0.01, Math.abs(this._activeArrowTo - this._activeArrowFrom)); // enforce minimum height b/c otherwise rendering will not be updated if height = 0
 
         this._activeArrowStemRect.setAttribute("y", `${top}`);
         this._activeArrowStemRect.setAttribute("height", `${height}`);
@@ -1745,18 +1752,18 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
         this._nameTitle.textContent = `${originWaypoint ? originWaypoint.ident : "______"}/${destinationWaypoint ? destinationWaypoint.ident : "______"}`;
     }
 
-    _drawRows(activeLeg) {
-        this._flightPlanRenderer.draw(activeLeg);
+    _drawRows(isDirectToActive, activeLeg) {
+        this._flightPlanRenderer.draw(isDirectToActive, activeLeg);
     }
 
-    _drawFlightPlan(activeLeg) {
+    _drawFlightPlan(isDirectToActive, activeLeg) {
         this._drawName();
-        this._drawRows(activeLeg);
+        this._drawRows(isDirectToActive, activeLeg);
     }
 
-    _redrawFlightPlan(activeLeg) {
+    _redrawFlightPlan(isDirectToActive, activeLeg) {
         this._cleanUpRows();
-        this._drawFlightPlan(activeLeg);
+        this._drawFlightPlan(isDirectToActive, activeLeg);
     }
 
     _updateAirwayCollapseMap() {
@@ -1913,7 +1920,7 @@ class WT_G3x5_TSCFlightPlanHTMLElement extends HTMLElement {
      */
     _updateFlightPlan(state) {
         if (this._needRedrawFlightPlan) {
-            this._redrawFlightPlan(state.activeLeg);
+            this._redrawFlightPlan(state.isDirectToActive, state.activeLeg);
             this._needRedrawFlightPlan = false;
         }
         this._flightPlanRenderer.update(state);
@@ -2851,9 +2858,10 @@ class WT_G3x5_TSCFlightPlanRowLegHTMLElement extends HTMLElement {
     _updateETA(time) {
         if (this.leg && !this._parentPage.instrument.airplane.sensors.isOnGround()) {
             let fpm = this._parentPage.instrument.flightPlanManagerWT;
-            let activeLeg = fpm.getActiveLeg(true);
+            let activeLeg = fpm.directTo.isActive() ? fpm.getDirectToLeg(true) : fpm.getActiveLeg(true);
             if (activeLeg && activeLeg.flightPlan === this.leg.flightPlan && activeLeg.index <= this.leg.index) {
-                let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let distanceToActiveLegFixNM = fpm.directTo.isActive() ? fpm.distanceToDirectTo(true, this._tempNM).number : fpm.distanceToActiveLegFix(true, this._tempNM).number;
+                let distanceNM = this.leg.cumulativeDistance.asUnit(WT_Unit.NMILE) - activeLeg.cumulativeDistance.asUnit(WT_Unit.NMILE) + distanceToActiveLegFixNM;
                 let speed = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots);
                 if (speed.compare(WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0) {
                     let ete = distanceNM / speed.number;
@@ -3820,6 +3828,7 @@ class WT_G3x5_TSCFlightPlanRenderer {
          * @type {Map<WT_FlightPlanLeg,WT_G3x5_TSCFlightPlanRowHTMLElement>}
          */
         this._legRows = new Map();
+        this._isDirectToActive = false;
         /**
          * @type {WT_FlightPlanLeg}
          */
@@ -3840,6 +3849,14 @@ class WT_G3x5_TSCFlightPlanRenderer {
      */
     get flightPlan() {
         return this._flightPlan;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isDirectToActive() {
+        return this._isDirectToActive;
     }
 
     /**
@@ -3865,9 +3882,10 @@ class WT_G3x5_TSCFlightPlanRenderer {
 
     /**
      *
+     * @param {Boolean} [isDirectToActive]
      * @param {WT_FlightPlanLeg} [activeLeg]
      */
-    draw(activeLeg) {
+    draw(isDirectToActive, activeLeg) {
         this.clearLegRows();
 
         if (this.flightPlan.hasDeparture()) {
@@ -3892,6 +3910,7 @@ class WT_G3x5_TSCFlightPlanRenderer {
             this._approach = null;
         }
 
+        this._isDirectToActive = isDirectToActive === undefined ? false : isDirectToActive;
         this._activeLeg = activeLeg ? activeLeg : null;
         this._redrawActiveLeg();
     }
@@ -3922,16 +3941,25 @@ class WT_G3x5_TSCFlightPlanRenderer {
     _redrawActiveLeg() {
         let showArrow = false;
         if (this._activeLeg) {
-            let previousLeg = this._activeLeg.previousLeg();
-            if (previousLeg) {
-                let activeLegRow = this._legRows.get(this._activeLeg);
-                let previousLegRow = this._legRows.get(previousLeg);
-                if (activeLegRow && previousLegRow) {
-                    let previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
-                    let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
-                    this.htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
-                    showArrow = true;
+            let activeLegRow = this._legRows.get(this._activeLeg);
+            if (activeLegRow) {
+                let previousLeg;
+                if (!this._isDirectToActive) {
+                    previousLeg = this._activeLeg.previousLeg();
                 }
+
+                let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
+                let previousLegCenterY = activeLegCenterY;
+
+                if (previousLeg) {
+                    let previousLegRow = this._legRows.get(previousLeg);
+                    if (previousLegRow) {
+                        previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
+                    }
+                }
+
+                this.htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
+                showArrow = true;
             }
         }
         this.htmlElement.setActiveArrowVisible(showArrow);
@@ -3939,10 +3967,11 @@ class WT_G3x5_TSCFlightPlanRenderer {
 
     /**
      *
+     * @param {Boolean} isDirectToActive
      * @param {WT_FlightPlanLeg} activeLeg
      */
-    _updateActiveLeg(activeLeg) {
-        if (this._activeLeg === activeLeg) {
+    _updateActiveLeg(isDirectToActive, activeLeg) {
+        if (this._activeLeg === activeLeg && this._isDirectToActive === isDirectToActive) {
             return;
         }
 
@@ -3959,10 +3988,11 @@ class WT_G3x5_TSCFlightPlanRenderer {
         // figure out if we need to redraw the flight plan in order to uncollapse or recollapse an airway sequence
         let needRedraw = (oldCollapsed !== newCollapsed) || ((oldCollapsed || newCollapsed) && this._activeLeg.parent !== activeLeg.parent);
 
+        this._isDirectToActive = isDirectToActive;
         this._activeLeg = activeLeg;
         if (needRedraw) {
             this.htmlElement.clearRows();
-            this.draw(activeLeg);
+            this.draw(isDirectToActive, activeLeg);
         } else {
             this._redrawActiveLeg();
         }
@@ -3990,7 +4020,7 @@ class WT_G3x5_TSCFlightPlanRenderer {
      * @param {WT_G3x5_TSCFlightPlanState} state
      */
     update(state) {
-        this._updateActiveLeg(state.activeLeg);
+        this._updateActiveLeg(state.isDirectToActive, state.activeLeg);
         this._updateChildren(state);
     }
 }
