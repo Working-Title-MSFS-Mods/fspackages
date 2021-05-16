@@ -26,15 +26,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
          * @type {WT_G3x5_TSCFlightPlanState}
          */
         this._state = {
-            _unitsModel: null,
             _settings: null,
             _airplaneHeadingTrue: 0,
             _isDirectToActive: false,
             _activeLeg: null,
-
-            get unitsModel() {
-                return this._unitsModel;
-            },
 
             get settings() {
                 return this._settings;
@@ -589,7 +584,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
             leg: leg,
-            unit: this._state.unitsModel.altitudeUnit,
+            unit: this.unitsModel.altitudeUnit,
             initialValue: initialValue,
             valueEnteredCallback: this._setVNAVAltitude.bind(this, leg),
             removeCallback: this._removeVNAVAltitude.bind(this, leg)
@@ -962,7 +957,6 @@ WT_G3x5_TSCFlightPlan.Source = {
 
 /**
  * @typedef WT_G3x5_TSCFlightPlanState
- * @property {readonly WT_G3x5_TSCFlightPlanUnitsModel} unitsModel
  * @property {readonly WT_G3x5_TSCFlightPlanSettings} settings
  * @property {readonly Number} airplaneHeadingTrue
  * @property {readonly Boolean} isDirectToActive
