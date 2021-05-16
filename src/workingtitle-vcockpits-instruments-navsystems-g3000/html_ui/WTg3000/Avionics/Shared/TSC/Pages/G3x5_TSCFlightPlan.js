@@ -3846,7 +3846,6 @@ class WT_G3x5_TSCFlightPlanRenderer {
      */
     draw(htmlElement, activeLeg) {
         this.clearLegRows();
-        this._updateActiveLeg(htmlElement, activeLeg ? activeLeg : null);
 
         if (this.flightPlan.hasDeparture()) {
             this._departure = new WT_G3x5_TSCFlightPlanDepartureRenderer(this, this.flightPlan.getDeparture());
@@ -3869,6 +3868,9 @@ class WT_G3x5_TSCFlightPlanRenderer {
         } else {
             this._approach = null;
         }
+
+        this._activeLeg = activeLeg;
+        this._redrawActiveLeg(htmlElement);
     }
 
     refreshAltitudeConstraint(leg) {
@@ -3892,6 +3894,24 @@ class WT_G3x5_TSCFlightPlanRenderer {
 
     refreshDataField(index) {
         this._legRows.forEach(row => row.getActiveModeHTMLElement().refreshDataField(index));
+    }
+
+    _redrawActiveLeg(htmlElement) {
+        let showArrow = false;
+        if (this._activeLeg) {
+            let previousLeg = this._activeLeg.previousLeg();
+            if (previousLeg) {
+                let activeLegRow = this._legRows.get(this._activeLeg);
+                let previousLegRow = this._legRows.get(previousLeg);
+                if (activeLegRow && previousLegRow) {
+                    let previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
+                    let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
+                    htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
+                    showArrow = true;
+                }
+            }
+        }
+        htmlElement.setActiveArrowVisible(showArrow);
     }
 
     /**
@@ -3921,22 +3941,9 @@ class WT_G3x5_TSCFlightPlanRenderer {
         if (needRedraw) {
             htmlElement.clearRows();
             this.draw(htmlElement, activeLeg);
+        } else {
+            this._redrawActiveLeg(htmlElement);
         }
-        let showArrow = false;
-        if (activeLeg) {
-            let previousLeg = activeLeg.previousLeg();
-            if (previousLeg) {
-                let activeLegRow = this._legRows.get(activeLeg);
-                let previousLegRow = this._legRows.get(previousLeg);
-                if (activeLegRow && previousLegRow) {
-                    let previousLegCenterY = previousLegRow.offsetTop + previousLegRow.offsetHeight / 2;
-                    let activeLegCenterY = activeLegRow.offsetTop + activeLegRow.offsetHeight / 2;
-                    htmlElement.moveActiveArrow(previousLegCenterY, activeLegCenterY);
-                    showArrow = true;
-                }
-            }
-        }
-        htmlElement.setActiveArrowVisible(showArrow);
     }
 
     _updateChildren(htmlElement, state) {
