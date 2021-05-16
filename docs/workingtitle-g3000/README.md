@@ -40,7 +40,7 @@ Once you have completed these steps, the mod will display and issue traffic aler
 *Please refer to the changelog for a more detailed description of changes in this release.*
 - Added the ability to insert airways into flight plans.
 - Added support for standby flight plans.
-- Added the Flight Plan and Procedure preview panes.
+- Added the Flight Plan and Procedure Preview panes.
 - Added the Flight Plan Text Inset window for the Navigation Map.
 
 **Fixes**
