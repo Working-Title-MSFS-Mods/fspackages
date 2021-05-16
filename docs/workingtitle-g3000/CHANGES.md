@@ -1,5 +1,40 @@
 # Changelog
 
+### v0.7.0
+**New Features**
+- \[FPLN\] Added the ability to insert airways into flight plans.
+  - Airways may only be inserted into the Enroute segment.
+  - To insert an airway, select an Enroute leg in the GTC Flight Plan page (MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan)) which represents the desired entry point, then press the Load Airway button in the Waypoint Options menu on the right. A pop-up window will appear allowing you to select the desired entry point (defaults to the waypoint belonging to the selected leg), airway, and exit point. Once all three fields have been entered, press the Load Airway button to insert the airway into the flight plan immediately after the selected leg (or, if the selected leg is within another airway, immediately after the airway sequence).
+  - By default, airways are collapsed within the Flight Plan page unless they contain the active flight plan leg. To manually expand/collapse airways, select an airway header row in the Flight Plan page and use the Airway Options menu on the right.
+- \[FPLN\] Added support for a standby flight plan.
+  - To access the standby flight plan, use the GTC navigate to MFD Home -> Flight Plan -> Standby Flight Plan.
+  - Note that because the mod still uses the sim's built-in flight plan system to manage the active flight plan, when activating the standby flight plan changes may be made to the Departure, Arrival, and Approach segments.
+  - Leg altitude restrictions are not imported into the active flight plan when activating the standby flight plan.
+- \[FPLN\] Added a function to delete the active/standby flight plans via the new Flight Plan Options menu.
+  - The option can be found by using the GTC to navigate to MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan) -> Flight Plan Options -> Delete Flight Plan.
+- \[FPLN\] Added the ability to preview flight plans and procedures via the Flight Plan and Procedure Preview Panes, respectively.
+  - To preview a flight plan, use the GTC to navigate to MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan) -> Flight Plan Options. Press the Show On Map to activate the Flight Plan Preview pane in the currently selected MFD pane.
+    - By default, the entire flight plan is previewed. To preview specific segments or legs, return to the GTC Flight Plan page and select the row representing the part of the flight plan you wish to preview.
+    - For flight plans that span a large distance (>4000 NM) or whose path passes near the poles, the preview may not accurately depict the entire flight plan.
+  - To preview a procedure, select the procedure via the appropriate GTC Procedure Selection page (MFD Home -> PROC -> Departure/Arrival/Approach), press the Preview button, and select Show On Map.
+- \[NavMap\] Added the Flight Plan Text Inset window.
+  - The inset displays information on up to 5 flight plan legs, beginning with the leg immediately prior to the active leg (or the first leg in the flight plan if there is no active leg). Airways are always displayed as collapsed, with only the airway header and last leg in the airway sequence visible, unless the airway contains the active leg.
+  - To enable/disable the inset, use the GTC to navigate to MFD Home -> Map Settings -> Inset Window tab, and press the Flight Plan Text button. The associated Leg-Leg/CUM button will change the DIS column in the inset to display either leg-leg distance or cumulative distance.
+- \[Charts\] Charts for terminal procedures may now be accessed and previewed by their corresponding procedures.
+  - To preview a chart for a given procedure, select the procedure via the appropriate GTC Procedure Selection page (MFD Home -> PROC -> Departure/Arrival/Approach), press the Preview button, and select Show Chart.
+
+**Changed Features**
+- \[GTC\] Overhauled the Flight Plan and Procedures pages to support the new flight planning features and to more closely match the real-life units.
+  - The two data fields on the far-right column of the Flight Plan page can now be customized by using the GTC to navigate to MFD Home -> Flight Plan -> Flight Plan Options -> Edit Data Fields. The following types of data are supported: CUM (cumulative distance), DIS (leg-leg distance), DTK (desired track), ETA (estimated time of arrival), ETE (estimated time enroute), FUEL (fuel to destination).
+  - Data displays in the Flight Plan page now respect measurement unit and time format settings set via Avionics Settings.
+
+**Fixes**
+- \[FPLN\] Fixed a bug where the GTC Flight Plan page would display a different active leg from the navigation map and PFD navigation status bar.
+- \[GTC\] The Flight Plan page should now report accurate leg-leg distances for all flight plan legs.
+- \[GTC\] The Back button now works properly in the Procedure Selection pages.
+- \[Charts\] The mod should now be better at "remembering" Navigraph account access and should not require account re-linking as frequently.
+- \[VFR Map\] Fixed a bug preventing the VFR Map from being moved when it was not detached to a separate window.
+
 ### v0.6.2
 **New Features**
 - \[Traffic\] Enabled support for laurinius's MSFS Traffic Service app, which adds Offline AI traffic and SimConnect-injected traffic to the mod's traffic systems.
