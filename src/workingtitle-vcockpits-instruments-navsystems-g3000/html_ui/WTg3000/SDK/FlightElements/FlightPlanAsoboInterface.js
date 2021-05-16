@@ -112,6 +112,23 @@ class WT_FlightPlanAsoboInterface {
 
     /**
      *
+     * @param {Object} leg
+     * @returns {Promise<WT_Waypoint>}
+     */
+    async _getWaypointFromAsoboLeg(leg) {
+        let waypoint = null;
+        if (leg.icao.length === 12 && leg.icao !== "W      CUSTD" && leg.icao !== "W      CUSTA") { // the sim encodes custom departure and arrival waypoints from the world map as CUSTD and CUSTA
+            waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
+        }
+        if (!waypoint && leg.lla) {
+            // leg has an invalid ICAO string but valid lat/long coordinates, so we will create a flight path waypoint
+            waypoint = new WT_FlightPathWaypoint(leg.ident, leg.lla);
+        }
+        return waypoint;
+    }
+
+    /**
+     *
      * @param {Object} data
      * @param {WT_Waypoint[]} array
      * @returns {Promise<void>}
@@ -119,11 +136,7 @@ class WT_FlightPlanAsoboInterface {
     async _getWaypointEntriesFromData(data, array) {
         for (let i = 0; i < data.length; i++) {
             let leg = data[i];
-            let waypoint = await this._icaoWaypointFactory.getWaypoint(leg.icao);
-            if (!waypoint && leg.lla) {
-                // leg has an invalid ICAO string but valid lat/long coordinates, so we will create a flight path waypoint
-                waypoint = new WT_FlightPathWaypoint(leg.ident, leg.lla);
-            }
+            let waypoint = await this._getWaypointFromAsoboLeg(leg);
             if (waypoint) {
                 if (waypoint instanceof WT_ICAOWaypoint && waypoint.location.distance(leg.lla) > 0.0001) {
                     // sometimes Asobo will rename custom "USER" waypoints to match the ICAO of the previous waypoint
@@ -162,10 +175,10 @@ class WT_FlightPlanAsoboInterface {
         this._updateAsoboFlightPlanInfo(data, forceDRCTDestination);
 
         if (this._asoboFlightPlanInfo.hasOrigin) {
-            await tempFlightPlan.setOriginICAO(data.waypoints[0].icao);
+            tempFlightPlan.setOrigin(await this._getWaypointFromAsoboLeg(data.waypoints[0]));
         }
         if (this._asoboFlightPlanInfo.hasDestination) {
-            await tempFlightPlan.setDestinationICAO(data.waypoints[this._asoboFlightPlanInfo.destinationIndex].icao);
+            tempFlightPlan.setDestination(await this._getWaypointFromAsoboLeg(data.waypoints[this._asoboFlightPlanInfo.destinationIndex]));
         }
 
         let waypointEntries = [];
