@@ -1677,9 +1677,9 @@ class WT_G3x5_TSCProcedureSelectionAirportButton extends WT_G3x5_TSCWaypointButt
                 left: 2%;
                 top: 30%;
                 width: 96%;
-                font-size: var(--waypoint-ident-font-size, 1.5em);
+                font-size: var(--button-waypoint-ident-font-size, 1.5em);
                 text-align: center;
-                color: var(--waypoint-ident-color, var(--wt-g3x5-lightblue));
+                color: var(--button-waypoint-ident-color, var(--wt-g3x5-lightblue));
             }
             :host([highlight=true][primed=false]) #ident {
                 color: black;
@@ -1694,28 +1694,14 @@ class WT_G3x5_TSCProcedureSelectionAirportButton extends WT_G3x5_TSCWaypointButt
                 left: 2%;
                 width: 96%;
                 bottom: 5%;
-                font-size: var(--waypoint-name-font-size, 1em);
+                font-size: var(--button-waypoint-name-font-size, 1em);
                 text-align: left;
                 white-space: nowrap;
                 overflow: hidden;
-                color: var(--waypoint-name-color, white);
+                color: var(--button-waypoint-name-color, white);
             }
             :host([highlight=true][primed=false]) #name {
                 color: black;
-            }
-        `;
-    }
-
-    _createIconStyle() {
-        return `
-            #icon {
-                position: absolute;
-                right: 5%;
-                top: 5%;
-                height: 25%;
-                max-width: 15%;
-                fill: white;
-                transform: rotateX(0deg);
             }
         `;
     }
@@ -1746,12 +1732,16 @@ class WT_G3x5_TSCProcedureSelectionAirportButton extends WT_G3x5_TSCWaypointButt
         `;
     }
 
-    _appendChildren() {
-        super._appendChildren();
-
+    _appendTitle() {
         this._title = document.createElement("div");
         this._title.id = "title";
         this._wrapper.appendChild(this._title);
+    }
+
+    _appendChildren() {
+        super._appendChildren();
+
+        this._appendTitle();
     }
 
     static get observedAttributes() {
@@ -2270,6 +2260,10 @@ WT_G3x5_TSCDepartureArrivalSelectionHTMLElement.TEMPLATE.innerHTML = `
             grid-gap: var(--procedureselection-grid-row-gap, 0.25em) var(--procedureselection-grid-column-gap, 0.2em);
             color: white;
         }
+            #airport {
+                --button-waypoint-icon-top: 5%;
+                --button-waypoint-icon-size: 1em;
+            }
             .selectionButton {
                 --button-value-font-size: var(--procedureselection-selectionbutton-value-font-size, 1.25em);
             }
@@ -3391,6 +3385,10 @@ WT_G3x5_TSCApproachSelectionHTMLElement.TEMPLATE.innerHTML = `
             grid-gap: var(--procedureselection-grid-row-gap, 0.25em) var(--procedureselection-grid-column-gap, 0.2em);
             color: white;
         }
+            #airport {
+                --button-waypoint-icon-top: 5%;
+                --button-waypoint-icon-size: 1em;
+            }
             .selectionButton {
                 --button-value-font-size: var(--procedureselection-selectionbutton-value-font-size, 1.25em);
             }
