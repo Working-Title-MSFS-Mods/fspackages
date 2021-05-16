@@ -51,6 +51,18 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 top: 10%;
                 height: 40%;
                 max-width: 15%;
+            }
+        `;
+    }
+
+    _createAirportRwyStyle() {
+        return `
+            #airportrwy {
+                position: absolute;
+                right: 5%;
+                top: 10%;
+                height: 40%;
+                max-width: 15%;
                 fill: white;
                 transform: rotateX(0deg);
             }
@@ -74,6 +86,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         let identStyle = this._createIdentStyle();
         let nameStyle = this._createNameStyle();
         let iconStyle = this._createIconStyle();
+        let airportRwyStyle = this._createAirportRwyStyle();
         let emptyStyle = this._createEmptyStyle();
 
         return`
@@ -81,6 +94,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
             ${identStyle}
             ${nameStyle}
             ${iconStyle}
+            ${airportRwyStyle}
             ${emptyStyle}
         `;
     }
@@ -90,22 +104,18 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         this._ident.id = "ident";
         this._name = document.createElement("div");
         this._name.id = "name";
-        this._icon = document.createElementNS(Avionics.SVG.NS, "svg");
+        this._icon = document.createElement("img")
         this._icon.id = "icon";
-        this._icon.setAttribute("viewBox", "-50 -50 100 100");
-        this._iconImage = document.createElementNS(Avionics.SVG.NS, "image");
-        this._iconImage.setAttribute("x", "-50");
-        this._iconImage.setAttribute("y", "-50");
-        this._iconImage.setAttribute("width", "100");
-        this._iconImage.setAttribute("height", "100");
+        this._airportRunwaySVG = document.createElementNS(Avionics.SVG.NS, "svg");
+        this._airportRunwaySVG.id = "airportrwy";
+        this._airportRunwaySVG.setAttribute("viewBox", "-50 -50 100 100");
         this._airportRunwaySymbol = document.createElementNS(Avionics.SVG.NS, "rect");
         this._airportRunwaySymbol.setAttribute("x", "-5");
         this._airportRunwaySymbol.setAttribute("y", "-25");
         this._airportRunwaySymbol.setAttribute("width", "10");
         this._airportRunwaySymbol.setAttribute("height", "50");
         this._airportRunwaySymbolCached = new WT_CachedElement(this._airportRunwaySymbol);
-        this._icon.appendChild(this._iconImage);
-        this._icon.appendChild(this._airportRunwaySymbol);
+        this._airportRunwaySVG.appendChild(this._airportRunwaySymbol);
 
         this._empty = document.createElement("div");
         this._empty.id = "empty";
@@ -113,6 +123,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
         this._wrapper.appendChild(this._ident);
         this._wrapper.appendChild(this._name);
         this._wrapper.appendChild(this._icon);
+        this._wrapper.appendChild(this._airportRunwaySVG);
         this._wrapper.appendChild(this._empty);
     }
 
@@ -168,7 +179,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
 
         this._ident.innerHTML = waypoint.ident;
         this._name.innerHTML = waypoint.name;
-        this._iconImage.setAttributeNS("http://www.w3.org/1999/xlink", "href", this._iconSrcFactory ? this._iconSrcFactory.getSrc(waypoint) : "");
+        this._icon.src = this._iconSrcFactory ? this._iconSrcFactory.getSrc(waypoint) : "";
 
         this._ident.style.display = "block";
         this._name.style.display = "block";
