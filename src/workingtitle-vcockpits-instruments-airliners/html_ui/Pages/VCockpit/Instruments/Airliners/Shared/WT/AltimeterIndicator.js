@@ -1606,15 +1606,6 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
             if (_mode == "STD") {
                 if (this._baroPresetChanged !== baroPreset && this._baroPresetChanged !== 0) {
-                    this.pressureBoxGroup.setAttribute("visibility", "visible");
-                    this.pressureSVGLeftPart.removeAttribute("stroke", "black");
-                    this.pressureSVGLeftPart.removeAttribute("stroke-width", "5px");
-                    this.pressureSVGCenterPart.removeAttribute("stroke", "black");
-                    this.pressureSVGCenterPart.removeAttribute("stroke-width", "4px");
-                    this.pressureSVGRightPart.removeAttribute("stroke", "black");
-                    this.pressureSVGRightPart.removeAttribute("stroke-width", "5px");
-                    this.pressureSVGUnits.removeAttribute("stroke", "black");
-                    this.pressureSVGUnits.removeAttribute("stroke-width", "5px");
                     this._baroPresetChanged = baroPreset;
                 }
                 if (units == "millibar") {
@@ -1639,20 +1630,10 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                     this.pressurePresetLeftPart.textContent = leftPart;
                     this.pressurePresetCenterPart.textContent = ".";
                     this.pressurePresetRightPart.textContent = rightPart;
-
                     this.pressurePresetUnits.textContent = "IN";
                 }
             }
             else {
-                this.pressureBoxGroup.setAttribute("visibility", "hidden");
-                this.pressureSVGLeftPart.setAttribute("stroke", "black");
-                this.pressureSVGLeftPart.setAttribute("stroke-width", "5px");
-                this.pressureSVGCenterPart.setAttribute("stroke", "black");
-                this.pressureSVGCenterPart.setAttribute("stroke-width", "4px");
-                this.pressureSVGRightPart.setAttribute("stroke", "black");
-                this.pressureSVGRightPart.setAttribute("stroke-width", "5px");
-                this.pressureSVGUnits.setAttribute("stroke", "black");
-                this.pressureSVGUnits.setAttribute("stroke-width", "5px");
                 if (this.aircraft == Aircraft.A320_NEO) {
                     if (_mode == "QFE") {
                         this.pressureSVG.textContent = "QFE ";
