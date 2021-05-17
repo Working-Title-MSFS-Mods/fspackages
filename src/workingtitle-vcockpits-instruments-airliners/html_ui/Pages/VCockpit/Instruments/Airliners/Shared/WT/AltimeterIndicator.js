@@ -107,8 +107,6 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
         else {
             Utils.RemoveAllChildren(this.rootGroup);
         }
-        if (!this.pressureSVGLeftPart)
-            this.pressureSVGLeftPart = document.createElementNS(Avionics.SVG.NS, "text");
 
         this.pressureBoxGroup = document.createElementNS(Avionics.SVG.NS, "g");
         this.pressureBoxGroup.setAttribute("id", "PressureBoxGroup");
