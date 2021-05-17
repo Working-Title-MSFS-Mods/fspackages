@@ -1606,6 +1606,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
 
             if (_mode == "STD") {
                 if (this._baroPresetChanged !== baroPreset && this._baroPresetChanged !== 0) {
+                    this.pressureBoxGroup.setAttribute("visibility", "visible");
                     this._baroPresetChanged = baroPreset;
                 }
                 if (units == "millibar") {
