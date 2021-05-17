@@ -1600,7 +1600,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
     updateBaroPressure(_mode) {
         let baroPreset = SimVar.GetSimVarValue("L:XMLVAR_Baro1_SavedPressure", "number") / 16;
         
-        if (this.pressureSVGLeftPart) {
+        if (this.pressureSVGLeftPart && this.pressureSVGCenterPart && this.pressureSVGRightPart) {
             var units = Simplane.getPressureSelectedUnits();
             var pressure = Simplane.getPressureValue(units);
 
