@@ -1635,6 +1635,7 @@ class Jet_PFD_AltimeterIndicator extends HTMLElement {
                 }
             }
             else {
+                this.pressureBoxGroup.setAttribute("visibility", "hidden");
                 if (this.aircraft == Aircraft.A320_NEO) {
                     if (_mode == "QFE") {
                         this.pressureSVG.textContent = "QFE ";
