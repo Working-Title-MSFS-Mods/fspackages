@@ -47,15 +47,52 @@ class WT_G3x5_TSCDuplicateWaypointSelection extends WT_G3x5_TSCPopUpElement {
         this.instrument.goBack();
     }
 
+    _activateScrollButtons() {
+        this.instrument.activateNavButton(5, "Up", this._onUpPressed.bind(this), true, "ICON_TSC_BUTTONBAR_UP.png");
+        this.instrument.activateNavButton(6, "Down", this._onDownPressed.bind(this), true, "ICON_TSC_BUTTONBAR_DOWN.png");
+    }
+
+    _deactivateScrollButtons() {
+        this.instrument.deactivateNavButton(5);
+        this.instrument.deactivateNavButton(6);
+    }
+
+    _activateNavButtons() {
+        super._activateNavButtons();
+
+        this._activateScrollButtons();
+    }
+
+    _deactivateNavButtons() {
+        super._deactivateNavButtons();
+
+        this._deactivateScrollButtons();
+    }
+
     onEnter() {
         super.onEnter();
 
         this.htmlElement.setIdent(this.context.ident);
         this.htmlElement.setWaypoints(this.context.waypoints);
+        this.htmlElement.open();
     }
 
     onUpdate(deltaTime) {
         this.htmlElement.update(this._state);
+    }
+
+    _onUpPressed() {
+        this.htmlElement.scrollUp();
+    }
+
+    _onDownPressed() {
+        this.htmlElement.scrollDown();
+    }
+
+    onExit() {
+        super.onExit();
+
+        this.htmlElement.close();
     }
 }
 
@@ -181,12 +218,32 @@ class WT_G3x5_TSCDuplicateWaypointSelectionHTMLElement extends HTMLElement {
         }
     }
 
+    scrollUp() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._rows.scrollManager.scrollUp();
+    }
+
+    scrollDown() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._rows.scrollManager.scrollDown();
+    }
+
+    open() {
+    }
+
     /**
      *
      * @param {WT_G3x5_TSCDuplicateWaypointSelectionState} state
      */
     _doUpdate(state) {
         this._visibleRows.forEach(row => row.update(state));
+        this._rows.scrollManager.update();
     }
 
     /**
@@ -199,6 +256,14 @@ class WT_G3x5_TSCDuplicateWaypointSelectionHTMLElement extends HTMLElement {
         }
 
         this._doUpdate(state);
+    }
+
+    close() {
+        if (!this._isInit) {
+            return;
+        }
+
+        this._rows.scrollManager.cancelScroll();
     }
 }
 WT_G3x5_TSCDuplicateWaypointSelectionHTMLElement.NAME = "wt-tsc-duplicatewaypoint";
