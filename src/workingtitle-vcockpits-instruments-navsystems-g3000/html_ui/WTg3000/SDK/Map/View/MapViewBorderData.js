@@ -58,7 +58,7 @@ class WT_MapViewBorderData {
     /**
      * Gets the polygon data for all features of a given administration level.
      * @param {WT_MapViewBorderData.AdminLevel} adminLevel - an administration level, either admin0 or admin1.
-     * @returns {MapViewBorderDataFeatureInfo[]} an array of feature polygon data.
+     * @returns {WT_MapViewBorderDataFeatureInfo[]} an array of feature polygon data.
      */
     getPolygons(adminLevel) {
         if (!this.isReady()) {
@@ -75,7 +75,7 @@ class WT_MapViewBorderData {
      * Gets the border data for all features of a given administration level at a specified LOD level.
      * @param {WT_MapViewBorderData.AdminLevel} adminLevel - an administration level, either admin0 or admin1.
      * @param {Number} lod - an LOD level.
-     * @returns {MapViewBorderDataFeatureInfo[]} an array of feature border data.
+     * @returns {WT_MapViewBorderDataFeatureInfo[]} an array of feature border data.
      */
     getBorders(adminLevel, lod) {
         if (!this.isReady()) {
@@ -106,7 +106,7 @@ WT_MapViewBorderData.AdminLevel = {
 }
 
 /**
- * @typedef MapViewBorderDataFeatureInfo
+ * @typedef WT_MapViewBorderDataFeatureInfo
  * @property {Object} feature
  * @property {Number[][]} geoBounds
  * @property {Number[]} geoCentroid

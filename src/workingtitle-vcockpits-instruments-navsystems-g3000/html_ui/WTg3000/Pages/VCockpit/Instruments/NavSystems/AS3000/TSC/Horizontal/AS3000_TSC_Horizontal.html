@@ -11,11 +11,11 @@
                             <div class="upperTitle">Nav Source</div>
                         </div>
                         <div class="gradientButton" id="OBSButton" state="Greyed">
-                            <img class="lowerImg" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_OBS.png" />
+                            <img class="lowerImg" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_OBS.png" />
                             <div class="upperTitle">OBS</div>
                         </div>
                         <div class="gradientButton" id="CasUp" state="Greyed">
-                            <img class="lowerImg" src="/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_BUTTONBAR_UP.png" />
+                            <img class="lowerImg" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_BUTTONBAR_UP.png" />
                             <div class="upperTitle">CAS UP</div>
                         </div>
                     </div>
@@ -31,87 +31,43 @@
                             <div class="lowerValue">OFF</div>
                         </div>
                         <div class="gradientButton" id="CasDown" state="Greyed">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_BUTTONBAR_DOWN.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_BUTTONBAR_DOWN.png" />
                             <div class="label">CAS DOWN</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="SpeedBugsButton_PFD">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SPEED_BUG.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SPEED_BUG.png" />
                             <div class="label">Speed Bugs</div>
                         </div>
                         <div class="gradientButton" id="TimersButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_TIMERS.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_TIMERS.png" />
                             <div class="label">Timers</div>
                         </div>
                         <div class="gradientButton" id="MinimumsButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_MINIMUMS.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_MINIMUMS.png" />
                             <div class="label">Minimums</div>
                         </div>
-                        <div class="gradientButton" id="TrafficMapButton" state="Greyed">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_TRAFFIC.png" />
-                            <div class="label">Traffic Map</div>
-                        </div>
+                        <wt-tsc-button-statusbarimg class="button" id="TrafficMapButton" labelText="Traffic Map" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_TRAFFIC_MAP.png">
+                        </wt-tsc-button-statusbarimg>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="PFDMapSettingsButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_INSET_SETTINGS_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_INSET_SETTINGS_1.png" />
                             <div class="label">PFD Map Settings</div>
                         </div>
                         <div class="gradientButton" id="SensorsButton" state="Greyed">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_SENSORS_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_SENSORS_1.png" />
                             <div class="label">Sensors</div>
                         </div>
                         <div class="gradientButton" id="PFDSettingsButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_PFD_SETTINGS_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_PFD_SETTINGS_1.png" />
                             <div class="label">PFD<br>Settings</div>
                         </div>
                     </div>
                 </div>
+
                 <div class="tscPage" id="SpeedBugs">
-                    <div class="backgroundBox" id="SB_buttons">
-                        <div class="gradientButton" id="SB_AllOn">
-                            <div class="mainText">All On</div>
-                        </div>
-                        <div class="gradientButton" id="SB_AllOff">
-                            <div class="mainText">All Off</div>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VrStatus">
-                            <div class="mainText">Vr</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VrValue">
-                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VxStatus">
-                            <div class="mainText">Vx</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VxValue">
-                            <div class="mainValue"><span class="valueSpan">100</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VyStatus">
-                            <div class="mainText">Vy</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VyValue">
-                            <div class="mainValue"><span class="valueSpan">124</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                        <div class="gradientButton statusToggleButton" id="SB_VappStatus">
-                            <div class="mainText">Vapp</div>
-                            <div class="statusBar"></div>
-                        </div>
-                        <div class="gradientButton" id="SB_VappValue">
-                            <div class="mainValue"><span class="valueSpan">85</span><span class="unitSpan">KT</span></div>
-                            <img class="editIcon" src="/WTg3000/SDK/Assets/Images/TSC/ICON_PENCIL.png"/>
-                        </div>
-                    </div>
-                    <div class="gradientButton" id="SB_RestoreDefaults">
-                        <div class="mainText">Restore All Defaults</div>
-                    </div>
                 </div>
 
                 <div class="tscPage" id="Timers">
@@ -150,34 +106,37 @@
                         </div>
                     </div>
                 </div>
-                <div class="tscPage MapSettings" id="PFDMapSettings">
+                <div class="tscPage mapSettings" id="PFDMapSettings">
+                </div>
+                <div class="tscPage trafficSettings" id="PFDNavMapTrafficSettings">
                 </div>
                 <div class="tscPage" id="PFDSettings">
                 </div>
                 <div class="tscPage" id="MFDHome">
                     <div class="line">
                         <div class="gradientButton" id="MapButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_MAP.png" />
-                            <img class="img active" src="/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_MAP_SETTINGS.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_MAP.png" />
+                            <img class="img active" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_MAP_SETTINGS.png" />
                             <div class="label">Map</div>
                         </div>
-                        <div class="gradientButton" id="TraficButton" state="Greyed">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SMALL_TRAFFIC_1.png" />
+                        <div class="gradientButton" id="TrafficButton">
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_TRAFFIC.png" />
+                            <img class="img active" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_TRAFFIC_SETTINGS.png" />
                             <div class="label">Traffic</div>
                         </div>
                         <div class="gradientButton" id="WeatherButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_WEATHER.png" />
-                            <img class="img active" src="/WTg3000/SDK/Assets/Images/TSC/ICON_TSC_WEATHER_SELECTION.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_WEATHER.png" />
+                            <img class="img active" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_WEATHER_SELECTION.png" />
                             <div class="label">Weather</div>
                         </div>
                         <div class="gradientButton" id="TAWSButton" state="Greyed">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_TERRAIN_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_TERRAIN_1.png" />
                             <div class="label">TAWS</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="DirectToButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_DIRECT_TO_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_DIRECT_TO_1.png" />
                             <div class="label">Direct To</div>
                         </div>
                         <div class="gradientButton" id="FlightPlanButton">
@@ -188,53 +147,62 @@
                             <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_PROCEDURES_1.png" />
                             <div class="label">PROC</div>
                         </div>
-                        <div class="gradientButton" id="ChartsButton" state="Greyed">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_CHARTS_1.png" />
+                        <div class="gradientButton" id="ChartsButton">
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_CHARTS_1.png" />
                             <div class="label">Charts</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="AircraftSystemsButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_SYSTEM_PROP_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_SYSTEM_PROP_1.png" />
                             <div class="label">Aircraft Systems</div>
                         </div>
                         <div class="gradientButton" id="ChecklistButton" state="Greyed">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_INITIALIZATION.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_INITIALIZATION.png" />
                             <div class="label">Checklist</div>
                         </div>
                         <div class="gradientButton" id="ServicesButton" state="Greyed">
-						    <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_MUSIC_1.png" />
+						    <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SMALL_MUSIC_1.png" />
 						    <div class="label">Services</div>
 						</div>
                         <div class="gradientButton" id="UtilitiesButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_UTILITIES.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_UTILITIES.png" />
                             <div class="label">Utilities</div>
                         </div>
                     </div>
                     <div class="line">
                         <div class="gradientButton" id="SpeedBugsButton_MFD">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SPEED_BUG.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_SPEED_BUG.png" />
                             <div class="label">Speed Bugs</div>
                         </div>
                         <div class="gradientButton" id="WaypointInfoButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_MAP_SMALL_WAYPOINT_INFO.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_WAYPOINT_INFO.png" />
                             <div class="label">Waypoint Info</div>
                         </div>
                         <div class="gradientButton" id="NearestButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NEAREST_MED_1.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_NRST.png" />
                             <div class="label">Nearest</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="tscPage MapSettings" id="MFDMapSettings">
+                <div class="tscPage mapSettings" id="MFDMapSettingsLeft">
+                </div>
+                <div class="tscPage mapSettings" id="MFDMapSettingsRight">
                 </div>
 
                 <div class="tscPage mapPointerControl" id="MapPointerControlLeft">
-                    <tsc-mappointercontrol></tsc-mappointercontrol>
                 </div>
                 <div class="tscPage mapPointerControl" id="MapPointerControlRight">
-                    <tsc-mappointercontrol></tsc-mappointercontrol>
+                </div>
+
+                <div class="tscPage trafficSettings" id="TrafficMapSettingsLeft">
+                </div>
+                <div class="tscPage trafficSettings" id="TrafficMapSettingsRight">
+                </div>
+                <div class="tscPage trafficSettings" id="NavMapTrafficSettingsLeft">
+                </div>
+                <div class="tscPage trafficSettings" id="NavMapTrafficSettingsRight">
                 </div>
 
                 <div class="tscPage weatherSelection" id="WeatherSelectionLeft">
@@ -741,13 +709,17 @@
                     </div>
                 </div>
 
+                <div class="tscPage charts" id="ChartsLeft">
+                </div>
+                <div class="tscPage charts" id="ChartsRight">
+                </div>
+
+                <div class="tscPage chartsTouchControl" id="ChartsTouchControlLeft">
+                </div>
+                <div class="tscPage chartsTouchControl" id="ChartsTouchControlRight">
+                </div>
+
                 <div class="tscPage" id="AircraftSystems">
-                    <div class="line">
-                        <div class="gradientButton" id="LightingConfigButton">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_SYSTEM_TESTS.png" />
-                            <div class="label">Lighting Config</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="tscPage" id="LightingConfig">
                     <div class="backgroundBox">
@@ -757,19 +729,19 @@
                         </div>
                         <div id="LightingControls">
                             <div class="gradientButton" id="LightingDecreaseButton">
-                                <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_ARROW_LEFT_MINUS.png" />
+                                <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_LEFT_MINUS.png" />
                                 <div class="label">Dec</div>
                             </div>
                             <div id="LightingConfigSliderWrapper">
                                 <div class="sliderWindow">
-                                    <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/GRADIENT_TRIANGLE_HORIZ_BLUE.png" id="LightingConfigSliderBackground" />
+                                    <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/GRADIENT_TRIANGLE_HORIZ_BLUE.png" id="LightingConfigSliderBackground" />
                                     <div class="LightingConfigSliderContainer">
                                         <input type="range" min="1" max="100" class="slider" id="LightingConfigSlider">
                                     </div>
                                 </div>
                             </div>
                             <div class="gradientButton" id="LightingIncreaseButton">
-                                <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_ARROW_RIGHT_PLUS.png" />
+                                <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_RIGHT_PLUS.png" />
                                 <div class="label">Inc</div>
                             </div>
                         </div>
@@ -779,322 +751,54 @@
                 <div class="tscPage" id="Utilities">
                     <div class="line">
                         <div class="gradientButton" id="SetupButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_SETUP.png" />
+                            <img class="img" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_SETUP.png" />
                             <div class="label">Setup</div>
                         </div>
                     </div>
                 </div>
                 <div class="tscPage" id="UtilitiesSetup">
-                    <div class="line">
-                        <div class="gradientButton" id="AvionicsSettingsButton">
-                            <img class="img" src="/WTg3000/SDK/Assets/Images/TSC/ICON_AVIONICS_SETTINGS.png" />
-                            <div class="label">Avionics Settings</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="tscPage" id="AvionicsSettings">
                 </div>
-
-                <div class="tscPage" id="WaypointsInfo">
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoAirport_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="label">Airport</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoINT_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="label">INT</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoVOR_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="label">VOR</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoNDB_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="label">NDB</div>
-                        </div>
-                        <div class="gradientButton" id="WPInfoUser_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="label">User Waypoint</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="WPInfoUserCreate_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="label">Create Waypoint</div>
-                        </div>
-                    </div>
+                <div class="tscPage" id="DatabaseStatus">
                 </div>
 
+                <div class="tscPage" id="WaypointInfoSelection">
+                </div>
                 <div class="tscPage airportInfo" id="AirportInfoLeft">
-                    <tsc-airportinfo></tsc-airportinfo>
                 </div>
                 <div class="tscPage airportInfo" id="AirportInfoRight">
-                    <tsc-airportinfo></tsc-airportinfo>
+                </div>
+                <div class="tscPage intInfo" id="INTInfoLeft">
+                </div>
+                <div class="tscPage intInfo" id="INTInfoRight">
+                </div>
+                <div class="tscPage vorInfo" id="VORInfoLeft">
+                </div>
+                <div class="tscPage vorInfo" id="VORInfoRight">
+                </div>
+                <div class="tscPage ndbInfo" id="NDBInfoLeft">
+                </div>
+                <div class="tscPage ndbInfo" id="NDBInfoRight">
                 </div>
 
-                <div class="tscPage" id="Nearest">
-                    <div class="line">
-                        <div class="gradientButton" id="NrstAirport_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRPORT.png" />
-                            <div class="label">Airport</div>
-                        </div>
-                        <div class="gradientButton" id="NrstInt_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_INT.png" />
-                            <div class="label">INT</div>
-                        </div>
-                        <div class="gradientButton" id="NrstVor_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_VOR_2.png" />
-                            <div class="label">VOR</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="NrstNdb_Btn">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_NDB.png" />
-                            <div class="label">NDB</div>
-                        </div>
-                        <div class="gradientButton" id="NrstUser_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_USER.png" />
-                            <div class="label">User</div>
-                        </div>
-                        <div class="gradientButton" id="NrstAirspace_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_AIRSPACE.png" />
-                            <div class="label">Airspace</div>
-                        </div>
-                    </div>
-                    <div class="line">
-                        <div class="gradientButton" id="NrstARTCC_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="label">ARTCC</div>
-                        </div>
-                        <div class="gradientButton" id="NrstFSS_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="label">FSS</div>
-                        </div>
-                        <div class="gradientButton" id="NrstWeather_Btn" state="Hidden">
-                            <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/defaultImage.png" />
-                            <div class="label">Weather</div>
-                        </div>
-                    </div>
+                <div class="tscPage" id="NearestWaypointSelection">
                 </div>
-                <div class="tscPage" id="NearestAirport">
-                    <div class="backgroundBox NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>Airport</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                    <th>APPR/RWY</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstAirport_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstAirport_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstAirport_AirportInfo">
-                                        <div class="mainText">Airport Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstAirport_AirportChart" state="Hidden">
-                                        <div class="mainText">Airport Chart</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstAirport_ShowOnMap">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestAirport" id="NearestAirportLeft">
                 </div>
-                <div class="tscPage" id="NearestIntersection">
-                    <div class="backgroundBox NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>Intersection</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_AirportInfo" state="Hidden">
-                                        <div class="mainText">Intersection Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstIntersection_ShowOnMap" state="Hidden">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestAirport" id="NearestAirportRight">
                 </div>
-                <div class="tscPage" id="NearestVOR">
-                    <div class="backgroundBox NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>VOR</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                    <th>Frequency</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_AirportInfo" state="Hidden">
-                                        <div class="mainText">VOR Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstVOR_ShowOnMap" state="Hidden">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestINT" id="NearestINTLeft">
                 </div>
-                <div class="tscPage" id="NearestNDB">
-                    <div class="backgroundBox NrstContainer">
-                        <table class="NearestList">
-                            <thead>
-                                <tr>
-                                    <th>NDB</th>
-                                    <th>BRG</th>
-                                    <th>DIS</th>
-                                    <th>Frequency</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="SizeSetter">
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="SelectionMenu" state="Inactive">
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_Drct">
-                                        <div class="mainText"><img class="DrctImg" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" /></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_InsertInFpl">
-                                        <div class="mainText">Insert in Flight Plan</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_AirportInfo" state="Hidden">
-                                        <div class="mainText">NDB Info</div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="gradientButton" id="NrstNDB_ShowOnMap" state="Hidden">
-                                        <div class="mainText">Show On Map</div>
-                                        <div class="statusBar"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div class="tscPage nearestINT" id="NearestINTRight">
+                </div>
+                <div class="tscPage nearestVOR" id="NearestVORLeft">
+                </div>
+                <div class="tscPage nearestVOR" id="NearestVORRight">
+                </div>
+                <div class="tscPage nearestNDB" id="NearestNDBLeft">
+                </div>
+                <div class="tscPage nearestNDB" id="NearestNDBRight">
                 </div>
 
                 <div class="tscPage" id="NavComHome">
@@ -2040,36 +1744,8 @@
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow1" state="Inactive">
-                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
-                <div class="content"></div>
-            </div>
-            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow2" state="Inactive">
-                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
-                <div class="content"></div>
-            </div>
-            <div class="PopUpWindow Transparent MapDetailSelect" id="MapDetailSelect" state="Inactive">
-                <div class="WindowTitle">Map Detail Settings</div>
-                <div class="Container">
-                    <div class="gradientButton" id="MapDetailIncreaseButton">
-                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/TSC/ICON_ARROW_UP_PLUS.png" />
-                    </div>
-                    <div class="MapDetailSliderOuterContainer">
-                        <div class="topText">Most</div>
-                        <div class="MapDetailSliderWrapper">
-                            <img class="sliderBackground" src="/WTg3000/SDK/Assets/Images/TSC/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MapDetailSliderBackground" />
-                            <div class="MapDetailSliderContainer">
-                                <input type="range" min="0" max="3" class="slider" id="MapDetailSlider">
-                            </div>
-                        </div>
-                        <div class="bottomText">Least</div>
-                    </div>
-                    <div class="gradientButton" id="MapDetailDecreaseButton">
-                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/TSC/ICON_ARROW_DOWN_MINUS.png" />
-                    </div>
-                </div>
-            </div>
             <div class="PopUpWindow Transparent" id="LoadFrequencyPopup" state="Inactive">
+                <div class="WindowTitle">Load Frequency</div>
                 <div class="content">
                     <div class="title">Load <span class="Frequency"></span> to:</div>
                     <div class="leftZone">
@@ -2105,14 +1781,6 @@
                     </div>
                 </div>
             </div>
-            <div class="PopUpWindow Transparent" id="WaypointInfo_WaypointOptions" state="Inactive">
-                <div class="WindowTitle">Waypoint Options</div>
-                <div class="content">
-                    <div class="button gradientButton drctButon">
-                        <img class="img" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/TSC/Icons/ICON_MAP_DIRECT_TO_1.png" />
-                    </div>
-                </div>
-            </div>
             <div class="PopUpWindow" id="SelectionList" state="Inactive">
                 <div class="WindowTitle"></div>
                 <div class="backgroundBox contentContainer">
@@ -2120,28 +1788,98 @@
                     </div>
                 </div>
             </div>
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow1" state="Inactive">
+                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+            </div>
+            <div class="PopUpWindow Transparent dynamicSelectionListWindow" id="DynamicSelectionListWindow2" state="Inactive">
+                <div class="WindowTitle" id="DynamicSelectionListWindowTitle">Select An Item</div>
+            </div>
+            <div class="PopUpWindow Transparent MapDetailSelect" id="MapDetailSelect" state="Inactive">
+                <div class="WindowTitle">Map Detail Settings</div>
+                <div class="Container">
+                    <div class="gradientButton" id="MapDetailIncreaseButton">
+                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_UP_PLUS.png" />
+                    </div>
+                    <div class="MapDetailSliderOuterContainer">
+                        <div class="topText">Most</div>
+                        <div class="MapDetailSliderWrapper">
+                            <img class="sliderBackground" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/GRADIENT_TRIANGLE_VERT_BLUE_GRAD2.png" id="MapDetailSliderBackground" />
+                            <div class="MapDetailSliderContainer">
+                                <input type="range" min="0" max="3" class="slider" id="MapDetailSlider">
+                            </div>
+                        </div>
+                        <div class="bottomText">Least</div>
+                    </div>
+                    <div class="gradientButton" id="MapDetailDecreaseButton">
+                        <img class="img_large" src="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_ARROW_DOWN_MINUS.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="PopUpWindow Transparent" id="NumKeyboard" state="Inactive">
+                <div class="WindowTitle"></div>
+            </div>
+            <div class="PopUpWindow Transparent" id="TimeKeyboard" state="Inactive">
+                <div class="WindowTitle"></div>
+            </div>
+            <div class="PopUpWindow Transparent" id="NavMapTrafficMapSettings" state="Inactive">
+                <div class="WindowTitle">Traffic Settings</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="NavigraphLink" state="Inactive">
+                <div class="WindowTitle">Navigraph Account Link</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="ChartsOptions" state="Inactive">
+                <div class="WindowTitle">Charts Options</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="ChartsLightThreshold" state="Inactive">
+                <div class="WindowTitle">Auto Light Mode Threshold</div>
+            </div>
+            <div class="PopUpWindow Transparent" id="WaypointOptions" state="Inactive">
+                <div class="WindowTitle">Waypoint Options</div>
+            </div>
         </div>
     </div>
 </script>
 
+<link rel="stylesheet" href="/WTg3000/Avionics/Shared/G3x5_BaseDefs.css" />
 <link rel="stylesheet" href="../AS3000_TSC_Common.css" />
 <link rel="stylesheet" href="AS3000_TSC_Horizontal.css" />
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 <script type="text/html" import-script="/JS/dataStorage.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/LzUtf8.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/spacetime.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/tz.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Libraries/WorldMagneticModel.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Utils/Wait.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/ReadOnlyArray.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/SortedArray.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/InterpolatedLookupTable.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/FileHandler.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/URLRequest.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/OAuth.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/CrossInstrumentEvent.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/DataStore.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/OptionsManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/CustomElementSelector.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/CachedElement.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Utils/HTMLElementRecycler.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreController.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/DataStoreSettingModel.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Math/NumberUnit.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Math/GVector2.js"></script>
 
+<script type="text/html" import-script="/WTg3000/SDK/Time/Time.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Time/TimeModel.js"></script>
+
 <script type="text/html" import-script="/WTg3000/SDK/Geo/GeoPoint.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Geo/GeoMagnetic.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Geo/NavAngleUnit.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Utils/Timer.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Utils/PlayerAirplane.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/NumberUnitModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Utils/InterpolatedNumberUnitLookupTable.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/Frequency.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/AltitudeConstraint.js"></script>
@@ -2159,36 +1897,39 @@
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanAsoboInterface.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/FlightElements/FlightPlanManager.js"></script>
 
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Airplane/PlayerAirplane.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCButton.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCWaypointButton.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCBearingArrow.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionListWindow.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingStatusBarButtonManager.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingLabeledButtonManager.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingValueButtonManager.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSlidingBanner.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCScrollManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCScrollList.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSelectionList.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCSettingButtonManager.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTabbedContent.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/TSC/TSCTouchPad.js"></script>
 
 <script type="text/html" import-template="/Pages/VCockpit/Instruments/Shared/Map/MapInstrument.html"></script>
 
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapController.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapPointerSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapTerrainModeSetting.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAutoNorthUpSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapSymbolShowSetting.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapTrackVectorSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapWindDataShowSetting.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapFuelRingSettingGroup.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Map/Controller/MapAltitudeInterceptSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/MapModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Model/Modules/MapModelTerrainModule.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapSettingModel.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapTerrainModeSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapAutoNorthUpSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapSymbolShowSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapTrackVectorSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapFuelRingSettingGroup.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Map/Settings/MapAltitudeInterceptSetting.js"></script>
 
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarModel.js"></script>
 <script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarView.js"></script>
-<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarController.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Weather/WeatherRadarSettingModel.js"></script>
 
-<script type="text/html" import-script="/WTg3000/SDK/Display/NavDataBar.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Avionics/SpeedBug.js"></script>
+<script type="text/html" import-script="/WTg3000/SDK/Avionics/NearestWaypointList.js"></script>
+
+<script type="text/html" import-script="/WTg3000/SDK/Charts/Navigraph.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/Highlight/Highlight.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/Templates/AttitudeIndicator/AttitudeIndicator.js"></script>
@@ -2197,33 +1938,95 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/SelectableElement.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/Shared/LogicElements/ContextualMenu.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/TouchScrollController.js"></script>
+<script type="text/html" import-script="/WTg3000/Config/ModConfig.js"></script>
 
-<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_NavMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Airplane/TBM930Airplane.js"></script>
+<script type="text/html" import-script="/WTg3000/Airplane/CitationLongitudeAirplane.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_BaseInstrument.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystem.js"></script>
+<script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/Shared/NavSystemTouch.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_RegionNames.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_UnitsSettingModel.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_AvionicsSystemSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_WeatherRadar.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/G3x5_NearestAirportList.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Time/G3x5_TimeModel.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavDataInfo/G3x5_NavDataInfo.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavDataInfo/G3x5_NavDataBar.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_TrafficSystem.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_MapModelTrafficModule.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_TrafficMapSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Traffic/G3x5_TrafficMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavMap/G3x5_MapPointerSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavMap/G3x5_MapWindDataShowSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavMap/G3x5_NavMapPointerEventHandler.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavMap/G3x5_NavMapSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/NavMap/G3x5_NavMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsModel.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/Charts/G3x5_ChartsDisplay.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/WaypointDisplay/G3x5_WaypointDisplayICAOSetting.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/WaypointDisplay/G3x5_WaypointDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/WaypointDisplay/WaypointInfo/G3x5_WaypointInfoDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/WaypointDisplay/NearestWaypoint/G3x5_NearestWaypointDisplay.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/PFD/G3x5_PFDSettings.js"></script>
 
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDElement.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDNavDataBar.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/MFD/G3x5_MFDMainPane.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCGradientDiv.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSlider.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCNumberUnitButton.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCWaypointButton.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCTabbedView.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPageElement.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCDirectoryPage.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCPopUpElement.js"></script>
-<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCSelectionListWindow.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCMFDPaneSelectDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/G3x5_TSCRangeDisplay.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCSelectionListWindow.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCNumericKeyboard.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCTimeKeyboard.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCLoadFrequency.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCWaypointOptions.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCNavMapTrafficMapSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCNavigraphLink.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/PopUps/G3x5_TSCChartsOptions.js"></script>
+
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTimer.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCPFDSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCSpeedBugs.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCMapPointerControl.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCTrafficSettings.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherSelection.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWeatherRadarSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCCharts.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCChartsTouchControl.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCUtilitiesSetup.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAvionicsSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCDatabaseStatus.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCWaypointInfo.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCAirportInfo.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/Shared/TSC/Pages/G3x5_TSCNearestWaypoint.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_TrafficAdvisorySystem.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCSpeedBugs.js"></script>
 <script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCPFDSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCTrafficSettings.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/TSC/Pages/G3000_TSCAircraftSystems.js"></script>
 
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/AS3000_TSC_Common.js"></script>
 <script type="text/html" import-script="/WTg3000/Pages/VCockpit/Instruments/NavSystems/AS3000/TSC/Horizontal/AS3000_TSC_Horizontal.js"></script>

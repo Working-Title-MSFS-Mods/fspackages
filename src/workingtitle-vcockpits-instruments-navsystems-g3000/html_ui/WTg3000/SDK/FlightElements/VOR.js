@@ -11,14 +11,14 @@ class WT_VOR extends WT_ICAOWaypoint {
         super._initFromData(data);
 
         this._vorType = data.type;
-        this._class = data.vorClass;
-        this._frequency = {MHz: data.freqMHz, bcd16: data.freqBCD16};
-        this._magVar = data.magneticVariation;
+        this._vorClass = data.vorClass;
+        this._frequency = new WT_Frequency(data.freqMHz, WT_Frequency.Prefix.MHz);
+        this._magVar = (-data.magneticVariation + 540) % 360 - 180; // coerce values to range -180 to 180.
     }
 
     /**
+     * The type of this VOR.
      * @readonly
-     * @property {WT_VOR.Type} vorType - the type of this VOR.
      * @type {WT_VOR.Type}
      */
     get vorType() {
@@ -26,26 +26,26 @@ class WT_VOR extends WT_ICAOWaypoint {
     }
 
     /**
+     * The class of this VOR.
      * @readonly
-     * @property {WT_VOR.Class} class - the class of this VOR.
      * @type {WT_VOR.Class}
      */
-    get class() {
-        return this._class;
+    get vorClass() {
+        return this._vorClass;
     }
 
     /**
+     * The frequency of this VOR.
      * @readonly
-     * @property {{MHz:Number, bcd16:Number}} frequency - the frequency of this VOR, in MHz and BCD16 formats.
-     * @type {{MHz:Number, bcd16:Number}}
+     * @type {WT_Frequency}
      */
     get frequency() {
         return this._frequency;
     }
 
     /**
+     * The magnetic variation at this VOR.
      * @readonly
-     * @property {Number} magVar - the magnetic variation at this VOR.
      * @type {Number}
      */
     get magVar() {
@@ -53,8 +53,8 @@ class WT_VOR extends WT_ICAOWaypoint {
     }
 
     /**
+     * A list of airways passing through this VOR.
      * @readonly
-     * @property {WT_Airway[]} airways - a list of airways passing through this VOR.
      * @type {WT_Airway[]}
      */
     get airways() {

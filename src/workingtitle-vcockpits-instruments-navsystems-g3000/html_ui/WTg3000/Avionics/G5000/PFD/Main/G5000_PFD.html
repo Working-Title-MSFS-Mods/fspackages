@@ -1,0 +1,68 @@
+<link rel="stylesheet" href="/WTg3000/Avionics/G5000/PFD/Main/G5000_PFD.css"/>
+
+<script type="text/html" id="AS3000_PFD">
+  <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
+  <div id="Mainframe">
+      <div id="Electricity" state="off">
+          <div id="Console">Initializing System...</div>
+          <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
+          <div id="HorizonContainer">
+              <map-instrument id="SyntheticVision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/WTg3000/Avionics/Shared/PFD/MapConfig/"></map-instrument>
+              <glasscockpit-attitude-indicator id="Horizon" background="false"></glasscockpit-attitude-indicator>
+          </div>
+
+          <div id="InstrumentsContainer">
+
+              <div id="InsetMap" class="insetMapContainer">
+                  <map-view dpi-scale="0.7" class="insetMap" config-path="/WTg3000/Avionics/G5000/PFD/MapConfig/insetmapconfig.json"></map-view>
+              </div>
+
+              <div id="TrafficInsetMap" class="insetMapContainer">
+                  <map-view dpi-scale="0.7" class="insetMap" config-path="/WTg3000/Avionics/G5000/PFD/MapConfig/trafficinsetmapconfig.json"></map-view>
+              </div>
+
+              <glasscockpit-hsi id="Compass"></glasscockpit-hsi>
+
+              <!--<iframe id="Map" src="/Pages/Minimap/Minimap.html"></iframe>-->
+
+              <div id="MarkerBeacon">M</div>
+
+              <div id="Warnings" state="Hidden">
+                  <span id="WarningsContent">PULL UP</span>
+              </div>
+
+              <div id="Annunciations" state="Hidden">
+                  <div id="newAnnunciations"></div>
+                  <div id="acknowledged"></div>
+              </div>
+
+              <div id="ComInfos">
+                  <div id="ActiveCom">COM1</div>
+                  <div id="ActiveComFreq"></div>
+                  <div id="ActiveComName"></div>
+              </div>
+          </div>
+      </div>
+  </div>
+</script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/G5000_AutoThrottle.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/G5000_ApproachNavLoader.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/G5000_Transponder.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/Traffic/G5000_TCASII.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/Traffic/G5000_MapViewTrafficIntruderLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/Traffic/G5000_MapViewNavMapTrafficStatusLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/Traffic/G5000_TrafficMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/NavMap/G5000_NavMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDTrafficInsetMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDAutopilotDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDAirspeedIndicator.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDAltimeter.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDAoAIndicator.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDTrafficAlert.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/G5000_PFDBottomInfo.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G5000/PFD/Main/G5000_PFD.js"></script>

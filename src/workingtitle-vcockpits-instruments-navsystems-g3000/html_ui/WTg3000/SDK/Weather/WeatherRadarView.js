@@ -65,7 +65,7 @@ class WT_WeatherRadarView extends HTMLElement {
         this._viewHeight = 0;
 
         this._origin = new WT_GVector2(0, 0);
-        this._targetHeight = 0;
+        this._targetViewRadius = 0;
         this._angularWidth = 0;
 
         this._lastRange = new WT_NumberUnit(0, WT_Unit.NMILE);
@@ -202,14 +202,14 @@ class WT_WeatherRadarView extends HTMLElement {
         this._bingMap.style.top = `${origin.y - size / 2}px`;
     }
 
-    _drawBearingLine(origin, targetHeight, facing) {
+    _drawBearingLine(origin, targetViewRadius, facing) {
         let angularWidth = WT_WeatherRadarView.BEARING_LINE_ANGULAR_WIDTH * Avionics.Utils.DEG2RAD;
 
         let rotation = WT_GTransform2.rotation(angularWidth, origin, this._tempTransform);
 
         let leftAngle = facing - angularWidth / 2;
 
-        let left = this._tempVector1.setFromPolar(targetHeight, leftAngle).add(origin);
+        let left = this._tempVector1.setFromPolar(targetViewRadius, leftAngle).add(origin);
         let right = rotation.apply(this._tempVector2.set(left), true);
 
         let path = `M ${left.x} ${left.y} L ${origin.x} ${origin.y} L ${right.x} ${right.y} Z`;
@@ -223,7 +223,7 @@ class WT_WeatherRadarView extends HTMLElement {
         this._boundaryLines.setAttribute("d", boundaryPath);
     }
 
-    _drawRangeLines(origin, targetHeight, leftAngle, rightAngle, rotation) {
+    _drawRangeLines(origin, targetViewRadius, leftAngle, rightAngle, rotation) {
         let rangeLabelOffset = this._tempVector3.setFromPolar(10, rightAngle + Math.PI / 2);
 
         // set anchor point for range labels based on quadrant they appear in
@@ -240,7 +240,7 @@ class WT_WeatherRadarView extends HTMLElement {
 
         let rangePath = "";
         for (let i = 4; i > 0; i--) {
-            let radius = targetHeight * i / 4;
+            let radius = targetViewRadius * i / 4;
             let left = this._tempVector1.setFromPolar(radius, leftAngle).add(origin);
             let right = rotation.apply(this._tempVector2.set(left), true);
             rangePath += `M ${left.x} ${left.y} A ${radius} ${radius} 0 0 1 ${right.x} ${right.y} `;
@@ -256,18 +256,18 @@ class WT_WeatherRadarView extends HTMLElement {
         this._rangeLines.setAttribute("d", rangePath);
     }
 
-    _redrawOverlay(origin, targetHeight, facing, angularWidth) {
-        this._drawBearingLine(origin, targetHeight, facing);
+    _redrawOverlay(origin, targetViewRadius, facing, angularWidth) {
+        this._drawBearingLine(origin, targetViewRadius, facing);
 
         let leftAngle = facing - angularWidth / 2;
         let rightAngle = leftAngle + angularWidth;
 
         let rotation = WT_GTransform2.rotation(angularWidth, origin, this._tempTransform);
 
-        let left = this._tempVector1.setFromPolar(targetHeight, leftAngle).add(origin);
+        let left = this._tempVector1.setFromPolar(targetViewRadius, leftAngle).add(origin);
 
         this._drawBoundaryLines(origin, left, rotation);
-        this._drawRangeLines(origin, targetHeight, leftAngle, rightAngle, rotation);
+        this._drawRangeLines(origin, targetViewRadius, leftAngle, rightAngle, rotation);
     }
 
     _redrawHorizontal() {
@@ -276,28 +276,28 @@ class WT_WeatherRadarView extends HTMLElement {
 
         this._angularWidth = WT_WeatherRadarView.HORIZONTAL_ANGULAR_WIDTH * Avionics.Utils.DEG2RAD;
 
-        this._targetHeight = Math.min(viewHeight - 2 * WT_WeatherRadarView.EDGE_PADDING, (viewWidth - 2 * WT_WeatherRadarView.EDGE_PADDING) * (2 / 3) / (2 * Math.sin(this._angularWidth / 2)));
-        this._origin.set(viewWidth / 2, viewHeight - WT_WeatherRadarView.EDGE_PADDING);
+        this._targetViewRadius = Math.min(viewHeight - 2 * WT_WeatherRadarView.EDGE_PADDING, (viewWidth - 2 * WT_WeatherRadarView.EDGE_PADDING) * (2 / 3) / (2 * Math.sin(this._angularWidth / 2)));
+        this._origin.set(viewWidth / 2, (viewHeight + this._targetViewRadius) / 2);
 
-        this._redrawBingMap(this._origin, this._targetHeight * 2);
-        this._redrawOverlay(this._origin, this._targetHeight, 0, this._angularWidth);
+        this._redrawBingMap(this._origin, this._targetViewRadius * 2);
+        this._redrawOverlay(this._origin, this._targetViewRadius, 0, this._angularWidth);
         this._verticalRangeLines.setAttribute("display", "none");
         for (let label of this._verticalRangeLabels) {
             label.style.display = "none";
         }
     }
 
-    _redrawVerticalRange(origin, targetHeight, angularWidth) {
+    _redrawVerticalRange(origin, targetViewRadius, angularWidth) {
         let heightFactor = 1;
-        let lineOffset = WT_WeatherRadarView.VERTICAL_RANGE_MARKER_HEIGHT.ratio(this.model.range) * targetHeight;
-        if (lineOffset > targetHeight * Math.sin(angularWidth / 2)) {
+        let lineOffset = WT_WeatherRadarView.VERTICAL_RANGE_MARKER_HEIGHT.ratio(this.model.range) * targetViewRadius;
+        if (lineOffset > targetViewRadius * Math.sin(angularWidth / 2)) {
             lineOffset *= 0.5;
             heightFactor = 0.5;
         }
         let height = this._tempNM.set(WT_WeatherRadarView.VERTICAL_RANGE_MARKER_HEIGHT).scale(heightFactor, true);
 
         let lineStartX = origin.x + lineOffset / Math.tan(angularWidth / 2);
-        let lineEndX = WT_WeatherRadarView.EDGE_PADDING + targetHeight * 1.1;
+        let lineEndX = origin.x + targetViewRadius * 1.1;
 
         let path = `M ${lineStartX} ${origin.y + lineOffset} L ${lineEndX} ${origin.y + lineOffset} M ${lineStartX} ${origin.y - lineOffset} L ${lineEndX} ${origin.y - lineOffset}`;
         this._verticalRangeLines.setAttribute("d", path);
@@ -324,13 +324,14 @@ class WT_WeatherRadarView extends HTMLElement {
 
         this._angularWidth = WT_WeatherRadarView.VERTICAL_ANGULAR_WIDTH * Avionics.Utils.DEG2RAD;
 
-        this._targetHeight = Math.min((viewWidth - 2 * WT_WeatherRadarView.EDGE_PADDING) * 2 / 3, (viewHeight - 2 * WT_WeatherRadarView.EDGE_PADDING) * 0.8 / (2 * Math.sin(this._angularWidth / 2)));
-        this._origin.set(WT_WeatherRadarView.EDGE_PADDING, viewHeight / 2);
+        let aspectRatio = 1 / (2 * Math.sin(this._angularWidth / 2));
+        this._targetViewRadius = Math.min((viewWidth - 2 * WT_WeatherRadarView.EDGE_PADDING) * 2 / 3, (viewHeight - 2 * WT_WeatherRadarView.EDGE_PADDING) * 0.8 * aspectRatio);
+        this._origin.set((viewWidth - (this._targetViewRadius + viewWidth / 3)) / 2, viewHeight / 2);
 
-        this._redrawBingMap(this._origin, this._targetHeight * 2);
+        this._redrawBingMap(this._origin, this._targetViewRadius * 2);
 
-        this._redrawOverlay(this._origin, this._targetHeight, Math.PI / 2, this._angularWidth);
-        this._redrawVerticalRange(this._origin, this._targetHeight, this._angularWidth);
+        this._redrawOverlay(this._origin, this._targetViewRadius, Math.PI / 2, this._angularWidth);
+        this._redrawVerticalRange(this._origin, this._targetViewRadius, this._angularWidth);
     }
 
     _redraw() {
@@ -351,7 +352,7 @@ class WT_WeatherRadarView extends HTMLElement {
 
     _updateCenterAndRange() {
         let range = this.model.range.asUnit(WT_Unit.METER);
-        let target = this.model.airplane.position(this._tempGeoPoint);
+        let target = this.model.airplane.navigation.position(this._tempGeoPoint);
         if (isNaN(range) || !target) {
             return;
         }
@@ -363,7 +364,7 @@ class WT_WeatherRadarView extends HTMLElement {
         this._bingMap.setParams(params);
 
         if (this.model.scanMode === WT_WeatherRadarModel.ScanMode.VERTICAL && !this._lastRange.equals(this.model.range)) {
-            this._redrawVerticalRange(this._origin, this._targetHeight, this._angularWidth);
+            this._redrawVerticalRange(this._origin, this._targetViewRadius, this._angularWidth);
         }
     }
 

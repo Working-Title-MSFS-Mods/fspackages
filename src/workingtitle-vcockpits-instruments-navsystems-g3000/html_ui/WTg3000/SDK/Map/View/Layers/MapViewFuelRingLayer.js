@@ -55,7 +55,7 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
      * @param {WT_MapViewState} state
      */
     isVisible(state) {
-        return state.model.fuelRing.show && !state.model.airplane.isOnGround();
+        return state.model.fuelRing.show && !state.model.airplane.sensors.isOnGround();
     }
 
     /**
@@ -67,55 +67,35 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         }
     }
 
+    _initHoursSmoother() {
+        this._hoursSmoother = new WT_ExponentialSmoother(this.smoothingConstant, 0, WT_MapViewFuelRingLayer.SMOOTHING_MAX_TIME_DELTA);
+    }
+
     /**
      * @param {WT_MapViewState} state
      */
     onAttached(state) {
         super.onAttached(state);
+
+        this._initHoursSmoother();
         this._updateStyles(state.dpiScale);
-    }
-
-    /**
-     * Calculates an appropriate exponential smoothing factor to use.
-     * @param {WT_MapViewState} state - the current map view state.
-     * @returns {Number} - a smoothing factor.
-     */
-    _calculateSmoothingFactor(state) {
-        let currentTimeSec = state.currentTime / 1000;
-        let dt = currentTimeSec - this._lastTime;
-        this._lastTime = currentTimeSec;
-        if (dt > WT_MapViewFuelRingLayer.SMOOTHING_MAX_TIME_DELTA) {
-            return 1;
-        } else {
-            return Math.pow(0.5, dt * this.smoothingConstant);
-        }
-    }
-
-    /**
-     * Applies exponential smoothing (i.e. exponential moving average) to a time fuel remaining value.
-     * @param {Number} hoursRemaining - the value to smooth.
-     * @param {Number} factor - the smoothing factor to use.
-     * @returns {Number} - the smoothed value.
-     */
-    _smoothHoursRemaining(hoursRemaining, factor) {
-        let smoothed = hoursRemaining * factor + this._lastHoursRemaining * (1 - factor);
-        this._lastHoursRemaining = smoothed;
-        return smoothed;
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
-        let fob = state.model.airplane.fuelOnboard(this._tempGal).number; // gallons
-        let fuelFlow = state.model.airplane.fuelFlowTotal(this._tempGPH).number; // gallons per hour
+        let dt = state.currentTime / 1000 - this._lastTime;
+
+        let airplane = state.model.airplane;
+        let fob = airplane.engineering.fuelOnboard(this._tempGal).number; // gallons
+        let fuelFlow = airplane.engineering.fuelFlowTotal(this._tempGPH).number; // gallons per hour
 
         let hoursRemainingTotal = fob / fuelFlow;
-        let smoothingFactor = this._calculateSmoothingFactor(state);
-        hoursRemainingTotal = this._smoothHoursRemaining(hoursRemainingTotal, smoothingFactor);
+        hoursRemainingTotal = this._hoursSmoother.next(hoursRemainingTotal, dt);
 
         let hoursRemainingReserve = Math.max(0, hoursRemainingTotal - state.model.fuelRing.reserveTime.asUnit(WT_Unit.HOUR));
-        let gs = state.model.airplane.groundSpeed(this._tempKnot).number; // knots
+        let gs = airplane.navigation.groundSpeed(this._tempKnot).number; // knots
         if (hoursRemainingReserve > 0) {
             this._outerRing.ring.strokeColor = this.outerRingStrokeColor;
             this._innerRing.ring.show = true;
@@ -135,6 +115,8 @@ class WT_MapViewFuelRingLayer extends WT_MapViewLabeledRingLayer {
         this._innerRing.radius = gs * hoursRemainingReserve / resolution;
         this._innerRing.label.time = this._timeToReserve.set(hoursRemainingReserve);
 
+        this._lastTime = state.currentTime / 1000;
+
         super.onUpdate(state);
     }
 }
@@ -142,7 +124,7 @@ WT_MapViewFuelRingLayer.CLASS_DEFAULT = "fuelRingLayer";
 WT_MapViewFuelRingLayer.CONFIG_NAME_DEFAULT = "fuelRing";
 WT_MapViewFuelRingLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
 WT_MapViewFuelRingLayer.OPTIONS_DEF = {
-    smoothingConstant: {default: 120, auto: true},
+    smoothingConstant: {default: 2, auto: true},
 
     outerRingStrokeWidth: {default: 2, auto: true},
     outerRingStrokeColor: {default: "#63aa59", auto: true},

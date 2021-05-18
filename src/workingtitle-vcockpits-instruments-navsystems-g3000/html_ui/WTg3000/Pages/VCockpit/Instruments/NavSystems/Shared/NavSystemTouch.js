@@ -34,8 +34,8 @@ class NavSystemTouch_Transponder extends NavSystemElement {
         this.inputIndex = -1;
         this.inputChanged = true;
     }
-    init(root) {
-        this.window = root;
+
+    _defineChildren() {
         this.transponder_CodeDisplay = this.gps.getChildById("transponder_Code");
         this.transponder_Bksp = this.gps.getChildById("transponder_Bksp");
         this.transponder_Vfr = this.gps.getChildById("transponder_Vfr");
@@ -50,6 +50,9 @@ class NavSystemTouch_Transponder extends NavSystemElement {
         this.transponder_Stby = this.gps.getChildById("transponder_Stby");
         this.transponder_On = this.gps.getChildById("transponder_On");
         this.transponder_Alt = this.gps.getChildById("transponder_Alt");
+    }
+
+    _initKeyboardButtons() {
         this.gps.makeButton(this.transponder_0, this.onDigitPress.bind(this, 0));
         this.gps.makeButton(this.transponder_1, this.onDigitPress.bind(this, 1));
         this.gps.makeButton(this.transponder_2, this.onDigitPress.bind(this, 2));
@@ -59,20 +62,41 @@ class NavSystemTouch_Transponder extends NavSystemElement {
         this.gps.makeButton(this.transponder_6, this.onDigitPress.bind(this, 6));
         this.gps.makeButton(this.transponder_7, this.onDigitPress.bind(this, 7));
         this.gps.makeButton(this.transponder_Bksp, this.backpacePress.bind(this));
+    }
+
+    _initModeButtons() {
         this.gps.makeButton(this.transponder_Stby, this.setTransponderState.bind(this, 1));
         this.gps.makeButton(this.transponder_On, this.setTransponderState.bind(this, 3));
         this.gps.makeButton(this.transponder_Alt, this.setTransponderState.bind(this, 4));
+    }
+
+    _initVFRButton() {
         this.gps.makeButton(this.transponder_Vfr, this.setCurrentCode.bind(this, [1, 2, 0, 0]));
+    }
+
+    _initButtons() {
+        this._initKeyboardButtons();
+        this._initModeButtons();
+        this._initVFRButton();
+    }
+
+    init(root) {
+        this.window = root;
+        this._defineChildren();
+        this._initButtons();
+
         if (SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") == 0) {
             this.setTransponderState(1);
         }
     }
+
     onEnter() {
         this.window.setAttribute("state", "Active");
         this.currentInput = [-1, -1, -1, -1];
         this.inputIndex = -1;
     }
-    onUpdate(_deltaTime) {
+
+    _updateModeButtons() {
         let transponderState = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
         if (this.transponderState != transponderState) {
             this.transponderState = transponderState;
@@ -80,6 +104,9 @@ class NavSystemTouch_Transponder extends NavSystemElement {
             this.transponder_On.setAttribute("state", (transponderState == 3 ? "Active" : ""));
             this.transponder_Alt.setAttribute("state", (transponderState == 4 ? "Active" : ""));
         }
+    }
+
+    _updateKeyboard() {
         let transponderCode;
         if (this.inputIndex == -1) {
             transponderCode = '<span class="Fixed">' + ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4) + '</span>';
@@ -100,6 +127,12 @@ class NavSystemTouch_Transponder extends NavSystemElement {
             this.inputChanged = false;
         }
     }
+
+    onUpdate(_deltaTime) {
+        this._updateModeButtons();
+        this._updateKeyboard();
+    }
+
     onExit() {
         this.window.setAttribute("state", "Inactive");
     }

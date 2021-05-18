@@ -1,6 +1,6 @@
 # Working Title G3000 Road Data
 
-### Latest version: v0.1.0
+### Latest version: v0.2.0
 
 ### Description
 This is an add-on package containing worldwide road geodata for the WorkingTitle G3000 mod. Installing this package in conjunction with the G3000 mod will enable display of roads and road labels on the navigation map (and optionally, VFR Map).
@@ -8,9 +8,21 @@ This is an add-on package containing worldwide road geodata for the WorkingTitle
 ### Installation
 To install, copy the `workingtitle-roaddata` folder from the zip file into your `Community` directory.
 
-#### Release Highlights for v0.1.0
+#### Release Highlights for v0.2.0
 _Please refer to the changelog for a more detailed description of changes in this release._
-- Initial release.
+- Updated road data for EN (Northern Europe) and SA (South America) regions.
+- Added road label data for the following countries:
+  - Argentina
+  - Bolivia
+  - Brazil
+  - Chile
+  - Paraguay
+  - Peru
+  - Uruguay
+  - Denmark
+  - Finland
+  - Norway
+  - Sweden
 
 ### Known Issues
 - Road data is currently unavailable for Tajikistan.

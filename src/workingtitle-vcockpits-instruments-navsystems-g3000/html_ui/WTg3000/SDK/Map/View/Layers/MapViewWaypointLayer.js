@@ -31,21 +31,27 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._showINT = false;
         this._showAirway = false;
 
+        /**
+         * @type {Set<WT_Waypoint>}
+         */
         this._standaloneWaypoints = new Set();
 
         this._airwaySegmentLabelCache = new WT_MapViewAirwaySegmentLabelCache(WT_MapViewWaypointLayer.AIRWAY_LABEL_CACHE_SIZE);
+        /**
+         * @type {Set<WT_MapViewAirwaySegmentLabel>}
+         */
         this._airwayLabelsToShow = new Set();
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewWaypointLayer.OPTIONS_DEF);
 
         this._airwayLayer = new WT_MapViewPersistentCanvas(WT_MapViewWaypointLayer.AIRWAY_OVERDRAW_FACTOR);
-        this._iconLayer = new WT_MapViewCanvas(true, true);
+        this._iconLayer = new WT_MapViewCanvas(false, true);
         this.addSubLayer(this._airwayLayer);
         this.addSubLayer(this._iconLayer);
 
         this._waypointRenderer = waypointRenderer;
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, this._iconLayer.buffer.context);
-        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, this._iconLayer.buffer.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, this._iconLayer.display.context);
+        this._waypointRenderer.setCanvasContext(WT_MapViewWaypointCanvasRenderer.Context.AIRWAY, this._iconLayer.display.context);
         this._waypointRenderer.setVisibilityHandler(WT_MapViewWaypointCanvasRenderer.Context.NORMAL, {isVisible: this._shouldShowNormalWaypoint.bind(this)});
         this._waypointStyleHandler = {getOptions: this._getWaypointStyleOptions.bind(this)};
 
@@ -54,7 +60,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
             onPaused: this._onAirwayRenderPaused.bind(this),
             onFinished: this._onAirwayRenderFinished.bind(this),
             onAborted: this._onAirwayRenderAborted.bind(this)
-        }
+        };
         this._airwayRenderer = new WT_MapViewAirwayCanvasRenderer(airwayRendererEventHandler, this._airwayLayer.buffer.context, 300);
         this._shouldDrawUnfinishedAirways = false;
 
@@ -334,12 +340,17 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._lastSearchParams.center.set(center);
         this._lastSearchParams.radius.set(radius);
         if (this._searchRequestsOpened) {
-            await Promise.all([
-                this._airportSearch.request.setParameters(center, radius, airportSearchSize),
-                this._vorSearch.request.setParameters(center, radius, vorSearchSize),
-                this._ndbSearch.request.setParameters(center, radius, ndbSearchSize),
-                this._intSearch.request.setParameters(center, radius, intSearchSize),
-            ]);
+            try {
+                await Promise.all([
+                    this._airportSearch.request.setParameters(center, radius, airportSearchSize),
+                    this._vorSearch.request.setParameters(center, radius, vorSearchSize),
+                    this._ndbSearch.request.setParameters(center, radius, ndbSearchSize),
+                    this._intSearch.request.setParameters(center, radius, intSearchSize),
+                ]);
+            } catch (e) {
+                // a newer search parameter update superceded this one.
+                return;
+            }
         } else {
             this._airportSearch.setRequest(this._icaoSearchers.airport.openRequest(center, radius, airportSearchSize));
             this._vorSearch.setRequest(this._icaoSearchers.vor.openRequest(center, radius, vorSearchSize));
@@ -423,10 +434,10 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     async _doUpdateSearch(search) {
         await search.update();
-        for (let waypoint of search.results) {
+        search.results.forEach(waypoint => {
             this._waypointRenderer.register(waypoint, WT_MapViewWaypointCanvasRenderer.Context.NORMAL);
             this._standaloneWaypoints.add(waypoint);
-        }
+        }, this);
     }
 
     /**
@@ -497,7 +508,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * Searches a list of waypoints for airways containing those waypoints, then filters and returns a subset of those airways that
      * should be drawn on the map.
      * @param {WT_MapViewState} state - the current map view state.
-     * @param {WT_Waypoint[]} waypoints - the waypoints from which to get airways.
+     * @param {WT_ICAOWaypoint[]} waypoints - the waypoints from which to get airways.
      * @returns {WT_Airway[]} - an array of airways that should be drawn on the map.
      */
     _getAirwaysToDraw(state, waypoints) {
@@ -510,11 +521,11 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         let boundTop = -this._airwayLayer.height * 0.05;
         let boundBottom = this._airwayLayer.height * 1.05;
 
-        for (let waypoint of waypoints) {
+        waypoints.forEach(waypoint => {
             if (waypoint.icao !== undefined) {
                 let show = waypoint.airways && waypoint.airways.length > 0;
                 if (!show) {
-                    continue;
+                    return;
                 }
             }
 
@@ -523,13 +534,11 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
                 viewPosition.x > boundRight ||
                 viewPosition.y < boundTop ||
                 viewPosition.y > boundBottom) {
-                continue;
+                    return;
             }
 
-            for (let airway of waypoint.airways) {
-                airways.set(airway.name, airway);
-            }
-        }
+            waypoint.airways.forEach(airway => airways.set(airway.name, airway))
+        }, this);
         return Array.from(airways.values());
     }
 
@@ -537,9 +546,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      * De-registers all waypoints associated with the most recently drawn airway segments.
      */
     _clearAirwayWaypoints() {
-        for (let waypoint of this._airwayWaypoints) {
-            this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY);
-        }
+        this._airwayWaypoints.forEach(waypoint => this._waypointRenderer.deregister(waypoint, WT_MapViewWaypointCanvasRenderer.Context.AIRWAY), this);
         this._airwayWaypoints = [];
     }
 
@@ -637,7 +644,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      */
     _startDrawAirways(state) {
         this._airwayLayer.syncBuffer(state);
-        this._airwayRenderer.render(this._getAirwaysToDraw(state, this._standaloneWaypoints), this._airwayLayer.buffer.projectionRenderer);
+        let airways = this._getAirwaysToDraw(state, this._standaloneWaypoints);
+        this._airwayRenderer.render(airways, this._airwayLayer.buffer.projectionRenderer);
     }
 
     /**
@@ -694,11 +702,8 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
      *
      * @param {WT_MapViewState} state
      */
-    _updateWaypointRenderer(state) {
-        this._waypointRenderer.update(state);
+    _updateIconLayer(state) {
         this._iconLayer.display.clear();
-        this._iconLayer.copyBufferToCanvas();
-        this._iconLayer.resetBuffer();
     }
 
     /**
@@ -713,9 +718,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
             }
         }
 
-        for (let waypoint of toRemove) {
-            this._standaloneWaypoints.delete(waypoint);
-        }
+        toRemove.forEach(waypoint => this._standaloneWaypoints.delete(waypoint), this);
     }
 
     /**
@@ -726,7 +729,7 @@ class WT_MapViewWaypointLayer extends WT_MapViewMultiLayer {
         this._updateVisibilityFromModel(state);
         this._retrieveWaypointsInRange(state);
         this._updateAirways(state);
-        this._updateWaypointRenderer(state);
+        this._updateIconLayer(state);
         this._updateStandaloneWaypoints(state);
         this._lastTime = state.currentTime / 1000;
         this._lastStandaloneWaypointsCount = this._standaloneWaypoints.size;
@@ -846,7 +849,19 @@ WT_MapViewWaypointLayer.CONFIG_PROPERTIES = [
     "airwayLabelPriority",
 ];
 
+/**
+ * A periodic search for ICAO waypoints.
+ */
 class WT_MapViewWaypointSearch {
+    /**
+     * @param {(icaos:String[]) => Promise<WT_Waypoint[]>} factoryMethod - the WT_ICAOWaypointFactory method the new
+     *                                                                     search should use to create WT_Waypoint
+     *                                                                     objects from ICAO strings.
+     * @param {Number} minDelay - the minimum amount of time between two successive search updates, in seconds.
+     * @param {Number} maxDelay - the maximum amount of time between two successive search updates, in seconds.
+     * @param {Number} delayIncThreshold - the number of searches updates required before the delay between updates
+     *                                     automatically increases.
+     */
     constructor(factoryMethod, minDelay, maxDelay, delayIncThreshold) {
         this._request = null;
         this._factoryMethod = factoryMethod;
@@ -862,8 +877,8 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
+     * The ICAO search request associated with this search.
      * @readonly
-     * @property {WT_ICAOSearchRequest} request
      * @type {WT_ICAOSearchRequest}
      */
     get request() {
@@ -871,8 +886,8 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
+     * The results of the most recent update from this search.
      * @readonly
-     * @property {WT_ICAOWaypoint[]} results
      * @type {WT_ICAOWaypoint[]}
      */
     get results() {
@@ -880,8 +895,8 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
+     * Whether this search is currently updating.
      * @readonly
-     * @property {Boolean} isBusy
      * @type {Boolean}
      */
     get isBusy() {
@@ -889,30 +904,45 @@ class WT_MapViewWaypointSearch {
     }
 
     /**
-     *
-     * @param {WT_ICAOSearchRequest} request
+     * Sets this search's ICAO search request.
+     * @param {WT_ICAOSearchRequest} request - an ICAO search request.
      */
     setRequest(request) {
         this._request = request;
     }
 
     /**
-     * @returns {Number}
+     * Gets the amount of time remaining on this search's update delay timer.
+     * @returns {Number} the amount of time remaining on this search's update delay timer, in seconds.
      */
     timeRemaining() {
         return this._timer;
     }
 
+    /**
+     * Advances this search's update delay timer.
+     * @param {Number} dt - the amount of time to advance, in seconds.
+     */
     advanceTimer(dt) {
         this._timer -= dt;
     }
 
+    /**
+     * Resets this search's update delay timer and counter to 0, and resets the delay to the minimum value.
+     */
     reset() {
         this._timer = 0;
         this._delay = this._minDelay;
         this._updateCount = 0;
     }
 
+    /**
+     * Executes a search update and stores the results in an array accessible through the results property. This will
+     * automatically increase this search's update delay if the number of updates since the last delay increase is
+     * greater than or equal to the threshold, and set the time remaining on the update delay timer to the delay value.
+     * @returns {Promise<void>} a Promise that resolves when the search update is complete and the results have been
+     *                          stored in the results array.
+     */
     async update() {
         this._isBusy = true;
         await this.request.update();
