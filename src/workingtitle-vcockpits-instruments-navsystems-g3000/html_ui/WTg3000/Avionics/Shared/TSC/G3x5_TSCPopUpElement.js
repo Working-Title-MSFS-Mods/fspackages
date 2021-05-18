@@ -71,7 +71,7 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     init(root) {
         this._popUpWindow = root;
         this._titleDisplay = root.querySelector(`.WindowTitle`);
-        if (this._title === null) {
+        if (this._title === null && this._titleDisplay) {
             this._title = this._titleDisplay.textContent;
         } else {
             this._updateTitle();
@@ -93,6 +93,10 @@ class WT_G3x5_TSCPopUpElement extends NavSystemElement {
     }
 
     _updateTitle() {
+        if (!this._titleDisplay) {
+            return;
+        }
+
         this._titleDisplay.textContent = this._title;
     }
 

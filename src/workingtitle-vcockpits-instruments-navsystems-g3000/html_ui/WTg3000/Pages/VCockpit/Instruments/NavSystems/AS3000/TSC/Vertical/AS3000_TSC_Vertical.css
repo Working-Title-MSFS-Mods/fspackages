@@ -1492,19 +1492,21 @@ as3000-tsc-vertical-element .nearestNDB wt-tsc-nearestndb {
         as3000-tsc-vertical-element #Electricity #SelectionList .content .gradientButton .value {
           font-size: 2.5vh; }
 
-    as3000-tsc-vertical-element #Electricity .PopUpWindow {
-      top: 18%;
-      width: 100%;
-      height: 68%;
-      z-index: 10; }
-      as3000-tsc-vertical-element #Electricity .PopUpWindow .WindowTitle {
+as3000-tsc-vertical-element #Electricity .PopUpWindow {
+    top: 18%;
+    width: 100%;
+    height: 68%;
+    z-index: 10;
+}
+    as3000-tsc-vertical-element #Electricity .PopUpWindow .WindowTitle {
         font-size: 3vh;
         height: 10%;
         width: 100%;
         background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
         background-size: contain;
         background-position: center top;
-        background-repeat: no-repeat; }
+        background-repeat: no-repeat;
+    }
 
     as3000-tsc-vertical-element #Electricity .SelectionListWindow .content {
       width: 50%;
@@ -1583,6 +1585,24 @@ as3000-tsc-vertical-element #TimeKeyboard wt-tsc-timekeyboard {
     height: 85%;
     font-size: 4.5vh;
     --timekeyboard-button-size: 10vh;
+}
+
+as3000-tsc-vertical-element #WaypointKeyboard wt-tsc-waypointkeyboard {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+    font-size: 5vh;
+}
+
+as3000-tsc-vertical-element #DuplicateWaypointSelection wt-tsc-duplicatewaypoint {
+    position: absolute;
+    left: 1%;
+    top: 10%;
+    width: 98%;
+    height: 89%;
+    font-size: 3.5vh;
 }
 
 as3000-tsc-vertical-element #TransponderMode wt-tsc-transpondermode-mode {

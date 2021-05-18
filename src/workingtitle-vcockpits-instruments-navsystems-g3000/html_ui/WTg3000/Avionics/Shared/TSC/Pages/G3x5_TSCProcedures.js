@@ -502,9 +502,9 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
 
     /**
      *
-     * @param {String} icao
+     * @param {WT_Airport} airport
      */
-    async _selectAirportICAO(icao) {
+    _selectAirport(airport) {
     }
 
     _removeProcedure() {
@@ -583,7 +583,7 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
     _onHTMLElementEvent(event) {
         switch (event.type) {
             case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.AIRPORT_SELECTED:
-                this._selectAirportICAO(event.airportICAO);
+                this._selectAirport(event.airport);
                 break;
             case WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.PROCEDURE_REMOVED:
                 this._removeProcedure();
@@ -1273,15 +1273,19 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         this._listeners.forEach(listener => listener(event));
     }
 
-    _selectAirport(icao) {
-        if (icao === "") {
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    _selectAirport(airport) {
+        if (!airport) {
             return;
         }
 
         this._notifyListeners({
             source: this,
             type: WT_G3x5_TSCProcedureSelectionHTMLElement.EventType.AIRPORT_SELECTED,
-            airportICAO: icao
+            airport: airport
         });
     }
 
@@ -1291,10 +1295,13 @@ class WT_G3x5_TSCProcedureSelectionHTMLElement extends HTMLElement {
         }
 
         let instrument = this._parentPage.instrument;
-        instrument.deactivateNavButton(5);
-        instrument.deactivateNavButton(6);
-        instrument.fullKeyboard.element.setContext(this._selectAirport.bind(this));
-        instrument.switchToPopUpPage(instrument.fullKeyboard);
+        instrument.waypointKeyboard.element.setContext({
+            homePageGroup: this._parentPage.homePageGroup,
+            homePageName: this._parentPage.homePageName,
+            searchTypes: [WT_ICAOWaypoint.Type.AIRPORT],
+            callback: this._selectAirport.bind(this)
+        });
+        instrument.switchToPopUpPage(instrument.waypointKeyboard);
     }
 
     _onAirportButtonPressed(button) {
@@ -1659,7 +1666,7 @@ WT_G3x5_TSCProcedureSelectionHTMLElement.UNIT_CLASS = "unit";
  * @typedef WT_G3x5_TSCProcedureSelectionEvent
  * @property {WT_G3x5_TSCProcedureSelectionHTMLElement} source
  * @property {WT_G3x5_TSCProcedureSelectionHTMLElement.EventType} type
- * @property {String} [airportICAO]
+ * @property {WT_Airport} [airport]
  * @property {WT_Procedure} [procedure]
  * @property {Number} [transitionIndex]
  * @property {WT_Runway} [runway]
@@ -2393,14 +2400,13 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
 
     /**
      *
-     * @param {String} icao
+     * @param {WT_Airport} airport
      */
-    async _selectAirportICAO(icao) {
+    _selectAirport(airport) {
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.setActiveOriginICAO(icao);
+                this._fpm.setActiveOrigin(airport);
             } else {
-                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
                 this._displayedFlightPlan.setOrigin(airport);
             }
         } catch (e) {
@@ -2636,14 +2642,13 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
 
     /**
      *
-     * @param {String} icao
+     * @param {WT_Airport} airport
      */
-    async _selectAirportICAO(icao) {
+    _selectAirport(airport) {
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.setActiveDestinationICAO(icao);
+                this._fpm.setActiveDestination(airport);
             } else {
-                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
                 this._displayedFlightPlan.setDestination(airport);
             }
         } catch (e) {
@@ -2898,14 +2903,13 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
 
     /**
      *
-     * @param {String} icao
+     * @param {WT_Airport} airport
      */
-    async _selectAirportICAO(icao) {
+    _selectAirport(airport) {
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.setActiveDestinationICAO(icao);
+                this._fpm.setActiveDestination(airport);
             } else {
-                let airport = await this.instrument.icaoWaypointFactory.getAirport(icao);
                 this._displayedFlightPlan.setDestination(airport);
             }
         } catch (e) {

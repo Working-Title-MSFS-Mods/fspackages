@@ -52,7 +52,9 @@ class WT_G3x5_UnitsSetting extends WT_DataStoreSetting {
      * @param {Number} defaultValue
      */
     constructor(model, key, defaultValue) {
-        super(model, key, defaultValue, false, true);
+        super(model, key, defaultValue, true, true);
+
+        this.update();
     }
 
     _getAllUnitsHelper(valueEnum, categories) {
@@ -65,10 +67,22 @@ class WT_G3x5_UnitsSetting extends WT_DataStoreSetting {
     }
 
     /**
+     * @readonly
+     * @type {Number}
+     */
+    get value() {
+        return this._value;
+    }
+
+    /**
      *
      * @returns {WT_Unit[][]}
      */
     getAllUnits() {
+    }
+
+    update() {
+        this._value = this.getValue();
     }
 }
 
@@ -80,7 +94,7 @@ class WT_G3x5_NavAngleUnitsSetting extends WT_G3x5_UnitsSetting {
     }
 
     getNavAngleUnit() {
-        return WT_G3x5_NavAngleUnitsSetting.UNITS.navAngle[this.getValue()];
+        return WT_G3x5_NavAngleUnitsSetting.UNITS.navAngle[this.value];
     }
 
     /**
@@ -112,11 +126,11 @@ class WT_G3x5_DistanceSpeedUnitsSetting extends WT_G3x5_UnitsSetting {
     }
 
     getDistanceUnit() {
-        return WT_G3x5_DistanceSpeedUnitsSetting.UNITS.distance[this.getValue()];
+        return WT_G3x5_DistanceSpeedUnitsSetting.UNITS.distance[this.value];
     }
 
     getSpeedUnit() {
-        return WT_G3x5_DistanceSpeedUnitsSetting.UNITS.speed[this.getValue()];
+        return WT_G3x5_DistanceSpeedUnitsSetting.UNITS.speed[this.value];
     }
 
     /**
@@ -149,11 +163,11 @@ class WT_G3x5_AltitudeUnitsSetting extends WT_G3x5_UnitsSetting {
     }
 
     getAltitudeUnit() {
-        return WT_G3x5_AltitudeUnitsSetting.UNITS.altitude[this.getValue()];
+        return WT_G3x5_AltitudeUnitsSetting.UNITS.altitude[this.value];
     }
 
     getVerticalSpeedUnit() {
-        return WT_G3x5_AltitudeUnitsSetting.UNITS.verticalSpeed[this.getValue()];
+        return WT_G3x5_AltitudeUnitsSetting.UNITS.verticalSpeed[this.value];
     }
 
     /**
@@ -186,7 +200,7 @@ class WT_G3x5_ExtTemperatureUnitsSetting extends WT_G3x5_UnitsSetting {
     }
 
     getTemperatureUnit() {
-        return WT_G3x5_ExtTemperatureUnitsSetting.UNITS.temperature[this.getValue()];
+        return WT_G3x5_ExtTemperatureUnitsSetting.UNITS.temperature[this.value];
     }
 
     /**

@@ -191,7 +191,7 @@ class WT_FlightPlanManager {
      * Sets the active flight plan's destination waypoint.
      * @param {WT_ICAOWaypoint} waypoint - the waypoint to set as the destination.
      */
-    async setActiveDestination(waypoint) {
+    setActiveDestination(waypoint) {
         this.setActiveDestinationICAO(waypoint ? waypoint.icao : "");
     }
 

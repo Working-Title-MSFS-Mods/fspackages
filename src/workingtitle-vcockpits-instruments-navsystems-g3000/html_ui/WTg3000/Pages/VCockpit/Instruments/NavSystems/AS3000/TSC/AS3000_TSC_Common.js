@@ -367,14 +367,10 @@ class AS3000_TSC extends NavSystemTouch {
         this.frequencyKeyboard.setGPS(this);
         this.speedKeyboard = new WT_G3x5_TSCElementContainer("Speed Keyboard", "speedKeyboard", new AS3000_TSC_SpeedKeyboard());
         this.speedKeyboard.setGPS(this);
-        this.fullKeyboard = new WT_G3x5_TSCElementContainer("Keyboard", "fullKeyboard", new AS3000_TSC_FullKeyboard());
-        this.fullKeyboard.setGPS(this);
         this.insertBeforeWaypoint = new WT_G3x5_TSCElementContainer("Insert Before Waypoint", "insertBeforeWaypointWindow", new AS3000_TSC_InsertBeforeWaypoint());
         this.insertBeforeWaypoint.setGPS(this);
         this.minimumSource = new WT_G3x5_TSCElementContainer("Minimums Source", "minimumSource", new AS3000_TSC_MinimumSource());
         this.minimumSource.setGPS(this);
-        this.duplicateWaypointSelection = new WT_G3x5_TSCElementContainer("Waypoint Duplicates", "WaypointDuplicateWindow", new AS3000_TSC_DuplicateWaypointSelection());
-        this.duplicateWaypointSelection.setGPS(this);
         this.loadFrequencyWindow = new WT_G3x5_TSCElementContainer("Frequency Window", "LoadFrequencyPopup", new WT_G3x5_TSCLoadFrequency());
         this.loadFrequencyWindow.setGPS(this);
         this.confirmationWindow = new AS3000_TSC_ConfirmationWindow();
@@ -392,6 +388,12 @@ class AS3000_TSC extends NavSystemTouch {
 
         this.timeKeyboard = new WT_G3x5_TSCElementContainer("Time Keyboard", "TimeKeyboard", new WT_G3x5_TSCTimeKeyboard());
         this.timeKeyboard.setGPS(this);
+
+        this.waypointKeyboard = new WT_G3x5_TSCElementContainer("Waypoint Keyboard", "WaypointKeyboard", new WT_G3x5_TSCWaypointKeyboard());
+        this.waypointKeyboard.setGPS(this);
+
+        this.duplicateWaypointSelection = new WT_G3x5_TSCElementContainer("Duplicate Waypoint Selection", "DuplicateWaypointSelection", new WT_G3x5_TSCDuplicateWaypointSelection());
+        this.duplicateWaypointSelection.setGPS(this);
 
         this.mapDetailSelect = new WT_G3x5_TSCElementContainer("Map Detail Settings", "MapDetailSelect", new WT_G3x5_TSCMapDetailSelect());
         this.mapDetailSelect.setGPS(this);
@@ -1441,9 +1443,17 @@ class AS3000_TSC_DirectTo extends NavSystemTouch_DirectTo {
 
     onEvent(_event) {
     }
+    endKeyboard(waypoint) {
+        super.endKeyboard(waypoint ? waypoint.icao : "");
+    }
     openKeyboard() {
-        this.gps.fullKeyboard.getElementOfType(AS3000_TSC_FullKeyboard).setContext(this.endKeyboard.bind(this));
-        this.gps.switchToPopUpPage(this.gps.fullKeyboard);
+        this.gps.waypointKeyboard.element.setContext({
+            homePageGroup: "MFD",
+            homePageName: "MFD Home",
+            searchTypes: null,
+            callback: this.endKeyboard.bind(this)
+        });
+        this.gps.switchToPopUpPage(this.gps.waypointKeyboard);
     }
     back() {
         this.gps.goBack();
@@ -2756,48 +2766,6 @@ class AS3000_TSC_AltitudeKeyboard extends NavSystemTouch_AltitudeKeyboard {
         this.gps.goBack();
     }
 }
-class AS3000_TSC_FullKeyboard extends NavSystemTouch_FullKeyboard {
-    _activateNavButtons() {
-        this.gps.activateNavButton(1, "Back", this.cancel.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validate.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
-    }
-
-    _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
-    }
-
-    onFocusGained() {
-        this._activateNavButtons();
-    }
-
-    onFocusLost() {
-        this._deactivateNavButtons();
-    }
-
-    cancel() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.closePopUpElement();
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-    validate() {
-        let nbMatched = SimVar.GetSimVarValue("C:fs9gps:IcaoSearchMatchedIcaosNumber", "number", this.gps.instrumentIdentifier);
-        if (nbMatched > 1) {
-            this.gps.duplicateWaypointSelection.element.setContext(this.endCallback);
-            this.gps.goBack();
-            this.gps.switchToPopUpPage(this.gps.duplicateWaypointSelection);
-        }
-        else {
-            this.endCallback(SimVar.GetSimVarValue("C:fs9gps:IcaoSearchCurrentIcao", "string", this.gps.instrumentIdentifier));
-            this.gps.goBack();
-        }
-        return true;
-    }
-}
 class AS3000_TSC_TerrainAlert extends Warnings {
     constructor() {
         super(...arguments);
@@ -2954,47 +2922,6 @@ class AS3000_TSC_InsertBeforeWaypoint extends NavSystemElement {
     }
     scrollDown() {
         this.scrollElement.scrollDown();
-    }
-}
-class AS3000_TSC_DuplicateWaypointSelection extends NavSystemTouch_DuplicateWaypointSelection {
-    _activateNavButtons() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(5, "Up", this.scrollUp.bind(this), false, "ICON_TSC_BUTTONBAR_UP.png");
-        this.gps.activateNavButton(6, "Down", this.scrollDown.bind(this), false, "ICON_TSC_BUTTONBAR_DOWN.png");
-    }
-
-    _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(5, true);
-        this.gps.deactivateNavButton(6, true);
-    }
-
-    onFocusGained() {
-        this._activateNavButtons();
-    }
-
-    onFocusLost() {
-        this._deactivateNavButtons();
-    }
-
-    back() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.closePopUpElement();
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-    scrollUp() {
-        this.scrollElement.scrollUp();
-    }
-    scrollDown() {
-        this.scrollElement.scrollDown();
-    }
-    onButtonClick(_index) {
-        super.onButtonClick(_index);
-        this.gps.goBack();
     }
 }
 class AS3000_TSC_Minimums extends NavSystemElement {
