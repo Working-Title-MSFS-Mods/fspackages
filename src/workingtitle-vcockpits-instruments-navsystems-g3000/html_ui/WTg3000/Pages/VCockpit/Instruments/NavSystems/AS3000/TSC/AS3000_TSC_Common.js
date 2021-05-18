@@ -277,6 +277,10 @@ class AS3000_TSC extends NavSystemTouch {
     _createNavMapTrafficSettingsPage(homePageGroup, homePageName, mapSettings) {
     }
 
+    _createFlightPlanPage() {
+        return new WT_G3x5_TSCFlightPlan("MFD", "MFD Home", this.instrumentIdentifier);
+    }
+
     _initPages() {
         this.pagesContainer = this.getChildById("PagesDisplay");
 
@@ -314,7 +318,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesLeft.weatherRadar = new WT_G3x5_TSCPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.weatherRadar = new WT_G3x5_TSCPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
                 new WT_G3x5_TSCPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
-                new WT_G3x5_TSCPage("Flight Plan", "FlightPlan", new WT_G3x5_TSCFlightPlan("MFD", "MFD Home", this.instrumentIdentifier)),
+                this._commonPages.flightPlan = new WT_G3x5_TSCPage("Flight Plan", "FlightPlan", this._createFlightPlanPage("MFD Home", "MFD")),
                 this._commonPages.procedures = new WT_G3x5_TSCPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
                 this._commonPages.departureSelection = new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
                 this._commonPages.arrivalSelection = new WT_G3x5_TSCPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),

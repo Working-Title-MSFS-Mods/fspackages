@@ -28,6 +28,10 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         return new WT_G5000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", mapSettings);
     }
 
+    _createFlightPlanPage() {
+        return new WT_G5000_TSCFlightPlan("MFD", "MFD Home", this.instrumentIdentifier);
+    }
+
     _createAircraftSystemsPage() {
         return new WT_G5000_TSCAircraftSystems("MFD", "MFD Home");
     }

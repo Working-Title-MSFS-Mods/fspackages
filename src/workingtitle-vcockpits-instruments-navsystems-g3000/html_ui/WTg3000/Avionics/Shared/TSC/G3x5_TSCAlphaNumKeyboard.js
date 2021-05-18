@@ -176,6 +176,7 @@ WT_G3x5_TSCAlphaNumKeyboard.TEMPLATE.innerHTML = `
                 font-size: var(--alphanumkeyboard-findbutton-font-size, 0.5em);
                 --button-img-image-top: -10%;
                 --button-img-image-height: 80%;
+                grid-area: 1 / 5 / span 1 / span 2;
             }
             .backspace {
                 font-size: var(--alphanumkeyboard-backspacebutton-font-size, 0.5em);
@@ -183,24 +184,19 @@ WT_G3x5_TSCAlphaNumKeyboard.TEMPLATE.innerHTML = `
                 --button-img-label-height: 55%;
                 --button-img-image-top: 30%;
                 --button-img-image-height: 80%;
+                grid-area: 1 / 10 / span 1 / span 3;
+            }
+            .key {
+                grid-column-end: span 2;
+            }
+            #numbers,
+            #letters {
+                grid-area: 1 / 7 / span 1 / span 3;
             }
             #wrapper[mode="letters"] #letterkeyboard,
             #wrapper[mode="numbers"] #numberkeyboard {
                 display: grid;
             }
-                .key {
-                    grid-column-end: span 2;
-                }
-                .find {
-                    grid-area: 1 / 5 / span 1 / span 2;
-                }
-                #numbers,
-                #letters {
-                    grid-area: 1 / 7 / span 1 / span 3;
-                }
-                .backspace {
-                    grid-area: 1 / 10 / span 1 / span 3;
-                }
                 #keyNorth {
                     grid-row-start: 2;
                     grid-column-start: 1;

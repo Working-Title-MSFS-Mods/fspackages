@@ -1623,6 +1623,17 @@ as3000-tsc-vertical-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapse
     font-size: 4vh;
 }
 
+as3000-tsc-vertical-element #FlightPlanKeyboard wt-tsc-fplnkeyboard {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 99%;
+    font-size: 4vh;
+    --fplnkeyboard-keyboard-font-size: 5vh;
+    --fplnalphanumkeyboard-key-size: 7.5vh;
+}
+
 as3000-tsc-vertical-element #FlightPlanOptions wt-tsc-flightplanoptions {
     position: absolute;
     left: 2%;
