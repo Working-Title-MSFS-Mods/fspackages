@@ -367,8 +367,13 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
     _openKeyboard() {
         this.instrument.deactivateNavButton(5);
         this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), WT_ICAOWaypoint.getICAOPrefixFromType(WT_ICAOWaypoint.Type.AIRPORT));
-        this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
+        this.instrument.waypointKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            searchTypes: [WT_ICAOWaypoint.Type.AIRPORT],
+            callback: this._onKeyboardClosed.bind(this)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.waypointKeyboard);
     }
 
     _openOptionsWindow() {
@@ -390,8 +395,12 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
         WT_CrossInstrumentEvent.fireEvent(this._manualAirportSelectKey, "");
     }
 
-    _onKeyboardClosed(icao) {
-        this.setAirportICAO(icao);
+    /**
+     *
+     * @param {WT_Airport} airport
+     */
+    _onKeyboardClosed(airport) {
+        this.setAirportICAO(airport ? airport.icao : "");
     }
 
     _onManualAirportSelect(key, data) {
