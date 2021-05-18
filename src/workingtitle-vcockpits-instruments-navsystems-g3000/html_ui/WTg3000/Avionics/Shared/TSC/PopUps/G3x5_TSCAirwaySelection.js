@@ -34,8 +34,17 @@ class WT_G3x5_TSCAirwaySelection extends WT_G3x5_TSCPopUpElement {
         this._initFromHTMLElement();
     }
 
+    /**
+     *
+     * @param {WT_G3x5_TSCAirwaySelectionEvent} event
+     */
     _onAirwayLoaded(event) {
         this.context.callback(event.airway, event.sequence);
+        this.instrument.goBack();
+    }
+
+    _onBackPressed() {
+        this.context.callback(null, []);
         this.instrument.goBack();
     }
 
@@ -59,8 +68,9 @@ class WT_G3x5_TSCAirwaySelection extends WT_G3x5_TSCPopUpElement {
         }
 
         this.htmlElement.setMode(WT_G3x5_TSCAirwaySelectionHTMLElement.Mode.DEFAULT);
-        await this.htmlElement.setEntryWaypoint(this.context.entryWaypoint);
-        await this.htmlElement.setAirway(null);
+        await this.htmlElement.setEntryWaypoint(this.context.entryWaypoint ? this.context.entryWaypoint : null);
+        await this.htmlElement.setAirway(this.context.airway ? this.context.airway : null);
+        await this.htmlElement.setExitWaypoint(this.context.exitWaypoint ? this.context.exitWaypoint : null);
     }
 
     onEnter() {
@@ -99,7 +109,7 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
         this._waypointIconSrcFactory = new WT_G3x5_TSCWaypointButtonIconSrcFactory(WT_G3x5_TSCAirwaySelectionHTMLElement.WAYPOINT_ICON_IMAGE_DIRECTORY);
 
         /**
-         * @type {((airway:WT_Airway, sequence:WT_ICAOWaypoint[]) => void)[]}
+         * @type {((event:WT_G3x5_TSCAirwaySelectionEvent) => void)[]}
          */
         this._loadAirwayListeners = [];
 
@@ -321,7 +331,7 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
             let airwayWaypoints = await this._airway.getWaypoints();
             let entryIndex = airwayWaypoints.findIndex(waypoint => waypoint.equals(this._entryWaypoint), this);
             let exitIndex = airwayWaypoints.findIndex(waypoint => waypoint.equals(this._exitWaypoint), this);
-            if (entryIndex !== exitIndex) {
+            if (entryIndex >= 0 && exitIndex >= 0 && entryIndex !== exitIndex) {
                 let direction = Math.sign(exitIndex - entryIndex);
                 for (let i = entryIndex; i - exitIndex !== direction; i += direction) {
                     this._waypointSequence.push(airwayWaypoints.get(i));
@@ -487,7 +497,7 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
 
     /**
      *
-     * @param {(airway:WT_Airway, sequence:WT_ICAOWaypoint[]) => void} listener
+     * @param {(event:WT_G3x5_TSCAirwaySelectionEvent) => void} listener
      */
     addLoadAirwayListener(listener) {
         this._loadAirwayListeners.push(listener);
@@ -495,7 +505,7 @@ class WT_G3x5_TSCAirwaySelectionHTMLElement extends HTMLElement {
 
     /**
      *
-     * @param {(airway:WT_Airway, sequence:WT_ICAOWaypoint[]) => void} listener
+     * @param {(event:WT_G3x5_TSCAirwaySelectionEvent) => void} listener
      */
     removeLoadAirwayListener(listener) {
         let index = this._loadAirwayListeners.indexOf(listener);
@@ -720,6 +730,13 @@ WT_G3x5_TSCAirwaySelectionHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_TSCAirwaySelectionHTMLElement.NAME, WT_G3x5_TSCAirwaySelectionHTMLElement);
+
+/**
+ * @typedef WT_G3x5_TSCAirwaySelectionEvent
+ * @property {WT_G3x5_TSCAirwaySelectionHTMLElement} source
+ * @property {WT_Airway} airway
+ * @property {WT_ICAOWaypoint[]} sequence
+ */
 
 class WT_G3x5_TSCAirwayButton extends WT_TSCButton {
     constructor() {

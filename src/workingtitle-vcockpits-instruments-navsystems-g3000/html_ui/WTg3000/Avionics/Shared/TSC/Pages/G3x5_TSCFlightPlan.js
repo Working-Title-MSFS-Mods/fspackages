@@ -254,6 +254,34 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     /**
      *
+     * @param {WT_FlightPlan} flightPlan
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {Number} index
+     */
+    _findPreviousLegFromSegmentIndex(flightPlan, segment, index) {
+        let previousLegSegment = segment;
+        let segmentElement = flightPlan.getSegment(previousLegSegment);
+        index = Math.min(index, segmentElement.elements.length);
+        let element;
+        if (segmentElement.elements.length > 0) {
+            element = segmentElement.elements.get(index - 1);
+        }
+        while (!element && previousLegSegment > 0) {
+            previousLegSegment--;
+            segmentElement = flightPlan.getSegment(previousLegSegment);
+            if (segmentElement) {
+                element = segmentElement.elements.last();
+            }
+        }
+        let previousLeg;
+        if (element) {
+            previousLeg = element.legs.last();
+        }
+        return previousLeg;
+    }
+
+    /**
+     *
      * @param {WT_ICAOWaypoint} waypoint
      */
     _selectOrigin(waypoint) {
@@ -310,25 +338,35 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     /**
      *
-     * @param {WT_FlightPlanLeg} leg
-     * @param {Number} deltaIndex
+     * @param {WT_FlightPlan.Segment} segment
      * @param {WT_ICAOWaypoint} waypoint
+     * @param {Number} [index]
      */
-    async _insertWaypoint(leg, deltaIndex, waypoint) {
-        if (!waypoint || leg.flightPlan !== this._fpm.activePlan) {
-            return;
-        }
-
+    async _insertWaypointToIndex(segment, waypoint, index) {
         try {
-            let legSegmentIndex = leg.index - leg.flightPlan.getSegment(leg.segment).legs.first().index;
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.addWaypointToActive(leg.segment, waypoint, legSegmentIndex + deltaIndex);
+                this._fpm.addWaypointToActive(segment, waypoint, index);
             } else {
-                await this._displayedFlightPlan.insertWaypoint(leg.segment, {waypoint: waypoint}, legSegmentIndex + deltaIndex);
+                await this._displayedFlightPlan.insertWaypoint(segment, {waypoint: waypoint}, index);
             }
         } catch (e) {
             console.log(e);
         }
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @param {Number} deltaIndex
+     * @param {WT_ICAOWaypoint} waypoint
+     */
+    async _insertWaypointFromLeg(leg, deltaIndex, waypoint) {
+        if (!waypoint || leg.flightPlan !== this._fpm.activePlan) {
+            return;
+        }
+
+        let legSegmentIndex = leg.flightPlan.getSegment(leg.segment).elements.indexOf(leg);
+        await this._insertWaypointToIndex(leg.segment, waypoint, legSegmentIndex + deltaIndex);
     }
 
     /**
@@ -340,11 +378,31 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             return;
         }
 
+        await this._insertWaypointToIndex(WT_FlightPlan.Segment.ENROUTE, waypoint);
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlan.Segment} segment
+     * @param {WT_Airway} airway
+     * @param {WT_ICAOWaypoint[]} waypointSequence
+     * @param {Number} [index]
+     */
+    async _insertAirwayToIndex(segment, airway, waypointSequence, index) {
         try {
+            let previousLeg = this._findPreviousLegFromSegmentIndex(this._displayedFlightPlan, segment, index);
+
+            let enter = waypointSequence[0];
+            let exit = waypointSequence[waypointSequence.length - 1];
+            if (previousLeg && enter.equals(previousLeg.fix)) {
+                // if the airway entry waypoint is equal to the previous leg fix,
+                // then set the entry waypoint to the next in the sequence to avoid duplicating a leg
+                enter = waypointSequence[1];
+            }
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.addWaypointToActive(WT_FlightPlan.Segment.ENROUTE, waypoint);
+                this._fpm.addAirwaySequenceToActive(segment, airway, enter, exit, index);
             } else {
-                await this._displayedFlightPlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint});
+                await this._displayedFlightPlan.insertAirway(segment, airway, enter, exit, index);
             }
         } catch (e) {
             console.log(e);
@@ -353,40 +411,26 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
     /**
      *
-     * @param {WT_FlightPlanLeg} leg
+     * @param {WT_FlightPlanLeg} referenceLeg
+     * @param {Number} indexDelta
      * @param {WT_Airway} airway
      * @param {WT_ICAOWaypoint[]} waypointSequence
      */
-    async _insertAirway(leg, airway, waypointSequence) {
-        if (leg.flightPlan !== this._displayedFlightPlan) {
+    async _insertAirwayFromLeg(referenceLeg, indexDelta, airway, waypointSequence) {
+        if (referenceLeg.flightPlan !== this._displayedFlightPlan || !airway || !waypointSequence) {
             return;
         }
 
-        let enter = waypointSequence[0];
-        let exit = waypointSequence[waypointSequence.length - 1];
-        if (enter.equals(leg.fix)) {
-            // if the airway entry waypoint is equal to the previous leg fix,
-            // then set the entry waypoint to the next in the sequence to avoid duplicating a leg
-            enter = waypointSequence[1];
+        let segmentElement = referenceLeg.flightPlan.getSegment(referenceLeg.segment);
+        let index;
+        if (referenceLeg.parent instanceof WT_FlightPlanAirwaySequence) {
+            index = segmentElement.elements.indexOf(referenceLeg.parent);
+        } else {
+            index = segmentElement.elements.indexOf(referenceLeg);
         }
 
-        try {
-            let segmentElement = leg.flightPlan.getSegment(leg.segment);
-            let index;
-            if (leg.parent instanceof WT_FlightPlanAirwaySequence) {
-                index = segmentElement.elements.indexOf(leg.parent);
-            } else {
-                index = segmentElement.elements.indexOf(leg);
-            }
-            if (index >= 0) {
-                if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                    this._fpm.addAirwaySequenceToActive(leg.segment, airway, enter, exit, index + 1);
-                } else {
-                    await this._displayedFlightPlan.insertAirway(leg.segment, airway, enter, exit, index + 1);
-                }
-            }
-        } catch (e) {
-            console.log(e);
+        if (index >= 0) {
+            await this._insertAirwayToIndex(referenceLeg.segment, airway, waypointSequence, index + indexDelta);
         }
     }
 
@@ -555,7 +599,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             homePageGroup: this.homePageGroup,
             homePageName: this.homePageName,
             entryWaypoint: leg.fix,
-            callback: this._insertAirway.bind(this, insertLeg)
+            callback: this._insertAirwayFromLeg.bind(this, insertLeg, 1)
         });
         this.instrument.switchToPopUpPage(this._airwaySelectionPopUp);
     }
@@ -784,7 +828,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onInsertBeforeButtonPressed(event) {
-        this._openWaypointKeyboard(this._insertWaypoint.bind(this, event.leg, 0));
+        this._openWaypointKeyboard(this._insertWaypointFromLeg.bind(this, event.leg, 0));
     }
 
     /**
@@ -792,7 +836,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onInsertAfterButtonPressed(event) {
-        this._openWaypointKeyboard(this._insertWaypoint.bind(this, event.leg, 1));
+        this._openWaypointKeyboard(this._insertWaypointFromLeg.bind(this, event.leg, 1));
     }
 
     /**
