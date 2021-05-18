@@ -1697,7 +1697,7 @@ as3000-tsc-vertical-element #WaypointOptions wt-tsc-waypointoptions {
 }
 
 :root {
-    --button-border: 2px ridge white;
+    --button-border: 2px solid white;
 }
 
   as3000-tsc-vertical-element .gradientButton {
@@ -1706,7 +1706,7 @@ as3000-tsc-vertical-element #WaypointOptions wt-tsc-waypointoptions {
     max-height: 15vh;
     margin: 0.5vh;
     font-size: 3vh;
-    border: 2px ridge white;
+    border: 2px solid white;
   }
     as3000-tsc-vertical-element .gradientButton .img {
       margin-top: 0; }
