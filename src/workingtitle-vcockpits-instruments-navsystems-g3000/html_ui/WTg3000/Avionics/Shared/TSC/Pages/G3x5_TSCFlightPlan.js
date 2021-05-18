@@ -252,32 +252,40 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.htmlElement.setFlightPlan(flightPlan);
     }
 
-    async _selectOrigin(icao) {
-        if (icao === "") {
+    /**
+     *
+     * @param {WT_ICAOWaypoint} waypoint
+     */
+    _selectOrigin(waypoint) {
+        if (!waypoint) {
             return;
         }
 
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.setActiveOriginICAO(icao);
+                this._fpm.setActiveOrigin(waypoint);
             } else {
-                await this._displayedFlightPlan.setOriginICAO(icao);
+                this._displayedFlightPlan.setOrigin(waypoint);
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    async _selectDestination(icao) {
-        if (icao === "") {
+    /**
+     *
+     * @param {WT_ICAOWaypoint} waypoint
+     */
+    _selectDestination(waypoint) {
+        if (!waypoint) {
             return;
         }
 
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.setActiveDestinationICAO(icao);
+                this._fpm.setActiveDestination(waypoint);
             } else {
-                await this._displayedFlightPlan.setDestinationICAO(icao);
+                this._displayedFlightPlan.setDestination(waypoint);
             }
         } catch (e) {
             console.log(e);
@@ -304,19 +312,18 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      *
      * @param {WT_FlightPlanLeg} leg
      * @param {Number} deltaIndex
-     * @param {String} icao
+     * @param {WT_ICAOWaypoint} waypoint
      */
-    async _insertWaypoint(leg, deltaIndex, icao) {
-        if (icao === "" || leg.flightPlan !== this._fpm.activePlan) {
+    async _insertWaypoint(leg, deltaIndex, waypoint) {
+        if (!waypoint || leg.flightPlan !== this._fpm.activePlan) {
             return;
         }
 
         try {
             let legSegmentIndex = leg.index - leg.flightPlan.getSegment(leg.segment).legs.first().index;
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.addWaypointICAOToActive(leg.segment, icao, legSegmentIndex + deltaIndex);
+                this._fpm.addWaypointToActive(leg.segment, waypoint, legSegmentIndex + deltaIndex);
             } else {
-                let waypoint = await this.instrument.icaoWaypointFactory.getWaypoint(icao);
                 await this._displayedFlightPlan.insertWaypoint(leg.segment, {waypoint: waypoint}, legSegmentIndex + deltaIndex);
             }
         } catch (e) {
@@ -324,16 +331,19 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
-    async _appendToEnroute(icao) {
-        if (icao === "") {
+    /**
+     *
+     * @param {WT_ICAOWaypoint} waypoint
+     */
+    async _appendToEnroute(waypoint) {
+        if (!waypoint) {
             return;
         }
 
         try {
             if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                this._fpm.addWaypointICAOToActive(WT_FlightPlan.Segment.ENROUTE, icao);
+                this._fpm.addWaypointToActive(WT_FlightPlan.Segment.ENROUTE, waypoint);
             } else {
-                let waypoint = await this.instrument.icaoWaypointFactory.getWaypoint(icao);
                 await this._displayedFlightPlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: waypoint});
             }
         } catch (e) {
@@ -471,10 +481,13 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _openWaypointKeyboard(callback) {
-        this.instrument.deactivateNavButton(5);
-        this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(callback);
-        this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
+        this.instrument.waypointKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            searchTypes: null,
+            callback: callback
+        });
+        this.instrument.switchToPopUpPage(this.instrument.waypointKeyboard);
     }
 
     _openPage(pageGroup, pageName) {

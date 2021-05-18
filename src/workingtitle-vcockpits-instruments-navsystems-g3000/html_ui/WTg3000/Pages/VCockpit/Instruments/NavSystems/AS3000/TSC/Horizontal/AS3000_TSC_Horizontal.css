@@ -1114,88 +1114,6 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         width: 50%;
         left: 25%; }
 
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable,
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable {
-      display: none; }
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard[keyboard=Letters] #Keyboard_LetterTable,
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard[keyboard=Numbers] #Keyboard_NumberTable {
-      display: inherit; }
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine {
-      position: absolute;
-      top: 0%;
-      left: 0%;
-      height: 10vh;
-      width: 100%; }
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText {
-        position: absolute;
-        left: 1%;
-        height: 100%;
-        width: 28%;
-        background-color: gray;
-        font-size: 7vh;
-        padding-left: 2%;
-        color: black; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .NoEdit {
-          background-color: var(--wt-g3x5-lightblue); }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .Writed {
-          background-color: none;
-          color: var(--wt-g3x5-lightblue); }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .ToWrite {
-          background-color: none;
-          color: dimgray; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #EditText .Writing {
-          animation: SelectedCharBlinkFreqEdit 1s infinite;
-          min-width: 0.5vw;
-          min-height: 6vh;
-          display: inline-block; }
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #Infos {
-        position: absolute;
-        left: 32%;
-        height: 100%;
-        width: 68%;
-        color: white;
-        font-size: 4vh;
-        vertical-align: bottom; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #Infos #InfosContent {
-          position: absolute;
-          bottom: 0%;
-          vertical-align: bottom;
-          width: 92%; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #topLine #Infos #InfosSymbol {
-          position: absolute;
-          bottom: 0%;
-          vertical-align: bottom;
-          width: 8%;
-          right: 0%; }
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable,
-    as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable {
-      position: absolute;
-      top: 10vh;
-      left: 0%;
-      width: 100%;
-      height: 90vh; }
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable tr,
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable tr {
-        height: 14.5vh; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable tr td,
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable tr td {
-          height: 14.5vh;
-          width: 12vw; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable tr .Double,
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable tr .Double {
-          width: 24vw; }
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable .gradientButton,
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable .gradientButton {
-        height: 14.5vh;
-        width: 11.5vw; }
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable .gradientButton .mainText,
-        as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable .gradientButton .mainText {
-          font-size: 7vh; }
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable #K_SwitchToNum,
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_LetterTable #KN_SwitchToLetters,
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable #K_SwitchToNum,
-      as3000-tsc-horizontal-element #Electricity #fullKeyboard #Keyboard_NumberTable #KN_SwitchToLetters {
-        width: 24vw; }
     as3000-tsc-horizontal-element #Electricity #ConfirmationWindow {
       z-index: 11;
       position: absolute;
@@ -1563,18 +1481,21 @@ as3000-tsc-horizontal-element #Electricity #SoftKeys tsc-mfdpaneselectdisplay {
         as3000-tsc-horizontal-element #Electricity #SelectionList .content .gradientButton .value {
           font-size: 4vh; }
 
-    as3000-tsc-horizontal-element #Electricity .PopUpWindow {
-      width: 78%;
-      height: 100%;
-      background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_BACKGROUND_HORIZONTAL.png");
-      z-index: 10; }
-      as3000-tsc-horizontal-element #Electricity .PopUpWindow .WindowTitle {
+as3000-tsc-horizontal-element #Electricity .PopUpWindow {
+    width: 78%;
+    height: 100%;
+    background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_BACKGROUND_HORIZONTAL.png");
+    z-index: 10;
+}
+as3000-tsc-horizontal-element #Electricity .PopUpWindow.Transparent {
+    background-image: none;
+}
+    as3000-tsc-horizontal-element #Electricity .PopUpWindow .WindowTitle {
         height: 8%;
         width: 100%;
         background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_TITLE_BOX_HORIZONTAL.png");
-        font-size: 4.5vh; }
-    as3000-tsc-horizontal-element #Electricity .Transparent {
-      background-image: none; }
+        font-size: 4.5vh;
+    }
 
 as3000-tsc-horizontal-element #NumKeyboard wt-tsc-numkeyboard {
     position: absolute;
@@ -1594,6 +1515,24 @@ as3000-tsc-horizontal-element #TimeKeyboard wt-tsc-timekeyboard {
     height: 85%;
     font-size: 7vh;
     --timekeyboard-button-size: 15vh;
+}
+
+as3000-tsc-horizontal-element #WaypointKeyboard wt-tsc-waypointkeyboard {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+    font-size: 8vh;
+}
+
+as3000-tsc-horizontal-element #DuplicateWaypointSelection wt-tsc-duplicatewaypoint {
+    position: absolute;
+    left: 1%;
+    top: 10%;
+    width: 98%;
+    height: 89%;
+    font-size: 5vh;
 }
 
 as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {

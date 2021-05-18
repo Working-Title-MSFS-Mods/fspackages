@@ -22,6 +22,13 @@
     display: none; }
 
 @font-face {
+    font-family: "Roboto-Mono";
+    src: url("/WTg3000/SDK/Assets/Fonts/RobotoMono-Medium-Mod.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
   font-family: "Roboto-Regular";
   src: url("/WTg3000/SDK/Assets/Fonts/Roboto-Regular-Mod.ttf") format("truetype");
   font-weight: normal;
@@ -332,12 +339,13 @@
   z-index: 10; }
 .PopUpWindow[state=Inactive] {
   display: none; }
+.PopUpWindow.Transparent {
+  background-image: none;
+  background-color: rgba(0, 0, 0, 0.8); }
   .PopUpWindow .WindowTitle {
     color: white;
     text-align: center; }
-  .Transparent {
-    background-image: none;
-    background-color: rgba(0, 0, 0, 0.8); }
+
 
 #SelectionList .content {
   position: relative;

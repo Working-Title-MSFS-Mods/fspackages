@@ -126,7 +126,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
 
         this._settingModelID = this._getSettingModelID(instrumentID, halfPaneID);
         this._mfdPaneDisplaySetting = mfdPaneDisplaySetting;
-        this._icaoWaypointTypePrefix = WT_ICAOWaypoint.getICAOPrefixFromType(icaoWaypointType);
+        this._icaoWaypointType = icaoWaypointType;
 
         /**
          * @type {T}
@@ -193,7 +193,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
     }
 
     setWaypoint(waypoint) {
-        if (waypoint === null && this.selectedWaypoint === null || (waypoint && waypoint.equals(this.selectedWaypoint))) {
+        if ((!waypoint && !this.selectedWaypoint) || (waypoint && waypoint.equals(this.selectedWaypoint))) {
             return;
         }
 
@@ -203,28 +203,18 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
         }
     }
 
-    async _setICAO(icao) {
-        if (icao) {
-            try {
-                let waypoint = await this._createWaypointFromICAO(icao);
-                this.setWaypoint(waypoint);
-                return;
-            } catch (e) {
-                console.log(e);
-            }
-        }
-        this.setWaypoint(null);
-    }
-
-    _onKeyboardClosed(icao) {
-        this._setICAO(icao);
+    _onKeyboardClosed(waypoint) {
+        this.setWaypoint(waypoint);
     }
 
     _openKeyboard() {
-        this.instrument.deactivateNavButton(5);
-        this.instrument.deactivateNavButton(6);
-        this.instrument.fullKeyboard.element.setContext(this._onKeyboardClosed.bind(this), this._icaoWaypointTypePrefix);
-        this.instrument.switchToPopUpPage(this.instrument.fullKeyboard);
+        this.instrument.waypointKeyboard.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            searchTypes: [this._icaoWaypointType],
+            callback: this._onKeyboardClosed.bind(this)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.waypointKeyboard);
     }
 
     _onSelectButtonPressed(button) {
