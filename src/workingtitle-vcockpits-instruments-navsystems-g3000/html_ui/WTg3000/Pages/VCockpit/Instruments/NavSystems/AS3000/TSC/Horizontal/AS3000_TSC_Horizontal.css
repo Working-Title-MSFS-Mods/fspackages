@@ -1617,7 +1617,7 @@ as3000-tsc-horizontal-element #WaypointOptions wt-tsc-waypointoptions {
 }
 
 :root {
-    --button-border: 3px ridge var(--wt-g3x5-bordergray);
+    --button-border: 4px ridge var(--wt-g3x5-bordergray);
 }
 
   as3000-tsc-horizontal-element .gradientButton {
@@ -1626,7 +1626,7 @@ as3000-tsc-horizontal-element #WaypointOptions wt-tsc-waypointoptions {
     max-height: 21vh;
     margin: 1vh;
     font-size: 5vh;
-    border: 3px ridge var(--wt-g3x5-bordergray);
+    border: 4px ridge var(--wt-g3x5-bordergray);
   }
     as3000-tsc-horizontal-element .gradientButton .lowerValue {
       position: absolute;
