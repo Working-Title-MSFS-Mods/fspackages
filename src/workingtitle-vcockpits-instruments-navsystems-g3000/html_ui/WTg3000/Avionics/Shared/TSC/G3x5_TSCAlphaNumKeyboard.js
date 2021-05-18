@@ -174,6 +174,8 @@ WT_G3x5_TSCAlphaNumKeyboard.TEMPLATE.innerHTML = `
             }
             .find {
                 font-size: var(--alphanumkeyboard-findbutton-font-size, 0.5em);
+                --button-img-image-top: -10%;
+                --button-img-image-height: 80%;
             }
             .backspace {
                 font-size: var(--alphanumkeyboard-backspacebutton-font-size, 0.5em);
@@ -284,7 +286,7 @@ WT_G3x5_TSCAlphaNumKeyboard.TEMPLATE.innerHTML = `
             <wt-tsc-button-label id="keyX" class="key" labeltext="X"></wt-tsc-button-label>
             <wt-tsc-button-label id="keyY" class="key" labeltext="Y"></wt-tsc-button-label>
             <wt-tsc-button-label id="keyZ" class="key" labeltext="Z"></wt-tsc-button-label>
-            <wt-tsc-button-img class="find" labeltext="Find" enabled="false"></wt-tsc-button-img>
+            <wt-tsc-button-img class="find" labeltext="Find" enabled="false" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_FIND.png"></wt-tsc-button-img>
             <wt-tsc-button-label id="numbers" labeltext="123..."></wt-tsc-button-label>
             <wt-tsc-button-img class="backspace" labeltext="Backspace" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_BKSP.png"></wt-tsc-button-img>
         </div>
@@ -305,7 +307,7 @@ WT_G3x5_TSCAlphaNumKeyboard.TEMPLATE.innerHTML = `
             <wt-tsc-button-label id="keyWest" class="key" labeltext="W"></wt-tsc-button-label>
             <wt-tsc-button-img class="find" labeltext="Find" enabled="false"></wt-tsc-button-img>
             <wt-tsc-button-label id="letters" labeltext="ABC..."></wt-tsc-button-label>
-            <wt-tsc-button-img class="backspace" labeltext="Backspace" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_MAP_BKSP.png"></wt-tsc-button-img>
+            <wt-tsc-button-img class="backspace" labeltext="Backspace" imgsrc="/WTg3000/SDK/Assets/Images/Garmin/TSC/ICON_TSC_FIND.png"></wt-tsc-button-img>
         </div>
     </div>
 `;
