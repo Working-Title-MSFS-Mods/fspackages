@@ -197,7 +197,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 Utils.RemoveAllChildren(this.cursorSVGGroup);
             if (!this.cursorSVGLine)
                 this.cursorSVGLine = document.createElementNS(Avionics.SVG.NS, "line");
-            this.cursorSVGLine.setAttribute("x1", this.cursorPosX1.toString());
+            this.cursorSVGLine.setAttribute("x1", (this.cursorPosX1 + 4).toString());
             this.cursorSVGLine.setAttribute("y1", this.cursorPosY1.toString());
             this.cursorSVGLine.setAttribute("x2", this.cursorPosX2.toString());
             this.cursorSVGLine.setAttribute("y2", this.cursorPosY2.toString());
@@ -215,9 +215,9 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.cursorSVGGroup.appendChild(this.cursorSVGVerticalLine);
             this.centerGroup.appendChild(this.cursorSVGGroup);
             let selectedCursorHeight = 12;
-            this.selectedCursorOffsetY = selectedCursorHeight * 0.5;
+            this.selectedCursorOffsetY = 0;
             this.selectedCursorSVG = document.createElementNS(Avionics.SVG.NS, "path");
-            this.selectedCursorSVG.setAttribute("d", "M" + (this.cursorPosX1 - 14) + " 0 l5 0 l0 -5 l13 " + (selectedCursorHeight * 0.5 + 5) + " l-13 " + (selectedCursorHeight * 0.5 + 5) + "l0 -5 l-5 0 l0 " + (-selectedCursorHeight * 0.5) + "Z");
+            this.selectedCursorSVG.setAttribute("d", "M -3 -10 L 9 0 L -3 10 L -3 3 L -6 3 L -6 -3 L -3 -3 L -3 -10 Z");
             this.selectedCursorSVG.setAttribute("fill", "cyan");
             this.selectedCursorSVG.setAttribute("visibility", "hidden");
             this.cursorSVGGroup.appendChild(this.selectedCursorSVG);
@@ -815,16 +815,20 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             }
         }
     }
+    
     updateSelectedVSpeed(_speed) {
         if (this.gradSpeeds && this.selectedCursorSVG) {
             let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
             let height = this.heightFromSpeed(vSpeed);
             let posY = 0;
-            if (vSpeed >= 0)
+            let rotation = (Math.atan(height / 130) * 180 / Math.PI).toString()
+            if (vSpeed >= 0){
                 posY = this.cursorPosY2 - height;
-            else
+            }else{
                 posY = this.cursorPosY2 + height;
-            this.selectedCursorSVG.setAttribute("transform", "translate(0 " + (posY - this.selectedCursorOffsetY) + ")");
+                rotation = -rotation
+            }
+            this.selectedCursorSVG.setAttribute("transform", "translate(25 " + (posY) + "), rotate(" + rotation + ")");
         }
     }
 
