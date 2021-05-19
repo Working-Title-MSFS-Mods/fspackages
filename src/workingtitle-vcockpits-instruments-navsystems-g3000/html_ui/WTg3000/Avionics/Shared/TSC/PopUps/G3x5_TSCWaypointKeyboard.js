@@ -451,7 +451,7 @@ WT_G3x5_TSCWaypointKeyboardHTMLElement.TEMPLATE.innerHTML = `
             width: calc(100% - var(--waypointkeyboard-padding-left, 0px) - var(--waypointkeyboard-padding-right, 0px));
             height: calc(100% - var(--waypointkeyboard-padding-top, 0px) - var(--waypointkeyboard-padding-bottom, 0px));
             display: grid;
-            grid-template-rows: var(--waypointkeyboard-toprow-height, 1.5em) 1fr;
+            grid-template-rows: var(--waypointkeyboard-toprow-height, 1.6em) 1fr;
             grid-template-columns: 100%;
             grid-gap: var(--waypointkeyboard-toprow-margin-bottom, 0) 0;
         }
