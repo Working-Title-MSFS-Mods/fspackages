@@ -440,7 +440,7 @@ class WT_G3x5_TSCProcedureSelection extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @type {WT_NavigraphAPI}
+     * @type {WT_NavigraphNetworkAPI}
      */
     get navigraphAPI() {
         return this._navigraphAPI;
@@ -2425,7 +2425,7 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
     /**
      *
      * @param {WT_Airport} airport
-     * @returns {WT_ProcedureList<T>}
+     * @returns {WT_ProcedureList<WT_Departure>}
      */
     _getProcedureList(airport) {
         return airport.departures;
@@ -2446,11 +2446,11 @@ class WT_G3x5_TSCDepartureSelection extends WT_G3x5_TSCDepartureArrivalSelection
     /**
      *
      * @param {WT_NavigraphChartDefinition[]} charts
-     * @param {T} procedure
+     * @param {WT_Departure} procedure
      * @returns {WT_NavigraphChartDefinition}
      */
     _findChart(charts, procedure) {
-        return charts.find(chart => chart.type.section === "DEP" && chart.procedure_code[0] === procedure.name);
+        return WT_NavigraphChartOperations.findDepartureChart(charts, procedure);
     }
 }
 WT_G3x5_TSCDepartureSelection.FILTER_SETTING_KEY = "WT_DepartureSelection_Filter";
@@ -2692,7 +2692,7 @@ class WT_G3x5_TSCArrivalSelection extends WT_G3x5_TSCDepartureArrivalSelection {
      * @returns {WT_NavigraphChartDefinition}
      */
     _findChart(charts, procedure) {
-        return charts.find(chart => chart.type.section === "ARR" && chart.procedure_code[0] === procedure.name);
+        return WT_NavigraphChartOperations.findArrivalChart(charts, procedure);
     }
 }
 WT_G3x5_TSCArrivalSelection.FILTER_SETTING_KEY = "WT_ArrivalSelection_Filter";
@@ -2962,64 +2962,12 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
 
     /**
      *
-     * @param {WT_Approach} procedure
-     * @returns {String}
-     */
-    _getProcedureChartCodePrefix(procedure) {
-        if (procedure) {
-            switch (procedure.type) {
-                case WT_Approach.Type.ILS_LOC:
-                case WT_Approach.Type.ILS:
-                    return "I";
-                case WT_Approach.Type.LOC:
-                    return "L";
-                case WT_Approach.Type.RNAV:
-                    return "R";
-                case WT_Approach.Type.VOR:
-                    return "VOR";
-            }
-        }
-        return "";
-    }
-
-    /**
-     *
-     * @param {WT_Approach} procedure
-     * @returns {String}
-     */
-    _getProcedureChartCodeSuffix(procedure) {
-        if (procedure) {
-            if (procedure.type === WT_Approach.Type.VOR) {
-                if (procedure.name.search(/ (A )|(A$)/) >= 0) {
-                    return "A";
-                } else if (procedure.name.search(/ (B )|(B$)/) >= 0) {
-                    return "B";
-                } else if (procedure.name.search(/ (C )|(C$)/) >= 0) {
-                    return "C";
-                }
-            } else {
-                if (procedure.name.search(/ (X )|(X$)/) >= 0) {
-                    return "X";
-                } else if (procedure.name.search(/ (Y )|(Y$)/) >= 0) {
-                    return "Y";
-                } else if (procedure.name.search(/ (Z )|(Z$)/) >= 0) {
-                    return "Z";
-                }
-            }
-        }
-        return "";
-    }
-
-    /**
-     *
      * @param {WT_NavigraphChartDefinition[]} charts
      * @param {WT_Approach} procedure
      * @returns {WT_NavigraphChartDefinition}
      */
     _findChart(charts, procedure) {
-        let prefix = this._getProcedureChartCodePrefix(procedure);
-        let suffix = this._getProcedureChartCodeSuffix(procedure);
-        return charts.find(chart => chart.type.section === "APP" && chart.procedure_code.indexOf(`${prefix}${procedure.runway ? procedure.runway.designationFull : ""}${suffix}`) >= 0);
+        return WT_NavigraphChartOperations.findApproachChart(charts, procedure);
     }
 
     async _activateApproach() {

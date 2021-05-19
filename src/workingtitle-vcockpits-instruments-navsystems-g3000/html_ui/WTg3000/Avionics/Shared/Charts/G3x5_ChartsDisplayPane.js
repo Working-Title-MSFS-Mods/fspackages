@@ -3,16 +3,16 @@ class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
      * @param {String} paneID
      * @param {WT_G3x5_PaneSettings} settings
      * @param {WT_PlayerAirplane} airplane
-     * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_NavigraphNetworkAPI} navigraphNetworkAPI
      * @param {WT_G3x5_UnitsSettingModel} unitsSettingModel
      */
-    constructor(paneID, settings, airplane, navigraphAPI, unitsSettingModel) {
+    constructor(paneID, settings, airplane, navigraphNetworkAPI, unitsSettingModel) {
         super();
 
         this._paneID = paneID;
         this._chartIDSetting = settings.chartID;
         this._airplane = airplane;
-        this._navigraphAPI = navigraphAPI;
+        this._navigraphNetworkAPI = navigraphNetworkAPI;
         this._unitsSettingModel = unitsSettingModel;
 
         this._settingModelID = paneID;
@@ -128,7 +128,7 @@ class WT_G3x5_ChartsDisplayPane extends WT_G3x5_DisplayPane {
     }
 
     init(viewElement) {
-        this._model = new WT_G3x5_ChartsModel(this._navigraphAPI);
+        this._model = new WT_G3x5_ChartsModel(this._navigraphNetworkAPI);
         this._view = viewElement;
         this._settingModel = new WT_DataStoreSettingModel(this.settingModelID);
 

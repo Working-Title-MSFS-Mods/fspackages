@@ -150,7 +150,7 @@ class AS3000_TSC extends NavSystemTouch {
     }
 
     _initNavigraphAPI() {
-        this._navigraphAPI = new WT_NavigraphAPI(WT_NavigraphAPI.MAGIC_STRINGS_G3000);
+        this._navigraphNetworkAPI = new WT_NavigraphNetworkAPI(WT_NavigraphNetworkAPI.MAGIC_STRINGS_G3000);
     }
 
     get templateID() { return "AS3000_TSC"; }
@@ -320,9 +320,9 @@ class AS3000_TSC extends NavSystemTouch {
                 new WT_G3x5_TSCPage("Direct To", "DirectTo", new AS3000_TSC_DirectTo()),
                 this._commonPages.flightPlan = new WT_G3x5_TSCPage("Flight Plan", "FlightPlan", this._createFlightPlanPage("MFD Home", "MFD")),
                 this._commonPages.procedures = new WT_G3x5_TSCPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
-                this._commonPages.departureSelection = new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                this._commonPages.arrivalSelection = new WT_G3x5_TSCPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
-                this._commonPages.approachSelection = new WT_G3x5_TSCPage("Approach Selection", "ApproachSelection", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphAPI)),
+                this._commonPages.departureSelection = new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
+                this._commonPages.arrivalSelection = new WT_G3x5_TSCPage("Arrival Selection", "ArrivalSelection", new WT_G3x5_TSCArrivalSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
+                this._commonPages.approachSelection = new WT_G3x5_TSCPage("Approach Selection", "ApproachSelection", new WT_G3x5_TSCApproachSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
                 new WT_G3x5_TSCPage("Waypoint Info Selection", "WaypointInfoSelection", new WT_G3x5_TSCWaypointInfoSelection("MFD", "MFD Home")),
                 this._mfdPagesLeft.airportInfo = new WT_G3x5_TSCPage("Airport Info Left", "AirportInfoLeft", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, mfdLeftPaneSettings.display)),
                 this._mfdPagesRight.airportInfo = new WT_G3x5_TSCPage("Airport Info Right", "AirportInfoRight", new WT_G3x5_TSCAirportInfo("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, mfdRightPaneSettings.display)),
@@ -342,8 +342,8 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesLeft.nearestNDB = new WT_G3x5_TSCPage("Nearest NDB Left", "NearestNDBLeft", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT, this._mfdPagesLeft, mfdLeftPaneSettings)),
                 this._mfdPagesRight.nearestNDB = new WT_G3x5_TSCPage("Nearest NDB Right", "NearestNDBRight", new WT_G3x5_TSCNearestNDB("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT, this._mfdPagesRight, mfdRightPaneSettings)),
                 new WT_G3x5_TSCPage("Speed Bugs", "SpeedBugs", this._speedBugs),
-                this._mfdPagesLeft.charts = new WT_G3x5_TSCPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.LEFT, this._navigraphAPI, this.icaoWaypointFactory, mfdLeftPaneSettings)),
-                this._mfdPagesRight.charts = new WT_G3x5_TSCPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.RIGHT, this._navigraphAPI, this.icaoWaypointFactory, mfdRightPaneSettings)),
+                this._mfdPagesLeft.charts = new WT_G3x5_TSCPage("Charts Left", "ChartsLeft", new WT_G3x5_TSCCharts("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.LEFT, this._navigraphNetworkAPI, this.icaoWaypointFactory, mfdLeftPaneSettings)),
+                this._mfdPagesRight.charts = new WT_G3x5_TSCPage("Charts Right", "ChartsRight", new WT_G3x5_TSCCharts("MFD", "MFD Home", WT_G3x5_MFDHalfPane.ID.RIGHT, this._navigraphNetworkAPI, this.icaoWaypointFactory, mfdRightPaneSettings)),
                 this._mfdPagesLeft.chartsTouchControl = new WT_G3x5_TSCPage("Charts Touch Control Left", "ChartsTouchControlLeft", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesLeft.charts.element)),
                 this._mfdPagesRight.chartsTouchControl = new WT_G3x5_TSCPage("Charts Touch Control Right", "ChartsTouchControlRight", new WT_G3x5_TSCChartsTouchControl("MFD", "MFD Home", this._mfdPagesRight.charts.element)),
                 new WT_G3x5_TSCPage("Aircraft Systems", "AircraftSystems", this._createAircraftSystemsPage()),
@@ -351,7 +351,7 @@ class AS3000_TSC extends NavSystemTouch {
                 new WT_G3x5_TSCPage("Utilities", "Utilities", new AS3000_TSC_Utilities()),
                 new WT_G3x5_TSCPage("Setup", "UtilitiesSetup", new WT_G3x5_TSCUtilitiesSetup("MFD", "MFD Home")),
                 new WT_G3x5_TSCPage("Avionics Settings", "AvionicsSettings", new WT_G3x5_TSCAvionicsSettings("MFD", "MFD Home", "MFD")),
-                new WT_G3x5_TSCPage("Database Status", "DatabaseStatus", new WT_G3x5_TSCDatabaseStatus("MFD", "MFD Home", this._navigraphAPI))
+                new WT_G3x5_TSCPage("Database Status", "DatabaseStatus", new WT_G3x5_TSCDatabaseStatus("MFD", "MFD Home", this._navigraphNetworkAPI))
             ]),
             new WT_G3x5_TSCPageGroup("NavCom", this, [
                 new WT_G3x5_TSCPage("NAV/COM Home", "NavComHome", new AS3000_TSC_NavComHome()),
