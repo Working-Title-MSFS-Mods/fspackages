@@ -29,7 +29,7 @@ class WT_G5000_MFDHalfPane extends WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G5000_ChartsDisplayPane}
      */
-    _createChartsDisplayPane(airplane, navigraphAPI, unitsSettingModel) {
-        return new WT_G5000_ChartsDisplayPane(this.paneID, this.settings, airplane, navigraphAPI, unitsSettingModel);
+    _createChartsDisplayPane(airplane, navigraphNetworkAPI, unitsSettingModel) {
+        return new WT_G5000_ChartsDisplayPane(this.paneID, this.settings, airplane, navigraphNetworkAPI, unitsSettingModel);
     }
 }

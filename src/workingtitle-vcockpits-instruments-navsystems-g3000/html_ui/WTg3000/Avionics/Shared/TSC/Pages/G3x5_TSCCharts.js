@@ -3,7 +3,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      * @param {String} homePageGroup
      * @param {String} homePageName
      * @param {WT_G3x5_MFDHalfPane.ID} halfPaneID
-     * @param {WT_NavigraphAPI} navigraphAPI
+     * @param {WT_NavigraphNetworkAPI} navigraphAPI
      * @param {WT_ICAOWaypointFactory} icaoWaypointFactory
      * @param {WT_G3x5_PaneSettings} paneSettings
      */
@@ -244,7 +244,7 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
                 }
             } catch (e) {
                 console.log(e);
-                if (e === WT_NavigraphAPI.Error.ACCESS_DENIED) {
+                if (e === WT_NavigraphNetworkAPI.Error.ACCESS_DENIED) {
                     this._dataFail = true;
                     if (this.htmlElement && this.htmlElement.isInitialized) {
                         this.htmlElement.setDataFail(this._dataFail);
@@ -270,10 +270,10 @@ class WT_G3x5_TSCCharts extends WT_G3x5_TSCPageElement {
      */
     _updateChartIDFromAirport(airport) {
         if (airport) {
-            if (this._chartID.substring(0, 4) !== airport.ident) {
+            if (WT_NavigraphChartOperations.getAirportIdentFromID(this._chartID) !== airport.ident) {
                 // selected chart ID does not belong to the airport -> try to select airport diagram.
                 let chartID = "";
-                let chart = this._charts.find(chart => chart.type.code === "AP");
+                let chart = WT_NavigraphChartOperations.findAirportDiagram(this._charts);
                 if (chart) {
                     chartID = chart.id;
                 }

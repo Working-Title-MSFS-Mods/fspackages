@@ -142,7 +142,7 @@ class WT_G3x5_MFDMainPane extends WT_G3x5_MFDElement {
             icaoSearchers: this.instrument.icaoSearchers,
             flightPlanManager: this.instrument.flightPlanManagerWT,
             trafficSystem: this.instrument.trafficSystem,
-            navigraphAPI: this.instrument.navigraphAPI,
+            navigraphNetworkAPI: this.instrument.navigraphNetworkAPI,
             unitsSettingModel: this.instrument.unitsSettingModel,
             citySearcher: this.instrument.citySearcher,
             borderData: this._borderData,
@@ -348,7 +348,7 @@ class WT_G3x5_MFDHalfPane {
     /**
      * @returns {WT_G3x5_ChartsDisplayPane}
      */
-    _createChartsDisplayPane(airplane, navigraphAPI, unitsSettingModel) {
+    _createChartsDisplayPane(airplane, navigraphNetworkAPI, unitsSettingModel) {
     }
 
     /**
@@ -371,7 +371,7 @@ class WT_G3x5_MFDHalfPane {
         this._weatherRadarPane = new WT_G3x5_WeatherRadarDisplayPane(this.paneID, this.settings, this._createWeatherRadar(data.airplane));
         this._flightPlanPane = this._createFlightPlanDisplayPane(data.airplane, data.icaoWaypointFactory, data.flightPlanManager, data.unitsSettingModel);
         this._procedurePane = this._createProcedureDisplayPane(data.airplane, data.icaoWaypointFactory, data.unitsSettingModel);
-        this._chartsPane = this._createChartsDisplayPane(data.airplane, data.navigraphAPI, data.unitsSettingModel);
+        this._chartsPane = this._createChartsDisplayPane(data.airplane, data.navigraphNetworkAPI, data.unitsSettingModel);
         this._waypointInfoPane = this._createWaypointInfoDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);
         this._nearestWaypointPane = this._createNearestWaypointDisplayPane(data.airplane, data.icaoWaypointFactory, data.icaoSearchers, data.unitsSettingModel);
     }
