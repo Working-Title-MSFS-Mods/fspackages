@@ -17,6 +17,13 @@
     - By default, the entire flight plan is previewed. To preview specific segments or legs, return to the GTC Flight Plan page and select the row representing the part of the flight plan you wish to preview.
     - For flight plans that span a large distance (>4000 NM) or whose path passes near the poles, the preview may not accurately depict the entire flight plan.
   - To preview a procedure, select the procedure via the appropriate GTC Procedure Selection page (MFD Home -> PROC -> Departure/Arrival/Approach), press the Preview button, and select Show On Map.
+- \[FPLN\] For the Longitude: the Flight Plan Keypad now allows direct entry of routes (waypoints or airways) into the Enroute segments of flight plans.
+  - Routes are made up of a sequence of one or more *route entries*. Each route entry is either a waypoint IDENT or airway name. Depending on the sequence of route entries entered into the keypad, a series of either direct (waypoint-to-waypoint) legs or airways will be inserted into the flight plan.
+  - The Route (\*) key is used for delimiting route entries.
+  - The syntax for inserting routes is as follows:
+    - Direct route (waypoint): *\[wpt\]* \*
+    - Airway: *\[entry_wpt\]* \* *\[airway\]* \* *\[exit_wpt\]* \* OR *\[entry_wpt\]* \* *\[airway1\]* \* *\[airway2\]* \*
+      - The second syntax will automatically select the exit waypoint based on where airway2 intersects airway1. After airway1 has been inserted, the system will automatically load airway2 into the keypad, and you will be prompted to input the exit waypoint (or intersecting airway) for airway2.
 - \[NavMap\] Added the Flight Plan Text Inset window.
   - The inset displays information on up to 5 flight plan legs, beginning with the leg immediately prior to the active leg (or the first leg in the flight plan if there is no active leg). Airways are always displayed as collapsed, with only the airway header and last leg in the airway sequence visible, unless the airway contains the active leg.
   - To enable/disable the inset, use the GTC to navigate to MFD Home -> Map Settings -> Inset Window tab, and press the Flight Plan Text button. The associated Leg-Leg/CUM button will change the DIS column in the inset to display either leg-leg distance or cumulative distance.
@@ -27,11 +34,13 @@
 - \[GTC\] Overhauled the Flight Plan and Procedures pages to support the new flight planning features and to more closely match the real-life units.
   - The two data fields on the far-right column of the Flight Plan page can now be customized by using the GTC to navigate to MFD Home -> Flight Plan -> Flight Plan Options -> Edit Data Fields. The following types of data are supported: CUM (cumulative distance), DIS (leg-leg distance), DTK (desired track), ETA (estimated time of arrival), ETE (estimated time enroute), FUEL (fuel to destination).
   - Data displays in the Flight Plan page now respect measurement unit and time format settings set via Avionics Settings.
+- \[GTC\] Updated the Waypoint Keyboard and Waypoint Duplicates pop up pages to more closely match the real-life units.
 
 **Fixes**
 - \[FPLN\] Fixed a bug where the GTC Flight Plan page would display a different active leg from the navigation map and PFD navigation status bar.
 - \[GTC\] The Flight Plan page should now report accurate leg-leg distances for all flight plan legs.
 - \[GTC\] The Back button now works properly in the Procedure Selection pages.
+- \[GTC\] The Waypoint Keyboard now provides accurate indications of when a match for the entered waypoint ident has been found.
 - \[Charts\] The mod should now be better at "remembering" Navigraph account access and should not require account re-linking as frequently.
 - \[VFR Map\] Fixed a bug preventing the VFR Map from being moved when it was not detached to a separate window.
 
