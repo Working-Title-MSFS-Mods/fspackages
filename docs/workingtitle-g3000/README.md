@@ -42,6 +42,7 @@ Once you have completed these steps, the mod will display and issue traffic aler
 - Added support for standby flight plans.
 - Added the Flight Plan and Procedure Preview panes.
 - Added the Flight Plan Text Inset window for the Navigation Map.
+- For the Longitude: the GTC Flight Plan Keypad now supports direct entry of routes into flight plans.
 
 **Fixes**
 - \[FPLN\] Fixed a bug where the GTC Flight Plan page would display a different active leg from the navigation map and PFD navigation status bar.
