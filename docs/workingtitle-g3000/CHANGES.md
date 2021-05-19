@@ -41,6 +41,7 @@
 - \[GTC\] The Flight Plan page should now report accurate leg-leg distances for all flight plan legs.
 - \[GTC\] The Back button now works properly in the Procedure Selection pages.
 - \[GTC\] The Waypoint Keyboard now provides accurate indications of when a match for the entered waypoint ident has been found.
+- \[GTC\] Fixed a graphical glitch affecting certain touchscreen buttons.
 - \[Charts\] The mod should now be better at "remembering" Navigraph account access and should not require account re-linking as frequently.
 - \[VFR Map\] Fixed a bug preventing the VFR Map from being moved when it was not detached to a separate window.
 
