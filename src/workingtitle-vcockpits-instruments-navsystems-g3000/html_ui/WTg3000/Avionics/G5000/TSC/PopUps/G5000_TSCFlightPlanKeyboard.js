@@ -225,26 +225,30 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
 
     _resolveWaypointResults(waypoints, successCallback, rejectCallback, closeOnFinish) {
         if (waypoints.length === 0) {
+            this._unlock();
             rejectCallback();
-            if (closeOnFinish) {
-                this.instrument.goBack();
-            }
         } else if (waypoints.length === 1) {
+            this._unlock();
             successCallback(waypoints[0]);
-            if (closeOnFinish) {
-                this.instrument.goBack();
-            }
         } else {
             this._openDuplicateWaypointWindow(waypoints[0].ident, waypoints, waypoint => {
+                this._unlock();
                 if (waypoint) {
                     successCallback(waypoint);
                 } else {
                     rejectCallback();
                 }
+
                 if (closeOnFinish) {
                     this.instrument.goBack();
                 }
             });
+            return;
+        }
+
+        this._unlock();
+        if (closeOnFinish) {
+            this.instrument.goBack();
         }
     }
 
@@ -262,6 +266,9 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
         };
         if (this.context.callback(command)) {
             this.context.initialWaypoint = waypoint;
+            this.context.initialAirway = null;
+            this._initialWaypoint = waypoint;
+            this._initialAirway = null;
             this._resetToInitialWaypoint();
         } else {
             this.instrument.goBack();
