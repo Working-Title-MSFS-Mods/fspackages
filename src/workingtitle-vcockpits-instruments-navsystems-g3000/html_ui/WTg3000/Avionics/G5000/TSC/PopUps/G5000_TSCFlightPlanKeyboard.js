@@ -1304,7 +1304,7 @@ WT_G5000_TSCFlightPlanKeyboardHTMLElement.TEMPLATE.innerHTML = `
                         position: absolute;
                         left: 0%;
                         top: 0%;
-                        width: var(--fplnkeyboard-display-width, 60%);
+                        width: var(--fplnkeyboard-display-width, 55%);
                         height: 100%;
                         background: #222222;
                         font-family: var(--fplnkeyboard-display-font-family, "Roboto-Mono");
@@ -1334,9 +1334,9 @@ WT_G5000_TSCFlightPlanKeyboardHTMLElement.TEMPLATE.innerHTML = `
                             }
                     #searchmessage {
                         position: absolute;
-                        left: calc(var(--fplnkeyboard-display-width, 60%) + var(--fplnkeyboard-searchmessage-margin-left, 0.2em));
+                        left: calc(var(--fplnkeyboard-display-width, 55%) + var(--fplnkeyboard-searchmessage-margin-left, 0.2em));
                         top: 50%;
-                        width: calc(100% - var(--fplnkeyboard-display-width, 60%) - var(--fplnkeyboard-searchmessage-margin-left, 0.2em));
+                        width: calc(100% - var(--fplnkeyboard-display-width, 55%) - var(--fplnkeyboard-searchmessage-margin-left, 0.2em));
                         transform: translateY(-50%);
                         color: white;
                         white-space: nowrap;
