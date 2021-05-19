@@ -3316,10 +3316,10 @@ class WT_G3x5_TSCFlightPlanRowAirwaySequenceFooterHTMLElement extends WT_G3x5_TS
      * @param {WT_NumberUnit} value
      */
     _updateETE(value) {
-        if (this.leg) {
+        if (this.leg && !this._parentPage.instrument.airplane.sensors.isOnGround()) {
             let distanceNM = this.leg.parent.distance.asUnit(WT_Unit.NMILE);
-            let speedKnots = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots).number;
-            value.set(distanceNM / speedKnots, WT_Unit.HOUR);
+            let speed = this._parentPage.instrument.airplane.navigation.groundSpeed(this._tempKnots);
+            value.set(speed.compare(WT_G3x5_TSCFlightPlanRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 ? (distanceNM / speed.number) : NaN, WT_Unit.HOUR);
         } else {
             value.set(NaN);
         }
