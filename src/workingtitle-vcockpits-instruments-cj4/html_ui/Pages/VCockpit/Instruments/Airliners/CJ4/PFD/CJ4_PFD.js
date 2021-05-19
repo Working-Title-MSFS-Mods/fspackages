@@ -1107,6 +1107,10 @@ class CJ4_APDisplay extends NavSystemElement {
         } else {
             this.AP_VerticalActive.setDisplayValue(""); //VERTICAL MODE
             Avionics.Utils.diffAndSet(this.AP_ModeReference_Value, ""); //VERTICAL MODE VAL (if needed)
+            this.AP_ModeReference_Icon.style.display = "none";
+            this.AP_VerticalSpeedbug_Icon.style.display = "none";
+            this.AP_VerticalDirectionArrowUp_Icon.style.display = "none";
+            this.AP_VerticalDirectionArrowDown_Icon.style.display = "none";
             this.AP_VerticalArmed.setDisplayValue(""); //VERTICAL ALTITUDE ARMED
             this.AP_VNAVArmed.setDisplayValue(""); //VERTICAL VNAV ARMED
             this.AP_ApprVerticalArmed.setDisplayValue(""); //VERTICAL APPR VERTICAL (GS/GP) ARMED
