@@ -61,6 +61,18 @@ class WT_G3x5_TSCDatabaseStatus extends WT_G3x5_TSCPageElement {
         this._openNavigraphLinkWindow(button);
     }
 
+    onFocusGained() {
+        super.onFocusGained();
+
+        this.htmlElement.focus();
+    }
+
+    onFocusLost() {
+        super.onFocusLost();
+
+        this.htmlElement.unfocus();
+    }
+
     onEnter() {
         this.htmlElement.open();
     }
@@ -118,12 +130,18 @@ class WT_G3x5_TSCDatabaseStatusHTMLElement extends HTMLElement {
         this.navigraphRow.update();
     }
 
-    open() {
+    focus() {
         if (!this._isInit) {
             return;
         }
 
         this._updateRows();
+    }
+
+    unfocus() {
+    }
+
+    open() {
     }
 
     close() {
