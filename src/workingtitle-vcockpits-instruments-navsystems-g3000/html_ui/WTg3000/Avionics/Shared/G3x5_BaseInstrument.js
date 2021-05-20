@@ -153,7 +153,14 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         await Coherent.call("LOAD_CURRENT_GAME_FLIGHT");
         await Coherent.call("LOAD_CURRENT_ATC_FLIGHTPLAN");
         await WT_Wait.awaitCallback(() => this.gameState === GameState.ingame, this);
+
+        // On first load, force sync of enroute legs from the sim's built-in flight plan so we can grab any legs imported from the world map
         this._needSyncEnrouteFromAsobo = true;
+        this._asoboEnrouteSyncCount = 0;
+        if (this.flightPlanManagerWT.isMaster) {
+            // lock the active flight plan while attempting to enroute legs from the sim's built-in flight plan
+            this.flightPlanManagerWT.lockActive();
+        }
     }
 
     _isFlightPlanManagerMaster() {
@@ -196,10 +203,17 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
 
     async _syncFlightPlanManagerFromAsobo() {
         try {
-            // we need to sync the enroute segment from the sim's built-in flight plan once so that the system correctly
-            // loads in flight plans imported from the world map
+            // this needs to be in a try-catch block because for a period of time after loading a flight, Coherent has issues retrieving ICAO waypoint data
+            // therefore we don't count forced enroute syncs that encounter errors as successful and will try again the next cycle
             await this.flightPlanManagerWT.syncActiveFromGame(this._needSyncEnrouteFromAsobo);
-            this._needSyncEnrouteFromAsobo = false;
+
+            // need to force enroute sync three times because sometimes the game is late loading all fpln legs from the world map
+            if (this._asoboEnrouteSyncCount < 3) {
+                this._asoboEnrouteSyncCount++;
+            } else if (this._needSyncEnrouteFromAsobo) {
+                this.flightPlanManagerWT.unlockActive();
+                this._needSyncEnrouteFromAsobo = false;
+            }
         } catch (e) {
             console.log(e);
         }
