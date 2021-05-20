@@ -618,7 +618,7 @@ class WT_VFRMapWT extends WT_VFRMap {
     _updateFlightPlanManager() {
         let currentTime = Date.now() / 1000;
         if (currentTime - this._lastFPMSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this._fpm.syncActiveFromGame();
+            this._fpm.syncActiveFromGame(true);
             this._lastFPMSyncTime = currentTime;
         }
     }
