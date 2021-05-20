@@ -185,9 +185,9 @@ class WT_FlightPlanAsoboInterface {
         if (data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
             let removeStart = 0;
-            let firstLeg = tempFlightPlan.getDeparture().legs.first();
-            if (firstLeg && firstLeg.fix instanceof WT_RunwayWaypoint) {
-                // don't remove runway fix if it exists.
+            let firstDepartureElement = tempFlightPlan.getDeparture().elements.first();
+            if (firstDepartureElement instanceof WT_FlightPlanLeg && firstDepartureElement.fix instanceof WT_RunwayWaypoint) {
+                // don't remove runway fix leg if it exists.
                 removeStart++;
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.DEPARTURE, removeStart, tempFlightPlan.getDeparture().length - removeStart);
@@ -208,9 +208,9 @@ class WT_FlightPlanAsoboInterface {
             waypointEntries = [];
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
             let removeCount = tempFlightPlan.getArrival().length;
-            let lastLeg = tempFlightPlan.getArrival().legs.last();
-            if (lastLeg && lastLeg.fix instanceof WT_RunwayWaypoint) {
-                // don't remove runway fix if it exists.
+            let lastArrivalElement = tempFlightPlan.getArrival().elements.last();
+            if (lastArrivalElement instanceof WT_FlightPlanLeg && lastArrivalElement.fix instanceof WT_RunwayWaypoint) {
+                // don't remove runway fix leg if it exists.
                 removeCount--;
             }
             tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.ARRIVAL, 0, removeCount);
@@ -220,10 +220,16 @@ class WT_FlightPlanAsoboInterface {
         }
         if (data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
-            // replace all waypoints except for the last, which should always be a runway fix.
-            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, tempFlightPlan.getApproach().length - 1);
+            let approachLength = tempFlightPlan.getApproach().length;
+            let preserveCount = 0;
+            let lastApproachElement = tempFlightPlan.getApproach().elements.last();
+            if (lastApproachElement instanceof WT_FlightPlanLeg && lastApproachElement.fix instanceof WT_RunwayWaypoint) {
+                // don't remove runway fix leg if it exists.
+                preserveCount = 1;
+            }
+            tempFlightPlan.removeByIndex(WT_FlightPlan.Segment.APPROACH, 0, approachLength - preserveCount);
             waypointEntries = [];
-            await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - 1), waypointEntries);
+            await this._getWaypointEntriesFromData(approachData.waypoints.slice(0, approachData.waypoints.length - preserveCount), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.APPROACH, waypointEntries, 0);
         }
 
