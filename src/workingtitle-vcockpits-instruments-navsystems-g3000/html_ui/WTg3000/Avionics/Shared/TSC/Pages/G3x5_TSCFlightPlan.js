@@ -14,7 +14,6 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
          */
         this._displayedFlightPlan = null;
         this._selectedRow = null;
-        this._drctWaypoint = null;
         this._isInit = false;
 
         this._initState();
@@ -539,7 +538,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _openDRCTPage(waypoint) {
-        this._drctWaypoint = waypoint;
+        this.instrument.commonPages.directTo.element.presetWaypoint(waypoint);
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
 
@@ -985,15 +984,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
-    _updateDirectTo() {
-        // TODO: Implement a more sane way to push data to direct to page.
-        this.instrument.lastRelevantICAO = (this._drctWaypoint && this._drctWaypoint instanceof WT_ICAOWaypoint) ? this._drctWaypoint.icao : null;
-    }
-
     onExit() {
         this.htmlElement.close();
         this._deactivateFlightPlanPreview();
-        this._updateDirectTo();
     }
 
     _onUpPressed() {

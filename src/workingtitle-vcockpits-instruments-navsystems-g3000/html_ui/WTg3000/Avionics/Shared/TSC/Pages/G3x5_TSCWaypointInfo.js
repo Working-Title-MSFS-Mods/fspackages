@@ -247,13 +247,7 @@ class WT_G3x5_TSCWaypointInfo extends WT_G3x5_TSCPageElement {
         this.htmlElement.update();
     }
 
-    _updateDirectTo() {
-        // TODO: Implement a more sane way to push data to direct to page.
-        this.instrument.lastRelevantICAO = this.selectedWaypoint ? this.selectedWaypoint.icao : null;
-    }
-
     onExit() {
-        this._updateDirectTo();
         this.htmlElement.close();
     }
 }

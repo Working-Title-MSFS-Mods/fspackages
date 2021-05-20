@@ -238,6 +238,7 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     }
 
     _onDRCTButtonPressed() {
+        this.instrument.commonPages.directTo.element.presetWaypoint(this.selectedWaypoint);
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
 
@@ -350,7 +351,6 @@ class WT_G3x5_TSCNearestWaypoint extends WT_G3x5_TSCPageElement {
     onExit() {
         this.htmlElement.close();
         this._setSelectedWaypoint(null);
-        this._updateDirectTo();
     }
 }
 

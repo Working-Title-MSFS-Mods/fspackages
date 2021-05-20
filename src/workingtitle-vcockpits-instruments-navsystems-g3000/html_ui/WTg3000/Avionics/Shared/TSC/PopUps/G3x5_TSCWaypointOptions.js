@@ -49,7 +49,7 @@ class WT_G3x5_TSCWaypointOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _updateDRCTButton() {
-        this.htmlElement.drctButton.enabled = `${this.context && this.context.waypoint}`;
+        this.htmlElement.drctButton.enabled = `${Boolean(this.context && this.context.waypoint)}`;
     }
 
     _updateShowOnMapButton() {
@@ -87,6 +87,7 @@ class WT_G3x5_TSCWaypointOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _onDRCTButtonPressed(button) {
+        this.instrument.commonPages.directTo.element.presetWaypoint(this.context.waypoint);
         this.instrument.closePopUpElement();
         this.instrument.SwitchToPageName("MFD", "Direct To");
     }
