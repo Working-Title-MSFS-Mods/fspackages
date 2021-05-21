@@ -208,11 +208,15 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
         this._openState(this._currentState, oldState);
     }
 
-    _rejectWaypointSearch() {
+    _rejectWaypointSearch(closeOnFinish) {
         this._rollBackLastRouteCommand();
         this._currentState.onOpened(this._getStateEntry(this.htmlElement.getEntry()));
 
         this._unlock();
+
+        if (closeOnFinish) {
+            this.instrument.goBack();
+        }
     }
 
     _beginWaypointOrAirwaySearch(waypoint) {
@@ -225,69 +229,64 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
 
     _resolveWaypointResults(waypoints, successCallback, rejectCallback, closeOnFinish) {
         if (waypoints.length === 0) {
-            this._unlock();
             rejectCallback();
         } else if (waypoints.length === 1) {
-            this._unlock();
             successCallback(waypoints[0]);
         } else {
             this._openDuplicateWaypointWindow(waypoints[0].ident, waypoints, waypoint => {
-                this._unlock();
                 if (waypoint) {
                     successCallback(waypoint);
                 } else {
                     rejectCallback();
                 }
-
-                if (closeOnFinish) {
-                    this.instrument.goBack();
-                }
             });
             return;
-        }
-
-        this._unlock();
-        if (closeOnFinish) {
-            this.instrument.goBack();
         }
     }
 
     async _closeWaypointSearch(stateEntry, closeOnFinish) {
         this._lock();
-
         let waypoints = await this._currentState.onClosed(stateEntry);
-        this._resolveWaypointResults(waypoints, this._insertWaypoint.bind(this), this._rejectWaypointSearch.bind(this), closeOnFinish);
+        this._unlock();
+
+        this._resolveWaypointResults(waypoints, this._insertWaypoint.bind(this, closeOnFinish), this._rejectWaypointSearch.bind(this, closeOnFinish));
     }
 
-    _insertWaypoint(waypoint) {
+    async _insertWaypoint(closeOnFinish, waypoint) {
         let command = {
             type: WT_G5000_TSCFlightPlanKeyboard.CommandType.INSERT_WAYPOINT,
             waypoint: waypoint
         };
-        if (this.context.callback(command)) {
+
+        this._lock();
+        let wasCommandSuccessful = await this.context.callback(command);
+        this._unlock();
+
+        if (wasCommandSuccessful) {
             this.context.initialWaypoint = waypoint;
             this.context.initialAirway = null;
             this._initialWaypoint = waypoint;
             this._initialAirway = null;
             this._resetToInitialWaypoint();
-        } else {
+        }
+        if (closeOnFinish || !wasCommandSuccessful) {
             this.instrument.goBack();
         }
     }
 
     async _closeWaypointOrAirwaySearch(stateEntry, closeOnFinish) {
         this._lock();
-
         let result = await this._currentState.onClosed(stateEntry);
+        this._unlock();
+
         if (result instanceof WT_Airway) {
             if (closeOnFinish) {
                 this._confirmAirway(this._currentState.prevWaypoint, result, null, null, closeOnFinish);
             } else {
                 await this._beginAirwayExitSearch(this._currentState.prevWaypoint, result);
-                this._unlock();
             }
         } else {
-            this._resolveWaypointResults(result, this._insertWaypoint.bind(this), this._rejectWaypointSearch.bind(this), closeOnFinish);
+            this._resolveWaypointResults(result, this._insertWaypoint.bind(this, closeOnFinish), this._rejectWaypointSearch.bind(this, closeOnFinish));
         }
     }
 
@@ -299,13 +298,14 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
     async _closeAirwaySearch(stateEntry, closeOnFinish) {
         this._lock();
         let airway = await this._currentState.onClosed(stateEntry);
+        this._unlock();
+
         if (airway) {
             if (closeOnFinish) {
                 this._confirmAirway(this._currentOperation.entryWaypoint, airway, null, null, closeOnFinish);
             } else {
                 this._currentOperation.setAirway(airway);
                 await this._beginAirwayExitSearch(this._currentState.entryWaypoint, airway);
-                this._unlock();
             }
         } else {
             this._rejectAirwaySearch();
@@ -318,10 +318,14 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
     }
 
     async _beginAirwayExitSearch(entryWaypoint, airway) {
+        this._lock();
+
         let oldState = this._currentState;
         this._currentState = new WT_G5000_TSCFlightPlanKeyboardAirwayExitSearchState(this, entryWaypoint, airway);
         await this._currentState.init();
         this._openState(this._currentState, oldState);
+
+        this._unlock();
     }
 
     /**
@@ -331,16 +335,23 @@ class WT_G5000_TSCFlightPlanKeyboard extends WT_G3x5_TSCPopUpElement {
      * @param {WT_Airway} airway
      * @param {WT_ICAOWaypoint[]} sequence
      */
-    _insertAirway(nextAirway, closeOnFinish, airway, sequence) {
+    async _insertAirway(nextAirway, closeOnFinish, airway, sequence) {
         if (airway && sequence.length > 1) {
             let command = {
                 type: WT_G5000_TSCFlightPlanKeyboard.CommandType.INSERT_AIRWAY,
                 airway: airway,
                 sequence: sequence
             };
-            if (this.context.callback(command)) {
+            this._lock();
+            let wasCommandSuccessful = await this.context.callback(command);
+            this._unlock();
+
+            if (wasCommandSuccessful) {
                 this.context.initialWaypoint = sequence[sequence.length - 1];
                 this.context.initialAirway = nextAirway;
+                this._initialWaypoint = sequence[sequence.length - 1];
+                this._initialAirway = nextAirway;
+                this._resetToInitialWaypoint();
             } else {
                 this.instrument.goBack();
                 return;
