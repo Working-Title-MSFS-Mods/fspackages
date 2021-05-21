@@ -348,8 +348,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             } else {
                 await this._displayedFlightPlan.insertWaypoint(segment, {waypoint: waypoint}, index);
             }
+            return true;
         } catch (e) {
             console.log(e);
+            return false;
         }
     }
 
@@ -361,11 +363,11 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     async _insertWaypointFromLeg(leg, deltaIndex, waypoint) {
         if (!waypoint || leg.flightPlan !== this._fpm.activePlan) {
-            return;
+            return false;
         }
 
         let legSegmentIndex = leg.flightPlan.getSegment(leg.segment).elements.indexOf(leg);
-        await this._insertWaypointToIndex(leg.segment, waypoint, legSegmentIndex + deltaIndex);
+        return this._insertWaypointToIndex(leg.segment, waypoint, legSegmentIndex + deltaIndex);
     }
 
     /**
@@ -374,10 +376,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     async _appendToEnroute(waypoint) {
         if (!waypoint) {
-            return;
+            return false;
         }
 
-        await this._insertWaypointToIndex(WT_FlightPlan.Segment.ENROUTE, waypoint);
+        return this._insertWaypointToIndex(WT_FlightPlan.Segment.ENROUTE, waypoint);
     }
 
     /**
@@ -403,8 +405,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
             } else {
                 await this._displayedFlightPlan.insertAirway(segment, airway, enter, exit, index);
             }
+            return true;
         } catch (e) {
             console.log(e);
+            return false;
         }
     }
 
@@ -417,7 +421,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      */
     async _insertAirwayFromLeg(referenceLeg, indexDelta, airway, waypointSequence) {
         if (referenceLeg.flightPlan !== this._displayedFlightPlan || !airway || !waypointSequence) {
-            return;
+            return false;
         }
 
         let segmentElement = referenceLeg.flightPlan.getSegment(referenceLeg.segment);
@@ -429,7 +433,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
 
         if (index >= 0) {
-            await this._insertAirwayToIndex(referenceLeg.segment, airway, waypointSequence, index + indexDelta);
+            return this._insertAirwayToIndex(referenceLeg.segment, airway, waypointSequence, index + indexDelta);
+        } else {
+            return false;
         }
     }
 
@@ -463,8 +469,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
                         this._displayedFlightPlan.removeElement(leg.segment, leg);
                 }
             }
+            return true;
         } catch (e) {
             console.log(e);
+            return false;
         }
     }
 
@@ -473,16 +481,20 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_FlightPlanAirwaySequence} sequence
      */
     _removeAirwaySequence(sequence) {
+        if (sequence.segment !== WT_FlightPlan.Segment.ENROUTE) {
+            return false;
+        }
+
         try {
-            if (sequence.segment === WT_FlightPlan.Segment.ENROUTE) {
-                if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-                    this._fpm.removeFromActive(sequence);
-                } else {
-                    this._displayedFlightPlan.removeElement(sequence.segment, sequence);
-                }
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.removeFromActive(sequence);
+            } else {
+                this._displayedFlightPlan.removeElement(sequence.segment, sequence);
             }
+            return true;
         } catch (e) {
             console.log(e);
+            return false;
         }
     }
 
@@ -492,10 +504,16 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_NumberUnit} altitude
      */
     async _setVNAVAltitude(leg, altitude) {
-        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-            this._fpm.setCustomLegAltitudeInActive(leg, altitude);
-        } else {
-            leg.altitudeConstraint.setCustomAltitude(altitude);
+        try {
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.setCustomLegAltitudeInActive(leg, altitude);
+            } else {
+                leg.altitudeConstraint.setCustomAltitude(altitude);
+            }
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
         }
     }
 
@@ -504,10 +522,16 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_FlightPlanLeg} leg
      */
     async _removeVNAVAltitude(leg) {
-        if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
-            this._fpm.removeCustomLegAltitudeInActive(leg);
-        } else {
-            leg.altitudeConstraint.removeCustomAltitude();
+        try {
+            if (this._source === WT_G3x5_TSCFlightPlan.Source.ACTIVE) {
+                this._fpm.removeCustomLegAltitudeInActive(leg);
+            } else {
+                leg.altitudeConstraint.removeCustomAltitude();
+            }
+            return true;
+        } catch (e) {
+            console.log(e);
+            return false;
         }
     }
 
@@ -518,8 +542,10 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     async _activateLeg(leg) {
         try {
             await this._fpm.setActiveLeg(leg);
+            return true;
         } catch (e) {
             console.log(e);
+            return false;
         }
     }
 

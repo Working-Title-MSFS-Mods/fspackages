@@ -13,8 +13,9 @@ class WT_G5000_TSCFlightPlan extends WT_G3x5_TSCFlightPlan {
      * @param {WT_FlightPlan.Segment} segment
      * @param {Number} index
      * @param {WT_G5000_TSCFlightPlanKeyboardCommand} command
+     * @returns {Promise<Boolean>}
      */
-    _flightPlanKeyboardCallback(flightPlan, referenceWaypoint, segment, index, command) {
+    async _flightPlanKeyboardCallback(flightPlan, referenceWaypoint, segment, index, command) {
         if (flightPlan !== this._displayedFlightPlan) {
             return false;
         }
@@ -25,16 +26,21 @@ class WT_G5000_TSCFlightPlan extends WT_G3x5_TSCFlightPlan {
             return false;
         }
 
+        let success;
         if (command.type === WT_G5000_TSCFlightPlanKeyboard.CommandType.INSERT_WAYPOINT) {
-            this._insertWaypointToIndex(segment, command.waypoint, index);
+            success = await this._insertWaypointToIndex(segment, command.waypoint, index);
             referenceWaypoint = command.waypoint;
         } else {
-            this._insertAirwayToIndex(segment, command.airway, command.sequence, index);
+            success = await this._insertAirwayToIndex(segment, command.airway, command.sequence, index);
             referenceWaypoint = command.sequence[command.sequence.length - 1];
         }
-        this._flightPlanKeyboardPopUp.element.context.callback = this._flightPlanKeyboardCallback.bind(this, flightPlan, referenceWaypoint, segment, index + 1);
 
-        return true;
+        if (success) {
+            this._flightPlanKeyboardPopUp.element.context.callback = this._flightPlanKeyboardCallback.bind(this, flightPlan, referenceWaypoint, segment, index + 1);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     _openFlightPlanKeyboard(flightPlan, segment, index) {
