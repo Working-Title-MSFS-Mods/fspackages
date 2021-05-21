@@ -8,7 +8,7 @@
   - By default, airways are collapsed within the Flight Plan page unless they contain the active flight plan leg. To manually expand/collapse airways, select an airway header row in the Flight Plan page and use the Airway Options menu on the right.
 - \[FPLN\] Added support for a standby flight plan.
   - To access the standby flight plan, use the GTC navigate to MFD Home -> Flight Plan -> Standby Flight Plan.
-  - Note that because the mod still uses the sim's built-in flight plan system to manage the active flight plan, when activating the standby flight plan changes may be made to the Departure, Arrival, and Approach segments.
+  - Note that because the mod still uses the sim's built-in flight plan system to manage the active flight plan, when activating the standby flight plan changes may be made to it for compatibility reasons.
   - Leg altitude restrictions are not imported into the active flight plan when activating the standby flight plan.
 - \[FPLN\] Added a function to delete the active/standby flight plans via the new Flight Plan Options menu.
   - The option can be found by using the GTC to navigate to MFD Home -> Flight Plan (\[optional\] -> Standby Flight Plan) -> Flight Plan Options -> Delete Flight Plan.
