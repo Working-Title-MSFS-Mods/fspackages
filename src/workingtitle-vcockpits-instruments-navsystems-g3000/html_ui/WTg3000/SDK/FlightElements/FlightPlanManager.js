@@ -277,16 +277,15 @@ class WT_FlightPlanManager {
         if (icao === "") {
             throw new Error("Invalid waypoint ICAO to add to the flight plan");
         }
-
-        if (segment === WT_FlightPlan.Segment.ENROUTE) {
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT, {
-                icao: icao,
-                index: index
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } else {
+        if (segment !== WT_FlightPlan.Segment.ENROUTE) {
             throw new Error("Cannot add waypoint to a non-enroute segment");
         }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_WAYPOINT, {
+            icao: icao,
+            index: index
+        });
+        this._syncHandler.fireEvent(syncEvent);
     }
 
     /**
@@ -300,17 +299,17 @@ class WT_FlightPlanManager {
      *                           end of the segment.
      */
     addAirwaySequenceToActive(segment, airway, enter, exit, index) {
-        if (segment === WT_FlightPlan.Segment.ENROUTE) {
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY, {
-                airwayName: airway.name,
-                enterICAO: enter.icao,
-                exitICAO: exit.icao,
-                index: index
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } else {
+        if (segment !== WT_FlightPlan.Segment.ENROUTE) {
             throw new Error("Cannot add airway to a non-enroute segment");
         }
+
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_INSERT_AIRWAY, {
+            airwayName: airway.name,
+            enterICAO: enter.icao,
+            exitICAO: exit.icao,
+            index: index
+        });
+        this._syncHandler.fireEvent(syncEvent);
     }
 
     /**
@@ -321,16 +320,15 @@ class WT_FlightPlanManager {
         if (element.flightPlan !== this.activePlan) {
             throw new Error("The provided element is not in the active flight plan.");
         }
-
-        if (element.segment === WT_FlightPlan.Segment.ENROUTE) {
-            let index = element.flightPlan.getEnroute().elements.indexOf(element);
-            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX, {
-                index: index
-            });
-            this._syncHandler.fireEvent(syncEvent);
-        } else {
+        if (element.segment !== WT_FlightPlan.Segment.ENROUTE) {
             throw new Error("Cannot remove element from a non-enroute segment");
         }
+
+        let index = element.flightPlan.getEnroute().elements.indexOf(element);
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_ENROUTE_REMOVE_INDEX, {
+            index: index
+        });
+        this._syncHandler.fireEvent(syncEvent);
     }
 
     /**
@@ -1382,6 +1380,44 @@ class WT_FlightPlanManager {
         }
     }
 
+    /**
+     *
+     * @param {WT_FlightPlan} tempFlightPlan
+     */
+    async _copyStandbyEnrouteWithoutDuplicates(tempFlightPlan) {
+        let enrouteElements = this.standbyPlan.getEnroute().elements;
+        for (let i = 0; i < enrouteElements.length; i++) {
+            let element = enrouteElements.get(i);
+            if (element instanceof WT_FlightPlanLeg) {
+                let previousLeg = element.previousLeg();
+                if (!(previousLeg && element.fix.icao === previousLeg.fix.icao)) {
+                    // if the leg duplicates the waypoint of the leg immediately prior to it, we need to drop it from the flight plan,
+                    // otherwise it will cause issues with syncing to the sim's built-in flight plan manager
+                    await tempFlightPlan.insertWaypoint(WT_FlightPlan.Segment.ENROUTE, {waypoint: element.fix});
+                }
+            } else {
+                let doCopy = true;
+                let enter = element.legs.first().fix;
+                let exit = element.legs.last().fix;
+                let firstLeg = element.legs.first();
+                let previousLeg = firstLeg.previousLeg();
+                console.log(firstLeg);
+                console.log(previousLeg);
+                if (previousLeg && firstLeg.fix.icao === previousLeg.fix.icao) {
+                    // if the first leg duplicates the waypoint of the leg immediately prior to it, we drop it from the airway sequence
+                    if (element.legs.length > 1) {
+                        enter = element.legs.get(1).fix;
+                    } else {
+                        doSync = false;
+                    }
+                }
+                if (doCopy) {
+                    await tempFlightPlan.insertAirway(WT_FlightPlan.Segment.ENROUTE, element.airway, enter, exit);
+                }
+            }
+        }
+    }
+
     async _doActivateStandbyWithSync() {
         if (this.isActiveLocked) {
             return;
@@ -1398,7 +1434,7 @@ class WT_FlightPlanManager {
                 await this._asoboInterface.setDestination(this.standbyPlan.getDestination().waypoint.icao);
             }
 
-            tempFlightPlan.copySegmentFrom(this.standbyPlan, WT_FlightPlan.Segment.ENROUTE);
+            await this._copyStandbyEnrouteWithoutDuplicates(tempFlightPlan);
             let enrouteElements = tempFlightPlan.getEnroute().elements;
             for (let i = 0; i < enrouteElements.length; i++) {
                 let element = enrouteElements.get(i);
@@ -1448,8 +1484,7 @@ class WT_FlightPlanManager {
     async _doActivateStandbyWithoutSync() {
         // only need to copy over the enroute segment; the rest will be synced through the sim's built-in flight plan manager
         let tempFlightPlan = new WT_FlightPlan(this._icaoWaypointFactory);
-        tempFlightPlan.copySegmentFrom(this.standbyPlan, WT_FlightPlan.Segment.ENROUTE);
-
+        await this._copyStandbyEnrouteWithoutDuplicates(tempFlightPlan);
         this.activePlan.copyFrom(tempFlightPlan);
 
         try {
