@@ -2610,10 +2610,7 @@ class WT_G3x5_TSCDepartureSelectionHTMLElement extends WT_G3x5_TSCDepartureArriv
      * @returns {Boolean}
      */
     _checkIfChartsDisplayHasSelectedProcedure() {
-        return this._displayedChart &&
-               this._selectedProcedure.airport.ident === this._displayedChart.icao_airport_identifier &&
-               this._displayedChart.type.section === "DEP" &&
-               this._displayedChart.procedure_code[0] === this._selectedProcedure.name;
+        return this._displayedChart && WT_NavigraphChartOperations.doesChartMatchDeparture(this._displayedChart, this._selectedProcedure);
     }
 }
 WT_G3x5_TSCDepartureSelectionHTMLElement.NAME = "wt-tsc-departureselection";
@@ -2852,10 +2849,7 @@ class WT_G3x5_TSCArrivalSelectionHTMLElement extends WT_G3x5_TSCDepartureArrival
      * @returns {Boolean}
      */
     _checkIfChartsDisplayHasSelectedProcedure() {
-        return this._displayedChart &&
-               this._selectedProcedure.airport.ident === this._displayedChart.icao_airport_identifier &&
-               this._displayedChart.type.section === "ARR" &&
-               this._displayedChart.procedure_code[0] === this._selectedProcedure.name;
+        return this._displayedChart && WT_NavigraphChartOperations.doesChartMatchArrival(this._displayedChart, this._selectedProcedure);
     }
 }
 WT_G3x5_TSCArrivalSelectionHTMLElement.NAME = "wt-tsc-arrivalselection";
@@ -3002,9 +2996,6 @@ WT_G3x5_TSCApproachSelection.TITLE = "Approach Selection";
 class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelectionHTMLElement {
     constructor() {
         super();
-
-        this._selectedProcedureChartCodePrefix = "";
-        this._selectedProcedureChartCodeSuffix = "";
 
         this._isActivateButtonEnabled = true;
     }
@@ -3173,65 +3164,6 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
         return procedureSegment.transitionIndex;
     }
 
-    _updateProcedureChartCodePrefix() {
-        if (this._selectedProcedure) {
-            switch (this._selectedProcedure.type) {
-                case WT_Approach.Type.ILS_LOC:
-                case WT_Approach.Type.ILS:
-                    this._selectedProcedureChartCodePrefix = "I";
-                    break;
-                case WT_Approach.Type.LOC:
-                    this._selectedProcedureChartCodePrefix = "L";
-                    break;
-                case WT_Approach.Type.RNAV:
-                    this._selectedProcedureChartCodePrefix = "R";
-                    break;
-                case WT_Approach.Type.VOR:
-                    this._selectedProcedureChartCodePrefix = "VOR";
-                    break;
-                default:
-                    this._selectedProcedureChartCodePrefix = "";
-            }
-        } else {
-            this._selectedProcedureChartCodePrefix = "";
-        }
-    }
-
-    _updateProcedureChartCodeSuffix() {
-        if (this._selectedProcedure) {
-            if (this._selectedProcedure.type === WT_Approach.Type.VOR) {
-                if (this._selectedProcedure.name.search(/ (A )|(A$)/) >= 0) {
-                    this._selectedProcedureChartCodeSuffix = "A";
-                } else if (this._selectedProcedure.name.search(/ (B )|(B$)/) >= 0) {
-                    this._selectedProcedureChartCodeSuffix = "B";
-                } else if (this._selectedProcedure.name.search(/ (C )|(C$)/) >= 0) {
-                    this._selectedProcedureChartCodeSuffix = "C";
-                } else {
-                    this._selectedProcedureChartCodeSuffix = "";
-                }
-            } else {
-                if (this._selectedProcedure.name.search(/ (X )|(X$)/) >= 0) {
-                    this._selectedProcedureChartCodeSuffix = "X";
-                } else if (this._selectedProcedure.name.search(/ (Y )|(Y$)/) >= 0) {
-                    this._selectedProcedureChartCodeSuffix = "Y";
-                } else if (this._selectedProcedure.name.search(/ (Z )|(Z$)/) >= 0) {
-                    this._selectedProcedureChartCodeSuffix = "Z";
-                } else {
-                    this._selectedProcedureChartCodeSuffix = "";
-                }
-            }
-        } else {
-            this._selectedProcedureChartCodeSuffix = "";
-        }
-    }
-
-    _updateFromSelectedProcedure() {
-        super._updateFromSelectedProcedure();
-
-        this._updateProcedureChartCodePrefix();
-        this._updateProcedureChartCodeSuffix();
-    }
-
     /**
      *
      * @returns {Boolean}
@@ -3299,10 +3231,7 @@ class WT_G3x5_TSCApproachSelectionHTMLElement extends WT_G3x5_TSCProcedureSelect
      * @returns {Boolean}
      */
     _checkIfChartsDisplayHasSelectedProcedure() {
-        return this._displayedChart &&
-               this._selectedProcedure.airport.ident === this._displayedChart.icao_airport_identifier &&
-               this._displayedChart.type.section === "APP" &&
-               this._displayedChart.procedure_code.indexOf(`${this._selectedProcedureChartCodePrefix}${this._selectedProcedure.runway ? this._selectedProcedure.runway.designationFull : ""}${this._selectedProcedureChartCodeSuffix}`) >= 0;
+        return this._displayedChart && WT_NavigraphChartOperations.doesChartMatchApproach(this._displayedChart, this._selectedProcedure);
     }
 
     _updateActivateButton(state) {
