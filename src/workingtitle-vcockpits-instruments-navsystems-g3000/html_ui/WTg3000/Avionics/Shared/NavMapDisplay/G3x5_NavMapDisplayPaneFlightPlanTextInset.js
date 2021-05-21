@@ -2396,7 +2396,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanAirwayFooterRowRenderer extends WT_G3x5
 
         let modeHTMLElement = row.getActiveModeHTMLElement();
         modeHTMLElement.setLeg(this.leg);
-        modeHTMLElement.setIndent(2);
+        modeHTMLElement.setIndent(3);
         modeHTMLElement.setActive(this.leg === activeLeg);
     }
 }
