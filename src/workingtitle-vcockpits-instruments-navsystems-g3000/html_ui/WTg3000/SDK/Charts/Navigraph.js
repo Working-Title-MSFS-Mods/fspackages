@@ -300,6 +300,16 @@ class WT_NavigraphChartOperations {
     }
 
     /**
+     * Checks if a chart definition is associated with a specific departure procedure.
+     * @param {WT_NavigraphChartDefinition} chartDef - a chart definition.
+     * @param {WT_Departure} departure - a departure procedure.
+     * @returns {Boolean} whether the chart definition and departure procedure are associated with each other.
+     */
+    static doesChartMatchDeparture(chartDef, departure) {
+        return chartDef && departure && chartDef.icao_airport_identifier === departure.airport.ident && chartDef.type.section === "DEP" && chartDef.procedure_code[0] === departure.name;
+    }
+
+    /**
      * Retrieves the chart definition associated with a specific arrival procedure from a list of charts belonging
      * to an airport. Returns undefined if an associated chart definition cannot be found.
      * @param {WT_NavigraphChartDefinition[]} chartDefs - the list of charts belonging to the airport.
@@ -311,6 +321,16 @@ class WT_NavigraphChartOperations {
     }
 
     /**
+     * Checks if a chart definition is associated with a specific arrival procedure.
+     * @param {WT_NavigraphChartDefinition} chartDef - a chart definition.
+     * @param {WT_Arrival} arrival - an arrival procedure.
+     * @returns {Boolean} whether the chart definition and arrival procedure are associated with each other.
+     */
+    static doesChartMatchArrival(chartDef, arrival) {
+        return chartDef && arrival && chartDef.icao_airport_identifier === arrival.airport.ident && chartDef.type.section === "ARR" && chartDef.procedure_code[0] === arrival.name;
+    }
+
+    /**
      *
      * @param {WT_Approach} approach
      * @returns {String}
@@ -318,15 +338,18 @@ class WT_NavigraphChartOperations {
     static _getApproachChartCodePrefix(approach) {
         if (approach) {
             switch (approach.type) {
-                case WT_Approach.Type.ILS_LOC:
                 case WT_Approach.Type.ILS:
                     return "I";
                 case WT_Approach.Type.LOC:
-                    return "L";
+                    return approach.runway ? "L" : "LDM";
                 case WT_Approach.Type.RNAV:
-                    return "R";
+                    return approach.runway ? "R" : "RNV";
                 case WT_Approach.Type.VOR:
-                    return "VOR";
+                    return approach.runway ? "V" : "VOR";
+                case WT_Approach.Type.NDB:
+                    return approach.runway ? "N" : "NDB";
+                case WT_Approach.Type.LDA:
+                    return "X";
             }
         }
         return "";
@@ -339,22 +362,9 @@ class WT_NavigraphChartOperations {
      */
     static _getApproachChartCodeSuffix(approach) {
         if (approach) {
-            if (approach.type === WT_Approach.Type.VOR) {
-                if (approach.name.search(/ (A )|(A$)/) >= 0) {
-                    return "A";
-                } else if (approach.name.search(/ (B )|(B$)/) >= 0) {
-                    return "B";
-                } else if (approach.name.search(/ (C )|(C$)/) >= 0) {
-                    return "C";
-                }
-            } else {
-                if (approach.name.search(/ (X )|(X$)/) >= 0) {
-                    return "X";
-                } else if (approach.name.search(/ (Y )|(Y$)/) >= 0) {
-                    return "Y";
-                } else if (approach.name.search(/ (Z )|(Z$)/) >= 0) {
-                    return "Z";
-                }
+            let letterMatch = approach.name.match(/( |-)([A-Z])( |$)/);
+            if (letterMatch) {
+                return letterMatch[2];
             }
         }
         return "";
@@ -375,6 +385,25 @@ class WT_NavigraphChartOperations {
         let prefix = WT_NavigraphChartOperations._getApproachChartCodePrefix(approach);
         let suffix = WT_NavigraphChartOperations._getApproachChartCodeSuffix(approach);
         let code = `${prefix}${approach.runway ? approach.runway.designationFull : ""}${suffix}`;
-        return chartDefs.find(chartDef => chartDef.type.section === "APP" && chartDef.procedure_code.indexOf(code) >= 0);
+        let codeAlt = `${prefix}${approach.runway ? approach.runway.designationFull : ""}-${suffix}`;
+        return chartDefs.find(chartDef => chartDef.type.section === "APP" && chartDef.procedure_code.some(candidate => candidate === code || candidate === codeAlt));
+    }
+
+    /**
+     * Checks if a chart definition is associated with a specific approach procedure.
+     * @param {WT_NavigraphChartDefinition} chartDef - a chart definition.
+     * @param {WT_Approach} approach - an approach procedure.
+     * @returns {Boolean} whether the chart definition and approach procedure are associated with each other.
+     */
+    static doesChartMatchApproach(chartDef, approach) {
+        if (!chartDef || !approach || chartDef.icao_airport_identifier !== approach.airport.ident || chartDef.type.section !== "APP") {
+            return false;
+        }
+
+        let prefix = WT_NavigraphChartOperations._getApproachChartCodePrefix(approach);
+        let suffix = WT_NavigraphChartOperations._getApproachChartCodeSuffix(approach);
+        let code = `${prefix}${approach.runway ? approach.runway.designationFull : ""}${suffix}`;
+        let codeAlt = `${prefix}${approach.runway ? approach.runway.designationFull : ""}-${suffix}`;
+        return chartDef.procedure_code.some(candidate => candidate === code || candidate === codeAlt);
     }
 }
