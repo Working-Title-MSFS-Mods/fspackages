@@ -362,7 +362,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_ICAOWaypoint} waypoint
      */
     async _insertWaypointFromLeg(leg, deltaIndex, waypoint) {
-        if (!waypoint || leg.flightPlan !== this._fpm.activePlan) {
+        if (!waypoint || leg.flightPlan !== this._displayedFlightPlan) {
             return false;
         }
 
