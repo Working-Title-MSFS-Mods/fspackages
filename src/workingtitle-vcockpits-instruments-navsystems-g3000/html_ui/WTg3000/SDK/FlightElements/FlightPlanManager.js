@@ -22,13 +22,14 @@ class WT_FlightPlanManager {
         this._standby.addListener(this._onStandbyFlightPlanChanged.bind(this));
         this._directTo = new WT_DirectTo();
 
-        this.unlockActive();
+        this._isActiveLocked = false;
+        this._activePlanHasManualEdit = false;
 
         this._syncHandler = new WT_FlightPlanSyncHandler(icaoWaypointFactory);
         this._syncHandler.addListener(this._onSyncEvent.bind(this));
 
         this._asoboInterface = new WT_FlightPlanAsoboInterface(icaoWaypointFactory);
-        this._lastActiveSyncTime = 0;
+        this._lastActivePlanSyncTime = 0;
 
         this._activeLegCached = null;
 
@@ -85,8 +86,17 @@ class WT_FlightPlanManager {
      * @readonly
      * @type {Number}
      */
-    get lastActiveSyncTime() {
-        return this._lastActiveSyncTime;
+    get lastActivePlanSyncTime() {
+        return this._lastActivePlanSyncTime;
+    }
+
+    /**
+     * Whether the active flight plan has been manually edited.
+     * @readonly
+     * @type {Boolean}
+     */
+    get activePlanHasManualEdit() {
+        return this._activePlanHasManualEdit;
     }
 
     /**
@@ -110,7 +120,11 @@ class WT_FlightPlanManager {
      * @returns {Promise<void>} a Promise which is fulfilled when the sync completes.
      */
     async syncActiveFromGame(forceEnrouteSync) {
-        this._lastActiveSyncTime = Date.now();
+        if (this._isActiveLocked) {
+            return;
+        }
+
+        this._lastActivePlanSyncTime = Date.now();
         await this._asoboInterface.syncFromGame(this._active, this._directTo, forceEnrouteSync);
 
         if (!this.directTo.isActive()) {
@@ -1517,8 +1531,10 @@ class WT_FlightPlanManager {
      * @param {WT_FlightPlanSyncEvent} event
      */
     _onSyncEvent(event) {
-        if ((event.command === WT_FlightPlanSyncHandler.Command.REQUEST && !this.isMaster) ||
-            (event.command === WT_FlightPlanSyncHandler.Command.CONFIRM && this.isMaster)) {
+        let isRequest = event.command === WT_FlightPlanSyncHandler.Command.REQUEST;
+        let isConfirm = event.command === WT_FlightPlanSyncHandler.Command.CONFIRM;
+        if ((isRequest && !this.isMaster) ||
+            (isConfirm && this.isMaster)) {
             // only master FPM should respond to request commands
             // master FPM should not respond to confirm commands
             return;
@@ -1526,6 +1542,10 @@ class WT_FlightPlanManager {
         if (event.command === WT_FlightPlanSyncHandler.Command.SYNC && event.sourceID === this._instrumentID) {
             // ignore sync commands from self
             return;
+        }
+
+        if ((isRequest && (!this.isMaster || !this._isActiveLocked)) || isConfirm) {
+            this._activePlanHasManualEdit = true;
         }
 
         switch (event.type) {
