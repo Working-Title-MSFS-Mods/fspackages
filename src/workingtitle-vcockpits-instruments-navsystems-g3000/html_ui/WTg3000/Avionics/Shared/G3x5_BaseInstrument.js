@@ -155,10 +155,10 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         await WT_Wait.awaitCallback(() => this.gameState === GameState.ingame, this);
 
         // On first load, force sync of enroute legs from the sim's built-in flight plan so we can grab any legs imported from the world map
-        this._needSyncEnrouteFromAsobo = true;
         this._asoboEnrouteSyncCount = 0;
+        this._forceSyncEnrouteFromAsobo = true;
         if (this.flightPlanManagerWT.isMaster) {
-            // lock the active flight plan while attempting to enroute legs from the sim's built-in flight plan
+            // lock the active flight plan while attempting to sync enroute legs from the sim's built-in flight plan
             this.flightPlanManagerWT.lockActive();
         }
     }
@@ -170,7 +170,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     _initFlightPlanManager() {
         this._fpm = new WT_FlightPlanManager(this._isFlightPlanManagerMaster(), this.instrumentIdentifier, this.airplane, this.icaoWaypointFactory);
         this.airplane.fms.setFlightPlanManager(this._fpm);
-        this._needSyncEnrouteFromAsobo = false;
+        this._forceSyncEnrouteFromAsobo = false;
         this._loadATCFlightPlan();
     }
 
@@ -205,14 +205,14 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
         try {
             // this needs to be in a try-catch block because for a period of time after loading a flight, Coherent has issues retrieving ICAO waypoint data
             // therefore we don't count forced enroute syncs that encounter errors as successful and will try again the next cycle
-            await this.flightPlanManagerWT.syncActiveFromGame(this._needSyncEnrouteFromAsobo);
+            await this.flightPlanManagerWT.syncActiveFromGame(!this.flightPlanManagerWT.activePlanHasManualEdit || this._forceSyncEnrouteFromAsobo);
 
             // need to force enroute sync three times because sometimes the game is late loading all fpln legs from the world map
-            if (this._asoboEnrouteSyncCount < 3) {
+            if (this._asoboEnrouteSyncCount < WT_G3x5_BaseInstrument.FLIGHT_PLAN_ENROUTE_SYNC_ATTEMPTS) {
                 this._asoboEnrouteSyncCount++;
-            } else if (this._needSyncEnrouteFromAsobo) {
+            } else if (this._forceSyncEnrouteFromAsobo) {
                 this.flightPlanManagerWT.unlockActive();
-                this._needSyncEnrouteFromAsobo = false;
+                this._forceSyncEnrouteFromAsobo = false;
             }
         } catch (e) {
             console.log(e);
@@ -220,7 +220,7 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 
     _updateFlightPlanManager(currentTime) {
-        if (currentTime - this.flightPlanManagerWT.lastActiveSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
+        if (currentTime - this.flightPlanManagerWT.lastActivePlanSyncTime >= WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL) {
             this._syncFlightPlanManagerFromAsobo();
         }
     }
@@ -237,3 +237,4 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
     }
 }
 WT_G3x5_BaseInstrument.FLIGHT_PLAN_SYNC_INTERVAL = 2000; // ms
+WT_G3x5_BaseInstrument.FLIGHT_PLAN_ENROUTE_SYNC_ATTEMPTS = 5;
