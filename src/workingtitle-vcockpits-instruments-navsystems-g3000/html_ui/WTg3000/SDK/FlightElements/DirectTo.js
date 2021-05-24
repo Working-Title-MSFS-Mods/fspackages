@@ -123,7 +123,6 @@ class WT_DirectToEvent {
 
     /**
      * @readonly
-     * @property {WT_DirectTo} directTo
      * @type {WT_DirectTo}
      */
     get directTo() {
@@ -132,7 +131,6 @@ class WT_DirectToEvent {
 
     /**
      * @readonly
-     * @property {Number} types
      * @type {Number}
      */
     get types() {
@@ -147,14 +145,26 @@ class WT_DirectToEvent {
         return (this.types & type) === type;
     }
 
+    /**
+     * @readonly
+     * @type {WT_GeoPoint}
+     */
     get origin() {
         return this._data.origin;
     }
 
+    /**
+     * @readonly
+     * @type {WT_Waypoint}
+     */
     get oldDestination() {
         return this._data.oldDestination;
     }
 
+    /**
+     * @readonly
+     * @type {WT_Waypoint}
+     */
     get newDestination() {
         return this._data.newDestination;
     }

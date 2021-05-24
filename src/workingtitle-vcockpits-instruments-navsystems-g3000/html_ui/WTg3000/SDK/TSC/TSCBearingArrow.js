@@ -39,6 +39,7 @@ WT_TSCBearingArrow.TEMPLATE.innerHTML = `
     <style>
         :host {
             display: block;
+            position: relative;
         }
 
         svg {
