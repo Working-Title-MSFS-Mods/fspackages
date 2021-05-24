@@ -1586,6 +1586,15 @@ as3000-tsc-vertical-element #VNAVAltitudeKeyboard wt-tsc-vnavaltkeyboard {
     --numkeyboard-button-size: 10vh;
 }
 
+as3000-tsc-vertical-element #ActivateLegConfirm wt-tsc-activatelegconfirm {
+    position: absolute;
+    left: 5%;
+    top: 20%;
+    width: 90%;
+    height: 60%;
+    font-size: 4.5vh;
+}
+
 as3000-tsc-vertical-element #NavigraphLink wt-tsc-navigraphlink {
     position: absolute;
     left: 5%;
