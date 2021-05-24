@@ -85,6 +85,7 @@ class WT_G3x5_TSCWaypointButton extends WT_TSCButton {
                 left: 50%;
                 top: 50%;
                 transform: translate(-50%, -50%);
+                font-size: var(--button-waypoint-emptytext-font-size, 1em);
             }
         `;
     }

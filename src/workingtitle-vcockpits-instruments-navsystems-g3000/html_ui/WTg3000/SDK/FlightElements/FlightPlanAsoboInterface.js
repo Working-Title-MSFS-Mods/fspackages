@@ -676,4 +676,16 @@ class WT_FlightPlanAsoboInterface {
         }
         await Coherent.call("SET_ACTIVE_WAYPOINT_INDEX", index);
     }
+
+    async deactivateDirectTo() {
+        await Coherent.call("CANCEL_DIRECT_TO");
+    }
+
+    /**
+     *
+     * @param {WT_Waypoint} waypoint
+     */
+    async activateDirectTo(waypoint) {
+        await Coherent.call("ACTIVATE_DIRECT_TO", waypoint.icao);
+    }
 }

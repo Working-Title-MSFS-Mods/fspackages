@@ -543,6 +543,23 @@ class WT_FlightPlanManager {
         await this.syncActiveFromGame();
     }
 
+    /**
+     * Activates a direct-to to a waypoint.
+     * @param {WT_Waypoint} destination - the target of the direct-to.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the direct-to has been activated.
+     */
+    async activateDirectTo(destination) {
+        await this._asoboInterface.activateDirectTo(destination);
+    }
+
+    /**
+     * Deactivates the currently active direct-to.
+     * @returns {Promise<void>} a Promise which will be fulfilled when the direct-to has been deactivated.
+     */
+    async deactivateDirectTo() {
+        await this._asoboInterface.deactivateDirectTo();
+    }
+
     _getDirectToLeg() {
         if (!this.directTo.isActive()) {
             return null;
