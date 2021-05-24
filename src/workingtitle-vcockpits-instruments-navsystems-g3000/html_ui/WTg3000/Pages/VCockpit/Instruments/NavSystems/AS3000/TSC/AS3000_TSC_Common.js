@@ -1558,7 +1558,8 @@ class AS3000_TSC_Utilities extends NavSystemElement {
 
 class AS3000_TSC_NavComHome extends NavSystemElement {
     constructor() {
-        super(...arguments);
+        super();
+
         this.xpdrState = -1;
         this.selectedCom = 1;
         this.inputIndex = -1;
@@ -1690,12 +1691,12 @@ class AS3000_TSC_NavComHome extends NavSystemElement {
     }
 
     _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-        this.gps.deactivateNavButton(3);
-        this.gps.deactivateNavButton(4);
-        this.gps.deactivateNavButton(5);
-        this.gps.deactivateNavButton(6);
+        this.instrument.deactivateNavButton(1);
+        this.instrument.deactivateNavButton(2);
+        this.instrument.deactivateNavButton(3);
+        this.instrument.deactivateNavButton(4);
+        this.instrument.deactivateNavButton(5);
+        this.instrument.deactivateNavButton(6);
     }
 
     onFocusGained() {
@@ -2190,10 +2191,10 @@ class AS3000_TSC_AudioRadios extends NavSystemElement {
     }
 
     _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(5, true);
-        this.gps.deactivateNavButton(6, true);
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.gps.deactivateNavButton(5);
+        this.gps.deactivateNavButton(6);
     }
 
     onFocusGained() {
@@ -2424,9 +2425,9 @@ class AS3000_TSC_FrequencyKeyboard extends NavSystemTouch_FrequencyKeyboard {
     }
 
     _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.gps.deactivateNavButton(6);
     }
 
     onFocusGained() {
@@ -2517,9 +2518,9 @@ class AS3000_TSC_TimeKeyboard extends NavSystemTouch_TimeKeyboard {
 
     onExit() {
         super.onExit();
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.gps.deactivateNavButton(6);
     }
 
     setContext(_endCallback, _startingValue, _homePageParent, _homePageName) {
@@ -2584,9 +2585,9 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
     }
 
     _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
+        this.gps.deactivateNavButton(1);
+        this.gps.deactivateNavButton(2);
+        this.gps.deactivateNavButton(6);
     }
 
     onFocusGained() {
@@ -2669,24 +2670,6 @@ class AS3000_TSC_SpeedKeyboard extends NavSystemElement {
     validateEdit() {
         this._context.callback(this.currentInput);
         this.cancelEdit();
-    }
-}
-class AS3000_TSC_AltitudeKeyboard extends NavSystemTouch_AltitudeKeyboard {
-    onEnter() {
-        super.onEnter();
-        this.gps.activateNavButton(1, "Back", this.cancelEdit.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-        this.gps.activateNavButton(6, "Enter", this.validateEdit.bind(this), true, "ICON_TSC_BUTTONBAR_ENTER.png");
-        this.gps.deactivateNavButton(5);
-    }
-    onExit() {
-        super.onExit();
-        this.gps.deactivateNavButton(1, true);
-        this.gps.deactivateNavButton(2, true);
-        this.gps.deactivateNavButton(6, true);
-    }
-    cancelEdit() {
-        this.gps.goBack();
     }
 }
 class AS3000_TSC_TerrainAlert extends Warnings {
