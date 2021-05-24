@@ -20,6 +20,11 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
         return this._htmlElement;
     }
 
+    _initPopUps() {
+        this._directToCancelConfirmPopUp = new WT_G3x5_TSCElementContainer("Direct To Cancel Confirm", "DirectToCancelConfirm", new WT_G3x5_TSCDirectToCancelConfirmation());
+        this._directToCancelConfirmPopUp.setGPS(this.instrument);
+    }
+
     _getTitle() {
         return WT_G3x5_TSCDirectTo.TITLE;
     }
@@ -35,6 +40,8 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
     }
 
     init(root) {
+        this._initPopUps();
+
         this.container.title = this._getTitle();
 
         this._htmlElement = this._createHTMLElement();
@@ -63,6 +70,19 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
         this.instrument.flightPlanManagerWT.deactivateDirectTo();
     }
 
+    _openDirectToCancelConfirmPopUp() {
+        this._directToCancelConfirmPopUp.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            callback: (confirmed => {
+                if (confirmed) {
+                    this._cancelDirectTo();
+                }
+            }).bind(this)
+        });
+        this.instrument.switchToPopUpPage(this._directToCancelConfirmPopUp);
+    }
+
     _activateDirectTo() {
         if (!this._selectedWaypoint) {
             return;
@@ -81,7 +101,7 @@ class WT_G3x5_TSCDirectTo extends WT_G3x5_TSCPageElement {
                 this._selectWaypoint(event.waypoint);
                 break;
             case WT_G3x5_TSCDirectToHTMLElement.EventType.CANCEL:
-                this._cancelDirectTo();
+                this._openDirectToCancelConfirmPopUp();
                 break;
             case WT_G3x5_TSCDirectToHTMLElement.EventType.ACTIVATE:
                 this._activateDirectTo();
@@ -918,3 +938,230 @@ class WT_G3x5_TSCDirectToRecentTab extends WT_G3x5_TSCDirectToScrollTab {
     }
 }
 WT_G3x5_TSCDirectToRecentTab.TITLE = "Recent";
+
+class WT_G3x5_TSCDirectToCancelConfirmation extends WT_G3x5_TSCPopUpElement {
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCDirectToCancelConfirmationHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    _createHTMLElement() {
+        let htmlElement = new WT_G3x5_TSCDirectToCancelConfirmationHTMLElement();
+        htmlElement.setDirectTo(this.instrument.flightPlanManagerWT.directTo);
+        return htmlElement;
+    }
+
+    async _initFromHTMLElement() {
+        await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
+        this.htmlElement.okButton.addButtonListener(this._onOKButtonPressed.bind(this));
+        this.htmlElement.cancelButton.addButtonListener(this._onCancelButtonPressed.bind(this));
+    }
+
+    onInit() {
+        this._htmlElement = this._createHTMLElement();
+        this.popUpWindow.appendChild(this.htmlElement);
+        this._initFromHTMLElement();
+    }
+
+    _onOKButtonPressed() {
+        this.context.callback(true);
+        this.instrument.goBack();
+    }
+
+    _onCancelButtonPressed() {
+        this.context.callback(false);
+        this.instrument.goBack();
+    }
+
+    _onBackPressed() {
+        this.context.callback(false);
+
+        super._onBackPressed();
+    }
+
+    _onHomePressed() {
+        this.context.callback(false);
+
+        super._onHomePressed();
+    }
+}
+
+class WT_G3x5_TSCDirectToCancelConfirmationHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        /**
+         * @type {WT_DirectTo}
+         */
+        this._directTo = null;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCDirectToCancelConfirmationHTMLElement.TEMPLATE;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isInitialized() {
+        return this._isInit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get okButton() {
+        return this._okButton;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get cancelButton() {
+        return this._cancelButton;
+    }
+
+    async _defineChildren() {
+        this._identText = this.shadowRoot.querySelector(`#ident`);
+
+        [
+            this._okButton,
+            this._cancelButton
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#ok`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#cancel`, WT_TSCLabeledButton)
+        ]);
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._isInit = true;
+        this._initFromDirectTo();
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _initFromDirectTo() {
+        this._directTo.addListener(this._onDirectToEvent.bind(this));
+        this._updateFromDirectTo();
+    }
+
+    setDirectTo(directTo) {
+        if (!directTo || this._directTo) {
+            return;
+        }
+
+        this._directTo = directTo;
+        if (this._isInit) {
+            this._initFromDirectTo();
+        }
+    }
+
+    _updateFromDirectTo() {
+        if (this._directTo.isActive()) {
+            this._okButton.enabled = "true";
+            this._identText.innerHTML = `&nbsp${this._directTo.getDestination().ident}`;
+            this._identText.style.color = "var(--wt-g3x5-purple)";
+        } else {
+            this._okButton.enabled = "false";
+            this._identText.innerHTML = "&nbsp______";
+            this._identText.style.color = "white";
+        }
+    }
+
+    /**
+     *
+     * @param {WT_DirectToEvent} event
+     */
+    _onDirectToEvent(event) {
+        this._updateFromDirectTo();
+    }
+}
+WT_G3x5_TSCDirectToCancelConfirmationHTMLElement.NAME = "wt-tsc-directtocancelconfirm";
+WT_G3x5_TSCDirectToCancelConfirmationHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCDirectToCancelConfirmationHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            border-radius: 5px;
+            background: linear-gradient(#1f3445, black 25px);
+            border: 3px solid var(--wt-g3x5-bordergray);
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--directtocancelconfirm-padding-left, 1em);
+            top: var(--directtocancelconfirm-padding-top, 1em);
+            width: calc(100% - var(--directtocancelconfirm-padding-left, 1em) - var(--directtocancelconfirm-padding-right, 1em));
+            height: calc(100% - var(--directtocancelconfirm-padding-top, 1em) - var(--directtocancelconfirm-padding-bottom, 1em));
+        }
+            #info {
+                position: absolute;
+                left: 0%;
+                top: 0%;
+                width: 100%;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: center;
+                align-items: center;
+            }
+                #drctSymbol {
+                    width: calc(1.43 * 0.8em);
+                    height: 0.8em;
+                }
+                    #drctArrow {
+                        fill: white;
+                    }
+                    #drctLetterD {
+                        fill: transparent;
+                        stroke-width: 10;
+                        stroke: white;
+                    }
+            #buttons {
+                position: absolute;
+                left: 0%;
+                bottom: 0%;
+                width: 100%;
+                height: 60%;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+            }
+                .button {
+                    width: var(--directtocancelconfirm-button-width, 40%);
+                    height: var(--directtocancelconfirm-button-height, 3em);
+                    font-size: var(--directtocancelconfirm-button-font-size, 0.85em);
+                }
+    </style>
+    <div id="wrapper">
+        <div id="info">
+            <div>Cancel&nbsp</div>
+            <svg id="drctSymbol" viewBox="0 -35 100 70">
+                <path id="drctArrow" d="M 5 -2.5 L 75 -2.5 L 75 -20 L 95 0 L 75 20 L 75 2.5 L 5 2.5 Z" />
+                <path id="drctLetterD" d="M 20 -30 L 30 -30 C 70 -30 70 30 30 30 L 20 30 Z" />
+            </svg>
+            <div id="ident"></div>
+            <div>?</div>
+        </div>
+        <div id="buttons">
+            <wt-tsc-button-label id="ok" class="button" labeltext="OK"></wt-tsc-button-label>
+            <wt-tsc-button-label id="cancel" class="button" labeltext="Cancel"></wt-tsc-button-label>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCDirectToCancelConfirmationHTMLElement.NAME, WT_G3x5_TSCDirectToCancelConfirmationHTMLElement);
