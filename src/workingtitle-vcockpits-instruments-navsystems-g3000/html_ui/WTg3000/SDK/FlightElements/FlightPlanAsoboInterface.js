@@ -683,9 +683,9 @@ class WT_FlightPlanAsoboInterface {
 
     /**
      *
-     * @param {WT_Waypoint} waypoint
+     * @param {String} icao
      */
-    async activateDirectTo(waypoint) {
-        await Coherent.call("ACTIVATE_DIRECT_TO", waypoint.icao);
+    async activateDirectTo(icao) {
+        await Coherent.call("ACTIVATE_DIRECT_TO", icao);
     }
 }

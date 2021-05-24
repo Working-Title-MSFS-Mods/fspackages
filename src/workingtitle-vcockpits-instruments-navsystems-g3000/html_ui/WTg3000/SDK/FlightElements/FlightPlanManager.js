@@ -546,18 +546,18 @@ class WT_FlightPlanManager {
     /**
      * Activates a direct-to to a waypoint.
      * @param {WT_Waypoint} destination - the target of the direct-to.
-     * @returns {Promise<void>} a Promise which will be fulfilled when the direct-to has been activated.
      */
-    async activateDirectTo(destination) {
-        await this._asoboInterface.activateDirectTo(destination);
+    activateDirectTo(destination) {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE, {icao: destination.icao});
+        this._syncHandler.fireEvent(syncEvent);
     }
 
     /**
      * Deactivates the currently active direct-to.
-     * @returns {Promise<void>} a Promise which will be fulfilled when the direct-to has been deactivated.
      */
-    async deactivateDirectTo() {
-        await this._asoboInterface.deactivateDirectTo();
+    deactivateDirectTo() {
+        let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.DIRECTTO_DEACTIVATE);
+        this._syncHandler.fireEvent(syncEvent);
     }
 
     _getDirectToLeg() {
@@ -1411,6 +1411,84 @@ class WT_FlightPlanManager {
         }
     }
 
+    async _doActivateDirectToWithSync(icao) {
+        if (this.isActiveLocked) {
+            return;
+        }
+
+        this.lockActive();
+        try {
+            await this._asoboInterface.activateDirectTo(icao);
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE);
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this.unlockActive();
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doActivateDirectToWithoutSync(icao) {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doActivateDirectTo(icao) {
+        if (this.isMaster) {
+            await this._doActivateDirectToWithSync(icao);
+        } else {
+            await this._doActivateDirectToWithoutSync(icao);
+        }
+    }
+
+    async _doDeactivateDirectToWithSync() {
+        if (this.isActiveLocked) {
+            return;
+        }
+
+        this.lockActive();
+        try {
+            await this._asoboInterface.deactivateDirectTo();
+
+            let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.CONFIRM, WT_FlightPlanSyncHandler.EventType.DIRECTTO_DEACTIVATE);
+            this._syncHandler.fireEvent(syncEvent);
+        } catch (e) {
+            console.log(e);
+        }
+        this.unlockActive();
+
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doDeactivateDirectToWithoutSync() {
+        try {
+            await this.syncActiveFromGame();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async _doDeactivateDirectTo() {
+        if (this.isMaster) {
+            await this._doDeactivateDirectToWithSync();
+        } else {
+            await this._doDeactivateDirectToWithoutSync();
+        }
+    }
+
     /**
      *
      * @param {WT_FlightPlan} tempFlightPlan
@@ -1599,6 +1677,12 @@ class WT_FlightPlanManager {
             case WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN:
                 this._doClearFlightPlan();
                 break;
+            case WT_FlightPlanSyncHandler.EventType.DIRECTTO_ACTIVATE:
+                this._doActivateDirectTo(event.icao);
+                break;
+            case WT_FlightPlanSyncHandler.EventType.DIRECTTO_DEACTIVATE:
+                this._doDeactivateDirectTo();
+                break;
             case WT_FlightPlanSyncHandler.EventType.ACTIVATE_STANDBY:
                 this._doActivateStandby();
                 break;
@@ -1748,8 +1832,10 @@ WT_FlightPlanSyncHandler.EventType = {
     ACTIVE_SET_ALTITUDE: 8,
     ACTIVE_REMOVE_ALTITUDE: 9,
     ACTIVE_CLEAR_FLIGHT_PLAN: 10,
-    ACTIVATE_STANDBY: 11,
-    STANDBY_SYNC: 12
+    DIRECTTO_ACTIVATE: 11,
+    DIRECTTO_DEACTIVATE: 12,
+    ACTIVATE_STANDBY: 13,
+    STANDBY_SYNC: 14
 }
 
 /**
