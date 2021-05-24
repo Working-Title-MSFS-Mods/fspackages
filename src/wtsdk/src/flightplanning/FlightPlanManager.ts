@@ -1208,7 +1208,13 @@ export class FlightPlanManager {
   public getApproach(): any {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
-      return (currentFlightPlan.destinationAirfield.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex];
+      const app = (currentFlightPlan.destinationAirfield.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex];
+      if(app !== undefined){
+        app.isLocalizer = function()  {
+          return this.name.indexOf("ILS") > -1 || this.name.indexOf("LOC") > -1
+        }.bind(app);
+      }
+      return app;
     }
 
     return undefined;
