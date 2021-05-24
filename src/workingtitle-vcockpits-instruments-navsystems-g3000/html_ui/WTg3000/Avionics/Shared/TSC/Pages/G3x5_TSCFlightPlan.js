@@ -598,6 +598,20 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         }
     }
 
+    _openConfirmationTextPopUp(text, confirmCallback) {
+        this.instrument.confirmationTextPopUp.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            text: text,
+            callback: (confirmed => {
+                if (confirmed) {
+                    confirmCallback();
+                }
+            }).bind(this)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.confirmationTextPopUp);
+    }
+
     _openFlightPlanOptionsPopUp() {
         this._flightPlanOptionsPopUp.element.setContext({
             homePageGroup: this.homePageGroup,
@@ -719,7 +733,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
     }
 
     _onActivateStandbyButtonPressed(event) {
-        this._fpm.activateStandby();
+        this._openConfirmationTextPopUp("Activate Standby Flight Plan and Replace Current Active Route?", this._fpm.activateStandby.bind(this._fpm));
     }
 
     _onProcButtonPressed(event) {

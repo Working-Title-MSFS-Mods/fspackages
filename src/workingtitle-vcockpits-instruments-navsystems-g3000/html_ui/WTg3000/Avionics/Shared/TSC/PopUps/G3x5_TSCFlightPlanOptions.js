@@ -43,6 +43,20 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
         this._initFromHTMLElement();
     }
 
+    _openConfirmationTextPopUp(text, confirmCallback) {
+        this.instrument.confirmationTextPopUp.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            text: text,
+            callback: (confirmed => {
+                if (confirmed) {
+                    confirmCallback();
+                }
+            }).bind(this)
+        });
+        this.instrument.switchToPopUpPage(this.instrument.confirmationTextPopUp);
+    }
+
     _toggleFlightPlanPreview() {
         let displaySetting = this.context.paneSettings.display;
         let isDisplayOn = displaySetting.mode === WT_G3x5_PaneDisplaySetting.Mode.FLIGHT_PLAN;
@@ -69,8 +83,8 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
 
     _openDataFieldsPopUp() {
         this._dataFieldsPopUp.element.setContext({
-            homePageGroup: this.context.homePageGroup,
-            homePageName: this.context.homePageName,
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
             settings: this.context.settings.dataFieldSettings
         });
         this.instrument.switchToPopUpPage(this._dataFieldsPopUp);
@@ -89,7 +103,7 @@ class WT_G3x5_TSCFlightPlanOptions extends WT_G3x5_TSCPopUpElement {
     }
 
     _onDeleteButtonPressed(button) {
-        this._deleteFlightPlan();
+        this._openConfirmationTextPopUp("Delete all waypoints in flight plan?", this._deleteFlightPlan.bind(this));
     }
 
     onEnter() {
