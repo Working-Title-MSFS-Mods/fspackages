@@ -317,7 +317,7 @@ class AS3000_TSC extends NavSystemTouch {
                 this._mfdPagesRight.weatherSelection = new WT_G3x5_TSCPage("Weather Selection Right", "WeatherSelectionRight", new WT_G3x5_TSCWeatherSelection("MFD", "MFD Home", "Weather Radar Settings Right")),
                 this._mfdPagesLeft.weatherRadar = new WT_G3x5_TSCPage("Weather Radar Settings Left", "WeatherRadarSettingsLeft", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.LEFT)),
                 this._mfdPagesRight.weatherRadar = new WT_G3x5_TSCPage("Weather Radar Settings Right", "WeatherRadarSettingsRight", new WT_G3x5_TSCWeatherRadarSettings("MFD", "MFD Home", "MFD", WT_G3x5_MFDHalfPane.ID.RIGHT)),
-                this._commonPages.directTo = new WT_G3x5_TSCPage("Direct To", "DirectTo", new WT_G3x5_TSCDirectTo("MFD Home", "MFD")),
+                this._commonPages.directTo = new WT_G3x5_TSCPage("Direct To", "DirectTo", new WT_G3x5_TSCDirectTo("MFD", "MFD Home")),
                 this._commonPages.flightPlan = new WT_G3x5_TSCPage("Flight Plan", "FlightPlan", this._createFlightPlanPage("MFD Home", "MFD")),
                 this._commonPages.procedures = new WT_G3x5_TSCPage("Procedures", "Procedures", new WT_G3x5_TSCProcedures("MFD", "MFD Home")),
                 this._commonPages.departureSelection = new WT_G3x5_TSCPage("Departure Selection", "DepartureSelection", new WT_G3x5_TSCDepartureSelection("MFD", "MFD Home", this.instrumentIdentifier, this._navigraphNetworkAPI)),
