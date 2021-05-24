@@ -4667,51 +4667,9 @@ WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE.innerHTML = `
 
 customElements.define(WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.NAME, WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement);
 
-class WT_G3x5_TSCActivateLegConfirmation extends WT_G3x5_TSCPopUpElement {
-    /**
-     * @readonly
-     * @type {WT_G3x5_TSCActivateLegConfirmationHTMLElement}
-     */
-    get htmlElement() {
-        return this._htmlElement;
-    }
-
+class WT_G3x5_TSCActivateLegConfirmation extends WT_G3x5_TSCConfirmationPopUp {
     _createHTMLElement() {
         return new WT_G3x5_TSCActivateLegConfirmationHTMLElement();
-    }
-
-    async _initFromHTMLElement() {
-        await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
-        this.htmlElement.okButton.addButtonListener(this._onOKButtonPressed.bind(this));
-        this.htmlElement.cancelButton.addButtonListener(this._onCancelButtonPressed.bind(this));
-    }
-
-    onInit() {
-        this._htmlElement = this._createHTMLElement();
-        this.popUpWindow.appendChild(this.htmlElement);
-        this._initFromHTMLElement();
-    }
-
-    _onOKButtonPressed() {
-        this.context.callback(true);
-        this.instrument.goBack();
-    }
-
-    _onCancelButtonPressed() {
-        this.context.callback(false);
-        this.instrument.goBack();
-    }
-
-    _onBackPressed() {
-        this.context.callback(false);
-
-        super._onBackPressed();
-    }
-
-    _onHomePressed() {
-        this.context.callback(false);
-
-        super._onHomePressed();
     }
 
     onEnter() {
@@ -4721,69 +4679,37 @@ class WT_G3x5_TSCActivateLegConfirmation extends WT_G3x5_TSCPopUpElement {
     }
 }
 
-class WT_G3x5_TSCActivateLegConfirmationHTMLElement extends HTMLElement {
+class WT_G3x5_TSCActivateLegConfirmationHTMLElement extends WT_G3x5_TSCConfirmationPopUpHTMLElement {
     constructor() {
         super();
-
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
 
         /**
          * @type {WT_FlightPlanLeg}
          */
         this._leg = null;
-        this._isInit = false;
     }
 
     _getTemplate() {
         return WT_G3x5_TSCActivateLegConfirmationHTMLElement.TEMPLATE;
     }
 
-    /**
-     * @readonly
-     * @type {Boolean}
-     */
-    get isInitialized() {
-        return this._isInit;
+    _getOKButtonQuery() {
+        return "#ok";
     }
 
-    /**
-     * @readonly
-     * @type {WT_TSCLabeledButton}
-     */
-    get okButton() {
-        return this._okButton;
-    }
-
-    /**
-     * @readonly
-     * @type {WT_TSCLabeledButton}
-     */
-    get cancelButton() {
-        return this._cancelButton;
+    _getCancelButtonQuery() {
+        return "#cancel";
     }
 
     async _defineChildren() {
+        await super._defineChildren();
+
         this._fromText = this.shadowRoot.querySelector(`#from`);
         this._toText = this.shadowRoot.querySelector(`#to`);
-
-        [
-            this._okButton,
-            this._cancelButton
-        ] = await Promise.all([
-            WT_CustomElementSelector.select(this.shadowRoot, `#ok`, WT_TSCLabeledButton),
-            WT_CustomElementSelector.select(this.shadowRoot, `#cancel`, WT_TSCLabeledButton)
-        ]);
     }
 
-    async _connectedCallbackHelper() {
-        await this._defineChildren();
-        this._isInit = true;
+    _onInit() {
         this._updateFromLeg();
-    }
-
-    connectedCallback() {
-        this._connectedCallbackHelper();
     }
 
     _updateFromLeg() {
@@ -4803,7 +4729,9 @@ class WT_G3x5_TSCActivateLegConfirmationHTMLElement extends HTMLElement {
         }
 
         this._leg = leg;
-        this._updateFromLeg();
+        if (this._isInit) {
+            this._updateFromLeg();
+        }
     }
 }
 WT_G3x5_TSCActivateLegConfirmationHTMLElement.NAME = "wt-tsc-activatelegconfirm";
