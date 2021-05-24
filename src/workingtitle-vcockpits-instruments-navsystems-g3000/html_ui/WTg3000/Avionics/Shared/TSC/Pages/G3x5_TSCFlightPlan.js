@@ -4732,7 +4732,6 @@ class WT_G3x5_TSCActivateLegConfirmationHTMLElement extends HTMLElement {
          * @type {WT_FlightPlanLeg}
          */
         this._leg = null;
-        this._isOpen = false;
         this._isInit = false;
     }
 

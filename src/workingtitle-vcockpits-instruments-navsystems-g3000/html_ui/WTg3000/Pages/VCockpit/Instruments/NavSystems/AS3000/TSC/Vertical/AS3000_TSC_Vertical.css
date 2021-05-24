@@ -1538,6 +1538,15 @@ as3000-tsc-vertical-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapse
     font-size: 4vh;
 }
 
+as3000-tsc-vertical-element #DirectToCancelConfirm wt-tsc-directtocancelconfirm {
+    position: absolute;
+    left: 5%;
+    top: 25%;
+    width: 90%;
+    height: 50%;
+    font-size: 4.5vh;
+}
+
 as3000-tsc-vertical-element #FlightPlanKeyboard wt-tsc-fplnkeyboard {
     position: absolute;
     left: 1%;

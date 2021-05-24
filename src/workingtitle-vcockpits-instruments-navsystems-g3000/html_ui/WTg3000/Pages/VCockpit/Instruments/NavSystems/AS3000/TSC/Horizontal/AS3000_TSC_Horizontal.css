@@ -1504,6 +1504,15 @@ as3000-tsc-horizontal-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-map
     font-size: 5vh;
 }
 
+as3000-tsc-horizontal-element #DirectToCancelConfirm wt-tsc-directtocancelconfirm {
+    position: absolute;
+    left: 10%;
+    top: 25%;
+    width: 80%;
+    height: 50%;
+    font-size: 7vh;
+}
+
 as3000-tsc-horizontal-element #FlightPlanOptions wt-tsc-flightplanoptions {
     position: absolute;
     left: 2%;
