@@ -96,6 +96,9 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
 
         this._vnavAltitudeKeyboardPopUp = new WT_G3x5_TSCElementContainer("VNAV Altitude Keyboard", "VNAVAltitudeKeyboard", new WT_G3x5_TSCVNAVAltitudeKeyboard());
         this._vnavAltitudeKeyboardPopUp.setGPS(this.instrument);
+
+        this._activateLegConfirmPopUp = new WT_G3x5_TSCElementContainer("Activate Leg Confirm", "ActivateLegConfirm", new WT_G3x5_TSCActivateLegConfirmation());
+        this._activateLegConfirmPopUp.setGPS(this.instrument);
     }
 
     _createHTMLElement() {
@@ -674,6 +677,25 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
         this.instrument.switchToPopUpPage(this._vnavAltitudeKeyboardPopUp);
     }
 
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     */
+    _openActivateLegConfirmPopUp(leg) {
+        let previousLeg = leg.previousLeg();
+        this._activateLegConfirmPopUp.element.setContext({
+            homePageGroup: this.homePageGroup,
+            homePageName: this.homePageName,
+            leg: leg,
+            callback: (confirmed => {
+                if (confirmed && leg.flightPlan === this._displayedFlightPlan && leg.previousLeg() === previousLeg) {
+                    this._activateLeg(leg);
+                }
+            }).bind(this)
+        });
+        this.instrument.switchToPopUpPage(this._activateLegConfirmPopUp);
+    }
+
     _setAirwaySequenceCollapse(airwaySequence, value) {
         this.htmlElement.setAirwaySequenceCollapse(airwaySequence, value);
     }
@@ -877,7 +899,7 @@ class WT_G3x5_TSCFlightPlan extends WT_G3x5_TSCPageElement {
      * @param {WT_G3x5_TSCFlightPlanButtonEvent} event
      */
     _onActivateLegButtonPressed(event) {
-        this._activateLeg(event.leg);
+        this._openActivateLegConfirmPopUp(event.leg);
     }
 
     /**
@@ -4644,3 +4666,228 @@ WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.TEMPLATE.innerHTML = `
 `;
 
 customElements.define(WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement.NAME, WT_G3x5_TSCVNAVAltitudeKeyboardHTMLElement);
+
+class WT_G3x5_TSCActivateLegConfirmation extends WT_G3x5_TSCPopUpElement {
+    /**
+     * @readonly
+     * @type {WT_G3x5_TSCActivateLegConfirmationHTMLElement}
+     */
+    get htmlElement() {
+        return this._htmlElement;
+    }
+
+    _createHTMLElement() {
+        return new WT_G3x5_TSCActivateLegConfirmationHTMLElement();
+    }
+
+    async _initFromHTMLElement() {
+        await WT_Wait.awaitCallback(() => this.htmlElement.isInitialized, this);
+        this.htmlElement.okButton.addButtonListener(this._onOKButtonPressed.bind(this));
+        this.htmlElement.cancelButton.addButtonListener(this._onCancelButtonPressed.bind(this));
+    }
+
+    onInit() {
+        this._htmlElement = this._createHTMLElement();
+        this.popUpWindow.appendChild(this.htmlElement);
+        this._initFromHTMLElement();
+    }
+
+    _onOKButtonPressed() {
+        this.context.callback(true);
+        this.instrument.goBack();
+    }
+
+    _onCancelButtonPressed() {
+        this.context.callback(false);
+        this.instrument.goBack();
+    }
+
+    _onBackPressed() {
+        this.context.callback(false);
+
+        super._onBackPressed();
+    }
+
+    _onHomePressed() {
+        this.context.callback(false);
+
+        super._onHomePressed();
+    }
+
+    onEnter() {
+        super.onEnter();
+
+        this.htmlElement.setLeg(this.context.leg);
+    }
+}
+
+class WT_G3x5_TSCActivateLegConfirmationHTMLElement extends HTMLElement {
+    constructor() {
+        super();
+
+        this.attachShadow({mode: "open"});
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+
+        /**
+         * @type {WT_FlightPlanLeg}
+         */
+        this._leg = null;
+        this._isOpen = false;
+        this._isInit = false;
+    }
+
+    _getTemplate() {
+        return WT_G3x5_TSCActivateLegConfirmationHTMLElement.TEMPLATE;
+    }
+
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
+    get isInitialized() {
+        return this._isInit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get okButton() {
+        return this._okButton;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_TSCLabeledButton}
+     */
+    get cancelButton() {
+        return this._cancelButton;
+    }
+
+    async _defineChildren() {
+        this._fromText = this.shadowRoot.querySelector(`#from`);
+        this._toText = this.shadowRoot.querySelector(`#to`);
+
+        [
+            this._okButton,
+            this._cancelButton
+        ] = await Promise.all([
+            WT_CustomElementSelector.select(this.shadowRoot, `#ok`, WT_TSCLabeledButton),
+            WT_CustomElementSelector.select(this.shadowRoot, `#cancel`, WT_TSCLabeledButton)
+        ]);
+    }
+
+    async _connectedCallbackHelper() {
+        await this._defineChildren();
+        this._isInit = true;
+        this._updateFromLeg();
+    }
+
+    connectedCallback() {
+        this._connectedCallbackHelper();
+    }
+
+    _updateFromLeg() {
+        if (this._leg) {
+            let previousLeg = this._leg.previousLeg();
+            this._fromText.textContent = previousLeg ? previousLeg.fix.ident : "";
+            this._toText.textContent = this._leg.fix.ident;
+        } else {
+            this._fromText.textContent = "";
+            this._toText.textContent = "";
+        }
+    }
+
+    setLeg(leg) {
+        if (this._leg === leg) {
+            return;
+        }
+
+        this._leg = leg;
+        this._updateFromLeg();
+    }
+}
+WT_G3x5_TSCActivateLegConfirmationHTMLElement.NAME = "wt-tsc-activatelegconfirm";
+WT_G3x5_TSCActivateLegConfirmationHTMLElement.TEMPLATE = document.createElement("template");
+WT_G3x5_TSCActivateLegConfirmationHTMLElement.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            border-radius: 5px;
+            background: linear-gradient(#1f3445, black 25px);
+            border: 3px solid var(--wt-g3x5-bordergray);
+        }
+
+        #wrapper {
+            position: absolute;
+            left: var(--activatelegconfirm-padding-left, 1em);
+            top: var(--activatelegconfirm-padding-top, 1em);
+            width: calc(100% - var(--activatelegconfirm-padding-left, 1em) - var(--activatelegconfirm-padding-right, 1em));
+            height: calc(100% - var(--activatelegconfirm-padding-top, 1em) - var(--activatelegconfirm-padding-bottom, 1em));
+        }
+            #title {
+                position: absolute;
+                left: 50%;
+                top: 0%;
+                transform: translateX(-50%);
+            }
+            #info {
+                position: absolute;
+                left: 0%;
+                top: 40%;
+                width: 100%;
+                transform: translateY(-50%);
+                display: grid;
+                grid-template-rows: auto;
+                grid-template-columns: 1fr var(--activatelegconfirm-arrow-size, 1em) 1fr;
+                grid-gap: 0 0.5em;
+                align-items: center;
+            }
+                #from {
+                    text-align: right;
+                }
+                #arrow {
+                    width: var(--activatelegconfirm-arrow-size, 1em);
+                    height: var(--activatelegconfirm-arrow-size, 1em);
+                    fill: transparent;
+                    stroke-width: 10;
+                    stroke: var(--wt-g3x5-purple);
+                }
+                #to {
+                    text-align: left;
+                }
+            #buttons {
+                position: absolute;
+                left: 0%;
+                top: 60%;
+                width: 100%;
+                height: 40%;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+            }
+                .button {
+                    width: var(--activatelegconfirm-button-width, 40%);
+                    height: var(--activatelegconfirm-button-height, 3em);
+                    font-size: var(--activatelegconfirm-button-font-size, 0.85em);
+                }
+    </style>
+    <div id="wrapper">
+        <div id="title">Activate Leg?</div>
+        <div id="info">
+            <div id="from"></div>
+            <svg id="arrow" viewbox="-50 -50 100 100">
+                <path d="M -40 0 L 40 0 M 20 20 L 40 0 L 20 -20" />
+            </svg>
+            <div id="to"></div>
+        </div>
+        <div id="buttons">
+            <wt-tsc-button-label id="ok" class="button" labeltext="OK"></wt-tsc-button-label>
+            <wt-tsc-button-label id="cancel" class="button" labeltext="Cancel"></wt-tsc-button-label>
+        </div>
+    </div>
+`;
+
+customElements.define(WT_G3x5_TSCActivateLegConfirmationHTMLElement.NAME, WT_G3x5_TSCActivateLegConfirmationHTMLElement);
