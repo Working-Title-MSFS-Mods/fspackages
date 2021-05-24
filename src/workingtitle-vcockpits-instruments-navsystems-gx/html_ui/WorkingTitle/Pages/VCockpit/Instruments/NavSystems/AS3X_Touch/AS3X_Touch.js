@@ -117,17 +117,17 @@ class AS3X_Touch extends NavSystemTouch {
                 this.switchToPopUpPage(this.pfdMenu);
             }
         }.bind(this));
-      this.makeButton(this.getChildById("AutopilotInfos"), function () {
-        if (this.popUpElement == this.afcsMenu) {
-          this.closePopUpElement();
-        }
-        else {
-          this.switchToPopUpPage(this.afcsMenu);
-        }
-      }.bind(this));
-      this.maxUpdateBudget = 12;
-      this.autoPitotHeat = false;
-      SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAuto", "number", 1);
+        this.makeButton(this.getChildById("AutopilotInfos"), function () {
+            if (this.popUpElement == this.afcsMenu) {
+                this.closePopUpElement();
+            }
+            else {
+                this.switchToPopUpPage(this.afcsMenu);
+            }
+        }.bind(this));
+        this.maxUpdateBudget = 12;
+        this.autoPitotHeat = false;
+        SimVar.SetSimVarValue("L:AS3X_Touch_Brightness_IsAuto", "number", 1);
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -147,15 +147,15 @@ class AS3X_Touch extends NavSystemTouch {
                 this.tactileOnly = true;
                 this.getChildById("LeftKnobInfos").style.display = "None";
                 this.getChildById("RightKnobInfos").style.display = "None";
-          }
-          let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
-          if (autoPitotHeat && autoPitotHeat.textContent == "True") {
-            this.autoPitotHeat = true;
-            this.pitotOnTime = null;
-            this.pitotHeating = false;
-          }
-      }
-      switch (this.displayMode) {
+            }
+            let autoPitotHeat = this.instrumentXmlConfig.getElementsByTagName("AutoPitotHeat")[0];
+            if (autoPitotHeat && autoPitotHeat.textContent == "True") {
+                this.autoPitotHeat = true;
+                this.pitotOnTime = null;
+                this.pitotHeating = false;
+            }
+        }
+        switch (this.displayMode) {
             case "PFD":
                 this.mainMfd.style.display = "None";
                 this.addIndependentElementContainer(new AS3X_Touch_PFD());
@@ -212,23 +212,23 @@ class AS3X_Touch extends NavSystemTouch {
     onUpdate(_deltaTime) {
         super.onUpdate(_deltaTime);
         if (this.autoPitotHeat) {
-          let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
-          let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
-          let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
-          if (temp <= 7 && rpm > 0) {
-            if (!pitotHeat) {
-              SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
-              SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
-              this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
-            } else {
-              let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
-              if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
-                SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
-              };
+            let temp = SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "celsius");
+            let pitotHeat = SimVar.GetSimVarValue("PITOT HEAT", "bool");
+            let rpm = SimVar.GetSimVarValue("GENERAL ENG RPM:1", "rpm");
+            if (temp <= 7 && rpm > 0) {
+                if (!pitotHeat) {
+                    SimVar.SetSimVarValue("K:PITOT_HEAT_ON", "bool", true);
+                    SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", true);
+                    this.pitotOnTime = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                } else {
+                    let now = SimVar.GetSimVarValue("E:ABSOLUTE TIME", "seconds");
+                    if (now - this.pitotOnTime > 10 + (7 - temp) / 3) {
+                        SimVar.SetSimVarValue("L:G3X_Pitot_Heating", "bool", false);
+                    };
+                }
+            } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
+                SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
             }
-          } else if (pitotHeat && (temp > 7 || rpm <= 0)) {
-            SimVar.SetSimVarValue("K:PITOT_HEAT_OFF", "bool", true);
-          }
         }
         if (this.handleReversionaryMode && this.displayMode == "PFD") {
             let reversionary = false;
@@ -433,9 +433,9 @@ class AS3X_Touch extends NavSystemTouch {
                     this.closePopUpElement();
                 }
                 else {
-                  this.SwitchToMenuName("MFD");
-                  this.computeEvent("Master_Caution_Push");
-                  this.computeEvent("Master_Warning_Push");
+                    this.SwitchToMenuName("MFD");
+                    this.computeEvent("Master_Caution_Push");
+                    this.computeEvent("Master_Warning_Push");
                 }
                 break;
             case "NRST_Push":
@@ -558,8 +558,8 @@ class AS3X_Touch_PFD extends NavSystemElementContainer {
     constructor() {
         super("PFD", "PFD", null);
         this.attitude = new PFD_Attitude();
-      this.mapInstrument = new MapInstrumentElement();
-      this.annunciations = new AS3X_Touch_Annunciations();
+        this.mapInstrument = new MapInstrumentElement();
+        this.annunciations = new AS3X_Touch_Annunciations();
         this.element = new NavSystemElementGroup([
             new PFD_Altimeter(),
             new PFD_Airspeed(),
@@ -589,20 +589,20 @@ class AS3X_Touch_MFD_Main extends NavSystemElementContainer {
     }
 }
 class AS3X_Touch_Annunciations extends Cabin_Annunciations {
-  onUpdate(_deltaTime) {
-    super.onUpdate(_deltaTime);
-    // Hide ourselves if we have no messages to avoid an empty black box
-    let hideMe = true;
-    for (var i = 0; i < this.allMessages.length; i++) {
-      if (this.allMessages[i].Visible) {
-        hideMe = false;
-        break;
-      }
+    onUpdate(_deltaTime) {
+        super.onUpdate(_deltaTime);
+        // Hide ourselves if we have no messages to avoid an empty black box
+        let hideMe = true;
+        for (var i = 0; i < this.allMessages.length; i++) {
+            if (this.allMessages[i].Visible) {
+                hideMe = false;
+                break;
+            }
+        }
+        if (hideMe) {
+            this.annunciations.setAttribute("state", "Hidden");
+        }
     }
-    if (hideMe) {
-      this.annunciations.setAttribute("state", "Hidden");
-    }
-  }
 }
 class AS3X_Touch_TopBar extends NavSystemElement {
     constructor() {
@@ -769,85 +769,85 @@ class AS3X_Touch_Map extends MapInstrumentElement {
 class AS3X_Touch_PageMenu_Button {
 }
 class AS3X_Touch_Popup extends NavSystemElement {
-  init(root) {
-    this.root = root;
-  }
-  onEnter() {
-    this.root.setAttribute("state", "Active");
-  }
-  onUpdate() {
-    super.onUpdate();
-  }
-  onExit() {
-    this.root.setAttribute("state", "Inactive");
-  }
-  onEvent(_event) {
-  }
+    init(root) {
+        this.root = root;
+    }
+    onEnter() {
+        this.root.setAttribute("state", "Active");
+    }
+    onUpdate() {
+        super.onUpdate();
+    }
+    onExit() {
+        this.root.setAttribute("state", "Inactive");
+    }
+    onEvent(_event) {
+    }
 }
 class AS3X_Touch_AFCSMenu extends AS3X_Touch_Popup {
-  init(root) {
-    super.init(root);
-    this.MasterButton = this.gps.getChildById("AFCS_AP_Master");
-    this.FdButton = this.gps.getChildById("AFCS_FD_Button");
-    this.YdButton = this.gps.getChildById("AFCS_YD_Button");
-    this.LvlButton = this.gps.getChildById("AFCS_LVL_Button");
-    this.HdgButton = this.gps.getChildById("AFCS_HDG_Button");
-    this.NavButton = this.gps.getChildById("AFCS_NAV_Button");
-    this.ApprButton = this.gps.getChildById("AFCS_APPR_Button");
-    this.IasButton = this.gps.getChildById("AFCS_IAS_Button");
-    this.AltButton = this.gps.getChildById("AFCS_ALT_Button");
-    this.VsButton = this.gps.getChildById("AFCS_VS_Button");
-    this.UpButton = this.gps.getChildById("AFCS_UP_Button");
-    this.DnButton = this.gps.getChildById("AFCS_DN_Button");
-    this.gps.makeButton(this.MasterButton, () => {this.buttonToggle("K:AP_MASTER")});
-    this.gps.makeButton(this.FdButton, () => {this.buttonToggle("K:TOGGLE_FLIGHT_DIRECTOR")});
-    this.gps.makeButton(this.YdButton, () => {this.buttonToggle("K:YAW_DAMPER_TOGGLE")});
-    this.gps.makeButton(this.LvlButton, () => {this.buttonToggle("K:AP_WING_LEVELER")});
-    this.gps.makeButton(this.HdgButton, () => {this.buttonToggle("K:AP_HDG_HOLD")});
-    this.gps.makeButton(this.NavButton, () => {this.buttonToggle("K:AP_NAV1_HOLD")});
-    this.gps.makeButton(this.ApprButton, () => {this.buttonToggle("K:AP_APR_HOLD")});
-    this.gps.makeButton(this.IasButton, () => {this.buttonToggle("K:FLIGHT_LEVEL_CHANGE")});
-    this.gps.makeButton(this.AltButton, () => {this.buttonToggle("K:AP_ALT_HOLD")});
-    this.gps.makeButton(this.VsButton, () => {this.buttonToggle("K:AP_VS_HOLD")});
-    this.gps.makeButton(this.UpButton, () => {this.buttonUpDn("UP")});
-    this.gps.makeButton(this.DnButton, () => {this.buttonUpDn("DN")});
-  }
-  onUpdate() {
-    this.MasterButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "Active" : ""));
-    this.FdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : ""));
-    this.YdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "Active" : ""));
-    this.LvlButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool") ? "Active" : ""));
-    this.HdgButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") ? "Active" : ""));
-    this.NavButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Bool") ? "Active" : ""));
-    this.ApprButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool") ? "Active" : ""));
-    this.IasButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Bool") ? "Active" : ""));
-    this.AltButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Bool") ? "Active" : ""));
-    this.VsButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Bool") ? "Active" : ""));
-  }
-  buttonToggle(simvar) {
-    SimVar.SetSimVarValue(simvar, "number", 0)
-  }
-  buttonUpDn(dir) {
-    if (SimVar.GetSimVarValue("A:AUTOPILOT VERTICAL HOLD", "bool")) {
-      var cmds = { "UP": "K:AP_VS_VAR_INC", "DN": "K:AP_VS_VAR_DEC" }
-    } else if (SimVar.GetSimVarValue("A:AUTOPILOT FLIGHT LEVEL CHANGE", "bool")) {
-      var cmds = { "UP": "K:AP_SPD_VAR_DEC", "DN": "K:AP_SPD_VAR_INC" }
-    } else if (SimVar.GetSimVarValue("A:AUTOPILOT PITCH HOLD", "bool")) {
-      var cmds = { "UP": "K:PITCH_REF_INC_UP", "DN": "K:PITCH_REF_INC_DN" }
-    } else {
-      var cmds = {}
+    init(root) {
+        super.init(root);
+        this.MasterButton = this.gps.getChildById("AFCS_AP_Master");
+        this.FdButton = this.gps.getChildById("AFCS_FD_Button");
+        this.YdButton = this.gps.getChildById("AFCS_YD_Button");
+        this.LvlButton = this.gps.getChildById("AFCS_LVL_Button");
+        this.HdgButton = this.gps.getChildById("AFCS_HDG_Button");
+        this.NavButton = this.gps.getChildById("AFCS_NAV_Button");
+        this.ApprButton = this.gps.getChildById("AFCS_APPR_Button");
+        this.IasButton = this.gps.getChildById("AFCS_IAS_Button");
+        this.AltButton = this.gps.getChildById("AFCS_ALT_Button");
+        this.VsButton = this.gps.getChildById("AFCS_VS_Button");
+        this.UpButton = this.gps.getChildById("AFCS_UP_Button");
+        this.DnButton = this.gps.getChildById("AFCS_DN_Button");
+        this.gps.makeButton(this.MasterButton, () => { this.buttonToggle("K:AP_MASTER") });
+        this.gps.makeButton(this.FdButton, () => { this.buttonToggle("K:TOGGLE_FLIGHT_DIRECTOR") });
+        this.gps.makeButton(this.YdButton, () => { this.buttonToggle("K:YAW_DAMPER_TOGGLE") });
+        this.gps.makeButton(this.LvlButton, () => { this.buttonToggle("K:AP_WING_LEVELER") });
+        this.gps.makeButton(this.HdgButton, () => { this.buttonToggle("K:AP_HDG_HOLD") });
+        this.gps.makeButton(this.NavButton, () => { this.buttonToggle("K:AP_NAV1_HOLD") });
+        this.gps.makeButton(this.ApprButton, () => { this.buttonToggle("K:AP_APR_HOLD") });
+        this.gps.makeButton(this.IasButton, () => { this.buttonToggle("K:FLIGHT_LEVEL_CHANGE") });
+        this.gps.makeButton(this.AltButton, () => { this.buttonToggle("K:AP_ALT_HOLD") });
+        this.gps.makeButton(this.VsButton, () => { this.buttonToggle("K:AP_VS_HOLD") });
+        this.gps.makeButton(this.UpButton, () => { this.buttonUpDn("UP") });
+        this.gps.makeButton(this.DnButton, () => { this.buttonUpDn("DN") });
     }
-    if (dir in cmds) this.buttonToggle(cmds[dir]);
-  }
+    onUpdate() {
+        this.MasterButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT MASTER", "Bool") ? "Active" : ""));
+        this.FdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool") ? "Active" : ""));
+        this.YdButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT YAW DAMPER", "Bool") ? "Active" : ""));
+        this.LvlButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT WING LEVELER", "Bool") ? "Active" : ""));
+        this.HdgButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT HEADING LOCK", "Bool") ? "Active" : ""));
+        this.NavButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT NAV1 LOCK", "Bool") ? "Active" : ""));
+        this.ApprButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT APPROACH HOLD", "Bool") ? "Active" : ""));
+        this.IasButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT FLIGHT LEVEL CHANGE", "Bool") ? "Active" : ""));
+        this.AltButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK", "Bool") ? "Active" : ""));
+        this.VsButton.setAttribute("state", (SimVar.GetSimVarValue("AUTOPILOT VERTICAL HOLD", "Bool") ? "Active" : ""));
+    }
+    buttonToggle(simvar) {
+        SimVar.SetSimVarValue(simvar, "number", 0)
+    }
+    buttonUpDn(dir) {
+        if (SimVar.GetSimVarValue("A:AUTOPILOT VERTICAL HOLD", "bool")) {
+            var cmds = { "UP": "K:AP_VS_VAR_INC", "DN": "K:AP_VS_VAR_DEC" }
+        } else if (SimVar.GetSimVarValue("A:AUTOPILOT FLIGHT LEVEL CHANGE", "bool")) {
+            var cmds = { "UP": "K:AP_SPD_VAR_DEC", "DN": "K:AP_SPD_VAR_INC" }
+        } else if (SimVar.GetSimVarValue("A:AUTOPILOT PITCH HOLD", "bool")) {
+            var cmds = { "UP": "K:PITCH_REF_INC_UP", "DN": "K:PITCH_REF_INC_DN" }
+        } else {
+            var cmds = {}
+        }
+        if (dir in cmds) this.buttonToggle(cmds[dir]);
+    }
 }
 class AS3X_Touch_PageMenu extends AS3X_Touch_Popup {
     init(root) {
-      super.init(root);
+        super.init(root);
         this.buttons = [];
         this.menuElements = root.getElementsByClassName("menuElements")[0];
     }
     onEnter() {
-      super.onEnter();
+        super.onEnter();
         let pageGroup = this.gps.getCurrentPageGroup();
         for (let i = 0; i < (pageGroup.pages.length + pageGroup.additionalMenuButtons.length); i++) {
             if (i >= this.buttons.length) {
@@ -1018,7 +1018,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.timerStartTime = -1;
         this.isTimerOn = false;
         this.pauseTime = 0;
-        this.syntheticVision = true;
+        this.syntheticVision = WTDataStore.get("Attitude.SyntheticVision", false);
     }
     init(root) {
         this.window = root;
@@ -1058,6 +1058,7 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         this.gps.makeButton(this.moreOptions_WindMode_SpeedDir, this.switchToWindMode.bind(this, 3));
         this.gps.makeButton(this.moreOptions_WindMode_HeadXWind, this.switchToWindMode.bind(this, 1));
         this.gps.makeButton(this.moreOptions_WindMode_Off, this.switchToWindMode.bind(this, 0));
+        Avionics.Utils.diffAndSetAttribute(this.moreOptions_SyntheticVision_Status, "state", (this.syntheticVision ? "Active" : "Inactive"));
     }
     onEnter() {
         this.window.setAttribute("state", "Active");
@@ -1147,10 +1148,15 @@ class AS3X_Touch_PFD_Menu extends NavSystemElement {
         Avionics.Utils.diffAndSetAttribute(this.moreOptions_Window, "state", "Inactive");
     }
     toggleSyntheticVision() {
+        console.log('toggling synvis');
+        console.log(`it was ${this.syntheticVision}`)
         this.syntheticVision = !this.syntheticVision;
+        console.log(`it is ${this.syntheticVision}`);
         let attitude = this.gps.getElementOfType(PFD_Attitude);
         if (attitude) {
-            Avionics.Utils.diffAndSetAttribute(attitude.svg, "background", (this.syntheticVision ? "false" : "true"));
+            console.log('we have an attitude.')
+            attitude.setSyntheticVisionEnabled(this.syntheticVision);
+            // Avionics.Utils.diffAndSetAttribute(attitude.svg, "background", (this.syntheticVision ? "false" : "true"));
         }
         if (this.syntheticVisionElement) {
             this.syntheticVisionElement.style.display = (this.syntheticVision ? "Block" : "None");
