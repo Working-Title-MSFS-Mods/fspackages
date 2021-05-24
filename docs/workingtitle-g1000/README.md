@@ -1,6 +1,6 @@
 # Documentation for the Working Title G1000
 
-_Applies to version: v0.3.5_
+_Applies to version: v0.3.6_
 
 This is an update of the Working Title G1000 mod that's compatible with World Update 4.
 
