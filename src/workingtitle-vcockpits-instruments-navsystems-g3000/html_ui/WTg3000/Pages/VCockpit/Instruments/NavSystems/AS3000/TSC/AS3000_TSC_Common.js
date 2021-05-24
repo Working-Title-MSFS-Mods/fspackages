@@ -382,6 +382,9 @@ class AS3000_TSC extends NavSystemTouch {
         this.addIndependentElementContainer(new WT_G3x5_TSCElementContainer("Terrain Alert", "terrainAlert", this.terrainAlerts));
         this.addIndependentElementContainer(new WT_G3x5_TSCElementContainer("Confirmation Window", "ConfirmationWindow", this.confirmationWindow));
 
+        this.confirmationTextPopUp = new WT_G3x5_TSCElementContainer("Confirmation Text", "ConfirmationText", new WT_G3x5_TSCConfirmationTextPopUp());
+        this.confirmationTextPopUp.setGPS(this);
+
         this.selectionListWindow1 = new WT_G3x5_TSCElementContainer("Dynamic Selection List Window 1", "DynamicSelectionListWindow1", new WT_G3x5_TSCSelectionListWindow());
         this.selectionListWindow1.setGPS(this);
         this.selectionListWindow2 = new WT_G3x5_TSCElementContainer("Dynamic Selection List Window 2", "DynamicSelectionListWindow2", new WT_G3x5_TSCSelectionListWindow());
