@@ -1420,69 +1420,6 @@ class AS3000_TSC_WeatherSelection extends NavSystemElement {
         }
     }
 }
-class AS3000_TSC_DirectTo extends NavSystemTouch_DirectTo {
-    constructor() {
-        super();
-
-        this._presetWaypoint = null;
-    }
-
-    presetWaypoint(waypoint) {
-        this._presetWaypoint = waypoint;
-    }
-
-    _activateLabelBar() {
-        this.gps.setTopKnobText("");
-        this.gps.setBottomKnobText("-Range+ Push: Pan");
-    }
-
-    _activateNavButtons() {
-        this.gps.activateNavButton(1, "Cancel", this.gps.goBack.bind(this.gps), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    _deactivateNavButtons() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-
-    onFocusGained() {
-        this._activateLabelBar();
-        this._activateNavButtons();
-    }
-
-    onFocusLost() {
-        this._deactivateNavButtons();
-    }
-
-    onEnter() {
-        if (this._presetWaypoint) {
-            this.endKeyboard(this._presetWaypoint);
-            this._presetWaypoint = null;
-        }
-    }
-
-    onEvent(_event) {
-    }
-    endKeyboard(waypoint) {
-        super.endKeyboard(waypoint ? waypoint.icao : "");
-    }
-    openKeyboard() {
-        this.gps.waypointKeyboard.element.setContext({
-            homePageGroup: "MFD",
-            homePageName: "MFD Home",
-            searchTypes: null,
-            callback: this.endKeyboard.bind(this)
-        });
-        this.gps.switchToPopUpPage(this.gps.waypointKeyboard);
-    }
-    back() {
-        this.gps.goBack();
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-    }
-}
 
 /*
  * Lighting Configuration Page (via Aircraft Systems Page): controls backlighting of PFD, MFD, and touchscreen, and all G3000 bezel keys/knobs
@@ -1619,41 +1556,6 @@ class AS3000_TSC_Utilities extends NavSystemElement {
     }
 }
 
-class AS3000_TSC_WaypointInfo extends NavSystemElement {
-    init(root) {
-        this.airportBtn = this.gps.getChildById("WPInfoAirport_Btn");
-        this.intBtn = this.gps.getChildById("WPInfoINT_Btn");
-        this.vorBtn = this.gps.getChildById("WPInfoVOR_Btn");
-        this.ndbBtn = this.gps.getChildById("WPInfoNDB_Btn");
-        this.gps.makeButton(this.airportBtn, this._onAirportButtonPressed.bind(this));
-    }
-    onEnter() {
-        this.gps.activateNavButton(1, "Back", this.back.bind(this), false, "ICON_TSC_BUTTONBAR_BACK.png");
-        this.gps.activateNavButton(2, "Home", this.backHome.bind(this), false, "ICON_TSC_BUTTONBAR_HOME.png");
-    }
-
-    _onAirportButtonPressed() {
-        this.gps.SwitchToPageName("MFD", this.gps.getSelectedMFDPanePages().airportInfo.name);
-    }
-
-    onUpdate(_deltaTime) {
-    }
-    onExit() {
-        this.gps.deactivateNavButton(1);
-        this.gps.deactivateNavButton(2);
-    }
-    onEvent(_event) {
-    }
-    back() {
-        this.gps.goBack();
-        return true;
-    }
-    backHome() {
-        this.gps.SwitchToPageName("MFD", "MFD Home");
-        this.gps.closePopUpElement();
-        return true;
-    }
-}
 class AS3000_TSC_NavComHome extends NavSystemElement {
     constructor() {
         super(...arguments);
