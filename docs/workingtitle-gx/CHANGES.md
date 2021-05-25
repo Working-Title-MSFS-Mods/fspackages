@@ -2,6 +2,7 @@
 
 * Fixed bug in synthetic vision toggle
 * Corrected attitude indicator width error on King Air
+* Corrected text on audio panel button
 
 # Changes in 0.1.0-dev6
 
