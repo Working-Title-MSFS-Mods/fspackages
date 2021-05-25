@@ -677,7 +677,7 @@ class CJ4_SAI_AltimeterIndicator extends HTMLElement {
         this.appendChild(this.rootSVG);
     }
     update(_dTime) {
-        var altitude = SimVar.GetSimVarValue("INDICATED ALTITUDE:2", "feet").toFixed(2).padStart(8, "0");
+        var altitude = SimVar.GetSimVarValue("INDICATED ALTITUDE:2", "feet").toFixed(2);
         this.updateGraduationScrolling(altitude);
         this.updateCursorScrolling(altitude);
         this.updateBaroPressure();
