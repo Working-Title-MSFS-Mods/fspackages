@@ -22,7 +22,16 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 - Added Traffic Display (TFC) to the PFD and MFD 
 - Added "ALT TAG" option on the FMS TCAS CONTROL page
 - Added ABOVE/NORM/BELOW options on the FMS TCAS CONTROL page
-- ... TODO ... dont forget to credit contributors
+- Lots of great cosmetic improvements to the PFD (thanks charles-vomacka!)
+- Adjusted the green band on the trim in extended view (thanks Slip!)
+- Adjustments to external lighting (thanks  Uwajimaya!)
+- More accurate AoA display (by Slip) 
+- Fixed ITT scale ranges on the MFD (by Slip) 
+- Overhaul of the SAI (by Slip) 
+- Fixed ZFW calculation concerning pax weight (thanks thor!)
+- VSi bug improvements on the PFD
+- Minor bugfixes
+
 
 ## ⚠️ Known Issues
 * In the latest versions of Navigraph data, some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.
