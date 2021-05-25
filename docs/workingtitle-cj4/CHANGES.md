@@ -1,11 +1,7 @@
 # Working Title CJ4 v0.12.5
-Welcome to the Working Title CJ4 v0.12.5. 
+Welcome to the Working Title CJ4 v0.12.5. This version brings compatibility for MSFS Sim Update 4, as well as a number of other enhancements and small fixes, including traffic display (TFC) that will show the new SU4 SimConnect injected traffic from online services like VATSIM and IVAO. TCAS Control options are also available in the FMS, but TA/RA advisories have not yet been implemented.
 
-This version brings compatibility to SimUpdate 4.
-
-We've also again received great code contributions by developers from the community. Thank you very much all!
-Besides that we've added a basic implementation for traffic display (TFC) and TCAS Control options in the FMS. TA/RA advisories are not implemented yet.
-
+In this release we also have a number of community submissions. Thanks to everyone, as always, for your contributions! We really love working with you all.
 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
