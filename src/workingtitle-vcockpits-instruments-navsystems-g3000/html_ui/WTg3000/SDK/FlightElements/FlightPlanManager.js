@@ -632,12 +632,15 @@ class WT_FlightPlanManager {
         if (this.directTo.isActive()) {
             distance = this._distanceToLocation(this._activeLegCached.fix.location);
         } else {
+            // if a leg has multiple steps, we need to find out which step is the "active" one - currently the only way of doing that
+            // is comparing the lat/long coordinates of the step fix and comparing it to the lat/long coordinates of the current autopilot
+            // GPS target.
             let gpsLat = SimVar.GetSimVarValue("GPS WP NEXT LAT", "degrees");
             let gpsLong = SimVar.GetSimVarValue("GPS WP NEXT LON", "degrees");
             let activeStep = this._activeLegCached.firstStep();
             let completedDistance = activeStep.distance.asUnit(WT_Unit.GA_RADIAN);
             while (!activeStep.endpoint.equals(this._activeLegCached.endpoint)) {
-                if (activeStep.endpoint.distance(gpsLat, gpsLong) < 1e-6) {
+                if (activeStep.endpoint.distance(gpsLat, gpsLong) <= WT_FlightPlanManager.ACTIVE_STEP_FIX_TOLERANCE) {
                     break;
                 }
                 activeStep = activeStep.next();
@@ -1695,6 +1698,7 @@ class WT_FlightPlanManager {
 WT_FlightPlanManager._tempNM = WT_Unit.NMILE.createNumber(0);
 WT_FlightPlanManager._tempKnot = WT_Unit.KNOT.createNumber(0);
 WT_FlightPlanManager._tempGeoPoint = new WT_GeoPoint(0, 0);
+WT_FlightPlanManager.ACTIVE_STEP_FIX_TOLERANCE = 1e-6; // ~6 m
 
 class WT_FlightPlanSyncHandler {
     /**
