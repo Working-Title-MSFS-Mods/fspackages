@@ -1,7 +1,7 @@
 # Working Title CJ4 v0.12.5
 Welcome to the Working Title CJ4 v0.12.5. 
 
-This versions brings compatibility to SimUpdate 4.
+This version brings compatibility to SimUpdate 4.
 
 We've also again received great code contributions by developers from the community. Thank you very much all!
 Besides that we've added a basic implementation for traffic display (TFC) and TCAS Control options in the FMS. TA/RA advisories are not implemented yet.
