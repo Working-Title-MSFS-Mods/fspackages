@@ -140,6 +140,11 @@ class NPCAirplaneManager {
                     let npcAirplane = this.npcAirplanes[i];
                     npcAirplane.alive = 0;
                 }
+
+                let aboveModeStatus = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number");
+                let belowModeStatus = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number");
+                let altitude = Simplane.getAltitude(); //map.planeAltitude;
+
                 for (let i = 0; i < obj.length; i++) {
                     let data = obj[i];
                     // ignore faulty traffic
@@ -152,7 +157,20 @@ class NPCAirplaneManager {
                         npcAirplane.useTCAS = this.useTCAS;
                         this.npcAirplanes.push(npcAirplane);
                     }
-                    npcAirplane.alive = 3;
+
+                    npcAirplane.alive = 0;
+                    let trafficAltFeet = obj[i].alt * 3.281;
+                    let deltaAltitudeTraffic = trafficAltFeet - altitude;
+                    if (Math.abs(deltaAltitudeTraffic) < 2701) {
+                        npcAirplane.alive = 3;
+                    } else {
+                        if (aboveModeStatus === 1 && deltaAltitudeTraffic >= 0 && deltaAltitudeTraffic < 9901) {
+                            npcAirplane.alive = 3;
+                        } else if (belowModeStatus === 1 && deltaAltitudeTraffic <= 0 && deltaAltitudeTraffic > -9901) {
+                            npcAirplane.alive = 3;
+                        }
+                    }
+
                     npcAirplane.targetLat = obj[i].lat;
                     npcAirplane.targetLon = obj[i].lon;
                     npcAirplane.targetAlt = obj[i].alt;
@@ -272,7 +290,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
         return container;
     }
     updateDraw(map) {
-        if(!this._isCreated){
+        if (!this._isCreated) {
             return;
         }
 
@@ -299,14 +317,14 @@ class SvgNPCAirplaneElement extends SvgMapElement {
             let distanceHorizontalTraffic = Avionics.Utils.computeDistance(new LatLong(this.lat, this.lon), map.planeCoordinates);
 
             // alt text
-            if(SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number")=== 0){
+            if (SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 0) {
                 const deltaAltText = Math.abs(deltaAltitudeTraffic / 100).toFixed(0).padStart(2, "0");
                 this._alt.setAttribute("x", "4");
                 if (deltaAltitudeTraffic > 0) {
                     // above
                     this._alt.setAttribute("y", "3");
                     this._altText.data = "+" + deltaAltText;
-    
+
                 } else if (deltaAltitudeTraffic < 0) {
                     // below
                     this._alt.setAttribute("y", "51");
@@ -316,7 +334,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                 this._alt.setAttribute("x", "14");
                 this._alt.setAttribute("y", "3");
                 const altText = Math.abs(trafficAltFeet / 100).toFixed(0).padStart(3, "0");
-                this._altText.data = altText;                
+                this._altText.data = altText;
             }
 
 
@@ -364,7 +382,7 @@ class SvgNPCAirplaneElement extends SvgMapElement {
                     this._lastCase = 2;
                 }
             }
-            else if (distanceHorizontalTraffic < 40) { //  && deltaAltitude < 2700?
+            else if (distanceHorizontalTraffic < 40) {
                 if (this._lastCase !== 3) {
                     // this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_OTHER_A320.svg");
                     this._image.setAttributeNS("http://www.w3.org/1999/xlink", "href", map.config.imagesDir + "ICON_MAP_TCAS_OT.svg");

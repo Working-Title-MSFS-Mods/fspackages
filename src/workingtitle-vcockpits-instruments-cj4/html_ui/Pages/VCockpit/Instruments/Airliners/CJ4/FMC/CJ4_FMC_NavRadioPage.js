@@ -559,6 +559,9 @@ class CJ4_FMC_NavRadioPage {
         fmc.clearDisplay();
 
         const relAbsSwitch = fmc._templateRenderer.renderSwitch(["REL", "ABS"], SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number"), "blue");
+        const altAboveOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1 ? "ABOVE[blue]" : "ABOVE[small]";
+        const altNormOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number") === 1 ? "NORM[blue]" : "NORM[small]";
+        const altBelowOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number") === 1 ? "BELOW[blue]" : "BELOW[small]";
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
@@ -569,17 +572,54 @@ class CJ4_FMC_NavRadioPage {
             ["◊TRAFFIC[disabled]", "EXT TEST[disabled]"],
             ["ON/OFF[disabled]", "ON/OFF[disabled]"],
             ["", "ALT LIMITS[disabled]"],
-            ["", "ABOVE[disabled]"],
+            ["", altAboveOption],
             [""],
-            ["", "NORM[disabled]"],
+            ["", altNormOption],
             [""],
-            ["", "BELOW[disabled]"]
+            ["", altBelowOption]
         ]);
+
+        let isAboveOrBelowSelected = () => {
+            let aboveStatus = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number");
+            let belowStatus = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number");
+            if(aboveStatus === 0 && belowStatus === 0){
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 1);
+            } else {
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 0);
+            }
+        };
 
         fmc.onRightInput[0] = () => {
             let mode = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number");
             mode = (mode === 0) ? 1 : 0;
             SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number", mode).then(() => {
+                CJ4_FMC_NavRadioPage.tcasControl(fmc);
+            });
+        };
+
+        fmc.onRightInput[3] = () => {
+            let isEnabled = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number");           
+            SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 1-isEnabled).then(() => {
+                isAboveOrBelowSelected();
+                CJ4_FMC_NavRadioPage.tcasControl(fmc);
+            });
+        };
+
+        fmc.onRightInput[4] = () => {
+            let isEnabled = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number");
+            if(isEnabled === 0){
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 0);  
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 1);         
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 0).then(() => {
+                    CJ4_FMC_NavRadioPage.tcasControl(fmc);
+                });
+            }
+        };
+
+        fmc.onRightInput[5] = () => {
+            let isEnabled = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number");           
+            SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 1-isEnabled).then(() => {
+                isAboveOrBelowSelected();
                 CJ4_FMC_NavRadioPage.tcasControl(fmc);
             });
         };
