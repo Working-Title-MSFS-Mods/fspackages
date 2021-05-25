@@ -1,5 +1,15 @@
 # Changelog
 
+### v0.7.1
+**Changed Features**
+- \[GTC\] Updated the Direct To page to more closely match the real-life units.
+- \[GTC\] Added confirmation pop-ups when attempting to cancel a Direct To, activate a flight plan leg, delete a flight plan, and activate the standby flight plan.
+
+**Fixes**
+- \[Compatibility\] Fixed a compatibility issue with Sim Update 4 where the FMS would not automatically activate approaches.
+- \[FPLN\] Reduced the chance of failing to import enroute waypoints into the FMS when loading a flight plan from the world map.
+- \[FPLN\] Fixed a bug where for certain ILS/LOC approaches, the FMS would automatically switch autopilot navigation source to NAV1/NAV2 before the plane was inbound on the final approach course.
+
 ### v0.7.0
 **New Features**
 - \[FPLN\] Added the ability to insert airways into flight plans.
