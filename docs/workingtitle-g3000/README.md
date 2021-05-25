@@ -1,6 +1,6 @@
 # Working Title G3000
 
-### Latest version: v0.7.0
+### Latest version: v0.7.1
 
 ### Description
 This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The goal is to bring functionality closer to the real-life units, with a focus on both features and layout/UI.
@@ -8,7 +8,7 @@ This is a mod for MSFS2020 that aims to improve the in-game G3000 and G5000. The
 This mod was created with cross-compatibility in mind. It modifies the minimum number of base files possible to achieve its goals, so it should be compatible with most other mods, including all other WorkingTitle mods. However, because of the nature of the mod, it will conflict with other mods that make changes to the G3000.
 
 ### Installation
-Download `workingtitle-g3000-v0.7.0.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
+Download `workingtitle-g3000-v0.7.1.zip` from the Github release page. Do not download the Source code files unless you are sure you want those.
 
 To install, copy the `workingtitle-g3000` folder from the zip file into your `Community` directory.
 
@@ -36,22 +36,14 @@ The base sim only provides information on Live AI Traffic to JS/HTML instruments
 
 Once you have completed these steps, the mod will display and issue traffic alerts for the additional types of traffic supported by the MSFS Traffic Service app. If the mod encounters any errors retrieving traffic data from the traffic service app during a flight, it will fall back to using the default sim's traffic data until it detects that the traffic service app is sending good data again. Lastly, it is recommended to set the `useTrafficService` mod configuration setting to `false` when you are not planning to use the traffic service app; while leaving the setting at `true` will not result in any errors, it does incur a small and otherwise unnecessary performance cost.
 
-### Release Highlights for v0.7.0
+### Release Highlights for v0.7.1
 *Please refer to the changelog for a more detailed description of changes in this release.*
-- Added the ability to insert airways into flight plans.
-- Added support for standby flight plans.
-- Added the Flight Plan and Procedure Preview panes.
-- Added the Flight Plan Text Inset window for the Navigation Map.
-- For the Longitude: the GTC Flight Plan Keypad now supports direct entry of routes into flight plans (please refer to the changelog for the syntax).
+- Updated the GTC Direct To page.
 
 **Fixes**
-- \[FPLN\] Fixed a bug where the GTC Flight Plan page would display a different active leg from the navigation map and PFD navigation status bar.
-- \[GTC\] The Flight Plan page should now report accurate leg-leg distances for all flight plan legs.
-- \[GTC\] The Back button now works properly in the Procedure Selection pages.
-- \[GTC\] The Waypoint Keyboard now provides accurate indications of when a match for the entered waypoint ident has been found.
-- \[GTC\] Fixed a graphical glitch affecting certain touchscreen buttons.
-- \[Charts\] The mod should now be better at "remembering" Navigraph account access and should not require account re-linking as frequently.
-- \[VFR Map\] Fixed a bug preventing the VFR Map from being moved when it was not detached to a separate window.
+- \[Compatibility\] Fixed a compatibility issue with Sim Update 4 where the FMS would not automatically activate approaches.
+- \[FPLN\] Reduced the chance of failing to import enroute waypoints into the FMS when loading a flight plan from the world map.
+- \[FPLN\] Fixed a bug where for certain ILS/LOC approaches, the FMS would automatically switch autopilot navigation source to NAV1/NAV2 before the plane was inbound on the final approach course.
 
 ### Known Issues
 - \[FPLN\] There is currently a bug with the sim's built-in flight plan management system which prevents waypoints from being properly added to the flight plan while an approach is loaded. As a result, inserting waypoints or airways into the Enroute segment of the active flight plan with an approach loaded will desynchronize the FMS flight plan from the sim's flight plan and lead to unexpected behavior. As a workaround, enter waypoints _before_ loading an approach. If you need to enter waypoints after an approach has been loaded, remove the approach, make the necessary edits, then reload the approach. Lastly, if the FMS active flight plan becomes desynchronized, you can fix it by deleting the active flight plan via the Flight Plan Options menu.
