@@ -100,6 +100,7 @@ class CJ4_FMC_NavRadioPageOne {
     render() {
         // console.log("Render Nav");
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
+        const relAbsDisplay = (SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]");
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
@@ -113,7 +114,7 @@ class CJ4_FMC_NavRadioPageOne {
             ["HOLD[s-text]", "HOLD[s-text]"],
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
-            [" ADF", "REL  [blue]"],
+            [" ADF", relAbsDisplay],
             [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>"],
         ]);
     }
@@ -379,6 +380,7 @@ class CJ4_FMC_NavRadioDispatch {
         // console.log("Render Nav");
 
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
+        const relAbsDisplay = (SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]");
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
@@ -392,7 +394,7 @@ class CJ4_FMC_NavRadioDispatch {
             ["HOLD[s-text]"],
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
-            [" ADF", "REL  [blue]"],
+            [" ADF", relAbsDisplay],
             [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>[disabled]"],
         ]);
     }
@@ -559,19 +561,19 @@ class CJ4_FMC_NavRadioPage {
         fmc.clearDisplay();
 
         const relAbsSwitch = fmc._templateRenderer.renderSwitch(["REL", "ABS"], SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number"), "blue");
-        const altAboveOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1 ? "ABOVE[blue]" : "ABOVE[small]";
-        const altNormOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number") === 1 ? "NORM[blue]" : "NORM[small]";
-        const altBelowOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number") === 1 ? "BELOW[blue]" : "BELOW[small]";
+        const altAboveOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1 ? "ABOVE[blue]" : "ABOVE[s-text]";
+        const altNormOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number") === 1 ? "NORM[blue]" : "NORM[s-text]";
+        const altBelowOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number") === 1 ? "BELOW[blue]" : "BELOW[s-text]";
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
-            ["MODE[disabled]", "ALT TAG"],
-            ["TA/RA/STBY[disabled]", relAbsSwitch],
+            [" MODE [disabled]", "ALT TAG "],
+            ["TA/[d-text disabled]RA/STBY[s-text disabled]", relAbsSwitch],
             [""],
-            ["", "TEST[disabled]"],
-            ["◊TRAFFIC[disabled]", "EXT TEST[disabled]"],
+            ["", "TEST[s-text disabled]"],
+            ["◊TRAFFIC[disabled]", "EXT TEST [disabled]"],
             ["ON/OFF[disabled]", "ON/OFF[disabled]"],
-            ["", "ALT LIMITS[disabled]"],
+            ["", "ALT LIMITS "],
             ["", altAboveOption],
             [""],
             ["", altNormOption],
