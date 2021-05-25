@@ -724,6 +724,7 @@ class MemoryState {
             this.mapNavigationSource = 0;
             this.showTerrain = false;
             this.showWeather = false;
+            this.showTfc = false;
             this.showGwx = false;
             this.isExtended = false;
         }
@@ -740,6 +741,7 @@ class MemoryState {
             this.mapNavigationSource = 0;
             this.showTerrain = false;
             this.showWeather = true;
+            this.showTfc = false;
             this.showGwx = false;
             this.isExtended = false;
         }
@@ -756,13 +758,14 @@ class MemoryState {
             this.mapNavigationSource = 0;
             this.showTerrain = true;
             this.showWeather = false;
+            this.showTfc = false;
             this.showGwx = false;
             this.isExtended = false;
         }
 
     }
 
-    setMemoryState(membutton, _systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showGwx, _isExtended){
+    setMemoryState(membutton, _systemPage1, systemPage2, _showChecklist, _showPassengerBrief, _mapDisplayMode, _mapNavigationMode, _mapNavigationSource, _showTerrain, _showWeather, _showTfc, _showGwx, _isExtended){
         // Set system pages
         this.systemPage1 = _systemPage1;
         this.systemPage2 = systemPage2;
@@ -776,6 +779,7 @@ class MemoryState {
         //this.showSystemOverlay = _showSystemOverlay;
         this.showTerrain = _showTerrain;
         this.showWeather = _showWeather;
+        this.showTfc = _showTfc;
         this.showGwx = _showGwx;
         this.isExtended = _isExtended;
 
@@ -791,6 +795,7 @@ class MemoryState {
             //showSystemOverlay: _showSystemOverlay,
             showTerrain: _showTerrain,
             showWeather: _showWeather,
+            showTfc: _showTfc,
             showGwx: _showGwx,
             isExtended: _isExtended
         };
