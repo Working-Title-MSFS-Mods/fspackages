@@ -1,30 +1,29 @@
 class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
-    constructor(homePageGroup, homePageName, controllerID) {
+    constructor(homePageGroup, homePageName, settingModelID) {
         super(homePageGroup, homePageName);
 
-        this._initController(controllerID);
+        this._initSettingModel(settingModelID);
     }
 
-    _initController(controllerID) {
-        this._controller = new WT_DataStoreController(controllerID, null);
-        this.controller.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this.controller));
-        this.controller.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this.controller));
-        this.controller.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this.controller));
-        this.controller.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this.controller));
+    _initSettingModel(settingModelID) {
+        this._settingModel = new WT_DataStoreSettingModel(settingModelID, null);
+        this.settingModel.addSetting(this._svtShowSetting = new WT_G3x5_PFDSVTShowSetting(this.settingModel));
+        this.settingModel.addSetting(this._aoaModeSetting = new WT_G3x5_PFDAoAModeSetting(this.settingModel));
+        this.settingModel.addSetting(this._windModeSetting = new WT_G3x5_PFDWindModeSetting(this.settingModel));
+        this.settingModel.addSetting(this._baroUnitsSetting = new WT_G3x5_PFDBaroUnitsSetting(this.settingModel));
+        this.settingModel.addSetting(this._altimeterMetersSetting = new WT_G3x5_PFDAltimeterMetersSetting(this.settingModel));
     }
 
     /**
      * @readonly
-     * @property {WT_DataStoreController} controller
-     * @type {WT_DataStoreController}
+     * @type {WT_DataStoreSettingModel}
      */
-    get controller() {
-        return this._controller;
+    get settingModel() {
+        return this._settingModel;
     }
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettingsHTMLElement} htmlElement
      * @type {WT_G3x5_TSCPFDSettingsHTMLElement}
      */
     get htmlElement() {
@@ -33,7 +32,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDSVTShowSetting} svtShowSetting
      * @type {WT_G3x5_PFDSVTShowSetting}
      */
     get svtShowSetting() {
@@ -42,7 +40,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDAoAModeSetting} aoaModeSetting
      * @type {WT_G3x5_PFDAoAModeSetting}
      */
     get aoaModeSetting() {
@@ -51,7 +48,6 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDWindModeSetting} windModeSetting
      * @type {WT_G3x5_PFDWindModeSetting}
      */
     get windModeSetting() {
@@ -60,11 +56,18 @@ class WT_G3x5_TSCPFDSettings extends WT_G3x5_TSCPageElement {
 
     /**
      * @readonly
-     * @property {WT_G3x5_PFDBaroUnitsSetting} baroUnitsSetting
      * @type {WT_G3x5_PFDBaroUnitsSetting}
      */
     get baroUnitsSetting() {
         return this._baroUnitsSetting;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_G3x5_PFDAltimeterMetersSetting}
+     */
+    get altimeterMetersSetting() {
+        return this._altimeterMetersSetting;
     }
 
     _createHTMLElement() {
@@ -81,7 +84,7 @@ class WT_G3x5_TSCPFDSettingsTable {
     constructor(parentPage) {
         this._parentPage = parentPage;
 
-        this._htmlElement = new WT_G3x5_TSCPFDSettingsTableHTMLElement();
+        this._htmlElement = this._createHTMLElement();
 
         /**
          * @type {WT_G3x5_TSCMapSettingsTabRow[]}
@@ -89,10 +92,15 @@ class WT_G3x5_TSCPFDSettingsTable {
         this._rows = [];
     }
 
+    _createHTMLElement() {
+        let htmlElement = new WT_TSCScrollList();
+        htmlElement.classList.add(WT_G3x5_TSCPFDSettingsTable.CLASS);
+        return htmlElement;
+    }
+
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettingsTableHTMLElement} htmlElement
-     * @type {WT_G3x5_TSCPFDSettingsTableHTMLElement}
+     * @type {WT_TSCScrollList}
      */
     get htmlElement() {
         return this._htmlElement;
@@ -103,7 +111,7 @@ class WT_G3x5_TSCPFDSettingsTable {
      * @param {WT_G3x5_TSCPFDSettingsRow} row
      */
     _initRow(row) {
-        row.htmlElement.slot = "rows";
+        row.htmlElement.slot = "content";
         this.htmlElement.appendChild(row.htmlElement);
         row.setParentPage(this._parentPage);
         row.onAttached();
@@ -122,57 +130,10 @@ class WT_G3x5_TSCPFDSettingsTable {
         for (let row of this._rows) {
             row.onUpdate();
         }
+        this.htmlElement.scrollManager.update();
     }
 }
-
-class WT_G3x5_TSCPFDSettingsTableHTMLElement extends HTMLElement {
-    constructor() {
-        super();
-
-        this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(WT_G3x5_TSCPFDSettingsTableHTMLElement.TEMPLATE.content.cloneNode(true));
-    }
-}
-WT_G3x5_TSCPFDSettingsTableHTMLElement.TEMPLATE = document.createElement("template");
-WT_G3x5_TSCPFDSettingsTableHTMLElement.TEMPLATE.innerHTML = `
-    <style>
-        :host {
-            display: block;
-        }
-
-        #wrapper  {
-            position: relative;
-            width: 100%;
-            top: 2%;
-            height: 96%;
-            overflow-x: hidden;
-            overflow-y: scroll;
-        }
-            #wrapper::-webkit-scrollbar {
-                width: 1vw;
-            }
-            #wrapper::-webkit-scrollbar-track {
-                background: none;
-            }
-            #wrapper::-webkit-scrollbar-thumb {
-                background: white;
-            }
-
-            #rows {
-                position: relative;
-                left: 2%;
-                width: 96%;
-                display: flex;
-                flex-flow: column nowrap;
-                align-items: center;
-            }
-    </style>
-    <div id="wrapper">
-        <slot name="rows" id="rows"></slot>
-    </div>
-`;
-
-customElements.define("tsc-pfdsettings-table", WT_G3x5_TSCPFDSettingsTableHTMLElement);
+WT_G3x5_TSCPFDSettingsTable.CLASS = "pfdSettingsTable";
 
 class WT_G3x5_TSCPFDSettingsRow {
     constructor() {
@@ -183,7 +144,6 @@ class WT_G3x5_TSCPFDSettingsRow {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettings} parentPage
      * @type {WT_G3x5_TSCPFDSettings}
      */
     get parentPage() {
@@ -192,7 +152,6 @@ class WT_G3x5_TSCPFDSettingsRow {
 
     /**
      * @readonly
-     * @property {WT_G3x5_TSCPFDSettingsRowHTMLElement} htmlElement
      * @type {WT_G3x5_TSCPFDSettingsRowHTMLElement}
      */
     get htmlElement() {
@@ -231,7 +190,6 @@ class WT_G3x5_TSCPFDSettingsRowHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} left
      * @type {HTMLElement}
      */
     get left() {
@@ -240,7 +198,6 @@ class WT_G3x5_TSCPFDSettingsRowHTMLElement extends HTMLElement {
 
     /**
      * @readonly
-     * @property {HTMLElement} right
      * @type {HTMLElement}
      */
     get right() {
@@ -345,17 +302,18 @@ class WT_G3x5_TSCPFDSettingsTitledToggleRow extends WT_G3x5_TSCPFDSettingsTitled
 }
 
 class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTitledRow {
-    constructor(title, setting, selectionWindowTitle, valueText) {
+    constructor(title, setting, selectionWindowTitle, valueText, selectionValues) {
         super(title);
 
         this._setting = setting;
         this._selectionWindowTitle = selectionWindowTitle;
         this._valueText = valueText;
+        this._selectionValues = selectionValues;
     }
 
     _initRight() {
         let button = new WT_TSCLabeledButton();
-        button.style.color = "#67e8ef";
+        button.style.color = "var(--wt-g3x5-lightblue)";
         button.style.position = "absolute";
         button.style.top = "2%";
         button.style.left = "2%";
@@ -365,7 +323,8 @@ class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTit
     }
 
     _mapValue(value) {
-        return this._valueText[value];
+        let index = this._selectionValues ? this._selectionValues.indexOf(value) : value;
+        return this._valueText[index];
     }
 
     onAttached() {
@@ -379,21 +338,10 @@ class WT_G3x5_TSCPFDSettingsTitledSelectionRow extends WT_G3x5_TSCPFDSettingsTit
             homePageGroup: this.parentPage.homePageGroup,
             homePageName: this.parentPage.homePageName
         };
-        this._manager = new WT_TSCSettingLabeledButtonManager(this.parentPage.instrument, this.htmlElement.right, this._setting, this.parentPage.instrument.selectionListWindow1, context, this._mapValue.bind(this));
+        this._manager = new WT_TSCSettingLabeledButtonManager(this.parentPage.instrument, this.htmlElement.right, this._setting, this.parentPage.instrument.selectionListWindow1, context, this._mapValue.bind(this), this._selectionValues);
         this._manager.init();
     }
 }
-
-class WT_G3x5_TSCPFDSettingsAoAModeRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
-    constructor(setting) {
-        super("AOA", setting, "AOA Settings", WT_G3x5_TSCPFDSettingsAoAModeRow.VALUE_TEXT);
-    }
-}
-WT_G3x5_TSCPFDSettingsAoAModeRow.VALUE_TEXT = [
-    "Off",
-    "On",
-    "Auto"
-];
 
 class WT_G3x5_TSCPFDSettingsBaroUnitsRow extends WT_G3x5_TSCPFDSettingsTitledSelectionRow {
     constructor(setting) {

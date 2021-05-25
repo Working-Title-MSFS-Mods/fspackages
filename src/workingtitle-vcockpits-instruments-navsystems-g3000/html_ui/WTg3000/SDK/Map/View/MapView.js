@@ -11,6 +11,9 @@ class WT_MapView extends HTMLElement {
         this._viewPlane = new WT_GVector2(0, 0);
         this._state = new WT_MapViewState(this);
 
+        /**
+         * @type {WT_MapViewLayerContainer[]}
+         */
         this._layers = [];
 
         this._configLoaded = false;
@@ -67,6 +70,15 @@ class WT_MapView extends HTMLElement {
     _loadConfig(data) {
         this._config = JSON.parse(data);
         this._configLoaded = true;
+    }
+
+    /**
+     * @readonly
+     * @property {WT_MapViewState} state - the current state of this view.
+     * @type {WT_MapViewState}
+     */
+    get state() {
+        return this._state;
     }
 
     /**
@@ -266,7 +278,7 @@ class WT_MapView extends HTMLElement {
         });
 
         if (this.model.airplane) {
-            this.projection.project(this.model.airplane.position(this._airplanePosition), this._viewPlane);
+            this.projection.project(this.model.airplane.navigation.position(this._airplanePosition), this._viewPlane);
         }
     }
 
@@ -292,7 +304,7 @@ class WT_MapView extends HTMLElement {
         this._currentTime = Date.now();
         this._updateProjection();
 
-        for (let layerContainer of this._layers) {
+        this._layers.forEach(layerContainer => {
             if (!layerContainer.isInitialized) {
                 layerContainer.init(this._state, this._config[layerContainer.layer.configName]);
             } else {
@@ -304,12 +316,12 @@ class WT_MapView extends HTMLElement {
                 }
             }
             if (layerContainer.layer.isEnabled() && layerContainer.layer.isVisible(this._state)) {
-                layerContainer.container.style.display = "block";
+                layerContainer.setVisibility(true);
                 layerContainer.layer.onUpdate(this._state);
             } else {
-                layerContainer.container.style.display = "none";
+                layerContainer.setVisibility(false);
             }
-        }
+        }, this);
     }
 }
 
@@ -318,15 +330,15 @@ class WT_MapView extends HTMLElement {
  */
 class WT_MapViewState {
     /**
-     * @param {WT_MapView} view
+     * @param {WT_MapView} view - the parent map view of the new state interface.
      */
     constructor(view) {
         this._view = view;
     }
 
     /**
+     * The current map model associated with the map view.
      * @readonly
-     * @property {WT_MapModel} model
      * @type {WT_MapModel}
      */
     get model() {
@@ -334,8 +346,8 @@ class WT_MapViewState {
     }
 
     /**
+     * The current dpi scaling factor of the map view's viewing window.
      * @readonly
-     * @property {Number} dpiScale
      * @type {Number}
      */
     get dpiScale() {
@@ -343,8 +355,8 @@ class WT_MapViewState {
     }
 
     /**
+     * The current map projection of the map view.
      * @readonly
-     * @property {WT_MapProjectionReadOnly} projection
      * @type {WT_MapProjectionReadOnly}
      */
     get projection() {
@@ -352,8 +364,8 @@ class WT_MapViewState {
     }
 
     /**
+     * The current projected location of the player airplane in the map view's viewing window.
      * @readonly
-     * @property {WT_GVector2ReadOnly} viewPlane
      * @type {WT_GVector2ReadOnly}
      */
     get viewPlane() {
@@ -361,8 +373,8 @@ class WT_MapViewState {
     }
 
     /**
+     * The time at which the current update cycle was initiated, in milliseconds.
      * @readonly
-     * @property {Number} currentTime
      * @type {Number}
      */
     get currentTime() {
@@ -374,6 +386,7 @@ class WT_MapViewLayerContainer {
     constructor(view, layer) {
         this._view = view;
         this._layer = layer;
+        this._isVisible = true;
         this._isInit = false;
 
         this._container = document.createElement("div");
@@ -386,18 +399,34 @@ class WT_MapViewLayerContainer {
         this._container.appendChild(layer.htmlElement);
     }
 
+    /**
+     * @readonly
+     * @type {WT_MapView}
+     */
     get view() {
         return this._view;
     }
 
+    /**
+     * @readonly
+     * @type {WT_MapViewLayer}
+     */
     get layer() {
         return this._layer;
     }
 
+    /**
+     * @readonly
+     * @type {HTMLElement}
+     */
     get container() {
         return this._container;
     }
 
+    /**
+     * @readonly
+     * @type {Boolean}
+     */
     get isInitialized() {
         return this._isInit;
     }
@@ -411,6 +440,13 @@ class WT_MapViewLayerContainer {
         this.view.appendChild(this.container);
         this.layer.onAttached(state);
         this._isInit = true;
+    }
+
+    setVisibility(value) {
+        if (this._isVisible !== value) {
+            this.container.style.display = value ? "block" : "none";
+            this._isVisible = value;
+        }
     }
 }
 

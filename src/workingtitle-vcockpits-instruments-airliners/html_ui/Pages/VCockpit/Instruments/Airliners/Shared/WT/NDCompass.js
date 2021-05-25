@@ -141,9 +141,11 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                         }
                     }, 30);
 
-                    /*if (this._displayMode === Jet_NDCompass_Display.ARC){   //This is commented out for now as these clock tick marks are for when TCAS is enabled and it currently isn't enabled
+                    if (this._displayMode === Jet_NDCompass_Display.ARC || this._displayMode === Jet_NDCompass_Display.PPOS){
                         dashSpacing = 12;
                         let radians = 0;
+                        var tfcGroup = document.createElementNS(Avionics.SVG.NS, "g");
+                        tfcGroup.setAttribute("id", "tfcClockTicks");
                         for (let i = 0; i < dashSpacing; i++) {
                             let line = document.createElementNS(Avionics.SVG.NS, "line");
                             let length = 15;
@@ -155,10 +157,10 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             line.setAttribute("x2", "50");
                             line.setAttribute("y2", lineEnd.toString());
                             line.setAttribute("transform", "rotate(" + (-degrees + 180) + " 50 50)");
-                            line.setAttribute("stroke", "red");
+                            line.setAttribute("stroke", "#cccac8");
                             line.setAttribute("stroke-width", "3");
                             line.setAttribute("stroke-opacity", "0.8");
-                            fixedGroup.appendChild(line);
+                            tfcGroup.appendChild(line);
                             radians += (2 * Math.PI) / dashSpacing;
 
                             // TODO idea for 3nm TCAS radials
@@ -174,9 +176,10 @@ class Jet_MFD_NDCompass extends Jet_NDCompass {
                             // smallLine.setAttribute("transform", "rotate(" + (-degrees + 180) + " 50 50)");
                             // smallLine.setAttribute("stroke", "#cccac8");
                             // smallLine.setAttribute("stroke-width", "2");
-                            // fixedGroup.appendChild(smallLine);
+                            // tfcGroup.appendChild(smallLine);
                         }
-                    } */ 
+                        fixedGroup.appendChild(tfcGroup);
+                    }
                 }
                 let clipRect = document.createElementNS(Avionics.SVG.NS, "rect");
                 clipRect.setAttribute("x", (50 - circleRadius).toString());

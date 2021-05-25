@@ -212,6 +212,7 @@ class CJ4_FMC_ModSettingsPageTwo {
         this._dlProcTime = WTDataStore.get("WT_CJ4_DL_Time", 0);
         this._hoppieLogon = WTDataStore.get("WT_CJ4_HoppieLogon", "REFER TO MANUAL");
         this._atisSrc = WTDataStore.get('WT_ATIS_Source', 0);
+        this._cj4aoaStyle = WTDataStore.get('WT_CJ4_aoaStyle', 0);
     }
 
     get atisSrc() {
@@ -244,6 +245,21 @@ class CJ4_FMC_ModSettingsPageTwo {
         this.invalidate();
     }
 
+    get cj4aoaStyle() {
+        return this._cj4aoaStyle;
+    }
+    set cj4aoaStyle(value) {
+        if (value == 2) {
+            value = 0;
+        }
+        this._cj4aoaStyle = value;
+
+        // set datastore
+        WTDataStore.set('WT_CJ4_aoaStyle', value);
+
+        this.invalidate();
+    }
+
     get dlProcTime() {
         return this._dlProcTime;
     }
@@ -260,10 +276,10 @@ class CJ4_FMC_ModSettingsPageTwo {
     }
 
     render() {
-
         const metarSrcSwitch = this._fmc._templateRenderer.renderSwitch(["VATSIM", "MSFS"], this.metarSrc);
         const dlProcSwitch = this._fmc._templateRenderer.renderSwitch(["INSTANT", "15 SEC"], this.dlProcTime);
         const atisSrcSwitch = this._fmc._templateRenderer.renderSwitch(["FAA", "VATSIM", "IVAO"], this.atisSrc);
+        const aoaSwitch = this._fmc._templateRenderer.renderSwitch(["OLD", "NEW"], this.cj4aoaStyle);
 
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "2/2[blue] ", "WT MOD SETTINGS[yellow]"],
@@ -275,8 +291,8 @@ class CJ4_FMC_ModSettingsPageTwo {
             [dlProcSwitch],
             ["HOPPIE LOGON CODE[blue]"],
             [this._hoppieLogon],
-            [""],
-            [""],
+            ["PFD AOA STYLE[blue]"],
+            [aoaSwitch],
             [""],
             [""]
         ]);
@@ -291,6 +307,9 @@ class CJ4_FMC_ModSettingsPageTwo {
         };
         this._fmc.onLeftInput[2] = () => {
             this.dlProcTime = this.dlProcTime + 1;
+        };
+        this._fmc.onLeftInput[4] = () => {
+            this.cj4aoaStyle = this.cj4aoaStyle + 1;
         };
         this._fmc.onPrevPage = () => {
             CJ4_FMC_ModSettingsPage.ShowPage1(this._fmc);

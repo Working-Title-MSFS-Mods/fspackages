@@ -8,11 +8,11 @@ Priority=0
 
 [Emitter.0]
 Lifetime=0.0, 0.0
-Delay=1.1, 1.1
+Delay=0.0, 0.0
 Bounce=0.0
 Light=1
 No Interpolate=1
-Rate=0.9, 0.9
+Rate=0.8, 0.8
 X Emitter Velocity=0.0, 0.0
 Y Emitter Velocity=0.0, 0.0
 Z Emitter Velocity=0.0, 0.0
@@ -57,17 +57,17 @@ Jitter Distance=0.0
 Jitter Time=0.0
 uv1=0.0, 0.0
 uv2=1.0, 1.0
-NearEndFade= 1.0
+NearEndFade= 8.0
 NearFade= 12.0
 MinProjSize=0.4
 
 [LightAttributes.0]
 Type=omni
 Size=0.05
-Range=1
-Intensity=0.4
-Softness=0.7
+Range=1.0
+Intensity=0.05
+Softness=0.0
 SpotInner=0.0
-SpotOuter=0.2
+SpotOuter=0.3
 Volumetric=1
 ScatDir=0.0

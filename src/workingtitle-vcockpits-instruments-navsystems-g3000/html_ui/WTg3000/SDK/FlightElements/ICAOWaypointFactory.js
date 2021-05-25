@@ -7,11 +7,24 @@
 class WT_ICAOWaypointFactory {
     /**
      * @param {Number} [cacheSize] - the size of the internal waypoint cache.
+     * @param {Number} [coherentCallProcessBudget] - the maximum number of calls to make to Coherent to request
+     *                                               waypoint data per waypoint type per update cycle.
+     * @param {Number} [coherentDataProcessBudget] - the maximum number of waypoint data objects sent by Coherent to
+     *                                               process per update cycle.
      */
-    constructor(cacheSize = WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT) {
+    constructor(cacheSize = WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT, coherentCallProcessBudget = WT_ICAOWaypointFactory.COHERENT_CALL_PROCESS_BUDGET_DEFAULT, coherentDataProcessBudget = WT_ICAOWaypointFactory.COHERENT_DATA_PROCESS_BUDGET_DEFAULT) {
         this._cacheSize = cacheSize;
+        this._coherentCallProcessBudget = coherentCallProcessBudget;
+        this._coherentDataProcessBudget = coherentDataProcessBudget;
 
+        /**
+         * @type {Map<String,Set<String>>}
+         */
         this._icaosToRetrieve = new Map();
+        this._coherentDataQueue = [];
+        /**
+         * @type {Map<String,WT_ICAOWaypointFactoryCacheEntry>}
+         */
         this._waypointCache = new Map();
 
         this._airwayCache = new Map();
@@ -48,27 +61,17 @@ class WT_ICAOWaypointFactory {
 
     /**
      * Returns a Promise that resolves when this factory is registered to receive waypoint data from Coherent.
-     * @returns {Promise}
+     * @returns {Promise<void>}
      */
-    _waitForRegistration() {
-        return new Promise(resolve => {
-            let loop = function() {
-                if (this._isRegistered) {
-                    resolve();
-                } else {
-                    requestAnimationFrame(loop.bind(this));
-                }
-            }
-            loop.bind(this)();
-        });
+    async _waitForRegistration() {
+        await WT_Wait.awaitCallback(() => this._isRegistered, this);
     }
 
     _buildAirway(waypoint, route) {
         let airway = this._airwayCache.get(route.name);
         if (!airway) {
-            let builder = new WT_ICAOWaypointFactoryAirwayBuilder(route, this._getWaypointEntry.bind(this));
+            let builder = new WT_ICAOWaypointFactoryAirwayBuilder(route, this._getWaypointEntry.bind(this), waypoint);
             airway = new WT_Airway(route.name, route.type, builder);
-            airway._waypoints.push(waypoint);
             this._airwayCache.set(route.name, airway);
         }
         return airway;
@@ -84,10 +87,10 @@ class WT_ICAOWaypointFactory {
             return;
         }
 
-        for (let route of routes) {
+        routes.forEach(route => {
             let airway = this._buildAirway(waypoint, route);
             waypoint.airways.push(airway);
-        }
+        }, this);
     }
 
     /**
@@ -134,29 +137,21 @@ class WT_ICAOWaypointFactory {
     }
 
     /**
+     * Enqueues waypoint data sent by Coherent to be processed.
+     * @param {Object} data - the waypoint data object.
+     */
+    _enqueueCoherentData(data) {
+        this._coherentDataQueue.push(data);
+    }
+
+    /**
      *
      * @param {Object} data - the data object describing the waypoint.
+     * @param {WT_ICAOWaypoint.Type} sentType - the ICAO waypoint type of the data, as sent by Coherent.
      */
-    _onCoherentDataLoaded(data, type) {
-        data.icaoTrimmed = data.icao.trim();
-
-        let entry = this._waypointCache.get(data.icaoTrimmed);
-        if (!entry) {
-            entry = {isReady: false};
-            this._waypointCache.set(data.icaoTrimmed, entry);
-            if (this._waypointCache.size > this._cacheSize) {
-                this._waypointCache.delete(this._waypointCache.keys().next().value);
-            }
-        } else if (entry.isReady) {
-            return;
-        }
-
-        if (data.routes) {
-            this._addAirwayDataToCache(data, entry);
-        }
-        if (data.icao[0] === type) {
-            this._addWaypointToCache(data, entry);
-        }
+    _onCoherentDataLoaded(data, sentType) {
+        data.sentType = sentType;
+        this._enqueueCoherentData(data);
     }
 
     /**
@@ -169,9 +164,7 @@ class WT_ICAOWaypointFactory {
             this._icaosToRetrieve.set(coherentCallName, new Set());
         }
         let icaosToRetrieve = this._icaosToRetrieve.get(coherentCallName);
-        for (let icao of icaos) {
-            icaosToRetrieve.add(icao);
-        }
+        icaos.forEach(icao => icaosToRetrieve.add(icao));
     }
 
     /**
@@ -410,22 +403,84 @@ class WT_ICAOWaypointFactory {
         }
     }
 
-    update() {
-        for (let key of this._icaosToRetrieve.keys()) {
-            let icaos = this._icaosToRetrieve.get(key);
-            if (!icaos || icaos.size === 0) {
-                continue;
-            }
-            let icaoArray = Array.from(icaos);
-            Coherent.call(key, icaoArray, icaoArray.length);
-            if (key !== WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS && key !== WT_ICAOWaypointFactory.COHERENT_CALL_INTS) {
-                Coherent.call(WT_ICAOWaypointFactory.COHERENT_CALL_INTS, icaoArray, icaoArray.length);
-            }
-            icaos.clear();
+    /**
+     * Sends a request to Coherent to retrieve waypoint data for an array of ICAO strings.
+     * @param {String} key - the Coherent call key.
+     * @param {String[]} icaoArray - an array of ICAO strings.
+     */
+    _executeCoherentCall(key, icaoArray) {
+        Coherent.call(key, icaoArray, icaoArray.length);
+        if (key !== WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS && key !== WT_ICAOWaypointFactory.COHERENT_CALL_INTS) {
+            // need to make an extra call to load intersection data in order to get airways for VORs and NDBs.
+            Coherent.call(WT_ICAOWaypointFactory.COHERENT_CALL_INTS, icaoArray, icaoArray.length);
         }
+    }
+
+    _processCoherentCallQueue() {
+        this._icaosToRetrieve.forEach((icaos, key) => {
+            if (!icaos || icaos.size === 0) {
+                return;
+            }
+            let icaoArray = [];
+            icaos.forEach(icao => {
+                if (icaoArray.length < this._coherentCallProcessBudget) {
+                    icaoArray.push(icao);
+                }
+            });
+            this._executeCoherentCall(key, icaoArray);
+
+            icaoArray.forEach(icao => icaos.delete(icao));
+        }, this);
+    }
+
+    /**
+     * Processes waypoint data sent by Coherent. Depending on the data that was sent, either a new WT_ICAOWaypoint
+     * object will be created from the data and added to the cache, or airway data will be added to a waypoint
+     * object.
+     * @param {Object} data - the waypoint data object.
+     */
+    _processCoherentData(data) {
+        data.icaoTrimmed = data.icao.trim();
+
+        let entry = this._waypointCache.get(data.icaoTrimmed);
+        if (!entry) {
+            entry = {isReady: false};
+            this._waypointCache.set(data.icaoTrimmed, entry);
+            if (this._waypointCache.size > this._cacheSize) {
+                this._waypointCache.delete(this._waypointCache.keys().next().value);
+            }
+        } else if (entry.isReady) {
+            return;
+        }
+
+        if (data.routes) {
+            this._addAirwayDataToCache(data, entry);
+        }
+        if (data.icao[0] === data.sentType) {
+            this._addWaypointToCache(data, entry);
+        }
+    }
+
+    _processCoherentDataQueue() {
+        let count = 0;
+        while (count < this._coherentDataProcessBudget) {
+            if (count >= this._coherentDataQueue.length) {
+                break;
+            }
+            this._processCoherentData(this._coherentDataQueue[count++]);
+        }
+
+        this._coherentDataQueue.splice(0, count);
+    }
+
+    update() {
+        this._processCoherentCallQueue();
+        this._processCoherentDataQueue();
     }
 }
 WT_ICAOWaypointFactory.CACHE_SIZE_DEFAULT = 5000;
+WT_ICAOWaypointFactory.COHERENT_CALL_PROCESS_BUDGET_DEFAULT = 10;
+WT_ICAOWaypointFactory.COHERENT_DATA_PROCESS_BUDGET_DEFAULT = 20;
 WT_ICAOWaypointFactory.COHERENT_CALL_AIRPORTS = "LOAD_AIRPORTS";
 WT_ICAOWaypointFactory.COHERENT_CALL_VORS = "LOAD_VORS";
 WT_ICAOWaypointFactory.COHERENT_CALL_NDBS = "LOAD_NDBS";
@@ -441,40 +496,34 @@ WT_ICAOWaypointFactory.RELOAD_ATTEMPT_INTERVAL = 200; // ms
  */
 
 class WT_ICAOWaypointFactoryAirwayBuilder extends WT_AirwayBuilder {
-    constructor(initialData, requestEntry) {
+    constructor(initialData, requestEntry, initialWaypoint) {
         super();
         this._initialData = initialData;
         this._requestEntry = requestEntry;
+        this._initialWaypoint = initialWaypoint;
+    }
+
+    async _step(nextICAOPropertyName, arrayInsertFunc) {
+        let isDone = false;
+        let current = this._initialData;
+        while (!isDone && current) {
+            let nextICAO = current[nextICAOPropertyName];
+            if (nextICAO && nextICAO.length > 0 && nextICAO[0] != " " && !this._waypointsArray.find(waypoint => waypoint.icao === nextICAO)) {
+                let entry = await this._requestEntry(nextICAO);
+                arrayInsertFunc(entry.waypoint);
+                current = entry.routes.find(route => route.name === current.name);
+            } else {
+                isDone = true;
+            }
+        }
     }
 
     async _stepForward() {
-        let isDone = false;
-        let current = this._initialData;
-        while (!isDone && current) {
-            let nextICAO = current.nextIcao;
-            if (nextICAO && nextICAO.length > 0 && nextICAO[0] != " ") {
-                let entry = await this._requestEntry(nextICAO);
-                this.airway._waypoints.push(entry.waypoint);
-                current = entry.routes.find(route => route.name === current.name);
-            } else {
-                isDone = true;
-            }
-        }
+        return this._step("nextIcao", this._waypointsArray.push.bind(this._waypointsArray));
     }
 
     async _stepBackward() {
-        let isDone = false;
-        let current = this._initialData;
-        while (!isDone && current) {
-            let prevICAO = current.prevIcao;
-            if (prevICAO && prevICAO.length > 0 && prevICAO[0] != " ") {
-                let entry = await this._requestEntry(prevICAO);
-                this.airway._waypoints.splice(0, 0, entry.waypoint);
-                current = entry.routes.find(route => route.name === current.name);
-            } else {
-                isDone = true;
-            }
-        }
+        return this._step("prevIcao", this._waypointsArray.unshift.bind(this._waypointsArray));
     }
 
     /**
@@ -488,6 +537,7 @@ class WT_ICAOWaypointFactoryAirwayBuilder extends WT_AirwayBuilder {
         }
         return new Promise(resolve => {
             this._hasStarted = true;
+            this._waypointsArray.push(this._initialWaypoint);
             Promise.all([
                 this._stepForward(),
                 this._stepBackward()

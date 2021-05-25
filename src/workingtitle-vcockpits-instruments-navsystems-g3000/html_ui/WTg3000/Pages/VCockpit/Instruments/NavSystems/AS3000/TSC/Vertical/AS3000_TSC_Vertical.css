@@ -1,5 +1,5 @@
 ﻿as3000-tsc-vertical-element {
-  font-family: "Roboto";
+  font-family: "Roboto-Regular";
   width: 100%;
   height: 100%;
   position: fixed; }
@@ -29,7 +29,7 @@
       left: 0%;
       height: 8%;
       width: 100%;
-      background-image: url("/WTg3000/SDK/Assets/Images/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
+      background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
       background-size: contain;
       background-position: center top;
       background-repeat: no-repeat;
@@ -49,8 +49,43 @@
         width: 100%;
         top: 0%;
         border-collapse: collapse; }
-        as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDR[state=Green] {
-          color: lawngreen; }
+        as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #AudioRadio .mainText {
+          position: absolute;
+          left: 0%;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-50%);
+          font-size: 2.5vh;
+        }
+        as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRMode {
+          color: var(--wt-g3x5-lightblue);
+        }
+          as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRMode .mainText {
+            position: absolute;
+            left: 0%;
+            width: 100%;
+            font-size: 2.2vh;
+          }
+          as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRModeXPDR {
+            top: 10%;
+          }
+          as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRModeMode {
+            top: 50%;
+          }
+        as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRCode {
+          color: var(--wt-g3x5-lightgreen);
+        }
+        as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRCode[mode="standby"] {
+          color: var(--wt-g3x5-lightblue);
+        }
+          as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #XPDRCode .mainNumber {
+            position: absolute;
+            left: 0%;
+            bottom: 10%;
+            text-align: center;
+            margin-left: 0;
+            width: 100%;
+          }
         as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #Mic, as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft #Mon {
           text-align: center; }
           as3000-tsc-vertical-element #Electricity #NavComHome #NavComLeft .symbol {
@@ -91,7 +126,7 @@
           margin-left: 8%; }
         as3000-tsc-vertical-element #Electricity #NavComHome .gradient .mainNumber {
           text-align: justify;
-          font-size: 2.8vh;
+          font-size: 3.5vh;
           margin-left: 8%; }
         as3000-tsc-vertical-element #Electricity #NavComHome .gradient .mainText {
           text-align: center;
@@ -148,47 +183,20 @@
       width: 100%;
       left: 0%;
       bottom: 14%; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NavComHome] #NavComHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDHome] #PFDHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=SpeedBugs] #SpeedBugs,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Timers] #Timers,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Minimums] #Minimums,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDMapSettings] #PFDMapSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=PFDSettings] #PFDSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=DirectTo] #DirectTo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ActiveFlightPlan] #ActiveFlightPlan,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDHome] #MFDHome,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MFDMapSettings] #MFDMapSettings,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlLeft] #MapPointerControlLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=MapPointerControlRight] #MapPointerControlRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionLeft] #WeatherSelectionLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelectionRight] #WeatherSelectionRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsLeft] #WeatherRadarSettingsLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherRadarSettingsRight] #WeatherRadarSettingsRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WeatherSelection] #WeatherSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=WaypointsInfo] #WaypointsInfo,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfoLeft] #AirportInfoLeft,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AirportInfoRight] #AirportInfoRight,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Nearest] #Nearest,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestAirport] #NearestAirport,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestIntersection] #NearestIntersection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestVOR] #NearestVOR,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=NearestNDB] #NearestNDB,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Procedures] #Procedures,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=DepartureSelection] #DepartureSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ArrivalSelection] #ArrivalSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=ApproachSelection] #ApproachSelection,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AircraftSystems] #AircraftSystems,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=LightingConfig] #LightingConfig,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=Utilities] #Utilities,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=UtilitiesSetup] #UtilitiesSetup,
-      as3000-tsc-vertical-element #Electricity #PagesDisplay[state=AvionicsSettings] #AvionicsSettings {
-        display: block; }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome {
+      as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome,
+      as3000-tsc-vertical-element #Electricity #PagesDisplay #MFDHome {
         position: absolute;
         width: 100%;
-        height: 100%; }
+        height: 100%;
+        font-size: 3vh;
+        line-height: 3vh;
+      }
+        as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome .button {
+          width: 18vh;
+          height: 14vh;
+          margin: 0.5vh;
+        }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome #Bearing1Button .centerImg,
         as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDHome #Bearing2Button .centerImg {
           position: absolute;
@@ -209,98 +217,39 @@
         as3000-tsc-vertical-element #Electricity #PagesDisplay #MFDHome .gradientButton[state="Active"] .active, as3000-tsc-vertical-element #Electricity #PagesDisplay #WeatherSelection .gradientButton[state="Active"] .active {
           display: inline-block; }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContainer {
-        position: absolute;
-        left: 15%;
-        top: 2%;
-        width: 84%;
-        height: 98%;
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: flex-end;
-        align-items: flex-start; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabSelect {
-        display: flex;
-        flex-flow: column nowrap;
-        justify-content: flex-start;
-        height: 100%;
-        margin-right: -1%;
-        padding: 1% 0; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabSelect .tabButton {
-          margin: 1vh 0;
-          height: 10vh; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContentContainer {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        border: 3px solid #d3eaf9;
-        background: #000000;
-        border-radius: 10px; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContentContainer .tabContent {
-          position: absolute;
-          width: 100%;
-          height: 100%; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .tabContentContainer .container {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          padding: 0.5vh;
-          display: flex;
-          flex-flow: column nowrap;
-          align-items: center; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SpeedBugsTopLine {
-            width: 100%;
-            height: 16%;
-            padding: 0 1vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr;
-            grid-gap: 0 1vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SpeedBugsTopLine .gradientButton {
-              height: 100%;
-              width: 100%;
-              margin: 0.25vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SpeedBugsDivider {
-            width: 100%;
-            height: 0;
-            margin: 0.5vh 0;
-            border-top: ridge 3px white; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons {
-            position: relative;
-            width: 100%;
-            height: 80%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-auto-rows: 11vh;
-            justify-items: center; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton {
-              width: 98%;
-              height: 10vh;
-              margin: 0.5vh; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 100%;
-                color: #67e8ef;
-                font-size: 3.5vh; }
-                as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .mainValue .unitSpan {
-                  font-size: 3vh; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton .editIcon {
-                display: none;
-                position: absolute;
-                top: 35%;
-                right: 8%;
-                height: 30%;
-                width: auto; }
-              as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_buttons .gradientButton[state="Edited"] .editIcon {
-                display: block; }
-      as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs #SB_RestoreDefaults {
-        position: absolute;
-        left: 1%;
-        bottom: 1%;
+
+as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font-size: 3.5vh;
+}
+
+as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs tsc-tabbedview {
+    position: absolute;
+    top: 0%;
+    height: 98%;
+    left: 10%;
+    width: 90%;
+    --tab-content-width: 50vh;
+    --tab-content-height: 60vh;
+}
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs wt-tsc-button-tab {
+        width: 15vh;
         height: 10vh;
-        width: 25%; }
+        margin: 1vh 0;
+    }
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs wt-tsc-speedbugs-tab {
+        --speedbugs-tab-rowsection-height: 77%;
+        --speedbugs-tab-row-height: 11vh;
+    }
+as3000-tsc-vertical-element #Electricity #PagesDisplay #SpeedBugs .speedBugsDefaultButton {
+    position: absolute;
+    left: 2.5%;
+    bottom: 5%;
+    height: 10vh;
+    width: 25%;
+}
 
 as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers {
     font-size: 4vh;
@@ -312,7 +261,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers .timerDisplayButt
     height: 12vh;
     width: 40%;
     font-size: 0.67em;
-    --value-font-size: 5vh;
+    --button-value-font-size: 5vh;
 }
 as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers .timerCountBox {
     position: absolute;
@@ -325,7 +274,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers .timerCountBox {
         font-size: 0.67em;
         margin: 0.5vh 0;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers tsc-button-statusbar {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #Timers wt-tsc-button-statusbar {
         width: 90%;
         height: 12vh;
         margin: 0.5vh 0;
@@ -409,10 +358,10 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsetti
     width: 100%;
     height: 100%;
 }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-button-label {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings wt-tsc-button-label {
         font-size: 4vh;
     }
-as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsettings-table {
+as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings .pfdSettingsTable {
     position: absolute;
     top: 2%;
     right: 2%;
@@ -429,73 +378,97 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #PFDSettings tsc-pfdsetti
         --pfdsettings-row-right-width: 70%;
     }
 
-as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-pfdmapsettings,
-as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mfdmapsettings {
+as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings wt-tsc-pfdmapsettings,
+as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings wt-tsc-mfdmapsettings {
     width: 100%;
     height: 100%;
     font-size: 2.5vh;
-    --mapsettings-left-width: 22.5%;
+    --mapsettings-left-width: 24%;
     --mapsettings-right-width: 1fr;
-    --mapsettings-left-right-gap: 2vh;
+    --mapsettings-left-right-gap: 1vh;
+    --button-value-font-size: 3vh;
 }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .leftButton {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings .leftButton {
         left: 2%;
         width: 96%;
         height: 11vh;
         margin: 0.5vh 0;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-button-mapdetail.leftButton {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings wt-tsc-button-mapdetail.leftButton {
         height: 15vh;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-tabbedview {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings tsc-tabbedview {
         position: absolute;
         right: 1%;
         width: 98%;
         --tab-content-width: 42vh;
         --tab-content-height: 60vh;
     }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-button-tab {
+        as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings wt-tsc-button-tab {
             width: 12vh;
             height: 10vh;
             margin: 1.75vh 0;
         }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings .tab {
+        as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings .tab {
             width: 100%;
             height: 100%;
         }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .MapSettings tsc-mapsettings-tabrow {
+            as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings wt-tsc-mapsettings-tabrow {
                 height: 12vh;
             }
+            as3000-tsc-vertical-element #Electricity #PagesDisplay .mapSettings .mapSettingsTabRowRight {
+                font-size: 3.5vh;
+            }
 
-as3000-tsc-vertical-element #Electricity .mapPointerControl tsc-mappointercontrol {
+as3000-tsc-vertical-element #Electricity .mapPointerControl wt-tsc-mappointercontrol {
     position: absolute;
     left: 1%;
     top: 0%;
     width: 98%;
     height: 99%;
-}
-    as3000-tsc-vertical-element #Electricity .mapPointerControl #touchpad {
-        position: absolute;
-        left: 1%;
-        right: 1%;
-        top: 13vh;
-        bottom: 1%;
-        height: auto;
-        width: auto;
-        border: 0.25vh solid white;
-        border-radius: 2vh;
-        background-size: 5vh 5vh;
-        background-image: linear-gradient(to right, grey 1px, transparent 1px), linear-gradient(to bottom, grey 1px, transparent 1px);
-        background-position: center;
-    }
-
-as3000-tsc-vertical-element #Electricity .weatherSelection tsc-button-img {
-    width: 18vh;
-    height: 14vh;
     font-size: 3vh;
 }
 
-as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradarsettings tsc-button-value {
+as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings {
+    font-size: 3vh;
+    --trafficsettings-button-height: 9vh;
+    --trafficsettings-button-margin-horizontal: 0.5vh;
+    --trafficsettings-button-margin-vertical: 0.5vh;
+}
+    as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-operatingmode {
+        position: absolute;
+        left: 0.5%;
+        top: 1%;
+        width: 32.3%;
+    }
+    as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-altitude {
+        position: absolute;
+        left: 33.8%;
+        top: 1%;
+        width: 32.3%;
+    }
+    as3000-tsc-vertical-element #Electricity .trafficSettings wt-tsc-trafficsettings-adsb {
+        position: absolute;
+        left: 67.2%;
+        top: 1%;
+        width: 32.3%;
+    }
+    as3000-tsc-vertical-element #Electricity .trafficSettings .trafficNavMapSettingsButton {
+        position: absolute;
+        left: 40%;
+        bottom: 2%;
+        width: 20%;
+        height: 12vh;
+    }
+
+as3000-tsc-vertical-element #Electricity .weatherSelection wt-tsc-button-img {
+    width: 18vh;
+    height: 14vh;
+    font-size: 3vh;
+    line-height: 3vh;
+}
+
+as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradarsettings wt-tsc-button-value {
     --value-font-size: 3vh;
 }
 
@@ -954,10 +927,93 @@ as3000-tsc-vertical-element #Electricity .weatherRadarSettings tsc-weatherradars
             height: 100%;
             -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
 
-as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings {
+as3000-tsc-vertical-element .charts wt-tsc-charts {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    width: 98%;
+    height: 98%;
+    font-size: 3vh;
+    --charts-datafail-position-x: calc(50% + 7.5vh);
+    --charts-datafail-position-y: 35vh;
+}
+    as3000-tsc-vertical-element .charts .chartsHeader {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+    }
+    as3000-tsc-vertical-element .charts .chartsSelectButton {
+        width: 40vh;
+        height: 10vh;
+        font-size: 3vh;
+        margin-right: 0.5vh;
+    }
+    as3000-tsc-vertical-element .charts .chartsOptionsButton {
+        width: 15vh;
+        height: 10vh;
+        font-size: 3vh;
+    }
+    as3000-tsc-vertical-element .charts tsc-tabbedview {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 11vh;
+        bottom: 1%;
+        --tab-content-width: 55vh;
+        --tab-content-height: 48vh;
+    }
+    as3000-tsc-vertical-element .charts wt-tsc-button-tab {
+        width: 15vh;
+        height: 10.5vh;
+        margin: 1.5vh 0;
+    }
+        as3000-tsc-vertical-element .charts wt-tsc-charts-tab {
+            --scrolllist-align-items: stretch;
+        }
+            as3000-tsc-vertical-element .charts .chartButton {
+                height: 12vh;
+                margin: 0.25vh 0;
+            }
+
+as3000-tsc-vertical-element .chartsTouchControl wt-tsc-chartstouchcontrol {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3.5vh;
+    background-color: black;
+    border: 3px solid var(--wt-g3x5-bordergray);
+    border-radius: 5px;
+    --chartstouchcontrol-padding-left: 1.5vh;
+    --chartstouchcontrol-padding-top: 1.5vh;
+    --chartstouchcontrol-padding-right: 1.5vh;
+    --chartstouchcontrol-padding-bottom: 1.5vh;
+    --chartstouchcontrol-header-height: 12vh;
+    --chartstouchcontrol-header-button-width: 15vh;
+    --chartstouchcontrol-header-margin-bottom: 1.5vh;
+}
+
+as3000-tsc-vertical-element #UtilitiesSetup wt-tsc-utilitiessetup {
+    position: absolute;
+    left: 5%;
+    top: 5%;
+    width: 90%;
+    height: 90%;
+    font-size: 3vh;
+    line-height: 3vh;
+    --utilitiessetup-grid-gap-row: 10%;
+    --utilitiessetup-grid-grap-column: 15%;
+}
+
+as3000-tsc-vertical-element #AvionicsSettings {
     font-size: 3vh;
 }
-as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-tabbedview {
+as3000-tsc-vertical-element #AvionicsSettings tsc-tabbedview {
     position: absolute;
     top: 1%;
     left: 1%;
@@ -966,21 +1022,41 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-tab
     --tab-content-width: 60vh;
     --tab-content-height: 59vh;
 }
-as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-button-tab {
+as3000-tsc-vertical-element #AvionicsSettings wt-tsc-button-tab {
     width: 14vh;
     height: 10vh;
     margin: 1.7vh 0;
 }
-as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings .tab {
+as3000-tsc-vertical-element #AvionicsSettings .tab {
     width: 100%;
     height: 100%;
 }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay #AvionicsSettings tsc-avionicssettings-mfdnavdatafieldrow {
+    as3000-tsc-vertical-element #AvionicsSettings .avionicsSettingsRow {
         height: 14vh;
         margin: 0.25vh 0.5vh;
     }
 
-as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airportinfo {
+as3000-tsc-vertical-element #DatabaseStatus wt-tsc-databasestatus {
+    position: absolute;
+    left: 5%;
+    top: 0%;
+    width: 90%;
+    height: 99%;
+    font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #WaypointInfoSelection wt-tsc-waypointinfoselection {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    font-size: 3vh;
+    line-height: 3vh;
+    --waypointinfoselection-grid-row: 14vh;
+    --waypointinfoselection-grid-column: 18vh;
+}
+
+as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo wt-tsc-airportinfo {
     position: absolute;
     left: 1%;
     top: 1%;
@@ -1017,7 +1093,7 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         --tab-content-width: 42vh;
         --tab-content-height: 48vh;
     }
-    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-button-tab {
+    as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo wt-tsc-button-tab {
         width: 15vh;
         height: 10.5vh;
         margin: 1.5vh 0;
@@ -1032,59 +1108,65 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         margin: 0.25vh;
     }
 
-      as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer {
-        left: 1%;
-        width: 96%;
-        height: 100%;
-        position: relative;
-        padding: 0.5vh; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList {
-          font-size: 3vh; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton {
-            height: 98%;
-            width: 98%;
-            margin: auto; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .mainValue {
-              position: absolute;
-              left: 2%;
-              top: 0%;
-              font-size: 4vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .title {
-              position: absolute;
-              left: 2%;
-              bottom: 0%;
-              width: 90%;
-              font-size: 2vh; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .Waypoint .symbol {
-              height: 75%; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList .gradientButton .mainNumber {
-              font-size: 3vh;
-              padding: 0%;
-              margin: 0%;
-              margin-top: 1.8vh;
-              width: 100%;
-              text-align: center; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList thead {
-            font-size: 3vh;
-            height: 7%;
-            padding-right: 3%; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody {
-            height: 93%; }
-            as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody tr, as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList tbody td {
-              height: 10vh;
-              position: relative; }
-          as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList #SizeSetter, as3000-tsc-vertical-element #Electricity #PagesDisplay .NrstContainer .NearestList #SizeSetter td {
-            border: none;
-            height: 0vh;
-            overflow: visible; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(1) {
-          width: 35vw; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(2), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(2) {
-          width: 20vw; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(3), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(3) {
-          width: 20vw; }
-        as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList thead tr th:nth-child(4), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestAirport .NearestList tbody tr:first-child td:nth-child(4) {
-          width: 20vw; }
+as3000-tsc-vertical-element .intInfo wt-tsc-intinfo,
+as3000-tsc-vertical-element .vorInfo wt-tsc-vorinfo,
+as3000-tsc-vertical-element .ndbInfo wt-tsc-ndbinfo {
+    position: absolute;
+    left: 5%;
+    top: 0%;
+    width: 90%;
+    height: 99%;
+    font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #NearestWaypointSelection wt-tsc-nearestwaypointselection {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    width: 80%;
+    height: 50%;
+    font-size: 3vh;
+    line-height: 3vh;
+    --nearestwaypointselection-grid-row: 14vh;
+    --nearestwaypointselection-grid-column: 18vh;
+}
+
+as3000-tsc-vertical-element .nearestAirport wt-tsc-nearestairport {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3.5vh;
+    --nearestwaypoints-col1-width: 2.5fr;
+    --nearestwaypoints-col2-width: 1fr;
+    --nearestwaypoints-col3-width: 1fr;
+    --nearestwaypoints-col4-width: 1.5fr;
+    --nearestwaypoints-row-height: 11vh;
+    --nearestwaypoints-options-width: 40%;
+    --nearestwaypoints-options-padding-left: 0.5em;
+    --nearestwaypoints-options-padding-right: 0.5em;
+}
+
+as3000-tsc-vertical-element .nearestINT wt-tsc-nearestint,
+as3000-tsc-vertical-element .nearestVOR wt-tsc-nearestvor,
+as3000-tsc-vertical-element .nearestNDB wt-tsc-nearestndb {
+    position: absolute;
+    left: 1%;
+    top: 0%;
+    width: 98%;
+    height: 99%;
+    font-size: 3.5vh;
+    --nearestwaypoints-col1-width: 2fr;
+    --nearestwaypoints-col2-width: 1fr;
+    --nearestwaypoints-col3-width: 1fr;
+    --nearestwaypoints-col4-width: 1fr;
+    --nearestwaypoints-row-height: 11vh;
+    --nearestwaypoints-options-width: 40%;
+    --nearestwaypoints-options-padding-left: 0.5em;
+    --nearestwaypoints-options-padding-right: 0.5em;
+}
+
         as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(1), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(1) {
           width: 35vw; }
         as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList thead tr th:nth-child(2), as3000-tsc-vertical-element #Electricity #PagesDisplay #NearestIntersection .NearestList tbody tr:first-child td:nth-child(2) {
@@ -1173,14 +1255,6 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
           font-size: 2.1vh;
           line-height: 2.28vh; }
 
-    as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect {
-      position: absolute;
-      left: 1%;
-      top: 10%; }
-      as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect #transponder_ModeSelectTitle {
-        font-size: 3vh; }
-      as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ModeSelect .gradientButton {
-        height: 12vh; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_CodeDisplay {
       position: absolute;
       right: 25%;
@@ -1204,10 +1278,6 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
       top: 30%;
       height: 40%;
       width: 70%; }
-    as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_ActiveTransponder {
-      position: absolute;
-      left: 25%;
-      bottom: 0%; }
     as3000-tsc-vertical-element #Electricity #TransponderWindow #transponder_Vfr {
       position: absolute;
       right: 2%;
@@ -1654,18 +1724,6 @@ as3000-tsc-vertical-element #Electricity #PagesDisplay .airportInfo tsc-airporti
         height: 15%;
         width: auto; }
 
-as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content {
-    left: 25%;
-    top: 10%;
-    bottom: 2%;
-    width: 50%;
-    font-size: 3vh;
-}
-    as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content .button {
-        width: 70%;
-        height: 12vh;
-    }
-
     as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow {
       font-size: 3vh; }
       as3000-tsc-vertical-element #Electricity #WaypointDuplicateWindow .Container {
@@ -1763,7 +1821,7 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
         font-size: 3vh;
         height: 10%;
         width: 100%;
-        background-image: url("/WTg3000/SDK/Assets/Images/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
+        background-image: url("/WTg3000/SDK/Assets/Images/Garmin/TSC/Textures/TSC_TITLE_BOX_VERTICAL.png");
         background-size: contain;
         background-position: center top;
         background-repeat: no-repeat; }
@@ -1777,18 +1835,20 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
     as3000-tsc-vertical-element #Electricity .StatusButtonSelectionListWindow .content .gradientButton .mainText {
       top: 30%; }
 
-    as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow .content {
-      width: 60%;
-      left: 20%;
-      height: 80%;
-      bottom: 5%; }
-        as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow .content .gradientButton .value {
-          font-size: 3vh; }
+    as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindow wt-tsc-selectionlist {
+        width: 60%;
+        left: 20%;
+        height: 80%;
+        bottom: 5%;
+    }
+        as3000-tsc-vertical-element #Electricity .dynamicSelectionListWindowButton {
+            height: 14vh;
+            font-size: 4vh;
+        }
 
-      as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .shortName {
-        font-size: 4vh; }
-      as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .longName {
-        font-size: 3vh; }
+    as3000-tsc-vertical-element #Electricity .navDataBarDynamicSelectionListWindow .dynamicSelectionListWindowButton {
+        font-size: 3vh;
+    }
 
     as3000-tsc-vertical-element #Electricity .MapDetailSelect .Container {
       bottom: 5%;
@@ -1825,12 +1885,92 @@ as3000-tsc-vertical-element #Electricity #WaypointInfo_WaypointOptions .content 
               width: 8vh;
               height: 21vh; }
 
+as3000-tsc-vertical-element #NumKeyboard wt-tsc-numkeyboard {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 85%;
+    font-size: 4.5vh;
+    --numkeyboard-button-size: 10vh;
+}
+
+as3000-tsc-vertical-element #TimeKeyboard wt-tsc-timekeyboard {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 85%;
+    font-size: 4.5vh;
+    --timekeyboard-button-size: 10vh;
+}
+
+as3000-tsc-vertical-element #TransponderMode wt-tsc-transpondermode-mode {
+    position: absolute;
+    left: 2%;
+    top: 10%;
+    width: 50%;
+    height: 88%;
+    font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #NavMapTrafficMapSettings wt-tsc-navmaptraffic-mapsettings {
+    position: absolute;
+    left: 15%;
+    top: 20%;
+    width: 70%;
+    height: 50%;
+    font-size: 4vh;
+}
+
+as3000-tsc-vertical-element #NavigraphLink wt-tsc-navigraphlink {
+    position: absolute;
+    left: 5%;
+    top: 10%;
+    width: 90%;
+    height: 80%;
+    font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #ChartsOptions wt-tsc-chartsoptions {
+    position: absolute;
+    left: 5%;
+    top: 20%;
+    width: 90%;
+    height: 70%;
+    font-size: 3.5vh;
+}
+
+as3000-tsc-vertical-element #ChartsLightThreshold wt-tsc-chartslightthreshold {
+    position: absolute;
+    left: 1%;
+    top: 10%;
+    width: 98%;
+    height: 70%;
+    font-size: 3vh;
+}
+
+as3000-tsc-vertical-element #WaypointOptions wt-tsc-waypointoptions {
+    position: absolute;
+    left: 25%;
+    top: 20%;
+    width: 50%;
+    height: 60%;
+    font-size: 3.5vh;
+}
+
+:root {
+    --button-border: 2px ridge white;
+}
+
   as3000-tsc-vertical-element .gradientButton {
     width: 18vh;
     height: 14vh;
     max-height: 15vh;
     margin: 0.5vh;
-    font-size: 3vh; }
+    font-size: 3vh;
+    border: 2px ridge white;
+  }
     as3000-tsc-vertical-element .gradientButton .img {
       margin-top: 0; }
     as3000-tsc-vertical-element .gradientButton .centerImg {

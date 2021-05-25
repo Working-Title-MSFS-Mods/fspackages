@@ -4,22 +4,57 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
         this.middleKnobText_Save = "";
     }
 
-    createSpeedBugsPage() {
-        return new AS3000_TSC_Vertical_SpeedBugs();
-    }
-
-    createAudioRadioWindow() {
-        return new AS3000_TSC_Vertical_AudioRadios();
-    }
-
     get templateID() { return "AS3000_TSC_Vertical"; }
 
-    connectedCallback() {
-        super.connectedCallback();
+    _defineLabelBar() {
         this.topKnobText = this.getChildById("SoftKey_1");
         this.middleKnobText = this.getChildById("SoftKey_2");
         this.bottomKnobText = this.getChildById("SoftKey_3");
+    }
+
+    _createSpeedBugsPage() {
+        return new WT_G5000_TSCSpeedBugs("PFD");
+    }
+
+    _createPFDSettingsPage() {
+        return new WT_G5000_TSCPFDSettings("PFD", "PFD Home", "PFD");
+    }
+
+    _createTrafficMapSettingsPage(homePageGroup, homePageName) {
+        return new WT_G5000_TSCTrafficMapSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1");
+    }
+
+    _createNavMapTrafficSettingsPage(homePageGroup, homePageName, mapSettings) {
+        return new WT_G5000_TSCNavMapTrafficSettings(homePageGroup, homePageName, WT_G3x5_TrafficSystem.ID, "XPDR1", mapSettings);
+    }
+
+    _createAircraftSystemsPage() {
+        return new WT_G5000_TSCAircraftSystems("MFD", "MFD Home");
+    }
+
+    _createChartsLightThresholdPopUp() {
+        return new WT_G3x5_TSCChartsLightThreshold((() => this.airplane.engineering.potentiometer(WT_CitationLongitudeEngineering.Potentiometer.MFD_BACKLIGHT)).bind(this));
+    }
+
+    _createTransponderPopUp() {
+        return new WT_G5000_TSCTransponderCode();
+    }
+
+    _initPopUpWindows() {
+        super._initPopUpWindows();
+
+        this.transponderMode = new NavSystemElementContainer("Transponder Mode", "TransponderMode", new WT_G5000_TSCTransponderMode());
+        this.transponderMode.setGPS(this);
+    }
+
+    _initNavCom() {
         this.addIndependentElementContainer(new NavSystemElementContainer("NavCom", "NavComLeft", new AS3000_TSC_Vertical_NavComHome()));
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._initNavCom();
         this.getElementOfType(AS3000_TSC_ActiveFPL).setArrowSizes(5, 20, 10, 4, 8);
     }
 
@@ -75,6 +110,72 @@ class AS3000_TSC_Vertical extends AS3000_TSC {
 }
 
 class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
+    _defineXPDRChildren() {
+        this._xpdrModeButton = this.gps.getChildById("XPDRMode");
+        this._xpdrCodeButton = new WT_CachedElement(this.gps.getChildById("XPDRCode"));
+        this._xpdrModeDisplay = new WT_CachedElement(this._xpdrModeButton.getElementsByClassName("mainText")[1]);
+        this._xpdrCodeDisplay = this._xpdrCodeButton.element.getElementsByClassName("mainNumber")[0];
+    }
+
+    _initXPDRButtons() {
+        this.gps.makeButton(this._xpdrCodeButton.element, this.openTransponder.bind(this));
+        this.gps.makeButton(this._xpdrModeButton, this._onXPDRModeButtonPressed.bind(this));
+    }
+
+    _initXPDRTCASModeSettingListener() {
+        this.gps.transponderMode.element.tcasModeSetting.addListener(this._onXPDRTCASModeSettingChanged.bind(this));
+        this._xpdrTCASMode = this.gps.transponderMode.element.tcasModeSetting.getValue();
+    }
+
+    init(root) {
+        super.init(root);
+
+        this._initXPDRTCASModeSettingListener();
+    }
+
+    _onXPDRTCASModeSettingChanged(setting, newValue, oldValue) {
+        this._xpdrTCASMode = newValue;
+    }
+
+    _updateXPDRMode() {
+        let xpdrMode = this.gps.airplane.navCom.getTransponder(1).mode();
+
+        let text;
+        switch (xpdrMode) {
+            case WT_AirplaneTransponder.Mode.ALT:
+                switch (this._xpdrTCASMode) {
+                    case WT_G5000_TransponderTCASModeSetting.Mode.AUTO:
+                        text = "AUTO";
+                        break;
+                    case WT_G5000_TransponderTCASModeSetting.Mode.TA_ONLY:
+                        text = "TA ONLY";
+                        break;
+                    default:
+                        text = "ALT";
+                }
+                this._xpdrCodeButton.setAttribute("mode", "alt");
+                break;
+            case WT_AirplaneTransponder.Mode.ON:
+                text = "ON";
+                this._xpdrCodeButton.setAttribute("mode", "on");
+                break;
+            default:
+                text = "STBY";
+                this._xpdrCodeButton.setAttribute("mode", "standby");
+        }
+        this._xpdrModeDisplay.textContent = text;
+    }
+
+    _updateXPDRCode() {
+        let transponderCode = ("0000" + SimVar.GetSimVarValue("TRANSPONDER CODE:1", "number")).slice(-4);
+        if (transponderCode != this._xpdrCodeDisplay.textContent) {
+            this._xpdrCodeDisplay.textContent = transponderCode;
+        }
+    }
+
+    _updateXPDRIdent() {
+    }
+
     setSelectedCom(id) {
         let title = `COM${id} Standby`;
         let activeFreqSimVar = `COM ACTIVE FREQUENCY:${id}`;
@@ -117,7 +218,22 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
         }
     }
 
+    _onXPDRModeButtonPressed() {
+        if (this.gps.popUpElement === this.gps.transponderMode) {
+            return;
+        }
+
+        let homePageGroup = this.gps.getCurrentPageGroup().name;
+        let homePageName = homePageGroup + " Home";
+        this.gps.transponderMode.element.setContext({homePageGroup: homePageGroup, homePageName: homePageName});
+        this.gps.switchToPopUpPage(this.gps.transponderMode);
+    }
+
     openTransponder() {
+        if (this.gps.popUpElement === this.gps.transponderWindow) {
+            return;
+        }
+
         if (this.inputIndex != -1) {
             this.comFreqCancel();
         }
@@ -128,6 +244,10 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     }
 
     openAudioRadios() {
+        if (this.gps.popUpElement === this.gps.audioRadioWindow) {
+            return;
+        }
+
         if (this.inputIndex != -1) {
             this.comFreqCancel();
         }
@@ -138,112 +258,13 @@ class AS3000_TSC_Vertical_NavComHome extends AS3000_TSC_NavComHome {
     }
 }
 
-class AS3000_TSC_Vertical_AirspeedReference extends AS3000_TSC_AirspeedReference {
-    constructor(valueButton, statusElem, refSpeed, displayName, tab) {
-        super(valueButton, statusElem, refSpeed, displayName);
-        this.tab = tab;
+class WT_G5000_TSCTransponderCode extends AS3000_TSC_Transponder {
+    _initModeButtons() {
+    }
+
+    _updateModeButtons() {
     }
 }
-
-class AS3000_TSC_Vertical_SpeedBugs extends AS3000_TSC_SpeedBugs {
-    constructor() {
-        super(...arguments);
-        this.tabbedContent = new WT_TSCTabbedContent(this);
-    }
-
-    initAirspeedReference(valueButton, statusButton, refSpeed, name, tab) {
-        if (valueButton && statusButton) {
-            this.references.push(new AS3000_TSC_Vertical_AirspeedReference(valueButton, statusButton, refSpeed == null ? -1 : refSpeed, name, tab));
-        }
-    }
-
-    init(root) {
-        let designSpeeds = Simplane.getDesignSpeeds();
-        this.initAirspeedReference(this.gps.getChildById("SB_V1Value"), this.gps.getChildById("SB_V1Status"), designSpeeds.V1, "1", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VrValue"), this.gps.getChildById("SB_VrStatus"), designSpeeds.Vr, "R", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_V2Value"), this.gps.getChildById("SB_V2Status"), designSpeeds.V2, "2", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VftoValue"), this.gps.getChildById("SB_VftoStatus"), designSpeeds.Venr, "FTO", AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-        this.initAirspeedReference(this.gps.getChildById("SB_VrefValue"), this.gps.getChildById("SB_VrefStatus"), designSpeeds.Vapp, "RF", AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
-        this.initAirspeedReference(this.gps.getChildById("SB_VappValue"), this.gps.getChildById("SB_VappStatus"), designSpeeds.Vapp, "AP", AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
-        this.takeoffAllOnButton = this.gps.getChildById("SB_Takeoff_AllOn");
-        this.takeoffAllOffButton = this.gps.getChildById("SB_Takeoff_AllOff");
-        this.landingAllOnButton = this.gps.getChildById("SB_Landing_AllOn");
-        this.landingAllOffButton = this.gps.getChildById("SB_Landing_AllOff");
-        this.resetButton = this.gps.getChildById("SB_RestoreDefaults");
-        this.gps.makeButton(this.takeoffAllOnButton, this.allOn.bind(this));
-        this.gps.makeButton(this.takeoffAllOffButton, this.allOff.bind(this));
-        this.gps.makeButton(this.landingAllOnButton, this.allOn.bind(this));
-        this.gps.makeButton(this.landingAllOffButton, this.allOff.bind(this));
-        this.gps.makeButton(this.resetButton, this.restoreAll.bind(this));
-        for (let i = 0; i < this.references.length; i++) {
-            this.gps.makeButton(this.references[i].statusElement, this.statusClick.bind(this, i));
-            this.gps.makeButton(this.references[i].valueButton, this.valueClick.bind(this, i));
-        }
-        this.tabbedContent.init(root);
-    }
-
-    onEnter() {
-        super.onEnter();
-        let lastPageName = this.gps.history[this.gps.history.length - 1].pageName;
-        if (lastPageName == "PFD Home" || lastPageName == "MFD Home") {
-            if (SimVar.GetSimVarValue("SIM ON GROUND", "bool")) {
-                this.tabbedContent.activateTab(AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF);
-            } else {
-                this.tabbedContent.activateTab(AS3000_TSC_Vertical_SpeedBugs.Tab.LANDING);
-            }
-        }
-    }
-
-    updateAllOnOffButtons() {
-        let takeoffOnCount = 0;
-        let landingOnCount = 0;
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].isDisplayed) {
-                if (this.references[i].tab == AS3000_TSC_Vertical_SpeedBugs.Tab.TAKEOFF) {
-                    takeoffOnCount++;
-                } else {
-                    landingOnCount++;
-                }
-            }
-        }
-        Avionics.Utils.diffAndSetAttribute(this.takeoffAllOffButton, "state", takeoffOnCount == 0 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.takeoffAllOnButton, "state", takeoffOnCount == 4 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.landingAllOffButton, "state", landingOnCount == 0 ? "Greyed" : "");
-        Avionics.Utils.diffAndSetAttribute(this.landingAllOnButton, "state", landingOnCount == 2 ? "Greyed" : "");
-    }
-
-    allOn() {
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].tab == this.tabbedContent.getActiveTab()) {
-                this.references[i].isDisplayed = true;
-            }
-        }
-        this.sendToPfd();
-    }
-
-    allOff() {
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].tab == this.tabbedContent.getActiveTab()) {
-                this.references[i].isDisplayed = false;
-            }
-        }
-        this.sendToPfd();
-    }
-
-    restoreAll() {
-        for (let i = 0; i < this.references.length; i++) {
-            if (this.references[i].tab == this.tabbedContent.getActiveTab()) {
-                this.references[i].isDisplayed = false;
-                this.references[i].displayedSpeed = this.references[i].refSpeed;
-            }
-        }
-        this.sendToPfd();
-    }
-}
-AS3000_TSC_Vertical_SpeedBugs.Tab = {
-    TAKEOFF: 0,
-    LANDING: 1
-};
 
 registerInstrument("as3000-tsc-vertical-element", AS3000_TSC_Vertical);
 //# sourceMappingURL=AS3000_TSC_Vertical.js.map

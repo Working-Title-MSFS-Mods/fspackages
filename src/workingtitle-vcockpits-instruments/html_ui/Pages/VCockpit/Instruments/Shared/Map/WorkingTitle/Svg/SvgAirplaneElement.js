@@ -173,7 +173,7 @@ class NPCAirplaneManager {
                     npcAirplane.lat += npcAirplane.deltaLat;
                     npcAirplane.lon += npcAirplane.deltaLon;
                     npcAirplane.alt += npcAirplane.deltaAlt;
-                    let deltaHeading = Avionics.Utils.angleDiff(npcAirplane.heading, npcAirplane.targetHeading);
+                    let deltaHeading = Avionics.Utils.diffAngle(npcAirplane.heading, npcAirplane.targetHeading);
                     if (deltaHeading > 60) {
                         npcAirplane.heading = npcAirplane.targetHeading;
                     }

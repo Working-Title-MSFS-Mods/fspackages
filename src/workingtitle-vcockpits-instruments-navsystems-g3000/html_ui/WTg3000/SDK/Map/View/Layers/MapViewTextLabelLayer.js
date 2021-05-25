@@ -12,7 +12,7 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
 
         this._manager = manager;
 
-        this._textLayer = new WT_MapViewCanvas(true, true);
+        this._textLayer = new WT_MapViewCanvas(false, true);
         this.addSubLayer(this._textLayer);
     }
 
@@ -36,13 +36,8 @@ class WT_MapViewTextLabelLayer extends WT_MapViewMultiLayer {
                 return value;
             }
         )
-        this._textLayer.buffer.clear();
-        for (let label of labels) {
-            label.draw(data, this._textLayer.buffer.context);
-        }
         this._textLayer.display.clear();
-        this._textLayer.copyBufferToCanvas();
-        this._textLayer.resetBuffer();
+        labels.forEach(label => label.draw(data, this._textLayer.display.context), this);
     }
 
     /**

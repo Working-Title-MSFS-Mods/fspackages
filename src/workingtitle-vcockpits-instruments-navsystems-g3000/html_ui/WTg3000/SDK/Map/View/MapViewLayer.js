@@ -29,8 +29,8 @@ class WT_MapViewLayer {
     }
 
     /**
+     * The name of the property in the map view's config file associated with this layer.
      * @readonly
-     * @property {String} configName - the name of the property in the map view's config file associated with this layer.
      * @type {String}
      */
     get configName() {
@@ -38,8 +38,8 @@ class WT_MapViewLayer {
     }
 
     /**
+     * The top-level element of this layer.
      * @readonly
-     * @property {HTMLElement} - the top-level element of this layer.
      * @type {HTMLElement}
      */
     get htmlElement() {
@@ -120,7 +120,14 @@ class WT_MapViewLayer {
 class WT_MapViewMultiLayer extends WT_MapViewLayer {
     constructor(className, configName) {
         super(className, configName);
+
+        /**
+         * @type {WT_MapViewSubLayer[]}
+         */
         this._subLayers = [];
+        /**
+         * @type {WT_MapViewSubLayer[]}
+         */
         this._toAttach = [];
 
         this._lastWidth = 0;
@@ -137,10 +144,6 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
         return container;
     }
 
-    get subLayers() {
-        return this._subLayers;
-    }
-
     /**
      * Adds a sublayer to this layer.
      * @param {WT_MapViewSubLayer} subLayer - the sublayer to add.
@@ -153,8 +156,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
             parentHTMLElement = this.htmlElement;
         }
 
-        this.subLayers.push(subLayer);
-        subLayer.container.style.zIndex = this.subLayers.length;
+        this._subLayers.push(subLayer);
         subLayer.parentHTMLElement = parentHTMLElement;
         parentHTMLElement.appendChild(subLayer.container);
         this._toAttach.push(subLayer);
@@ -165,12 +167,12 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
      * @param {WT_MapViewSubLayer} subLayer - the sublayer to remove.
      */
     removeSubLayer(subLayer) {
-        let index = this.subLayers.indexOf(subLayer);
+        let index = this._subLayers.indexOf(subLayer);
         if (index >= 0) {
             if (subLayer.container.parentNode === subLayer.parentHTMLElement) {
                 subLayer.parentHTMLElement.removeChild(subLayer.container);
             }
-            this.subLayers.splice(index, 1);
+            this._subLayers.splice(index, 1);
             subLayer.onDetached();
         }
     }
@@ -179,18 +181,14 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onProjectionViewChanged(state) {
-        for (let subLayer of this.subLayers) {
-            subLayer.onProjectionViewChanged(state);
-        }
+        this._subLayers.forEach(subLayer => subLayer.onProjectionViewChanged(state));
     }
 
     /**
      * @param {WT_MapViewState} state
      */
     onAttached(state) {
-        for (let subLayer of this.subLayers) {
-            subLayer.onAttached(state);
-        }
+        this._subLayers.forEach(subLayer => subLayer.onAttached(state));
     }
 
     /**
@@ -198,9 +196,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
      */
     onUpdate(state) {
         if (this._toAttach.length > 0) {
-            for (let subLayer of this._toAttach) {
-                subLayer.onAttached(state);
-            }
+            this._toAttach.forEach(subLayer => subLayer.onAttached(state));
             this._toAttach = [];
         }
     }
@@ -209,9 +205,7 @@ class WT_MapViewMultiLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onDetached() {
-        for (let subLayer of this.subLayers) {
-            subLayer.onDetached();
-        }
+        this._subLayers.forEach(subLayer => subLayer.onDetached());
     }
 }
 
@@ -241,8 +235,8 @@ class WT_MapViewSubLayer {
     }
 
     /**
+     * Whether to automatically sync this sublayer's size to the size of the map view's viewing window.
      * @readonly
-     * @property {Boolean} syncSizeToView - whether to automatically sync this sublayer's size to the size of the map view's viewing window.
      * @type {Boolean}
      */
     get syncSizeToView() {
@@ -250,8 +244,8 @@ class WT_MapViewSubLayer {
     }
 
     /**
+     * The top-level HTML element of this sublayer.
      * @readonly
-     * @property {HTMLElement} container - the top-level HTML element of this sublayer.
      * @type {HTMLElement}
      */
     get container() {
@@ -325,8 +319,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 
     /**
+     * Whether this canvas sublayer has an offscreen buffer.
      * @readonly
-     * @property {Boolean} hasBuffer - whether this canvas sublayer has an offscreen buffer.
      * @type {Boolean}
      */
     get hasBuffer() {
@@ -334,8 +328,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 
     /**
+     * An object containing this sublayer's display canvas and its rendering context.
      * @readonly
-     * @property {WT_MapViewCanvasDrawable} display - an object containing this sublayer's display canvas and its rendering context.
      * @type {WT_MapViewCanvasDrawable}
      */
     get display() {
@@ -343,8 +337,8 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 
     /**
+     * An object containing this sublayer's offscreen buffer and its rendering context, if they exist.
      * @readonly
-     * @property {WT_MapViewCanvasDrawable} buffer - an object containing this sublayer's offscreen buffer and its rendering context, if they exist.
      * @type {WT_MapViewCanvasDrawable}
      */
     get buffer() {
@@ -352,7 +346,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 
     /**
-     * @property {Number} width - the width, in pixels, of this sublayer.
+     * The width, in pixels, of this sublayer.
      * @type {Number}
      */
     get width() {
@@ -368,7 +362,7 @@ class WT_MapViewCanvas extends WT_MapViewSubLayer {
     }
 
     /**
-     * @property {Number} height - the height, in pixels, of this sublayer.
+     * The height, in pixels, of this sublayer.
      * @type {Number}
      */
     get height() {
@@ -431,8 +425,8 @@ class WT_MapViewCanvasDrawable {
     }
 
     /**
+     * This drawable's canvas element.
      * @readonly
-     * @property {HTMLCanvasElement} canvas - this drawable's canvas element.
      * @type {HTMLCanvasElement}
      */
     get canvas() {
@@ -440,8 +434,8 @@ class WT_MapViewCanvasDrawable {
     }
 
     /**
+     * This drawable's canvas 2D rendering context.
      * @readonly
-     * @property {CanvasRenderingContext2D} context - this drawable's 2D rendering context.
      * @type {CanvasRenderingContext2D}
      */
     get context() {
@@ -492,8 +486,8 @@ class WT_MapViewSvg extends WT_MapViewSubLayer {
     }
 
     /**
+     * This sublayer's svg element.
      * @readonly
-     * @property {HTMLElement} canvas - this sublayer's svg element.
      * @type {HTMLElement}
      */
     get svg() {
@@ -501,7 +495,7 @@ class WT_MapViewSvg extends WT_MapViewSubLayer {
     }
 
     /**
-     * @property {Number} width - the width, in pixels, of this sublayer.
+     * The width, in pixels, of this sublayer.
      * @type {Number}
      */
     get width() {
@@ -515,7 +509,7 @@ class WT_MapViewSvg extends WT_MapViewSubLayer {
     }
 
     /**
-     * @property {Number} height - the height, in pixels, of this sublayer.
+     * The height, in pixels, of this sublayer.
      * @type {Number}
      */
     get height() {

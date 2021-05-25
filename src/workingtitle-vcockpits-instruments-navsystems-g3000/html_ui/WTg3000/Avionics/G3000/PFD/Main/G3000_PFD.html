@@ -1,0 +1,147 @@
+<link rel="stylesheet" href="/WTg3000/Avionics/G3000/PFD/Main/G3000_PFD.css"/>
+
+<script type="text/html" id="AS3000_PFD">
+    <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
+    <div id="Mainframe">
+        <div id="Electricity" state="off">
+            <div id="Console">Initializing System...</div>
+            <img id="Splash" src="/Pages/VCockpit/Instruments/NavSystems/Shared/Images/Logo/Garmin.svg" />
+            <div id="HorizonContainer">
+                <map-instrument id="SyntheticVision" bing-mode="horizon" bing-id="PFD_SyntheticVision" show-overlay="false" config-path="/WTg3000/Avionics/Shared/PFD/MapConfig/"></map-instrument>
+                <glasscockpit-attitude-indicator id="Horizon" background="false"></glasscockpit-attitude-indicator>
+            </div>
+
+            <div id="InstrumentsContainer">
+
+                <div id="InsetMap" class="insetMapContainer">
+                    <map-view dpi-scale="0.7" class="insetMap" config-path="/WTg3000/Avionics/G3000/PFD/MapConfig/insetmapconfig.json"></map-view>
+                </div>
+
+                <div id="TrafficInsetMap" class="insetMapContainer">
+                    <map-view dpi-scale="0.7" class="insetMap" config-path="/WTg3000/Avionics/G3000/PFD/MapConfig/trafficinsetmapconfig.json"></map-view>
+                </div>
+
+                <glasscockpit-hsi id="Compass"></glasscockpit-hsi>
+
+                <!--<iframe id="Map" src="/Pages/Minimap/Minimap.html"></iframe>-->
+
+                <div id="MarkerBeacon">M</div>
+
+                <div id="Warnings" state="Hidden">
+                    <span id="WarningsContent">PULL UP</span>
+                </div>
+
+                <div id="Annunciations" state="Hidden">
+                    <div id="newAnnunciations"></div>
+                    <div id="acknowledged"></div>
+                </div>
+
+                <div id="ComInfos">
+                    <div id="ActiveCom">COM1</div>
+                    <div id="ActiveComFreq"></div>
+                    <div id="ActiveComName"></div>
+                </div>
+
+                <div id="SoftKeys">
+                    <div id="softkeyscontainer">
+                        <div id="Key1" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key2" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key3" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key4" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key5" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key6" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key7" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key8" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key9" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key10" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key11" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                        <div id="Key12" class="SoftKey">
+                            <div class="Title"></div>
+                            <div class="Value"></div>
+                            <div class="Status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <svg>
+            <clipPath id="navstatusboxclip" clipPathUnits="objectBoundingBox">
+                <path d="M1,0 L1,1 L0.07,1 Q0.065,0.5,0.022,0 Z"/>
+            </clipPath>
+            <clipPath id="navdmeinfoclip" clipPathUnits="objectBoundingBox">
+                <path d="M0,0 L0.92,0 Q0.925,0.5,0.995,1 L0,1 Z"/>
+            </clipPath>
+            <clipPath id="bottominfoclip" clipPathUnits="objectBoundingBox">
+                <path d="M0,0 L0,1 L1,1 L1,0 L0.57,0 Q0.5,1,0.43,0 Z"/>
+            </clipPath>
+        </svg>
+    </div>
+</script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/G3000_ApproachNavLoader.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_TrafficAdvisorySystem.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_MapViewTrafficIntruderLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_MapViewNavMapTrafficStatusLayer.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/Traffic/G3000_TrafficMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/NavMap/G3000_NavMap.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDTrafficInsetMap.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDAutopilotDisplay.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDAirspeedIndicator.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDAltimeter.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDWindData.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDAoAIndicator.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDTrafficAlert.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDNavStatusBox.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDNavDMEInfo.js"></script>
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/G3000_PFDBottomInfo.js"></script>
+
+<script type="text/html" import-script="/WTg3000/Avionics/G3000/PFD/Main/G3000_PFD.js"></script>

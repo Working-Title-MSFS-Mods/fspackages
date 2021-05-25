@@ -97,7 +97,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             var _height = centerHeight;
             var bg = document.createElementNS(Avionics.SVG.NS, "rect");
             bg.setAttribute("x", _left.toString());
-            bg.setAttribute("y", _top.toString());
+            bg.setAttribute("y", (_top + 9).toString());
             bg.setAttribute("width", _width.toString());
             bg.setAttribute("height", _height.toString());
             bg.setAttribute("fill", "black");
@@ -105,10 +105,10 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.centerGroup.appendChild(bg);
             this.topSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.topSpeedText.textContent = "";
-            this.topSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
-            this.topSpeedText.setAttribute("y", (_top + 18).toString());
+            this.topSpeedText.setAttribute("x", (_left + _width * 0.89).toString());
+            this.topSpeedText.setAttribute("y", (_top + 27).toString());
             this.topSpeedText.setAttribute("fill", "green");
-            this.topSpeedText.setAttribute("font-size", (this.fontSize * 0.85).toString());
+            this.topSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.topSpeedText.setAttribute("font-family", "Roboto-Bold");
             this.topSpeedText.setAttribute("text-anchor", "end");
             this.topSpeedText.setAttribute("alignment-baseline", "central");
@@ -197,7 +197,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
                 Utils.RemoveAllChildren(this.cursorSVGGroup);
             if (!this.cursorSVGLine)
                 this.cursorSVGLine = document.createElementNS(Avionics.SVG.NS, "line");
-            this.cursorSVGLine.setAttribute("x1", this.cursorPosX1.toString());
+            this.cursorSVGLine.setAttribute("x1", (this.cursorPosX1 + 4).toString());
             this.cursorSVGLine.setAttribute("y1", this.cursorPosY1.toString());
             this.cursorSVGLine.setAttribute("x2", this.cursorPosX2.toString());
             this.cursorSVGLine.setAttribute("y2", this.cursorPosY2.toString());
@@ -215,9 +215,9 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             this.cursorSVGGroup.appendChild(this.cursorSVGVerticalLine);
             this.centerGroup.appendChild(this.cursorSVGGroup);
             let selectedCursorHeight = 12;
-            this.selectedCursorOffsetY = selectedCursorHeight * 0.5;
+            this.selectedCursorOffsetY = 0;
             this.selectedCursorSVG = document.createElementNS(Avionics.SVG.NS, "path");
-            this.selectedCursorSVG.setAttribute("d", "M" + (this.cursorPosX1 - 14) + " 0 l5 0 l0 -5 l13 " + (selectedCursorHeight * 0.5 + 5) + " l-13 " + (selectedCursorHeight * 0.5 + 5) + "l0 -5 l-5 0 l0 " + (-selectedCursorHeight * 0.5) + "Z");
+            this.selectedCursorSVG.setAttribute("d", "M -3 -10 L 9 0 L -3 10 L -3 3 L -6 3 L -6 -3 L -3 -3 L -3 -10 Z");
             this.selectedCursorSVG.setAttribute("fill", "cyan");
             this.selectedCursorSVG.setAttribute("visibility", "hidden");
             this.cursorSVGGroup.appendChild(this.selectedCursorSVG);
@@ -238,10 +238,10 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
 
             this.bottomSpeedText = document.createElementNS(Avionics.SVG.NS, "text");
             this.bottomSpeedText.textContent = "";
-            this.bottomSpeedText.setAttribute("x", (_left + _width * 0.92).toString());
+            this.bottomSpeedText.setAttribute("x", (_left + _width * 0.89).toString());
             this.bottomSpeedText.setAttribute("y", (_top + _height * 0.95).toString());
             this.bottomSpeedText.setAttribute("fill", "green");
-            this.bottomSpeedText.setAttribute("font-size", (this.fontSize * 0.85).toString());
+            this.bottomSpeedText.setAttribute("font-size", (this.fontSize * 1.2).toString());
             this.bottomSpeedText.setAttribute("font-family", "Roboto-Bold");
             this.bottomSpeedText.setAttribute("text-anchor", "end");
             this.bottomSpeedText.setAttribute("alignment-baseline", "central");
@@ -795,7 +795,7 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             {
                 let threshold = 400;
                 var displaySpeed = Math.abs(Math.floor(_speed));
-                displaySpeed = Math.round(displaySpeed / 5) * 5;
+                displaySpeed = Math.round(displaySpeed / 100) * 100;
                 if (this.topSpeedText) {
                     if (_speed >= threshold)
                         this.topSpeedText.textContent = displaySpeed.toString();
@@ -815,16 +815,20 @@ class Jet_PFD_VerticalSpeedIndicator extends HTMLElement {
             }
         }
     }
+    
     updateSelectedVSpeed(_speed) {
         if (this.gradSpeeds && this.selectedCursorSVG) {
             let vSpeed = Math.min(this.maxSpeed, Math.max(-this.maxSpeed, _speed));
             let height = this.heightFromSpeed(vSpeed);
             let posY = 0;
-            if (vSpeed >= 0)
+            let rotation = (Math.atan(height / 130) * 180 / Math.PI).toString()
+            if (vSpeed >= 0){
                 posY = this.cursorPosY2 - height;
-            else
+            }else{
                 posY = this.cursorPosY2 + height;
-            this.selectedCursorSVG.setAttribute("transform", "translate(0 " + (posY - this.selectedCursorOffsetY) + ")");
+                rotation = -rotation
+            }
+            this.selectedCursorSVG.setAttribute("transform", "translate(25 " + (posY) + "), rotate(" + rotation + ")");
         }
     }
 

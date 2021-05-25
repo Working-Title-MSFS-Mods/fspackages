@@ -1,25 +1,28 @@
 /**
  * Model for a navigational map. The base model defines only the basic parameters of a map, which are its nominal range, target position, and rotation.
  * The model can be expanded with more parameters through the addition of optional modules. By default, three modules are automatically included:
- * * .airplane - contains parameters related to the status of the player aircraft.
  * * .weather - contains parameters related to the weather and outside environment.
  * * .autopilot - contains parameters related to the player aircraft's autopilot.
+ * * .units - contains parameters related to the display of measurement units.
  * @property {LatLong} target - the target position (lat/long) of the map.
  * @property {Number} rotation - the rotation of the map in degrees. A value of 0 indicates North up, with increasing values proceeding clockwise.
  */
 class WT_MapModel {
-    constructor() {
+    /**
+     * @param {WT_PlayerAirplane} airplane - the player airplane.
+     */
+    constructor(airplane) {
+        this._airplane = airplane;
         this._target = new WT_GeoPoint(0, 0);
         this._range = new WT_NumberUnit(5, WT_Unit.NMILE);
 
         this._optsManager = new WT_OptionsManager(this, WT_MapModel.OPTIONS_DEF);
 
-        this.addModule(new WT_MapModelWeatherModule());
-        this.addModule(new WT_MapModelAutopilotModule());
+        this.addModule(new WT_MapModelUnitsModule());
     }
 
     /**
-     * @property {WT_GeoPoint} target - the target point of the map.
+     * The target point of the map.
      * @type {WT_GeoPoint}
      */
     get target() {
@@ -31,7 +34,7 @@ class WT_MapModel {
     }
 
     /**
-     * @property {WT_NumberUnit} range - the nominal range of the map.
+     * The nominal range of the map.
      * @type {WT_NumberUnit}
      */
     get range() {
@@ -43,12 +46,12 @@ class WT_MapModel {
     }
 
     /**
+     * The player airplane.
      * @readonly
-     * @property {WT_AirplaneModel} airplane - a model object that allows access to properties of the player airplane.
      * @type {WT_PlayerAirplane}
      */
     get airplane() {
-        return WT_PlayerAirplane.INSTANCE;
+        return this._airplane;
     }
 
     /**
@@ -130,61 +133,18 @@ class WT_MapModelModule {
     }
 }
 
-class WT_MapModelWeatherModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelWeatherModule.NAME_DEFAULT) {
+class WT_MapModelUnitsModule extends WT_MapModelModule {
+    constructor(name = WT_MapModelUnitsModule.NAME_DEFAULT) {
         super(name);
-    }
 
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} windSpeed - the current wind speed at the airplane's position. Default unit is knots.
-     * @type {WT_NumberUnit}
-     */
-    get windSpeed() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT WIND VELOCITY", "knots"), WT_Unit.KNOT);
-    }
-
-    /**
-     * @readonly
-     * @property {Number} windDirection - the current wind direction at the airplane's position in degrees.
-     * @type {Number}
-     */
-    get windDirection() {
-        return SimVar.GetSimVarValue("AMBIENT WIND DIRECTION", "degree");
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} airPressure - the current air pressure at the airplane's position. Default unit is inches of mercury.
-     * @type {WT_NumberUnit}
-     */
-    get airPressure() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT PRESSURE", "inHg"), WT_Unit.IN_HG);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} temperature - the current air temperature at the airplane's position. Default unit is degrees Celsius.
-     * @type {WT_NumberUnit}
-     */
-    get temperature() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AMBIENT TEMPERATURE", "Celsius"), WT_Unit.CELSIUS);
+        this._optsManager.addOptions(WT_MapModelUnitsModule.OPTIONS_DEF);
     }
 }
-WT_MapModelWeatherModule.NAME_DEFAULT = "weather";
-
-class WT_MapModelAutopilotModule extends WT_MapModelModule {
-    constructor(name = WT_MapModelAutopilotModule.NAME_DEFAULT) {
-        super(name);
-    }
-
-    /**
-     * @readonly
-     * @property {WT_NumberUnit} altitudeTarget - the current autopilot target altitude. Default unit is feet.
-     * @type {WT_NumberUnit}
-     */
-    get altitudeTarget() {
-        return new WT_NumberUnit(SimVar.GetSimVarValue("AUTOPILOT ALTITUDE LOCK VAR", "feet"), WT_Unit.FOOT);
-    }
-}
-WT_MapModelAutopilotModule.NAME_DEFAULT = "autopilot";
+WT_MapModelUnitsModule.NAME_DEFAULT = "units";
+WT_MapModelUnitsModule.OPTIONS_DEF = {
+    bearing: {default: new WT_NavAngleUnit(true), auto: true},
+    distance: {default: WT_Unit.NMILE, auto: true},
+    speed: {default: WT_Unit.KNOT, auto: true},
+    verticalSpeed: {default: WT_Unit.FPM, auto: true},
+    altitude: {default: WT_Unit.FOOT, auto: true}
+};

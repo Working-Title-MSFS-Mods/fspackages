@@ -31,7 +31,7 @@ class WT_GeoPoint {
 
     static _parseArgs(_1, _2) {
         let returnValue = undefined;
-        if (_1 !== undefined && typeof _1.lat === "number" && typeof _1.long === "number") {
+        if (_1 !== undefined && _1 !== null && typeof _1.lat === "number" && typeof _1.long === "number") {
             WT_GeoPoint._tempValue.lat = _1.lat;
             WT_GeoPoint._tempValue.long = _1.long;
             returnValue = WT_GeoPoint._tempValue;
@@ -182,6 +182,7 @@ class WT_GeoPoint {
 
         let deltaLat = distance * Math.cos(bearingRad);
         let offsetLat = lat + deltaLat;
+        let offsetLong;
 
         if (Math.abs(offsetLat) >= Math.PI / 2) {
             // you can't technically go past the poles along a rhumb line, so we will simply terminate the path at the pole
@@ -191,7 +192,7 @@ class WT_GeoPoint {
             let deltaPsi = WT_GeoPoint._deltaPsi(lat, offsetLat);
             let correction = WT_GeoPoint._rhumbCorrection(deltaPsi, lat, offsetLat);
             let deltaLong = distance * Math.sin(bearingRad) / correction;
-            let offsetLong = long + deltaLong;
+            offsetLong = long + deltaLong;
 
             offsetLat *= Avionics.Utils.RAD2DEG;
             offsetLong *= Avionics.Utils.RAD2DEG;
@@ -303,7 +304,7 @@ class WT_GeoPoint {
      * @param {Number} [arg2] - the longitude value of the other point.
      * @returns {Boolean} whether this point is equal to the other point.
      */
-    equals(arg1, arg2, arg3) {
+    equals(arg1, arg2) {
         let other = WT_GeoPoint._parseArgs(arg1, arg2);
         if (other) {
             return Math.abs(this.lat - other.lat) + Math.abs(this.long - other.long) <= WT_GeoPoint.EQUALITY_TOLERANCE;

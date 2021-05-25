@@ -90,7 +90,7 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
     }
 
     _updateActiveTab() {
-        if (!this._activeTabEntry) {
+        if (this._activeTabEntry === this._oldActiveTabEntry) {
             return;
         }
 
@@ -128,6 +128,10 @@ class WT_G3x5_TSCTabbedView extends HTMLElement {
      */
     getActiveTab() {
         return this._activeTabEntry ? this._activeTabEntry.tab : null;
+    }
+
+    getActiveTabIndex() {
+        return this._activeTabEntry ? this._tabs.indexOf(this._activeTabEntry) : -1;
     }
 
     setActiveTab(tab) {
@@ -216,7 +220,7 @@ customElements.define("tsc-tabbedview", WT_G3x5_TSCTabbedView);
  */
 
 class WT_G3x5_TSCTabButton extends WT_TSCLabeledButton {
-    _initHostStyle() {
+    _createHostStyle() {
         return `
             :host {
                 display: block;
@@ -285,7 +289,7 @@ class WT_G3x5_TSCTabButton extends WT_TSCLabeledButton {
     }
 }
 
-customElements.define("tsc-button-tab", WT_G3x5_TSCTabButton);
+customElements.define("wt-tsc-button-tab", WT_G3x5_TSCTabButton);
 
 class WT_G3x5_TSCTabContent {
     constructor(title) {

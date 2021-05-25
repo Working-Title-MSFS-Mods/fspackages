@@ -1,3 +1,6 @@
+# changes on 0.3.6
+* Updated for 1.16.2.0
+
 # changes on 0.3.5
 * Updated for 1.15.7.0
 * Fixed compat problems with stock G3000
