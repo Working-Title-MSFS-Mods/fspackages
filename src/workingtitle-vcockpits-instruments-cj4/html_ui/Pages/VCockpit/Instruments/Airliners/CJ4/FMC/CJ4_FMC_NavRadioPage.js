@@ -395,7 +395,7 @@ class CJ4_FMC_NavRadioDispatch {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", relAbsDisplay],
-            [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>[disabled]"],
+            [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>"],
         ]);
     }
 
@@ -474,7 +474,6 @@ class CJ4_FMC_NavRadioDispatch {
             }
         };
 
-
         this._fmc.onLeftInput[4] = () => {
             const value = this._fmc.inOut;
             const numValue = parseFloat(value);
@@ -497,6 +496,9 @@ class CJ4_FMC_NavRadioDispatch {
 
         this._fmc.onRightInput[4] = () => {
             this.transponderMode = this.transponderMode + 1;
+        };
+        this._fmc.onRightInput[5] = () => {
+            CJ4_FMC_NavRadioPage.tcasControl(this._fmc);
         };
         this._fmc.onPrevPage = () => {
             CJ4_FMC_NavRadioDispatch.ShowPage2(this._fmc);
