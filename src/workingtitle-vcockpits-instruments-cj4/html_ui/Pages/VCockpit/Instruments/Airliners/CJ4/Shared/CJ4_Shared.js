@@ -312,7 +312,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -320,11 +320,42 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 3) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
             }
+            // ITT RED LINES
+            this.redLineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineLeft.setAttribute("x1", (startPosX - halfWidth));
+            this.redLineLeft.setAttribute("y1", 81);
+            this.redLineLeft.setAttribute("x2", (startPosX - halfWidth + 20));
+            this.redLineLeft.setAttribute("y2", 81);
+            this.redLineLeft.setAttribute("stroke", "red");
+            this.redLineLeft.setAttribute("stroke-width", "3");
+            ittGroup.appendChild(this.redLineLeft);
+
+            this.redLineRight = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineRight.setAttribute("x1", (startPosX + halfWidth));
+            this.redLineRight.setAttribute("y1", 81);
+            this.redLineRight.setAttribute("x2", (startPosX + halfWidth - 20));
+            this.redLineRight.setAttribute("y2", 81);
+            this.redLineRight.setAttribute("stroke", "red");
+            this.redLineRight.setAttribute("stroke-width", "3");
+            ittGroup.appendChild(this.redLineRight);
+
+            this.redLineLeftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineLeftTriangle.setAttribute("visibility", "hidden");
+            this.redLineLeftTriangle.setAttribute("fill", "red");
+            this.redLineLeftTriangle.setAttribute("d", "M 289 35 l18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineLeftTriangle);
+
+            this.redLineRightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineRightTriangle.setAttribute("visibility", "hidden");
+            this.redLineRightTriangle.setAttribute("fill", "red");
+            this.redLineRightTriangle.setAttribute("d", "M 411 35 l-18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineRightTriangle);
+
             var line = document.createElementNS(Avionics.SVG.NS, "line");
             line.setAttribute("x1", (startPosX - halfWidth - 12).toString());
             line.setAttribute("y1", posY.toString());
@@ -372,6 +403,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTLeftBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTLeftBeacon.setAttribute("fill", "darkorange");
             ittGroup.appendChild(this.ITTLeftBeacon);
+            ittGroup.appendChild(this.redLineLeftTriangle);
             this.ITTRightBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
             this.ITTRightBeacon.setAttribute("x", (this.ITTRightZoneX - cursorWidth).toString());
             this.ITTRightBeacon.setAttribute("y", this.ITTRightZoneY1.toString());
@@ -379,6 +411,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTRightBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTRightBeacon.setAttribute("fill", "darkorange");
             ittGroup.appendChild(this.ITTRightBeacon);
+            ittGroup.appendChild(this.redLineRightTriangle);
             this.ITTLeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ITTLeftCursor.setAttribute("fill", "white");
             ittGroup.appendChild(this.ITTLeftCursor);
@@ -1059,7 +1092,7 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX - halfWidth + gradLength[i]).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 var line = document.createElementNS(Avionics.SVG.NS, "line");
@@ -1067,11 +1100,40 @@ class CJ4_SystemEngines extends NavSystemElement {
                 line.setAttribute("y1", posY.toString());
                 line.setAttribute("x2", (startPosX + halfWidth).toString());
                 line.setAttribute("y2", posY.toString());
-                line.setAttribute("stroke", (i == 4) ? "red" : "#52504d");
+                line.setAttribute("stroke", "#52504d");
                 line.setAttribute("stroke-width", "2");
                 ittGroup.appendChild(line);
                 posY += gradSpacing[i];
             }
+            // ITT RED LINES
+            this.redLineLeft = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineLeft.setAttribute("x1", (startPosX - halfWidth));
+            this.redLineLeft.setAttribute("y1", 112);
+            this.redLineLeft.setAttribute("x2", (startPosX - halfWidth + 20));
+            this.redLineLeft.setAttribute("y2", 112);
+            this.redLineLeft.setAttribute("stroke", "red");
+            this.redLineLeft.setAttribute("stroke-width", "3");
+
+            this.redLineRight = document.createElementNS(Avionics.SVG.NS, "line");
+            this.redLineRight.setAttribute("x1", (startPosX + halfWidth));
+            this.redLineRight.setAttribute("y1", 112);
+            this.redLineRight.setAttribute("x2", (startPosX + halfWidth - 20));
+            this.redLineRight.setAttribute("y2", 112);
+            this.redLineRight.setAttribute("stroke", "red");
+            this.redLineRight.setAttribute("stroke-width", "3");
+
+            this.redLineLeftTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineLeftTriangle.setAttribute("visibility", "hidden");
+            this.redLineLeftTriangle.setAttribute("fill", "red");
+            this.redLineLeftTriangle.setAttribute("d", "M " + (startPosX - halfWidth) + " " + "52 l18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineLeftTriangle);
+
+            this.redLineRightTriangle = document.createElementNS(Avionics.SVG.NS, "path");
+            this.redLineRightTriangle.setAttribute("visibility", "hidden");
+            this.redLineRightTriangle.setAttribute("fill", "red");
+            this.redLineRightTriangle.setAttribute("d", "M " + (startPosX + halfWidth) + " " + "52 l-18 -7.5 0 15 Z");
+            ittGroup.appendChild(this.redLineRightTriangle);
+
             var line = document.createElementNS(Avionics.SVG.NS, "line");
             line.setAttribute("x1", (startPosX - halfWidth - 12).toString());
             line.setAttribute("y1", posY.toString());
@@ -1118,14 +1180,18 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.ITTLeftBeacon.setAttribute("width", cursorWidth.toString());
             this.ITTLeftBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTLeftBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.redLineLeft);
             ittGroup.appendChild(this.ITTLeftBeacon);
+            ittGroup.appendChild(this.redLineLeftTriangle);
             this.ITTRightBeacon = document.createElementNS(Avionics.SVG.NS, "rect");
             this.ITTRightBeacon.setAttribute("x", (this.ITTRightZoneX - cursorWidth).toString());
             this.ITTRightBeacon.setAttribute("y", this.ITTRightZoneY1.toString());
             this.ITTRightBeacon.setAttribute("width", cursorWidth.toString());
             this.ITTRightBeacon.setAttribute("height", cursorHeight.toString());
             this.ITTRightBeacon.setAttribute("fill", "darkorange");
+            ittGroup.appendChild(this.redLineRight);
             ittGroup.appendChild(this.ITTRightBeacon);
+            ittGroup.appendChild(this.redLineRightTriangle);
             this.ITTLeftCursor = document.createElementNS(Avionics.SVG.NS, "path");
             this.ITTLeftCursor.setAttribute("fill", "white");
             ittGroup.appendChild(this.ITTLeftCursor);
@@ -1691,9 +1757,9 @@ class CJ4_SystemEngines extends NavSystemElement {
             var posY = startPosY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", posY.toString());
+            rect.setAttribute("y", (startPosY - gaugeHeight * 0.18).toString());
             rect.setAttribute("width", gaugeWidth.toString());
-            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("height", (gaugeHeight * 0.20).toString());
             rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
@@ -1889,7 +1955,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTLeftCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (ITTEng1 > 200) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1]) : 850;
+            let endValue = (this.isStartingLeft) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTLeftBeacon.setAttribute("y", beacon_y2.toString());
@@ -1903,7 +1969,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             else
                 this.ITTRightCursor.setAttribute("d", "");
             let startValue = 825;
-            let endValue = (ITTEng2 > 200) ? (this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 1] : 850;
+            let endValue = (this.isStartingRight) ? ((this.isMinimized) ? this.ITT_Table_Values_Minimized[this.ITT_Table_Values_Minimized.length - 1] : this.ITT_Table_Values[this.ITT_Table_Values.length - 2]) : 850;
             let beacon_y1 = this.ITTToPixels(startValue);
             let beacon_y2 = this.ITTToPixels(endValue);
             this.ITTRightBeacon.setAttribute("y", beacon_y2.toString());
@@ -1911,20 +1977,26 @@ class CJ4_SystemEngines extends NavSystemElement {
         }
     }
     updateIGN() {
-        let ignLeft = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:1", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:1", "number") == 1));
-        let ignRight = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:2", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:2", "number") == 1));
+        this.isStartingLeft = ((this.ignLeft && this.N2Eng1 > 11.0 && this.N2Eng1 < 51.5) == 1);
+        this.isStartingRight = ((this.ignRight && this.N2Eng2 > 11.0 && this.N2Eng2 < 51.5) == 1);
+        this.ignLeft = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:1", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:1", "number") == 1));
+        this.ignRight = ((SimVar.GetSimVarValue("GENERAL ENG STARTER:2", "number") == 1) && (SimVar.GetSimVarValue("GENERAL ENG COMBUSTION:2", "number") == 1));
 
-        this.IgnLeft.setAttribute("visibility", ignLeft ? "visible" : "hidden");
-        this.IgnRight.setAttribute("visibility", ignRight ? "visible" : "hidden");
+        this.IgnLeft.setAttribute("visibility", this.ignLeft ? "visible" : "hidden");
+        this.IgnRight.setAttribute("visibility", this.ignRight ? "visible" : "hidden");
+        this.redLineLeftTriangle.setAttribute("visibility", this.isStartingLeft ? "visible" : "hidden");
+        this.redLineRightTriangle.setAttribute("visibility", this.isStartingRight ? "visible" : "hidden");
+        this.redLineLeft.setAttribute("visibility", this.isStartingLeft ? "hidden" : "visible");
+        this.redLineRight.setAttribute("visibility", this.isStartingRight ? "hidden" : "visible");
     }
     updateN2() {
         {
-            let N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
-            this.N2LeftValue.textContent = N2Eng1.toFixed(1);
+            this.N2Eng1 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:1", "percent");
+            this.N2LeftValue.textContent = this.N2Eng1.toFixed(1);
         }
         {
-            let N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
-            this.N2RightValue.textContent = N2Eng2.toFixed(1);
+            this.N2Eng2 = SimVar.GetSimVarValue("TURB ENG CORRECTED N2:2", "percent");
+            this.N2RightValue.textContent = this.N2Eng2.toFixed(1);
         }
     }
     updateOil() {
@@ -3113,6 +3185,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
+        this.isTrafficVisible = undefined;
         this.isExtended = undefined;
         this.zoomRanges = [5, 10, 25, 50, 100, 200, 300, 600];
         this.zoomFactor = 1.0;
@@ -3244,6 +3317,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
         this.map.instrument.zoomRanges = this.getAdaptiveRanges();
         this.setWxRadarBug();
+        this.setTFCSpecificMapOverlays();
     }
     showTerrain(_value) {
         if (this.isTerrainVisible != _value) {
@@ -3279,6 +3353,12 @@ class CJ4_MapContainer extends NavSystemElementContainer {
                 this.setMode(Jet_NDCompass_Display.NONE);
             }
             this.refreshLayout();
+        }
+    }
+    showTraffic(_value) {
+        if (this.isTrafficVisible !== _value) {
+            this.isTrafficVisible = _value;
+            this.map.instrument.setAttribute("show-traffic", this.isTrafficVisible);
         }
     }
     setExtended(_value) {
@@ -3339,7 +3419,6 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         this.symbolsToSimvar = true;
     }
     syncSymbols() {
-        this.map.instrument.showTraffic = (this.symbols & (1 << CJ4_MapSymbol.TRAFFIC)) ? true : false;
         this.map.instrument.showConstraints = (this.symbols & (1 << CJ4_MapSymbol.CONSTRAINTS)) ? true : false;
         this.map.instrument.showAirspaces = (this.symbols & (1 << CJ4_MapSymbol.AIRSPACES)) ? true : false;
         this.map.instrument.showAirways = (this.symbols & (1 << CJ4_MapSymbol.AIRWAYS)) ? true : false;
@@ -3360,6 +3439,12 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         let radarbug = document.querySelector("#weather_radar_bug");
         if (radarbug) {
             radarbug.style.display = (this.isWeatherVisible) ? "" : "none";
+        }
+    }
+    setTFCSpecificMapOverlays() {
+        let tfcTicks = document.querySelector("#tfcClockTicks");
+        if (tfcTicks) {
+            tfcTicks.style.display = this.isTrafficVisible ? "" : "none";
         }
     }
 
@@ -3388,6 +3473,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
     refreshLayout() {
 
         this.setWxRadarBug();
+        this.setTFCSpecificMapOverlays();
         if (this.isMapVisible) {
             this.map.instrument.setAttribute('style', '');
 
@@ -3498,6 +3584,9 @@ var CJ4_MapOverlaySymbol;
 (function (CJ4_MapOverlaySymbol) {
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TERR"] = 0] = "TERR";
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["WX"] = 1] = "WX";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC"] = 2] = "TFC";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC_ABOVE"] = 3] = "TFC_ABOVE";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC_BELOW"] = 4] = "TFC_BELOW";
 })(CJ4_MapOverlaySymbol || (CJ4_MapOverlaySymbol = {}));
 class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -3505,6 +3594,7 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
         this.compass = new CJ4_MapCompass();
         this.infos = new CJ4_MapInfo();
         this.isExtended = undefined;
+        this.isTfcVisible = undefined;
         this.isTerrainVisible = undefined;
         this.isWeatherVisible = undefined;
         this.isGwxVisible = undefined;
@@ -3527,6 +3617,9 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     }
     onUpdate(_dTime) {
         super.onUpdate(_dTime);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC, this.isTfcVisible);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC_ABOVE, SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC_BELOW, SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number") === 1);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.WX, this.isWeatherVisible);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.TERR, this.isTerrainVisible);
         this.updateElapsedTime();
@@ -3555,6 +3648,12 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     showGwx(_value) {
         if (this.isGwxVisible != _value) {
             this.isGwxVisible = _value;
+            this.refreshLayout();
+        }
+    }
+    showTfc(_value) {
+        if (this.isTfcVisible != _value) {
+            this.isTfcVisible = _value;
             this.refreshLayout();
         }
     }
@@ -3669,6 +3768,10 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.aircraft = Aircraft.CJ4;
         this.root.gps = this.gps;
 
+        this.tfcIndicator = this.root.querySelector('#TFC');
+        this.tfcAboveIndicator = this.root.querySelector('#overlay-tfc-above');
+        this.tfcBelowIndicator = this.root.querySelector('#overlay-tfc-below');
+
         this.terrIndicator = this.root.querySelector('#Symbols .overlay-terr');
         this.wxIndicator = this.root.querySelector('#Symbols .overlay-wx');
 
@@ -3689,28 +3792,44 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.setMode(_navigation, _navigationSource);
     }
     showSymbol(_symbol, _show) {
-        if (_symbol === CJ4_MapOverlaySymbol.TERR) {
-            if (_show) {
-                this.terrIndicator.classList.add('active');
-            }
-            else {
-                this.terrIndicator.classList.remove('active');
-            }
-        }
+        switch (_symbol) {
+            case CJ4_MapOverlaySymbol.TFC_ABOVE:
+                if (this.tfcAboveIndicator) {
+                    this.tfcAboveIndicator.style.visibility = _show ? 'visible' : 'hidden';
+                }
+                break;
+            case CJ4_MapOverlaySymbol.TFC_BELOW:
+                if (this.tfcBelowIndicator) {
+                    this.tfcBelowIndicator.style.visibility = _show ? 'visible' : 'hidden';
+                }
+                break;
+            case CJ4_MapOverlaySymbol.TFC:
+                if (this.tfcIndicator) {
+                    this.tfcIndicator.style.display = _show ? '' : 'none';
+                }
+                break;
+            case CJ4_MapOverlaySymbol.TERR:
+                if (_show) {
+                    this.terrIndicator.classList.add('active');
+                }
+                else {
+                    this.terrIndicator.classList.remove('active');
+                }
+                break;
+            case CJ4_MapOverlaySymbol.WX:
+                if (_show) {
+                    this.wxIndicator.classList.add('active');
 
-        if (_symbol === CJ4_MapOverlaySymbol.WX) {
-            if (_show) {
-                this.wxIndicator.classList.add('active');
+                    this.wxLine1.style.display = 'block';
+                    this.wxLine2.style.display = 'block';
+                }
+                else {
+                    this.wxIndicator.classList.remove('active');
 
-                this.wxLine1.style.display = 'block';
-                this.wxLine2.style.display = 'block';
-            }
-            else {
-                this.wxIndicator.classList.remove('active');
-
-                this.wxLine1.style.display = 'none';
-                this.wxLine2.style.display = 'none';
-            }
+                    this.wxLine1.style.display = 'none';
+                    this.wxLine2.style.display = 'none';
+                }
+                break;
         }
     }
 }

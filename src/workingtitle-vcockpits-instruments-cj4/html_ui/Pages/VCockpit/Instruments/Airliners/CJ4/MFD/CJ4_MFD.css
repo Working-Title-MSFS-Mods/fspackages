@@ -641,6 +641,14 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #Symbol
   position: absolute;
 }
 
+cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #TFC {
+  top: 40%;
+  left: 87%;
+  width: 11%;
+  height: 5%;
+  position: absolute;
+}
+
 cj4-mfd-element #Mainframe #Electricity #MainDisplay #MapOverlay #NDInfo #Symbols svg {
   width: 100%;
   height: 100%;
@@ -1021,6 +1029,18 @@ cj4-mfd-element #Mainframe #Electricity #MainDisplay #SystemOverlay[visible=fals
 div#VORDMENavaid_Left,
 div#VORDMENavaid_Right {
   text-align: left;
+}
+
+#TFC ul {
+  font-size: 22px;
+  list-style: none;
+  padding: 0;
+  text-align: right;
+}
+
+#TFC .active {
+  font-size: 24px;
+  color: cyan;
 }
 
 #Symbols ul {

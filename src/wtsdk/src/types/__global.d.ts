@@ -149,7 +149,7 @@ declare class Utils {
   bearingDistanceToCoordinates(bearing: number, distanceInNM: number, lat: number, long: number): LatLongAlt;
   fmod(value: number, moduloBy: number): number;
   computeDistance(coords1: LatLongAlt, coords2: LatLongAlt): number;
-  angleDiff(degrees1: number, degrees2: number): number;
+  diffAngle(degrees1: number, degrees2: number): number;
   lerpAngle(from: number, to: number, d: number): number;
   formatRunway(rwy: string): string;
   DEG2RAD: number;

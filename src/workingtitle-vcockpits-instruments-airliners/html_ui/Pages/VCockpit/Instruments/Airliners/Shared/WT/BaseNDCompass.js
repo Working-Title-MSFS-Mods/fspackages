@@ -347,7 +347,7 @@ class Jet_NDCompass extends HTMLElement {
                     if (this.aircraft == Aircraft.CJ4) {
                         let CompassAngle = this.degreeToArc(compass);
                         let selectedAngle = this.degreeToArc(simSelectedHeading);
-                        let delta = Math.abs(Avionics.Utils.angleDiff(CompassAngle, selectedAngle));
+                        let delta = Math.abs(Avionics.Utils.diffAngle(CompassAngle, selectedAngle));
                         this.selectedHeadingLine.classList.toggle('hide', (delta > 65 && this._displayMode !== Jet_NDCompass_Display.ROSE && (SimVar.GetSimVarValue("L:WT_CJ4_HDG_ON", "number") === 1)) ? false : true);
                         this.selectedHeadingBug.classList.toggle('hide', (delta > 90 && this._displayMode === Jet_NDCompass_Display.ARC) ? true : false);
 
@@ -718,7 +718,7 @@ class Jet_NDCompass extends HTMLElement {
         }
 
         if (this._currentCourse !== this._courseTarget) {
-            const angleDiff = Avionics.Utils.angleDiff(this._currentCourse, this._courseTarget);
+            const angleDiff = Avionics.Utils.diffAngle(this._currentCourse, this._courseTarget);
             const absAngleDiff = Math.abs(angleDiff);
 
             const currentAnimationPosition = Math.pow((absAngleDiff / 180), .25);

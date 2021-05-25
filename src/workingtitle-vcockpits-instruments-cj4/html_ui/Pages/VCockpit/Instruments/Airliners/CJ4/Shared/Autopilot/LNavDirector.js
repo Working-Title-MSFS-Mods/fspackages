@@ -105,7 +105,7 @@ class LNavDirector {
       const planeToActiveBearing = planeLatLon.initialBearingTo(activeLatLon);
       const nextStartTrack = nextWaypoint ? activeLatLon.initialBearingTo(nextLatLon) : planeToActiveBearing;
 
-      const anticipationDistance = this.getAnticipationDistance(planeState, Avionics.Utils.angleDiff(planeToActiveBearing, nextStartTrack));
+      const anticipationDistance = this.getAnticipationDistance(planeState, Avionics.Utils.diffAngle(planeToActiveBearing, nextStartTrack));
       if (!nextWaypoint || !nextWaypoint.isFlyover) {
         this.alertIfClose(planeState, distanceToActive, anticipationDistance);
 
@@ -142,7 +142,7 @@ class LNavDirector {
    * @param {number} navSensitivityScalar The current nav sensitivity scalar.
    */
   handleTurnCompleting(planeState, dtk, previousWaypoint, activeWaypoint, navSensitivity, navSensitivityScalar) {
-    const angleDiffToTarget = Avionics.Utils.angleDiff(planeState.trueHeading, dtk);
+    const angleDiffToTarget = Avionics.Utils.diffAngle(planeState.trueHeading, dtk);
     if (Math.abs(angleDiffToTarget) < this.options.degreesRollout || this.navModeSelector.currentLateralActiveState !== LateralNavModeState.LNAV) {
       this.state = LNavState.TRACKING;
     }
@@ -388,7 +388,7 @@ class LNavDirector {
 
     const interceptAngle = AutopilotMath.interceptAngle(xtk, navSensitivity);
     const bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(planeState.position, legEnd);
-    const deltaAngle = Math.abs(Avionics.Utils.angleDiff(dtk, bearingToWaypoint));
+    const deltaAngle = Math.abs(Avionics.Utils.diffAngle(dtk, bearingToWaypoint));
 
     const interceptRate = Math.sign(this.previousDeviation) === 1
       ? Math.max(this.previousDeviation - xtk, 0)
