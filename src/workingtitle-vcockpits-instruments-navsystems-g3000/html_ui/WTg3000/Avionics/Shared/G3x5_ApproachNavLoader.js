@@ -85,8 +85,22 @@ class WT_G3x5_ApproachNavLoader {
      * @param {WT_FlightPlanLeg} activeLeg
      */
     _checkApproachOnFinal(activeLeg) {
+        let result = false;
         let fafIndex = this._fpm.activePlan.legs.length - 2;
-        return activeLeg.index > fafIndex || (activeLeg.index === fafIndex && this._fpm.distanceToActiveLegFix(true, this._tempNM).compare(WT_G3x5_ApproachNavLoader.NAV_SWITCH_MAX_FAF_DISTANCE) <= 0);
+        if (activeLeg.index > fafIndex) {
+            result = true;
+        } else if (activeLeg.index === fafIndex && this._fpm.distanceToActiveLegFix(true, this._tempNM).compare(WT_G3x5_ApproachNavLoader.NAV_SWITCH_MAX_FAF_DISTANCE) <= 0) {
+            if (activeLeg.firstStep().endpoint.equals(activeLeg.endpoint)) {
+                result = true;
+            } else {
+                // if the faf leg has multiple steps, only return true if the currently "active" step is the last one
+                // (i.e. the step to the actual faf waypoint); otherwise airplane may not be on the final approach course
+                let gpsLat = SimVar.GetSimVarValue("GPS WP NEXT LAT", "degrees");
+                let gpsLong = SimVar.GetSimVarValue("GPS WP NEXT LON", "degrees");
+                result = activeLeg.fix.location.distance(gpsLat, gpsLong) <= WT_FlightPlanManager.ACTIVE_STEP_FIX_TOLERANCE;
+            }
+        }
+        return result;
     }
 
     _switchAutopilotToNav() {
