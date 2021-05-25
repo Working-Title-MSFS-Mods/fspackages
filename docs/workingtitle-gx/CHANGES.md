@@ -1,3 +1,14 @@
+# Changes in 0.1.0-dev7
+
+* Fixed bug in synthetic vision toggle
+* Corrected attitude indicator width error on King Air
+* Corrected text on audio panel button
+
+# Changes in 0.1.0-dev6
+
+* rebase onto new G3X code
+* apply improved styling
+* port over CAS and autopilot functionality
 # Changes in 0.1.0-dev5
 
 * Fixed compatibility problems with FBW A320
