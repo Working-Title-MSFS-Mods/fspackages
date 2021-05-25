@@ -1,0 +1,11 @@
+﻿{
+    "airplane": {
+        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_LONGITUDE_PURPLE.svg",
+        "iconSize": 40,
+        "iconAnchor": [0.5, 0]
+    },
+
+    "airplaneStatus": {
+        "imagePath": "/WTg3000/SDK/Assets/Images/Garmin/Map/ICON_MAP_AIRPLANE_LONGITUDE_PURPLE.svg"
+    }
+}

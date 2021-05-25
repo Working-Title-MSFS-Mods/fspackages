@@ -11,8 +11,10 @@ class WT_Airway {
         this._name = name;
         this._type = type;
         this._waypoints = [];
+        this._waypointsReadOnly = new WT_ReadOnlyArray(this._waypoints);
+
         this._builder = builder;
-        this._builder._airway = this;
+        this._builder.setWaypointsArray(this._waypoints);
         this._status = WT_Airway.Status.INCOMPLETE;
     }
 
@@ -44,30 +46,16 @@ class WT_Airway {
         return this._status;
     }
 
-    _waitForBuilderLoop(resolve) {
-        if (this._builder.isDone) {
-            resolve();
-        } else {
-            requestAnimationFrame(this._waitForBuilderLoop.bind(this, resolve));
-        }
-    }
-
-    _waitForBuilder() {
-        return new Promise(resolve => {
-            this._waitForBuilderLoop(resolve);
-        });
-    }
-
     /**
      * Gets the waypoints belonging to this airway, in order.
-     * @returns {Promise<WT_ICAOWaypoint[]>} a Promise to return an array of waypoints belong to this airway.
+     * @returns {Promise<WT_ReadOnlyArray<WT_ICAOWaypoint>>} a Promise to return an array of waypoints belong to this airway.
      */
     async getWaypoints() {
         if (!this._builder.hasStarted) {
             this._builder.startBuild().then(value => this._status = value);
         }
-        await this._waitForBuilder();
-        return this._waypoints;
+        await WT_Wait.awaitCallback(() => this._builder.isDone, this);
+        return this._waypointsReadOnly;
     }
 }
 /**
@@ -96,17 +84,9 @@ WT_Airway.Status = {
  */
 class WT_AirwayBuilder {
     constructor() {
+        this._waypointsArray = null;
         this._hasStarted = false;
         this._isDone = false;
-    }
-
-    /**
-     * @readonly
-     * @property {WT_Airway} airway - this builder's parent airway.
-     * @type {WT_Airway}
-     */
-    get airway() {
-        return this._airway;
     }
 
     /**
@@ -125,6 +105,14 @@ class WT_AirwayBuilder {
      */
     get isDone() {
         return this._isDone;
+    }
+
+    /**
+     * Sets the array into which this builder will load waypoints.
+     * @param {WT_ICAOWaypoint[]} array - an array.
+     */
+    setWaypointsArray(array) {
+        this._waypointsArray = array;
     }
 
     /**

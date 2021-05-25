@@ -231,7 +231,7 @@ class AutopilotMath {
    */
   static isAbeam(dtk, planePosition, fixCoords) {
     const planeToFixTrack = Avionics.Utils.computeGreatCircleHeading(planePosition, fixCoords);
-    const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
+    const trackDiff = Math.abs(Avionics.Utils.diffAngle(dtk, planeToFixTrack));
 
     return trackDiff > 90.5;
   }

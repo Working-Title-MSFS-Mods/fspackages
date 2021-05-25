@@ -12,10 +12,20 @@ class WT_AltitudeConstraint {
         return this._type;
     }
 
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} ceiling
+     * @type {WT_NumberUnitReadOnly}
+     */
     get ceiling() {
         return undefined;
     }
 
+    /**
+     * @readonly
+     * @property {WT_NumberUnitReadOnly} floor
+     * @type {WT_NumberUnitReadOnly}
+     */
     get floor() {
         return undefined;
     }

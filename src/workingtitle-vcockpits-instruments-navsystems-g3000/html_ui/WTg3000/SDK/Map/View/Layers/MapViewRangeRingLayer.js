@@ -52,6 +52,8 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
      */
     onProjectionViewChanged(state) {
         super.onProjectionViewChanged(state);
+
+        this._updateStyles(state.dpiScale);
     }
 
     /**
@@ -59,6 +61,7 @@ class WT_MapViewRangeRingLayer extends WT_MapViewLabeledRingLayer {
      */
     onAttached(state) {
         super.onAttached(state);
+
         this._updateStyles(state.dpiScale);
     }
 
@@ -100,17 +103,17 @@ WT_MapViewRangeRingLayer.CONFIG_PROPERTIES = [
 
 class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
     _createLabel() {
-        this._rangeLabel = new WT_MapViewRangeDisplay();
-        return this._rangeLabel;
+        this._rangeDisplay = new WT_MapViewRangeDisplay();
+        return this._rangeDisplay;
     }
 
     /**
+     * This label's range display object.
      * @readonly
-     * @property {WT_MapViewRangeLabel} rangeRing - this label's range label object.
      * @type {WT_MapViewRangeDisplay}
      */
-    get rangeLabel() {
-        return this._rangeLabel;
+    get rangeDisplay() {
+        return this._rangeDisplay;
     }
 
     /**
@@ -118,6 +121,8 @@ class WT_MapViewRangeRingLabel extends WT_MapViewRingLabel {
      */
     onUpdate(state) {
         super.onUpdate(state);
-        this.rangeLabel.update(state);
+
+        this.rangeDisplay.setRange(state.model.range);
+        this.rangeDisplay.update(state);
     }
 }

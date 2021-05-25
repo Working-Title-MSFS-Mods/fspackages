@@ -43,13 +43,17 @@ class WT_VFRMapPanel extends HTMLElement {
     }
 
     _initMap() {
-        switch (WT_PlayerAirplane.INSTANCE.type()) {
-            case WT_PlayerAirplane.Type.TBM930:
-            case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
-                this._initWTMap();
-                break;
-            default:
-                this._initAsoboMap();
+        if (WT_g3000_ModConfig.INSTANCE.vfrMap.useCustom) {
+            switch (WT_PlayerAirplane.getAircraftType()) {
+                case WT_PlayerAirplane.Type.TBM930:
+                case WT_PlayerAirplane.Type.CITATION_LONGITUDE:
+                    this._initWTMap();
+                    break;
+                default:
+                    this._initAsoboMap();
+            }
+        } else {
+            this._initAsoboMap();
         }
 
         this._map.htmlElement.setAttribute("active", "true");
@@ -82,20 +86,6 @@ class WT_VFRMapPanel extends HTMLElement {
         this._updateLoop();
     }
 
-    _waitUntilReadyLoop(resolve) {
-        if (window["simvar"] && this._modConfigLoaded) {
-            resolve();
-        } else {
-            requestAnimationFrame(this._waitUntilReadyLoop.bind(this, resolve));
-        }
-    }
-
-    _waitUntilReady() {
-        return new Promise(resolve => {
-            this._waitUntilReadyLoop(resolve);
-        });
-    }
-
     _doInit() {
         this._initMap();
         this._initFooter();
@@ -107,7 +97,7 @@ class WT_VFRMapPanel extends HTMLElement {
     connectedCallback() {
         this._panel = document.querySelector(`#${WT_VFRMapPanel.FRAME_ID}`);
         this._loadModConfig();
-        this._waitUntilReady().then(this._doInit.bind(this));
+        WT_Wait.awaitCallback(() => window["simvar"] && this._modConfigLoaded, this).then(this._doInit.bind(this));
     }
 
     _onVFRMapRegistered() {
@@ -305,6 +295,8 @@ class WT_VFRMapWT extends WT_VFRMap {
     constructor(htmlElement) {
         super(htmlElement);
 
+        this._airplane = new WT_PlayerAirplane();
+
         this._icaoWaypointFactory = new WT_ICAOWaypointFactory();
         this._icaoSearchers = {
             airport: new WT_ICAOSearcher("VFRMap", WT_ICAOSearcher.Keys.AIRPORT),
@@ -313,7 +305,7 @@ class WT_VFRMapWT extends WT_VFRMap {
             int: new WT_ICAOSearcher("VFRMap", WT_ICAOSearcher.Keys.INT)
         };
 
-        this._fpm = new WT_FlightPlanManager(this._icaoWaypointFactory);
+        this._fpm = new WT_FlightPlanManager(this._airplane, this._icaoWaypointFactory);
         this._lastFPMSyncTime = 0;
 
         this._citySearcher = new WT_CitySearcher();
@@ -329,8 +321,17 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     /**
+     * The player airplane.
      * @readonly
-     * @property {WT_MapModel} model - the model associated with this map.
+     * @type {WT_PlayerAirplane}
+     */
+    get airplane() {
+        return this._airplane;
+    }
+
+    /**
+     * The model associated with this map.
+     * @readonly
      * @type {WT_MapModel}
      */
     get model() {
@@ -338,8 +339,8 @@ class WT_VFRMapWT extends WT_VFRMap {
     }
 
     /**
+     * The view associated with this map.
      * @readonly
-     * @property {WT_MapView} view - the view associated with this map.
      * @type {WT_MapView}
      */
     get view() {
@@ -348,6 +349,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _initModel(modConfig) {
         this.model.addModule(new WT_MapModelUnitsModule());
+        this.model.addModule(new WT_MapModelAirplaneIconModule());
         this.model.addModule(new WT_MapModelTerrainModule());
         this.model.addModule(new WT_MapModelWeatherDisplayModule());
         this.model.addModule(new WT_MapModelBordersModule());
@@ -402,31 +404,37 @@ class WT_VFRMapWT extends WT_VFRMap {
         for (let region of regions) {
             switch (region) {
                 case WT_MapViewRoadFeatureCollection.Region.NA:
-                    data.push(new WT_MapViewNARouteCollection());
+                    data.push(new WT_Garmin_MapViewNARouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.CA:
-                    data.push(new WT_MapViewMexicoRouteCollection());
+                    data.push(new WT_Garmin_MapViewMexicoRouteCollection());
+                    break;
+                case WT_MapViewRoadFeatureCollection.Region.SA:
+                    data.push(new WT_Garmin_MapViewSARouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EI:
-                    data.push(new WT_MapViewEIRouteCollection());
+                    data.push(new WT_Garmin_MapViewEIRouteCollection());
+                    break;
+                case WT_MapViewRoadFeatureCollection.Region.EN:
+                    data.push(new WT_Garmin_MapViewENRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EW:
-                    data.push(new WT_MapViewEWRouteCollection());
+                    data.push(new WT_Garmin_MapViewEWRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.EC:
-                    data.push(new WT_MapViewECRouteCollection());
+                    data.push(new WT_Garmin_MapViewECRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.RU:
-                    data.push(new WT_MapViewRussiaRouteCollection());
+                    data.push(new WT_Garmin_MapViewRussiaRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.CH:
-                    data.push(new WT_MapViewCHRouteCollection());
+                    data.push(new WT_Garmin_MapViewCHRouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.AE:
-                    data.push(new WT_MapViewAERouteCollection());
+                    data.push(new WT_Garmin_MapViewAERouteCollection());
                     break;
                 case WT_MapViewRoadFeatureCollection.Region.OC:
-                    data.push(new WT_MapViewOCRouteCollection());
+                    data.push(new WT_Garmin_MapViewOCRouteCollection());
                     break;
             }
         }
@@ -454,10 +462,11 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _initView(modConfig) {
         let labelManager = new WT_MapViewTextLabelManager({preventOverlap: true});
-        let waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
+        this._waypointRenderer = new WT_MapViewWaypointCanvasRenderer(labelManager);
         let borderData = this._initBorderData();
+        let roadData;
         if (modConfig.roads.showInVFRMap) {
-            let roadData = this._initRoadData(modConfig);
+            roadData = this._initRoadData(modConfig);
             this._loadRoadData(roadData.feature, roadData.label);
         }
 
@@ -467,8 +476,8 @@ class WT_VFRMapWT extends WT_VFRMap {
             this.view.addLayer(new WT_MapViewRoadLayer(roadData.feature, roadData.label, WT_VFRMapWT.ROAD_LOD_RESOLUTION_THRESHOLDS));
         }
         this.view.addLayer(new WT_MapViewCityLayer(this._citySearcher, labelManager));
-        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, waypointRenderer, labelManager));
-        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegStyleChooser()));
+        this.view.addLayer(new WT_MapViewWaypointLayer(this._icaoSearchers, this._icaoWaypointFactory, this._waypointRenderer, labelManager));
+        this.view.addLayer(new WT_MapViewFlightPlanLayer(this._fpm, this._icaoWaypointFactory, this._waypointRenderer, labelManager, new WT_G3x5_MapViewFlightPlanLegCanvasStyler()));
         this.view.addLayer(new WT_MapViewTextLabelLayer(labelManager));
         this.view.addLayer(this._airplaneLayer = new WT_MapViewAirplaneLayer());
     }
@@ -483,7 +492,7 @@ class WT_VFRMapWT extends WT_VFRMap {
 
     _init() {
         let modConfig = WT_g3000_ModConfig.INSTANCE;
-        this._model = new WT_MapModel();
+        this._model = new WT_MapModel(this.airplane);
         this.view.setModel(this.model);
         this._initModel(modConfig);
         this._initView(modConfig);
@@ -545,7 +554,7 @@ class WT_VFRMapWT extends WT_VFRMap {
         await this._fpm.syncActiveFromGame();
         Coherent.trigger("ON_BACK_ON_TRACK_START");
         this.setShowAirplane(true);
-        this.setCenter(this.model.airplane.position());
+        this.setCenter(this.model.airplane.navigation.position());
 
         if (this._hidePlaneTimeout) {
             clearTimeout(this._hidePlaneTimeout);
@@ -563,6 +572,18 @@ class WT_VFRMapWT extends WT_VFRMap {
     _changeRange(delta) {
         let newIndex = Math.max(0, Math.min(WT_VFRMapWT.MAP_RANGE_LEVELS.length, this._rangeIndex + delta));
         this._rangeIndex = newIndex;
+    }
+
+    _updateICAOWaypointFactory() {
+        this._icaoWaypointFactory.update();
+    }
+
+    _updateFlightPlanManager() {
+        let currentTime = Date.now() / 1000;
+        if (currentTime - this._lastFPMSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
+            this._fpm.syncActiveFromGame();
+            this._lastFPMSyncTime = currentTime;
+        }
     }
 
     _updateScrollInputs() {
@@ -620,33 +641,47 @@ class WT_VFRMapWT extends WT_VFRMap {
         this._scrollDelta.set(0, 0);
     }
 
+    /**
+     *
+     * @param {WT_GeoPoint} target
+     */
+    _handleLatitudeCompensation(target) {
+        let longDimensionFactor = Math.max(1, this.view.viewWidth / this.view.viewHeight);
+        let latDelta = this.model.range.asUnit(WT_Unit.GA_RADIAN) * Avionics.Utils.RAD2DEG * longDimensionFactor * 0.5;
+        let edgeLat = target.lat + (target.lat >= 0 ? 1 : -1) * latDelta;
+        if (Math.abs(edgeLat) > WT_VFRMapWT.MAX_LATITUDE) {
+            let compensatedLat = Math.max(0, WT_VFRMapWT.MAX_LATITUDE - latDelta) * (target.lat >= 0 ? 1 : -1);
+            target.set(compensatedLat, target.long);
+        }
+    }
+
     _updateTarget() {
         if (this.isFollowingAirplane()) {
-            this.model.airplane.position(this._target);
+            this.model.airplane.navigation.position(this._target);
         } else {
             this._scroll();
         }
+
+        this._handleLatitudeCompensation(this._target);
+
         this.model.target = this._target;
     }
 
     _updateView() {
         this.view.update();
+        this._waypointRenderer.update(this.view.state);
     }
 
     onUpdate(deltaTime) {
-        this._icaoWaypointFactory.update();
-        let currentTime = Date.now() / 1000;
-        if (currentTime - this._lastFPMSyncTime >= WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL) {
-            this._fpm.syncActiveFromGame();
-            this._lastFPMSyncTime = currentTime;
-        }
-
+        this._updateICAOWaypointFactory();
+        this._updateFlightPlanManager();
         this._updateInputs();
         this._updateRange();
         this._updateTarget();
         this._updateView();
     }
 }
+WT_VFRMapWT.MAX_LATITUDE = 85;
 WT_VFRMapWT.FLIGHT_PLAN_SYNC_INTERVAL = 3; // seconds
 WT_VFRMapWT.HOTKEY_SCROLL_STEP = 10;
 

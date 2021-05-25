@@ -260,25 +260,25 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                     this.cj4_FlightDirector = document.createElementNS(Avionics.SVG.NS, "g");
                     attitudePitchContainer.appendChild(this.cj4_FlightDirector);
                     let triangleOuterLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    triangleOuterLeft.setAttribute("d", "M-110 23 l20 7 L0 0 Z");
+                    triangleOuterLeft.setAttribute("d", "M -128 20 l 20 7 L 0 -2 Z");
                     triangleOuterLeft.setAttribute("fill", "magenta");
                     triangleOuterLeft.setAttribute("stroke", "black");
                     triangleOuterLeft.setAttribute("stroke-width", "1.5");
                     this.cj4_FlightDirector.appendChild(triangleOuterLeft);
                     let triangleBottomLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                    triangleBottomLeft.setAttribute("d", "M-110 23 l20 7 l-20 7 Z");
+                    triangleBottomLeft.setAttribute("d", "M-128 20 l20 7 l-20 7 Z");
                     triangleBottomLeft.setAttribute("fill", "magenta");
                     triangleBottomLeft.setAttribute("stroke", "black");
                     triangleBottomLeft.setAttribute("stroke-width", "1.5");
                     this.cj4_FlightDirector.appendChild(triangleBottomLeft);
                     let triangleOuterRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    triangleOuterRight.setAttribute("d", "M110 23 l-20 7 L0 0 Z");
+                    triangleOuterRight.setAttribute("d", "M128 20 l-20 7 L0 -2 Z");
                     triangleOuterRight.setAttribute("fill", "magenta");
                     triangleOuterRight.setAttribute("stroke", "black");
                     triangleOuterRight.setAttribute("stroke-width", "1.5");
                     this.cj4_FlightDirector.appendChild(triangleOuterRight);
                     let triangleBottomRight = document.createElementNS(Avionics.SVG.NS, "path");
-                    triangleBottomRight.setAttribute("d", "M110 23 l-20 7 l20 7 Z");
+                    triangleBottomRight.setAttribute("d", "M128 20 l-20 7 l20 7 Z");
                     triangleBottomRight.setAttribute("fill", "magenta");
                     triangleBottomRight.setAttribute("stroke", "black");
                     triangleBottomRight.setAttribute("stroke-width", "1.5");
@@ -379,25 +379,25 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 crossPointersLeft.setAttribute("d", "M -90 30 m 30 0 L -60 0 L -135 0 L -135 10 L -70 10 L -70 42 L -60 42 Z");
                 crossPointersLeft.setAttribute("fill", "#black");
                 crossPointersLeft.setAttribute("stroke", "white");
-                crossPointersLeft.setAttribute("stroke-width", "2");
+                crossPointersLeft.setAttribute("stroke-width", "3");
                 this.crossPointersGroup.appendChild(crossPointersLeft);
 
                 let crossPointersRight = document.createElementNS(Avionics.SVG.NS, "path");
                 crossPointersRight.setAttribute("d", "M 90 30 m -30 -4 L 60 0 L 135 0 L 135 10 L 70 10 L 70 42 L 60 42 Z");
                 crossPointersRight.setAttribute("fill", "#black");
                 crossPointersRight.setAttribute("stroke", "white");
-                crossPointersRight.setAttribute("stroke-width", "2");
+                crossPointersRight.setAttribute("stroke-width", "3");
                 this.crossPointersGroup.appendChild(crossPointersRight);
 
                 let triangleInnerLeft = document.createElementNS(Avionics.SVG.NS, "path");
-                triangleInnerLeft.setAttribute("d", "M-90 30 l30 0 L0 0 Z");
+                triangleInnerLeft.setAttribute("d", "M -108 27 l 50 0 L 0 0 Z");
                 triangleInnerLeft.setAttribute("fill", "#black");
                 triangleInnerLeft.setAttribute("stroke", "white");
                 triangleInnerLeft.setAttribute("stroke-width", "2");
                 this.vBarAircraftSymbol.appendChild(triangleInnerLeft);
 
                 let triangleInnerRight = document.createElementNS(Avionics.SVG.NS, "path");
-                triangleInnerRight.setAttribute("d", "M90 30 l-30 0 L0 0 Z");
+                triangleInnerRight.setAttribute("d", "M 108 27 l -50 0 L 0 0 Z");
                 triangleInnerRight.setAttribute("fill", "#black");
                 triangleInnerRight.setAttribute("stroke", "white");
                 triangleInnerRight.setAttribute("stroke-width", "2");
@@ -413,20 +413,24 @@ class Jet_PFD_AttitudeIndicator extends HTMLElement {
                 this.attitude_root.appendChild(this.slipSkid);
 
                 this.crossPointersPitch = document.createElementNS(Avionics.SVG.NS, "path");
-                this.crossPointersPitch.setAttribute("d", "M -110 23 m -9 -14 L -119 2 L 119 2 L 119 8 L -119 8 Z");
+                this.crossPointersPitch.setAttribute("d", "M -110 23 m -9.153 -14.992 C -123 8 -123 2 -119 2 L 119 2 C 123 2 123 8 119 8 L -119.153 8.008 Z");
                 this.crossPointersPitch.setAttribute("fill", "magenta");
+                this.crossPointersPitch.setAttribute("stroke", "black");
+                this.crossPointersPitch.setAttribute("stroke-width", "1px");
                 this.crossPointersGroup.appendChild(this.crossPointersPitch);
 
                 this.crossPointersBank = document.createElementNS(Avionics.SVG.NS, "path");
-                this.crossPointersBank.setAttribute("d", "M -3 0 l 0 -116 l 6 0 l 0 238 L -3 122 L -3 0");
+                this.crossPointersBank.setAttribute("d", "M -3 0 l 0 -116 c 0 -4 6 -4 6 0 l 0 238 C 3 126 -3 126 -3 122 L -3 0 Z");
                 this.crossPointersBank.setAttribute("fill", "magenta");
+                this.crossPointersBank.setAttribute("stroke", "black");
+                this.crossPointersBank.setAttribute("stroke-width", "1px");
                 this.crossPointersGroup.appendChild(this.crossPointersBank);
 
                 this.crossPointersMiddle = document.createElementNS(Avionics.SVG.NS, "path");
                 this.crossPointersMiddle.setAttribute("d", "M -5 0 L 5 0 L 5 10 L -5 10 L -5 0 Z");
                 this.crossPointersMiddle.setAttribute("fill", "none");
                 this.crossPointersMiddle.setAttribute("stroke", "white");
-                this.crossPointersMiddle.setAttribute("stroke-width", "2");
+                this.crossPointersMiddle.setAttribute("stroke-width", "3");
                 this.crossPointersGroup.appendChild(this.crossPointersMiddle);
 
             }

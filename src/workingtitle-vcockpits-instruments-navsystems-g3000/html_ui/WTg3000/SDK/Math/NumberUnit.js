@@ -196,7 +196,7 @@ class WT_NumberUnit {
         if (Math.abs(diff) < 1e-14) {
             return 0;
         }
-        return diff;
+        return Math.sign(diff);
     }
 
     /**
@@ -208,6 +208,14 @@ class WT_NumberUnit {
      */
     equals(value, unit) {
         return this.compare(value, unit) === 0;
+    }
+
+    /**
+     * Checks whether this NumberUnit has a numeric value of NaN.
+     * @returns {Boolean} whether this NumberUnit has a numeric value of NaN.
+     */
+    isNaN() {
+        return isNaN(this.number);
     }
 
     /**
@@ -301,6 +309,10 @@ class WT_NumberUnitReadOnly {
         return this._source.equals(other);
     }
 
+    isNaN() {
+        return this._source.isNaN();
+    }
+
     copy() {
         return this._source.copy();
     }
@@ -389,6 +401,16 @@ class WT_Unit {
     createNumber(value) {
         return new WT_NumberUnit(value, this);
     }
+
+    /**
+     * Checks whether this unit is equal to an argument. Returns true if and only if the argument is an instance of
+     * WT_Unit, belongs to the same family, and has the same full name as this unit.
+     * @param {*} other - the comparison.
+     * @returns {Boolean} whether this unit is equal to the comparison.
+     */
+    equals(other) {
+        return (other instanceof WT_Unit) && this.family === other.family && this.fullNameSingular === other.fullNameSingular;
+    }
 }
 
 /**
@@ -405,6 +427,7 @@ class WT_SimpleUnit extends WT_Unit {
      */
     constructor(family, scaleFactor, fullNameSingular, fullNameMultiple, abbrevName) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
+
         this._family = family;
         this._scaleFactor = scaleFactor;
     }
@@ -435,7 +458,8 @@ class WT_TempUnit extends WT_Unit {
      */
     constructor(fullNameSingular, fullNameMultiple, abbrevName, zeroOffset, scaleFactor) {
         super(fullNameSingular, fullNameMultiple, abbrevName);
-        this._family = WT_Unit.TEMP;
+
+        this._family = WT_Unit.Family.TEMP;
         this._zeroOffset = zeroOffset;
         this._scaleFactor = scaleFactor;
     }
@@ -452,9 +476,6 @@ class WT_TempUnit extends WT_Unit {
      */
     convert(value, otherUnit) {
         if (this.family === otherUnit.family) {
-            if (this.id === otherUnit.id) {
-                return value;
-            }
             return (value + this._zeroOffset) * (this._scaleFactor / otherUnit._scaleFactor) - otherUnit._zeroOffset;
         }
         return NaN;
@@ -577,6 +598,7 @@ WT_Unit.DEGREE = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180, "degree"
 WT_Unit.ARC_MIN = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180 / 60, "minute", "minutes", "'");
 WT_Unit.ARC_SEC = new WT_SimpleUnit(WT_Unit.Family.ANGLE, Math.PI / 180 / 3600, "second", "seconds", "\"");
 
+WT_Unit.MILLISECOND = new WT_SimpleUnit(WT_Unit.Family.TIME, 0.001, "millisecond", "milliseconds", "ms");
 WT_Unit.SECOND = new WT_SimpleUnit(WT_Unit.Family.TIME, 1, "second", "seconds", "s");
 WT_Unit.MINUTE = new WT_SimpleUnit(WT_Unit.Family.TIME, 60, "minute", "minutes", "m");
 WT_Unit.HOUR = new WT_SimpleUnit(WT_Unit.Family.TIME, 3600, "hour", "hours", "h");
@@ -598,7 +620,8 @@ WT_Unit.CELSIUS = new WT_TempUnit("° Celsius", "° Celsius", "°C", 273.15, 1);
 WT_Unit.FAHRENHEIT = new WT_TempUnit("° Fahrenheit", "° Fahrenheit", "°F", 459.67, 5/9);
 
 WT_Unit.KNOT = new WT_CompoundUnit([WT_Unit.NMILE], [WT_Unit.HOUR], "knot", "knots", "kt");
-WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kph");
+WT_Unit.KPH = new WT_CompoundUnit([WT_Unit.KILOMETER], [WT_Unit.HOUR], null, null, "kh");
+WT_Unit.MPM = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.MINUTE], null, null, "mpm");
 WT_Unit.MPS = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.SECOND]);
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");
 WT_Unit.FPS = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.SECOND]);
@@ -980,14 +1003,23 @@ WT_CoordinateFormatter.OPTIONS_DEFAULT = {
  */
 class WT_NumberHTMLFormatter {
     /**
-     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of the WT_NumberUnit objects.
+     * @param {WT_NumberFormatter} numberFormatter - the formatter to use to generate the raw string representations of WT_NumberUnit objects.
      * @param {object} opts - options definition object containing properties to initialize to the new formatter.
      */
     constructor(numberFormatter, opts = {}) {
-        this.numberFormatter = numberFormatter;
+        this._numberFormatter = numberFormatter;
 
         this._optsManager = new WT_OptionsManager(this, WT_NumberHTMLFormatter.OPTIONS_DEF);
         this.setOptions(opts);
+    }
+
+    /**
+     * The formatter used by this HTML formatter to generate the raw string representations of WT_NumberUnit objects.
+     * @readonly
+     * @type {WT_NumberFormatter}
+     */
+    get numberFormatter() {
+        return this._numberFormatter;
     }
 
     /**

@@ -4,15 +4,17 @@
  */
 class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
     /**
+     * @param {Number} altimeterIndex - the index of the altimeter from which to obtain indicated altitude.
      * @param {{getFacingAngle(state:WT_MapViewState):Number}} [facingAngleGetter] - defines the facing angle (in viewing window space) of the arc by implementing the
      *                                                                               getFacingAngle() method. If this argument is not supplied, by default the arc will
      *                                                                               face the current true ground track of the plane.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(facingAngleGetter = {getFacingAngle: state => state.model.airplane.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
+    constructor(altimeterIndex, facingAngleGetter = {getFacingAngle: state => state.model.airplane.navigation.trackTrue() + state.projection.rotation}, className = WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT, configName = WT_MapViewAltitudeInterceptLayer.CONFIG_NAME_DEFAULT) {
         super(className, configName);
 
+        this._altimeterIndex = altimeterIndex;
         this.facingAngleGetter = facingAngleGetter;
 
         this._optsManager = new WT_OptionsManager(this, WT_MapViewAltitudeInterceptLayer.OPTIONS_DEF);
@@ -49,6 +51,16 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         }
     }
 
+    _initRadiusSmoother() {
+        this._radiusSmoother = new WT_ExponentialSmoother(this.smoothingConstant, 0, WT_MapViewAltitudeInterceptLayer.SMOOTHING_MAX_TIME_DELTA);
+    }
+
+    onAttached(state) {
+        super.onAttached(state);
+
+        this._initRadiusSmoother();
+    }
+
     /**
      * Applies a stroke to this layer's canvas rendering context using the specified styles.
      * @param {Number} lineWidth - the width of the stroke, in pixels.
@@ -58,30 +70,6 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
         this._arcLayer.display.context.lineWidth = lineWidth;
         this._arcLayer.display.context.strokeStyle = strokeStyle;
         this._arcLayer.display.context.stroke();
-    }
-
-    /**
-     * Calculates an appropriate exponential smoothing factor to use.
-     * @param {WT_MapViewState} state - the current map view state.
-     * @returns {Number} - a smoothing factor.
-     */
-    _calculateSmoothingFactor(state) {
-        let dt = state.currentTime / 1000 - this._lastTime;
-        if (dt > WT_MapViewAltitudeInterceptLayer.SMOOTHING_MAX_TIME_DELTA) {
-            return 1;
-        } else {
-            return Math.pow(0.5, dt * this.smoothingConstant);
-        }
-    }
-
-    /**
-     * Applies exponential smoothing (i.e. exponential moving average) to a radius value.
-     * @param {Number} radius - the value to smooth.
-     * @param {Number} factor - the smoothing factor to use.
-     * @returns {Number} - the smoothed value.
-     */
-    _smoothRadius(radius, factor) {
-        return radius * factor + this._lastRadius * (1 - factor);
     }
 
     /**
@@ -138,35 +126,37 @@ class WT_MapViewAltitudeInterceptLayer extends WT_MapViewMultiLayer {
     onUpdate(state) {
         super.onUpdate(state);
 
-        if (state.model.airplane.isOnGround()) {
+        if (state.model.airplane.sensors.isOnGround()) {
             return;
         }
 
         this._arcLayer.display.context.clearRect(this._lastDrawnBounds.left, this._lastDrawnBounds.top, this._lastDrawnBounds.width, this._lastDrawnBounds.height);
 
-        let vSpeed = state.model.airplane.verticalSpeed(this._tempFPM).number;
-        let currentAlt = state.model.airplane.altitudeIndicated(this._tempFoot).number;
-        let targetAlt = state.model.autopilot.altitudeTarget.number;
+        let dt = state.currentTime / 1000 - this._lastTime;
+        let vSpeed = state.model.airplane.sensors.verticalSpeed(this._tempFPM).number;
+        let currentAlt = state.model.airplane.sensors.getAltimeter(this._altimeterIndex).altitudeIndicated(this._tempFoot).number;
+        let targetAlt = state.model.airplane.autopilot.selectedAltitude(this._tempFoot).number;
         let deltaAlt = targetAlt - currentAlt;
         let time = deltaAlt / vSpeed / 60; // hours
         if (Math.abs(vSpeed) < WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD || time < 0 || Math.abs(deltaAlt) < WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD) {
             return;
         }
 
-        let gs = state.model.airplane.groundSpeed(this._tempKnot).number;
+        let gs = state.model.airplane.navigation.groundSpeed(this._tempKnot).number;
         let distance = this._tempNM.set(gs * time);
         let angle = this.facingAngleGetter.getFacingAngle(state);
-        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.position(this._tempGeoPoint), distance, angle, this._tempGeoPoint);
+        let arcTarget = state.projection.offsetByViewAngle(state.model.airplane.navigation.position(this._tempGeoPoint), distance, angle, this._tempGeoPoint);
         let viewArcTarget = state.projection.project(arcTarget, this._tempVector);
         let radius = viewArcTarget.subtract(state.viewPlane).length;
         if (state.projection.range.equals(this._lastRange)) {
-            radius = this._smoothRadius(radius, this._calculateSmoothingFactor(state));
+            radius = this._radiusSmoother.next(radius, dt);
+        } else {
+            this._radiusSmoother.reset(radius);
         }
         this._drawArc(state, radius, angle);
 
         this._lastTime = state.currentTime / 1000;
         this._lastRange.set(state.projection.range);
-        this._lastRadius = radius;
     }
 }
 WT_MapViewAltitudeInterceptLayer.CLASS_DEFAULT = "altitudeInterceptLayer";
@@ -175,7 +165,7 @@ WT_MapViewAltitudeInterceptLayer.SMOOTHING_MAX_TIME_DELTA = 0.5;
 WT_MapViewAltitudeInterceptLayer.VSPEED_THRESHOLD = 100; // FPM
 WT_MapViewAltitudeInterceptLayer.ALTITUDE_DELTA_THRESHOLD = 100; // feet
 WT_MapViewAltitudeInterceptLayer.OPTIONS_DEF = {
-    smoothingConstant: {default: 50, auto: true},
+    smoothingConstant: {default: 1, auto: true},
 
     angularWidth: {default: 40, auto: true},
     strokeWidth: {default: 4, auto: true},

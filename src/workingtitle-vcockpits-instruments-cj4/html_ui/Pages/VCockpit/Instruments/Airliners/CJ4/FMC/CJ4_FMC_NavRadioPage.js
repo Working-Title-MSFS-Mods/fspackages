@@ -114,7 +114,7 @@ class CJ4_FMC_NavRadioPageOne {
             [" ATC1", "TCAS MODE "],
             [this._freqMap.atc1.toFixed(0).padStart(4, "0") + "[green]", tcasModeSwitch],
             [" ADF", "REL  [blue]"],
-            [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>[disabled]"],
+            [this._freqMap.adf1.toFixed(1).padStart(6) + "[green]", "TCAS>"],
         ]);
     }
 
@@ -157,16 +157,16 @@ class CJ4_FMC_NavRadioPageOne {
         this._fmc.onLeftInput[0] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.com1Control(this._fmc, 1);
-            } else {    
-            this.enterVhfFreq(this._fmc.inOut, 1);
+            } else {
+                this.enterVhfFreq(this._fmc.inOut, 1);
             }
         };
 
         this._fmc.onRightInput[0] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.com2Control(this._fmc, 2);
-            } else {    
-            this.enterVhfFreq(this._fmc.inOut, 2);
+            } else {
+                this.enterVhfFreq(this._fmc.inOut, 2);
             }
         };
 
@@ -208,7 +208,7 @@ class CJ4_FMC_NavRadioPageOne {
                         });
                     });
                 } else {
-                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+                    this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
                 }
             }
         };
@@ -436,8 +436,8 @@ class CJ4_FMC_NavRadioDispatch {
         this._fmc.onLeftInput[0] = () => {
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.com1Control(this._fmc, 1);
-            } else {    
-            this.enterVhfFreq(this._fmc.inOut, 1);
+            } else {
+                this.enterVhfFreq(this._fmc.inOut, 1);
             }
         };
 
@@ -467,7 +467,7 @@ class CJ4_FMC_NavRadioDispatch {
                         });
                     });
                 } else {
-                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+                    this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
                 }
             }
         };
@@ -558,21 +558,72 @@ class CJ4_FMC_NavRadioPage {
     static tcasControl(fmc) {
         fmc.clearDisplay();
 
+        const relAbsSwitch = fmc._templateRenderer.renderSwitch(["REL", "ABS"], SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number"), "blue");
+        const altAboveOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1 ? "ABOVE[blue]" : "ABOVE[small]";
+        const altNormOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number") === 1 ? "NORM[blue]" : "NORM[small]";
+        const altBelowOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number") === 1 ? "BELOW[blue]" : "BELOW[small]";
+
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
-            ["MODE[disabled]", "ALT TAG[disabled]"],
-            ["TA/RA/STBY[disabled]", "REL/ABS[disabled]"],
+            ["MODE[disabled]", "ALT TAG"],
+            ["TA/RA/STBY[disabled]", relAbsSwitch],
             [""],
             ["", "TEST[disabled]"],
             ["◊TRAFFIC[disabled]", "EXT TEST[disabled]"],
             ["ON/OFF[disabled]", "ON/OFF[disabled]"],
             ["", "ALT LIMITS[disabled]"],
-            ["", "ABOVE[disabled]"],
+            ["", altAboveOption],
             [""],
-            ["", "NORM[disabled]"],
+            ["", altNormOption],
             [""],
-            ["", "BELOW[disabled]"]
+            ["", altBelowOption]
         ]);
+
+        let isAboveOrBelowSelected = () => {
+            let aboveStatus = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number");
+            let belowStatus = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number");
+            if(aboveStatus === 0 && belowStatus === 0){
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 1);
+            } else {
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 0);
+            }
+        };
+
+        fmc.onRightInput[0] = () => {
+            let mode = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number");
+            mode = (mode === 0) ? 1 : 0;
+            SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number", mode).then(() => {
+                CJ4_FMC_NavRadioPage.tcasControl(fmc);
+            });
+        };
+
+        fmc.onRightInput[3] = () => {
+            let isEnabled = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number");           
+            SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 1-isEnabled).then(() => {
+                isAboveOrBelowSelected();
+                CJ4_FMC_NavRadioPage.tcasControl(fmc);
+            });
+        };
+
+        fmc.onRightInput[4] = () => {
+            let isEnabled = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number");
+            if(isEnabled === 0){
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number", 0);  
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 1);         
+                SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 0).then(() => {
+                    CJ4_FMC_NavRadioPage.tcasControl(fmc);
+                });
+            }
+        };
+
+        fmc.onRightInput[5] = () => {
+            let isEnabled = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number");           
+            SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number", 1-isEnabled).then(() => {
+                isAboveOrBelowSelected();
+                CJ4_FMC_NavRadioPage.tcasControl(fmc);
+            });
+        };
+
         fmc.updateSideButtonActiveStatus();
     }
     static atcControl(fmc) {
@@ -768,9 +819,9 @@ class CJ4_FMC_AtcControlPage {
             const avionicsComp = SimVar.GetSimVarValue("COM STATUS:2", "number");
             if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 if (avionicsComp === 2) {
-                CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
+                    CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
                 } else {
-                CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
+                    CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
                 }
             } else {
                 this._fmc.clearUserInput();
@@ -859,11 +910,11 @@ class CJ4_FMC_ComControlPageOne {
         WTDataStore.set(`CJ4_COM_RADIO_PRES`, JSON.stringify(this.presets));
         //console.log(WTDataStore.get(`CJ4_COM_RADIO_PRES`, JSON.stringify(this.presets)));
     }
-    
+
     render() {
         const rows = [];
         rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM1 CONTROL[blue]`]);
-        rows.push([ ` COM1`, 'SQUELCH ']);
+        rows.push([` COM1`, 'SQUELCH ']);
         rows.push([this._freqMap.vhf1.toFixed(3) + '[green]', 'ON[blue]/OFF[s-text disabled]']);
         rows.push([' RECALL']);
         rows.push([this._freqMap.rcl1.toFixed(3), 'TEST[s-text disabled]']);
@@ -871,9 +922,9 @@ class CJ4_FMC_ComControlPageOne {
         const presetStart = ((this.currentPageNumber * 4) - 4) + 1;
         rows.push([`${this.displayPreset(presetStart - 1)}`, `${presetStart}`]);
         rows.push(['']);
-        rows.push([`${this.displayPreset(presetStart)}`,`${presetStart + 1}`]);
+        rows.push([`${this.displayPreset(presetStart)}`, `${presetStart + 1}`]);
         rows.push(['']);
-        rows.push([`${this.displayPreset(presetStart + 1)}`,`${presetStart + 2}`]);
+        rows.push([`${this.displayPreset(presetStart + 1)}`, `${presetStart + 2}`]);
         rows.push(['']);
         if (this.currentPageNumber !== 6) {
             rows.push([`${this.displayPreset(presetStart + 2)}`, `${presetStart + 3}`]);
@@ -916,8 +967,8 @@ class CJ4_FMC_ComControlPageOne {
                 CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
             } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
-            } else {   
-            this.enterVhfFreq(this._fmc.inOut, 1);
+            } else {
+                this.enterVhfFreq(this._fmc.inOut, 1);
             }
         };
         this._fmc.onLeftInput[1] = () => {
@@ -1037,7 +1088,7 @@ class CJ4_FMC_ComControlPageTwo {
     render() {
         const rows = [];
         rows.push(['', `${this.currentPageNumber}/5[blue]`, `COM2 CONTROL[blue]`]);
-        rows.push([ ` COM2`, 'SQUELCH ']);
+        rows.push([` COM2`, 'SQUELCH ']);
         rows.push([this._freqMap.vhf2.toFixed(3) + '[green]', 'ON[blue]/OFF[s-text disabled]']);
         rows.push([' RECALL']);
         rows.push([this._freqMap.rcl2.toFixed(3), 'TEST[s-text disabled]']);
@@ -1045,9 +1096,9 @@ class CJ4_FMC_ComControlPageTwo {
         const presetStart = ((this.currentPageNumber * 4) - 4) + 1;
         rows.push([`${this.displayPreset(presetStart - 1)}`, `${presetStart}`]);
         rows.push(['']);
-        rows.push([`${this.displayPreset(presetStart)}`,`${presetStart + 1}`]);
+        rows.push([`${this.displayPreset(presetStart)}`, `${presetStart + 1}`]);
         rows.push(['']);
-        rows.push([`${this.displayPreset(presetStart + 1)}`,`${presetStart + 2}`]);
+        rows.push([`${this.displayPreset(presetStart + 1)}`, `${presetStart + 2}`]);
         rows.push(['']);
         if (this.currentPageNumber !== 6) {
             rows.push([`${this.displayPreset(presetStart + 2)}`, `${presetStart + 3}`]);
@@ -1090,8 +1141,8 @@ class CJ4_FMC_ComControlPageTwo {
                 CJ4_FMC_NavRadioDispatch.Dispatch(this._fmc);
             } else if (this._fmc.inOut === undefined || this._fmc.inOut === '') {
                 CJ4_FMC_NavRadioPage.ShowPage1(this._fmc);
-            } else {   
-            this.enterVhfFreq(this._fmc.inOut, 2);
+            } else {
+                this.enterVhfFreq(this._fmc.inOut, 2);
             }
         };
         this._fmc.onLeftInput[1] = () => {
@@ -1202,7 +1253,7 @@ class CJ4_FMC_AdfControlPage {
     render() {
         const rows = [];
         rows.push(['', `${this.currentPageNumber}/5[blue]`, `ADF1 CONTROL[blue]`]);
-        rows.push([ ` ADF1`, 'BFO ']);
+        rows.push([` ADF1`, 'BFO ']);
         rows.push([this._freqMap.adf1.toFixed(1).padStart(6) + '[green]', 'ON[blue]/OFF[s-text disabled]']);
         rows.push([' MODE']);
         rows.push(['ADF[blue]/ANT[s-text disabled]', 'TEST[s-text disabled]']);
@@ -1210,9 +1261,9 @@ class CJ4_FMC_AdfControlPage {
         const presetStart = ((this.currentPageNumber * 4) - 4) + 1;
         rows.push([`${this.displayPreset(presetStart - 1)}`, `${presetStart}`]);
         rows.push(['']);
-        rows.push([`${this.displayPreset(presetStart)}`,`${presetStart + 1}`]);
+        rows.push([`${this.displayPreset(presetStart)}`, `${presetStart + 1}`]);
         rows.push(['']);
-        rows.push([`${this.displayPreset(presetStart + 1)}`,`${presetStart + 2}`]);
+        rows.push([`${this.displayPreset(presetStart + 1)}`, `${presetStart + 2}`]);
         rows.push(['']);
         if (this.currentPageNumber !== 6) {
             rows.push([`${this.displayPreset(presetStart + 2)}`, `${presetStart + 3}`]);
@@ -1247,7 +1298,7 @@ class CJ4_FMC_AdfControlPage {
                         });
                     });
                 } else {
-                this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
+                    this._fmc.showErrorMessage(this._fmc.defaultInputErrorMessage);
                 }
             }
         };

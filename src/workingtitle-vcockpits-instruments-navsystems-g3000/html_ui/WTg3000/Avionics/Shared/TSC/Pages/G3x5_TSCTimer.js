@@ -39,8 +39,6 @@ class WT_G3x5_TSCTimerHTMLElement extends HTMLElement {
         super();
 
         this._formatter = new WT_TimeFormatter({round: 0});
-
-        this._tempTime = new WT_NumberUnit(0, WT_Unit.SECOND);
     }
 
     /**
@@ -125,14 +123,22 @@ class WT_G3x5_TSCTimerHTMLElement extends HTMLElement {
     }
 
     _onKeyboardClosed(value) {
-        this.parentPage.timer.setInitialValue(this._tempTime.set(value / 1000));
+        this.parentPage.timer.setInitialValue(value);
         this.parentPage.timer.syncToInitialValue();
     }
 
     _onDisplayPressed(button) {
         this.parentPage.timer.stop();
         let keyboard = this.parentPage.instrument.timeKeyboard;
-        keyboard.element.setContext(this._onKeyboardClosed.bind(this), this.parentPage.timer.value.number * 1000, this.parentPage.homePageGroup, this.parentPage.homePageName);
+        keyboard.element.setContext({
+            title: "Timer",
+            homePageGroup: this.parentPage.homePageGroup,
+            homePageName: this.parentPage.homePageName,
+            positiveOnly: true,
+            limit24Hours: false,
+            initialValue: this.parentPage.timer.value,
+            valueEnteredCallback: this._onKeyboardClosed.bind(this)
+        });
         this.parentPage.instrument.switchToPopUpPage(keyboard);
     }
 

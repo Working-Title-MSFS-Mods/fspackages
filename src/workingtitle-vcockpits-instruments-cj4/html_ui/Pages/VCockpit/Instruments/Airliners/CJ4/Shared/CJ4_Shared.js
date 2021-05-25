@@ -1113,7 +1113,7 @@ class CJ4_SystemEngines extends NavSystemElement {
             this.redLineLeft.setAttribute("y2", 112);
             this.redLineLeft.setAttribute("stroke", "red");
             this.redLineLeft.setAttribute("stroke-width", "3");
-            
+
             this.redLineRight = document.createElementNS(Avionics.SVG.NS, "line");
             this.redLineRight.setAttribute("x1", (startPosX + halfWidth));
             this.redLineRight.setAttribute("y1", 112);
@@ -3356,7 +3356,7 @@ class CJ4_MapContainer extends NavSystemElementContainer {
         }
     }
     showTraffic(_value) {
-        if(this.isTrafficVisible !== _value){
+        if (this.isTrafficVisible !== _value) {
             this.isTrafficVisible = _value;
             this.map.instrument.setAttribute("show-traffic", this.isTrafficVisible);
         }
@@ -3585,6 +3585,8 @@ var CJ4_MapOverlaySymbol;
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TERR"] = 0] = "TERR";
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["WX"] = 1] = "WX";
     CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC"] = 2] = "TFC";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC_ABOVE"] = 3] = "TFC_ABOVE";
+    CJ4_MapOverlaySymbol[CJ4_MapOverlaySymbol["TFC_BELOW"] = 4] = "TFC_BELOW";
 })(CJ4_MapOverlaySymbol || (CJ4_MapOverlaySymbol = {}));
 class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     constructor(_name, _root) {
@@ -3616,6 +3618,8 @@ class CJ4_MapOverlayContainer extends NavSystemElementContainer {
     onUpdate(_dTime) {
         super.onUpdate(_dTime);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC, this.isTfcVisible);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC_ABOVE, SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1);
+        this.infos.showSymbol(CJ4_MapOverlaySymbol.TFC_BELOW, SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_BELOW_ENABLED", "number") === 1);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.WX, this.isWeatherVisible);
         this.infos.showSymbol(CJ4_MapOverlaySymbol.TERR, this.isTerrainVisible);
         this.updateElapsedTime();
@@ -3764,7 +3768,9 @@ class CJ4_MapInfo extends NavSystemElement {
         this.root.aircraft = Aircraft.CJ4;
         this.root.gps = this.gps;
 
-        this.tfcIndicator = this.root.querySelector('#TFC .overlay-tfc');
+        this.tfcIndicator = this.root.querySelector('#TFC');
+        this.tfcAboveIndicator = this.root.querySelector('#overlay-tfc-above');
+        this.tfcBelowIndicator = this.root.querySelector('#overlay-tfc-below');
 
         this.terrIndicator = this.root.querySelector('#Symbols .overlay-terr');
         this.wxIndicator = this.root.querySelector('#Symbols .overlay-wx');
@@ -3787,6 +3793,16 @@ class CJ4_MapInfo extends NavSystemElement {
     }
     showSymbol(_symbol, _show) {
         switch (_symbol) {
+            case CJ4_MapOverlaySymbol.TFC_ABOVE:
+                if (this.tfcAboveIndicator) {
+                    this.tfcAboveIndicator.style.visibility = _show ? 'visible' : 'hidden';
+                }
+                break;
+            case CJ4_MapOverlaySymbol.TFC_BELOW:
+                if (this.tfcBelowIndicator) {
+                    this.tfcBelowIndicator.style.visibility = _show ? 'visible' : 'hidden';
+                }
+                break;
             case CJ4_MapOverlaySymbol.TFC:
                 if (this.tfcIndicator) {
                     this.tfcIndicator.style.display = _show ? '' : 'none';

@@ -113,9 +113,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
      * @param {Number} size
      */
     _deregisterAll(size) {
-        for (let city of this._drawnCities[size]) {
-            this._deregisterCity(city);
-        }
+        this._drawnCities[size].forEach(city => this._deregisterCity(city), this);
     }
 
     _clearDrawnCities(size) {
@@ -194,9 +192,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
         let layer = this._cityLayers[size];
         let renderQueue = this._renderQueues[size];
         let cities = this._searcher.search(size, layer.buffer.reference.center, layer.buffer.reference.range);
-        for (let city of cities) {
-            renderQueue.enqueue(city);
-        }
+        cities.forEach(city => renderQueue.enqueue(city));
     }
 
     _startRenderCities(state, size) {
@@ -275,7 +271,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
             return;
         }
 
-        for (let entry of this._registeredCities.values()) {
+        this._registeredCities.forEach(entry => {
             let show = state.projection.isInView(entry.label.city.location, 0.05);
             if (show && !entry.showLabel) {
                 this._labelManager.add(entry.label);
@@ -283,7 +279,7 @@ class WT_MapViewCityLayer extends WT_MapViewMultiLayer {
                 this._labelManager.remove(entry.label);
             }
             entry.showLabel = show;
-        }
+        }, this);
 
         this._lastRegisteredUpdateTime = state.currentTime;
     }

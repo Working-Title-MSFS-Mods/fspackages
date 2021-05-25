@@ -15,6 +15,7 @@ class WT_MapViewRangeDisplayLayer extends WT_MapViewLayer {
      * @param {WT_MapViewState} state
      */
     onUpdate(state) {
+        this._rangeDisplay.setRange(state.model.range);
         this._rangeDisplay.update(state);
     }
 }

@@ -1,5 +1,11 @@
-# Working Title CJ4 v0.12.1
-Welcome to the Working Title CJ4 v0.12.1. This version brings a boatload of bug fixes and tweaks, including a new custom vertical autopilot that has allowed us to add altitude capture for PTCH mode, TO/GA modes and improve the altitude capture mechanics of the autopilot.
+# Working Title CJ4 v0.12.5
+Welcome to the Working Title CJ4 v0.12.5. 
+
+This versions brings compatibility to SimUpdate 4.
+
+We've also again received great code contributions by developers from the community. Thank you very much all!
+Besides that we've added a basic implementation for traffic display (TFC) and TCAS Control options in the FMS. TA/RA advisories are not implemented yet.
+
 
 ## READ THE GUIDE
 Please, please, please read the guide for instructions on using features. A lot of hard work went into writing the guide and the Discord channels are clogged with questions that are readily answered in the guide.
@@ -13,12 +19,10 @@ Installation is easy, simply copy the `workingtitle-aircraft-cj4` folder inside 
 
 # Changes
 
-- Fixed bugs with parsing TUN page inputs.
-- Minor cleanup on DSPL MENU FMC page.
-- Fixed bugs with leg altitude (constraint) parsing to address some incorrect constraints in some European approaches.
-- Fix for erroneous sim autopilot altitude capture when using a hardware button tied to all the altitude slots and not just slot 1.
-- Fix for some erroneous situations where VNAV PATH kicks you to PTCH incorrectly.
-- Fix for sequencing missed approach on Go-Around after a new approach is selected.
+- Added Traffic Display (TFC) to the PFD and MFD 
+- Added "ALT TAG" option on the FMS TCAS CONTROL page
+- Added ABOVE/NORM/BELOW options on the FMS TCAS CONTROL page
+- ... TODO ... dont forget to credit contributors
 
 ## ⚠️ Known Issues
 * In the latest versions of Navigraph data, some "lettered" or non-runway-specific approaches now appear as something like RNAV A - 00 and do not allow the selection of a landing runway, preventing using the Approach Refs page - this is something we will be working to address in the future.

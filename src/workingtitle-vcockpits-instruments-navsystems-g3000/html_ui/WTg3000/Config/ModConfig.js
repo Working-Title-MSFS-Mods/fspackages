@@ -30,9 +30,17 @@ class WT_g3000_ModConfig {
     static async initialize() {
         let config = await new WT_g3000_ModConfigLoader().load();
         WT_g3000_ModConfig._INSTANCE = config;
+        return config;
     }
 }
 WT_g3000_ModConfig.SECTIONS = [
+    {cfgName: "TRAFFIC", objName: "traffic", options: {
+        useTrafficService: {default: false, auto: true},
+        trafficServicePort: {default: 8383, auto: true}
+    }},
+    {cfgName: "VFRMAP", objName: "vfrMap", options: {
+        useCustom: {default: true, auto: true}
+    }},
     {cfgName: "ROADS", objName: "roads", options: {
         quality: {default: 3, auto: true},
         showInVFRMap: {default: true, auto: true},
@@ -51,6 +59,37 @@ WT_g3000_ModConfig.SECTIONS = [
         loadAE: {default: true, auto: true},
         loadAS: {default: true, auto: true},
         loadOC: {default: true, auto: true}
+    }},
+    {cfgName: "TBM_930_REFERENCES", objName: "tbm930References", options: {
+        vmo: {default: [[0, 266]], auto: true},
+        vr: {default: 90, auto: true},
+        vy: {default: 124, auto: true},
+        vx: {default: 100, auto: true},
+        vapp: {default: 85, auto: true},
+        vglide: {default: 120, auto: true},
+        vle: {default: 178, auto: true},
+        vfe: {default: [178, 122], auto: true},
+        aoaZeroLift: {default: -3.6, auto: true},
+        aoaCritical: {default: 15, auto: true}
+    }},
+    {cfgName: "CITATION_LONGITUDE_REFERENCES", objName: "longitudeReferences", options: {
+        vmo: {default: [[0, 290], [8000, 325]], auto: true},
+        mmo: {default: 0.84, auto: true},
+        crossover: {default: 29375, auto: true},
+        v1: {default: 110, auto: true},
+        vr: {default: 120, auto: true},
+        v2: {default: 137, auto: true},
+        vfto: {default: 180, auto: true},
+        vapp: {default: 115, auto: true},
+        vref: {default: 108, auto: true},
+        vno: {default: 235, auto: true},
+        mno: {default: 0.75, auto: true},
+        vle: {default: 230, auto: true},
+        vfe: {default: [250, 230, 180], auto: true},
+        aoaZeroLift: {default: -3, auto: true},
+        aoaCritical: {default: 13, auto: true},
+        clbN1: {default: [[0, 0, 0.95]], auto: true},
+        cruN1: {default: [[0, 0, 0.85]], auto: true}
     }}
 ];
 

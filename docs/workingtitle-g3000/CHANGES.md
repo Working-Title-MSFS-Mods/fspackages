@@ -1,5 +1,151 @@
 # Changelog
 
+### v0.6.2
+**New Features**
+- \[Traffic\] Enabled support for laurinius's MSFS Traffic Service app, which adds Offline AI traffic and SimConnect-injected traffic to the mod's traffic systems.
+  - Configuration settings for this feature can be found in the mod config file.
+
+**Changed Features**
+- \[GTC\] Airport icons, when shown, now indicate the direction of the longest runway at the airport.
+
+**Fixes**
+- \[General\] Fixed a bug with initializing airport data with no listed runways.
+- \[NavMap\] While in TRACK UP mode on the ground, the compass arc's reference tick mark now correctly indicates the aircraft's current heading instead of ground track (which cannot always be reliably calculated on the ground).
+- \[Traffic\] Fixed an error with ground track computation for traffic contacts.
+- \[PFD\] Airspeed altimeter speed bugs are no longer mispositioned when airspeed is below the minimum indicated airspeed.
+- \[GTC\] Fixed a bug where the Charts page would sometimes automatically change the selected airport after closing a popup or navigating back to it from the pan/zoom control page.
+
+### v0.6.1
+**Changed Features**
+- \[Charts\] The airplane icon is now visible in ALL view as long as the chart is geo-referenced and the projected position of the airplane is not in an inset.
+- \[GTC\] Improved performance while the Map Settings page is open.
+- \[GTC\] Improved performance while the Nearest Waypoints pages are open.
+
+**Fixes**
+- \[Compatibility\] Fixed an error related to parsing certain Navigraph approach data that would cause major performance degradation as well as other undesired effects related to flight plan logic and rendering.
+- \[Compatibility\] Automatic ILS frequency loading now works properly when using Navigraph FMS data.
+- \[NavMap\] Fixed an error that would sometimes cause the active flight plan waypoint to become "stuck" on the map after removing it from the flight plan.
+- \[Traffic\] If a contact is lost while triggering a traffic advisory, the traffic advisory is now properly removed.
+- \[PFD\] Fixed a regression introduced in v0.6.0 that caused the airspeed indicator reference speed bug to be slightly out of position.
+- \[PFD\] The NAV/DME info and bearing info displays now correctly report DME distance from DME-only stations, and will not report data from stations from which they are not receiving a signal.
+
+### v0.6.0
+**New Features**
+- \[General\] Implemented traffic awareness and alert systems for both the TBM930 and Longitude.
+  - When the system is active, traffic alerts (TAs) will display a "TRAFFIC" annunciation on the PFD. Additionally, if no PFD inset is enabled, the PFD inset traffic map will automatically be displayed. Alternatively, if the PFD inset map is enabled, the traffic overlay for the inset map will automatically be displayed.
+  - Traffic can be visualized in several ways:
+    - Enable the traffic pane on the MFD by using the GTC to navigate to MFD Home -> Traffic.
+    - Enable the traffic overlay in the navigation map by using the GTC to navigate to MFD Home -> Map -> Map Settings -> Sensors tab -> Traffic.
+    - Enable the traffic inset on the PFD by using the GTC to navigate to PFD Home -> Traffic Map.
+      - Alternatively, in the TBM930 only, press the Traffic Map PFD softkey, or navigate to PFD Map Settings -> Map Layout -> Inset Traffic.
+    - Enable the traffic overlay in the PFD inset map by using the GTC to navigate to PFD Home -> PFD Map Settings -> Sensors tab -> Traffic.
+      - Alternatively, in the TBM930 only, use the PFD softkeys to navigate to PFD Map Settings -> Traffic.
+  - The traffic settings menu can be found by using the GTC to navigate to MFD Home -> Traffic -> Traffic Settings _or_ MFD Home -> Map -> Map Settings -> Sensors tab -> Traffic Settings _or_ PFD Home -> PFD Map Settings -> Sensors tab -> Traffic Settings.
+  - Settings specific to the navigation map traffic overlay can be found by using the GTC to navigate to MFD Home -> Map -> Map Settings -> Sensors tab -> Traffic Settings -> Map Settings _or_ PFD Home -> PFD Map Settings -> Sensors tab -> Traffic Settings -> Map Settings.
+- \[General\] Added Navigraph charts integration. *Use of this feature requires a paid Navigraph subscription*.
+  - To link a Navigraph account, use the GTC to navigate to MFD Home -> Utilities -> Database Status -> Navigraph Charts.
+  - To enable the charts pane on the MFD, use the GTC to navigate to MFD Home -> Charts.
+    - Charts can be rotated, zoomed, and scrolled using the GTC Charts Control page.
+    - The charts pane supports a live airplane icon overlay for geo-referenced charts while in Plan View.
+  - Use the Charts page on the touchscreen controller to select desired charts for viewing.
+- \[General\] Added settings to configure Time Format and Local Time Offset.
+  - The following time formats are available: Local 12 hr, Local 24 hr, and UTC.
+  - To change these settings, use the GTC to navigate to MFD Home -> Utilities -> Avionics Settings -> System tab.
+- \[General\] Added settings to filter airports which appear in the Nearest Airports list. Airports may be filtered by runway length and/or runway surface type.
+  - To change these settings, use the GTC to navigate to MFD Home -> Utilities -> Avionics Settings -> System tab.
+- \[MFD\] Added support for the Nearest Waypoint pane. When active, this pane highlights the selected nearest waypoint (airport, intersection, VOR, NDB).
+- \[GTC\] Added information pages for Intersections, VORs, and NDBs. These pages can be found by navigating to MFD Home -> Waypoint Info.
+
+**Changed Features**
+- \[NavMap\] Having many waypoints displayed on the map now incurs less of a performance cost.
+- \[MFD\] Increased the size of the weather radar display in the WX Radar Pane.
+- \[GTC\] Removed map pointer control scroll speed limit.
+- \[GTC\] The Airport Info page now displays the time zone offset for the selected airport.
+- \[GTC\] Updated the Nearest Waypoint pages to more closely match the real-life units.
+- \[VFR Map\] Added an option in the mod config file to enable/disable the custom VFR Map.
+- \[VFR Map\] Increased font size for the custom VFR map.
+
+**Fixes**
+- \[Compatibility\] For the Longitude: increased the default CRU thrust limit to 95% N1. This will allow the airplane to maintain Mmo at higher altitudes for those who have installed dakfly's Longitude performance mod.
+- \[General\] The aural minimums alert no longer triggers immediately after takeoff.
+- \[General\] Calculations for distance and ETE are now more accurate for flight plan legs that involve transition turns.
+- \[General\] For the Longitude: altimeter pressure setting increment/decrement hotkeys now work properly again.
+- \[NavMap\] Fixed a game freeze related to rendering certain airways.
+
+### v0.5.1
+**Fixes**
+- \[Compatibility\] Fixed compatibility issue with dakfly's Longitude performance mod.
+- \[PFD\] The autopilot display will now correctly flash an autopilot disconnect warning when the autopilot is disconnected through means other than pressing the AP key.
+  - For the TBM 930: the warning will flash indefinitely until it is acknowledged by pressing the AP/Trim disconnect switch on the control wheel.
+  - For the Longitude: the warning will flash for 5 seconds, then stop.
+- \[PFD\] Fixed airspeed indicator behavior when IAS is below the minimum reportable speed (20 KIAS for the TBM930, 40 KIAS for the Longitude):
+  - The IAS display shows "---" instead of the minimum speed.
+  - The trend vector is hidden.
+- \[PFD\] For the Longitude: the autopilot display will now flash an autothrottle disconnect caution alert when the autothrottle is turned off.
+- \[PFD\] For the Longitude: fixed erroneous display in the navigation status display ETE field when ground speed is 0.
+- \[PFD\] For the Longitude: the airspeed indicator now always shows the reference speed (and bug).
+- \[PFD\] For the Longitude: 'NO WIND DATA' annunciation no longer overflows its container.
+- \[GTC\] The "Home" button in the Timers page now works properly.
+- \[GTC\] When in the Map Pointer Control page, pressing the bottom knob will now exit the page as intended.
+
+### v0.5.0
+**New Features**
+- \[General\] Enabled measurement unit selection. You may now choose between different sets of measurement units in several categories, which affects how various on-screen values are displayed. Note that some on-screen values are not affected by these settings (e.g. the PFD airspeed indicator will always display airspeed in knots).
+  - These settings can be changed by using the GTC and navigating to MFD Home -> Utilities -> Setup -> Avionics Settings -> Units tab.
+  - The following categories are customizable:
+    - Nav Angle (magnetic or true)
+    - Distance/Speed (nautical or metric)
+    - Altitude/Vertical Speed (feet or meters)
+    - External Temperature (Celsius or Fahrenheit)
+- \[Misc\] Certain aircraft reference values are now configurable via the mod config file (located at `workingtitle-g3000\html_ui\WTg3000.cfg`).
+
+**Changed Features**
+- \[PFD\] Overhauled the autopilot display to more closely match the real Garmin units.
+  - For the Longitude: the display now supports annunciations for auto-throttle modes. It will also display the reference speed when auto-throttle is active and in SPD mode.
+- \[PFD\] Overhauled the airspeed indicator to more closely match the real Garmin units.
+  - The airspeed indicator now displays mach units at the bottom instead of TAS. The mach display is disabled below M0.3 for the TBM930 and M0.4 for the Longitude.
+  - The airspeed indicator will now display an overspeed caution/warning by turning the IAS/mach displays yellow/red.
+  - When mach units are used for FLC mode, the reference speed display at the top of the airspeed indicator changes from knots to mach units. Moreover, the reference speed bug on the airspeed tape will be placed at the IAS value that is equivalent to the reference mach speed.
+  - For the Longitude only:
+    - The overspeed ("barber pole") speed strip will dynamically change based on pressure altitude to reflect true Vmo/Mmo:
+      - Vmo increases linearly from 290 knots at sea level to 325 knots at 8000 feet.
+      - Vmo = 325 knots from 8000 feet to the crossover altitude (29375 feet).
+      - Mmo = 0.84 above the crossover altitude.
+    - The underspeed (solid yellow/red) speed strips will dynamically change based on the angle of attack to correspond to the yellow/red ranges on the Angle of Attack Indicator.
+- \[PFD\] Overhauled the altimeter to more closely match the real Garmin units.
+  - Enabled meters overlay. This setting can be changed by using the GTC and navigating to PFD Home -> PFD Settings. Alternatively, for the G3000 only, use the PFD softkey menu and navigate to PFD Settings -> Other PFD Settings -> Altitude Units -> Meters.
+- \[PFD\] Changed the style/positioning of the following displays to more closely match the real Garmin units:
+  - Radar Altimeter
+  - Minimums Display
+  - Wind Data Display
+  - Angle of Attack Indicator
+  - Navigation Status Bar
+  - NAV/DME Information Bar
+  - Bearing Information Bar
+- \[PFD\] Changed the style of the G3000 PFD softkey menus to more closely match the real-life unit.
+- \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator is no longer available in the G3000.
+- \[NavMap\] The high-latitude behavior of the map has been changed to take into account the range of the map. At smaller map ranges, the map can be centered at higher latitudes up to +/- 85 degrees (previously the map was restricted to 70 degrees at all ranges).
+- \[GTC\] Added the ability to drag-to-scroll in various pages. These pages also now have scroll-up/scroll-down buttons enabled in the button bar.
+- \[Misc\] For the Longitude: In autothrottle CLIMB mode, thrust is limited to 95% N1 (CLB thrust). After leveling off (switching from CLIMB to any other autothrottle mode), CLB thrust is available for another 10 minutes, after which the autothrottle will be limited to 85% N1 (CRU thrust). Engaging CLIMB mode again will reset the autothrottle limit to CLB thrust.
+  - The default CLB and CRU values are arbitrary since no references could be found. If so desired, these values can be customized in the mod config file (located at `workingtitle-g3000\html_ui\WTg3000.cfg`). Both support lookup tables keyed to pressure altitude and delta ISA temperature.
+
+**Fixes**
+- \[PFD\] The "barber pole" speed strip on the airspeed indicator now appears at the correct speeds.
+- \[PFD\] Fixed a regression in v0.4.2/Sim Update 3 that caused the altimeter's baro setting display to not always display all four significant digits in "IN HG" mode.
+- \[PFD\] Fixed the scale of the Angle of Attack Indicator. Zero AoA is no longer in the middle of the scale. The top of the scale now theoretically represents the critical (stall) AoA, and zero on the scale represents the zero-lift AoA.
+  - The scale for the TBM930 is based on the values found in the targetperformance.cfg file.
+  - The scale for the Longitude is somewhat arbitrary since no references could be found, but should be at least in the ballpark of a "correct" scale based on empiric performance data gathered from within the sim.
+  - The scale is not adjusted for differences in configuration (e.g. flaps) or mach speed.
+- \[PFD\] The "Auto" display mode for the PFD Angle of Attack Indicator in the G5000 now functions properly: when selected, the AoA indicator will be displayed if the landing gear are down or if flaps are set to any setting other than fully retracted.
+- \[PFD\] For the Longitude: The PFD altimeter is now synced with the same altimeter used by the autopilot (which is also synced to the standby altimeter). This will fix the issue of the autopilot appearing to hold at an altitude different from the selected altitude if the PFD and standby altimeter baro settings are not the same. This change has the side effect of rendering the standby altimeter baro knob unusable, since the standby altimeter is now slaved to the PFD altimeter.
+- \[PFD\] For the Longitude: the joystick above the PFD displays can now be used to increase/decrease the range of the PFD Inset Map.
+- \[NavMap\] The flight plan renderer now correctly draws the turning "transitions" into approaches which the sim's default autopilot flies when directly sequencing from the last leg before an approach into the first leg of the approach would result in a greater than 90-degree angle turn.
+- \[GTC\] The backspace button in the frequency entry pop-up window is no longer broken.
+- \[GTC\] Speed Bug settings are now properly synchronized across different touchscreen controllers.
+- \[Misc\] Loading/activating an ILS/LOC approach will automatically load the approach frequency into the nav radio. The exact behavior of this function depends on whether the G3000 or G5000 is being used, whether the selected autopilot/CDI nav source is FMS or NAV, and whether the approach frequency was already loaded into the nav radio.
+- \[Misc\] When flying an ILS/LOC approach, the selected autopilot/CDI nav source is FMS, and the approach frequency is loaded into the active frequency field of NAV1 or NAV2, the system will automatically switch the nav source to NAV1/NAV2 when the following conditions are first met: the next active waypoint is the FAF and the plane is within 15 NM of the FAF, OR the next active waypoint is past the FAF.
+- \[Misc\] Added the missing default reference Vspeeds for the Longitude. Note that these speeds are the published real-life values; performance in the sim may differ.
+
 ### v0.4.2
 **Fixes**
 - \[Compatibility\] Now compatible with game patch 1.14.5.0 (Sim Update 3).

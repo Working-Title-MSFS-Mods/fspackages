@@ -42,6 +42,11 @@
                                 <span class="fmaValue"></span>
                             </div>
                             <div id="verticalCaptureDataField">
+                                <span id="verticalSpeedBugField_Icon">    
+                                    <svg id="verticalSpeedbug" viewBox="0 0 31 20">
+                                        <path d="M 20 0 L 32 10 L 20 20 L 20 13 L 17 13 L 17 7 L 20 7 L 20 0 Z"/>
+                                    </svg>
+                                </span>
                                 <span id="verticalCaptureDataField_Icon">
                                     <svg id="Speedbug" viewBox="0 0 31 18">
                                         <path d="M 1 9 l 18 -8 l 11 0 l 0 16 l -11 0 l -18 -8"/>
@@ -49,6 +54,18 @@
                                 </span>
                                 <span id="verticalCaptureDataField_Value">
                                     <span class="fmaValue"></span>
+                                </span>
+                            </div>
+                            <div id="verticalArrowField">
+                                <span id="verticalDirectionArrowUp_Icon">
+                                    <svg id="verticalDirectionArrowUp" viewBox="0 0 210 134">
+                                        <path d= "m 152 23 l 0 -15 l -4 6 l -3 0 l 8.5 -12 l 0 0 l 8.5 12 l -3 0 l -4 -6 l 0 15 l -3 0 Z"/>
+                                    </svg>
+                                </span>
+                                <span id="verticalDirectionArrowDown_Icon">
+                                    <svg id="verticalDirectionArrowDown" viewBox="0 0 210 134">
+                                    <path d="m 152 2 l 0 15 l -4 -6 l -3 0 l 8.5 12 l 0 0 l 8.5 -12 l -3 0 l -4 6 l 0 -15 l -3 0 Z"/>
+                                    </svg>
                                 </span>
                             </div>
                             <div id="verticalArmField">
@@ -186,6 +203,15 @@
                             </table>
                         </div>
                     </div>
+                    <div id="TFC" class="overlay-tfc">
+                        <ul>
+                            <li class='active'>TFC</li>
+                            <li>&nbsp;</li>
+                            <li>&nbsp;</li>
+                            <li id="overlay-tfc-above" class="cyan">ABOVE</li>
+                            <li id="overlay-tfc-below" class="cyan">BELOW</li>
+                        </ul>
+                    </div>
 
                     <div id="Symbols">
                         <ul>
@@ -301,7 +327,7 @@
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/HSIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/AttitudeIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/VerticalSpeedIndicator.js"></script>
-<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/PFD/AOAIndicator.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/AOAIndicator.js"></script>
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/WT/ILSIndicator.js"></script>
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/Airliners/Shared/BaseAirliners.js"></script>

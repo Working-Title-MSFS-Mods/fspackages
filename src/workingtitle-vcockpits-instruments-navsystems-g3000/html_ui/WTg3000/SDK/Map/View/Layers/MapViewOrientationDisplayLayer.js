@@ -28,31 +28,16 @@ class WT_MapViewOrientationDisplay extends HTMLElement {
     constructor() {
         super();
 
-        let template = document.createElement("template");
-        template.innerHTML = `
-            <style>
-                :host {
-                    background-color: black;
-                    border: solid 1px white;
-                    border-radius: 3px;
-                    text-align: center;
-                    font-weight: bold;
-                    font-size: 1.75vh;
-                    line-height: 2vh;
-                    color: #67e8ef;
-                }
-                #text {
-                    margin: 0 0.5vh;
-                }
-            </style>
-            <div id="text"></div>
-        `;
         this.attachShadow({mode: "open"});
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
+        this.shadowRoot.appendChild(this._getTemplate().content.cloneNode(true));
+    }
+
+    _getTemplate() {
+        return WT_MapViewOrientationDisplay.TEMPLATE;
     }
 
     connectedCallback() {
-        this._text = this.shadowRoot.querySelector(`#text`);
+        this._text = new WT_CachedElement(this.shadowRoot.querySelector(`#text`));
     }
 
     /**
@@ -63,5 +48,21 @@ class WT_MapViewOrientationDisplay extends HTMLElement {
         this._text.innerHTML = texts[state.model.orientation.mode];
     }
 }
+WT_MapViewOrientationDisplay.TEMPLATE = document.createElement("template");
+WT_MapViewOrientationDisplay.TEMPLATE.innerHTML = `
+    <style>
+        :host {
+            background-color: black;
+            border: solid 1px white;
+            border-radius: 3px;
+            text-align: center;
+            color: white;
+        }
+        #text {
+            margin: 0 0.2em;
+        }
+    </style>
+    <div id="text"></div>
+`;
 
 customElements.define("map-view-orientationdisplay", WT_MapViewOrientationDisplay);
