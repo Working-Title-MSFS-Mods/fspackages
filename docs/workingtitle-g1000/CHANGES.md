@@ -1,3 +1,6 @@
+# changes on 0.3.7
+* Fixed bug that could cause display issues in the same area as live traffic.
+
 # changes on 0.3.6
 * Updated for 1.16.2.0
 

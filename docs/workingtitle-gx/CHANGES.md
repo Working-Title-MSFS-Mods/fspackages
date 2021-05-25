@@ -1,3 +1,6 @@
+# Changes in 0.1.0-dev8
+* Fixed bug that could cause display issues in the same area as live traffic.
+
 # Changes in 0.1.0-dev7
 
 * Fixed bug in synthetic vision toggle
