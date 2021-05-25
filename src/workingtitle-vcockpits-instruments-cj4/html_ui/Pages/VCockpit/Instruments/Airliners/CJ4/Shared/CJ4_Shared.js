@@ -4124,6 +4124,8 @@ var CJ4_PopupMenu_Key;
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_MISSEDAPPR"] = 50] = "MAP_SYMBOL_MISSEDAPPR";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_NDBS"] = 51] = "MAP_SYMBOL_NDBS";
     CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MAP_SYMBOL_RNGSEL"] = 52] = "MAP_SYMBOL_RNGSEL";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["PFD_TFC_OVERLAY"] = 53] = "PFD_TFC_OVERLAY";
+    CJ4_PopupMenu_Key[CJ4_PopupMenu_Key["MFD_TFC_OVERLAY"] = 54] = "MFD_TFC_OVERLAY";
 })(CJ4_PopupMenu_Key || (CJ4_PopupMenu_Key = {}));
 class CJ4_PopupMenu_Item {
     constructor(_type, _section, _y, _height) {
@@ -4625,8 +4627,8 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("TFC", this.textSize, 0.18);
-                this.addRadio("OFF", this.textSize, null);
-                this.addRadio("ON", this.textSize, null);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.PFD_TFC_OVERLAY]);
+                this.addRadio("ON", this.textSize, [CJ4_PopupMenu_Key.PFD_TFC_OVERLAY]);
             }
             this.endSection();
         }
@@ -5079,8 +5081,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             this.beginSection();
             {
                 this.addTitle("TFC", this.textSize, 0.18);
-                this.addRadio("OFF", this.textSize, null);
-                this.addRadio("ON", this.textSize, null);
+                this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.MFD_TFC_OVERLAY]);
+                this.addRadio("ON", this.textSize, [CJ4_PopupMenu_Key.MFD_TFC_OVERLAY]);
             }
             this.endSection();
         }

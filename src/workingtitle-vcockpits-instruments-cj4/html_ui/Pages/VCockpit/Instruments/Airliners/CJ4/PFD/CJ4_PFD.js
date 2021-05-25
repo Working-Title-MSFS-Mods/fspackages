@@ -474,6 +474,12 @@ class CJ4_PFD extends BaseAirliners {
             this.showTerrain = false;
             this.showWeather = false;
         }
+        const overlayTfc = _dict.get(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY);
+        if (overlayTfc == "ON") {
+            this.showTfc = true;
+        } else {
+            this.showTfc = false;
+        }
 
         const navSrc = _dict.get(CJ4_PopupMenu_Key.NAV_SRC);
         if (navSrc == "FMS1") {
@@ -666,6 +672,12 @@ class CJ4_PFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "WX");
         } else {
             _dict.set(CJ4_PopupMenu_Key.PFD_MAP_OVERLAY, "OFF");
+        }
+
+        if (this.showTfc) {
+            _dict.set(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY, "ON");
+        } else {
+            _dict.set(CJ4_PopupMenu_Key.PFD_TFC_OVERLAY, "OFF");
         }
 
         if (this.mapNavigationMode == Jet_NDCompass_Navigation.VOR && this.mapNavigationSource == 1) {

@@ -480,6 +480,7 @@ class CJ4_MFD extends BaseAirliners {
             //this.showSystemOverlay = getParsedMemoryStateSettings.showSystemOverlay;
             this.showTerrain = getParsedMemoryStateSettings.showTerrain;
             this.showWeather = getParsedMemoryStateSettings.showWeather;
+            //this.showTfc = getParsedMemoryStateSettings.showTfc;
             this.showGwx = getParsedMemoryStateSettings.showGwx;
             this.isExtended = getParsedMemoryStateSettings.isExtended;
         }
@@ -496,6 +497,7 @@ class CJ4_MFD extends BaseAirliners {
             this.mapNavigationSource = memoryFunction.mapNavigationSource;
             this.showTerrain = memoryFunction.showTerrain;
             this.showWeather = memoryFunction.showWeather;
+            //this.showTfc = memoryFunction.showTfc;
             this.showGwx = memoryFunction.showGwx;
             this.isExtended = memoryFunction.isExtended;
         }
@@ -576,6 +578,13 @@ class CJ4_MFD extends BaseAirliners {
             this.showWeather = false;
         }
 
+        const overlayTfc = _dict.get(CJ4_PopupMenu_Key.MFD_TFC_OVERLAY);
+        if (overlayTfc == "ON") {
+            this.showTfc = true;
+        } else {
+            this.showTfc = false;
+        }
+
         this.map.setSymbol(CJ4_MapSymbol.AIRPORTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.CONSTRAINTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS) == "ON") ? true : false);
         this.map.setSymbol(CJ4_MapSymbol.INTERSECTS, (_dict.get(CJ4_PopupMenu_Key.MAP_SYMBOL_INTERSECTS) == "ON") ? true : false);
@@ -641,6 +650,12 @@ class CJ4_MFD extends BaseAirliners {
             _dict.set(CJ4_PopupMenu_Key.MFD_MAP_OVERLAY, "WX");
         } else {
             _dict.set(CJ4_PopupMenu_Key.MFD_MAP_OVERLAY, "OFF");
+        }
+
+        if (this.showTfc) {
+            _dict.set(CJ4_PopupMenu_Key.MFD_TFC_OVERLAY, "ON");
+        } else {
+            _dict.set(CJ4_PopupMenu_Key.MFD_TFC_OVERLAY, "OFF");
         }
 
         _dict.set(CJ4_PopupMenu_Key.MAP_SYMBOL_AIRPORTS, (CJ4_MapSymbols.hasSymbol(CJ4_MapSymbol.AIRPORTS)) ? "ON" : "OFF");
