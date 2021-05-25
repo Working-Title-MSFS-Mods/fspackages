@@ -214,6 +214,10 @@ class WT_G3x5_BaseInstrument extends BaseInstrument {
                 this.flightPlanManagerWT.unlockActive();
                 this._forceSyncEnrouteFromAsobo = false;
             }
+
+            if (this.flightPlanManagerWT.isMaster) {
+                await this.flightPlanManagerWT.tryAutoActivateApproach();
+            }
         } catch (e) {
             console.log(e);
         }

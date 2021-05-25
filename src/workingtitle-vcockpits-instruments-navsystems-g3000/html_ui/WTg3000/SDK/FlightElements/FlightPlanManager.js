@@ -135,6 +135,23 @@ class WT_FlightPlanManager {
     }
 
     /**
+     * Checks if the active flight plan's approach (if one exists) needs to be activated, and if so, activates the
+     * approach. An approach needs to be activated when the autopilot has sequenced past the last leg of the active
+     * flight plan prior to the first approach leg.
+     * @returns {Promise<void>} a Promise which is fulfilled either when the system determines an approach does not
+     *                          need to be activated, or when the approach has been activated.
+     */
+    async tryAutoActivateApproach() {
+        if (this._activeLegCached && this.activePlan.hasApproach() && (this._activeLegCached.index >= this.activePlan.getApproach().legs.first().index) && !this.isApproachActive()) {
+            try {
+                await this._asoboInterface.tryAutoActivateApproach();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+
+    /**
      *
      * @param {WT_FlightPlanSyncHandler.Command} command
      * @param {WT_FlightPlanSyncHandler.EventType} type
@@ -485,6 +502,14 @@ class WT_FlightPlanManager {
     clearActivePlan() {
         let syncEvent = this._prepareEvent(WT_FlightPlanSyncHandler.Command.REQUEST, WT_FlightPlanSyncHandler.EventType.ACTIVE_CLEAR_FLIGHT_PLAN);
         this._syncHandler.fireEvent(syncEvent);
+    }
+
+    /**
+     * Checks whether an approach is currently active.
+     * @returns {Boolean} whether an approach is currently active.
+     */
+    isApproachActive() {
+        return this._asoboInterface.isApproachActive();
     }
 
     /**

@@ -608,6 +608,14 @@ class WT_FlightPlanAsoboInterface {
 
     /**
      *
+     * @returns {Promise<void>}
+     */
+    async tryAutoActivateApproach() {
+        await Coherent.call("TRY_AUTOACTIVATE_APPROACH");
+    }
+
+    /**
+     *
      * @param {WT_FlightPlan} flightPlan
      * @returns {Promise<WT_FlightPlanLeg>}
      */

@@ -102,8 +102,7 @@ class WT_G3x5_TSCProcedures extends WT_G3x5_TSCPageElement {
     }
 
     onUpdate(deltaTime) {
-        let activeLeg = this._fpm.getActiveLeg(true);
-        let isApproachActive = activeLeg && activeLeg.segment === WT_FlightPlan.Segment.APPROACH;
+        let isApproachActive = this._fpm.isApproachActive();
         this.htmlElement.update(isApproachActive);
     }
 }
@@ -2983,9 +2982,8 @@ class WT_G3x5_TSCApproachSelection extends WT_G3x5_TSCProcedureSelection {
     _updateState() {
         super._updateState();
 
-        let activeLeg = this._fpm.getActiveLeg(true);
         this._state._flightPlanSource = this._source;
-        this._state._isApproachActive = activeLeg && activeLeg.flightPlan === this._displayedFlightPlan && activeLeg.segment === WT_FlightPlan.Segment.APPROACH;
+        this._state._isApproachActive = this._fpm.activePlan === this._displayedFlightPlan && this._fpm.isApproachActive();
     }
 }
 WT_G3x5_TSCApproachSelection.TITLE = "Approach Selection";
