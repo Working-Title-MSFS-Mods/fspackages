@@ -3,7 +3,7 @@
      id="l4343">
     <path
        style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#00F2FF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers stroke fill"
-       d="M 0 0 m -12.7 0 l 6.35 -11 l 12.7 0 l 6.35 11 l -6.35 11 l -12.7 0 l -6.35 -11"
+       d="M 0 -9 L 10 0 L 0 10 L -10 0 Z"
        id="rect4517" />
   </g>
 </svg>

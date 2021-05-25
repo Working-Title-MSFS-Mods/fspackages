@@ -353,7 +353,7 @@ class HoldsDirector {
 
     const interceptAngle = AutopilotMath.interceptAngle(xtk, NavSensitivity.NORMAL);
     const bearingToWaypoint = Avionics.Utils.computeGreatCircleHeading(planeState.position, legEnd);
-    const deltaAngle = Math.abs(Avionics.Utils.angleDiff(dtk, bearingToWaypoint));
+    const deltaAngle = Math.abs(Avionics.Utils.diffAngle(dtk, bearingToWaypoint));
 
     const headingToSet = deltaAngle < Math.abs(interceptAngle) ? AutopilotMath.normalizeHeading(dtk + interceptAngle) : bearingToWaypoint;
     this.tryActivateIfArmed(legStart, legEnd, planeState, NavSensitivity.NORMAL);
@@ -397,7 +397,7 @@ class HoldsDirector {
    */
   isAbeam(dtk, planePosition, fixCoords) {
     const planeToFixTrack = Avionics.Utils.computeGreatCircleHeading(planePosition, fixCoords);
-    const trackDiff = Math.abs(Avionics.Utils.angleDiff(dtk, planeToFixTrack));
+    const trackDiff = Math.abs(Avionics.Utils.diffAngle(dtk, planeToFixTrack));
 
     return trackDiff > 91;
   }
@@ -521,7 +521,7 @@ class HoldsDirector {
    * @returns {string} The hold entry state for a given set of courses.
    */
   static calculateEntryState(holdCourse, inboundCourse) {
-    const courseDiff = Avionics.Utils.angleDiff(holdCourse, inboundCourse);
+    const courseDiff = Avionics.Utils.diffAngle(holdCourse, inboundCourse);
     if (courseDiff >= -130 && courseDiff <= 70) {
       return HoldsDirectorState.ENTRY_DIRECT_INBOUND;
     }

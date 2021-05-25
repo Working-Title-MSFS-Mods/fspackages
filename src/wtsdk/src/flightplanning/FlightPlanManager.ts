@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { FlightPlanSegment } from './FlightPlanSegment';
+import { FlightPlanSegment, SegmentType } from './FlightPlanSegment';
 import { FlightPlanAsoboSync } from './FlightPlanAsoboSync';
 import { HoldDetails } from './HoldDetails';
 import { ManagedFlightPlan } from './ManagedFlightPlan';
@@ -850,10 +850,10 @@ export class FlightPlanManager {
       if (runways && runways.length > 0) {
         const direction = Simplane.getHeadingMagnetic();
         let bestRunway = runways[0];
-        let bestDeltaAngle = Math.abs(Avionics.Utils.angleDiff(direction, bestRunway.direction));
+        let bestDeltaAngle = Math.abs(Avionics.Utils.diffAngle(direction, bestRunway.direction));
 
         for (let i = 1; i < runways.length; i++) {
-          const deltaAngle = Math.abs(Avionics.Utils.angleDiff(direction, runways[i].direction));
+          const deltaAngle = Math.abs(Avionics.Utils.diffAngle(direction, runways[i].direction));
           if (deltaAngle < bestDeltaAngle) {
             bestDeltaAngle = deltaAngle;
             bestRunway = runways[i];
@@ -897,13 +897,13 @@ export class FlightPlanManager {
    * @param index The index of the runway in the origin airport runway information.
    * @param callback A callback to call when the operation completes.
    */
-   public async setDepartureRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
+  public async setDepartureRunwayIndex(index: number, callback = EmptyCallback.Void): Promise<void> {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
 
-    if(currentFlightPlan.procedureDetails.departureIndex > -1 && index > -1){
-      const apt = currentFlightPlan.originAirfield.infos as AirportInfo;      
-      const rwyTrans = apt.departures[currentFlightPlan.procedureDetails.departureIndex].runwayTransitions 
-      if(rwyTrans !== undefined && rwyTrans.length-1 < index){
+    if (currentFlightPlan.procedureDetails.departureIndex > -1 && index > -1) {
+      const apt = currentFlightPlan.originAirfield.infos as AirportInfo;
+      const rwyTrans = apt.departures[currentFlightPlan.procedureDetails.departureIndex].runwayTransitions
+      if (rwyTrans !== undefined && rwyTrans.length - 1 < index) {
         callback();
         return;
       }
@@ -1187,6 +1187,15 @@ export class FlightPlanManager {
   }
 
   /**
+   * Returns a value indicating if we are in a approach/arrival segment. 
+   */
+  public isApproachActivated(): boolean {
+    const fpln = this.getCurrentFlightPlan();
+    const segment = fpln.findSegmentByWaypointIndex(fpln.activeWaypointIndex);
+    return segment.type === SegmentType.Approach || segment.type === SegmentType.Arrival;
+  }
+
+  /**
    * Gets the index of the active waypoint on the approach in the current flight plan.
    */
   public getApproachActiveWaypointIndex() {
@@ -1199,7 +1208,13 @@ export class FlightPlanManager {
   public getApproach(): any {
     const currentFlightPlan = this._flightPlans[this._currentFlightPlanIndex];
     if (currentFlightPlan.hasDestination && currentFlightPlan.procedureDetails.approachIndex !== -1) {
-      return (currentFlightPlan.destinationAirfield.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex];
+      const app = (currentFlightPlan.destinationAirfield.infos as AirportInfo).approaches[currentFlightPlan.procedureDetails.approachIndex];
+      if(app !== undefined){
+        app.isLocalizer = function()  {
+          return this.name.indexOf("ILS") > -1 || this.name.indexOf("LOC") > -1
+        }.bind(app);
+      }
+      return app;
     }
 
     return undefined;

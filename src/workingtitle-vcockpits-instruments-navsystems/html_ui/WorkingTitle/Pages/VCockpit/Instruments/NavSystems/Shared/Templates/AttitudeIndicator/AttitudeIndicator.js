@@ -166,18 +166,18 @@ class AttitudeIndicator extends HTMLElement {
             this.appendChild(this.horizon);
             this.horizonTop = document.createElementNS(Avionics.SVG.NS, "rect");
             this.horizonTop.setAttribute("fill", (this.backgroundVisible) ? this.horizonTopColor : "transparent");
-            this.horizonTop.setAttribute("x", "-1000");
+            this.horizonTop.setAttribute("x", "-1500");
             this.horizonTop.setAttribute("y", "-1000");
-            this.horizonTop.setAttribute("width", "2000");
+            this.horizonTop.setAttribute("width", "3000");
             this.horizonTop.setAttribute("height", "2000");
             this.horizon.appendChild(this.horizonTop);
             this.bottomPart = document.createElementNS(Avionics.SVG.NS, "g");
-            this.horizon.appendChild(this.bottomPart);            
+            this.horizon.appendChild(this.bottomPart);
             this.horizonTopGradient = document.createElementNS(Avionics.SVG.NS, "rect");
             this.horizonTopGradient.setAttribute("fill", (this.backgroundVisible) ? "url(#sky)" : "transparent");
-            this.horizonTopGradient.setAttribute("x", "-1000");
+            this.horizonTopGradient.setAttribute("x", "-1500");
             this.horizonTopGradient.setAttribute("y", "-200");
-            this.horizonTopGradient.setAttribute("width", "2000");
+            this.horizonTopGradient.setAttribute("width", "3000");
             this.horizonTopGradient.setAttribute("height", "200");
             this.bottomPart.appendChild(this.horizonTopGradient);
             this.horizonBottom = document.createElementNS(Avionics.SVG.NS, "rect");
@@ -230,7 +230,7 @@ class AttitudeIndicator extends HTMLElement {
         triangleOuterRight.setAttribute("d", "M140 30 l-50 0 L0 0 Z");
         triangleOuterRight.setAttribute("fill", "#d12bc7");
         //this.flightDirector.appendChild(triangleOuterRight);
- 
+
         let triangleHeight = 16;
         let triangleHalfHeight = triangleHeight / 2;
         let triangleWidth = 110;
@@ -402,7 +402,7 @@ class AttitudeIndicator extends HTMLElement {
             this.slipSkid.setAttribute("fill", "white");
             this.root.appendChild(this.slipSkid);
         }
-        
+
         {
             let radius = 10;
             let strokeWidth = 2;
@@ -411,29 +411,29 @@ class AttitudeIndicator extends HTMLElement {
             let color = "#00ff00";
             function createBarb(rotation, outline) {
                 let barb = document.createElementNS(Avionics.SVG.NS, "rect");
-                barb.setAttribute("x",-radius - barbLength);
-                barb.setAttribute("y",-barbThickness / 2);
-                barb.setAttribute("width",barbLength);
-                barb.setAttribute("height",barbThickness);
+                barb.setAttribute("x", -radius - barbLength);
+                barb.setAttribute("y", -barbThickness / 2);
+                barb.setAttribute("width", barbLength);
+                barb.setAttribute("height", barbThickness);
                 if (outline) {
-                    barb.setAttribute("fill","transparent");
-                    barb.setAttribute("stroke","black");
-                    barb.setAttribute("stroke-width",strokeWidth);
+                    barb.setAttribute("fill", "transparent");
+                    barb.setAttribute("stroke", "black");
+                    barb.setAttribute("stroke-width", strokeWidth);
                 } else {
-                    barb.setAttribute("fill",color);
+                    barb.setAttribute("fill", color);
                 }
-                barb.setAttribute("transform",`rotate(${rotation})`);
+                barb.setAttribute("transform", `rotate(${rotation})`);
                 return barb;
             }
             let actualDirectionMarker = document.createElementNS(Avionics.SVG.NS, "g");
             {
                 let outline = document.createElementNS(Avionics.SVG.NS, "circle");
-                outline.setAttribute("cx",0);
-                outline.setAttribute("cy",0);
-                outline.setAttribute("r",radius);
-                outline.setAttribute("fill","transparent");
-                outline.setAttribute("stroke","black");
-                outline.setAttribute("stroke-width",strokeWidth + barbThickness);
+                outline.setAttribute("cx", 0);
+                outline.setAttribute("cy", 0);
+                outline.setAttribute("r", radius);
+                outline.setAttribute("fill", "transparent");
+                outline.setAttribute("stroke", "black");
+                outline.setAttribute("stroke-width", strokeWidth + barbThickness);
                 actualDirectionMarker.appendChild(outline);
             }
             actualDirectionMarker.appendChild(createBarb(0, true));
@@ -442,14 +442,14 @@ class AttitudeIndicator extends HTMLElement {
             actualDirectionMarker.appendChild(createBarb(0, false));
             actualDirectionMarker.appendChild(createBarb(90, false));
             actualDirectionMarker.appendChild(createBarb(180, false));
-            
+
             let fill = document.createElementNS(Avionics.SVG.NS, "circle");
-            fill.setAttribute("cx",0);
-            fill.setAttribute("cy",0);
-            fill.setAttribute("r",radius);
-            fill.setAttribute("fill","transparent");
-            fill.setAttribute("stroke",color);
-            fill.setAttribute("stroke-width",barbThickness);
+            fill.setAttribute("cx", 0);
+            fill.setAttribute("cy", 0);
+            fill.setAttribute("r", radius);
+            fill.setAttribute("fill", "transparent");
+            fill.setAttribute("stroke", color);
+            fill.setAttribute("stroke-width", barbThickness);
             actualDirectionMarker.appendChild(fill);
             this.actualDirectionMarker = actualDirectionMarker;
             this.attitude_pitch.appendChild(actualDirectionMarker);
@@ -472,7 +472,7 @@ class AttitudeIndicator extends HTMLElement {
                 break;
             case "actual-pitch":
                 this.actualPitch = parseFloat(newValue);
-                break;               
+                break;
             case "ground-speed":
                 this.groundSpeed = parseFloat(newValue);
                 break;
@@ -535,9 +535,9 @@ class AttitudeIndicator extends HTMLElement {
             let ax = Math.sin(a);
             let ay = Math.sin(-this.actualPitch * Math.PI / 180);
             let az = Math.cos(a);
-            let screenWidth = 400 * 100/47.0; //From the css setting the width
-            let screenHeight = screenWidth * 3/4;
-            let fov = (80/2) * Math.PI / 180.0; 
+            let screenWidth = 400 * 100 / 47.0; //From the css setting the width
+            let screenHeight = screenWidth * 3 / 4;
+            let fov = (80 / 2) * Math.PI / 180.0;
             let focalLength = 1 / Math.tan(fov);
             let screenX = (ax * (focalLength / az)) * screenWidth;
             let screenY = (ay * (focalLength / az)) * screenHeight;
