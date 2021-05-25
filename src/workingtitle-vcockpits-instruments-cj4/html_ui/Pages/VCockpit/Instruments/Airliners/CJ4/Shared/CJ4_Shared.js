@@ -1757,9 +1757,9 @@ class CJ4_SystemEngines extends NavSystemElement {
             var posY = startPosY;
             var rect = document.createElementNS(Avionics.SVG.NS, "rect");
             rect.setAttribute("x", gaugeStartX.toString());
-            rect.setAttribute("y", posY.toString());
+            rect.setAttribute("y", (startPosY - gaugeHeight * 0.18).toString());
             rect.setAttribute("width", gaugeWidth.toString());
-            rect.setAttribute("height", (gaugeHeight * 0.25).toString());
+            rect.setAttribute("height", (gaugeHeight * 0.20).toString());
             rect.setAttribute("fill", "#11d011");
             trimGroup.appendChild(rect);
             var text = document.createElementNS(Avionics.SVG.NS, "text");
