@@ -182,7 +182,7 @@ class WT_FlightPlanAsoboInterface {
         }
 
         let waypointEntries = [];
-        if (data.departureProcIndex >= 0) {
+        if (tempFlightPlan.hasOrigin() && data.departureProcIndex >= 0) {
             await tempFlightPlan.setDepartureIndex(data.departureProcIndex, data.departureRunwayIndex, data.departureEnRouteTransitionIndex);
             let removeStart = 0;
             let firstDepartureElement = tempFlightPlan.getDeparture().elements.first();
@@ -204,7 +204,7 @@ class WT_FlightPlanAsoboInterface {
             tempFlightPlan.copySegmentFrom(flightPlan, WT_FlightPlan.Segment.ENROUTE);
         }
 
-        if (data.arrivalProcIndex >= 0) {
+        if (tempFlightPlan.hasDestination() && data.arrivalProcIndex >= 0) {
             waypointEntries = [];
             await tempFlightPlan.setArrivalIndex(data.arrivalProcIndex, data.arrivalEnRouteTransitionIndex, data.arrivalRunwayIndex);
             let removeCount = tempFlightPlan.getArrival().length;
@@ -218,7 +218,7 @@ class WT_FlightPlanAsoboInterface {
             await this._getWaypointEntriesFromData(data.waypoints.slice(this._asoboFlightPlanInfo.arrivalStartIndex, arrivalEnd), waypointEntries);
             await tempFlightPlan.insertWaypoints(WT_FlightPlan.Segment.ARRIVAL, waypointEntries, 0);
         }
-        if (data.approachIndex >= 0) {
+        if (tempFlightPlan.hasDestination() && data.approachIndex >= 0) {
             await tempFlightPlan.setApproachIndex(data.approachIndex, data.approachTransitionIndex);
             let approachLength = tempFlightPlan.getApproach().length;
             let preserveCount = 0;
