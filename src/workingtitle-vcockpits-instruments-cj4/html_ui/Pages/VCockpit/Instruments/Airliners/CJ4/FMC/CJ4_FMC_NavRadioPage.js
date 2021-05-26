@@ -101,7 +101,6 @@ class CJ4_FMC_NavRadioPageOne {
         // console.log("Render Nav");
         const tcasModeSwitch = this._fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], this.transponderMode, "blue");
         const relAbsDisplay = (SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number") === 1 ? "ABS  [blue]" : "REL  [blue]");
-
         this._fmc._templateRenderer.setTemplateRaw([
             ["", "1/2[blue]", "TUNE[blue]"],
             [" COM1", "COM2 "],
@@ -562,6 +561,7 @@ class CJ4_FMC_NavRadioPage {
     static tcasControl(fmc) {
         fmc.clearDisplay();
 
+        const tcasModeSwitch = fmc._templateRenderer.renderSwitch(["TA/RA", "STBY"], SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number") === 1 ? 1 : 0, "blue");
         const relAbsSwitch = fmc._templateRenderer.renderSwitch(["REL", "ABS"], SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_TAG", "number"), "blue");
         const altAboveOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_ABOVE_ENABLED", "number") === 1 ? "ABOVE[blue]" : "ABOVE[s-text]";
         const altNormOption = SimVar.GetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number") === 1 ? "NORM[blue]" : "NORM[s-text]";
@@ -569,8 +569,8 @@ class CJ4_FMC_NavRadioPage {
 
         fmc._templateRenderer.setTemplateRaw([
             ["", "", "TCAS CONTROL[blue]"],
-            [" MODE [disabled]", "ALT TAG "],
-            ["TA/[d-text disabled]RA/STBY[s-text disabled]", relAbsSwitch],
+            [" MODE ", "ALT TAG "],
+            [tcasModeSwitch, relAbsSwitch],
             [""],
             ["", "TEST[s-text disabled]"],
             ["◊TRAFFIC[disabled]", "EXT TEST [disabled]"],
@@ -591,6 +591,14 @@ class CJ4_FMC_NavRadioPage {
             } else {
                 SimVar.SetSimVarValue("L:WT_CJ4_TFC_ALT_NORM_ENABLED", "number", 0);
             }
+        };
+
+        fmc.onLeftInput[0] = () => {
+            let modeValue = SimVar.GetSimVarValue("TRANSPONDER STATE:1", "number");
+            modeValue = (modeValue === 1) ? 1 : 4;
+            this.transponderMode = SimVar.SetSimVarValue("TRANSPONDER STATE:1", "number", (modeValue === 1) ? 4 : 1).then(() => {
+                CJ4_FMC_NavRadioPage.tcasControl(fmc);
+            });
         };
 
         fmc.onRightInput[0] = () => {
