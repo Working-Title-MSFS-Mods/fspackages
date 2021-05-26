@@ -4554,7 +4554,7 @@ class CJ4_PopupMenu_PFD extends CJ4_PopupMenu_Handler {
                 this.addTitle("BRG PTR 2", this.textSize, 0.45);
                 this.addRadio("OFF", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
                 this.addRadio("VOR2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
-                this.addRadio("ADF2", this.textSize, [CJ4_PopupMenu_Key.BRG_PTR2_SRC]);
+                this.addRadio("ADF2", this.textSize, null); //[CJ4_PopupMenu_Key.BRG_PTR2_SRC]); -- not active in our version
             }
             this.endSection();
         }
@@ -5028,8 +5028,8 @@ class CJ4_PopupMenu_LOWER extends CJ4_PopupMenu_Handler {
             {
                 //this.addCheckbox("CONSTRAINTS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_CONSTRAINTS]);
                 this.addCheckbox("GEO-POL", this.textSize, null);
-                this.addCheckbox("AIRSPACE", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]);
-                this.addCheckbox("AIRWAYS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);
+                this.addCheckbox("AIRSPACE", this.textSize, null); //[CJ4_PopupMenu_Key.MAP_SYMBOL_AIRSPACES]); -- For Future Update
+                this.addCheckbox("AIRWAYS", this.textSize, null); //[CJ4_PopupMenu_Key.MAP_SYMBOL_AIRWAYS]);  -- For Future Update
                 this.addCheckbox("NEAREST APTS", this.textSize, null);
                 this.addCheckbox("HI NAVAIDS", this.textSize, null);
                 this.addCheckbox("LO NAVAIDS", this.textSize, [CJ4_PopupMenu_Key.MAP_SYMBOL_NAVAIDS]);
