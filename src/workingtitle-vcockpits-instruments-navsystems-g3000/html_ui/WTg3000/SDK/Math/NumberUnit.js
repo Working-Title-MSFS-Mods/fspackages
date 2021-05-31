@@ -698,6 +698,10 @@ WT_Unit.POUND = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 0.453592, "pound", "pou
 WT_Unit.TON = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 907.185, "ton", "tons", "tn");
 WT_Unit.TONNE = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 1000, "tonne", "tonnes", "tn");
 
+// the following fuel units use the generic conversion factor of 1 gal = 6.7 lbs
+WT_Unit.LITER_FUEL = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 0.80283679, "liter", "liters", "l");
+WT_Unit.GALLON_FUEL = new WT_SimpleUnit(WT_Unit.Family.WEIGHT, 3.0390664, "gallon", "gallons", "gal");
+
 WT_Unit.LITER = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 1, "liter", "liters", "l");
 WT_Unit.GALLON = new WT_SimpleUnit(WT_Unit.Family.VOLUME, 3.78541, "gallon", "gallons", "gal");
 
@@ -715,8 +719,10 @@ WT_Unit.MPM = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.MINUTE], null, null,
 WT_Unit.MPS = new WT_CompoundUnit([WT_Unit.METER], [WT_Unit.SECOND]);
 WT_Unit.FPM = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.MINUTE], null, null, "fpm");
 WT_Unit.FPS = new WT_CompoundUnit([WT_Unit.FOOT], [WT_Unit.SECOND]);
+WT_Unit.KGH = new WT_CompoundUnit([WT_Unit.KILOGRAM], [WT_Unit.HOUR], null, null, "kgh");
 WT_Unit.PPH = new WT_CompoundUnit([WT_Unit.POUND], [WT_Unit.HOUR], null, null, "pph");
-WT_Unit.GPH = new WT_CompoundUnit([WT_Unit.GALLON], [WT_Unit.HOUR], null, null, "gph");
+WT_Unit.LPH_FUEL = new WT_CompoundUnit([WT_Unit.LITER_FUEL], [WT_Unit.HOUR], null, null, "lph");
+WT_Unit.GPH_FUEL = new WT_CompoundUnit([WT_Unit.GALLON_FUEL], [WT_Unit.HOUR], null, null, "gph");
 
 /**
  * Generates formatted strings from WT_NumberUnit objects.

@@ -164,7 +164,7 @@ class WT_PlayerAirplane {
         return this._references;
     }
 }
-WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH);
+WT_PlayerAirplane._tempGPH = new WT_NumberUnit(0, WT_Unit.GPH_FUEL);
 /**
  * @enum {Number}
  */
@@ -1251,7 +1251,7 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
      */
     fuelOnboard(reference) {
         let value = SimVar.GetSimVarValue("FUEL TOTAL QUANTITY", "gallons");
-        return reference ? reference.set(value, WT_Unit.GALLON) : WT_Unit.GALLON.createNumber(value);
+        return reference ? reference.set(value, WT_Unit.GALLON_FUEL) : WT_Unit.GALLON_FUEL.createNumber(value);
     }
 
     /**
@@ -1261,7 +1261,7 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
      * @returns {WT_NumberUnit} the current total fuel consumption of the airplane.
      */
     fuelFlowTotal(reference) {
-        let fuelFlow = reference ? reference.set(0) : WT_Unit.GPH.createNumber(0);
+        let fuelFlow = reference ? reference.set(0) : WT_Unit.GPH_FUEL.createNumber(0);
         for (let i = 0; i < this.engineCount; i++) {
             fuelFlow.add(this.getEngine(i + 1).fuelFlow(WT_PlayerAirplane._tempGPH));
         }
@@ -1277,7 +1277,7 @@ class WT_AirplaneEngineering extends WT_AirplaneComponent {
      */
     fuelFlow(index, reference) {
         let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${index + 1}`, "gallons per hour");
-        return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
+        return reference ? reference.set(value, WT_Unit.GPH_FUEL) : WT_Unit.GPH_FUEL.createNumber(value);
     }
 
     /**
@@ -1330,7 +1330,7 @@ class WT_AirplaneEngine {
      */
     fuelFlow(reference) {
         let value = SimVar.GetSimVarValue(`ENG FUEL FLOW GPH:${this.index}`, "gallons per hour");
-        return reference ? reference.set(value, WT_Unit.GPH) : WT_Unit.GPH.createNumber(value);
+        return reference ? reference.set(value, WT_Unit.GPH_FUEL) : WT_Unit.GPH_FUEL.createNumber(value);
     }
 
     /**

@@ -132,6 +132,14 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetUnitsModel extends WT_G3x5_Uni
      * @readonly
      * @type {WT_Unit}
      */
+    get fuelUnit() {
+        return this._fuelUnit;
+    }
+
+    /**
+     * @readonly
+     * @type {WT_Unit}
+     */
     get verticalSpeedUnit() {
         return this._verticalSpeedUnit;
     }
@@ -147,6 +155,10 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetUnitsModel extends WT_G3x5_Uni
     _updateAltitude() {
         this._altitudeUnit = this.unitsSettingModel.altitudeSetting.getAltitudeUnit();
         this._verticalSpeedUnit = this.unitsSettingModel.altitudeSetting.getVerticalSpeedUnit();
+    }
+
+    _updateFuel() {
+        this._fuelUnit = this.unitsSettingModel.fuelSetting.getUnit();
     }
 }
 
@@ -1389,6 +1401,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         this._indent = 0;
         this._bearingUnit = null;
         this._distanceUnit = null;
+        this._fuelUnit = null;
         this._needUpdateDataFields = false;
         this._dynamicDataFieldUpdateTime = 0;
 
@@ -1397,8 +1410,8 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
 
         this._tempNM = WT_Unit.NMILE.createNumber(0);
         this._tempKnots = WT_Unit.KNOT.createNumber(0);
-        this._tempGallons = WT_Unit.GALLON.createNumber(0);
-        this._tempGPH = WT_Unit.GPH.createNumber(0);
+        this._tempGallons = WT_Unit.GALLON_FUEL.createNumber(0);
+        this._tempGPH = WT_Unit.GPH_FUEL.createNumber(0);
     }
 
     _getTemplate() {
@@ -1537,7 +1550,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
                 let speed = this._instrument.airplane.navigation.groundSpeed(this._tempKnots);
                 let currentFuelGal = this._instrument.airplane.engineering.fuelOnboard(this._tempGallons).number;
                 let fuelFlow = this._instrument.airplane.engineering.fuelFlowTotal(this._tempGPH);
-                value.set((speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 && fuelFlow.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW) >= 0) ? (currentFuelGal - distanceToLeg / speed.number * fuelFlow.number) : NaN, WT_Unit.GALLON);
+                value.set((speed.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED) >= 0 && fuelFlow.compare(WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW) >= 0) ? (currentFuelGal - distanceToLeg / speed.number * fuelFlow.number) : NaN, WT_Unit.GALLON_FUEL);
                 return;
             }
         }
@@ -1548,43 +1561,39 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
         this._dtkInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "DTK"}, new WT_NumberUnitModelAutoUpdated(new WT_NavAngleUnit(true), {updateValue: this._updateDTK.bind(this)}));
         this._cumDisInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "CUM"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {updateValue: this._updateCumulativeDistance.bind(this)}));
         this._legDisInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "DIS"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.NMILE, {updateValue: this._updateLegDistance.bind(this)}));
-        this._fuelInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "FUEL"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON, {updateValue: this._updateFuelRemaining.bind(this)}));
+        this._fuelInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "FUEL"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.GALLON_FUEL, {updateValue: this._updateFuelRemaining.bind(this)}));
         this._eteInfo = new WT_G3x5_NavDataInfoNumber({shortName: "", longName: "ETE"}, new WT_NumberUnitModelAutoUpdated(WT_Unit.SECOND, {updateValue: this._updateETE.bind(this)}));
         this._etaInfo = new WT_G3x5_NavDataInfoTime({shortName: "", longName: "ETA"}, new WT_G3x5_TimeModel(new WT_TimeModelAutoUpdated("", {updateTime: this._updateETA.bind(this)}), this._instrument.avionicsSystemSettingModel.timeFormatSetting, this._instrument.avionicsSystemSettingModel.timeLocalOffsetSetting));
     }
 
     _initNavDataFormatters() {
-        let bearingOpts = {
+        let bearingFormatter = new WT_NumberFormatter({
             precision: 1,
             unitSpaceBefore: false
-        };
-        let bearingFormatter = new WT_NumberFormatter(bearingOpts);
+        });
 
-        let distanceOpts = {
+        let distanceFormatter = new WT_NumberFormatter({
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
-        }
-        let distanceFormatter = new WT_NumberFormatter(distanceOpts);
+        });
 
-        let volumeOpts = {
+        let fuelFormatter = new WT_NumberFormatter({
             precision: 0.1,
             maxDigits: 3,
             unitSpaceBefore: false,
             unitCaps: true
-        }
-        let volumeFormatter = new WT_NumberFormatter(volumeOpts);
+        });
 
-        let durationOpts = {
+        let durationFormatter = new WT_TimeFormatter({
             timeFormat: WT_TimeFormatter.Format.HH_MM_OR_MM_SS,
             delim: WT_TimeFormatter.Delim.COLON_OR_CROSS
-        }
-        let durationFormatter = new WT_TimeFormatter(durationOpts);
+        });
 
         this._bearingInfoFormatter = new WT_G3x5_NavDataInfoViewDegreeFormatter(bearingFormatter);
         this._distanceInfoFormatter = new WT_G3x5_NavDataInfoViewNumberFormatter(distanceFormatter);
-        this._volumeInfoFormatter = new WT_G3x5_NavDataInfoViewNumberFormatter(volumeFormatter);
+        this._volumeInfoFormatter = new WT_G3x5_NavDataInfoViewNumberFormatter(fuelFormatter);
         this._durationInfoFormatter = new WT_G3x5_NavDataInfoViewDurationFormatter(durationFormatter, "__:__");
         this._timeInfoFormatter = new WT_G3x5_NavDataInfoViewTimeFormatter();
     }
@@ -1765,6 +1774,11 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
             this._cumDisInfo.setDisplayUnit(this._distanceUnit);
             this._needUpdateDataFields = true;
         }
+        if (!unitsModel.fuelUnit.equals(this._fuelUnit)) {
+            this._fuelUnit = unitsModel.fuelUnit;
+            this._fuelInfo.setDisplayUnit(this._fuelUnit);
+            this._needUpdateDataFields = true;
+        }
     }
 
     _updateDynamicDataFields() {
@@ -1805,7 +1819,7 @@ class WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement extends HTML
     }
 }
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_SPEED = WT_Unit.KNOT.createNumber(30);
-WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW = WT_Unit.GPH.createNumber(1);
+WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.MIN_COMPUTE_FUEL_FLOW = WT_Unit.GPH_FUEL.createNumber(1);
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.DYNAMIC_DATA_FIELD_UPDATE_INTERVAL = 2000; // ms
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.NAME = "wt-navmapdisplaypane-flightplantextinset-row-leg";
 WT_G3x5_NavMapDisplayPaneFlightPlanTextInsetRowLegHTMLElement.TEMPLATE = document.createElement("template");

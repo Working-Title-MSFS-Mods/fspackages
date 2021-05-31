@@ -958,6 +958,9 @@ class WT_G3x5_TSCAvionicsSettingsUnitsTab extends WT_G3x5_TSCAvionicsSettingsRow
 
         this._extTemperatureRow = new WT_G3x5_TSCUnitsButtonRow();
         this._initButtonRow(this._extTemperatureRow, "External Temperature", this.unitsSettingModel.extTemperatureSetting, ["Celsius", "Fahrenheit"], this.unitsSettingModel.extTemperatureSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
+
+        this._fuelRow = new WT_G3x5_TSCUnitsButtonRow();
+        this._initButtonRow(this._fuelRow, "Fuel", this.unitsSettingModel.fuelSetting, ["Gallons", "Liters", "Pounds", "Kilograms"], this.unitsSettingModel.fuelSetting.getAllUnits().map(units => units.map(unit => unit.abbrevName.toUpperCase())));
     }
 
     onAttached() {
