@@ -1466,6 +1466,34 @@ class WT_FlightPlanLeg extends WT_FlightPlanElement {
         return this._firstStep;
     }
 
+    /**
+     *
+     * @param {WT_NumberUnitObject} distanceAlong
+     * @param {WT_GeoPoint} [reference]
+     * @returns {WT_GeoPoint}
+     */
+    getPointAlong(distanceAlong, reference) {
+        if (!this._prev || !this._prev.endpoint) {
+            return undefined;
+        }
+
+        let start = this._prev.endpoint;
+        let step = this.firstStep();
+        let stepDistanceGARad = step.distance.asUnit(WT_Unit.GA_RADIAN);
+        let distanceAlongGARad = distanceAlong.asUnit(WT_Unit.GA_RADIAN);
+        while (distanceAlongGARad > stepDistanceGARad) {
+            if (step.isLoop || !step.next()) {
+                break;
+            }
+            start = step.endpoint;
+            step = step.next();
+            distanceAlongGARad -= stepDistanceGARad;
+        }
+
+        // not completely accurate, but for now we will treat every step as a direct step
+        return (reference ? reference.set(start) : new WT_GeoPoint(start.lat, start.long)).offset(start.bearingTo(step.endpoint), distanceAlongGARad, true);
+    }
+
     equals(other) {
         return (other instanceof WT_FlightPlanLeg) && this.firstStep().equals(other.firstStep());
     }

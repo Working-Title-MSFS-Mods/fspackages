@@ -9,10 +9,11 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
      * @param {WT_MapViewWaypointCanvasRenderer} waypointRenderer - the renderer to use for drawing waypoints.
      * @param {WT_MapViewTextLabelManager} labelManager - the text label manager to use for managing waypoint labels.
      * @param {WT_MapViewFlightPlanLegCanvasStyler} legStyler - the leg styler to use for determining how to render the paths for individual flight plan legs.
+     * @param {Boolean} shouldDrawVNAV - whether the new layer should draw VNAV indicators.
      * @param {String} [className] - the name of the class to add to the new layer's top-level HTML element's class list.
      * @param {String} [configName] - the name of the property in the map view's config file to be associated with the new layer.
      */
-    constructor(icaoWaypointFactory, waypointRenderer, labelManager, legStyler, className = WT_MapViewActiveFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewActiveFlightPlanLayer.CONFIG_NAME_DEFAULT) {
+    constructor(icaoWaypointFactory, waypointRenderer, labelManager, legStyler, shouldDrawVNAV, className = WT_MapViewActiveFlightPlanLayer.CLASS_DEFAULT, configName = WT_MapViewActiveFlightPlanLayer.CONFIG_NAME_DEFAULT) {
         super(icaoWaypointFactory, waypointRenderer, labelManager, legStyler, className, configName);
 
         /**
@@ -20,6 +21,22 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
          */
         this._fpm = null;
         this._drctRenderer = new WT_MapViewDirectToCanvasRenderer();
+
+        this._shouldDrawVNAV = shouldDrawVNAV;
+        if (this._shouldDrawVNAV) {
+            this._vnavLayer = new WT_MapViewCanvas(false, true);
+            this.addSubLayer(this._vnavLayer);
+
+            /**
+             * @type {WT_MapViewLocationTextLabel}
+             */
+            this._vnavLabel = null;
+
+            this._tempSecond = WT_Unit.SECOND.createNumber(0);
+            this._tempNM = WT_Unit.NMILE.createNumber(0);
+            this._tempGeoPoint = new WT_GeoPoint(0, 0);
+            this._tempVector2 = new WT_GVector2(0, 0);
+        }
     }
 
     _initWaypointRenderer() {
@@ -35,6 +52,15 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
 
     _initOptionsManager() {
         this._optsManager = new WT_OptionsManager(this, WT_MapViewActiveFlightPlanLayer.OPTIONS_DEF);
+    }
+
+    /**
+     * Whether this layer draws VNAV indicators.
+     * @readonly
+     * @type {Boolean}
+     */
+    get doesDrawVNAV() {
+        return this._shouldDrawVNAV;
     }
 
     /**
@@ -431,6 +457,166 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
                this._drctRenderer.needsRedraw();
     }
 
+    _clearVNAVLabel() {
+        if (this._vnavLabel) {
+            this._labelManager.remove(this._vnavLabel);
+            this._vnavLabel = null;
+        }
+    }
+
+    /**
+     *
+     * @param {WT_GeoPoint} location
+     * @param {String} labelText
+     * @returns {WT_MapViewLocationTextLabel}
+     */
+    _createVNAVLabel(location, labelText) {
+        let label = new WT_MapViewLocationTextLabel(location, labelText, this.vnavLabelPriority, true);
+        label.fontSize = this.vnavLabelFontSize;
+        label.fontWeight = this.vnavLabelFontWeight;
+        label.anchor = this.vnavLabelAnchor;
+        label.offset = this.vnavLabelOffset;
+        return label;
+    }
+
+    /**
+     *
+     * @param {CanvasRenderingContext2D} context
+     * @param {String} lineWidth
+     * @param {String|CanvasGradient|CanvasPattern} strokeStyle
+     */
+    _applyStroke(context, lineWidth, strokeStyle) {
+        context.lineWidth = lineWidth;
+        context.strokeStyle = strokeStyle;
+
+        context.stroke();
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_GeoPoint} location
+     */
+    _drawVNAVIcon(state, location) {
+        let projectedLocation = state.projection.project(location, this._tempVector2);
+
+        this._vnavLayer.display.context.beginPath();
+        this._vnavLayer.display.context.arc(projectedLocation.x, projectedLocation.y, this.vnavIconSize / 2 * state.dpiScale, 0, Math.PI * 2);
+        if (this.vnavIconOutlineWidth > 0) {
+            this._applyStroke(this._vnavLayer.display.context, (this.vnavIconOutlineWidth * 2 + this.vnavIconStrokeWidth) * state.dpiScale, this.vnavIconOutlineColor);
+        }
+        this._applyStroke(this._vnavLayer.display.context, this.vnavIconStrokeWidth * state.dpiScale, this.vnavIconStrokeColor);
+    }
+
+    /**
+     *
+     * @param {WT_GeoPoint} location
+     * @param {String} labelText
+     */
+    _updateVNAVLabel(location, labelText) {
+        if (this._vnavLabel && this._vnavLabel.location.equals(location) && this._vnavLabel.text === labelText) {
+            return;
+        }
+
+        this._clearVNAVLabel();
+        this._vnavLabel = this._createVNAVLabel(location, labelText);
+        this._labelManager.add(this._vnavLabel);
+    }
+
+    /**
+     *
+     * @param {WT_MapViewState} state
+     * @param {WT_GeoPoint} location
+     * @param {String} labelText
+     */
+    _drawVNAVPoint(state, location, labelText) {
+        this._drawVNAVIcon(state, location);
+        this._updateVNAVLabel(location, labelText);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateDirectToVNAV(state) {
+        let finalBearing = this._fpm.directTo.getFinalBearing();
+        let activeVNAVPath = this._fpm.getActiveVNAVPath(true);
+        let vnavOffset = this._fpm.directTo.getVNAVOffset();
+        let timeToTOD = this._fpm.timeToActiveVNAVPathStart(true, this._tempSecond);
+
+        if (timeToTOD.number >= 0) {
+            let distance = vnavOffset.asUnit(WT_Unit.GA_RADIAN) - activeVNAVPath.getTotalDistance().asUnit(WT_Unit.GA_RADIAN);
+            let tod = this._tempGeoPoint.set(this._fpm.directTo.getDestination().location).offset(finalBearing.number, distance, true);
+            this._drawVNAVPoint(state, tod, "TOD");
+            return;
+        } else if (this._fpm.directTo.getVNAVOffset().number !== 0) {
+            // only draw BOD if it is not coincident with the direct to waypoint
+            let timeToBOD = this._fpm.timeToActiveVNAVWaypoint(true, this._tempSecond);
+            if (timeToBOD.number >= 0) {
+                let distance = vnavOffset.asUnit(WT_Unit.GA_RADIAN);
+                let bod = this._tempGeoPoint.set(this._fpm.directTo.getDestination().location).offset(finalBearing.number, distance, true);
+                this._drawVNAVPoint(state, bod, "BOD");
+                return;
+            }
+        }
+
+        this._clearVNAVLabel();
+    }
+
+    /**
+     *
+     * @param {WT_FlightPlanLeg} leg
+     * @param {Number} offset
+     * @param {WT_GeoPoint} reference
+     */
+    _findPointAlongFlightPlan(leg, offset, reference) {
+        let currentLeg = leg;
+        while (offset < 0 || offset > currentLeg.distance.asUnit(WT_Unit.NMILE)) {
+            let delta = offset < 0 ? -1 : 1;
+            let newIndex = currentLeg.index + delta;
+            if (newIndex < 0 || newIndex >= currentLeg.flightPlan.legs.length) {
+                break;
+            }
+            currentLeg = leg.flightPlan.legs.get(newIndex);
+        }
+
+        return currentLeg.getPointAlong(this._tempNM.set(offset), reference);
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateFlightPlanVNAV(state) {
+        let timeToTOD = this._fpm.timeToActiveVNAVPathStart(true, this._tempSecond);
+        if (timeToTOD.number >= 0) {
+            let legRestriction = this._fpm.getActiveVNAVLegRestriction(true);
+            let totalVNAVDistance = legRestriction.vnavPath.getTotalDistance();
+            let tod = this._findPointAlongFlightPlan(legRestriction.leg, legRestriction.leg.distance.asUnit(WT_Unit.NMILE) - totalVNAVDistance.asUnit(WT_Unit.NMILE), this._tempGeoPoint);
+            this._drawVNAVPoint(state, tod, "TOD");
+            return;
+        }
+
+        this._clearVNAVLabel();
+    }
+
+    /**
+     * @param {WT_MapViewState} state
+     */
+    _updateVNAVLayer(state) {
+        this._vnavLayer.display.clear();
+        if (!this._fpm || !this._fpm.isVNAVEnabled) {
+            this._clearVNAVLabel();
+            return;
+        }
+
+        if (this._fpm.directTo.isVNAVActive()) {
+            this._updateDirectToVNAV(state);
+        } else if (this._fpm.getActiveVNAVLegRestriction(true)) {
+            this._updateFlightPlanVNAV(state);
+        } else {
+            this._clearVNAVLabel();
+        }
+    }
+
     /**
      * @param {WT_MapViewState} state
      */
@@ -439,6 +625,9 @@ class WT_MapViewActiveFlightPlanLayer extends WT_MapViewFlightPlanLayer {
         this._updateActiveLeg(state);
         this._updatePath(state);
         this._updateWaypointLayer(state);
+        if (this._shouldDrawVNAV) {
+            this._updateVNAVLayer(state);
+        }
     }
 }
 WT_MapViewActiveFlightPlanLayer.CLASS_DEFAULT = "activeFlightPlanLayer";
@@ -508,7 +697,19 @@ WT_MapViewActiveFlightPlanLayer.OPTIONS_DEF = {
     ndbLabelOffset: {default: {x: 0, y: -27.5}, auto: true},
     intLabelOffset: {default: {x: 0, y: -20}, auto: true},
     rwyLabelOffset: {default: {x: 0, y: -20}, auto: true},
-    flightPathLabelOffset: {default: {x: 0, y: -17.5}, auto: true}
+    flightPathLabelOffset: {default: {x: 0, y: -17.5}, auto: true},
+
+    vnavIconSize: {default: 10, auto: true},
+    vnavIconStrokeWidth: {default: 2, auto: true},
+    vnavIconStrokeColor: {default: "white", auto: true},
+    vnavIconOutlineWidth: {default: 1, auto: true},
+    vnavIconOutlineColor: {default: "black", auto: true},
+
+    vnavLabelFontSize: {default: 15, auto: true},
+    vnavLabelFontWeight: {default: "bold", auto: true},
+    vnavLabelPriority: {default: 1010, auto: true},
+    vnavLabelAnchor: {default: {x: 0, y: 0}, auto: true},
+    vnavLabelOffset: {default: {x: 5, y: 5}, auto: true}
 };
 WT_MapViewActiveFlightPlanLayer.CONFIG_PROPERTIES = [
     ...WT_MapViewFlightPlanLayer.CONFIG_PROPERTIES,
@@ -524,4 +725,14 @@ WT_MapViewActiveFlightPlanLayer.CONFIG_PROPERTIES = [
     "activeLabelBackgroundBorderRadius",
     "activeLabelBackgroundOutlineWidth",
     "activeLabelBackgroundOutlineColor",
+    "vnavIconSize",
+    "vnavIconStrokeWidth",
+    "vnavIconStrokeColor",
+    "vnavIconOutlineWidth",
+    "vnavIconOutlineColor",
+    "vnavLabelFontSize",
+    "vnavLabelFontWeight",
+    "vnavLabelPriority",
+    "vnavLabelAnchor",
+    "vnavLabelOffset"
 ];

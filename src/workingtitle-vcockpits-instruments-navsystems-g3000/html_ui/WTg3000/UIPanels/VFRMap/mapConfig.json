@@ -104,7 +104,8 @@
     "activeFlightPlan": {
         "iconDirectory": "/WTg3000/SDK/Assets/Images/Garmin/Map",
         "waypointLabelFontSize": 20,
-        "activeLabelFontSize": 20
+        "activeLabelFontSize": 20,
+        "vnavLabelFontSize": 20
     },
 
     "waypointHighlight": {

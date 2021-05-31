@@ -1,9 +1,19 @@
 class WT_DirectTo {
     constructor(options) {
+        /**
+         * @type {WT_FlightPathWaypoint}
+         */
         this._origin = null;
+        /**
+         * @type {WT_Waypoint}
+         */
         this._destination = null;
+        this._initialBearing = new WT_NavAngleUnit(false).createNumber(0);
+        this._finalBearing = new WT_NavAngleUnit(false).createNumber(0);
+
         this._vnavPath = new WT_VNAVPath();
         this._vnavOffset = WT_Unit.NMILE.createNumber(0);
+
         this._isActive = false;
         this._isVNAVActive = false;
         this._hasVNAVPath = false;
@@ -36,6 +46,22 @@ class WT_DirectTo {
      */
     getDestination() {
         return this._destination;
+    }
+
+    /**
+     *
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    getInitialBearing() {
+        return this.isActive() ? this._initialBearing.readonly() : null;
+    }
+
+    /**
+     *
+     * @returns {WT_NumberUnitReadOnly}
+     */
+    getFinalBearing() {
+        return this.isActive() ? this._finalBearing.readonly() : null;
     }
 
     /**
@@ -84,6 +110,11 @@ class WT_DirectTo {
         eventData.types = eventData.types | WT_DirectToEvent.Type.VNAV_PATH_CHANGED;
     }
 
+    /**
+     *
+     * @param {{lat:Number, long:Number}} origin
+     * @param {Object} eventData
+     */
     _activate(origin, eventData) {
         if (this.isActive() && this._origin.location.equals(origin)) {
             return;
@@ -91,6 +122,12 @@ class WT_DirectTo {
 
         this._origin = new WT_FlightPathWaypoint("DRCT-ORIG", origin);
         this._isActive = true;
+
+        this._initialBearing.unit.setLocation(origin);
+        this._initialBearing.set(this._origin.location.bearingTo(this._destination.location));
+        this._finalBearing.unit.setLocation(this._destination.location);
+        this._finalBearing.set(this._destination.location.bearingFrom(this._origin.location));
+
         eventData.types = eventData.types | WT_DirectToEvent.Type.ACTIVATED;
 
         this._initVNAVPath(eventData);
@@ -118,7 +155,7 @@ class WT_DirectTo {
 
     /**
      *
-     * @param {WT_GeoPoint} origin
+     * @param {{lat:Number, long:Number}} origin
      */
     activate(origin) {
         if (origin) {

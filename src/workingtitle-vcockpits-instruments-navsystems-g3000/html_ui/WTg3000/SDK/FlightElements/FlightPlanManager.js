@@ -1234,27 +1234,16 @@ class WT_FlightPlanManager {
         }
     }
 
-    _distanceToDirectToVNAVPathStart(reference) {
-        return this._distanceToDirectTo(reference).subtract(this.directTo.vnavPath.getTotalDistance());
-    }
-
-    _distanceToActiveVNAVLegRestrictionPathStart(reference) {
-        if (!this._activeLegCached || !this._activeVNAVLegRestrictionCached) {
-            return undefined;
-        }
-
-        return this._distanceToActiveVNAVLegRestriction(reference).subtract(this._activeVNAVLegRestrictionCached.vnavPath.getTotalDistance());
-    }
-
     _distanceToActiveVNAVPathStart(reference) {
         if (!this.isVNAVEnabled) {
             return undefined;
         }
 
-        if (this.directTo.isVNAVActive()) {
-            return this._distanceToDirectToVNAVPathStart(reference);
+        let activeVNAVPath = this._getActiveVNAVPath();
+        if (activeVNAVPath) {
+            return this._distanceToActiveVNAVWaypoint(reference).subtract(activeVNAVPath.getTotalDistance());
         } else {
-            return this._distanceToActiveVNAVLegRestrictionPathStart(reference);
+            return undefined;
         }
     }
 
@@ -2244,8 +2233,6 @@ class WT_FlightPlanManager {
      * @param {WT_FlightPlanSyncEvent} event
      */
     _onSyncEvent(event) {
-        console.log(event);
-
         let isRequest = event.command === WT_FlightPlanSyncHandler.Command.REQUEST;
         let isConfirm = event.command === WT_FlightPlanSyncHandler.Command.CONFIRM;
         if ((isRequest && !this.isMaster) ||
